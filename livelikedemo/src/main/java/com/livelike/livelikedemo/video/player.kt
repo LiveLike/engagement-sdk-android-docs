@@ -5,20 +5,27 @@ import android.net.Uri
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 
+data class PlayerState(var window: Int = 0,
+                       var position: Long = 0,
+                       var whenReady: Boolean = true)
+
 class ExoPlayerImpl(private val context: Context, private val playerView : PlayerView) : VideoPlayer{
     private lateinit var player : SimpleExoPlayer
+    private lateinit var mediaSource : MediaSource
+    private var playerState = PlayerState()
 
     private fun initializePlayer(uri: Uri) {
         playerView.requestFocus()
 
         player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
 
-        val mediaSource = buildMediaSource(uri)
-        player.prepare(mediaSource)
+        mediaSource = buildMediaSource(uri)
+
     }
 
     private fun buildMediaSource(uri: Uri): ExtractorMediaSource {
@@ -32,11 +39,22 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
     }
 
     override fun start() {
-        player.playWhenReady = true
+        player.prepare(mediaSource)
+        with(playerState) {
+            player.playWhenReady = whenReady
+            player.seekTo(window, position)
+        }
     }
 
     override fun stop() {
-        player.stop()
+        with(player) {
+            with(playerState) {
+                position = currentPosition
+                window = currentWindowIndex
+                whenReady = playWhenReady
+            }
+            stop()
+        }
     }
 
     override fun release() {

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             android:orientation="vertical"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             android:background="@color/colorPrimaryDark"
+    >
+
+    <ListView
+        android:id="@+id/chatdisplay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/chatBackground"
+        android:stackFromBottom="true"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/chatinput"
+        />
+
+    <EditText
+        android:id="@+id/chatinput"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:importantForAutofill="no"
+
+        android:inputType="text"
+        android:textColor="@color/colorInputText"
+        android:background="@color/colorAccent"
+        android:textSize="18sp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+</android.support.constraint.ConstraintLayout>
