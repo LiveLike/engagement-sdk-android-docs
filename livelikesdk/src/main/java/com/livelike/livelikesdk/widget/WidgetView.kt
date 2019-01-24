@@ -39,4 +39,3 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         }
     }
 }
-
