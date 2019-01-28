@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ChatView">
+        <attr name="inputTextColor" format="color" />
+        <attr name="inputTextDefault" format="string" />
+        <attr name="displayTextColor" format="color" />
+        <attr name="displayTextHighlightColor" format="color" />
+        <attr name="displayTextBackground" format="reference" />
+    </declare-styleable>
+</resources>

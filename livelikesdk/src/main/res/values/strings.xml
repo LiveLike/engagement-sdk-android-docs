@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LiveLikeSDK</string>
+    <string name="user_message_seperator">:</string>
 </resources>
