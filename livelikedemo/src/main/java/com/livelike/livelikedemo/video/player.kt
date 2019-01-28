@@ -3,6 +3,7 @@ package com.livelike.livelikedemo.video
 import android.content.Context
 import android.net.Uri
 import com.google.android.exoplayer2.ExoPlayerFactory
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
@@ -25,7 +26,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
         player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
 
         mediaSource = buildMediaSource(uri)
-
+        player.repeatMode = Player.REPEAT_MODE_ALL
     }
 
     private fun buildMediaSource(uri: Uri): ExtractorMediaSource {
