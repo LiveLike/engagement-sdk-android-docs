@@ -1,14 +1,18 @@
 package com.livelike.livelikedemo
 
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.constraint.Constraints
-import android.util.Log
 import android.view.View
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
+import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.chat.*
 import kotlinx.android.synthetic.main.activity_exo_player.*
+import kotlinx.android.synthetic.main.widget_chat_stacked.*
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -18,7 +22,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exo_player)
-
+        initializeLiveLikeSDK()
         useDrawerLayout = intent.getBooleanExtra(USE_DRAWER_LAYOUT, false)
         if(!useDrawerLayout)
             playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
@@ -40,6 +44,23 @@ class ExoPlayerActivity : AppCompatActivity() {
             stopAd.visibility = View.GONE
             startAd.visibility = View.VISIBLE
         }
+    }
+
+    private fun initializeLiveLikeSDK() {
+        val sdk = LiveLikeSDK("app_Id")
+        val session = sdk.createContentSession("someContentId") { currentPlayheadPosition() }
+
+        // Bind the chatView object here with the session.
+        val chatTheme = ChatTheme.Builder()
+                            .backgroundColor(Color.RED)
+                            .cellFont(Typeface.SANS_SERIF)
+                        .build()
+          val chatAdapter = ChatAdapter(session, chatTheme, DefaultChatCellFactory(applicationContext, null))
+          chat_view.setDataSource(chatAdapter)
+    }
+
+    private fun currentPlayheadPosition() {
+
     }
 
     override fun onStart() {
