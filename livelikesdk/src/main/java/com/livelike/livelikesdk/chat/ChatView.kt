@@ -12,8 +12,8 @@ import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.chatinput
+import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.user
-import kotlinx.android.synthetic.main.default_chat_cell.view.message
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -116,9 +116,9 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 .inflate(R.layout.default_chat_cell, this, true)
     }
 
-    override fun setMessage(chat: ChatMessage) {
-        user.text = chat.senderDisplayName
-        message.text = chat.message
+    override fun setMessage(message: ChatMessage) {
+        user.text = message.senderDisplayName
+        chatMessage.text = message.message
     }
 
     override fun getView(): View {

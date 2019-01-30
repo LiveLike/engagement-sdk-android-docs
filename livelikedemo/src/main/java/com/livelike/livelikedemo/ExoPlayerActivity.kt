@@ -55,8 +55,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                             .backgroundColor(Color.RED)
                             .cellFont(Typeface.SANS_SERIF)
                         .build()
-          val chatAdapter = ChatAdapter(session, chatTheme, DefaultChatCellFactory(applicationContext, null))
-          chat_view.setDataSource(chatAdapter)
+        val chatAdapter = ChatAdapter(session, chatTheme, DefaultChatCellFactory(applicationContext, null))
+        chat_view.setDataSource(chatAdapter)
+        widget_view.setSession(session)
     }
 
     private fun currentPlayheadPosition() {
