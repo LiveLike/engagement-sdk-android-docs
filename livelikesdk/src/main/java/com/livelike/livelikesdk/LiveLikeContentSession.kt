@@ -1,5 +1,7 @@
 package com.livelike.livelikesdk
 
+import com.livelike.livelikesdk.messaging.MessagingEventListener
+
 /**
  *  Represents a playable session which LiveLike uses deliver widgets and associate user with the Chat
  *  component. SDK would keep a track of video player's current position as well. This would help the
@@ -19,4 +21,6 @@ interface LiveLikeContentSession {
     fun clearFeedbackQueue()
     /** Closes the current session.*/
     fun close()
+    /** Set a listener on the Widget MessagingClient **/
+    fun setWidgetSourceListener(listener: MessagingEventListener)
 }
