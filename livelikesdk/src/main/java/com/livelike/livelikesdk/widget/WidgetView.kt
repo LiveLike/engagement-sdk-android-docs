@@ -13,16 +13,19 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.Error
-import com.livelike.livelikesdk.messaging.MessagingClient
-import com.livelike.livelikesdk.messaging.MessagingEventListener
-import kotlinx.android.synthetic.main.widget_view.view.webview
 
-class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), MessagingEventListener {
+import kotlinx.android.synthetic.main.widget_view.view.webview
+import java.util.*
+import kotlin.concurrent.timer
+
+class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), WidgetRenderer {
+
+    companion object {
+        const val AUTO_DISMISS_DELAY = 5000L
+    }
 
     val webInterface = WebAppInterface(context)
+    override var widgetListener : WidgetEventListener? = null
 
     init {
         LayoutInflater.from(context)
@@ -37,25 +40,10 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 super.onPageFinished(view, url)
             }
         }
-        webview!!.loadUrl("https://dev.redspace.com/animations-test/index.html")
     }
 
     fun setSession(liveLikeContentSession: LiveLikeContentSession) {
-        liveLikeContentSession.setWidgetSourceListener(this)
-    }
-
-    override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(context, event.event + " " + event.message["url"], Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onClientMessageError(client: MessagingClient, error: Error) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
-        Toast.makeText(context, status.name, Toast.LENGTH_SHORT).show()
+        liveLikeContentSession.renderer = this
     }
 
     class WebAppInterface(private val mContext: Context) {
@@ -64,4 +52,18 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
 
         }
     }
+
+    override fun displayWidget(widgetData: Any) {
+        Handler(Looper.getMainLooper()).post {
+            webview!!.loadUrl("https://dev.redspace.com/animations-test/index.html")
+            Toast.makeText(context, widgetData.toString(), Toast.LENGTH_SHORT).show()
+            val timerTask = object : TimerTask() {
+                override fun run() {
+                    widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
+                }
+            }
+            Timer().schedule(timerTask, AUTO_DISMISS_DELAY)
+        }
+    }
 }
+
