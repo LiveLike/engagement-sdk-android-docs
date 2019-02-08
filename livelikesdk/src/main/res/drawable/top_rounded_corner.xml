@@ -10,11 +10,10 @@
             android:angle="45"/>
         <padding
             android:left="16dp"
-            android:right="8dp"
-            android:top="8dp"
-            android:bottom="8dp"
+            android:right="34dp"
+            android:top="10dp"
+            android:bottom="10dp"
             />
-
     <corners
         android:topLeftRadius="5dp"
         android:topRightRadius="5dp"/>

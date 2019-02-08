@@ -9,4 +9,6 @@
     <color name="colorDisplayText">#ccffffff</color>
     <color name="colorDisplayTextHighlight">#3333ff</color>
 
+    <color name="text_color">#ffffff</color>
+
 </resources>

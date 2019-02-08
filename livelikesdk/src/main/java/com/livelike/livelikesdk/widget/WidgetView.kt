@@ -1,38 +1,50 @@
 package com.livelike.livelikesdk.widget
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.messaging.*
 
-import java.util.*
-
-class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), WidgetRenderer {
-    override var widgetListener : WidgetEventListener? = null
-
-    companion object {
-        const val AUTO_DISMISS_DELAY = 5000L
+class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), MessagingEventListener {
+    override fun onClientMessageError(client: MessagingClient, error: Error) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-
-    fun setSession(liveLikeContentSession: LiveLikeContentSession) {
-        liveLikeContentSession.renderer = this
+    override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun displayWidget(widgetData: Any) {
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(context, widgetData.toString(), Toast.LENGTH_SHORT).show()
-            val timerTask = object : TimerTask() {
-                override fun run() {
-                    widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
-                }
-            }
-            Timer().schedule(timerTask, AUTO_DISMISS_DELAY)
-        }
+    override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private var container : FrameLayout
+    init {
+        LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
+        container = findViewById(R.id.containerView)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        Handler().postDelayed({
+            val layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutParams.topMargin = 0
+            val predictionWidget = PredictionWidget(context, null, 0)
+            predictionWidget.layoutParams = layoutParams
+            container.addView(predictionWidget)
+        }, 5000)
     }
 }
 

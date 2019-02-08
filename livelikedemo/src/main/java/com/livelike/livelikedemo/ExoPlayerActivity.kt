@@ -5,6 +5,9 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.support.constraint.ConstraintLayout
+import android.support.constraint.ConstraintSet
 import android.support.constraint.Constraints
 import android.view.View
 import com.livelike.livelikedemo.video.ExoPlayerImpl
@@ -14,7 +17,6 @@ import com.livelike.livelikesdk.chat.*
 import com.livelike.livelikesdk.messaging.EpochTime
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
-import java.util.Date
 
 class ExoPlayerActivity : AppCompatActivity() {
 
