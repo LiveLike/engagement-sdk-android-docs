@@ -28,7 +28,6 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
                                                  defStyleAttr: Int = 0)
     : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    private lateinit var touchListener: View.OnTouchListener
     private lateinit var parentView: ScrollView
     private val buttonList: ArrayList<Button> = ArrayList()
     private var optionSelected = false
@@ -50,7 +49,6 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
         val options = arrayListOf("player 3", "player 4", "player 5")
 
         val textView = findViewById<TextView>(R.id.prediction_question_textView)
-        this.touchListener = LayoutTouchListener(this, parentView)
 
         addNewlyCreatedButtonsToLayout(options, context)
         applyConstraintsBetweenViews(constraintSet, textView)
@@ -59,9 +57,19 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
         performTimerAnimation()
         performEasingAnimation()
 
-        prediction_text_widget.setOnTouchListener(touchListener)
+        prediction_text_widget.setOnTouchListener(LayoutTouchListener(this, parentView))
     }
 
+    private fun performClickAction(it: View?, context: Context) {
+        buttonList.forEach { button ->
+            optionSelected = true
+            // TODO: Move this logic to android state drawables.
+            if (button.id == it?.id) {
+                button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
+            } else
+                button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
+        }
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun addNewlyCreatedButtonsToLayout(options: ArrayList<String>, context: Context) {
@@ -69,8 +77,9 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
             val button = Button(context)
             buttonList.add(button)
             applyStyle(button, options, index, context, element)
-            setOnClickListener(button, context)
-            button.setOnTouchListener(touchListener)
+            button.setOnTouchListener(LayoutTouchListener(this, parentView) {
+                performClickAction(it, context)
+            })
             layout.addView(button)
         }
     }
@@ -100,19 +109,6 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
                 ConstraintSet.CHAIN_PACKED)
 
         constraintSet.applyTo(layout)
-    }
-
-    private fun setOnClickListener(button: Button, context: Context) {
-        button.setOnClickListener { view ->
-            buttonList.forEach { button ->
-                optionSelected = true
-                // TODO: Move this logic to android state drawables.
-                if (button.id == view.id) {
-                    button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
-                } else
-                    button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
-            }
-        }
     }
 
     private fun applyStyle(button: Button,
@@ -170,6 +166,20 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
 
         animatorSet.duration = 5000
         animatorSet.start()
+    }
+
+    private fun performTimerAnimation() {
+        bindListenerToTimerAnimation()
+        prediction_pie_updater_animation.playAnimation()
+        val animator = ValueAnimator.ofFloat(0f, 1f)
+        animator.duration = widgetDismissDuration
+
+        animator.addUpdateListener { animation ->
+            prediction_pie_updater_animation.progress = animation.animatedValue as Float
+        }
+        animator.start()
+
+        bindListenerToConfirmMessageAnimation()
     }
 
     private fun bindListenerToTimerAnimation() {

@@ -1,13 +1,20 @@
 package com.livelike.livelikesdk
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ScrollView
 
 class LayoutTouchListener(private val view: View,
                           private val scrollview: ScrollView) : View.OnTouchListener {
+
+    private var action : (View?) -> Unit = {}
+    constructor(view: View,
+                scrollview: ScrollView,
+                action: (View?) -> Unit) : this(view, scrollview) {
+        this.action = action
+    }
+
     private var downX : Float = 0.0f
     private var downY : Float = 0.0f
     private var upX : Float = 0.0f
@@ -29,8 +36,7 @@ class LayoutTouchListener(private val view: View,
                 upY = event.y
 
                 val deltaX = downX - upX
-
-                return swipeHorizontally(deltaX)
+                return swipeHorizontally(deltaX, v)
             }
             MotionEvent.ACTION_CANCEL -> {
                 scrollview.requestDisallowInterceptTouchEvent(true)
@@ -42,7 +48,7 @@ class LayoutTouchListener(private val view: View,
         return false
     }
 
-    private fun swipeHorizontally(deltaX: Float): Boolean {
+    private fun swipeHorizontally(deltaX: Float, viewTouched: View?): Boolean {
         if (Math.abs(deltaX) > 100) {
             if (deltaX < 0) {
                 hideView()
@@ -54,13 +60,11 @@ class LayoutTouchListener(private val view: View,
             }
             return true
         } else {
-            Log.i("Swipe", "Horizontal swipe was too small")
+            action(viewTouched)
         }
         return true
     }
 
-    private fun hideView() {
-        view.visibility = View.INVISIBLE
-    }
-
+    // Maybe move this method to better place.
+    private fun hideView() { view.visibility = View.INVISIBLE }
 }
