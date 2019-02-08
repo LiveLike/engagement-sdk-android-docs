@@ -1,25 +1,24 @@
 package com.livelike.livelikesdk.widget
 
-import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.widget.*
+import android.widget.Toast.LENGTH_LONG
 import com.daimajia.easing.Glider
 import com.daimajia.easing.Skill
 import com.livelike.livelikesdk.LayoutTouchListener
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.animation.AnimationHandler
+import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
 @SuppressLint("ViewConstructor")
@@ -29,9 +28,11 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
     : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private lateinit var parentView: ScrollView
+    private lateinit var animationHandler : AnimationHandler
     private val buttonList: ArrayList<Button> = ArrayList()
     private var optionSelected = false
-    private val widgetDismissDuration: Long = 100000
+    private val timerDuration: Long = 7000
+    private val widgetShowingDurationAfterConfirmMessage: Long = 3000
     private val widgetOpacityFactor: Float = 0.2f
     private val constraintSet = ConstraintSet()
     private var layout = ConstraintLayout(context, attrs, defStyleAttr)
@@ -53,10 +54,18 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
         addNewlyCreatedButtonsToLayout(options, context)
         applyConstraintsBetweenViews(constraintSet, textView)
 
-        // TODO: Actually start this animation after the bounce effect is completed.
-        performTimerAnimation()
-        performEasingAnimation()
+        val pieTimerViewStub = findViewById<ViewStub>(R.id.prediction_pie)
+        pieTimerViewStub.layoutResource = R.layout.pie_timer
+        val pieTimer = pieTimerViewStub.inflate()
 
+        animationHandler = AnimationHandler()
+        animationHandler.startAnimation(
+                pieTimer.findViewById(R.id.prediction_pie_updater_animation),
+                { onTimerAnimationCompleted() },
+                timerDuration)
+
+        // TODO: Actually start this animation after the bounce effect is completed.
+        performEasingAnimation()
         prediction_text_widget.setOnTouchListener(LayoutTouchListener(this, parentView))
     }
 
@@ -65,6 +74,8 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
             optionSelected = true
             // TODO: Move this logic to android state drawables.
             if (button.id == it?.id) {
+                Toast.makeText(context, "selected option ${button.text} ", LENGTH_LONG).show()
+                // Here we get the selected option which will used for follow up widget.
                 button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
             } else
                 button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
@@ -137,19 +148,32 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
     private fun isLastButtonToBeAddedToLayout(buttonNames: ArrayList<String>, index: Int) =
             buttonNames[index] == buttonNames[buttonNames.size - 1]
 
-    private fun performTimerAnimation() {
-        bindListenerToTimerAnimation()
-        prediction_pie_updater_animation.playAnimation()
-        val animator = ValueAnimator.ofFloat(0f, 1f)
-        animator.duration = widgetDismissDuration
-
-        animator.addUpdateListener { animation ->
-            prediction_pie_updater_animation.progress = animation.animatedValue as Float
-        }
-        animator.start()
-
-        bindListenerToConfirmMessageAnimation()
+    private fun onTimerAnimationCompleted() {
+        if (optionSelected) {
+            prediction_confirm_message_textView.visibility = View.VISIBLE
+            prediction_confirm_message_animation.visibility = View.VISIBLE
+            animationHandler.startAnimation(
+                    prediction_confirm_message_animation,
+                    {hideWidget()},
+                    widgetShowingDurationAfterConfirmMessage)
+            performPredictionWidgetFadeOutOperations()
+        } else hideWidget()
     }
+
+    private fun performPredictionWidgetFadeOutOperations() {
+        buttonList.forEach { button ->
+            disableButtons(button)
+            setViewTranslucent(button)
+        }
+        setViewTranslucent(prediction_question_textView)
+        setViewTranslucent(prediction_pie_updater_animation)
+    }
+
+    private fun setViewTranslucent(view: View) {
+        view.alpha = widgetOpacityFactor
+    }
+
+    private fun disableButtons(button: Button) { button.isEnabled = false }
 
     private fun performEasingAnimation() {
         val heightToReach = this.measuredHeight
@@ -166,63 +190,6 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
 
         animatorSet.duration = 5000
         animatorSet.start()
-    }
-
-    private fun performTimerAnimation() {
-        bindListenerToTimerAnimation()
-        prediction_pie_updater_animation.playAnimation()
-        val animator = ValueAnimator.ofFloat(0f, 1f)
-        animator.duration = widgetDismissDuration
-
-        animator.addUpdateListener { animation ->
-            prediction_pie_updater_animation.progress = animation.animatedValue as Float
-        }
-        animator.start()
-
-        bindListenerToConfirmMessageAnimation()
-    }
-
-    private fun bindListenerToTimerAnimation() {
-        prediction_pie_updater_animation.addAnimatorListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) { Log.e("Animation:", "start") }
-            override fun onAnimationEnd(animation: Animator) {
-                Log.e("Animation:", "end")
-                if (optionSelected) {
-                    prediction_confirm_message_textView.visibility = View.VISIBLE
-                    prediction_confirm_message_animation.visibility = View.VISIBLE
-                    prediction_confirm_message_animation.playAnimation()
-                    performPredictionWidgetFadeOutOperations()
-                    Handler().postDelayed({ this@PredictionWidget.visibility = View.INVISIBLE }, widgetDismissDuration)
-                } else hideWidget()
-            }
-
-            fun performPredictionWidgetFadeOutOperations() {
-                buttonList.forEach { button ->
-                    disableButtons(button)
-                    setViewTranslucent(button)
-                }
-                setViewTranslucent(prediction_question_textView)
-                setViewTranslucent(prediction_pie_updater_animation)
-            }
-
-            fun setViewTranslucent(view: View) { view.alpha = widgetOpacityFactor }
-            fun disableButtons(button: Button) { button.isEnabled = false }
-            override fun onAnimationCancel(animation: Animator) { Log.e("Animation:", "cancel") }
-            override fun onAnimationRepeat(animation: Animator) { Log.e("Animation:", "repeat") }
-        })
-    }
-
-    private fun bindListenerToConfirmMessageAnimation() {
-        prediction_confirm_message_animation.addAnimatorListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) { Log.e("Animation:", "start") }
-            override fun onAnimationEnd(animation: Animator) {
-                Log.e("Animation:", "end")
-                Handler().postDelayed({ hideWidget() }, 3000)
-            }
-
-            override fun onAnimationCancel(animation: Animator) { Log.e("Animation:", "cancel") }
-            override fun onAnimationRepeat(animation: Animator) { Log.e("Animation:", "repeat") }
-        })
     }
 
     private fun hideWidget() {

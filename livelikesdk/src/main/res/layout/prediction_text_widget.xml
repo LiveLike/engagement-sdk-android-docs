@@ -22,15 +22,10 @@
                 android:text="@string/prediction_question"
                 app:fontFamily="@font/titillium_bold"/>
 
-        <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/prediction_pie_updater_animation"
+        <ViewStub
+                android:id="@+id/prediction_pie"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                app:lottie_fileName="pie_updater_lottie_animation.json"
                 app:layout_constraintStart_toStartOf="@+id/prediction_question_textView"
                 app:layout_constraintEnd_toEndOf="@+id/prediction_question_textView"
                 app:layout_constraintBottom_toBottomOf="@+id/prediction_question_textView"
@@ -76,8 +71,7 @@
                 app:layout_constraintEnd_toEndOf="@id/prediction_confirm_message_textView"
                 app:layout_constraintBottom_toBottomOf="@id/prediction_confirm_message_textView"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.1"
-                app:layout_constraintHorizontal_bias="0.494"
+                app:layout_constraintHorizontal_bias="0.498"
                 android:visibility="invisible"/>
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

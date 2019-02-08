@@ -5,6 +5,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ScrollView
 
+/**
+ *  Custom touch listener which would recognise the touch event on the view. Since widget view is wrapped around ScrollView
+ *  and scrollView disable/override the child layout's touch listener, so we would need a custom touch listener which
+ *  would request the parent view to not interfere in it's touch. Downfall here is we would have to manually handle the
+ *  touch.
+ */
 class LayoutTouchListener(private val view: View,
                           private val scrollview: ScrollView) : View.OnTouchListener {
 
