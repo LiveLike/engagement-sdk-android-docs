@@ -29,6 +29,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         player = ExoPlayerImpl(this, playerView)
         player.playMedia(Uri.parse("https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"))
 
+        setUpAdClickListeners()
+    }
+
+    private fun setUpAdClickListeners() {
         startAd.setOnClickListener {
             player.stop()
             //Pause call to sdk here
