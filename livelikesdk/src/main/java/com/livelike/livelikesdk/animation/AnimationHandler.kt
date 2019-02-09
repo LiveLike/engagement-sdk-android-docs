@@ -1,6 +1,8 @@
 package com.livelike.livelikesdk.animation
 
 import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.util.Log
 import com.airbnb.lottie.LottieAnimationView
@@ -19,6 +21,23 @@ class AnimationHandler {
 
         lottieAnimationView.playAnimation()
         animator.start()
+    }
+
+    fun createAnimationEffectWith(ease: AnimationEaseInterpolator.Ease,
+                                  forDuration: Float,
+                                  animator: ValueAnimator) {
+        val animatorSet = AnimatorSet()
+
+        // TODO: remove hardcoded start position -400 to something meaningful.
+        animatorSet.playTogether(AnimationEaseAdapter()
+                .createAnimationEffectWith(
+                        ease,
+                        forDuration,
+                        animator
+                ))
+
+        animatorSet.duration = 5000
+        animatorSet.start()
     }
 
     private fun bindListenerToTimerAnimation(lottieAnimationView: LottieAnimationView,

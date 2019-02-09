@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.widget
 
-import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,10 +12,9 @@ import android.util.AttributeSet
 import android.view.*
 import android.widget.*
 import android.widget.Toast.LENGTH_LONG
-import com.daimajia.easing.Glider
-import com.daimajia.easing.Skill
 import com.livelike.livelikesdk.LayoutTouchListener
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
@@ -28,7 +26,6 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
     : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private lateinit var parentView: ScrollView
-    private lateinit var animationHandler : AnimationHandler
     private val buttonList: ArrayList<Button> = ArrayList()
     private var optionSelected = false
     private val timerDuration: Long = 7000
@@ -58,28 +55,9 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
 
-        animationHandler = AnimationHandler()
-        animationHandler.startAnimation(
-                pieTimer.findViewById(R.id.prediction_pie_updater_animation),
-                { onTimerAnimationCompleted() },
-                timerDuration)
-
-        // TODO: Actually start this animation after the bounce effect is completed.
-        performEasingAnimation()
         prediction_text_widget.setOnTouchListener(LayoutTouchListener(this, parentView))
-    }
 
-    private fun performClickAction(it: View?, context: Context) {
-        buttonList.forEach { button ->
-            optionSelected = true
-            // TODO: Move this logic to android state drawables.
-            if (button.id == it?.id) {
-                Toast.makeText(context, "selected option ${button.text} ", LENGTH_LONG).show()
-                // Here we get the selected option which will used for follow up widget.
-                button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
-            } else
-                button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
-        }
+        startWidgetAnimation(pieTimer, AnimationHandler())
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -92,6 +70,42 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
                 performClickAction(it, context)
             })
             layout.addView(button)
+        }
+    }
+
+    private fun applyStyle(button: Button,
+                           buttonNames: ArrayList<String>,
+                           buttonIndex: Int,
+                           context: Context,
+                           buttonText: String) {
+        button.apply {
+            background = if (isLastButtonToBeAddedToLayout(buttonNames, buttonIndex))
+                AppCompatResources.getDrawable(context, R.drawable.bottom_rounded_corner)
+            else
+                AppCompatResources.getDrawable(context, R.drawable.button_default)
+            setTextColor(ContextCompat.getColor(context, R.color.text_color))
+            text = buttonText
+            layoutParams = ConstraintLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT)
+
+            gravity = Gravity.START; Gravity.CENTER_VERTICAL
+            id = View.generateViewId()
+            typeface = ResourcesCompat.getFont(context, R.font.titillium_semibold)
+            textSize = 15f
+        }
+    }
+
+    private fun performClickAction(it: View?, context: Context) {
+        buttonList.forEach { button ->
+            optionSelected = true
+            // TODO: Move this logic to android state drawables.
+            if (button.id == it?.id) {
+                Toast.makeText(context, "selected option ${button.text} ", LENGTH_LONG).show()
+                // Here we get the selected option which will used for follow up widget.
+                button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
+            } else
+                button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
         }
     }
 
@@ -122,33 +136,10 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
         constraintSet.applyTo(layout)
     }
 
-    private fun applyStyle(button: Button,
-                           buttonNames: ArrayList<String>,
-                           buttonIndex: Int,
-                           context: Context,
-                           buttonText: String) {
-        button.apply {
-            background = if (isLastButtonToBeAddedToLayout(buttonNames, buttonIndex))
-                AppCompatResources.getDrawable(context, R.drawable.bottom_rounded_corner)
-            else
-                AppCompatResources.getDrawable(context, R.drawable.button_default)
-            setTextColor(ContextCompat.getColor(context, R.color.text_color))
-            text = buttonText
-            layoutParams = ConstraintLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT)
-
-            gravity = Gravity.START; Gravity.CENTER_VERTICAL
-            id = View.generateViewId()
-            typeface = ResourcesCompat.getFont(context, R.font.titillium_semibold)
-            textSize = 15f
-        }
-    }
-
     private fun isLastButtonToBeAddedToLayout(buttonNames: ArrayList<String>, index: Int) =
             buttonNames[index] == buttonNames[buttonNames.size - 1]
 
-    private fun onTimerAnimationCompleted() {
+    private fun onTimerAnimationCompleted(animationHandler: AnimationHandler) {
         if (optionSelected) {
             prediction_confirm_message_textView.visibility = View.VISIBLE
             prediction_confirm_message_animation.visibility = View.VISIBLE
@@ -159,6 +150,8 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
             performPredictionWidgetFadeOutOperations()
         } else hideWidget()
     }
+
+    private fun hideWidget() { layout.visibility = View.INVISIBLE }
 
     private fun performPredictionWidgetFadeOutOperations() {
         buttonList.forEach { button ->
@@ -175,24 +168,33 @@ class PredictionWidget @JvmOverloads constructor(context: Context,
 
     private fun disableButtons(button: Button) { button.isEnabled = false }
 
-    private fun performEasingAnimation() {
-        val heightToReach = this.measuredHeight
-        val animatorSet = AnimatorSet()
-
-        // TODO: remove hardcoded start position -400 to something meaningful.
-        animatorSet.playTogether(
-                Glider.glide(Skill.ElasticEaseOut, 12000f, ObjectAnimator.ofFloat(this,
-                        "translationY",
-                        -400f,
-                        heightToReach.toFloat(),
-                        heightToReach.toFloat() / 2, 0f))
-        )
-
-        animatorSet.duration = 5000
-        animatorSet.start()
+    private fun startWidgetAnimation(pieTimer: View, animationHandler: AnimationHandler) {
+        startEasingAnimation(animationHandler)
+        startTimerAnimation(pieTimer, animationHandler)
     }
 
-    private fun hideWidget() {
-        layout.visibility = View.INVISIBLE
+    private fun startTimerAnimation(pieTimer: View, animationHandler: AnimationHandler) {
+        animationHandler.startAnimation(
+                pieTimer.findViewById(R.id.prediction_pie_updater_animation),
+                { onTimerAnimationCompleted(animationHandler) },
+                timerDuration)
+    }
+
+    // Would have to think more on how to not use hard coded values. I think once we have more easing
+    // functions to use and how we layout widget and chat we can think of these values more.
+    private fun startEasingAnimation(animationHandler: AnimationHandler) {
+        val heightToReach = this.measuredHeight.toFloat()
+
+        // TODO: remove hardcoded start position -400 to something meaningful.
+        val animator = ObjectAnimator.ofFloat(this,
+                "translationY",
+                -400f,
+                heightToReach,
+                heightToReach / 2, 0f)
+
+        animationHandler.createAnimationEffectWith(
+                AnimationEaseInterpolator.Ease.EaseOutElastic,
+                120000f,
+                animator)
     }
 }
