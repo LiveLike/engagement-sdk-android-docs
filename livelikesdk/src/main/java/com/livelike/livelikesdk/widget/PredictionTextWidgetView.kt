@@ -22,10 +22,11 @@ import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 // Note: Need to have presenter and model from this.
 // TODO: Refactor as we deal with user interactions. No business logic should be present in this class.
 @SuppressLint("ViewConstructor")
-class PredictionTextWidgetView @JvmOverloads constructor(context: Context,
-                                                         attrs: AttributeSet? = null,
-                                                         defStyleAttr: Int = 0)
-    : ConstraintLayout(context, attrs, defStyleAttr) {
+class PredictionTextWidgetView : ConstraintLayout {
+
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     private lateinit var parentView: ScrollView
     private val buttonList: ArrayList<Button> = ArrayList()
@@ -33,7 +34,7 @@ class PredictionTextWidgetView @JvmOverloads constructor(context: Context,
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
     private val widgetOpacityFactor: Float = 0.2f
     private val constraintSet = ConstraintSet()
-    private var layout = ConstraintLayout(context, attrs, defStyleAttr)
+    private var layout = ConstraintLayout(context, null, 0)
     private var optionSelected = false
 
     init {
@@ -153,7 +154,7 @@ class PredictionTextWidgetView @JvmOverloads constructor(context: Context,
         } else hideWidget()
     }
 
-    private fun hideWidget() { layout.visibility = View.INVISIBLE }
+    private fun hideWidget() { prediction_text_widget_scroll_view.visibility = View.INVISIBLE }
 
     private fun performPredictionWidgetFadeOutOperations() {
         buttonList.forEach { button ->
