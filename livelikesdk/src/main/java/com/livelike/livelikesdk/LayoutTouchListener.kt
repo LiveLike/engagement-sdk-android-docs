@@ -56,19 +56,17 @@ class LayoutTouchListener(private val view: View,
 
     private fun swipeHorizontally(deltaX: Float, viewTouched: View?): Boolean {
         if (Math.abs(deltaX) > 100) {
-            if (deltaX < 0) {
+            if (deltaX < 0 || deltaX > 0) {
                 hideView()
-                return true
             }
-            if (deltaX > 0) {
-                hideView()
-                return true
-            }
-            return true
         } else {
-            action(viewTouched)
+            performActionOnViewClicked(viewTouched)
         }
         return true
+    }
+
+    private fun performActionOnViewClicked(viewTouched: View?) {
+        action(viewTouched)
     }
 
     // Maybe move this method to better place.

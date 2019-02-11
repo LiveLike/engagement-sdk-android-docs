@@ -2,13 +2,13 @@ package com.livelike.livelikesdk.animation
 
 import android.animation.Animator
 import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.util.Log
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.R
 
 class AnimationHandler {
+    private val TAG : String = this::class.java.simpleName
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: (Boolean) -> Unit,
                        duration: Long) {
@@ -36,20 +36,19 @@ class AnimationHandler {
                         animator
                 ))
 
-        animatorSet.duration = 5000
+        animatorSet.duration = forDuration.toLong()
         animatorSet.start()
     }
 
     private fun bindListenerToTimerAnimation(lottieAnimationView: LottieAnimationView,
                                              onAnimationCompletedCallback: (Boolean) -> Unit) {
         lottieAnimationView.addAnimatorListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) { Log.e("Animation:", "start") }
+            override fun onAnimationStart(animation: Animator) { Log.d(TAG, "Animation start") }
             override fun onAnimationEnd(animation: Animator) {
-                Log.e("Animation:", "end")
                 onAnimationCompletedCallback(true)
             }
-            override fun onAnimationCancel(animation: Animator) { Log.e("Animation:", "cancel") }
-            override fun onAnimationRepeat(animation: Animator) { Log.e("Animation:", "repeat") }
+            override fun onAnimationCancel(animation: Animator) { Log.d(TAG, "Animation cancel") }
+            override fun onAnimationRepeat(animation: Animator) { Log.d(TAG, "Animation repeat") }
         })
     }
 }

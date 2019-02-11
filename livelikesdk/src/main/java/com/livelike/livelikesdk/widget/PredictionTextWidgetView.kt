@@ -29,12 +29,12 @@ class PredictionTextWidgetView @JvmOverloads constructor(context: Context,
 
     private lateinit var parentView: ScrollView
     private val buttonList: ArrayList<Button> = ArrayList()
-    private var optionSelected = false
     private val timerDuration: Long = 7000
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
     private val widgetOpacityFactor: Float = 0.2f
     private val constraintSet = ConstraintSet()
     private var layout = ConstraintLayout(context, attrs, defStyleAttr)
+    private var optionSelected = false
 
     init {
         inflate(context)
@@ -158,14 +158,14 @@ class PredictionTextWidgetView @JvmOverloads constructor(context: Context,
     private fun performPredictionWidgetFadeOutOperations() {
         buttonList.forEach { button ->
             disableButtons(button)
-            setViewTranslucent(button)
+            button.setTranslucent()
         }
-        setViewTranslucent(prediction_question_textView)
-        setViewTranslucent(prediction_pie_updater_animation)
+        prediction_question_textView.setTranslucent()
+        prediction_pie_updater_animation.setTranslucent()
     }
 
-    private fun setViewTranslucent(view: View) {
-        view.alpha = widgetOpacityFactor
+    private fun View.setTranslucent() {
+        this.alpha = widgetOpacityFactor
     }
 
     private fun disableButtons(button: Button) { button.isEnabled = false }
@@ -194,9 +194,10 @@ class PredictionTextWidgetView @JvmOverloads constructor(context: Context,
                 heightToReach,
                 heightToReach / 2, 0f)
 
+        val animationDuration = 5000f
         animationHandler.createAnimationEffectWith(
                 AnimationEaseInterpolator.Ease.EaseOutElastic,
-                120000f,
+                animationDuration,
                 animator)
     }
 }

@@ -12,8 +12,8 @@ class AnimationEaseAdapter : AnimationEaseInterpolator {
 
     override fun createAnimationEffectWith(ease: AnimationEaseInterpolator.Ease,
                                            forDuration: Float,
-                                           animator: ValueAnimator) : ValueAnimator {
-        return when(ease) {
+                                           animator: ValueAnimator): ValueAnimator {
+        return when (ease) {
             Ease.EaseInBounce -> {
                 Glider.glide(Skill.BounceEaseIn, forDuration, animator)
             }
@@ -26,5 +26,5 @@ class AnimationEaseAdapter : AnimationEaseInterpolator {
                 Glider.glide(Skill.ElasticEaseOut, forDuration, animator)
             }
         }
-        }
+    }
 }
