@@ -19,10 +19,12 @@ import com.livelike.livelikesdk.animation.AnimationHandler
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
+// Note: Need to have presenter and model from this.
+// TODO: Refactor as we deal with user interactions. No business logic should be present in this class.
 @SuppressLint("ViewConstructor")
-class PredictionWidget @JvmOverloads constructor(context: Context,
-                                                 attrs: AttributeSet? = null,
-                                                 defStyleAttr: Int = 0)
+class PredictionTextWidgetView @JvmOverloads constructor(context: Context,
+                                                         attrs: AttributeSet? = null,
+                                                         defStyleAttr: Int = 0)
     : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private lateinit var parentView: ScrollView

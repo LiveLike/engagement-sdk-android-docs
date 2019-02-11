@@ -20,7 +20,9 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/textView_text_size"
                 android:text="@string/prediction_question"
-                app:fontFamily="@font/titillium_bold"/>
+                app:fontFamily="@font/titillium_bold"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toTopOf="parent"/>
 
         <ViewStub
                 android:id="@+id/prediction_pie"

@@ -41,7 +41,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT)
             layoutParams.topMargin = 0
-            val predictionWidget = PredictionWidget(context, null, 0)
+            val predictionWidget = PredictionTextWidgetView(context, null, 0)
             predictionWidget.layoutParams = layoutParams
             container.addView(predictionWidget)
         }, 5000)
