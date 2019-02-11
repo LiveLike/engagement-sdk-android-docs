@@ -10,6 +10,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.constraint.Constraints
 import android.view.View
+import android.view.WindowManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeSDK
@@ -19,6 +20,11 @@ import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
 
 class ExoPlayerActivity : AppCompatActivity() {
+
+    companion object {
+        const val AD_STATE = "adstate"
+        const val POSITION = "position"
+    }
 
     lateinit var player: VideoPlayer
     var useDrawerLayout: Boolean = false
@@ -33,25 +39,30 @@ class ExoPlayerActivity : AppCompatActivity() {
         player = ExoPlayerImpl(this, playerView)
         player.playMedia(Uri.parse("https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"))
 
+        setAdState(savedInstanceState?.getBoolean(AD_STATE) == true)
+
         setUpAdClickListeners()
     }
 
     private fun setUpAdClickListeners() {
         startAd.setOnClickListener {
-            player.stop()
-            //Pause call to sdk here
-            adOverlay.visibility = View.VISIBLE
-            stopAd.visibility = View.VISIBLE
-            startAd.visibility = View.GONE
+            setAdState(true)
         }
 
         stopAd.setOnClickListener {
-            player.start()
-            //Resume call to sdk here
-            adOverlay.visibility = View.GONE
-            stopAd.visibility = View.GONE
-            startAd.visibility = View.VISIBLE
+            setAdState(false)
         }
+    }
+
+    private fun setAdState(adsOn: Boolean){
+        adOverlay.visibleOrGone(adsOn)
+        stopAd.visibleOrGone(adsOn)
+        startAd.visibleOrGone(!adsOn)
+
+        if(adsOn)
+            player.stop()
+         else
+            player.start()
     }
 
     private fun initializeLiveLikeSDK() {
@@ -84,4 +95,15 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onDestroy()
         player.release()
     }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        outState?.putBoolean(AD_STATE, adOverlay.visibility == View.VISIBLE)
+        outState?.putLong(POSITION, player.position())
+    }
+}
+
+fun View.visibleOrGone(visible: Boolean) {
+    visibility = if(visible) View.VISIBLE else View.GONE
 }
