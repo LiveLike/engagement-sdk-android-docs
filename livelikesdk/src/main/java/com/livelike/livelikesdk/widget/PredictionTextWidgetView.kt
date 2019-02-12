@@ -18,12 +18,12 @@ import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
+import java.util.*
 
 // Note: Need to have presenter and model from this.
 // TODO: Refactor as we deal with user interactions. No business logic should be present in this class.
 @SuppressLint("ViewConstructor")
 class PredictionTextWidgetView : ConstraintLayout {
-
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -145,6 +145,9 @@ class PredictionTextWidgetView : ConstraintLayout {
     private fun onTimerAnimationCompleted(animationHandler: AnimationHandler) {
         if (optionSelected) {
             prediction_confirm_message_textView.visibility = View.VISIBLE
+
+            val path = "confirmMessage"
+            prediction_confirm_message_animation.setAnimation(path + '/' + selectRandomEmojiForConfirmMessage(path))
             prediction_confirm_message_animation.visibility = View.VISIBLE
             animationHandler.startAnimation(
                     prediction_confirm_message_animation,
@@ -152,6 +155,16 @@ class PredictionTextWidgetView : ConstraintLayout {
                     widgetShowingDurationAfterConfirmMessage)
             performPredictionWidgetFadeOutOperations()
         } else hideWidget()
+    }
+
+    private fun selectRandomEmojiForConfirmMessage(path: String): String? {
+        val asset = context?.assets
+        val assetList = asset?.list(path)
+        val random = Random()
+        return if (assetList!!.isNotEmpty()) {
+            val emojiIndex = random.nextInt(assetList.size)
+            assetList[emojiIndex]
+        } else assetList[0]
     }
 
     private fun hideWidget() { prediction_text_widget_scroll_view.visibility = View.INVISIBLE }
