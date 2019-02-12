@@ -17,7 +17,7 @@
             android:theme="@style/AppTheme.NoActionBar"
             >
         <activity android:name=".ExoPlayerActivity"
-                  android:windowSoftInputMode="adjustResize|stateHidden">
+                  android:windowSoftInputMode="adjustNothing|stateHidden">
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
