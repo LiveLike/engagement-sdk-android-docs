@@ -1,6 +1,6 @@
 package com.livelike.livelikesdk
 
-import com.livelike.livelikesdk.messaging.MessagingEventListener
+import com.livelike.livelikesdk.widget.WidgetRenderer
 
 /**
  *  Represents a playable session which LiveLike uses deliver widgets and associate user with the Chat
@@ -10,7 +10,7 @@ import com.livelike.livelikesdk.messaging.MessagingEventListener
  */
 interface LiveLikeContentSession {
     var contentSessionId : String
-
+    var renderer: WidgetRenderer?
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
     /** Resume the current Chat and widget sessions. This generally happens when ads are completed */
@@ -21,6 +21,4 @@ interface LiveLikeContentSession {
     fun clearFeedbackQueue()
     /** Closes the current session.*/
     fun close()
-    /** Set a listener on the Widget MessagingClient **/
-    fun setWidgetSourceListener(listener: MessagingEventListener)
 }

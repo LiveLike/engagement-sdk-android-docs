@@ -11,8 +11,10 @@ import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.chat.*
+import com.livelike.livelikesdk.messaging.EpochTime
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
+import java.util.Date
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -64,9 +66,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         widget_view.setSession(session)
     }
 
-    private fun currentPlayheadPosition() {
-
-    }
+    private fun currentPlayheadPosition() =  EpochTime(System.currentTimeMillis())
 
     override fun onStart() {
         super.onStart()

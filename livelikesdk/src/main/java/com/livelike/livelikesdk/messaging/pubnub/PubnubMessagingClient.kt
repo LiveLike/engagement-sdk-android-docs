@@ -5,6 +5,7 @@ import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.Error
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
+import com.livelike.livelikesdk.messaging.EpochTime
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -80,8 +81,10 @@ class PubnubMessagingClient (val contentId: String) : MessagingClient {
 
             override fun message(pubnub: PubNub, message: PNMessageResult) {
                 logMessage(message)
-
-                val clientMessage = ClientMessage(message.message.asJsonObject["event"].asString, message.message.asJsonObject["payload"].asJsonObject)
+                val clientMessage = ClientMessage(
+                        message.message.asJsonObject,
+                        message.channel,
+                        EpochTime( message.timetoken))
                 listener?.onClientMessageEvent(client, clientMessage)
             }
 
@@ -95,10 +98,6 @@ class PubnubMessagingClient (val contentId: String) : MessagingClient {
                 println("Message timetoken: " + message.timetoken!!)
             }
         })
-
-        //Force TEST subscription here
-        //test channel: program_642f635d_44a6_4e2a_b638_504021f62f6a
-        this.subscribe(listOf("program_642f635d_44a6_4e2a_b638_504021f62f6a"))
     }
 
     override fun subscribe(channels : List<String>) {
@@ -114,7 +113,7 @@ class PubnubMessagingClient (val contentId: String) : MessagingClient {
     }
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {
-        //More than one listener?
+        //More than one triggerListener?
         this.listener = listener
     }
 
