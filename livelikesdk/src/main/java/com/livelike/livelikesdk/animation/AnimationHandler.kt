@@ -8,7 +8,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.R
 
 class AnimationHandler {
-    private val TAG : String = this::class.java.simpleName
+    private val TAG = this::class.java.simpleName
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: (Boolean) -> Unit,
                        duration: Long) {

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="prediction_widget_question_trigger_time_in_milliseconds">5000</integer>
+</resources>

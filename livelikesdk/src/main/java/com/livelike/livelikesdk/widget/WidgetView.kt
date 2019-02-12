@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
@@ -44,7 +45,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             val predictionWidget = PredictionTextWidgetView(context, null, 0)
             predictionWidget.layoutParams = layoutParams
             container.addView(predictionWidget)
-        }, 5000)
+        }, resources.getInteger(R.integer.prediction_widget_question_trigger_time_in_milliseconds).toLong())
     }
 }
 
