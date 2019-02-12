@@ -61,6 +61,10 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
     override fun release() {
         player.release()
     }
+
+    override fun getCurrentPosition(): Long {
+        return player.currentPosition
+    }
 }
 
 interface VideoPlayer {
@@ -68,4 +72,5 @@ interface VideoPlayer {
     fun start()
     fun stop()
     fun release()
+    fun getCurrentPosition() : Long
 }
