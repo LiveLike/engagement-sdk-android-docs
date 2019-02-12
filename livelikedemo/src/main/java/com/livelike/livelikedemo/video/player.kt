@@ -16,17 +16,23 @@ data class PlayerState(var window: Int = 0,
                        var whenReady: Boolean = true)
 
 class ExoPlayerImpl(private val context: Context, private val playerView : PlayerView) : VideoPlayer{
-    private lateinit var player : SimpleExoPlayer
+    private var player : SimpleExoPlayer? = null
     private lateinit var mediaSource : MediaSource
     private var playerState = PlayerState()
 
-    private fun initializePlayer(uri: Uri) {
+    private fun initializePlayer(uri: Uri, state: PlayerState) {
         playerView.requestFocus()
 
         player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
 
         mediaSource = buildMediaSource(uri)
-        player.repeatMode = Player.REPEAT_MODE_ALL
+        playerState = state
+        player?.prepare(mediaSource)
+        with(playerState) {
+            player?.playWhenReady = whenReady
+            player?.seekTo(window, position)
+            player?.repeatMode = Player.REPEAT_MODE_ALL
+        }
     }
 
     private fun buildMediaSource(uri: Uri): ExtractorMediaSource {
@@ -34,43 +40,45 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
             DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
     }
 
-    override fun playMedia(uri: Uri) {
-        initializePlayer(uri)
-        player.playWhenReady = true
+    override fun playMedia(uri: Uri, startPosition: Long, playWhenReady: Boolean) {
+        initializePlayer(uri, PlayerState(0, startPosition, playWhenReady))
     }
 
     override fun start() {
-        player.prepare(mediaSource)
+        player?.prepare(mediaSource)
         with(playerState) {
-            player.playWhenReady = whenReady
-            player.seekTo(window, position)
+            player?.playWhenReady = true
+            player?.seekTo(window, position)
         }
     }
 
     override fun stop() {
-        with(player) {
-            with(playerState) {
-                position = currentPosition
-                window = currentWindowIndex
-                whenReady = playWhenReady
-            }
-            stop()
+        with(playerState) {
+            position = player?.currentPosition ?: 0
+            window = player?.currentWindowIndex ?: 0
+            whenReady = false
         }
+        player?.stop()
     }
 
     override fun release() {
-        player.release()
+        player?.release()
     }
 
     override fun position() : Long {
-        return player.currentPosition
+        return player?.currentPosition ?: 0
+    }
+
+    override fun seekTo(position: Long) {
+        player?.seekTo(position)
     }
 }
 
 interface VideoPlayer {
-    fun playMedia(uri: Uri)
+    fun playMedia(uri: Uri, startPosition: Long = 0, playWhenReady: Boolean = true)
     fun start()
     fun stop()
+    fun seekTo(position: Long)
     fun release()
     fun position() : Long
 }

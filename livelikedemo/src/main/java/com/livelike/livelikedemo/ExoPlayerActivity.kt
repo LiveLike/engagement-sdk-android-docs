@@ -26,8 +26,20 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val POSITION = "position"
     }
 
-    lateinit var player: VideoPlayer
+    private var player: VideoPlayer? = null
     var useDrawerLayout: Boolean = false
+    private var adsPlaying = false
+    set(value) {
+        field = value
+        adOverlay.visibleOrGone(value)
+        stopAd.visibleOrGone(value)
+        startAd.visibleOrGone(!value)
+
+        if(value)
+            player?.stop()
+        else
+            player?.start()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,33 +48,24 @@ class ExoPlayerActivity : AppCompatActivity() {
         useDrawerLayout = intent.getBooleanExtra(USE_DRAWER_LAYOUT, false)
         if(!useDrawerLayout)
             playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
+
         player = ExoPlayerImpl(this, playerView)
-        player.playMedia(Uri.parse("https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"))
 
-        setAdState(savedInstanceState?.getBoolean(AD_STATE) == true)
+        adsPlaying = savedInstanceState?.getBoolean(AD_STATE) == true
+        val position = savedInstanceState?.getLong(POSITION) ?: 0
 
+        player?.playMedia(Uri.parse("https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"), position, !adsPlaying)
         setUpAdClickListeners()
     }
 
     private fun setUpAdClickListeners() {
         startAd.setOnClickListener {
-            setAdState(true)
+            adsPlaying = true
         }
 
         stopAd.setOnClickListener {
-            setAdState(false)
+            adsPlaying = false
         }
-    }
-
-    private fun setAdState(adsOn: Boolean){
-        adOverlay.visibleOrGone(adsOn)
-        stopAd.visibleOrGone(adsOn)
-        startAd.visibleOrGone(!adsOn)
-
-        if(adsOn)
-            player.stop()
-         else
-            player.start()
     }
 
     private fun initializeLiveLikeSDK() {
@@ -83,24 +86,25 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        player.start()
+        if(!adsPlaying)
+            player?.start()
     }
 
     override fun onStop() {
         super.onStop()
-        player.stop()
+        player?.stop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        player.release()
+        player?.release()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
         outState?.putBoolean(AD_STATE, adOverlay.visibility == View.VISIBLE)
-        outState?.putLong(POSITION, player.position())
+        outState?.putLong(POSITION, player?.position() ?: 0)
     }
 }
 
