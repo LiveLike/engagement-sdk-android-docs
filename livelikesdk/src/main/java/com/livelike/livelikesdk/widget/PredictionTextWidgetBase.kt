@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.widget
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v4.content.ContextCompat
@@ -10,32 +11,30 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
 import android.view.*
-import android.widget.*
-import android.widget.Toast.LENGTH_LONG
+import android.widget.Button
+import android.widget.ScrollView
+import android.widget.TextView
+import android.widget.Toast
 import com.livelike.livelikesdk.LayoutTouchListener
-import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
-import kotlinx.android.synthetic.main.pie_timer.view.*
-import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import java.util.*
+import com.livelike.livelikesdk.R
 
-// Note: Need to have presenter and model from this.
-// TODO: Refactor as we deal with user interactions. No business logic should be present in this class.
-@SuppressLint("ViewConstructor")
-class PredictionTextWidgetView : ConstraintLayout {
+open class PredictionTextWidgetBase : ConstraintLayout {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private lateinit var parentView: ScrollView
-    private val buttonList: ArrayList<Button> = ArrayList()
-    private val timerDuration: Long = 7000
-    private val widgetShowingDurationAfterConfirmMessage: Long = 3000
-    private val widgetOpacityFactor: Float = 0.2f
-    private val constraintSet = ConstraintSet()
-    private var layout = ConstraintLayout(context, null, 0)
-    private var optionSelected = false
+    protected val timerDuration: Long = 7000
+    protected val widgetShowingDurationAfterConfirmMessage: Long = 3000
+    protected val widgetOpacityFactor: Float = 0.2f
+    protected var optionSelected = false
+    protected val constraintSet = ConstraintSet()
+    protected var layout = ConstraintLayout(context, null, 0)
+    protected val buttonList: ArrayList<Button> = ArrayList()
+    protected val animationHandler = AnimationHandler()
+    protected lateinit var pieTimerViewStub : ViewStub
 
     init {
         inflate(context)
@@ -46,7 +45,6 @@ class PredictionTextWidgetView : ConstraintLayout {
         LayoutInflater.from(context)
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
-        parentView = findViewById(R.id.prediction_text_widget_scroll_view)
         val options = arrayListOf("player 3", "player 4", "player 5")
 
         val textView = findViewById<TextView>(R.id.prediction_question_textView)
@@ -54,13 +52,7 @@ class PredictionTextWidgetView : ConstraintLayout {
         addNewlyCreatedButtonsToLayout(options, context)
         applyConstraintsBetweenViews(constraintSet, textView)
 
-        val pieTimerViewStub = findViewById<ViewStub>(R.id.prediction_pie)
-        pieTimerViewStub.layoutResource = R.layout.pie_timer
-        val pieTimer = pieTimerViewStub.inflate()
-
-        prediction_text_widget.setOnTouchListener(LayoutTouchListener(this, parentView))
-
-        startWidgetAnimation(pieTimer, AnimationHandler())
+        pieTimerViewStub = findViewById(R.id.prediction_pie)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -69,9 +61,9 @@ class PredictionTextWidgetView : ConstraintLayout {
             val button = Button(context)
             buttonList.add(button)
             applyStyle(button, options, index, context, element)
-            button.setOnTouchListener(LayoutTouchListener(this, parentView) {
+            /*button.setOnTouchListener(LayoutTouchListener(this, parentView) {
                 performClickAction(it, context)
-            })
+            })*/
             layout.addView(button)
         }
     }
@@ -91,7 +83,7 @@ class PredictionTextWidgetView : ConstraintLayout {
             layoutParams = ConstraintLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT)
-
+            elevation = dpToPx(4).toFloat()
             gravity = Gravity.START; Gravity.CENTER_VERTICAL
             id = View.generateViewId()
             typeface = ResourcesCompat.getFont(context, R.font.titillium_semibold)
@@ -104,7 +96,7 @@ class PredictionTextWidgetView : ConstraintLayout {
             optionSelected = true
             // TODO: Move this logic to android state drawables.
             if (button.id == it?.id) {
-                Toast.makeText(context, "selected option ${button.text} ", LENGTH_LONG).show()
+                Toast.makeText(context, "selected option ${button.text} ", Toast.LENGTH_LONG).show()
                 // Here we get the selected option which will used for follow up widget.
                 button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
             } else
@@ -142,63 +134,9 @@ class PredictionTextWidgetView : ConstraintLayout {
     private fun isLastButtonToBeAddedToLayout(buttonNames: ArrayList<String>, index: Int) =
             buttonNames[index] == buttonNames[buttonNames.size - 1]
 
-    private fun onTimerAnimationCompleted(animationHandler: AnimationHandler) {
-        if (optionSelected) {
-            prediction_confirm_message_textView.visibility = View.VISIBLE
-
-            val path = "confirmMessage"
-            prediction_confirm_message_animation.setAnimation(path + '/' + selectRandomEmojiForConfirmMessage(path))
-            prediction_confirm_message_animation.visibility = View.VISIBLE
-            animationHandler.startAnimation(
-                    prediction_confirm_message_animation,
-                    {hideWidget()},
-                    widgetShowingDurationAfterConfirmMessage)
-            performPredictionWidgetFadeOutOperations()
-        } else hideWidget()
-    }
-
-    private fun selectRandomEmojiForConfirmMessage(path: String): String? {
-        val asset = context?.assets
-        val assetList = asset?.list(path)
-        val random = Random()
-        return if (assetList!!.isNotEmpty()) {
-            val emojiIndex = random.nextInt(assetList.size)
-            assetList[emojiIndex]
-        } else assetList[0]
-    }
-
-    private fun hideWidget() { prediction_text_widget_scroll_view.visibility = View.INVISIBLE }
-
-    private fun performPredictionWidgetFadeOutOperations() {
-        buttonList.forEach { button ->
-            disableButtons(button)
-            button.setTranslucent()
-        }
-        prediction_question_textView.setTranslucent()
-        prediction_pie_updater_animation.setTranslucent()
-    }
-
-    private fun View.setTranslucent() {
-        this.alpha = widgetOpacityFactor
-    }
-
-    private fun disableButtons(button: Button) { button.isEnabled = false }
-
-    private fun startWidgetAnimation(pieTimer: View, animationHandler: AnimationHandler) {
-        startEasingAnimation(animationHandler)
-        startTimerAnimation(pieTimer, animationHandler)
-    }
-
-    private fun startTimerAnimation(pieTimer: View, animationHandler: AnimationHandler) {
-        animationHandler.startAnimation(
-                pieTimer.findViewById(R.id.prediction_pie_updater_animation),
-                { onTimerAnimationCompleted(animationHandler) },
-                timerDuration)
-    }
-
     // Would have to think more on how to not use hard coded values. I think once we have more easing
     // functions to use and how we layout widget and chat we can think of these values more.
-    private fun startEasingAnimation(animationHandler: AnimationHandler) {
+    protected fun startEasingAnimation(animationHandler: AnimationHandler) {
         val heightToReach = this.measuredHeight.toFloat()
 
         // TODO: remove hardcoded start position -400 to something meaningful.
@@ -214,4 +152,10 @@ class PredictionTextWidgetView : ConstraintLayout {
                 animationDuration,
                 animator)
     }
+
+    protected fun dpToPx(dp: Int): Int {
+        val scale = Resources.getSystem().displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
+    }
+
 }

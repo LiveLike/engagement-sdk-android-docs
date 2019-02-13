@@ -4,14 +4,15 @@
         <scale android:scaleWidth="100%">
             <shape>
                 <corners android:radius="4dp" />
+
                 <gradient
                         android:angle="270"
-                        android:endColor="#e6429321"
-                        android:startColor="#e681ca00" />
-                <padding android:bottom="15dp"
-                         android:top="14dp"
-                         android:right="48dp"
-                         android:left="16dp"/>
+                        android:endColor="#33ffffff"
+                        android:startColor="#33ffffff" />
+                <padding android:left="8dp"
+                         android:right="8dp"
+                         android:top="8dp"
+                         android:bottom="8dp"/>
             </shape>
         </scale>
     </item>

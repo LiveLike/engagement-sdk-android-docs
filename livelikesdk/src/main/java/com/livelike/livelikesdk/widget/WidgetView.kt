@@ -28,15 +28,22 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     @SuppressLint("ClickableViewAccessibility")
     override fun onFinishInflate() {
         super.onFinishInflate()
+        val layoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT)
+        layoutParams.topMargin = 0
+
+//        Handler().postDelayed({
+//            val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0)
+//            predictionWidget.layoutParams = layoutParams
+//            container.addView(predictionWidget)
+//        }, resources.getInteger(R.integer.prediction_widget_question_trigger_time_in_milliseconds).toLong())
+
         Handler().postDelayed({
-            val layoutParams = FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT)
-            layoutParams.topMargin = 0
-            val predictionWidget = PredictionTextWidgetView(context, null, 0)
+            val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0)
             predictionWidget.layoutParams = layoutParams
             container.addView(predictionWidget)
-        }, resources.getInteger(R.integer.prediction_widget_question_trigger_time_in_milliseconds).toLong())
+        }, 3000)
     }
 
     override fun displayWidget(widgetData: Any) {
