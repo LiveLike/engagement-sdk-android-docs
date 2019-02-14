@@ -42,5 +42,9 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     override fun displayWidget(widgetData: Any) {
 
     }
+
+    override fun dismissCurrentWidget() {
+        container.removeAllViews() // TODO: Use the dismiss method when MSDK-103 is implemented
+    }
 }
 

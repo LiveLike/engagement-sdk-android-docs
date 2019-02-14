@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk.widget
 
+import android.util.Log
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -51,6 +52,15 @@ class WidgetQueue(upstream: MessagingClient) :
 
         super.onClientMessageEvent(client, event)
     }
+
+    fun toggleEmission(pause: Boolean) {
+        Log.i(javaClass::getSimpleName.name, "The session has been " + if (pause) "paused" else "resumed" )
+        triggerListener?.toggleEmission(pause)
+        // When the session is paused, if a widget was on screen, he is dismissed
+        if (pause){
+            renderer?.dismissCurrentWidget()
+        }
+    }
 }
 
 enum class WidgetType (val value: String) {
@@ -69,6 +79,7 @@ enum class WidgetType (val value: String) {
 interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
     fun displayWidget(widgetData:Any)
+    fun dismissCurrentWidget()
 }
 
 interface WidgetEventListener {
@@ -86,6 +97,6 @@ fun MessagingClient.toWidgetQueue() : WidgetQueue {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
     val widgetQueue = WidgetQueue(triggeredMessagingClient)
     triggeredMessagingClient.externalTrigger = widgetQueue
-    return widgetQueue;
+    return widgetQueue
 }
 

@@ -3,18 +3,17 @@ package com.livelike.livelikedemo
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.support.constraint.ConstraintLayout
-import android.support.constraint.ConstraintSet
 import android.support.constraint.Constraints
+import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.view.WindowManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
+import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.chat.*
+import com.livelike.livelikesdk.chat.ChatAdapter
+import com.livelike.livelikesdk.chat.ChatTheme
+import com.livelike.livelikesdk.chat.DefaultChatCellFactory
 import com.livelike.livelikesdk.messaging.EpochTime
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
@@ -28,6 +27,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private var player: VideoPlayer? = null
     var useDrawerLayout: Boolean = false
+    private lateinit var session: LiveLikeContentSession
     private var adsPlaying = false
     set(value) {
         field = value
@@ -35,10 +35,15 @@ class ExoPlayerActivity : AppCompatActivity() {
         stopAd.visibleOrGone(value)
         startAd.visibleOrGone(!value)
 
-        if(value)
+        if(value){
             player?.stop()
-        else
+            session.pause()
+        }
+        else{
             player?.start()
+            session.resume()
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,12 +70,13 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         stopAd.setOnClickListener {
             adsPlaying = false
+
         }
     }
 
     private fun initializeLiveLikeSDK() {
         val sdk = LiveLikeSDK("app_Id")
-        val session = sdk.createContentSession("someContentId") { currentPlayheadPosition() }
+        session = sdk.createContentSession("someContentId") { currentPlayheadPosition() }
 
         // Bind the chatView object here with the session.
         val chatTheme = ChatTheme.Builder()

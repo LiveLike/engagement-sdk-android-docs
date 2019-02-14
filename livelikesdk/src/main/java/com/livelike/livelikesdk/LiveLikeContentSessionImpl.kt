@@ -24,11 +24,11 @@ class LiveLikeContentSessionImpl(override var contentSessionId: String,
     }
     
     override fun pause() {
-        //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        widgetQueue?.toggleEmission(true)
     }
 
     override fun resume() {
-       // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        widgetQueue?.toggleEmission(false)
     }
 
     override fun clearChatHistory() {
