@@ -63,3 +63,7 @@
 # PubNub
 -dontwarn com.pubnub.**
 -keep class com.pubnub.** { *; }
+
+# Sendbird
+-dontwarn com.sendbird.android.shadow.**
+
