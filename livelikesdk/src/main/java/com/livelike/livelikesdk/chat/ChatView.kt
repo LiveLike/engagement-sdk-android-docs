@@ -1,8 +1,11 @@
 package com.livelike.livelikesdk.chat
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -34,15 +37,24 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.*
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs)  {
     val attrs: AttributeSet = attrs!!
     lateinit var chatAdapter: ChatAdapter
-    private val messagingClient : MessagingClient = SendbirdMessagingClient("a_content_id", context)
+    private val messagingClient = SendbirdMessagingClient("a_content_id", context).syncTo(EpochTime(System.currentTimeMillis()))
     private val TAG = javaClass.simpleName
     private val channelUrl = "program_00f4cdfd_6a19_4853_9c21_51aa46d070a0" // TODO: Get this from backend
 
+    // sync loop
+    private val runnableCode = object: Runnable {
+        override fun run() {
+            Log.i(TAG,"run the sync: ${System.currentTimeMillis()}")
+            messagingClient.updateTimeSource(EpochTime(System.currentTimeMillis()))
+            Handler().postDelayed(this, 1000)
+        }
+    }
+
     init {
+        runnableCode.run()
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
         messagingClient.subscribe(listOf(channelUrl))
-        messagingClient.syncTo(EpochTime(System.currentTimeMillis())) // TODO: replace with playhead time
         messagingClient.addMessagingEventListener(object : MessagingEventListener {
             override fun onClientMessageError(
                 client: MessagingClient,
@@ -54,18 +66,19 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
             }
 
             override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-                this@ChatView.chatAdapter.addMessage(
-                    ChatMessage(
-                        event.message.get("message").asString,
-                        event.message.get("sender_id").asString,
-                        event.message.get("sender").asString
+                Handler(Looper.getMainLooper()).post {
+                    this@ChatView.chatAdapter.addMessage(
+                        ChatMessage(
+                            event.message.get("message").asString,
+                            event.message.get("sender_id").asString,
+                            event.message.get("sender").asString
+                        )
                     )
-                )
-            }
+                }
 
+            }
         })
     }
-
     /**
      *  Sets the data source for this view.
      *  @param chatAdapter ChatAdapter used for creating this view.
@@ -94,7 +107,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                             messageJson.addProperty("sender", "User123")
                             messageJson.addProperty("sender_id", "user-id")
 
-                            val timeData = EpochTime(System.currentTimeMillis()) // message.data..timestamp TODO: Parse the data to get the message timestamp
+                            val timeData = EpochTime(System.currentTimeMillis()+5000) // Simulate a delay of 5sec, TODO: this should be playhead time
                             messagingClient.sendMessage(ClientMessage(messageJson, channelUrl, timeData))
 
                             this@ChatView.chatAdapter.addMessage(

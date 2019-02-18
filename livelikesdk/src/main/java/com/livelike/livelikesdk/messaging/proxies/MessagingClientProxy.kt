@@ -1,10 +1,6 @@
 package com.livelike.livelikesdk.messaging.proxies
 
-import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.Error
-import com.livelike.livelikesdk.messaging.MessagingClient
-import com.livelike.livelikesdk.messaging.MessagingEventListener
+import com.livelike.livelikesdk.messaging.*
 
 //TODO Look into removing MessageClientProxy and replacing with Kotlin MessageClient by upstream
 abstract class MessagingClientProxy (val upstream: MessagingClient) : MessagingClient, MessagingEventListener {
@@ -21,6 +17,10 @@ abstract class MessagingClientProxy (val upstream: MessagingClient) : MessagingC
 
     override fun unsubscribe(channels: List<String>) {
         upstream.unsubscribe(channels)
+    }
+
+    override fun sendMessage(message: ClientMessage) {
+        upstream.sendMessage(message)
     }
 
     override fun unsubscribeAll() {

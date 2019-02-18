@@ -62,7 +62,13 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
                                     messageJson.addProperty("sender", message.sender.nickname)
                                     messageJson.addProperty("sender_id", message.sender.userId)
 
-                                    val timeData = EpochTime(System.currentTimeMillis()) // message.data..timestamp TODO: Parse the data to get the message timestamp
+                                    val timeMs: Long = if (message.data.isNullOrEmpty()){
+                                        System.currentTimeMillis()
+                                    }else{
+                                        message.data.toLong()
+                                    }
+
+                                    val timeData = EpochTime(timeMs)
 
                                     listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(messageJson, channel.url, timeData))
                                 }
@@ -75,19 +81,14 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
     }
 
     override fun unsubscribe(channels: List<String>) {
-        // Unsubscribe from the channel
-        connectedChannels.remove(connectedChannels.find { openChannel -> openChannel.url == channels.first() }) // remove the found channels
-
-        if (connectedChannels.isEmpty()){
-            // Disconnect from Sendbird if no subscribed channels
-            SendBird.disconnect {
-                // You are disconnected from SendBird.
-            }
+        channels.forEach {
+            SendBird.removeChannelHandler(it)
+            connectedChannels.remove(connectedChannels.find { openChannel -> openChannel.url == it })
         }
     }
 
     override fun unsubscribeAll() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        SendBird.removeAllChannelHandlers()
     }
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {
@@ -96,8 +97,7 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
 
     override fun sendMessage(message: ClientMessage){
         connectedChannels.find { openChannel -> openChannel.url == message.channel }.also {
-            // Send user message
-            it?.sendUserMessage(message.message.get("message").asString, message.timeStamp.toString(), "timestamp", null) { userMessage, exception ->
+            it?.sendUserMessage(message.message.get("message").asString, message.timeStamp.timeSinceEpochInMs.toString(), "timestamp", null) { userMessage, exception ->
                 if (exception!=null){
                     Log.e(TAG, "Error sending the message")
                 }
