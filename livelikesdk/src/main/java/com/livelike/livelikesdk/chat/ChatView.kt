@@ -10,10 +10,11 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
-import kotlinx.android.synthetic.main.chat_view.view.chatinput
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
-import kotlinx.android.synthetic.main.default_chat_cell.view.user
+import com.livelike.livelikesdk.messaging.*
+import com.livelike.livelikesdk.messaging.proxies.syncTo
+import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
+import kotlinx.android.synthetic.main.chat_view.view.*
+import kotlinx.android.synthetic.main.default_chat_cell.view.*
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -32,10 +33,37 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.user
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs)  {
     val attrs: AttributeSet = attrs!!
     lateinit var chatAdapter: ChatAdapter
+    private val messagingClient : MessagingClient = SendbirdMessagingClient("a_content_id", context)
+    private val TAG = javaClass.simpleName
 
     init {
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
+        messagingClient.subscribe(listOf("program_00f4cdfd_6a19_4853_9c21_51aa46d070a0")) // TODO: Get this from backend
+        messagingClient.syncTo(EpochTime(System.currentTimeMillis())) // TODO: replace with playhead time
+        messagingClient.addMessagingEventListener(object : MessagingEventListener {
+            override fun onClientMessageError(
+                client: MessagingClient,
+                error: com.livelike.livelikesdk.messaging.Error
+            ) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+                this@ChatView.chatAdapter.addMessage(
+                    ChatMessage(
+                        event.message.get("message").asString,
+                        event.message.get("sender_id").asString,
+                        event.message.get("sender").asString
+                    )
+                )
+            }
+
+        })
     }
 
     /**
@@ -60,10 +88,11 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 chatinput.setOnKeyListener(object : View.OnKeyListener {
                     override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
                         if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
+                            // Todo: send message to sendbird
                             this@ChatView.chatAdapter.addMessage(
                                     ChatMessage(
                                             chatinput.text.toString(),
-                                            0,
+                                            "an_id",
                                             "User123"
                                     )
                             )
@@ -92,7 +121,7 @@ interface ChatCell {
  *  @param senderId This is unique user id.
  *  @param senderDisplayName This is display name user is associated with.
  */
-data class ChatMessage(val message: String, val senderId: Int, val senderDisplayName: String )
+data class ChatMessage(val message: String, val senderId: String, val senderDisplayName: String )
 
 /**
  *
@@ -164,6 +193,7 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
         val cell = cellFactory.getCell()
         cell.setMessage(chat)
         chatMessages.add(cell)
+        notifyDataSetChanged()
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
