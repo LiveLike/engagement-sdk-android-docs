@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.widget
 
-import android.util.Log
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -39,7 +38,6 @@ class WidgetQueue(upstream: MessagingClient) :
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         isProcessing = true
-        //Process payload for widgets and send to Renderer (WidgetView)
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         when (widgetType) {
             WidgetType.HTML5 -> renderer?.displayWidget(event.message["payload"].asJsonObject["url"])
@@ -54,9 +52,7 @@ class WidgetQueue(upstream: MessagingClient) :
     }
 
     fun toggleEmission(pause: Boolean) {
-        Log.i(javaClass::getSimpleName.name, "The session has been " + if (pause) "paused" else "resumed" )
         triggerListener?.toggleEmission(pause)
-        // When the session is paused, if a widget was on screen, he is dismissed
         if (pause){
             renderer?.dismissCurrentWidget()
         }
