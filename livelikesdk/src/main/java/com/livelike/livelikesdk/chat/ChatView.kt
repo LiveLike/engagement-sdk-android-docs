@@ -36,23 +36,21 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     lateinit var chatAdapter: ChatAdapter
     private val messagingClient : MessagingClient = SendbirdMessagingClient("a_content_id", context)
     private val TAG = javaClass.simpleName
-    private val ChannelUrl = "program_00f4cdfd_6a19_4853_9c21_51aa46d070a0" // TODO: Get this from backend
+    private val channelUrl = "program_00f4cdfd_6a19_4853_9c21_51aa46d070a0" // TODO: Get this from backend
 
     init {
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
-        messagingClient.subscribe(listOf(ChannelUrl))
+        messagingClient.subscribe(listOf(channelUrl))
         messagingClient.syncTo(EpochTime(System.currentTimeMillis())) // TODO: replace with playhead time
         messagingClient.addMessagingEventListener(object : MessagingEventListener {
             override fun onClientMessageError(
                 client: MessagingClient,
                 error: com.livelike.livelikesdk.messaging.Error
             ) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
@@ -97,7 +95,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                             messageJson.addProperty("sender_id", "user-id")
 
                             val timeData = EpochTime(System.currentTimeMillis()) // message.data..timestamp TODO: Parse the data to get the message timestamp
-                            messagingClient.sendMessage(ClientMessage(messageJson, ChannelUrl, timeData))
+                            messagingClient.sendMessage(ClientMessage(messageJson, channelUrl, timeData))
 
                             this@ChatView.chatAdapter.addMessage(
                                     ChatMessage(
