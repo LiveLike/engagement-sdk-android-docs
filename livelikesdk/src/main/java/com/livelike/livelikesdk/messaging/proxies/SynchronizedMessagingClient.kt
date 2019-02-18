@@ -2,14 +2,17 @@ package com.livelike.livelikesdk.messaging.proxies
 
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.EpochTime
+import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
 
 
 class SynchronizedMessagingClient(upstream: MessagingClient, val timeSource: EpochTime) : MessagingClientProxy(upstream) {
+    override fun sendMessage(message: ClientMessage) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     companion object {
         const val SYNC_TIME_FIDELITY = 100L
     }

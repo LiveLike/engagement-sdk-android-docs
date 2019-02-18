@@ -11,6 +11,7 @@ interface MessagingClient {
     fun unsubscribe(channels: List<String>)
     fun unsubscribeAll()
     fun addMessagingEventListener(listener: MessagingEventListener)
+    fun sendMessage(message: ClientMessage)
 }
 
 /**

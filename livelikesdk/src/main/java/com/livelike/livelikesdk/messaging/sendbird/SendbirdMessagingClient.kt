@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.messaging.sendbird
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.EpochTime
@@ -13,6 +14,7 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
 
     private var listener : MessagingEventListener? = null
     private val TAG = javaClass.simpleName
+    private var connectedChannels : MutableList<OpenChannel> = mutableListOf()
 
     init {
         val subscribeKey = fetchSubKey(contentId)
@@ -38,7 +40,8 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
     }
 
     override fun subscribe(channels: List<String>) {
-        OpenChannel.getChannel(channels.first(), // TODO: subscribe to all channels
+        // TODO: subscribe to all channels
+        OpenChannel.getChannel(channels.first(),
             OpenChannel.OpenChannelGetHandler { openChannel, e ->
             if (e != null) {    // Error.
                 return@OpenChannelGetHandler
@@ -48,6 +51,7 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
                 if (e != null) {    // Error.
                     return@OpenChannelEnterHandler
                 }
+                connectedChannels.add(openChannel)
                 SendBird.addChannelHandler(openChannel.url, object: SendBird.ChannelHandler(){
                     override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
                         if(message!=null && channel!=null){
@@ -69,10 +73,13 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
 
     override fun unsubscribe(channels: List<String>) {
         // Unsubscribe from the channel
+        connectedChannels.remove(connectedChannels.find { openChannel -> openChannel.url == channels.first() }) // remove the found channels
 
-        // Disconnect from Sendbird if no subscribed channels
-        SendBird.disconnect {
-            // You are disconnected from SendBird.
+        if (connectedChannels.isEmpty()){
+            // Disconnect from Sendbird if no subscribed channels
+            SendBird.disconnect {
+                // You are disconnected from SendBird.
+            }
         }
     }
 
@@ -84,14 +91,18 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
         this.listener = listener
     }
 
-    // Send user message
-//    channel.sendUserMessage(MESSAGE, new BaseChannel.SendUserMessageHandler() {
-//        @Override
-//        public void onSent(UserMessage userMessage, SendBirdException e) {
-//            if (e != null) {    // Error.
-//                return;
-//            }
-//        }
-//    });
+    override fun sendMessage(message: ClientMessage){
+        connectedChannels.find { openChannel -> openChannel.url == message.channel }.also {
+            // Send user message
+            it?.sendUserMessage(message.message.get("message").asString) { userMessage, exception ->
+                if (exception!=null){
+                    Log.e(TAG, "Error sending the message")
+                }
+            }
+        }
+
+    }
+
+
 
 }

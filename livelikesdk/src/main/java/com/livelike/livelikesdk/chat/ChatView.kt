@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.messaging.*
@@ -35,11 +36,12 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     lateinit var chatAdapter: ChatAdapter
     private val messagingClient : MessagingClient = SendbirdMessagingClient("a_content_id", context)
     private val TAG = javaClass.simpleName
+    private val ChannelUrl = "program_00f4cdfd_6a19_4853_9c21_51aa46d070a0" // TODO: Get this from backend
 
     init {
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
-        messagingClient.subscribe(listOf("program_00f4cdfd_6a19_4853_9c21_51aa46d070a0")) // TODO: Get this from backend
+        messagingClient.subscribe(listOf(ChannelUrl))
         messagingClient.syncTo(EpochTime(System.currentTimeMillis())) // TODO: replace with playhead time
         messagingClient.addMessagingEventListener(object : MessagingEventListener {
             override fun onClientMessageError(
@@ -88,11 +90,19 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 chatinput.setOnKeyListener(object : View.OnKeyListener {
                     override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
                         if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
-                            // Todo: send message to sendbird
+
+                            val messageJson = JsonObject()
+                            messageJson.addProperty("message", chatinput.text.toString())
+                            messageJson.addProperty("sender", "User123")
+                            messageJson.addProperty("sender_id", "user-id")
+
+                            val timeData = EpochTime(System.currentTimeMillis()) // message.data..timestamp TODO: Parse the data to get the message timestamp
+                            messagingClient.sendMessage(ClientMessage(messageJson, ChannelUrl, timeData))
+
                             this@ChatView.chatAdapter.addMessage(
                                     ChatMessage(
                                             chatinput.text.toString(),
-                                            "an_id",
+                                            "user-id",
                                             "User123"
                                     )
                             )

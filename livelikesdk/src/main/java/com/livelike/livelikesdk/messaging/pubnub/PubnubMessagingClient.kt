@@ -1,11 +1,6 @@
 package com.livelike.livelikesdk.messaging.pubnub
 
-import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.Error
-import com.livelike.livelikesdk.messaging.MessagingClient
-import com.livelike.livelikesdk.messaging.MessagingEventListener
-import com.livelike.livelikesdk.messaging.EpochTime
+import com.livelike.livelikesdk.messaging.*
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -17,6 +12,9 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
 
 class PubnubMessagingClient (val contentId: String) : MessagingClient {
+    override fun sendMessage(message: ClientMessage) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
     private var pubnub : PubNub
