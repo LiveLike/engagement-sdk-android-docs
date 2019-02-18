@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -44,7 +43,6 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     // sync loop
     private val runnableCode = object: Runnable {
         override fun run() {
-            Log.i(TAG,"run the sync: ${System.currentTimeMillis()}")
             messagingClient.updateTimeSource(EpochTime(System.currentTimeMillis()))
             Handler().postDelayed(this, 1000)
         }
