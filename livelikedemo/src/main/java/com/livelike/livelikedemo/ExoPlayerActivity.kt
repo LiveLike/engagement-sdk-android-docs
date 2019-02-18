@@ -29,13 +29,13 @@ class ExoPlayerActivity : AppCompatActivity() {
     var useDrawerLayout: Boolean = false
     private lateinit var session: LiveLikeContentSession
     private var adsPlaying = false
-    set(value) {
-        field = value
-        adOverlay.visibleOrGone(value)
-        stopAd.visibleOrGone(value)
-        startAd.visibleOrGone(!value)
+    set(adsPlaying) {
+        field = adsPlaying
+        adOverlay.visibleOrGone(adsPlaying)
+        stopAd.visibleOrGone(adsPlaying)
+        startAd.visibleOrGone(!adsPlaying)
 
-        if(value){
+        if(adsPlaying){
             player?.stop()
             session.pause()
         }
