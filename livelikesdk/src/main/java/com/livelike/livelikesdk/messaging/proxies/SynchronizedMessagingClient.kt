@@ -9,10 +9,6 @@ import java.util.*
 
 
 class SynchronizedMessagingClient(upstream: MessagingClient, val timeSource: EpochTime) : MessagingClientProxy(upstream) {
-    override fun sendMessage(message: ClientMessage) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     companion object {
         const val SYNC_TIME_FIDELITY = 100L
     }
@@ -54,7 +50,7 @@ class SynchronizedMessagingClient(upstream: MessagingClient, val timeSource: Epo
         val event = queue.peek()?:return
         //For now lets use the timestamp, we can implement minimumTime when sync timing comes in, timestamp of <= 0 is passthrough
         if(event.timeStamp > EpochTime(0)) {
-            if(event.timeStamp >= timeSource) {
+            if(event.timeStamp <= timeSource) {
                 publishEvent(queue.dequeue()!!)
             }
         } else {
