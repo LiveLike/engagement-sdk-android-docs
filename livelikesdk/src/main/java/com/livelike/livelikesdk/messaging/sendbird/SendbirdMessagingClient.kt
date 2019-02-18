@@ -40,35 +40,38 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
     }
 
     override fun subscribe(channels: List<String>) {
-        // TODO: subscribe to all channels
-        OpenChannel.getChannel(channels.first(),
-            OpenChannel.OpenChannelGetHandler { openChannel, e ->
-            if (e != null) {    // Error.
-                return@OpenChannelGetHandler
-            }
-
-            openChannel.enter(OpenChannel.OpenChannelEnterHandler { e ->
-                if (e != null) {    // Error.
-                    return@OpenChannelEnterHandler
-                }
-                connectedChannels.add(openChannel)
-                SendBird.addChannelHandler(openChannel.url, object: SendBird.ChannelHandler(){
-                    override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
-                        if(message!=null && channel!=null){
-                            message as UserMessage
-                            val messageJson = JsonObject()
-                            messageJson.addProperty("message", message.message)
-                            messageJson.addProperty("sender", message.sender.nickname)
-                            messageJson.addProperty("sender_id", message.sender.userId)
-
-                            val timeData = EpochTime(System.currentTimeMillis()) // message.data..timestamp TODO: Parse the data to get the message timestamp
-
-                            listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(messageJson, channel.url, timeData))
-                        }
+        channels.forEach {
+            OpenChannel.getChannel(it,
+                OpenChannel.OpenChannelGetHandler { openChannel, e ->
+                    if (e != null) {    // Error.
+                        return@OpenChannelGetHandler
                     }
+
+                    openChannel.enter(OpenChannel.OpenChannelEnterHandler { e ->
+                        if (e != null) {    // Error.
+                            return@OpenChannelEnterHandler
+                        }
+                        connectedChannels.add(openChannel)
+
+                        SendBird.addChannelHandler(openChannel.url, object: SendBird.ChannelHandler(){
+                            override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
+                                if(message!=null && channel!=null){
+                                    message as UserMessage
+                                    val messageJson = JsonObject()
+                                    messageJson.addProperty("message", message.message)
+                                    messageJson.addProperty("sender", message.sender.nickname)
+                                    messageJson.addProperty("sender_id", message.sender.userId)
+
+                                    val timeData = EpochTime(System.currentTimeMillis()) // message.data..timestamp TODO: Parse the data to get the message timestamp
+
+                                    listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(messageJson, channel.url, timeData))
+                                }
+                            }
+                        })
+                    })
                 })
-            })
-        })
+        }
+
     }
 
     override fun unsubscribe(channels: List<String>) {
@@ -94,7 +97,7 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
     override fun sendMessage(message: ClientMessage){
         connectedChannels.find { openChannel -> openChannel.url == message.channel }.also {
             // Send user message
-            it?.sendUserMessage(message.message.get("message").asString) { userMessage, exception ->
+            it?.sendUserMessage(message.message.get("message").asString, message.timeStamp.toString(), "timestamp", null) { userMessage, exception ->
                 if (exception!=null){
                     Log.e(TAG, "Error sending the message")
                 }
