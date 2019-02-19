@@ -14,8 +14,7 @@ import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.messaging.*
-import com.livelike.livelikesdk.messaging.proxies.syncTo
-import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
+import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
 
@@ -36,47 +35,30 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.*
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs)  {
     val attrs: AttributeSet = attrs!!
     lateinit var chatAdapter: ChatAdapter
-    private val messagingClient = SendbirdMessagingClient("a_content_id", context).syncTo(EpochTime(System.currentTimeMillis()))
     private val TAG = javaClass.simpleName
     private val channelUrl = "program_00f4cdfd_6a19_4853_9c21_51aa46d070a0" // TODO: Get this from backend
-
-    // sync loop
-    private val runnableCode = object: Runnable {
-        override fun run() {
-            messagingClient.updateTimeSource(EpochTime(System.currentTimeMillis()))
-            Handler().postDelayed(this, 1000)
+    private val chatClient = SendbirdChatClient("todo_content_id_from_backend", context, object : MessagingEventListener {
+        override fun onClientMessageError(client: MessagingClient, error: com.livelike.livelikesdk.messaging.Error) {}
+        override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
+        override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+            Handler(Looper.getMainLooper()).post {
+                this@ChatView.chatAdapter.addMessage(
+                    ChatMessage(
+                        event.message.get("message").asString,
+                        event.message.get("sender_id").asString,
+                        event.message.get("sender").asString,
+                        event.message.get("id").asString
+                    )
+                )
+            }
         }
-    }
+    })
 
     init {
-        runnableCode.run()
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
-        messagingClient.subscribe(listOf(channelUrl))
-        messagingClient.addMessagingEventListener(object : MessagingEventListener {
-            override fun onClientMessageError(
-                client: MessagingClient,
-                error: com.livelike.livelikesdk.messaging.Error
-            ) {
-            }
-
-            override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
-            }
-
-            override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-                Handler(Looper.getMainLooper()).post {
-                    this@ChatView.chatAdapter.addMessage(
-                        ChatMessage(
-                            event.message.get("message").asString,
-                            event.message.get("sender_id").asString,
-                            event.message.get("sender").asString
-                        )
-                    )
-                }
-
-            }
-        })
     }
+
     /**
      *  Sets the data source for this view.
      *  @param chatAdapter ChatAdapter used for creating this view.
@@ -106,13 +88,15 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                             messageJson.addProperty("sender_id", "user-id")
 
                             val timeData = EpochTime(System.currentTimeMillis()+5000) // Simulate a delay of 5sec, TODO: this should be playhead time
-                            messagingClient.sendMessage(ClientMessage(messageJson, channelUrl, timeData))
+
+                            chatClient.sendMessage(ClientMessage(messageJson, channelUrl, timeData))
 
                             this@ChatView.chatAdapter.addMessage(
                                     ChatMessage(
                                             chatinput.text.toString(),
                                             "user-id",
-                                            "User123"
+                                            "User123",
+                                            "message_id"
                                     )
                             )
                             chatinput.setText("")
@@ -139,8 +123,9 @@ interface ChatCell {
  *  @param message The message user wants to send.
  *  @param senderId This is unique user id.
  *  @param senderDisplayName This is display name user is associated with.
+ *  @param id A unique ID to identify the message.
  */
-data class ChatMessage(val message: String, val senderId: String, val senderDisplayName: String )
+data class ChatMessage(val message: String, val senderId: String, val senderDisplayName: String, val id: String)
 
 /**
  *

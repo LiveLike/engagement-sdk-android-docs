@@ -8,6 +8,9 @@ import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
 import com.sendbird.android.*
+import com.sendbird.android.SendBird.UserInfoUpdateHandler
+
+
 
 
 class SendbirdMessagingClient (contentId: String, val context: Context) : MessagingClient {
@@ -17,7 +20,7 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
     private var connectedChannels : MutableList<OpenChannel> = mutableListOf()
 
     init {
-        val subscribeKey = fetchSubKey(contentId)
+        val subscribeKey = fetchSubKey()
         val userId = fetchUserId()
         SendBird.init(subscribeKey, context)
         SendBird.connect(userId, object : SendBird.ConnectHandler {
@@ -25,6 +28,12 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
                 if (e != null) {    // Error.
                     return
                 }
+                SendBird.updateCurrentUserInfo(fetchUsername(), null,
+                    UserInfoUpdateHandler { e ->
+                        if (e != null) {    // Error.
+                            return@UserInfoUpdateHandler
+                        }
+                    })
             }
         })
     }
@@ -34,7 +43,12 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
         return "user-id"
     }
 
-    private fun fetchSubKey(contentId: String): String {
+    private fun fetchUsername() : String {
+        // TODO: Get username from backend session + local storage until we allow user to modify their username.
+        return "Username-123"
+    }
+
+    private fun fetchSubKey(): String {
         //TODO: Get sendbird sub key from content id when backend Application endpoint is integrated.
         return "E5F2FB80-CC44-4BD2-8D1F-F82917563662"
     }
@@ -61,6 +75,7 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
                                     messageJson.addProperty("message", message.message)
                                     messageJson.addProperty("sender", message.sender.nickname)
                                     messageJson.addProperty("sender_id", message.sender.userId)
+                                    messageJson.addProperty("id", message.messageId)
 
                                     val timeMs: Long = if (message.data.isNullOrEmpty()){
                                         System.currentTimeMillis()
