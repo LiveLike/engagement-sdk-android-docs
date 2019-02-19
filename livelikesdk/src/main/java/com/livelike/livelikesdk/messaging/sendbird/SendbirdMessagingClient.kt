@@ -77,7 +77,7 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
                                     messageJson.addProperty("id", message.messageId)
 
                                     val timeMs: Long = if (message.data.isNullOrEmpty()){
-                                        System.currentTimeMillis()
+                                        0
                                     }else{
                                         message.data.toLong()
                                     }
