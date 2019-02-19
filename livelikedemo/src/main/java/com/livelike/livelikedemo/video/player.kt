@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import java.net.URL
 
 
 data class PlayerState(var window: Int = 0,
@@ -24,12 +25,12 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
     private lateinit var mediaSource : MediaSource
     private var playerState = PlayerState()
 
-    private fun initializePlayer(uri: Uri, state: PlayerState) {
+    private fun initializePlayer(uri: Uri, state: PlayerState, useHls: Boolean = true) {
         playerView.requestFocus()
 
         player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
-
-        mediaSource = buildMediaSource(uri)
+        //TODO extend this to take multiple video types (Dash, HLS, MP4)
+        mediaSource = if (useHls) buildHLSMediaSource(uri) else buildMediaSource(uri)
         playerState = state
         player?.prepare(mediaSource)
         with(playerState) {
@@ -58,8 +59,12 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
         return 0 // No time information in this stream
     }
 
-    override fun playMedia(uri: Uri, startPosition: Long, playWhenReady: Boolean) {
-        initializePlayer(uri, PlayerState(0, startPosition, playWhenReady))
+    private fun buildHLSMediaSource(uri: Uri): HlsMediaSource {
+        return HlsMediaSource.Factory(DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
+    }
+
+    override fun playMedia(uri: Uri, startState: PlayerState) {
+        initializePlayer(uri, startState)
     }
 
     override fun start() {
@@ -81,6 +86,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
 
     override fun release() {
         player?.release()
+        playerState = PlayerState()
     }
 
     override fun position() : Long {
@@ -93,7 +99,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
 }
 
 interface VideoPlayer {
-    fun playMedia(uri: Uri, startPosition: Long = 0, playWhenReady: Boolean = true)
+    fun playMedia(uri: Uri, startState: PlayerState = PlayerState())
     fun start()
     fun stop()
     fun seekTo(position: Long)
@@ -101,3 +107,17 @@ interface VideoPlayer {
     fun position() : Long
     fun getCurrentDate(): Long
 }
+
+
+
+/*
+Class Representing a Demo App channel which comes from service via json like:
+	{
+      "name": "Android Demo Channel 1",
+      "video_url": "http://livecut-streams.livelikecdn.com/live/colorbars-angle1/index.m3u8",
+      "video_thumbnail_url": "http://lorempixel.com/200/200/?2",
+      "livelike_program_url": "https://livelike-blast.herokuapp.com/api/v1/programs/00f4cdfd-6a19-4853-9c21-51aa46d070a0/"
+    }
+}*/
+
+data class Channel(val name: String, val video: URL, val thumbnail: URL, val llProgram: URL)
