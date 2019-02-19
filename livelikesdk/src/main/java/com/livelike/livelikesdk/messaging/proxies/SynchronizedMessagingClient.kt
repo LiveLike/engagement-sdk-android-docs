@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.messaging.proxies
 
-import android.util.Log
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.EpochTime

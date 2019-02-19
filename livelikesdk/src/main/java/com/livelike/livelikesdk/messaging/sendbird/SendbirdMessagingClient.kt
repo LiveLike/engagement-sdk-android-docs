@@ -6,10 +6,14 @@ import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
-import com.sendbird.android.*
+import com.sendbird.android.BaseChannel
+import com.sendbird.android.BaseMessage
+import com.sendbird.android.OpenChannel
+import com.sendbird.android.SendBird
 import com.sendbird.android.SendBird.UserInfoUpdateHandler
-
-
+import com.sendbird.android.SendBirdException
+import com.sendbird.android.User
+import com.sendbird.android.UserMessage
 
 
 class SendbirdMessagingClient (contentId: String, val context: Context) : MessagingClient {

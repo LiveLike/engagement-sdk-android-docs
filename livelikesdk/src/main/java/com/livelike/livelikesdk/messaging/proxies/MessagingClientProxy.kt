@@ -1,6 +1,11 @@
 package com.livelike.livelikesdk.messaging.proxies
 
-import com.livelike.livelikesdk.messaging.*
+import com.livelike.livelikesdk.messaging.ClientMessage
+import com.livelike.livelikesdk.messaging.ConnectionStatus
+import com.livelike.livelikesdk.messaging.Error
+import com.livelike.livelikesdk.messaging.MessagingClient
+import com.livelike.livelikesdk.messaging.MessagingEventListener
+
 
 //TODO Look into removing MessageClientProxy and replacing with Kotlin MessageClient by upstream
 abstract class MessagingClientProxy (val upstream: MessagingClient) : MessagingClient, MessagingEventListener {
