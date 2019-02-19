@@ -7,7 +7,6 @@ import com.livelike.livelikesdk.util.Queue
 
 class TriggeredMessagingClient(upstream: MessagingClient) :
         MessagingClientProxy(upstream), ExternalTriggerListener {
-
     val queue = Queue<ClientMessage>()
     var externalTrigger: ExternalMessageTrigger = EmptyTrigger()
     set(value) {

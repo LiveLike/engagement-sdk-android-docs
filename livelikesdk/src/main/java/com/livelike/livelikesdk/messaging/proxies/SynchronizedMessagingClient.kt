@@ -2,14 +2,13 @@ package com.livelike.livelikesdk.messaging.proxies
 
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.EpochTime
+import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
 
 
-class SynchronizedMessagingClient(upstream: MessagingClient, val timeSource: EpochTime) : MessagingClientProxy(upstream) {
+class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: EpochTime) : MessagingClientProxy(upstream) {
     companion object {
         const val SYNC_TIME_FIDELITY = 100L
     }
@@ -21,6 +20,10 @@ class SynchronizedMessagingClient(upstream: MessagingClient, val timeSource: Epo
         override fun run() {
             processQueueForScheduledEvent()
         }
+    }
+
+    fun updateTimeSource(timeSource: EpochTime){
+        this.timeSource = timeSource
     }
 
     override fun subscribe(channels: List<String>) {
@@ -51,7 +54,7 @@ class SynchronizedMessagingClient(upstream: MessagingClient, val timeSource: Epo
         val event = queue.peek()?:return
         //For now lets use the timestamp, we can implement minimumTime when sync timing comes in, timestamp of <= 0 is passthrough
         if(event.timeStamp > EpochTime(0)) {
-            if(event.timeStamp >= timeSource) {
+            if(event.timeStamp <= timeSource) {
                 publishEvent(queue.dequeue()!!)
             }
         } else {

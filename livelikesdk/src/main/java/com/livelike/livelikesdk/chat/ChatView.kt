@@ -1,6 +1,8 @@
 package com.livelike.livelikesdk.chat
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.KeyEvent
@@ -8,12 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
-import kotlinx.android.synthetic.main.chat_view.view.chatinput
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
-import kotlinx.android.synthetic.main.default_chat_cell.view.user
+import com.livelike.livelikesdk.messaging.*
+import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
+import kotlinx.android.synthetic.main.chat_view.view.*
+import kotlinx.android.synthetic.main.default_chat_cell.view.*
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -32,6 +35,24 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.user
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs)  {
     val attrs: AttributeSet = attrs!!
     lateinit var chatAdapter: ChatAdapter
+    private val TAG = javaClass.simpleName
+    private val channelUrl = "program_00f4cdfd_6a19_4853_9c21_51aa46d070a0" // TODO: Get this from backend
+    private val chatClient = SendbirdChatClient("todo_content_id_from_backend", context, object : MessagingEventListener {
+        override fun onClientMessageError(client: MessagingClient, error: com.livelike.livelikesdk.messaging.Error) {}
+        override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
+        override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+            Handler(Looper.getMainLooper()).post {
+                this@ChatView.chatAdapter.addMessage(
+                    ChatMessage(
+                        event.message.get("message").asString,
+                        event.message.get("sender_id").asString,
+                        event.message.get("sender").asString,
+                        event.message.get("id").asString
+                    )
+                )
+            }
+        }
+    })
 
     init {
         LayoutInflater.from(context)
@@ -60,11 +81,22 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 chatinput.setOnKeyListener(object : View.OnKeyListener {
                     override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
                         if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
+
+                            val messageJson = JsonObject()
+                            messageJson.addProperty("message", chatinput.text.toString())
+                            messageJson.addProperty("sender", "User123")
+                            messageJson.addProperty("sender_id", "user-id")
+
+                            val timeData = EpochTime(System.currentTimeMillis()+5000) // Simulate a delay of 5sec, TODO: this should be playhead time
+
+                            chatClient.sendMessage(ClientMessage(messageJson, channelUrl, timeData))
+
                             this@ChatView.chatAdapter.addMessage(
                                     ChatMessage(
                                             chatinput.text.toString(),
-                                            0,
-                                            "User123"
+                                            "user-id",
+                                            "User123",
+                                            "message_id"
                                     )
                             )
                             chatinput.setText("")
@@ -91,8 +123,9 @@ interface ChatCell {
  *  @param message The message user wants to send.
  *  @param senderId This is unique user id.
  *  @param senderDisplayName This is display name user is associated with.
+ *  @param id A unique ID to identify the message.
  */
-data class ChatMessage(val message: String, val senderId: Int, val senderDisplayName: String )
+data class ChatMessage(val message: String, val senderId: String, val senderDisplayName: String, val id: String)
 
 /**
  *
@@ -164,6 +197,7 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
         val cell = cellFactory.getCell()
         cell.setMessage(chat)
         chatMessages.add(cell)
+        notifyDataSetChanged()
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

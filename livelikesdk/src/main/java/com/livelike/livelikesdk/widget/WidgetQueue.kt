@@ -12,7 +12,6 @@ class WidgetQueue(upstream: MessagingClient) :
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
         WidgetEventListener{
-
     var renderer: WidgetRenderer? = null
     set(value) {
         field = value
