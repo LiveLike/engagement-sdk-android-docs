@@ -38,7 +38,6 @@ class WidgetQueue(upstream: MessagingClient) :
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         isProcessing = true
-        //Process payload for widgets and send to Renderer (WidgetView)
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         when (widgetType) {
             WidgetType.HTML5 -> renderer?.displayWidget(event.message["payload"].asJsonObject["url"])
@@ -50,6 +49,13 @@ class WidgetQueue(upstream: MessagingClient) :
         }
 
         super.onClientMessageEvent(client, event)
+    }
+
+    fun toggleEmission(pause: Boolean) {
+        triggerListener?.toggleEmission(pause)
+        if (pause){
+            renderer?.dismissCurrentWidget()
+        }
     }
 }
 
@@ -69,6 +75,7 @@ enum class WidgetType (val value: String) {
 interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
     fun displayWidget(widgetData:Any)
+    fun dismissCurrentWidget()
 }
 
 interface WidgetEventListener {
@@ -86,6 +93,6 @@ fun MessagingClient.toWidgetQueue() : WidgetQueue {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
     val widgetQueue = WidgetQueue(triggeredMessagingClient)
     triggeredMessagingClient.externalTrigger = widgetQueue
-    return widgetQueue;
+    return widgetQueue
 }
 
