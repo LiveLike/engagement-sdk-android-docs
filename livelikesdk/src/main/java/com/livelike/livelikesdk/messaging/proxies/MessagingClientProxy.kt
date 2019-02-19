@@ -19,10 +19,6 @@ abstract class MessagingClientProxy (val upstream: MessagingClient) : MessagingC
         upstream.unsubscribe(channels)
     }
 
-    override fun sendMessage(message: ClientMessage) {
-        upstream.sendMessage(message)
-    }
-
     override fun unsubscribeAll() {
         upstream.unsubscribeAll()
     }

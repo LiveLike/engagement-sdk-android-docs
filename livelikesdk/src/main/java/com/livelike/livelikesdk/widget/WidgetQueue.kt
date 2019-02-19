@@ -12,10 +12,6 @@ class WidgetQueue(upstream: MessagingClient) :
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
         WidgetEventListener{
-    override fun sendMessage(message: ClientMessage) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     var renderer: WidgetRenderer? = null
     set(value) {
         field = value

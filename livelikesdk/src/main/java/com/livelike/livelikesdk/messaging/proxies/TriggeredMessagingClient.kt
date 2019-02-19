@@ -7,10 +7,6 @@ import com.livelike.livelikesdk.util.Queue
 
 class TriggeredMessagingClient(upstream: MessagingClient) :
         MessagingClientProxy(upstream), ExternalTriggerListener {
-    override fun sendMessage(message: ClientMessage) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     val queue = Queue<ClientMessage>()
     var externalTrigger: ExternalMessageTrigger = EmptyTrigger()
     set(value) {

@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk.messaging.sendbird
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.EpochTime
@@ -29,8 +28,8 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
                     return
                 }
                 SendBird.updateCurrentUserInfo(fetchUsername(), null,
-                    UserInfoUpdateHandler { e ->
-                        if (e != null) {    // Error.
+                    UserInfoUpdateHandler { exception ->
+                        if (exception != null) {    // Error.
                             return@UserInfoUpdateHandler
                         }
                     })
@@ -61,8 +60,8 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
                         return@OpenChannelGetHandler
                     }
 
-                    openChannel.enter(OpenChannel.OpenChannelEnterHandler { e ->
-                        if (e != null) {    // Error.
+                    openChannel.enter(OpenChannel.OpenChannelEnterHandler { exception ->
+                        if (exception != null) {    // Error.
                             return@OpenChannelEnterHandler
                         }
                         connectedChannels.add(openChannel)
@@ -109,18 +108,4 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
     override fun addMessagingEventListener(listener: MessagingEventListener) {
         this.listener = listener
     }
-
-    override fun sendMessage(message: ClientMessage){
-        connectedChannels.find { openChannel -> openChannel.url == message.channel }.also {
-            it?.sendUserMessage(message.message.get("message").asString, message.timeStamp.timeSinceEpochInMs.toString(), "timestamp", null) { userMessage, exception ->
-                if (exception!=null){
-                    Log.e(TAG, "Error sending the message")
-                }
-            }
-        }
-
-    }
-
-
-
 }
