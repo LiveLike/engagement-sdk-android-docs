@@ -167,13 +167,13 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         return (dp * scale + 0.5f).toInt()
     }
 
-    protected fun selectRandomEmojiForConfirmMessage(path: String): String? {
+    protected fun selectRandomLottieAnimation(path: String): String? {
         val asset = context?.assets
         val assetList = asset?.list(path)
         val random = Random()
         return if (assetList!!.isNotEmpty()) {
             val emojiIndex = random.nextInt(assetList.size)
             assetList[emojiIndex]
-        } else assetList[0]
+        } else return null
     }
 }

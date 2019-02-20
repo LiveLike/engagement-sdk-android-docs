@@ -43,7 +43,9 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         startEasingAnimation(animationHandler)
         prediction_result.visibility = View.VISIBLE
         prediction_result.playAnimation()
-        prediction_result.setAnimation(lottieAnimationPath + '/' + selectRandomEmojiForConfirmMessage(lottieAnimationPath))
+        val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath)
+        if (lottieAnimation != null)
+            prediction_result.setAnimation("$lottieAnimationPath/$lottieAnimation")
     }
 
     private fun provideStyleToButtonAndProgressBar(userSelection: Pair<String?, String?>, button: Button): Pair<Int, CharSequence> {
@@ -63,6 +65,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         } else {
             when {
                 isCurrentButtonOptionCorrect(correctOption, buttonText) -> {
+                    lottieAnimationPath = "wrongAnswer"
                     percentageDrawable = R.drawable.progress_bar
                     selectedOptionCorrect(buttonText.toString())
                 }
@@ -73,7 +76,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
                 else -> percentageDrawable = R.drawable.progress_bar_looser
 
             }
-            lottieAnimationPath = "wrongAnswer"
+
         }
 
         return Pair(percentageDrawable, buttonText)
@@ -136,7 +139,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
             layoutParams = LayoutParams(
                     0,
                     0)
-            elevation = dpToPx(2).toFloat()
+            elevation = dpToPx(1).toFloat()
             max = 100
             progress = percentage!!.toInt()
             isIndeterminate = false

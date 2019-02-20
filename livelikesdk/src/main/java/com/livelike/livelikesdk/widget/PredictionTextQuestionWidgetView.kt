@@ -37,13 +37,17 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
             prediction_confirm_message_textView.visibility = View.VISIBLE
 
             lottieAnimationPath = "confirmMessage"
-            prediction_confirm_message_animation.setAnimation(lottieAnimationPath + '/' + selectRandomEmojiForConfirmMessage(lottieAnimationPath))
-            prediction_confirm_message_animation.visibility = View.VISIBLE
-            animationHandler.startAnimation(
+            val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath)
+            if (lottieAnimation != null) {
+                prediction_confirm_message_animation.setAnimation("$lottieAnimationPath/$lottieAnimation")
+                prediction_confirm_message_animation.visibility = View.VISIBLE
+                animationHandler.startAnimation(
                     prediction_confirm_message_animation,
                     { hideWidget() },
-                    widgetShowingDurationAfterConfirmMessage)
-            performPredictionWidgetFadeOutOperations()
+                    widgetShowingDurationAfterConfirmMessage
+                )
+                performPredictionWidgetFadeOutOperations()
+            }
         } else hideWidget()
     }
 
