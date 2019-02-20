@@ -10,22 +10,22 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewStub
 import android.widget.Button
-import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
-import com.livelike.livelikesdk.LayoutTouchListener
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
+import com.livelike.livelikesdk.widget.model.WidgetOptionsData
 import java.util.*
 import com.livelike.livelikesdk.R
+import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_question_textView
+import kotlin.collections.ArrayList
 
-open class PredictionTextWidgetBase : ConstraintLayout {
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-
+open class PredictionTextWidgetBase : ConstraintLayout, Observer {
     protected val timerDuration: Long = 7000
     protected val widgetShowingDurationAfterConfirmMessage: Long = 3000
     protected val widgetOpacityFactor: Float = 0.2f
@@ -36,40 +36,61 @@ open class PredictionTextWidgetBase : ConstraintLayout {
     protected val animationHandler = AnimationHandler()
     protected lateinit var pieTimerViewStub : ViewStub
 
-    init {
-        inflate(context)
-    }
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    init { inflate(context) }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun inflate(context: Context) {
         LayoutInflater.from(context)
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
-        val options = arrayListOf("player 3", "player 4", "player 5")
-
-        val textView = findViewById<TextView>(R.id.prediction_question_textView)
-
-        addNewlyCreatedButtonsToLayout(options, context)
-        applyConstraintsBetweenViews(constraintSet, textView)
-
         pieTimerViewStub = findViewById(R.id.prediction_pie)
     }
 
+    override fun questionUpdated(questionText: String) {
+        prediction_question_textView.text = questionText
+    }
+
+    override fun optionListUpdated(optionList: Map<String, Long>, optionSelectedCallback: (CharSequence?) -> Unit, userSelection: Pair<String?, String?>) {
+        val textView = findViewById<TextView>(R.id.prediction_question_textView)
+        addNewlyCreatedButtonsToLayout(context, ArrayList(optionList.keys), optionSelectedCallback)
+        applyConstraintsBetweenViews(constraintSet, textView)
+    }
+
+    override fun optionSelectedUpdated(selectedOption: WidgetOptionsData) {
+        buttonList.single { button ->
+            button.text == selectedOption.description
+        }.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
+
+        buttonList.filterNot { button ->
+            button.text == selectedOption.description
+        }.forEach{ button ->
+            button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
-    private fun addNewlyCreatedButtonsToLayout(options: ArrayList<String>, context: Context) {
-        options.forEachIndexed { index, element ->
+    private fun addNewlyCreatedButtonsToLayout(
+        context: Context,
+        optionList: List<String>,
+        optionSelectedCallback: (CharSequence?) -> Unit) {
+        optionList.forEachIndexed { index, element ->
             val button = Button(context)
             buttonList.add(button)
-            applyStyle(button, options, index, context, element)
-            /*button.setOnTouchListener(LayoutTouchListener(this, parentView) {
-                performClickAction(it, context)
-            })*/
+            applyStyle(button, optionList, index, context, element)
+            button.setOnClickListener {
+                optionSelected = true
+                optionSelectedCallback(button.text)
+            }
             layout.addView(button)
         }
     }
 
     private fun applyStyle(button: Button,
-                           buttonNames: ArrayList<String>,
+                           buttonNames: List<String>?,
                            buttonIndex: Int,
                            context: Context,
                            buttonText: String) {
@@ -88,19 +109,6 @@ open class PredictionTextWidgetBase : ConstraintLayout {
             id = View.generateViewId()
             typeface = ResourcesCompat.getFont(context, R.font.titillium_semibold)
             textSize = 15f
-        }
-    }
-
-    private fun performClickAction(it: View?, context: Context) {
-        buttonList.forEach { button ->
-            optionSelected = true
-            // TODO: Move this logic to android state drawables.
-            if (button.id == it?.id) {
-                Toast.makeText(context, "selected option ${button.text} ", Toast.LENGTH_LONG).show()
-                // Here we get the selected option which will used for follow up widget.
-                button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
-            } else
-                button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
         }
     }
 
@@ -131,8 +139,8 @@ open class PredictionTextWidgetBase : ConstraintLayout {
         constraintSet.applyTo(layout)
     }
 
-    private fun isLastButtonToBeAddedToLayout(buttonNames: ArrayList<String>, index: Int) =
-            buttonNames[index] == buttonNames[buttonNames.size - 1]
+    private fun isLastButtonToBeAddedToLayout(buttonNames: List<String>?, index: Int) =
+            buttonNames!![index] == buttonNames[buttonNames.size - 1]
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
     // functions to use and how we layout widget and chat we can think of these values more.

@@ -1,12 +1,10 @@
 package com.livelike.livelikesdk.widget
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.support.constraint.ConstraintSet
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -14,26 +12,22 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.livelikesdk.R
-import kotlinx.android.synthetic.main.prediction_text_widget.view.*
+import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_result
 
-// Note: Need to have presenter and model from this.
-// TODO: Refactor as we deal with user interactions. No business logic should be present in this class.
-@SuppressLint("ViewConstructor")
-class PredictionTextFollowUpWidgetView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : PredictionTextWidgetBase(context, attrs, defStyleAttr) {
-    val result : LinkedHashMap<CharSequence, Int> = linkedMapOf(
-            buttonList[0].text to 50,
-            buttonList[1].text to 70,
-            buttonList[2].text to 20)
+class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    init {
-        buttonList.forEachIndexed { index, button ->
-            if ( index == 1 )
-                button.background = AppCompatResources.getDrawable(context, R.drawable.correct_answer_outline)
-
-            button.setOnTouchListener(null)
-            val (progressBar, textViewPercentage) = createResultView(context, button)
+    override fun optionListUpdated(optionList: Map<String, Long>,
+                                   optionSelectedCallback: (CharSequence?) -> Unit,
+                                   userSelection: Pair<String?, String?>) {
+        super.optionListUpdated(optionList, optionSelectedCallback, userSelection)
+        buttonList.forEach { button ->
+            button.setOnClickListener(null)
+            val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(userSelection, button)
+            val percentage = optionList[buttonText]
+            val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)
             startEasingAnimation(animationHandler)
             prediction_result.visibility = View.VISIBLE
@@ -42,22 +36,75 @@ class PredictionTextFollowUpWidgetView @JvmOverloads constructor(
         }
     }
 
-    private fun createResultView(context: Context, button: Button): Pair<ProgressBar, TextView> {
+    private fun provideStyleToButtonAndProgressBar(userSelection: Pair<String?, String?>, button: Button): Pair<Int, CharSequence> {
+        val correctOption = userSelection.first
+        val userSelectedOption = userSelection.second
+        val percentageDrawable: Int
+        val buttonText = button.text
+        if (hasUserSelectedCorrectOption(userSelectedOption, correctOption)) {
+            if (isCurrentButtonOptionCorrect(correctOption, buttonText)) {
+                percentageDrawable = R.drawable.progress_bar
+                selectedOptionCorrect(buttonText.toString())
+            } else {
+                percentageDrawable = R.drawable.progress_bar_looser
+            }
+        } else {
+            when {
+                isCurrentButtonOptionCorrect(correctOption, buttonText) -> {
+                    percentageDrawable = R.drawable.progress_bar
+                    selectedOptionCorrect(buttonText.toString())
+                }
+                isCurrentButtonUserSelectedOption(userSelectedOption, buttonText) -> {
+                    percentageDrawable = R.drawable.progress_bar_wrong
+                    selectedOptionIncorrect(buttonText.toString())
+                }
+                else -> percentageDrawable = R.drawable.progress_bar_looser
+            }
+        }
+        return Pair(percentageDrawable, buttonText)
+    }
+
+    private fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
+            isCurrentButtonUserSelectedOption(userSelectedOption, correctOption)
+
+    private fun isCurrentButtonOptionCorrect(correctOption: String?, buttonText: CharSequence?) =
+            isCurrentButtonUserSelectedOption(correctOption, buttonText)
+
+    private fun isCurrentButtonUserSelectedOption(userSelectedOption: String?, buttonText: CharSequence?) =
+            userSelectedOption == buttonText
+
+    private fun selectedOptionCorrect(optionDescription: String) {
+        outlineButton(optionDescription, R.drawable.correct_answer_outline)
+    }
+
+    private fun selectedOptionIncorrect(optionDescription: String) {
+        outlineButton(optionDescription, R.drawable.wrong_answer_outline)
+    }
+
+    private fun outlineButton(optionDescription: String, drawableId: Int) {
+        val singleOrNull = buttonList.singleOrNull { button ->
+            button.text == optionDescription
+        }
+        singleOrNull?.background = AppCompatResources.getDrawable(context, drawableId)
+    }
+
+
+    private fun createResultView(context: Context, percentage: Long?, percentageDrawable: Int): Pair<ProgressBar, TextView> {
         val progressBar = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal)
-        addStyleToProgressBar(progressBar, context, button)
+        addStyleToProgressBar(progressBar, context, percentage, percentageDrawable)
 
         val textViewPercentage = TextView(context)
-        addStyleToShowResultTextView(textViewPercentage, button)
+        addStyleToShowResultTextView(textViewPercentage, percentage)
 
         layout.addView(textViewPercentage)
         layout.addView(progressBar)
         return Pair(progressBar, textViewPercentage)
     }
 
-    private fun addStyleToShowResultTextView(textViewPercentage: TextView, button: Button) {
+    private fun addStyleToShowResultTextView(textViewPercentage: TextView, percentage: Long?) {
         textViewPercentage.apply {
             setTextColor(Color.WHITE)
-            text = result[button.text].toString() + "%"
+            text = percentage.toString().plus("%")
             layoutParams = LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -66,25 +113,19 @@ class PredictionTextFollowUpWidgetView @JvmOverloads constructor(
             setPadding(padding, padding, padding, padding)
             gravity = Gravity.START; Gravity.CENTER_VERTICAL
             id = View.generateViewId()
-
         }
     }
 
-    private fun addStyleToProgressBar(progressBar: ProgressBar, context: Context, button: Button) {
+    private fun addStyleToProgressBar(progressBar: ProgressBar, context: Context, percentage: Long?, percentageDrawable: Int) {
         progressBar.apply {
             layoutParams = LayoutParams(
                     0,
                     0)
             elevation = dpToPx(2).toFloat()
             max = 100
-            progress = result[button.text]!!
+            progress = percentage!!.toInt()
             isIndeterminate = false
-            Log.d("Widget", "Abhishek ${button.text}")
-            if (button.text == "player 4") {
-                Log.d("Widget", "Abhishek ${button.text}")
-                progressDrawable = AppCompatResources.getDrawable(context, R.drawable.progress_bar)
-            }
-              else  progressDrawable = AppCompatResources.getDrawable(context, R.drawable.progress_bar_looser)
+            progressDrawable = AppCompatResources.getDrawable(context, percentageDrawable)
             id = View.generateViewId()
         }
     }

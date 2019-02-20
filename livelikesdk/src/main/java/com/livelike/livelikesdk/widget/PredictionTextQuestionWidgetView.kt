@@ -4,21 +4,20 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
-import com.livelike.livelikesdk.LayoutTouchListener
 import com.livelike.livelikesdk.animation.AnimationHandler
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import java.util.*
 import com.livelike.livelikesdk.R
 
-class PredictionTextQuestionWidgetView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : PredictionTextWidgetBase(context, attrs, defStyleAttr) {
+class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     init {
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        //prediction_text_widget.setOnTouchListener(LayoutTouchListener(this, parentView))
         startWidgetAnimation(pieTimer)
     }
 
