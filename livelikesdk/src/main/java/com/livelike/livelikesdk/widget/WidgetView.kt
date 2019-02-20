@@ -15,7 +15,7 @@ import com.livelike.livelikesdk.widget.model.PredictionWidgetData
 import com.livelike.livelikesdk.widget.model.WidgetOptionsData
 import com.livelike.livelikesdk.widget.model.WidgetData
 import java.net.URI
-import java.util.*
+import java.util.UUID
 
 class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), WidgetRenderer {
 

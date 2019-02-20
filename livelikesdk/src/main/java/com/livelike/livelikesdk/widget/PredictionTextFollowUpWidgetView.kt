@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.livelikesdk.R
@@ -18,6 +19,14 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    init {
+        pieTimerViewStub.layoutResource = R.layout.cross_image
+        pieTimerViewStub.inflate()
+        val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
+        imageView.setImageResource(R.mipmap.widget_ic_x)
+        imageView.setOnClickListener { this.visibility = View.INVISIBLE }
+    }
 
     override fun optionListUpdated(optionList: Map<String, Long>,
                                    optionSelectedCallback: (CharSequence?) -> Unit,

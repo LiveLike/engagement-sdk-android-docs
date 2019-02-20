@@ -20,7 +20,6 @@ import android.widget.TextView
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.widget.model.WidgetOptionsData
-import java.util.*
 import com.livelike.livelikesdk.R
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_question_textView
 import kotlin.collections.ArrayList
