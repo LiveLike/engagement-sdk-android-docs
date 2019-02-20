@@ -18,7 +18,7 @@ class LiveLikeContentSessionImpl(override var contentSessionId: String,
     override var renderer : WidgetRenderer? = null
     set(value) {
         field = value
-        widgetQueue = pubNubMessagingClient.syncTo(playheadTimeSource.invoke(0)).toWidgetQueue()
+        widgetQueue = pubNubMessagingClient.syncTo { playheadTimeSource.invoke(0) }.toWidgetQueue()
         widgetQueue?.renderer = renderer
         widgetQueue?.subscribe(listOf("program_642f635d_44a6_4e2a_b638_504021f62f6a"))
     }
