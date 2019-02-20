@@ -7,9 +7,9 @@ import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
 import java.util.*
 
-
 class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () -> EpochTime) :
     MessagingClientProxy(upstream) {
+
     companion object {
         const val SYNC_TIME_FIDELITY = 100L
     }

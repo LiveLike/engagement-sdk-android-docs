@@ -39,7 +39,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private val channelList: MutableList<Channel> = mutableListOf()
 
     private var player: VideoPlayer? = null
-    private lateinit var session: LiveLikeContentSession
+    private var session: LiveLikeContentSession? = null
     private var useDrawerLayout: Boolean = false
     private var startingState: PlayerState? = null
     private var selectedChannel: Channel? = null
@@ -53,18 +53,18 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         if(adsPlaying){
             player?.stop()
-            session.pause()
+            session?.pause()
         }
         else{
             player?.start()
-            session.resume()
+            session?.resume()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exo_player)
-        
+
         useDrawerLayout = intent.getBooleanExtra(USE_DRAWER_LAYOUT, false)
         if(!useDrawerLayout)
             playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
@@ -161,10 +161,12 @@ class ExoPlayerActivity : AppCompatActivity() {
                             .backgroundColor(Color.RED)
                             .cellFont(Typeface.SANS_SERIF)
                         .build()
-        val chatAdapter = ChatAdapter(session, chatTheme, DefaultChatCellFactory(applicationContext, null))
+        val chatAdapter = ChatAdapter(session!!, chatTheme, DefaultChatCellFactory(applicationContext, null))
         chat_view.setDataSource(chatAdapter)
-        chat_view.setSession(session)
-        widget_view.setSession(session)
+
+        chat_view.setSession(session!!)
+        widget_view.setSession(session!!)
+
 
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
     }
