@@ -13,7 +13,10 @@ import android.widget.BaseAdapter
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.messaging.*
+import com.livelike.livelikesdk.messaging.ClientMessage
+import com.livelike.livelikesdk.messaging.ConnectionStatus
+import com.livelike.livelikesdk.messaging.MessagingClient
+import com.livelike.livelikesdk.messaging.MessagingEventListener
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
@@ -37,7 +40,8 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     lateinit var chatAdapter: ChatAdapter
     private val TAG = javaClass.simpleName
     private val channelUrl = "program_00f4cdfd_6a19_4853_9c21_51aa46d070a0" // TODO: Get this from backend
-    private val chatClient = SendbirdChatClient("todo_content_id_from_backend", context, object : MessagingEventListener {
+    private lateinit var session: LiveLikeContentSession
+    private val chatClient = SendbirdChatClient(object : MessagingEventListener {
         override fun onClientMessageError(client: MessagingClient, error: com.livelike.livelikesdk.messaging.Error) {}
         override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
         override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
@@ -57,6 +61,11 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     init {
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
+    }
+
+    fun setSession(session: LiveLikeContentSession) {
+        this.session = session
+        chatClient.setSession(session, context)
     }
 
     /**
@@ -80,14 +89,14 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 chatinput.setText(defaultText.orEmpty())
                 chatinput.setOnKeyListener(object : View.OnKeyListener {
                     override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
-                        if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
+                        if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
 
                             val messageJson = JsonObject()
                             messageJson.addProperty("message", chatinput.text.toString())
                             messageJson.addProperty("sender", "User123")
                             messageJson.addProperty("sender_id", "user-id")
 
-                            val timeData = EpochTime(System.currentTimeMillis()+5000) // Simulate a delay of 5sec, TODO: this should be playhead time
+                            val timeData = session.getPlayheadTime()
 
                             chatClient.sendMessage(ClientMessage(messageJson, channelUrl, timeData))
 
@@ -110,6 +119,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
             }
         }
     }
+
 
 }
 

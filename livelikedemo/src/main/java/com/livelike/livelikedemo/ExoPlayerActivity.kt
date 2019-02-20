@@ -85,10 +85,11 @@ class ExoPlayerActivity : AppCompatActivity() {
                         .build()
         val chatAdapter = ChatAdapter(session, chatTheme, DefaultChatCellFactory(applicationContext, null))
         chat_view.setDataSource(chatAdapter)
+        chat_view.setSession(session)
         widget_view.setSession(session)
     }
 
-    private fun currentPlayheadPosition() =  EpochTime(System.currentTimeMillis())
+    private fun currentPlayheadPosition() = EpochTime(player?.position() ?: 0)
 
     override fun onStart() {
         super.onStart()
