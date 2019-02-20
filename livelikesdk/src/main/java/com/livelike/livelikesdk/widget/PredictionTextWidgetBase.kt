@@ -22,17 +22,19 @@ import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.widget.model.WidgetOptionsData
 import com.livelike.livelikesdk.R
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_question_textView
+import java.util.*
 import kotlin.collections.ArrayList
 
 open class PredictionTextWidgetBase : ConstraintLayout, Observer {
     protected val timerDuration: Long = 7000
     protected val widgetShowingDurationAfterConfirmMessage: Long = 3000
     protected val widgetOpacityFactor: Float = 0.2f
-    protected var optionSelected = false
     protected val constraintSet = ConstraintSet()
-    protected var layout = ConstraintLayout(context, null, 0)
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val animationHandler = AnimationHandler()
+    protected var optionSelected = false
+    protected var layout = ConstraintLayout(context, null, 0)
+    protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub : ViewStub
 
     constructor(context: Context?) : super(context)
@@ -153,7 +155,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
                 heightToReach,
                 heightToReach / 2, 0f)
 
-        val animationDuration = 5000f
+        val animationDuration = 3000f
         animationHandler.createAnimationEffectWith(
                 AnimationEaseInterpolator.Ease.EaseOutElastic,
                 animationDuration,
@@ -165,4 +167,13 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         return (dp * scale + 0.5f).toInt()
     }
 
+    protected fun selectRandomEmojiForConfirmMessage(path: String): String? {
+        val asset = context?.assets
+        val assetList = asset?.list(path)
+        val random = Random()
+        return if (assetList!!.isNotEmpty()) {
+            val emojiIndex = random.nextInt(assetList.size)
+            assetList[emojiIndex]
+        } else assetList[0]
+    }
 }

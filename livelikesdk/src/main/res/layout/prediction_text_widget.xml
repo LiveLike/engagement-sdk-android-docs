@@ -73,7 +73,6 @@
             android:layout_height="match_parent"
             android:elevation="4dp"
             android:id="@+id/prediction_result"
-            app:lottie_fileName="confetti-1.json"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

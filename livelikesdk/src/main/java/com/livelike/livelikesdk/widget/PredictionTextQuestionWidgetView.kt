@@ -7,7 +7,6 @@ import android.widget.Button
 import com.livelike.livelikesdk.animation.AnimationHandler
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
-import java.util.*
 import com.livelike.livelikesdk.R
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
@@ -37,8 +36,8 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
         if (optionSelected) {
             prediction_confirm_message_textView.visibility = View.VISIBLE
 
-            val path = "confirmMessage"
-            prediction_confirm_message_animation.setAnimation(path + '/' + selectRandomEmojiForConfirmMessage(path))
+            lottieAnimationPath = "confirmMessage"
+            prediction_confirm_message_animation.setAnimation(lottieAnimationPath + '/' + selectRandomEmojiForConfirmMessage(lottieAnimationPath))
             prediction_confirm_message_animation.visibility = View.VISIBLE
             animationHandler.startAnimation(
                     prediction_confirm_message_animation,
@@ -46,16 +45,6 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
                     widgetShowingDurationAfterConfirmMessage)
             performPredictionWidgetFadeOutOperations()
         } else hideWidget()
-    }
-
-    private fun selectRandomEmojiForConfirmMessage(path: String): String? {
-        val asset = context?.assets
-        val assetList = asset?.list(path)
-        val random = Random()
-        return if (assetList!!.isNotEmpty()) {
-            val emojiIndex = random.nextInt(assetList.size)
-            assetList[emojiIndex]
-        } else assetList[0]
     }
 
     private fun hideWidget() {

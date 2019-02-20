@@ -38,11 +38,12 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
             val percentage = optionList[buttonText]
             val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)
-            startEasingAnimation(animationHandler)
-            prediction_result.visibility = View.VISIBLE
-            prediction_result.playAnimation()
-            prediction_result.repeatCount = 10
         }
+
+        startEasingAnimation(animationHandler)
+        prediction_result.visibility = View.VISIBLE
+        prediction_result.playAnimation()
+        prediction_result.setAnimation(lottieAnimationPath + '/' + selectRandomEmojiForConfirmMessage(lottieAnimationPath))
     }
 
     private fun provideStyleToButtonAndProgressBar(userSelection: Pair<String?, String?>, button: Button): Pair<Int, CharSequence> {
@@ -50,7 +51,9 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         val userSelectedOption = userSelection.second
         val percentageDrawable: Int
         val buttonText = button.text
+
         if (hasUserSelectedCorrectOption(userSelectedOption, correctOption)) {
+            lottieAnimationPath = "correctAnswer"
             if (isCurrentButtonOptionCorrect(correctOption, buttonText)) {
                 percentageDrawable = R.drawable.progress_bar
                 selectedOptionCorrect(buttonText.toString())
@@ -68,8 +71,11 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
                     selectedOptionIncorrect(buttonText.toString())
                 }
                 else -> percentageDrawable = R.drawable.progress_bar_looser
+
             }
+            lottieAnimationPath = "wrongAnswer"
         }
+
         return Pair(percentageDrawable, buttonText)
     }
 
