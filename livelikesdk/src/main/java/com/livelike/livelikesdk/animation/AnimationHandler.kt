@@ -12,8 +12,8 @@ class AnimationHandler {
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: (Boolean) -> Unit,
                        duration: Long) {
-        bindListenerToTimerAnimation(lottieAnimationView, onAnimationCompletedCallback)
         val animator = ValueAnimator.ofFloat(0f, 1f)
+        bindListenerToAnimationView(animator, onAnimationCompletedCallback)
         animator.duration = duration
         animator.addUpdateListener { animation ->
             lottieAnimationView.progress = animation.animatedValue as Float
@@ -40,9 +40,9 @@ class AnimationHandler {
         animatorSet.start()
     }
 
-    private fun bindListenerToTimerAnimation(lottieAnimationView: LottieAnimationView,
-                                             onAnimationCompletedCallback: (Boolean) -> Unit) {
-        lottieAnimationView.addAnimatorListener(object : Animator.AnimatorListener {
+    fun bindListenerToAnimationView(view: Animator,
+                                    onAnimationCompletedCallback: (Boolean) -> Unit) {
+        view.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) { Log.d(TAG, "Animation start") }
             override fun onAnimationEnd(animation: Animator) {
                 onAnimationCompletedCallback(true)

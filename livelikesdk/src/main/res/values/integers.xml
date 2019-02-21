@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="prediction_widget_question_trigger_time_in_milliseconds">5000</integer>
+    <integer name="prediction_widget_question_trigger_time_in_milliseconds">2000</integer>
+    <integer name="prediction_widget_followup_trigger_time_in_milliseconds">13000</integer>
+    <integer name="prediction_widget_follow_transition_out_in_milliseconds">10000</integer>
 </resources>

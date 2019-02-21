@@ -6,6 +6,7 @@ import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
+import com.livelike.livelikesdk.widget.model.WidgetData
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 class WidgetQueue(upstream: MessagingClient) :
@@ -39,9 +40,19 @@ class WidgetQueue(upstream: MessagingClient) :
         isProcessing = true
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         when (widgetType) {
-            WidgetType.HTML5 -> renderer?.displayWidget(event.message["payload"].asJsonObject["url"])
+
+            WidgetType.HTML5 -> {
+
+            }
             WidgetType.IMAGE_PREDICTION -> TODO()
-            WidgetType.TEXT_PREDICTION_RESULTS -> TODO()
+            WidgetType.TEXT_PREDICTION_RESULTS -> {
+                // Register view to get the updated widget data.
+
+                // TODO: Parse json and fill questionData. Now dummy object created.
+                //renderer?.bindViewWith(questionData, WidgetType.TEXT_PREDICTION_RESULTS)
+                //renderer?.displayWidget()
+                //renderer?.displayWidget(event.message["payload"].asJsonObject["url"])
+            }
             WidgetType.TEXT_PREDICTION -> TODO()
             else -> {
             }
@@ -73,8 +84,8 @@ enum class WidgetType (val value: String) {
 
 interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
-    fun displayWidget(widgetData:Any)
     fun dismissCurrentWidget()
+    fun displayWidget(widgetData: WidgetData)
 }
 
 interface WidgetEventListener {
