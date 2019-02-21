@@ -56,7 +56,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         prediction_question_textView.text = questionText
     }
 
-    override fun optionListUpdated(optionList: Map<String, Long>, optionSelectedCallback: (CharSequence?) -> Unit, userSelection: Pair<String?, String?>) {
+    override fun optionListUpdated(optionList: Map<String, Long>, optionSelectedCallback: (CharSequence?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
         val textView = findViewById<TextView>(R.id.prediction_question_textView)
         addNewlyCreatedButtonsToLayout(context, ArrayList(optionList.keys), optionSelectedCallback)
         applyConstraintsBetweenViews(constraintSet, textView)

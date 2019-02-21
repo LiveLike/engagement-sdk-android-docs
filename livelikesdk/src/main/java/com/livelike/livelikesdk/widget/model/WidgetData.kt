@@ -1,8 +1,7 @@
 package com.livelike.livelikesdk.widget.model
 
-import android.util.Log
 import com.livelike.livelikesdk.binding.Observable
-import com.livelike.livelikesdk.widget.Observer
+import com.livelike.livelikesdk.binding.Observer
 import java.net.URI
 import java.util.Date
 import java.util.UUID
@@ -40,19 +39,18 @@ abstract class WidgetData : Observable {
     }
 }
 
-data class FollowupWidgetData(val predictionWidgetDataList: MutableList<WidgetData>) : WidgetData() {
+data class PredictionWidgetFollowUpData(val predictionWidgetQuestionDataList: MutableList<WidgetData>) : WidgetData() {
     private var  descriptionList =  LinkedHashMap<String, Long>()
     var correctOptionId: UUID by observable(UUID(0,0)) { _, _, _ ->
         if (!optionList.isEmpty()) {
-            updateOptionList(descriptionList, predictionWidgetDataList)
+            updateOptionList(descriptionList, predictionWidgetQuestionDataList)
         }
     }
 
     override var optionList: List<WidgetOptionsData> by observable(emptyList()) { _, _, newValue ->
         val descriptionList = createOptionsWithVotePercentageMap(newValue)
         if (correctOptionId.leastSignificantBits != 0L && correctOptionId.mostSignificantBits != 0L) {
-            Log.v("Main", "Abhishek descriptionList")
-            updateOptionList(descriptionList, predictionWidgetDataList)
+            updateOptionList(descriptionList, predictionWidgetQuestionDataList)
         }
     }
 
@@ -87,6 +85,7 @@ data class FollowupWidgetData(val predictionWidgetDataList: MutableList<WidgetDa
             voteTotal += option.voteCount
         }
         optionList.forEach { option ->
+            if (voteTotal == 0L) return
             option.voteCount = (option.voteCount * 100) / voteTotal
         }
     }
@@ -107,7 +106,7 @@ data class WidgetOptionsData(val id: UUID?,
                              var voteCount: Long)
 
 
-class PredictionWidgetData : WidgetData(){
+class PredictionWidgetQuestionData : WidgetData(){
     override var optionList: List<WidgetOptionsData> by observable(emptyList()) { _, _, newValue ->
         val descriptionList = LinkedHashMap<String, Long>()
         newValue.forEach { data ->

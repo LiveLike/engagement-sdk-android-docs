@@ -12,14 +12,13 @@ import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.widget.WidgetEventListener
 import com.livelike.livelikesdk.widget.WidgetRenderer
-import com.livelike.livelikesdk.widget.model.FollowupWidgetData
-import com.livelike.livelikesdk.widget.model.PredictionWidgetData
-import com.livelike.livelikesdk.widget.model.WidgetOptionsData
+import com.livelike.livelikesdk.util.WidgetTestData
+import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUpData
+import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestionData
 import com.livelike.livelikesdk.widget.model.WidgetData
-import java.net.URI
-import java.util.UUID
 
-class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), WidgetRenderer {
+class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs),
+    WidgetRenderer {
 
     override var widgetListener : WidgetEventListener? = null
     private var container : FrameLayout
@@ -33,62 +32,33 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         liveLikeContentSession.renderer = this
     }
 
-    var questionWidgetData = PredictionWidgetData()
-    var questionWidgetDataList = mutableListOf<WidgetData>()
-    val optionList = listOf(
-            WidgetOptionsData(
-                    UUID.fromString("0de19009-1a2b-4924-a0d2-7518fc44a6db"),
-                    URI.create("https://livelike-blast.herokuapp.com/"),
-                    "Sidney Crosby",
-                    211
-            ),
-            WidgetOptionsData(
-                    UUID.fromString("d49504eb-89f4-4752-9ad1-ec41dcc21c8a"),
-                    URI.create("https://livelike-blast.herokuapp.com/"),
-                    "Alexander Ovechkin",
-                    611
-            ),
-            WidgetOptionsData(
-                    UUID.fromString("e49504eb-89f4-4752-9ad1-ec41dcc21c8a"),
-                    URI.create("https://livelike-blast.herokuapp.com/"),
-                    "Parel Anthony",
-                    411
-            )
-    )
-
     // TODO: Once we start receiving the events from pubnub, below code will move to displayWidget()
     @SuppressLint("ClickableViewAccessibility")
     override fun onFinishInflate() {
         super.onFinishInflate()
         val layoutParams = FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
+                ViewGroup.LayoutParams.MATCH_PARENT)
         layoutParams.topMargin = 0
-
 
         Handler().postDelayed({
             val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0)
             predictionWidget.layoutParams = layoutParams
+            val questionWidgetData = PredictionWidgetQuestionData()
             questionWidgetData.registerObserver(predictionWidget)
-            questionWidgetData.question = "Who will be the winner of the match?"
-            questionWidgetData.optionList = optionList
-            questionWidgetDataList.add(questionWidgetData)
+            WidgetTestData.fillDummyDataInTextPredictionQuestionData(questionWidgetData)
             container.addView(predictionWidget)
-            // Unregister when view is removed.
-        }, 2000)
+        }, resources.getInteger(R.integer.prediction_widget_question_trigger_time_in_milliseconds).toLong())
 
         Handler().postDelayed({
-            val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0)
+            val predictionWidget =
+                PredictionTextFollowUpWidgetView(context, null, 0)
             predictionWidget.layoutParams = layoutParams
-            val followupWidgetData = FollowupWidgetData(questionWidgetDataList)
+            val followupWidgetData = PredictionWidgetFollowUpData(WidgetTestData.questionWidgetDataList)
             followupWidgetData.registerObserver(predictionWidget)
-
-            followupWidgetData.question = "Who will be the winner of the match?"
-            followupWidgetData.correctOptionId = UUID.fromString("d49504eb-89f4-4752-9ad1-ec41dcc21c8a")
-            followupWidgetData.optionList = optionList
-
+            WidgetTestData.fillDummyDataInTextPredictionFollowUpData(followupWidgetData)
             container.addView(predictionWidget)
-        }, 13000)
+        }, resources.getInteger(R.integer.prediction_widget_followup_trigger_time_in_milliseconds).toLong())
     }
 
     override fun displayWidget(widgetData: WidgetData) {
@@ -98,12 +68,4 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     override fun dismissCurrentWidget() {
         container.removeAllViews() // TODO: Use the dismiss method when MSDK-103 is implemented
     }
-}
-
-interface Observer {
-    fun questionUpdated(questionText: String)
-    fun optionListUpdated(optionList: Map<String, Long>,
-                          optionSelectedCallback: (CharSequence?) -> Unit,
-                          userSelection: Pair<String?, String?>)
-    fun optionSelectedUpdated(selectedOption: WidgetOptionsData)
 }
