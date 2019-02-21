@@ -22,6 +22,10 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    companion object {
+        const val correctAnswerLottieFilePath = "correctAnswer"
+        const val wrongAnswerLottieFilePath = "wrongAnswer"
+    }
 
     init {
         pieTimerViewStub.layoutResource = R.layout.cross_image
@@ -37,27 +41,31 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
                                    correctOptionWithUserSelection: Pair<String?, String?>) {
         super.optionListUpdated(optionList, optionSelectedCallback, correctOptionWithUserSelection)
 
+        val correctOption = correctOptionWithUserSelection.first
+        val userSelectedOption = correctOptionWithUserSelection.second
+
         buttonList.forEach { button ->
             button.setOnClickListener(null)
-
-            val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(correctOptionWithUserSelection, button)
+            val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(correctOption, userSelectedOption, button)
             val percentage = optionList[buttonText]
             val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)
         }
+
+        lottieAnimationPath = if (hasUserSelectedCorrectOption(correctOption, userSelectedOption))
+            correctAnswerLottieFilePath
+        else wrongAnswerLottieFilePath
+
         triggerTransitionInAnimation()
         triggerTransitionOutAnimation()
     }
 
-    private fun provideStyleToButtonAndProgressBar(userSelection: Pair<String?, String?>, button: Button): Pair<Int, CharSequence> {
-        val correctOption = userSelection.first
-        val userSelectedOption = userSelection.second
+    private fun provideStyleToButtonAndProgressBar(correctOption: String?, userSelectedOption: String?, button: Button): Pair<Int, CharSequence> {
         val percentageDrawable: Int
         val buttonText = button.text
 
         if (hasUserSelectedCorrectOption(userSelectedOption, correctOption)) {
-            lottieAnimationPath = "correctAnswer"
-            if (isCurrentButtonOptionCorrect(correctOption, buttonText)) {
+            if (isCurrentButtonTextSameAsCorrectOption(correctOption, buttonText)) {
                 percentageDrawable = R.drawable.progress_bar
                 selectedOptionCorrect(buttonText.toString())
             } else {
@@ -65,8 +73,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
             }
         } else {
             when {
-                isCurrentButtonOptionCorrect(correctOption, buttonText) -> {
-                    lottieAnimationPath = "wrongAnswer"
+                isCurrentButtonTextSameAsCorrectOption(correctOption, buttonText) -> {
                     percentageDrawable = R.drawable.progress_bar
                     selectedOptionCorrect(buttonText.toString())
                 }
@@ -75,22 +82,19 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
                     selectedOptionIncorrect(buttonText.toString())
                 }
                 else -> percentageDrawable = R.drawable.progress_bar_looser
-
             }
-
         }
-
         return Pair(percentageDrawable, buttonText)
     }
 
     private fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
-            isCurrentButtonUserSelectedOption(userSelectedOption, correctOption)
+        userSelectedOption == correctOption
 
-    private fun isCurrentButtonOptionCorrect(correctOption: String?, buttonText: CharSequence?) =
-            isCurrentButtonUserSelectedOption(correctOption, buttonText)
+    private fun isCurrentButtonTextSameAsCorrectOption(correctOption: String?, buttonText: CharSequence?) =
+        buttonText == correctOption
 
     private fun isCurrentButtonUserSelectedOption(userSelectedOption: String?, buttonText: CharSequence?) =
-            userSelectedOption == buttonText
+            userSelectedOption == buttonText.toString()
 
     private fun selectedOptionCorrect(optionDescription: String) {
         outlineButton(optionDescription, R.drawable.correct_answer_outline)
