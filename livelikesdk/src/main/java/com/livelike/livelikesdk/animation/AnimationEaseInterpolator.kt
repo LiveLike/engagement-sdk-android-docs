@@ -7,7 +7,8 @@ interface AnimationEaseInterpolator {
     enum class Ease {
         EaseInElastic,
         EaseOutElastic,
-        EaseInBounce
+        EaseInBounce,
+        EaseOutQuad
     }
 
     fun createAnimationEffectWith(ease: Ease, forDuration: Float, animator: ValueAnimator) : ValueAnimator

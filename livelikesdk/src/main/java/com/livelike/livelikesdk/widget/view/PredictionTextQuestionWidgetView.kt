@@ -1,5 +1,6 @@
-package com.livelike.livelikesdk.widget
+package com.livelike.livelikesdk.widget.view
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -8,6 +9,7 @@ import com.livelike.livelikesdk.animation.AnimationHandler
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
@@ -21,7 +23,14 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
     }
 
     private fun startWidgetAnimation(pieTimer: View) {
-        startEasingAnimation(animationHandler)
+        val heightToReach = this.measuredHeight.toFloat()
+        // TODO: remove hardcoded start position -400 to something meaningful.
+        val animator = ObjectAnimator.ofFloat(this,
+            "translationY",
+            -400f,
+            heightToReach,
+            heightToReach / 2, 0f)
+        startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutElastic, animator)
         startTimerAnimation(pieTimer)
     }
 

@@ -1,4 +1,4 @@
 package com.livelike.livelikesdk.binding
 
-class ObservableSubject {
+interface Observer {
 }

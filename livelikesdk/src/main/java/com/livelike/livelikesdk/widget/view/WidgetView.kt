@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget
+package com.livelike.livelikesdk.widget.view
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.widget.WidgetEventListener
+import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.model.FollowupWidgetData
 import com.livelike.livelikesdk.widget.model.PredictionWidgetData
 import com.livelike.livelikesdk.widget.model.WidgetOptionsData

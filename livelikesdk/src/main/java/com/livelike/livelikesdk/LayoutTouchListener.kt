@@ -27,6 +27,7 @@ class LayoutTouchListener(private val view: View,
     private var upY : Float = 0.0f
 
     @SuppressLint("ClickableViewAccessibility")
+    // TODO: We would tweak the logic below to implement swipe horizontally in correct manner.
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -36,8 +37,6 @@ class LayoutTouchListener(private val view: View,
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
-                scrollview.requestDisallowInterceptTouchEvent(false)
-
                 upX = event.x
                 upY = event.y
 

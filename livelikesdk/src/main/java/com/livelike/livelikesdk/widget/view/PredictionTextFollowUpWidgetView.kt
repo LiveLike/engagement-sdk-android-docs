@@ -1,7 +1,9 @@
-package com.livelike.livelikesdk.widget
+package com.livelike.livelikesdk.widget.view
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
+import android.os.Handler
 import android.support.constraint.ConstraintSet
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
@@ -13,6 +15,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_result
 
 class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
@@ -26,26 +29,24 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
         imageView.setOnClickListener { this.visibility = View.INVISIBLE }
+
     }
 
     override fun optionListUpdated(optionList: Map<String, Long>,
                                    optionSelectedCallback: (CharSequence?) -> Unit,
-                                   userSelection: Pair<String?, String?>) {
-        super.optionListUpdated(optionList, optionSelectedCallback, userSelection)
+                                   correctOptionWithUserSelection: Pair<String?, String?>) {
+        super.optionListUpdated(optionList, optionSelectedCallback, correctOptionWithUserSelection)
+
         buttonList.forEach { button ->
             button.setOnClickListener(null)
-            val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(userSelection, button)
+
+            val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(correctOptionWithUserSelection, button)
             val percentage = optionList[buttonText]
             val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)
         }
-
-        startEasingAnimation(animationHandler)
-        prediction_result.visibility = View.VISIBLE
-        prediction_result.playAnimation()
-        val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath)
-        if (lottieAnimation != null)
-            prediction_result.setAnimation("$lottieAnimationPath/$lottieAnimation")
+        triggerTransitionInAnimation()
+        triggerTransitionOutAnimation()
     }
 
     private fun provideStyleToButtonAndProgressBar(userSelection: Pair<String?, String?>, button: Button): Pair<Int, CharSequence> {
@@ -168,6 +169,37 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         constraintSet.constrainPercentWidth(progressBar.id, 0.9f)
 
         constraintSet.applyTo(layout)
+    }
+
+    private fun triggerTransitionInAnimation() {
+        val heightToReach = this.measuredHeight.toFloat()
+        val animator = ObjectAnimator.ofFloat(this,
+                "translationY",
+                -400f,
+                heightToReach,
+                heightToReach / 2, 0f)
+
+        animationHandler.bindListenerToAnimationView(animator) {
+            val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath)
+            if (lottieAnimation != null)
+                prediction_result.setAnimation("$lottieAnimationPath/$lottieAnimation")
+            prediction_result.visibility = View.VISIBLE
+            prediction_result.playAnimation()
+        }
+
+        startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutElastic, animator)
+    }
+
+    // TODO: EaseOutQuad needs to be EaseOutQuart. Current library does not support it so we will have to switch soon to
+    // https://github.com/MasayukiSuda/EasingInterpolator
+
+    private fun triggerTransitionOutAnimation() {
+        Handler().postDelayed({
+            val animator = ObjectAnimator.ofFloat(this,
+                    "translationY",
+                    0f, -600f)
+            startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
+        }, resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong())
     }
 
 }

@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget
+package com.livelike.livelikesdk.widget.view
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -21,8 +21,9 @@ import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.widget.model.WidgetOptionsData
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.binding.Observer
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_question_textView
-import java.util.*
+import java.util.Random
 import kotlin.collections.ArrayList
 
 open class PredictionTextWidgetBase : ConstraintLayout, Observer {
@@ -145,21 +146,28 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
     // functions to use and how we layout widget and chat we can think of these values more.
-    protected fun startEasingAnimation(animationHandler: AnimationHandler) {
-        val heightToReach = this.measuredHeight.toFloat()
+    protected fun startEasingAnimation(
+        animationHandler: AnimationHandler,
+        ease: AnimationEaseInterpolator.Ease,
+        animator: ObjectAnimator) {
+        val animationDuration = 1000f
+        when(ease)  {
+            AnimationEaseInterpolator.Ease.EaseOutElastic -> {
+                animationHandler.createAnimationEffectWith(
+                    ease,
+                    animationDuration,
+                    animator)
+            }
+            AnimationEaseInterpolator.Ease.EaseOutQuad -> {
+                animationHandler.createAnimationEffectWith(
+                    ease,
+                    animationDuration,
+                    animator
+                )
+            }
 
-        // TODO: remove hardcoded start position -400 to something meaningful.
-        val animator = ObjectAnimator.ofFloat(this,
-                "translationY",
-                -400f,
-                heightToReach,
-                heightToReach / 2, 0f)
-
-        val animationDuration = 3000f
-        animationHandler.createAnimationEffectWith(
-                AnimationEaseInterpolator.Ease.EaseOutElastic,
-                animationDuration,
-                animator)
+            else -> {}
+        }
     }
 
     protected fun dpToPx(dp: Int): Int {
