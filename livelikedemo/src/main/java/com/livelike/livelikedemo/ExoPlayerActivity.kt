@@ -59,7 +59,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         adsPlaying = savedInstanceState?.getBoolean(AD_STATE) == true
         val position = savedInstanceState?.getLong(POSITION) ?: 0
 
-        player?.playMedia(Uri.parse("https://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"), position, !adsPlaying)
+        player?.playMedia(
+            Uri.parse("http://livecut-streams.livelikecdn.com/live/colorbars-angle1/index.m3u8"),
+            position,
+            !adsPlaying
+        )
         setUpAdClickListeners()
     }
 
@@ -76,7 +80,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private fun initializeLiveLikeSDK() {
         val sdk = LiveLikeSDK("app_Id")
-        session = sdk.createContentSession("someContentId") { currentPlayheadPosition() }
+        session = sdk.createContentSession("someContentId") { EpochTime(player?.getCurrentDate()!!) }
 
         // Bind the chatView object here with the session.
         val chatTheme = ChatTheme.Builder()
