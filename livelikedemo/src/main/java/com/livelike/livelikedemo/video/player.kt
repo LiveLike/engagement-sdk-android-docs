@@ -34,9 +34,10 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
         player?.prepare(mediaSource)
         with(playerState) {
             player?.playWhenReady = whenReady
-//            player?.seekTo(window, position)
+            player?.seekToDefaultPosition()
             player?.repeatMode = Player.REPEAT_MODE_ALL
         }
+
     }
 
     private fun buildMediaSource(uri: Uri): HlsMediaSource {
@@ -65,7 +66,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
         player?.prepare(mediaSource)
         with(playerState) {
             player?.playWhenReady = true
-            player?.seekTo(window, position)
+            player?.seekToDefaultPosition()
         }
     }
 
