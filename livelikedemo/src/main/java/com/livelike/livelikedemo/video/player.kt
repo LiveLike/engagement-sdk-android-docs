@@ -2,6 +2,7 @@ package com.livelike.livelikedemo.video
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -47,9 +48,9 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
 
     override fun getCurrentDate(): Long {
         val position = player?.currentPosition
-        val currentManifest = player?.currentManifest as HlsManifest
+        val currentManifest = player?.currentManifest as HlsManifest?
         if (position != null) {
-            if (currentManifest.mediaPlaylist.hasProgramDateTime) {
+            if (currentManifest?.mediaPlaylist?.hasProgramDateTime!!) {
                 val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
                 return currentAbsoluteTimeMs
             }
