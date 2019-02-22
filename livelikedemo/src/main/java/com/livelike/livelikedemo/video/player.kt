@@ -2,12 +2,11 @@ package com.livelike.livelikedemo.video
 
 import android.content.Context
 import android.net.Uri
-import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.hls.HlsManifest
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
@@ -35,7 +34,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
         player?.prepare(mediaSource)
         with(playerState) {
             player?.playWhenReady = whenReady
-            player?.seekTo(window, position)
+//            player?.seekTo(window, position)
             player?.repeatMode = Player.REPEAT_MODE_ALL
         }
     }
@@ -46,20 +45,12 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
     }
 
     override fun getCurrentDate(): Long {
-        var position = player?.currentPosition
-        val currentTimeline = player?.currentTimeline
+        val position = player?.currentPosition
+        val currentManifest = player?.currentManifest as HlsManifest
         if (position != null) {
-            if (!currentTimeline?.isEmpty!!) {
-                position -= currentTimeline.getPeriod(
-                    player?.currentPeriodIndex!!,
-                    Timeline.Period()
-                )?.positionInWindowMs!!
-                val windowStartTimeMs = currentTimeline.getWindow(0, Timeline.Window()).windowStartTimeMs
-                if (windowStartTimeMs == C.TIME_UNSET) {
-                    // HLS playlist didn't have EXT-X-PROGRAM-DATE-TIME tag
-                } else {
-                    return (windowStartTimeMs + position)
-                }
+            if (currentManifest.mediaPlaylist.hasProgramDateTime) {
+                val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
+                return currentAbsoluteTimeMs
             }
             return position // VOD or no PDT
         }

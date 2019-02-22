@@ -80,7 +80,9 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private fun initializeLiveLikeSDK() {
         val sdk = LiveLikeSDK("app_Id")
-        session = sdk.createContentSession("someContentId") { EpochTime(player?.getCurrentDate()!!) }
+        session = sdk.createContentSession("someContentId") {
+            EpochTime(player?.getCurrentDate()!!)
+        }
 
         // Bind the chatView object here with the session.
         val chatTheme = ChatTheme.Builder()
