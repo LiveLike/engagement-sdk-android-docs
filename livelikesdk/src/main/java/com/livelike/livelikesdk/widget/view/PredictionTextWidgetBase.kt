@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -85,11 +86,17 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
             applyStyle(button, optionList, index, context, element)
             button.setOnClickListener {
                 optionSelected = true
-                optionSelectedCallback(button.text)
+                button.text.also {
+                    logi("User selected option $it")
+                    optionSelectedCallback(it)
+                }
             }
             layout.addView(button)
         }
     }
+
+    private inline fun <reified T> T.logi(message: String) =
+        Log.i(T::class.java.simpleName, message)
 
     private fun applyStyle(button: Button,
                            buttonNames: List<String>?,
