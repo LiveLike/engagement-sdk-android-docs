@@ -199,9 +199,10 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
 
     private fun triggerTransitionOutAnimation() {
         Handler().postDelayed({
+            // TODO: Get rid of hardcoded value once we have minimun viewable area defined.
             val animator = ObjectAnimator.ofFloat(this,
                     "translationY",
-                    0f, -600f)
+                    0f, -dpToPx(250).toFloat())
             startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
         }, resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong())
     }
