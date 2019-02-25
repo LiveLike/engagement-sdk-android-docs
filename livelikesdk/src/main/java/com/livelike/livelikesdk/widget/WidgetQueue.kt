@@ -7,13 +7,6 @@ import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
-import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestionData
-import com.livelike.livelikesdk.widget.model.WidgetData
-import com.livelike.livelikesdk.util.extractLong
-import com.livelike.livelikesdk.util.extractStringOrEmpty
-import com.livelike.livelikesdk.widget.model.WidgetOptionsData
-import java.net.URI
-import java.util.*
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 class WidgetQueue(upstream: MessagingClient) :
@@ -46,30 +39,8 @@ class WidgetQueue(upstream: MessagingClient) :
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         isProcessing = true
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
-        when (widgetType) {
-
-            WidgetType.HTML5 -> {
-
-            }
-            WidgetType.IMAGE_PREDICTION -> TODO()
-            WidgetType.TEXT_PREDICTION_RESULTS -> {
-                // Register view to get the updated widget data.
-                // TODO: Parse json and fill questionData. Now dummy object created.
-                //renderer?.bindViewWith(questionData, WidgetType.TEXT_PREDICTION_RESULTS)
-                //renderer?.displayWidget()
-                renderer?.displayWidget(widgetType, event.message["payload"].asJsonObject)
-            }
-            WidgetType.TEXT_PREDICTION -> {
-                //TODO: Lets move this parsing down to the renderer since that is what cares about this data
-                // pass to it the type and raw data displayWidget(WidgetType, data: JsonObject)
-
-                val payload = event.message["payload"].asJsonObject
-                renderer?.displayWidget(widgetType, payload)
-            }
-            else -> {
-            }
-        }
-
+        val payload = event.message["payload"].asJsonObject
+        renderer?.displayWidget(widgetType, payload)
         super.onClientMessageEvent(client, event)
     }
 

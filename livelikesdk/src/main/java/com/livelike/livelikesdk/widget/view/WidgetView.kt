@@ -53,6 +53,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 parseTextPredictionWidget(widgetData, payload)
                 container.addView(predictionWidget)
             }
+            
             WidgetType.TEXT_PREDICTION_RESULTS -> {
                 val predictionWidget =
                     PredictionTextFollowUpWidgetView(context, null, 0)
