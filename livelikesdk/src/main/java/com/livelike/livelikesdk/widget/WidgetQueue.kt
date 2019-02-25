@@ -1,12 +1,19 @@
 package com.livelike.livelikesdk.widget
 
+import android.util.Log
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
+import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestionData
 import com.livelike.livelikesdk.widget.model.WidgetData
+import com.livelike.livelikesdk.util.extractLong
+import com.livelike.livelikesdk.util.extractStringOrEmpty
+import com.livelike.livelikesdk.widget.model.WidgetOptionsData
+import java.net.URI
+import java.util.*
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 class WidgetQueue(upstream: MessagingClient) :
@@ -47,13 +54,31 @@ class WidgetQueue(upstream: MessagingClient) :
             WidgetType.IMAGE_PREDICTION -> TODO()
             WidgetType.TEXT_PREDICTION_RESULTS -> {
                 // Register view to get the updated widget data.
-
                 // TODO: Parse json and fill questionData. Now dummy object created.
                 //renderer?.bindViewWith(questionData, WidgetType.TEXT_PREDICTION_RESULTS)
                 //renderer?.displayWidget()
                 //renderer?.displayWidget(event.message["payload"].asJsonObject["url"])
+                renderer?.displayWidget(widgetType, PredictionWidgetQuestionData())
             }
-            WidgetType.TEXT_PREDICTION -> TODO()
+            WidgetType.TEXT_PREDICTION -> {
+                //TODO: Lets move this parsing down to the renderer since that is what cares about this data
+                // pass to it the type and raw data displayWidget(WidgetType, data: JsonObject)
+                var data = PredictionWidgetQuestionData()
+                val payload = event.message["payload"].asJsonObject
+                data.question = payload.extractStringOrEmpty("question")
+
+                val options = mutableListOf<WidgetOptionsData>()
+                for(option in payload["options"].asJsonArray) {
+                    val optionJson = option.asJsonObject;
+                    options.add(WidgetOptionsData(
+                        UUID.fromString(optionJson.extractStringOrEmpty("id")),
+                        URI.create(optionJson.extractStringOrEmpty("vote_url")),
+                        optionJson.extractStringOrEmpty("description"),
+                        optionJson.extractLong("vote_count")))
+                }
+                data.optionList = options.toList()
+                renderer?.displayWidget(widgetType, data)
+            }
             else -> {
             }
         }
@@ -70,8 +95,8 @@ class WidgetQueue(upstream: MessagingClient) :
 }
 
 enum class WidgetType (val value: String) {
-    TEXT_PREDICTION("textPrediction"), //Examples we need real names here
-    TEXT_PREDICTION_RESULTS("textPredictionResults"),
+    TEXT_PREDICTION("text-prediction-created"), //Examples we need real names here
+    TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("imagePredictionResults"),
     HTML5("html-widget"),
     NONE("none");
@@ -85,7 +110,7 @@ enum class WidgetType (val value: String) {
 interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
     fun dismissCurrentWidget()
-    fun displayWidget(widgetData: WidgetData)
+    fun displayWidget(type: WidgetType, widgetData: WidgetData)
 }
 
 interface WidgetEventListener {

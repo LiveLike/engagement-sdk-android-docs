@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.messaging.pubnub
 
 import com.livelike.livelikesdk.messaging.*
+import com.livelike.livelikesdk.util.extractLong
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -9,7 +10,6 @@ import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
-
 
 class PubnubMessagingClient (val contentId: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
@@ -78,7 +78,7 @@ class PubnubMessagingClient (val contentId: String) : MessagingClient {
                 val clientMessage = ClientMessage(
                         message.message.asJsonObject,
                         message.channel,
-                        EpochTime( message.timetoken))
+                        EpochTime( message.message.asJsonObject.extractLong("program_date_time", 0)))
                 listener?.onClientMessageEvent(client, clientMessage)
             }
 

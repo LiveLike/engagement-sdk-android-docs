@@ -1,6 +1,8 @@
 package com.livelike.livelikesdk
 
 import com.google.gson.JsonObject
+import com.livelike.livelikesdk.util.extractLong
+import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.syncTo
@@ -17,7 +19,6 @@ class LiveLikeContentSessionImpl(override var programUrl: String, val currentPla
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
     private var pubNubMessagingClient: MessagingClient? = null
-    private var sendBirdChatClient : MessagingClient? = null
     private var widgetQueue: WidgetQueue? = null
     override var renderer: WidgetRenderer? = null
         set(value) {
@@ -29,9 +30,8 @@ class LiveLikeContentSessionImpl(override var programUrl: String, val currentPla
         return currentPlayheadTime()
     }
 
-    override fun contentSessionId(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun contentSessionId() = program?.clientId ?: ""
+
 
     init {
         llDataClient.getLiveLikeProgramData(programUrl) {
@@ -50,7 +50,6 @@ class LiveLikeContentSessionImpl(override var programUrl: String, val currentPla
                 it.extractStringOrEmpty("stream_url"))
             //TODO check against empty program
             initializeWidgetMessaging()
-
         }
     }
 
@@ -84,16 +83,4 @@ class LiveLikeContentSessionImpl(override var programUrl: String, val currentPla
     override fun close() {
         //   TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-}
-
-fun JsonObject.extractStringOrEmpty(propertyName: String): String {
-    return if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asString else ""
-}
-
-fun JsonObject.extractLong(propertyName: String, default: Long = 0): Long {
-    var returnVal = default
-    try {
-        returnVal = if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asLong else default
-    } catch (e: NumberFormatException) {}
-    return returnVal
 }
