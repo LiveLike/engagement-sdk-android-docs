@@ -81,7 +81,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private fun initializeLiveLikeSDK() {
         val sdk = LiveLikeSDK("app_Id")
         session = sdk.createContentSession("someContentId") {
-            EpochTime(player?.getCurrentDate()!!)
+            EpochTime(player!!.getCurrentDate())
         }
 
         // Bind the chatView object here with the session.
@@ -94,8 +94,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         chat_view.setSession(session)
         widget_view.setSession(session)
     }
-
-    private fun currentPlayheadPosition() = EpochTime(player?.position() ?: 0)
 
     override fun onStart() {
         super.onStart()

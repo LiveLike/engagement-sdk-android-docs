@@ -42,4 +42,5 @@ dependencies {
 
     //sdk
     implementation project(":livelikesdk")
+    implementation project(path: ':player_preintegrators')
 }

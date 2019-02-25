@@ -6,11 +6,11 @@ import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.hls.HlsManifest
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.livelike.player_preintegrators.ExoplayerPreintegrator
 
 
 data class PlayerState(var window: Int = 0,
@@ -46,16 +46,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
     }
 
     override fun getCurrentDate(): Long {
-        val position = player?.currentPosition
-        val currentManifest = player?.currentManifest as HlsManifest?
-        if (position != null) {
-            if (currentManifest?.mediaPlaylist?.hasProgramDateTime!!) {
-                val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
-                return currentAbsoluteTimeMs
-            }
-            return position // VOD or no PDT
-        }
-        return 0 // No time information in this stream
+        return ExoplayerPreintegrator(player).getCurrentDate()
     }
 
     override fun playMedia(uri: Uri, startPosition: Long, playWhenReady: Boolean) {
