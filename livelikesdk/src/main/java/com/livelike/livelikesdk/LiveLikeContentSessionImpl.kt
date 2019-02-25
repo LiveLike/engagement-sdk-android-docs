@@ -17,7 +17,7 @@ class LiveLikeContentSessionImpl(override var programUrl: String, val currentPla
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
     private var pubNubMessagingClient: MessagingClient? = null
-
+    private var sendBirdChatClient : MessagingClient? = null
     private var widgetQueue: WidgetQueue? = null
     override var renderer: WidgetRenderer? = null
         set(value) {
@@ -27,6 +27,10 @@ class LiveLikeContentSessionImpl(override var programUrl: String, val currentPla
 
     override fun getPlayheadTime(): EpochTime {
         return currentPlayheadTime()
+    }
+
+    override fun contentSessionId(): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     init {
@@ -45,11 +49,20 @@ class LiveLikeContentSessionImpl(override var programUrl: String, val currentPla
                 it.extractStringOrEmpty("sendbird_channel"),
                 it.extractStringOrEmpty("stream_url"))
             //TODO check against empty program
-            pubNubMessagingClient = PubnubMessagingClient(program!!.clientId)
-            widgetQueue = pubNubMessagingClient!!.syncTo(currentPlayheadTime).toWidgetQueue()
-            widgetQueue!!.subscribe(listOf(program!!.subscribeChannel))
-            widgetQueue!!.renderer = renderer
+            initializeWidgetMessaging()
+
         }
+    }
+
+    private fun initializeWidgetMessaging() {
+        pubNubMessagingClient = PubnubMessagingClient(program!!.clientId)
+        widgetQueue = pubNubMessagingClient!!.syncTo(currentPlayheadTime).toWidgetQueue()
+        widgetQueue!!.subscribe(listOf(program!!.subscribeChannel))
+        widgetQueue!!.renderer = renderer
+    }
+
+    private fun initializeChatMessaging() {
+
     }
 
     override fun pause() {

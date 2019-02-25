@@ -25,6 +25,8 @@ interface LiveLikeContentSession {
 
     /** Return the playheadTime for this session.*/
     fun getPlayheadTime(): EpochTime
+
+    fun contentSessionId(): String
 }
 
 
