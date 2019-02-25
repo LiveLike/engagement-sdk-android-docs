@@ -23,6 +23,7 @@ import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.widget.model.WidgetOptionsData
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.binding.Observer
+import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_question_textView
 import java.util.Random
 import kotlin.collections.ArrayList
@@ -51,10 +52,15 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
+
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun questionUpdated(questionText: String) {
-        prediction_question_textView.text = questionText
+        addHorizontalSwipeListener(prediction_question_textView.apply {
+            text = questionText
+            isClickable = true
+        })
     }
 
     override fun optionListUpdated(optionList: Map<String, Long>, optionSelectedCallback: (CharSequence?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
@@ -91,8 +97,21 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
                     optionSelectedCallback(it)
                 }
             }
+            addHorizontalSwipeListener(button)
             layout.addView(button)
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun addHorizontalSwipeListener(view: View) {
+        view.setOnTouchListener(object : SwipeDismissTouchListener(layout,
+            null, object : DismissCallbacks {
+                override fun canDismiss(token: Any?) = true
+                override fun onDismiss(view: View?, token: Any?) {
+                    layout.removeAllViewsInLayout()
+                    layout.visibility = View.INVISIBLE
+                }
+            }) {})
     }
 
     private inline fun <reified T> T.logi(message: String) =
