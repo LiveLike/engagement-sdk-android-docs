@@ -43,12 +43,12 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
 
     private fun fetchUserId() : String {
         // TODO: Get username from backend session + local storage until we allow user to modify their username.
-        return "user-id"
+        return "user-idoo"
     }
 
     private fun fetchUsername() : String {
         // TODO: Get username from backend session + local storage until we allow user to modify their username.
-        return "Username-123"
+        return "Username-123oo"
     }
 
     private fun fetchSubKey(): String {

@@ -5,17 +5,21 @@ import android.net.Uri
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.hls.HlsManifest
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+
 
 data class PlayerState(var window: Int = 0,
                        var position: Long = 0,
                        var whenReady: Boolean = true)
 
 class ExoPlayerImpl(private val context: Context, private val playerView : PlayerView) : VideoPlayer{
+
+
     private var player : SimpleExoPlayer? = null
     private lateinit var mediaSource : MediaSource
     private var playerState = PlayerState()
@@ -30,14 +34,28 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
         player?.prepare(mediaSource)
         with(playerState) {
             player?.playWhenReady = whenReady
-            player?.seekTo(window, position)
+            player?.seekToDefaultPosition()
             player?.repeatMode = Player.REPEAT_MODE_ALL
         }
+
     }
 
-    private fun buildMediaSource(uri: Uri): ExtractorMediaSource {
-        return ExtractorMediaSource.Factory(
+    private fun buildMediaSource(uri: Uri): HlsMediaSource {
+        return HlsMediaSource.Factory(
             DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
+    }
+
+    override fun getCurrentDate(): Long {
+        val position = player?.currentPosition
+        val currentManifest = player?.currentManifest as HlsManifest?
+        if (position != null) {
+            if (currentManifest?.mediaPlaylist?.hasProgramDateTime!!) {
+                val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
+                return currentAbsoluteTimeMs
+            }
+            return position // VOD or no PDT
+        }
+        return 0 // No time information in this stream
     }
 
     override fun playMedia(uri: Uri, startPosition: Long, playWhenReady: Boolean) {
@@ -48,7 +66,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
         player?.prepare(mediaSource)
         with(playerState) {
             player?.playWhenReady = true
-            player?.seekTo(window, position)
+            player?.seekToDefaultPosition()
         }
     }
 
@@ -81,4 +99,5 @@ interface VideoPlayer {
     fun seekTo(position: Long)
     fun release()
     fun position() : Long
+    fun getCurrentDate(): Long
 }

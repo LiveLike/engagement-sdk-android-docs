@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk
 
+import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.widget.WidgetRenderer
 
 /**
@@ -21,4 +22,7 @@ interface LiveLikeContentSession {
     fun clearFeedbackQueue()
     /** Closes the current session.*/
     fun close()
+
+    /** Return the playheadTime for this session.*/
+    fun getPlayheadTime(): EpochTime
 }

@@ -55,6 +55,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     // Mock library
     testImplementation "org.mockito:mockito-core:2.8.9"
+    //players
+    implementation 'com.google.android.exoplayer:exoplayer:2.9.3'
 }
 
 repositories {

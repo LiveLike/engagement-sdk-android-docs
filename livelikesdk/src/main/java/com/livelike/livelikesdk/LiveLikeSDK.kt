@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk
 
 import com.livelike.livelikesdk.messaging.EpochTime
-import java.util.Date
 
 /**
  * Use this class to initialize the LiveLike SDK. This is the entry point for SDK usage. This creates a singleton instance of LiveLike SDK.
@@ -24,7 +23,8 @@ class LiveLikeSDK(appId: String) {
      *  @param currentPlayheadTime
      */
     fun createContentSession(contentId: String,
-                             currentPlayheadTime: ((Long) -> EpochTime)): LiveLikeContentSessionImpl {
+                             currentPlayheadTime: (() -> EpochTime)
+    ): LiveLikeContentSessionImpl {
         return LiveLikeContentSessionImpl(contentId, currentPlayheadTime)
     }
 }

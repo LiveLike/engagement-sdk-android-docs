@@ -9,8 +9,9 @@ import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.toWidgetQueue
 
 class LiveLikeContentSessionImpl(override var contentSessionId: String,
-                                 currentPlayheadTime: (Long) -> EpochTime) : LiveLikeContentSession {
-    private val playheadTimeSource = currentPlayheadTime
+                                 private val currentPlayheadTime: () -> EpochTime
+) : LiveLikeContentSession {
+
     private var contentId : String = contentSessionId
     private val pubNubMessagingClient : MessagingClient = PubnubMessagingClient(contentId)
     private var widgetQueue: WidgetQueue? = null
@@ -18,9 +19,13 @@ class LiveLikeContentSessionImpl(override var contentSessionId: String,
     override var renderer : WidgetRenderer? = null
     set(value) {
         field = value
-        widgetQueue = pubNubMessagingClient.syncTo(playheadTimeSource.invoke(0)).toWidgetQueue()
+        widgetQueue = pubNubMessagingClient.syncTo { getPlayheadTime() }.toWidgetQueue()
         widgetQueue?.renderer = renderer
         widgetQueue?.subscribe(listOf("program_642f635d_44a6_4e2a_b638_504021f62f6a"))
+    }
+
+    override fun getPlayheadTime(): EpochTime {
+        return currentPlayheadTime()
     }
     
     override fun pause() {
