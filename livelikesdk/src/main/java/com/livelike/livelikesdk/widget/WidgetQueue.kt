@@ -1,6 +1,6 @@
 package com.livelike.livelikesdk.widget
 
-import android.util.Log
+import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -57,27 +57,14 @@ class WidgetQueue(upstream: MessagingClient) :
                 // TODO: Parse json and fill questionData. Now dummy object created.
                 //renderer?.bindViewWith(questionData, WidgetType.TEXT_PREDICTION_RESULTS)
                 //renderer?.displayWidget()
-                //renderer?.displayWidget(event.message["payload"].asJsonObject["url"])
-                renderer?.displayWidget(widgetType, PredictionWidgetQuestionData())
+                renderer?.displayWidget(widgetType, event.message["payload"].asJsonObject)
             }
             WidgetType.TEXT_PREDICTION -> {
                 //TODO: Lets move this parsing down to the renderer since that is what cares about this data
                 // pass to it the type and raw data displayWidget(WidgetType, data: JsonObject)
-                var data = PredictionWidgetQuestionData()
-                val payload = event.message["payload"].asJsonObject
-                data.question = payload.extractStringOrEmpty("question")
 
-                val options = mutableListOf<WidgetOptionsData>()
-                for(option in payload["options"].asJsonArray) {
-                    val optionJson = option.asJsonObject;
-                    options.add(WidgetOptionsData(
-                        UUID.fromString(optionJson.extractStringOrEmpty("id")),
-                        URI.create(optionJson.extractStringOrEmpty("vote_url")),
-                        optionJson.extractStringOrEmpty("description"),
-                        optionJson.extractLong("vote_count")))
-                }
-                data.optionList = options.toList()
-                renderer?.displayWidget(widgetType, data)
+                val payload = event.message["payload"].asJsonObject
+                renderer?.displayWidget(widgetType, payload)
             }
             else -> {
             }
@@ -110,7 +97,7 @@ enum class WidgetType (val value: String) {
 interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
     fun dismissCurrentWidget()
-    fun displayWidget(type: WidgetType, widgetData: WidgetData)
+    fun displayWidget(type: WidgetType, payload: JsonObject)
 }
 
 interface WidgetEventListener {
