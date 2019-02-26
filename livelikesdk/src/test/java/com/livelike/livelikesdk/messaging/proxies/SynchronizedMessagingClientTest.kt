@@ -17,7 +17,7 @@ class SynchronizedMessagingClientTest {
 
     @Mock lateinit var messaingClient: MessagingClient
 
-    private var timeSource: EpochTime = EpochTime(100L)
+    private var timeSource: () -> EpochTime = {EpochTime(100L)}
     private lateinit var  subject : SynchronizedMessagingClient
     private lateinit var listener : MessagingEventListener
 
@@ -39,7 +39,7 @@ class SynchronizedMessagingClientTest {
 
     @Test
     fun `should publish event if timestamp gt time` (){
-        val clientMessage = ClientMessage( JsonObject(),"",   EpochTime(timeSource.timeSinceEpochInMs + 50 ))
+        val clientMessage = ClientMessage( JsonObject(),"",   EpochTime(timeSource.invoke().timeSinceEpochInMs + 50 ))
         subject.onClientMessageEvent(messaingClient, clientMessage)
         subject.listener = listener
         subject.processQueueForScheduledEvent()
@@ -48,7 +48,7 @@ class SynchronizedMessagingClientTest {
 
     @Test
     fun `should not publish event if timestamp lt time` (){
-        val clientMessage = ClientMessage( JsonObject(),"",   EpochTime(timeSource.timeSinceEpochInMs - 50 ))
+        val clientMessage = ClientMessage( JsonObject(),"",   EpochTime(timeSource.invoke().timeSinceEpochInMs - 50 ))
         subject.onClientMessageEvent(messaingClient, clientMessage)
         subject.listener = listener
         subject.processQueueForScheduledEvent()

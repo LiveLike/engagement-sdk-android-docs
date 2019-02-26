@@ -160,17 +160,17 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         val sdk = LiveLikeSDK(getString(R.string.app_id))
         sdk.createContentSession(channel.llProgram.toString(), currentPlayheadPosition ) {
-            session = it
+            this.session = it
             // Bind the chatView object here with the session.
             val chatTheme = ChatTheme.Builder()
                 .backgroundColor(Color.RED)
                 .cellFont(Typeface.SANS_SERIF)
                 .build()
-            val chatAdapter = ChatAdapter(session!!, chatTheme, DefaultChatCellFactory(applicationContext, null))
+            val chatAdapter = ChatAdapter(it, chatTheme, DefaultChatCellFactory(applicationContext, null))
             chat_view.setDataSource(chatAdapter)
 
-            chat_view.setSession(session!!)
-            widget_view.setSession(session!!)
+            chat_view.setSession(it)
+            widget_view.setSession(it)
 
 
             player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())

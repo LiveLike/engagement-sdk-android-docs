@@ -10,7 +10,7 @@ import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.toWidgetQueue
 
 
-class LiveLikeContentSessionImpl(override var programUrl: String, val currentPlayheadTime: () -> EpochTime
+class LiveLikeContentSessionImpl(override val programUrl: String, val currentPlayheadTime: () -> EpochTime
 , val sdkConfiguration: LiveLikeSDK.SdkConfiguration) : LiveLikeContentSession {
 
     private val llDataClient = LiveLikeDataClientImpl()

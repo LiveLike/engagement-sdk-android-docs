@@ -29,7 +29,6 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
         playerView.requestFocus()
 
         player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
-        //TODO extend this to take multiple video types (Dash, HLS, MP4)
         mediaSource = if (useHls) buildHLSMediaSource(uri) else buildMediaSource(uri)
         playerState = state
         player?.prepare(mediaSource)

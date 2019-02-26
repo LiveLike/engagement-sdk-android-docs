@@ -50,7 +50,7 @@ class LiveLikeSDK(val appId: String) {
     )
 }
 
-interface LiveLikeSdkDataClient {
+internal interface LiveLikeSdkDataClient {
     fun getLiveLikeSdkConfig(url: String, responseCallback:(config: LiveLikeSDK.SdkConfiguration) -> Unit)
 }
 
