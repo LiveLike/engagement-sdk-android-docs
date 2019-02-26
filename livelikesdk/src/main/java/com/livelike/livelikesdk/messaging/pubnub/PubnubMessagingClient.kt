@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.messaging.pubnub
 
 import com.livelike.livelikesdk.messaging.*
+import com.livelike.livelikesdk.util.extractLong
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -10,16 +11,15 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
-
-class PubnubMessagingClient (val contentId: String) : MessagingClient {
+class PubnubMessagingClient (subscriberKey: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
     private var pubnub : PubNub
     private var listener : MessagingEventListener? = null
 
     init {
-        pubnubConfiguration.subscribeKey = fetchSubKey(contentId)
+        pubnubConfiguration.subscribeKey = subscriberKey
         pubnub = PubNub(pubnubConfiguration)
-        val client = this;
+        val client = this
 
         //Extract SubscribeCallback?
         pubnub.addListener(object : SubscribeCallback() {
@@ -78,7 +78,7 @@ class PubnubMessagingClient (val contentId: String) : MessagingClient {
                 val clientMessage = ClientMessage(
                         message.message.asJsonObject,
                         message.channel,
-                        EpochTime( message.timetoken))
+                        EpochTime( message.message.asJsonObject.extractLong("program_date_time", 0)))
                 listener?.onClientMessageEvent(client, clientMessage)
             }
 
@@ -109,10 +109,5 @@ class PubnubMessagingClient (val contentId: String) : MessagingClient {
     override fun addMessagingEventListener(listener: MessagingEventListener) {
         //More than one triggerListener?
         this.listener = listener
-    }
-
-    private fun fetchSubKey(contentId: String) : String {
-        //TODO: Mechanism for getting pubnub sub key from content id
-        return "sub-c-016db434-d156-11e8-b5de-7a9ddb77e130"
     }
 }

@@ -17,7 +17,8 @@ class SendbirdChatClient(private val messagingEventListener: MessagingEventListe
 
     override fun setSession(session: LiveLikeContentSession, context: Context) {
         messagingClient =
-            SendbirdMessagingClient(session.contentSessionId, context).syncTo { session.getPlayheadTime() }
+            SendbirdMessagingClient(session.contentSessionId(), context).syncTo { session.getPlayheadTime() }
+
         messagingClient.subscribe(listOf(channelUrl))
         messagingClient.addMessagingEventListener(messagingEventListener)
     }
