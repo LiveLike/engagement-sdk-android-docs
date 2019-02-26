@@ -11,15 +11,15 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
-class PubnubMessagingClient (val contentId: String) : MessagingClient {
+class PubnubMessagingClient (subscriberKey: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
     private var pubnub : PubNub
     private var listener : MessagingEventListener? = null
 
     init {
-        pubnubConfiguration.subscribeKey = fetchSubKey(contentId)
+        pubnubConfiguration.subscribeKey = subscriberKey
         pubnub = PubNub(pubnubConfiguration)
-        val client = this;
+        val client = this
 
         //Extract SubscribeCallback?
         pubnub.addListener(object : SubscribeCallback() {
@@ -109,10 +109,5 @@ class PubnubMessagingClient (val contentId: String) : MessagingClient {
     override fun addMessagingEventListener(listener: MessagingEventListener) {
         //More than one triggerListener?
         this.listener = listener
-    }
-
-    private fun fetchSubKey(contentId: String) : String {
-        //TODO: Mechanism for getting pubnub sub key from content id
-        return "sub-c-016db434-d156-11e8-b5de-7a9ddb77e130"
     }
 }

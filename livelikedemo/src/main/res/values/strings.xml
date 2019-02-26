@@ -3,4 +3,5 @@
     <string name="start_ad">Start Ad</string>
     <string name="stop_ad">Stop Ad</string>
     <string name="channel">Channel</string>
+    <string name="app_id">pilot</string>
 </resources>

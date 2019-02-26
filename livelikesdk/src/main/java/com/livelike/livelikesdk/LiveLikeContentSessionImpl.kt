@@ -1,8 +1,5 @@
 package com.livelike.livelikesdk
 
-import com.google.gson.JsonObject
-import com.livelike.livelikesdk.util.extractLong
-import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.syncTo
@@ -14,7 +11,7 @@ import com.livelike.livelikesdk.widget.toWidgetQueue
 
 
 class LiveLikeContentSessionImpl(override var programUrl: String, val currentPlayheadTime: () -> EpochTime
-) : LiveLikeContentSession {
+, val sdkConfiguration: LiveLikeSDK.SdkConfiguration) : LiveLikeContentSession {
 
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
@@ -35,26 +32,13 @@ class LiveLikeContentSessionImpl(override var programUrl: String, val currentPla
 
     init {
         llDataClient.getLiveLikeProgramData(programUrl) {
-            program = Program(
-                it.extractStringOrEmpty("url"),
-                it.extractStringOrEmpty("timeline_url"),
-                it.extractStringOrEmpty("content_id"),
-                it.extractStringOrEmpty("id"),
-                it.extractStringOrEmpty("title"),
-                it.extractLong("created_at"),
-                it.extractLong("started_at"),
-                it["widgets_enabled"].asBoolean,
-                it["chat_enabled"].asBoolean,
-                it.extractStringOrEmpty("subscribe_channel"),
-                it.extractStringOrEmpty("sendbird_channel"),
-                it.extractStringOrEmpty("stream_url"))
-            //TODO check against empty program
+            program = it
             initializeWidgetMessaging()
         }
     }
 
     private fun initializeWidgetMessaging() {
-        pubNubMessagingClient = PubnubMessagingClient(program!!.clientId)
+        pubNubMessagingClient = PubnubMessagingClient(sdkConfiguration.pubNubKey)
         widgetQueue = pubNubMessagingClient!!.syncTo(currentPlayheadTime).toWidgetQueue()
         widgetQueue!!.subscribe(listOf(program!!.subscribeChannel))
         widgetQueue!!.renderer = renderer

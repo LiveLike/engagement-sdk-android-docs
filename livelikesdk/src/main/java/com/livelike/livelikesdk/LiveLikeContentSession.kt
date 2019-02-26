@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk
 import com.livelike.livelikesdk.messaging.EpochTime
-import com.google.gson.JsonObject
 import com.livelike.livelikesdk.widget.WidgetRenderer
 
 /**
@@ -29,10 +28,10 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
 }
 
-
 interface LiveLikeDataClient {
-    fun getLiveLikeProgramData(url: String, responseCallback: (response: JsonObject) -> Unit)
+    fun getLiveLikeProgramData(url: String, responseCallback: (program: Program) -> Unit)
 }
+
 
 data class Program (val programUrl: String,
                     val timelineUrl: String,

@@ -20,7 +20,11 @@ import com.livelike.livelikesdk.chat.DefaultChatCellFactory
 import com.livelike.livelikesdk.messaging.EpochTime
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
-import okhttp3.*
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -153,25 +157,27 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private fun initializeLiveLikeSDK(channel: Channel) {
         selectedChannel = channel
-        val sdk = LiveLikeSDK(channel.name)
-        session = sdk.createContentSession(channel.llProgram.toString()) { currentPlayheadPosition() }
 
-        // Bind the chatView object here with the session.
-        val chatTheme = ChatTheme.Builder()
-                            .backgroundColor(Color.RED)
-                            .cellFont(Typeface.SANS_SERIF)
-                        .build()
-        val chatAdapter = ChatAdapter(session!!, chatTheme, DefaultChatCellFactory(applicationContext, null))
-        chat_view.setDataSource(chatAdapter)
+        val sdk = LiveLikeSDK(getString(R.string.app_id))
+        sdk.createContentSession(channel.llProgram.toString(), currentPlayheadPosition ) {
+            session = it
+            // Bind the chatView object here with the session.
+            val chatTheme = ChatTheme.Builder()
+                .backgroundColor(Color.RED)
+                .cellFont(Typeface.SANS_SERIF)
+                .build()
+            val chatAdapter = ChatAdapter(session!!, chatTheme, DefaultChatCellFactory(applicationContext, null))
+            chat_view.setDataSource(chatAdapter)
 
-        chat_view.setSession(session!!)
-        widget_view.setSession(session!!)
+            chat_view.setSession(session!!)
+            widget_view.setSession(session!!)
 
 
-        player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
+            player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
+        }
     }
 
-    private fun currentPlayheadPosition() = EpochTime(player?.getCurrentDate() ?: 0)
+    val currentPlayheadPosition: () -> EpochTime = { EpochTime(player?.getCurrentDate() ?: 0) }
 
     override fun onStart() {
         super.onStart()
