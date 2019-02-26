@@ -1,4 +1,4 @@
-package com.livelike.player_preintegrators
+package com.livelike.livelikepreintegrators
 
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.hls.HlsManifest

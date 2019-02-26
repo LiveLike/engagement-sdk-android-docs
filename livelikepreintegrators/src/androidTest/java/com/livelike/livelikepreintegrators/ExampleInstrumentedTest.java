@@ -1,4 +1,4 @@
-package com.livelike.player_preintegrators;
+package com.livelike.livelikepreintegrators;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

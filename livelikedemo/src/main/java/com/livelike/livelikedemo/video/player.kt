@@ -10,9 +10,9 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.livelike.livelikepreintegrators.createExoplayerSession
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.player_preintegrators.createExoplayerSession
 
 
 data class PlayerState(var window: Int = 0,
