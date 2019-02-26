@@ -10,7 +10,9 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.livelike.player_preintegrators.ExoplayerPreintegrator
+import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.player_preintegrators.createExoplayerSession
 
 
 data class PlayerState(var window: Int = 0,
@@ -45,8 +47,8 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
             DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
     }
 
-    override fun getCurrentDate(): Long {
-        return ExoplayerPreintegrator(player).getCurrentDate()
+    override fun getSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
+        return sdk.createExoplayerSession(player, sessionId) // this is using the pre-integrator
     }
 
     override fun playMedia(uri: Uri, startPosition: Long, playWhenReady: Boolean) {
@@ -90,5 +92,5 @@ interface VideoPlayer {
     fun seekTo(position: Long)
     fun release()
     fun position() : Long
-    fun getCurrentDate(): Long
+    fun getSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession
 }

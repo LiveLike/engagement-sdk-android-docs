@@ -34,8 +34,12 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    //players
+
+    // players
     compileOnly 'com.google.android.exoplayer:exoplayer:2.9.3'
+
+    // livelike SDKs
+    compileOnly project(path: ':livelikesdk')
 }
 repositories {
     mavenCentral()

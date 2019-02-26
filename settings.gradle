@@ -1,1 +1,1 @@
-include ':livelikedemo', ':livelikesdk', ':player_preintegrators'
+include ':livelikedemo', ':livelikesdk', ':livelikepreintegrators'

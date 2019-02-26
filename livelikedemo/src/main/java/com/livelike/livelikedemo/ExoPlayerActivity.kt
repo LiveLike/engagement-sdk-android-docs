@@ -14,7 +14,6 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.chat.ChatAdapter
 import com.livelike.livelikesdk.chat.ChatTheme
 import com.livelike.livelikesdk.chat.DefaultChatCellFactory
-import com.livelike.livelikesdk.messaging.EpochTime
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
 
@@ -78,11 +77,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
     }
 
+
     private fun initializeLiveLikeSDK() {
         val sdk = LiveLikeSDK("app_Id")
-        session = sdk.createContentSession("someContentId") {
-            EpochTime(player!!.getCurrentDate())
-        }
+
+        session = player!!.getSession("session_id", sdk)
 
         // Bind the chatView object here with the session.
         val chatTheme = ChatTheme.Builder()
