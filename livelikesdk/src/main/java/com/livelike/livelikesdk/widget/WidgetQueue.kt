@@ -53,7 +53,7 @@ class WidgetQueue(upstream: MessagingClient) :
 }
 
 enum class WidgetType (val value: String) {
-    TEXT_PREDICTION("text-prediction-created"), 
+    TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("imagePredictionResults"),
     HTML5("html-widget"),

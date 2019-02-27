@@ -53,7 +53,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 parseTextPredictionWidget(widgetData, payload)
                 container.addView(predictionWidget)
             }
-            
+
             WidgetType.TEXT_PREDICTION_RESULTS -> {
                 val predictionWidget =
                     PredictionTextFollowUpWidgetView(context, null, 0)
@@ -79,14 +79,15 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         //widgetData.confirmationMessage = payload.extractStringOrEmpty("confirmation_message")
 
         val options = mutableListOf<WidgetOptionsData>()
-        for(option in payload["options"].asJsonArray) {
+        for (option in payload["options"].asJsonArray) {
             val optionJson = option.asJsonObject
             options.add(
                 WidgetOptionsData(
                     UUID.fromString(optionJson.extractStringOrEmpty("id")),
                     URI.create(optionJson.extractStringOrEmpty("vote_url")),
                     optionJson.extractStringOrEmpty("description"),
-                    optionJson.extractLong("vote_count"))
+                    optionJson.extractLong("vote_count")
+                )
             )
         }
         widgetData.optionList = options.toList()

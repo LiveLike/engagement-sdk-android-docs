@@ -17,10 +17,8 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.chat.ChatAdapter
 import com.livelike.livelikesdk.chat.ChatTheme
 import com.livelike.livelikesdk.chat.DefaultChatCellFactory
-import com.livelike.livelikesdk.messaging.EpochTime
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
-import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -36,15 +34,16 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val AD_STATE = "adstate"
         const val POSITION = "position"
         const val CHANNEL_NAME = "channelName"
-        const val TEST_CONFIG_URL = "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-demo.json"
+        const val TEST_CONFIG_URL =
+            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-demo.json"
     }
 
     private val client: OkHttpClient = OkHttpClient()
     private val channelList: MutableList<Channel> = mutableListOf()
 
-    private var player: VideoPlayer? = null
+    private lateinit var player: VideoPlayer
+    var useDrawerLayout: Boolean = false
     private var session: LiveLikeContentSession? = null
-    private var useDrawerLayout: Boolean = false
     private var startingState: PlayerState? = null
     private var selectedChannel: Channel? = null
 
@@ -56,11 +55,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         startAd.visibleOrGone(!adsPlaying)
 
         if(adsPlaying){
-            player?.stop()
+            player.stop()
             session?.pause()
         }
         else{
-            player?.start()
+            player.start()
             session?.resume()
         }
     }
@@ -90,17 +89,17 @@ class ExoPlayerActivity : AppCompatActivity() {
             .build()
 
         val call = client.newCall(request)
-        call.enqueue(object: Callback {
-            override fun onResponse(call: Call?, response: Response) {
+        call.enqueue(object : Callback {
+            override fun onResponse(call: okhttp3.Call, response: Response) {
                 val responseData = response.body()?.string()
-                runOnUiThread{
+                runOnUiThread {
                     try {
                         val json = JSONObject(responseData)
                         val results = json.getJSONArray("results")
                         for (i in 0..(results.length() - 1)) {
                             val channel = getChannelFor(results.getJSONObject(i))
                             channelList.add(channel)
-                            if(channelName.isNotEmpty() && channel.name.equals(channelName))
+                            if (channelName.isNotEmpty() && channel.name.equals(channelName))
                                 selectChannel(channel)
                         }
                         displayChannelList(channelList)
@@ -110,7 +109,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call?, e: IOException?) {
+            override fun onFailure(call: okhttp3.Call, e: IOException?) {
                 println("Request Failure.")
             }
         })
@@ -122,35 +121,34 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         stopAd.setOnClickListener {
             adsPlaying = false
-
         }
     }
 
     private fun displayChannelList(channels: List<Channel>) {
-        if(channels.size > 1) {
+        if (channels.size > 1) {
             selectChannelButton.visibility = View.VISIBLE
             selectChannelButton.setOnClickListener {
                 val popupMenu = PopupMenu(this, selectChannelButton)
                 popupMenu.setOnMenuItemClickListener {
-                    for(channel : Channel in channels) {
-                        if(it.title.equals(channel.name)) {
+                    for (channel: Channel in channels) {
+                        if (it.title.equals(channel.name)) {
                             selectChannel(channel)
                         }
                     }
                     true
                 }
-                for(channel : Channel in channels)
+                for (channel: Channel in channels)
                     popupMenu.menu.add(channel.name)
                 popupMenu.show()
             }
-        } else if(channels.size == 1) {
+        } else if (channels.size == 1) {
             selectChannel(channels[0])
         }
     }
 
     private fun selectChannel(channel: Channel) {
-        player?.stop()
-        player?.release()
+        player.stop()
+        player.release()
         startingState = PlayerState(0, 0, !adsPlaying)
         initializeLiveLikeSDK(channel)
     }
@@ -159,7 +157,8 @@ class ExoPlayerActivity : AppCompatActivity() {
         selectedChannel = channel
 
         val sdk = LiveLikeSDK(getString(R.string.app_id))
-        sdk.createContentSession(channel.llProgram.toString(), currentPlayheadPosition ) {
+
+        player.createSession(channel.llProgram.toString(), sdk) {
             this.session = it
             // Bind the chatView object here with the session.
             val chatTheme = ChatTheme.Builder()
@@ -173,41 +172,41 @@ class ExoPlayerActivity : AppCompatActivity() {
             widget_view.setSession(it)
 
 
-            player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
+            player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
     }
-
-    val currentPlayheadPosition: () -> EpochTime = { EpochTime(player?.getCurrentDate() ?: 0) }
 
     override fun onStart() {
         super.onStart()
         if(!adsPlaying)
-            player?.start()
+            player.start()
     }
 
     override fun onStop() {
         super.onStop()
-        player?.stop()
+        player.stop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        player?.release()
+        player.release()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putString(CHANNEL_NAME, selectedChannel?.name ?: "")
         outState?.putBoolean(AD_STATE, adOverlay.visibility == View.VISIBLE)
-        outState?.putLong(POSITION, player?.position() ?: 0)
+        outState?.putLong(POSITION, player.position())
     }
 
     //TODO move this to common ground
-    private fun  getChannelFor(channelData : JSONObject) :Channel {
-        return Channel(channelData.getString("name"),
+    private fun getChannelFor(channelData: JSONObject): Channel {
+        return Channel(
+            channelData.getString("name"),
             URL(channelData.getString("video_url")),
             URL(channelData.getString("video_thumbnail_url")),
-            URL(channelData.getString("livelike_program_url")))
+            URL(channelData.getString("livelike_program_url"))
+        )
     }
 }
 

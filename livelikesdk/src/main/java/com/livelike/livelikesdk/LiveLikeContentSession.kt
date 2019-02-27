@@ -9,7 +9,7 @@ import com.livelike.livelikesdk.widget.WidgetRenderer
  *  TODO: These can be serializable? Maybe not sure.
  */
 interface LiveLikeContentSession {
-    val programUrl : String
+    val programUrl: String
     var renderer: WidgetRenderer?
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -33,15 +33,17 @@ internal interface LiveLikeDataClient {
 }
 
 
-data class Program (val programUrl: String,
-                    val timelineUrl: String,
-                    val clientId: String,
-                    val id: String,
-                    val title: String,
-                    val created: Long,
-                    val started: Long,
-                    val widgetsEnabled: Boolean,
-                    val chatEnabled: Boolean,
-                    val subscribeChannel: String,
-                    val chatChannel: String,
-                    val streamUrl: String)
+data class Program(
+    val programUrl: String,
+    val timelineUrl: String,
+    val clientId: String,
+    val id: String,
+    val title: String,
+    val created: Long,
+    val started: Long,
+    val widgetsEnabled: Boolean,
+    val chatEnabled: Boolean,
+    val subscribeChannel: String,
+    val chatChannel: String,
+    val streamUrl: String
+)

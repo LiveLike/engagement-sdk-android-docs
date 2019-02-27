@@ -1,6 +1,11 @@
 package com.livelike.livelikesdk.messaging.pubnub
 
-import com.livelike.livelikesdk.messaging.*
+import com.livelike.livelikesdk.messaging.ClientMessage
+import com.livelike.livelikesdk.messaging.ConnectionStatus
+import com.livelike.livelikesdk.messaging.EpochTime
+import com.livelike.livelikesdk.messaging.Error
+import com.livelike.livelikesdk.messaging.MessagingClient
+import com.livelike.livelikesdk.messaging.MessagingEventListener
 import com.livelike.livelikesdk.util.extractLong
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
@@ -11,7 +16,7 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
-class PubnubMessagingClient (subscriberKey: String) : MessagingClient {
+class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
     private var pubnub : PubNub
     private var listener : MessagingEventListener? = null
@@ -78,7 +83,8 @@ class PubnubMessagingClient (subscriberKey: String) : MessagingClient {
                 val clientMessage = ClientMessage(
                         message.message.asJsonObject,
                         message.channel,
-                        EpochTime( message.message.asJsonObject.extractLong("program_date_time", 0)))
+                    EpochTime(message.message.asJsonObject.extractLong("program_date_time", 0))
+                )
                 listener?.onClientMessageEvent(client, clientMessage)
             }
 

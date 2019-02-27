@@ -18,13 +18,13 @@ import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.Button
 import android.widget.TextView
+import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
-import com.livelike.livelikesdk.widget.model.WidgetOptionsData
-import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.binding.Observer
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
-import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_question_textView
+import com.livelike.livelikesdk.widget.model.WidgetOptionsData
+import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import java.util.Random
 import kotlin.collections.ArrayList
 

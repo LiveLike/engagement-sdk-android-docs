@@ -38,7 +38,7 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
     override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
         super.onClientMessageStatus(client, status)
         when (status) {
-            ConnectionStatus.CONNECTED -> if(activeSub) timer.start()
+            ConnectionStatus.CONNECTED -> if (activeSub) timer.start()
             ConnectionStatus.DISCONNECTED -> timer.cancel()
         }
     }
@@ -60,15 +60,16 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
     }
 }
 
-class SyncTimer (val task: Runnable, val period: Long){
+class SyncTimer(val task: Runnable, val period: Long) {
     var running = false
     val handler = Handler()
     private var innerRunnable = Runnable {
         doTick()
     }
+
     fun start() {
         if (running) return
-            handler.postDelayed(innerRunnable, period)
+        handler.postDelayed(innerRunnable, period)
         running = true
     }
 
@@ -78,7 +79,7 @@ class SyncTimer (val task: Runnable, val period: Long){
     }
 
     private fun doTick() {
-        if(running) {
+        if (running) {
             handler.post(task)
             handler.postDelayed(innerRunnable, period)
         }

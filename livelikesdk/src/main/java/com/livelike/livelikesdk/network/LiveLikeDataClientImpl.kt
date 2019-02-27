@@ -17,7 +17,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 
-class LiveLikeDataClientImpl : LiveLikeDataClient , LiveLikeSdkDataClient {
+class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient {
     private val client = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
     override fun getLiveLikeProgramData(url: String, responseCallback: (program: Program) -> Unit) {
@@ -26,7 +26,7 @@ class LiveLikeDataClientImpl : LiveLikeDataClient , LiveLikeSdkDataClient {
             .build()
 
         val call = client.newCall(request)
-        call.enqueue(object: Callback {
+        call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
                 val responseData = response.body()?.string()
                 mainHandler.post { responseCallback.invoke(parseProgramData(JsonParser().parse(responseData).asJsonObject)) }
@@ -39,7 +39,7 @@ class LiveLikeDataClientImpl : LiveLikeDataClient , LiveLikeSdkDataClient {
         })
     }
 
-    private fun parseProgramData(programData: JsonObject) : Program {
+    private fun parseProgramData(programData: JsonObject): Program {
         return Program(
             programData.extractStringOrEmpty("url"),
             programData.extractStringOrEmpty("timeline_url"),
@@ -52,7 +52,8 @@ class LiveLikeDataClientImpl : LiveLikeDataClient , LiveLikeSdkDataClient {
             programData["chat_enabled"].asBoolean,
             programData.extractStringOrEmpty("subscribe_channel"),
             programData.extractStringOrEmpty("sendbird_channel"),
-            programData.extractStringOrEmpty("stream_url"))
+            programData.extractStringOrEmpty("stream_url")
+        )
     }
 
     override fun getLiveLikeSdkConfig(url: String, responseCallback: (config: LiveLikeSDK.SdkConfiguration) -> Unit) {
@@ -61,7 +62,7 @@ class LiveLikeDataClientImpl : LiveLikeDataClient , LiveLikeSdkDataClient {
             .build()
 
         val call = client.newCall(request)
-        call.enqueue(object: Callback {
+        call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
                 val responseData = response.body()?.string()
                 mainHandler.post { responseCallback.invoke(pareseSdkConfiguration(JsonParser().parse(responseData).asJsonObject)) }
@@ -74,7 +75,7 @@ class LiveLikeDataClientImpl : LiveLikeDataClient , LiveLikeSdkDataClient {
         })
     }
 
-    private fun pareseSdkConfiguration(configData: JsonObject) : LiveLikeSDK.SdkConfiguration {
+    private fun pareseSdkConfiguration(configData: JsonObject): LiveLikeSDK.SdkConfiguration {
         return LiveLikeSDK.SdkConfiguration(
             configData.extractStringOrEmpty("url"),
             configData.extractStringOrEmpty("name"),

@@ -6,29 +6,32 @@ import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.hls.HlsManifest
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.livelike.livelikepreintegrators.createExoplayerSession
+import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.messaging.EpochTime
 import java.net.URL
-
 
 data class PlayerState(var window: Int = 0,
                        var position: Long = 0,
                        var whenReady: Boolean = true)
 
-class ExoPlayerImpl(private val context: Context, private val playerView : PlayerView) : VideoPlayer{
+class ExoPlayerImpl(private val context: Context, private val playerView: PlayerView) : VideoPlayer {
 
 
     private var player : SimpleExoPlayer? = null
-    private lateinit var mediaSource : MediaSource
+    private var mediaSource: MediaSource = buildMediaSource(Uri.EMPTY)
     private var playerState = PlayerState()
 
     private fun initializePlayer(uri: Uri, state: PlayerState, useHls: Boolean = true) {
         playerView.requestFocus()
 
         player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
+
         mediaSource = if (useHls) buildHLSMediaSource(uri) else buildMediaSource(uri)
         playerState = state
         player?.prepare(mediaSource)
@@ -45,17 +48,12 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
             DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
     }
 
-    override fun getCurrentDate(): Long {
-        val position = player?.currentPosition
-        val currentManifest = player?.currentManifest as HlsManifest?
-        if (position != null) {
-            if (currentManifest?.mediaPlaylist?.hasProgramDateTime!!) {
-                val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
-                return currentAbsoluteTimeMs
-            }
-            return position // VOD or no PDT
-        }
-        return 0 // No time information in this stream
+    override fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit) {
+        return if (player != null) sdk.createExoplayerSession(
+            player!!,
+            sessionId,
+            sessionReady
+        ) else sdk.createContentSession(sessionId, { EpochTime(0) }, sessionReady)
     }
 
     private fun buildHLSMediaSource(uri: Uri): HlsMediaSource {
@@ -104,9 +102,8 @@ interface VideoPlayer {
     fun seekTo(position: Long)
     fun release()
     fun position() : Long
-    fun getCurrentDate(): Long
+    fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit)
 }
-
 
 
 /*
