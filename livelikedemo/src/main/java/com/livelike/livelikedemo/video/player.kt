@@ -48,7 +48,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
     }
 
     override fun getSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
-        return sdk.createExoplayerSession(player, sessionId) // this is using the pre-integrator
+        return sdk.createExoplayerSession(player!!, sessionId) // this is using the pre-integrator
     }
 
     override fun playMedia(uri: Uri, startPosition: Long, playWhenReady: Boolean) {
