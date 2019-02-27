@@ -24,7 +24,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val POSITION = "position"
     }
 
-    private var player: VideoPlayer? = null
+    private lateinit var player: VideoPlayer
     var useDrawerLayout: Boolean = false
     private lateinit var session: LiveLikeContentSession
     private var adsPlaying = false
@@ -35,11 +35,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         startAd.visibleOrGone(!adsPlaying)
 
         if(adsPlaying){
-            player?.stop()
+            player.stop()
             session.pause()
         }
         else{
-            player?.start()
+            player.start()
             session.resume()
         }
 
@@ -58,7 +58,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         adsPlaying = savedInstanceState?.getBoolean(AD_STATE) == true
         val position = savedInstanceState?.getLong(POSITION) ?: 0
 
-        player?.playMedia(
+        player.playMedia(
             Uri.parse("http://livecut-streams.livelikecdn.com/live/colorbars-angle1/index.m3u8"),
             position,
             !adsPlaying
@@ -81,7 +81,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private fun initializeLiveLikeSDK() {
         val sdk = LiveLikeSDK("app_Id")
 
-        session = player!!.getSession("session_id", sdk)
+        session = player.getSession("session_id", sdk)
 
         // Bind the chatView object here with the session.
         val chatTheme = ChatTheme.Builder()
@@ -97,24 +97,24 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if(!adsPlaying)
-            player?.start()
+            player.start()
     }
 
     override fun onStop() {
         super.onStop()
-        player?.stop()
+        player.stop()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        player?.release()
+        player.release()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
         outState?.putBoolean(AD_STATE, adOverlay.visibility == View.VISIBLE)
-        outState?.putLong(POSITION, player?.position() ?: 0)
+        outState?.putLong(POSITION, player.position())
     }
 }
 
