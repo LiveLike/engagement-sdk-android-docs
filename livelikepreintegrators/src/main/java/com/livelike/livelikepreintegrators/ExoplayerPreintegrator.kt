@@ -8,9 +8,10 @@ import com.livelike.livelikesdk.messaging.EpochTime
 
 fun LiveLikeSDK.createExoplayerSession(
     player: SimpleExoPlayer,
-    contentSessionId: String
-): LiveLikeContentSession {
-    return this.createContentSession(contentSessionId) {
+    contentId: String,
+    sessionReady: (LiveLikeContentSession) -> Unit
+) {
+    return this.createContentSession(contentId, {
         val position = player.currentPosition
         val currentManifest = player.currentManifest as HlsManifest?
         if (currentManifest?.mediaPlaylist?.hasProgramDateTime!!) {
@@ -19,7 +20,7 @@ fun LiveLikeSDK.createExoplayerSession(
         }
         EpochTime(position) // VOD or no PDT
         EpochTime(0) // No time information in this stream
-    }
+    }, sessionReady)
 }
 
 

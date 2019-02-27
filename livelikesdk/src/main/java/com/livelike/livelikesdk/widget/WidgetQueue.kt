@@ -1,12 +1,12 @@
 package com.livelike.livelikesdk.widget
 
+import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
-import com.livelike.livelikesdk.widget.model.WidgetData
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 class WidgetQueue(upstream: MessagingClient) :
@@ -39,25 +39,8 @@ class WidgetQueue(upstream: MessagingClient) :
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         isProcessing = true
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
-        when (widgetType) {
-
-            WidgetType.HTML5 -> {
-
-            }
-            WidgetType.IMAGE_PREDICTION -> TODO()
-            WidgetType.TEXT_PREDICTION_RESULTS -> {
-                // Register view to get the updated widget data.
-
-                // TODO: Parse json and fill questionData. Now dummy object created.
-                //renderer?.bindViewWith(questionData, WidgetType.TEXT_PREDICTION_RESULTS)
-                //renderer?.displayWidget()
-                //renderer?.displayWidget(event.message["payload"].asJsonObject["url"])
-            }
-            WidgetType.TEXT_PREDICTION -> TODO()
-            else -> {
-            }
-        }
-
+        val payload = event.message["payload"].asJsonObject
+        renderer?.displayWidget(widgetType, payload)
         super.onClientMessageEvent(client, event)
     }
 
@@ -70,8 +53,8 @@ class WidgetQueue(upstream: MessagingClient) :
 }
 
 enum class WidgetType (val value: String) {
-    TEXT_PREDICTION("textPrediction"), //Examples we need real names here
-    TEXT_PREDICTION_RESULTS("textPredictionResults"),
+    TEXT_PREDICTION("text-prediction-created"),
+    TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("imagePredictionResults"),
     HTML5("html-widget"),
     NONE("none");
@@ -85,7 +68,7 @@ enum class WidgetType (val value: String) {
 interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
     fun dismissCurrentWidget()
-    fun displayWidget(widgetData: WidgetData)
+    fun displayWidget(type: WidgetType, payload: JsonObject)
 }
 
 interface WidgetEventListener {

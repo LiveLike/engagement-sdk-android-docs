@@ -13,25 +13,26 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.livelike.livelikepreintegrators.createExoplayerSession
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
-
+import com.livelike.livelikesdk.messaging.EpochTime
+import java.net.URL
 
 data class PlayerState(var window: Int = 0,
                        var position: Long = 0,
                        var whenReady: Boolean = true)
 
-class ExoPlayerImpl(private val context: Context, private val playerView : PlayerView) : VideoPlayer{
+class ExoPlayerImpl(private val context: Context, private val playerView: PlayerView) : VideoPlayer {
 
 
     private var player : SimpleExoPlayer? = null
-    private lateinit var mediaSource : MediaSource
+    private var mediaSource: MediaSource = buildMediaSource(Uri.EMPTY)
     private var playerState = PlayerState()
 
-    private fun initializePlayer(uri: Uri, state: PlayerState) {
+    private fun initializePlayer(uri: Uri, state: PlayerState, useHls: Boolean = true) {
         playerView.requestFocus()
 
         player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
 
-        mediaSource = buildMediaSource(uri)
+        mediaSource = if (useHls) buildHLSMediaSource(uri) else buildMediaSource(uri)
         playerState = state
         player?.prepare(mediaSource)
         with(playerState) {
@@ -47,12 +48,20 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
             DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
     }
 
-    override fun getSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
-        return sdk.createExoplayerSession(player!!, sessionId) // this is using the pre-integrator
+    override fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit) {
+        return if (player != null) sdk.createExoplayerSession(
+            player!!,
+            sessionId,
+            sessionReady
+        ) else sdk.createContentSession(sessionId, { EpochTime(0) }, sessionReady)
     }
 
-    override fun playMedia(uri: Uri, startPosition: Long, playWhenReady: Boolean) {
-        initializePlayer(uri, PlayerState(0, startPosition, playWhenReady))
+    private fun buildHLSMediaSource(uri: Uri): HlsMediaSource {
+        return HlsMediaSource.Factory(DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
+    }
+
+    override fun playMedia(uri: Uri, startState: PlayerState) {
+        initializePlayer(uri, startState)
     }
 
     override fun start() {
@@ -74,6 +83,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
 
     override fun release() {
         player?.release()
+        playerState = PlayerState()
     }
 
     override fun position() : Long {
@@ -86,11 +96,24 @@ class ExoPlayerImpl(private val context: Context, private val playerView : Playe
 }
 
 interface VideoPlayer {
-    fun playMedia(uri: Uri, startPosition: Long = 0, playWhenReady: Boolean = true)
+    fun playMedia(uri: Uri, startState: PlayerState = PlayerState())
     fun start()
     fun stop()
     fun seekTo(position: Long)
     fun release()
     fun position() : Long
-    fun getSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession
+    fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit)
 }
+
+
+/*
+Class Representing a Demo App channel which comes from service via json like:
+	{
+      "name": "Android Demo Channel 1",
+      "video_url": "http://livecut-streams.livelikecdn.com/live/colorbars-angle1/index.m3u8",
+      "video_thumbnail_url": "http://lorempixel.com/200/200/?2",
+      "livelike_program_url": "https://livelike-blast.herokuapp.com/api/v1/programs/00f4cdfd-6a19-4853-9c21-51aa46d070a0/"
+    }
+}*/
+
+data class Channel(val name: String, val video: URL, val thumbnail: URL, val llProgram: URL)

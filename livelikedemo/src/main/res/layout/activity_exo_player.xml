@@ -35,6 +35,16 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
     />
+
+    <Button
+            android:id="@+id/selectChannelButton"
+            android:text="@string/channel"
+            android:layout_height="40dp"
+            android:layout_width="100dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/startAd"
+            android:visibility="gone"
+    />
     <View
             android:id="@+id/adOverlay"
             android:layout_height="match_parent"

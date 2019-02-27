@@ -14,6 +14,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="@id/guidelineLeft"
+
+
     />
     <android.support.constraint.Guideline
             android:id="@+id/guidelineLeft"
@@ -39,6 +41,15 @@
             app:layout_constraintTop_toTopOf="parent"
 
             app:layout_constraintLeft_toLeftOf="parent"
+    />
+    <Button
+            android:id="@+id/selectChannelButton"
+            android:text="@string/channel"
+            android:layout_height="40dp"
+            android:layout_width="100dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/startAd"
+            android:visibility="gone"
     />
     <View
             android:id="@+id/adOverlay"

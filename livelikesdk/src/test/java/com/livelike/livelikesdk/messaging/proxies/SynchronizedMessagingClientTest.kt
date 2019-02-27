@@ -2,9 +2,9 @@ package com.livelike.livelikesdk.messaging.proxies
 
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
+import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
-import com.livelike.livelikesdk.messaging.EpochTime
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -17,7 +17,7 @@ class SynchronizedMessagingClientTest {
 
     @Mock lateinit var messaingClient: MessagingClient
 
-    private var timeSource: EpochTime = EpochTime(100L)
+    private var timeSource: () -> EpochTime = { EpochTime(100L) }
     private lateinit var  subject : SynchronizedMessagingClient
     private lateinit var listener : MessagingEventListener
 
@@ -39,7 +39,7 @@ class SynchronizedMessagingClientTest {
 
     @Test
     fun `should publish event if timestamp gt time` (){
-        val clientMessage = ClientMessage( JsonObject(),"",   EpochTime(timeSource.timeSinceEpochInMs + 50 ))
+        val clientMessage = ClientMessage(JsonObject(), "", EpochTime(timeSource.invoke().timeSinceEpochInMs + 50))
         subject.onClientMessageEvent(messaingClient, clientMessage)
         subject.listener = listener
         subject.processQueueForScheduledEvent()
@@ -48,7 +48,7 @@ class SynchronizedMessagingClientTest {
 
     @Test
     fun `should not publish event if timestamp lt time` (){
-        val clientMessage = ClientMessage( JsonObject(),"",   EpochTime(timeSource.timeSinceEpochInMs - 50 ))
+        val clientMessage = ClientMessage(JsonObject(), "", EpochTime(timeSource.invoke().timeSinceEpochInMs - 50))
         subject.onClientMessageEvent(messaingClient, clientMessage)
         subject.listener = listener
         subject.processQueueForScheduledEvent()
