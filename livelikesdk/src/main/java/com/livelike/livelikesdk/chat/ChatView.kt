@@ -35,28 +35,15 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.*
  *  using [setDataSource]. See [ChatAdapter] class on how to create a data source.
  */
 
-class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs)  {
+class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer  {
+    override var chatListener: ChatEventListener? = null
+
     val attrs: AttributeSet = attrs!!
-    lateinit var chatAdapter: ChatAdapter
     private val TAG = javaClass.simpleName
-    private val channelUrl = "program_00f4cdfd_6a19_4853_9c21_51aa46d070a0" // TODO: Get this from backend
+
     private lateinit var session: LiveLikeContentSession
-    private val chatClient = SendbirdChatClient(object : MessagingEventListener {
-        override fun onClientMessageError(client: MessagingClient, error: com.livelike.livelikesdk.messaging.Error) {}
-        override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
-        override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-            Handler(Looper.getMainLooper()).post {
-                this@ChatView.chatAdapter.addMessage(
-                    ChatMessage(
-                        event.message.get("message").asString,
-                        event.message.get("sender_id").asString,
-                        event.message.get("sender").asString,
-                        event.message.get("id").asString
-                    )
-                )
-            }
-        }
-    })
+    lateinit var chatAdapter: ChatAdapter
+    override val chatContext : Context = context
 
     init {
         LayoutInflater.from(context)
@@ -65,7 +52,14 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
-        chatClient.setSession(session, context)
+        session.chatRenderer = this
+    }
+
+    override fun displayChatMessage(message: ChatMessage) {
+        //Might not need the looper here?
+        Handler(Looper.getMainLooper()).post {
+            this@ChatView.chatAdapter.addMessage(message)
+        }
     }
 
     /**
@@ -87,32 +81,22 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
                 chatinput.setTextColor(inputTextColor)
                 chatinput.setText(defaultText.orEmpty())
-                chatinput.setOnKeyListener(object : View.OnKeyListener {
-                    override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
-                        if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
+                chatinput.setOnKeyListener(OnKeyListener { v, keyCode, event ->
+                    if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
+                        val newMessage = ChatMessage(
+                            chatinput.text.toString(),
+                            "user-id",
+                            "User123",
+                            "message_id"
+                        )
 
-                            val messageJson = JsonObject()
-                            messageJson.addProperty("message", chatinput.text.toString())
-                            messageJson.addProperty("sender", "User123")
-                            messageJson.addProperty("sender_id", "user-id")
-
-                            val timeData = session.getPlayheadTime()
-
-                            chatClient.sendMessage(ClientMessage(messageJson, channelUrl, timeData))
-
-                            this@ChatView.chatAdapter.addMessage(
-                                    ChatMessage(
-                                            chatinput.text.toString(),
-                                            "user-id",
-                                            "User123",
-                                            "message_id"
-                                    )
-                            )
-                            chatinput.setText("")
-                            return true
-                        }
-                        return false
+                        val timeData = session.getPlayheadTime()
+                        chatListener?.onChatMessageSend(newMessage, timeData)
+                        this@ChatView.chatAdapter.addMessage(newMessage)
+                        chatinput.setText("")
+                        return@OnKeyListener true
                     }
+                    false
                 })
             } finally {
                 recycle()

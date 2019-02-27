@@ -16,15 +16,15 @@ import com.sendbird.android.User
 import com.sendbird.android.UserMessage
 
 
-class SendbirdMessagingClient (contentId: String, val context: Context) : MessagingClient {
+class SendbirdMessagingClient (subscribeKey: String, val context: Context) : MessagingClient {
 
     private var listener : MessagingEventListener? = null
     private val TAG = javaClass.simpleName
     private var connectedChannels : MutableList<OpenChannel> = mutableListOf()
 
     init {
-        val subscribeKey = fetchSubKey()
         val userId = fetchUserId()
+
         SendBird.init(subscribeKey, context)
         SendBird.connect(userId, object : SendBird.ConnectHandler {
             override fun onConnected(user: User, e: SendBirdException?) {
@@ -49,11 +49,6 @@ class SendbirdMessagingClient (contentId: String, val context: Context) : Messag
     private fun fetchUsername() : String {
         // TODO: Get username from backend session + local storage until we allow user to modify their username.
         return "Username-123oo"
-    }
-
-    private fun fetchSubKey(): String {
-        //TODO: Get sendbird sub key from content id when backend Application endpoint is integrated.
-        return "E5F2FB80-CC44-4BD2-8D1F-F82917563662"
     }
 
     override fun subscribe(channels: List<String>) {
