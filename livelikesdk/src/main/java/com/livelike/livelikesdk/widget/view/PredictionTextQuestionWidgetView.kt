@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.widget.view
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.livelike.livelikesdk.animation.AnimationHandler
@@ -12,17 +13,20 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
+    val localDismiss :  (() -> Unit)? = null
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr, dismiss)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,  dismiss: () -> Unit) : super(context, attrs, defStyleAttr) {
+        val localDismiss = dismiss
+    }
 
-    private var dismiss: (() -> Unit)? = null
+
     init {
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
         startWidgetAnimation(pieTimer)
-        this.dismiss = dismiss
+
     }
 
 
@@ -65,7 +69,8 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
     }
 
     private fun hideWidget() {
-        dismiss?.invoke()
+        Log.d("SHANE", "SSSSSSS")
+        localDismiss?.invoke()
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

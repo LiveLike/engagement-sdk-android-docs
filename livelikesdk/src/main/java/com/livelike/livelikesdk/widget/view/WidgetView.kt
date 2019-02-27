@@ -3,13 +3,13 @@ package com.livelike.livelikesdk.widget.view
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.util.WidgetTestData
 import com.livelike.livelikesdk.util.extractLong
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.util.logDebug
@@ -76,6 +76,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     }
 
     override fun dismissCurrentWidget() {
+        Log.d("SHANE", "HIDE?")
         container.removeAllViews() // TODO: Use the dismiss method when MSDK-103 is implemented
         if(currentWidgetId.isNotEmpty()) {
             previousWidgetSelections[currentWidgetId] = currentSelection
@@ -84,7 +85,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         currentWidgetId = ""
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
-
+    
     private val setUserSelection: (selection: WidgetOptions) -> Unit = { currentSelection = it }
 
     private fun parseTextPredictionWidget(widgetData: PredictionWidgetQuestion, payload: JsonObject) {
