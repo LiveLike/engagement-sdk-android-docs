@@ -13,7 +13,6 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.livelike.livelikepreintegrators.createExoplayerSession
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.messaging.EpochTime
 import java.net.URL
 
 data class PlayerState(var window: Int = 0,
@@ -23,7 +22,8 @@ data class PlayerState(var window: Int = 0,
 class ExoPlayerImpl(private val context: Context, private val playerView: PlayerView) : VideoPlayer {
 
 
-    private var player : SimpleExoPlayer? = null
+    private var player: SimpleExoPlayer? =
+        ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
     private var mediaSource: MediaSource = buildMediaSource(Uri.EMPTY)
     private var playerState = PlayerState()
 
@@ -49,11 +49,15 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     }
 
     override fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit) {
-        return if (player != null) sdk.createExoplayerSession(
-            player!!,
+        return sdk.createExoplayerSession(
+            { getPlayer() },
             sessionId,
             sessionReady
-        ) else sdk.createContentSession(sessionId, { EpochTime(0) }, sessionReady)
+        )
+    }
+
+    private fun getPlayer(): SimpleExoPlayer? {
+        return player
     }
 
     private fun buildHLSMediaSource(uri: Uri): HlsMediaSource {
