@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk
 
+import android.content.Context
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 
@@ -11,7 +12,7 @@ import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
  * @param appId Application's id
  */
 
-class LiveLikeSDK(val appId: String) {
+class LiveLikeSDK(val appId: String, val applicationContext: Context) {
 
     companion object {
         const val CONFIG_URL = "https://livelike-blast.herokuapp.com/api/v1/applications/"
@@ -32,10 +33,20 @@ class LiveLikeSDK(val appId: String) {
                              currentPlayheadTime: () -> EpochTime,
                              sessionReady: (LiveLikeContentSession) -> Unit
     ) {
-        dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(appId)) {
-            this.configuration = it
-            sessionReady.invoke(LiveLikeContentSessionImpl(contentId, currentPlayheadTime, configuration))
-        }
+        sessionReady.invoke(createContentSession(contentId, currentPlayheadTime))
+    }
+
+    /**
+     *  Creates a content session.
+     *  @param contentId
+     *  @param currentPlayheadTime
+     */
+    fun createContentSession(contentId: String, currentPlayheadTime: () -> EpochTime) : LiveLikeContentSession {
+        return LiveLikeContentSessionImpl(contentId, currentPlayheadTime, object : Provider<SdkConfiguration> {
+            override fun subscribe(ready: (SdkConfiguration) -> Unit) {
+                dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(appId)) { ready(it) }
+            }
+        }, applicationContext )
     }
 
     data class SdkConfiguration(

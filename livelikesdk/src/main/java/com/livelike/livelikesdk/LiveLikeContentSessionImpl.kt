@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk
 
+import android.content.Context
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.toChatQueue
@@ -15,14 +16,14 @@ import com.livelike.livelikesdk.widget.toWidgetQueue
 
 
 class LiveLikeContentSessionImpl(
-    override val programUrl: String, val currentPlayheadTime: () -> EpochTime
-    , val sdkConfiguration: LiveLikeSDK.SdkConfiguration
+    override val programUrl: String, val currentPlayheadTime: () -> EpochTime,
+    val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
+    val applicationContext: Context
 ) : LiveLikeContentSession {
 
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
 
-    //Implement base Queue type? with toggleable (pause/resume) and biderectional hooks?
     private var widgetQueue: WidgetQueue? = null
     private var chatQueue: ChatQueue? = null
 
@@ -36,8 +37,6 @@ class LiveLikeContentSessionImpl(
         set(renderer) {
             field = renderer
             chatQueue?.renderer = chatRenderer
-            if(renderer != null && program != null)
-                initializeChatMessaging()
         }
 
     init {
@@ -55,22 +54,22 @@ class LiveLikeContentSessionImpl(
     override fun contentSessionId() = program?.clientId ?: ""
 
     private fun initializeWidgetMessaging() {
-        val pubNubMessagingClient = PubnubMessagingClient(sdkConfiguration.pubNubKey)
-        val widgetQueue = pubNubMessagingClient.syncTo(currentPlayheadTime).toWidgetQueue()
-        widgetQueue.subscribe(listOf(program!!.subscribeChannel))
-        widgetQueue.renderer = widgetRenderer
-        this.widgetQueue = widgetQueue
+        sdkConfiguration.subscribe {
+            val pubNubMessagingClient = PubnubMessagingClient(it.pubNubKey)
+            val widgetQueue = pubNubMessagingClient.syncTo(currentPlayheadTime).toWidgetQueue()
+            widgetQueue.subscribe(listOf(program!!.subscribeChannel))
+            widgetQueue.renderer = widgetRenderer
+            this.widgetQueue = widgetQueue
+        }
     }
 
     private fun initializeChatMessaging() {
-        if(chatRenderer != null) {
-            val sendBirdMessagingClient = SendbirdMessagingClient(sdkConfiguration.sendBirdAppId, chatRenderer!!.chatContext)
+        sdkConfiguration.subscribe {
+            val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext)
             val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime).toChatQueue(SendbirdChatClient())
             chatQueue.subscribe(listOf(program!!.chatChannel))
             chatQueue.renderer = chatRenderer
             this.chatQueue = chatQueue
-        } else {
-
         }
     }
 
@@ -95,4 +94,9 @@ class LiveLikeContentSessionImpl(
     override fun close() {
         //   TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+}
+
+
+interface Provider<T> {
+    fun subscribe(ready: (T) -> Unit)
 }

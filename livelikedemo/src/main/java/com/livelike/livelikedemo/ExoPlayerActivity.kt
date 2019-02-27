@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo
 
+import android.app.Application
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
@@ -156,8 +157,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private fun initializeLiveLikeSDK(channel: Channel) {
         selectedChannel = channel
 
-        val sdk = LiveLikeSDK(getString(R.string.app_id))
-
+        val sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
         player.createSession(channel.llProgram.toString(), sdk) {
             this.session = it
             // Bind the chatView object here with the session.
@@ -170,7 +170,6 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             chat_view.setSession(it)
             widget_view.setSession(it)
-
 
             player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
