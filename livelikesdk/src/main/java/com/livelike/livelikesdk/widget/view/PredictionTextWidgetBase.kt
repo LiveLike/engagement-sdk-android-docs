@@ -41,10 +41,15 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub : ViewStub
+    protected var dismissWidget :  (() -> Unit)? = null
+
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr) {
+        dismissWidget = dismiss
+    }
 
     init { inflate(context) }
 
@@ -111,9 +116,13 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
                     layout.removeAllViewsInLayout()
-                    layout.visibility = View.INVISIBLE
+                    dismissWidget()
                 }
             }) {})
+    }
+
+    protected fun dismissWidget() {
+        dismissWidget?.invoke()
     }
 
     private inline fun <reified T> T.logi(message: String) =

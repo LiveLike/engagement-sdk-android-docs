@@ -13,22 +13,17 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
-    var localDismiss :  (() -> Unit)? = null
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,  dismiss: () -> Unit) : super(context, attrs, defStyleAttr) {
-        localDismiss = dismiss
-    }
-
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,  dismiss: () -> Unit) : super(context, attrs, defStyleAttr, dismiss)
 
     init {
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
         startWidgetAnimation(pieTimer)
-
     }
-
 
     private fun startWidgetAnimation(pieTimer: View) {
         val heightToReach = this.measuredHeight.toFloat()
@@ -60,16 +55,12 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
                 prediction_confirm_message_animation.visibility = View.VISIBLE
                 animationHandler.startAnimation(
                     prediction_confirm_message_animation,
-                    { hideWidget() },
+                    { dismissWidget() },
                     widgetShowingDurationAfterConfirmMessage
                 )
                 performPredictionWidgetFadeOutOperations()
             }
-        } else hideWidget()
-    }
-
-    private fun hideWidget() {
-        localDismiss?.invoke()
+        } else dismissWidget()
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

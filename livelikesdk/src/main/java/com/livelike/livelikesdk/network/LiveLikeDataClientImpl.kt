@@ -12,6 +12,7 @@ import com.livelike.livelikesdk.Program
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
+import com.livelike.livelikesdk.widget.WidgetDataClient
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType
@@ -21,9 +22,10 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
 
-class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient {
+class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
     private val client = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
+
     override fun getLiveLikeProgramData(url: String, responseCallback: (program: Program) -> Unit) {
         val request = Request.Builder()
             .url(url)
@@ -117,5 +119,11 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient {
                 logError { e }
             }
         })
+
+    override fun vote(voteUrl: String) {
+        val request = Request.Builder()
+            .url(voteUrl)
+            .build()
+        client.newCall(request).execute()
     }
 }

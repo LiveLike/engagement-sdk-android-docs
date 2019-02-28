@@ -34,6 +34,10 @@ class WidgetQueue(upstream: MessagingClient) : MessagingClientProxy(upstream), E
         }
     }
 
+    override fun onOptionVote(voteUrl: String) {
+
+    }
+
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         isProcessing = true
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
@@ -72,11 +76,16 @@ interface WidgetRenderer {
 interface WidgetEventListener {
     fun onAnalyticsEvent(data: Any)
     fun onWidgetEvent(event: WidgetEvent)
+    fun onOptionVote(voteUrl: String)
 }
 
 enum class WidgetEvent{
     WIDGET_DISMISS,
     WIDGET_SHOWN
+}
+
+interface WidgetDataClient {
+    fun vote(voteUrl:String)
 }
 
 fun MessagingClient.toWidgetQueue() : WidgetQueue {
@@ -85,4 +94,3 @@ fun MessagingClient.toWidgetQueue() : WidgetQueue {
     triggeredMessagingClient.externalTrigger = widgetQueue
     return widgetQueue
 }
-

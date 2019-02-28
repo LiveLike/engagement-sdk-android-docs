@@ -33,6 +33,8 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     private var currentSelection: WidgetOptions? = null
     private val previousWidgetSelections = mutableMapOf<String, WidgetOptions?>()
 
+    private val setUserSelection: (selection: WidgetOptions) -> Unit = { currentSelection = it }
+
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
         container = findViewById(R.id.containerView)
@@ -52,9 +54,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
 
         when (type) {
             WidgetType.TEXT_PREDICTION -> {
-                val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0, dismiss)
-
-
+                val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0) { dismissCurrentWidget() }
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion(setUserSelection)
 
@@ -77,22 +77,22 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         }
     }
 
-    val dismiss: () -> Unit = {dismissCurrentWidget()}
+
     override fun dismissCurrentWidget() {
         Log.d("SHANE", "HIDE?")
         container.removeAllViews() // TODO: Use the dismiss method when MSDK-103 is implemented
         if(currentWidgetId.isNotEmpty()) {
             previousWidgetSelections[currentWidgetId] = currentSelection
+
         }
+
         currentSelection = null
         currentWidgetId = ""
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
-    
-    private val setUserSelection: (selection: WidgetOptions) -> Unit = { currentSelection = it }
 
     private fun parseTextPredictionWidget(widgetData: PredictionWidgetQuestion, payload: JsonObject) {
-        widgetData.question = payload.extractStringOrEmpty("question")
+        parseTextPredictionCommon(widgetData, payload)
         //widgetData.confirmationMessage = payload.extractStringOrEmpty("confirmation_message")
     }
 

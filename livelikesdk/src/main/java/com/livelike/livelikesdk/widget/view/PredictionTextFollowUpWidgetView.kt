@@ -30,15 +30,12 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         const val wrongAnswerLottieFilePath = "wrongAnswer"
     }
 
-    private var dismiss: (() -> Unit)? = null
     init {
         pieTimerViewStub.layoutResource = R.layout.cross_image
         pieTimerViewStub.inflate()
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
-        imageView.setOnClickListener { this.visibility = View.INVISIBLE }
-        this.dismiss = dismiss
-
+        imageView.setOnClickListener { dismissWidget() }
     }
 
     override fun optionListUpdated(
@@ -208,5 +205,4 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
             startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
         }, resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong())
     }
-
 }
