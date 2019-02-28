@@ -1,12 +1,15 @@
 package com.livelike.livelikesdk.messaging.pubnub
 
+import android.annotation.SuppressLint
+import android.os.Build
+import android.util.Log
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.Error
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
-import com.livelike.livelikesdk.util.extractLong
+import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -15,6 +18,9 @@ import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import java.time.Duration
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
@@ -78,12 +84,33 @@ class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                 }
             }
 
+            val datePattern = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ")
+            } else {
+                TODO("VERSION.SDK_INT < O")
+            }
+
+            @SuppressLint("NewApi")
             override fun message(pubnub: PubNub, message: PNMessageResult) {
+                val pdtString =
+                    message.message.asJsonObject.getAsJsonObject("payload").extractStringOrEmpty("program_date_time")
+                if (!pdtString.isNullOrEmpty()) {
+                    Log.i(
+                        "PubnubSync",
+                        ZonedDateTime.parse(pdtString, datePattern).toInstant().toEpochMilli().toString()
+                    )
+                }
                 logMessage(message)
                 val clientMessage = ClientMessage(
-                        message.message.asJsonObject,
-                        message.channel,
-                    EpochTime(message.message.asJsonObject.extractLong("program_date_time", 0))
+                    message.message.asJsonObject,
+                    message.channel,
+                    EpochTime(
+                        ZonedDateTime.parse(
+                            pdtString,
+                            datePattern
+                        ).toInstant().toEpochMilli()
+                    ), // PDT is like 2019-02-28T11:36:45.305000-05:00
+                    Duration.parse(message.message.asJsonObject.getAsJsonObject("payload").extractStringOrEmpty("timeout")).toMillis()
                 )
                 listener?.onClientMessageEvent(client, clientMessage)
             }
@@ -91,11 +118,11 @@ class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
             override fun presence(pubnub: PubNub, presence: PNPresenceEventResult) {}
 
             fun logMessage(message: PNMessageResult) {
-                println("Message publisher: " + message.publisher)
-                println("Message Payload: " + message.message)
-                println("Message Subscription: " + message.subscription)
-                println("Message Channel: " + message.channel)
-                println("Message timetoken: " + message.timetoken!!)
+                Log.i("Pubnub", "Message publisher: " + message.publisher)
+                Log.i("Pubnub", "Message Payload: " + message.message)
+                Log.i("Pubnub", "Message Subscription: " + message.subscription)
+                Log.i("Pubnub", "Message Channel: " + message.channel)
+                Log.i("Pubnub", "Message timetoken: " + message.timetoken!!)
             }
         })
     }
