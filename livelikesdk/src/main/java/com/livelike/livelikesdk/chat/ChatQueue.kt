@@ -9,7 +9,7 @@ import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.sendbird.ChatClient
 
 class ChatQueue (upstream: MessagingClient, val chatClient: ChatClient): MessagingClientProxy(upstream), ChatEventListener {
-    private var connectedChannels : MutableList<String> = mutableListOf()
+    private val connectedChannels : MutableList<String> = mutableListOf()
 
     var renderer: ChatRenderer? = null
         set(value) {
@@ -28,7 +28,7 @@ class ChatQueue (upstream: MessagingClient, val chatClient: ChatClient): Messagi
     }
 
     override fun unsubscribeAll() {
-        connectedChannels = mutableListOf()
+        connectedChannels.clear()
         super.unsubscribeAll()
     }
 

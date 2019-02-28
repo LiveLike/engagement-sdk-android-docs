@@ -18,7 +18,7 @@ class LiveLikeSDK(val appId: String, val applicationContext: Context) {
         const val CONFIG_URL = "https://livelike-blast.herokuapp.com/api/v1/applications/"
     }
 
-    lateinit var configuration: SdkConfiguration
+    private var configuration: SdkConfiguration? = null
     private val dataClient = LiveLikeDataClientImpl()
     init {
 
@@ -31,8 +31,7 @@ class LiveLikeSDK(val appId: String, val applicationContext: Context) {
      */
     fun createContentSession(contentId: String,
                              currentPlayheadTime: () -> EpochTime,
-                             sessionReady: (LiveLikeContentSession) -> Unit
-    ) {
+                             sessionReady: (LiveLikeContentSession) -> Unit) {
         sessionReady.invoke(createContentSession(contentId, currentPlayheadTime))
     }
 
@@ -44,9 +43,13 @@ class LiveLikeSDK(val appId: String, val applicationContext: Context) {
     fun createContentSession(contentId: String, currentPlayheadTime: () -> EpochTime) : LiveLikeContentSession {
         return LiveLikeContentSessionImpl(contentId, currentPlayheadTime, object : Provider<SdkConfiguration> {
             override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-                dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(appId)) { ready(it) }
+                if (configuration != null) ready(configuration!!)
+                else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(appId)) {
+                    configuration = it
+                    ready(it)
+                }
             }
-        }, applicationContext )
+        }, applicationContext)
     }
 
     data class SdkConfiguration(
