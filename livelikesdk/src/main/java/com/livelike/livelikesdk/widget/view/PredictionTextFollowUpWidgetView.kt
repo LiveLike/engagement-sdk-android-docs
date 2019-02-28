@@ -17,6 +17,8 @@ import android.widget.TextView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_result
+import java.util.*
+import kotlin.collections.LinkedHashMap
 
 class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
@@ -36,18 +38,19 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
 
     }
 
-    override fun optionListUpdated(optionList: Map<String, Long>,
-                                   optionSelectedCallback: (CharSequence?) -> Unit,
-                                   correctOptionWithUserSelection: Pair<String?, String?>) {
-        super.optionListUpdated(optionList, optionSelectedCallback, correctOptionWithUserSelection)
+    override fun optionListUpdated(
+        idDescriptionVoteMap: LinkedHashMap<UUID?, Pair<String, Long>>,
+        optionSelectedCallback: (UUID?) -> Unit,
+        correctOptionWithUserSelection: Pair<String?, String?>) {
+        super.optionListUpdated(idDescriptionVoteMap, optionSelectedCallback, correctOptionWithUserSelection)
 
         val correctOption = correctOptionWithUserSelection.first
         val userSelectedOption = correctOptionWithUserSelection.second
 
-        buttonList.forEach { button ->
+        buttonMap.forEach{(button, optionId) ->
             button.setOnClickListener(null)
             val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(correctOption, userSelectedOption, button)
-            val percentage = optionList[buttonText]
+            val percentage = idDescriptionVoteMap[optionId]?.second
             val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)
         }

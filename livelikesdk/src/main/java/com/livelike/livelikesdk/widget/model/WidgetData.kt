@@ -25,32 +25,32 @@ abstract class WidgetData : Observable {
         }
     }
 
-    protected fun optionSelectedUpdated(description: String) {
+    protected fun optionSelectedUpdated(id: UUID?) {
         optionSelected = optionList.single { option ->
-            option.description == description
+            option.id == id
         }
     }
 
     var optionSelected: WidgetOptionsData by observable(
         WidgetOptionsData(null, null, "", 0)) { _, _, newValue ->
         observers.forEach { observer ->
-            observer.optionSelectedUpdated(newValue)
+            observer.optionSelectedUpdated(newValue.id!!)
         }
     }
 }
 
 data class PredictionWidgetFollowUpData(val predictionWidgetQuestionDataList: MutableList<WidgetData>) : WidgetData() {
-    private var  descriptionList =  LinkedHashMap<String, Long>()
+    private val idDescriptionVoteMap = LinkedHashMap<UUID?, Pair<String, Long>>()
     var correctOptionId: UUID by observable(UUID(0,0)) { _, _, _ ->
         if (!optionList.isEmpty()) {
-            updateOptionList(descriptionList, predictionWidgetQuestionDataList)
+            updateOptionList(idDescriptionVoteMap, predictionWidgetQuestionDataList)
         }
     }
 
     override var optionList: List<WidgetOptionsData> by observable(emptyList()) { _, _, newValue ->
-        val descriptionList = createOptionsWithVotePercentageMap(newValue)
+        createOptionsWithVotePercentageMap(newValue)
         if (correctOptionId.leastSignificantBits != 0L && correctOptionId.mostSignificantBits != 0L) {
-            updateOptionList(descriptionList, predictionWidgetQuestionDataList)
+            updateOptionList(idDescriptionVoteMap, predictionWidgetQuestionDataList)
         }
     }
 
@@ -70,13 +70,13 @@ data class PredictionWidgetFollowUpData(val predictionWidgetQuestionDataList: Mu
         return Pair(correctOption, userSelection)
     }
 
-    private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptionsData>): LinkedHashMap<String, Long> {
+    private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptionsData>) {
         calculateVotePercentage(newValue)
         val optionsWithVotePercentageMap = LinkedHashMap<String, Long>()
         newValue.forEach { data ->
             optionsWithVotePercentageMap[data.description] = data.voteCount
+            idDescriptionVoteMap[data.id] = Pair(data.description, data.voteCount)
         }
-        return optionsWithVotePercentageMap
     }
 
     private fun calculateVotePercentage(optionList: List<WidgetOptionsData>) {
@@ -90,11 +90,11 @@ data class PredictionWidgetFollowUpData(val predictionWidgetQuestionDataList: Mu
         }
     }
 
-    private fun updateOptionList(descriptionList: LinkedHashMap<String, Long>,
+    private fun updateOptionList(idDescriptionVoteMap: LinkedHashMap<UUID?, Pair<String, Long>>,
                                  predictionWidgetDataList: MutableList<WidgetData>) {
         observers.forEach { observer ->
-            observer.optionListUpdated(descriptionList,
-                    { optionSelectedUpdated(it.toString()) },
+            observer.optionListUpdated(idDescriptionVoteMap,
+                    { optionSelectedUpdated(it) },
                     getCorrectOptionWithUserSelection(predictionWidgetDataList))
         }
     }
@@ -108,12 +108,14 @@ data class WidgetOptionsData(val id: UUID?,
 
 class PredictionWidgetQuestionData : WidgetData(){
     override var optionList: List<WidgetOptionsData> by observable(emptyList()) { _, _, newValue ->
-        val descriptionList = LinkedHashMap<String, Long>()
+        val idDescriptionVoteMap = LinkedHashMap<UUID?, Pair<String, Long>>()
         newValue.forEach { data ->
-            descriptionList[data.description] = data.voteCount
+            Pair(data.description, data.voteCount)
+            idDescriptionVoteMap[data.id] = Pair(data.description, data.voteCount)
         }
+
         observers.forEach { observer ->
-            observer.optionListUpdated(descriptionList, { optionSelectedUpdated(it.toString()) }, Pair(null, null))
+            observer.optionListUpdated(idDescriptionVoteMap, { optionSelectedUpdated(it) }, Pair(null, null))
         }
     }
 }
