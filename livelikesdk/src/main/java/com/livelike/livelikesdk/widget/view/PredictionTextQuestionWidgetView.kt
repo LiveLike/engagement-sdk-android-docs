@@ -13,12 +13,12 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
-    val localDismiss :  (() -> Unit)? = null
+    var localDismiss :  (() -> Unit)? = null
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,  dismiss: () -> Unit) : super(context, attrs, defStyleAttr) {
-        val localDismiss = dismiss
+        localDismiss = dismiss
     }
 
 
@@ -69,7 +69,6 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
     }
 
     private fun hideWidget() {
-        Log.d("SHANE", "SSSSSSS")
         localDismiss?.invoke()
     }
 

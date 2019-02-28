@@ -52,7 +52,9 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
 
         when (type) {
             WidgetType.TEXT_PREDICTION -> {
-                val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0) { dismissCurrentWidget() }
+                val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0, dismiss)
+
+
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion(setUserSelection)
 
@@ -63,7 +65,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
 
             WidgetType.TEXT_PREDICTION_RESULTS -> {
                 val predictionWidget =
-                    PredictionTextFollowUpWidgetView(context, null, 0){ dismissCurrentWidget() }
+                    PredictionTextFollowUpWidgetView(context, null, 0) { dismissCurrentWidget() }
                 predictionWidget.layoutParams = layoutParams
                 val followupWidgetData = PredictionWidgetFollowUp(WidgetTestData.questionWidgetDataList)
                 followupWidgetData.registerObserver(predictionWidget)
@@ -75,6 +77,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         }
     }
 
+    val dismiss: () -> Unit = {dismissCurrentWidget()}
     override fun dismissCurrentWidget() {
         Log.d("SHANE", "HIDE?")
         container.removeAllViews() // TODO: Use the dismiss method when MSDK-103 is implemented
