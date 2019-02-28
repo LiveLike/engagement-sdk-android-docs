@@ -76,16 +76,14 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             }
         }
     }
-
-
+    
     override fun dismissCurrentWidget() {
-        Log.d("SHANE", "HIDE?")
-        container.removeAllViews() // TODO: Use the dismiss method when MSDK-103 is implemented
+        container.removeAllViews()
         if(currentWidgetId.isNotEmpty()) {
             previousWidgetSelections[currentWidgetId] = currentSelection
-
+            val voteUrl = previousWidgetSelections[currentWidgetId]?.voteUrl.toString()
+            widgetListener?.onOptionVote(voteUrl)
         }
-
         currentSelection = null
         currentWidgetId = ""
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)

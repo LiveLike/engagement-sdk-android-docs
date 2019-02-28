@@ -12,8 +12,7 @@ import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.widget.WidgetQueue
 import com.livelike.livelikesdk.widget.WidgetRenderer
-import com.livelike.livelikesdk.widget.toWidgetQueue
-
+import com.livelike.livelikesdk.widget.asWidgetQueue
 
 class LiveLikeContentSessionImpl(
     override val programUrl: String, val currentPlayheadTime: () -> EpochTime,
@@ -78,8 +77,7 @@ class LiveLikeContentSessionImpl(
 
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
-            val pubNubMessagingClient = PubnubMessagingClient(it.pubNubKey)
-            val widgetQueue = pubNubMessagingClient.syncTo(currentPlayheadTime).toWidgetQueue()
+            val widgetQueue = PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).asWidgetQueue()
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer
@@ -120,7 +118,6 @@ class LiveLikeContentSessionImpl(
         //   TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
-
 
 interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
