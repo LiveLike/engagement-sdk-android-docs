@@ -1,4 +1,5 @@
 package com.livelike.livelikesdk
+import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.widget.WidgetRenderer
 
@@ -9,8 +10,10 @@ import com.livelike.livelikesdk.widget.WidgetRenderer
  *  TODO: These can be serializable? Maybe not sure.
  */
 interface LiveLikeContentSession {
-    val programUrl: String
-    var renderer: WidgetRenderer?
+    val programUrl : String
+    var widgetRenderer: WidgetRenderer?
+    var chatRenderer: ChatRenderer?
+
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
     /** Resume the current Chat and widget sessions. This generally happens when ads are completed */

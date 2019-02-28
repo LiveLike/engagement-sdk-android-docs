@@ -33,8 +33,8 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         container = findViewById(R.id.containerView)
     }
 
-    fun setSession(liveLikeContentSession: LiveLikeContentSession) {
-        liveLikeContentSession.renderer = this
+    fun setSession(session: LiveLikeContentSession) {
+        session.widgetRenderer = this
     }
 
     override fun displayWidget(type: WidgetType, payload: JsonObject) {
