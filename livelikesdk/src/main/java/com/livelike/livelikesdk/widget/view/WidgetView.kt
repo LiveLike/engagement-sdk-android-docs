@@ -20,6 +20,7 @@ import com.livelike.livelikesdk.widget.WidgetType
 
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
 import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
+import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.model.WidgetOptions
 
 import java.net.URI
@@ -98,11 +99,17 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         val previousWidgetId = payload.extractStringOrEmpty("text_prediction_id")
         parseTextPredictionCommon(widgetData, payload)
         widgetData.correctOptionId = UUID.fromString(payload.extractStringOrEmpty("correct_option_id"))
-        widgetData.optionSelected = previousWidgetSelections[previousWidgetId] ?: return
+        val widgetOptionsData = previousWidgetSelections[previousWidgetId]
+        widgetData.optionSelected = widgetOptionsData ?: return
     }
 
     private fun parseTextPredictionCommon(widgetData: Widget, payload: JsonObject) {
         widgetData.question = payload.extractStringOrEmpty("question")
+
+        // Fixme: id for follow widget comes as id and for question widget it is text_prediction_id. Maybe talk to CMS team about this.
+        var widgetId = payload.extractStringOrEmpty("id")
+        if (widgetId == "")  widgetId = payload.extractStringOrEmpty("text_prediction_id")
+        widgetData.textPredictionId = UUID.fromString(widgetId)
         val options = mutableListOf<WidgetOptions>()
 
         for (option in payload["options"].asJsonArray) {
@@ -117,5 +124,6 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             )
         }
         widgetData.optionList = options.toList()
+        currentWidgetId = widgetId
     }
 }
