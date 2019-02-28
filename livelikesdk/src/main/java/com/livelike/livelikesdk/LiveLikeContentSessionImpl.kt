@@ -42,8 +42,8 @@ class LiveLikeContentSessionImpl(
     init {
         llDataClient.getLiveLikeProgramData(programUrl) {
             program = it
-            initializeWidgetMessaging()
-            initializeChatMessaging()
+            initializeWidgetMessaging(it)
+            initializeChatMessaging(it)
         }
     }
 
@@ -53,21 +53,21 @@ class LiveLikeContentSessionImpl(
 
     override fun contentSessionId() = program?.clientId ?: ""
 
-    private fun initializeWidgetMessaging() {
+    private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val pubNubMessagingClient = PubnubMessagingClient(it.pubNubKey)
             val widgetQueue = pubNubMessagingClient.syncTo(currentPlayheadTime).toWidgetQueue()
-            widgetQueue.subscribe(listOf(program!!.subscribeChannel))
+            widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer
             this.widgetQueue = widgetQueue
         }
     }
 
-    private fun initializeChatMessaging() {
+    private fun initializeChatMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext)
             val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime).toChatQueue(SendbirdChatClient())
-            chatQueue.subscribe(listOf(program!!.chatChannel))
+            chatQueue.subscribe(listOf(program.chatChannel))
             chatQueue.renderer = chatRenderer
             this.chatQueue = chatQueue
         }
