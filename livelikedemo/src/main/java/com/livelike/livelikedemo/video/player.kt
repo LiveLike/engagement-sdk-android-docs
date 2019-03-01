@@ -5,8 +5,8 @@ import android.net.Uri
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.Timeline
 import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.hls.HlsManifest
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
@@ -46,18 +46,15 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     }
 
     override fun getPDT(): Long {
-        val position = player?.currentPosition
-        if (position != null) {
-            val currentManifest = player?.currentManifest as HlsManifest?
-            if (currentManifest?.mediaPlaylist?.hasProgramDateTime != null && currentManifest.mediaPlaylist?.hasProgramDateTime!!) {
-                val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
-                return currentAbsoluteTimeMs
-            } else {
-                return position // VOD or no PDT
+        return player?.let {
+            it.currentTimeline?.run {
+                if (!isEmpty) {
+                    getWindow(it.currentWindowIndex, Timeline.Window()).windowStartTimeMs + it.currentPosition
+                } else {
+                    it.currentPosition
             }
-        } else {
-            return 0 // No time information in this stream
-        }
+            }
+        } ?: 0
     }
 
     private fun buildMediaSource(uri: Uri): HlsMediaSource {
