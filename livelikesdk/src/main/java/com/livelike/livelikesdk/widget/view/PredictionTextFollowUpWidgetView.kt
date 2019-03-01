@@ -18,7 +18,6 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_result
-import java.util.*
 
 class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
@@ -39,9 +38,9 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     }
 
     override fun optionListUpdated(
-        voteOptions: MutableList<VoteOption>,
-        optionSelectedCallback: (UUID?) -> Unit,
-        correctOptionWithUserSelection: Pair<UUID?, UUID?>) {
+        voteOptions: List<VoteOption>,
+        optionSelectedCallback: (String?) -> Unit,
+        correctOptionWithUserSelection: Pair<String?, String?>) {
         super.optionListUpdated(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
 
         val correctOption = correctOptionWithUserSelection.first
@@ -50,7 +49,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         buttonMap.forEach{(button, optionId) ->
             button.setOnClickListener(null)
             val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(correctOption, userSelectedOption, button)
-            val percentage = voteOptions.single { option ->  option.id == optionId }.vote
+            val percentage = voteOptions.single { option ->  option.id == optionId }.votePercentage
             val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)
         }
@@ -63,7 +62,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         triggerTransitionOutAnimation()
     }
 
-    private fun provideStyleToButtonAndProgressBar(correctOption: UUID?, userSelectedOption: UUID?, button: Button): Pair<Int, UUID?> {
+    private fun provideStyleToButtonAndProgressBar(correctOption: String?, userSelectedOption: String?, button: Button): Pair<Int, String?> {
         val percentageDrawable: Int
         val buttonId = buttonMap[button]
         if (hasUserSelectedCorrectOption(userSelectedOption, correctOption)) {
@@ -89,10 +88,10 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         return Pair(percentageDrawable, buttonId)
     }
 
-    private fun hasUserSelectedCorrectOption(userSelectedOption: UUID?, correctOption: UUID?) =
+    private fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
         userSelectedOption == correctOption
 
-    private fun isCurrentButtonSameAsCorrectOption(correctOption: UUID?, buttonId: UUID?) =
+    private fun isCurrentButtonSameAsCorrectOption(correctOption: String?, buttonId: String?) =
         buttonId == correctOption
 
     private fun selectedOptionCorrect(optionDescription: String) {

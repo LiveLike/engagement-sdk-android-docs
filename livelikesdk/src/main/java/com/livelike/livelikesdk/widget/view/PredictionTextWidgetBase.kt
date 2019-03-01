@@ -21,21 +21,21 @@ import android.widget.TextView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
-import com.livelike.livelikesdk.binding.Observer
+import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-open class PredictionTextWidgetBase : ConstraintLayout, Observer {
+open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected val timerDuration: Long = 7000
     protected val widgetShowingDurationAfterConfirmMessage: Long = 3000
     protected val widgetOpacityFactor: Float = 0.2f
     protected val constraintSet = ConstraintSet()
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val animationHandler = AnimationHandler()
-    protected val buttonMap = mutableMapOf<Button, UUID>()
+    protected val buttonMap = mutableMapOf<Button, String>()
     protected var optionSelected = false
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
@@ -63,13 +63,13 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         })
     }
 
-    override fun optionListUpdated(voteOptions: MutableList<VoteOption>, optionSelectedCallback: (UUID?) -> Unit, correctOptionWithUserSelection: Pair<UUID?, UUID?>) {
+    override fun optionListUpdated(voteOptions: List<VoteOption>, optionSelectedCallback: (String?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
         val textView = findViewById<TextView>(R.id.prediction_question_textView)
         addNewlyCreatedButtonsToLayout(context, voteOptions, optionSelectedCallback)
         applyConstraintsBetweenViews(constraintSet, textView)
     }
 
-    override fun optionSelectedUpdated(selectedOptionId: UUID) {
+    override fun optionSelectedUpdated(selectedOptionId: String?) {
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
@@ -80,8 +80,8 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
     @SuppressLint("ClickableViewAccessibility")
     private fun addNewlyCreatedButtonsToLayout(
         context: Context,
-        voteOptions: MutableList<VoteOption>,
-        optionSelectedCallback: (UUID?) -> Unit) {
+        voteOptions: List<VoteOption>,
+        optionSelectedCallback: (String?) -> Unit) {
         voteOptions.forEachIndexed{ index, option ->
             val button = Button(context)
             buttonList.add(button)
@@ -120,7 +120,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
     private fun applyStyle(button: Button,
                            buttonText: String,
                            context: Context,
-                           voteOptions: MutableList<VoteOption>,
+                           voteOptions: List<VoteOption>,
                            index: Int) {
         button.apply {
             background = if (isLastButtonToBeAddedToLayout(voteOptions, index)) {
@@ -167,7 +167,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         constraintSet.applyTo(layout)
     }
 
-    private fun isLastButtonToBeAddedToLayout(options: MutableList<VoteOption>, index: Int) =
+    private fun isLastButtonToBeAddedToLayout(options: List<VoteOption>, index: Int) =
         options[index] == options[options.size - 1]
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
