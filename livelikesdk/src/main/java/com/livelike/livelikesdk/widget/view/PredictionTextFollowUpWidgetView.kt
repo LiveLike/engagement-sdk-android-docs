@@ -16,9 +16,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
+import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_result
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
@@ -39,10 +39,10 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     }
 
     override fun optionListUpdated(
-        idDescriptionVoteMap: LinkedHashMap<UUID?, Pair<String, Long>>,
+        voteOptions: MutableList<VoteOption>,
         optionSelectedCallback: (UUID?) -> Unit,
         correctOptionWithUserSelection: Pair<UUID?, UUID?>) {
-        super.optionListUpdated(idDescriptionVoteMap, optionSelectedCallback, correctOptionWithUserSelection)
+        super.optionListUpdated(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
 
         val correctOption = correctOptionWithUserSelection.first
         val userSelectedOption = correctOptionWithUserSelection.second
@@ -50,7 +50,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         buttonMap.forEach{(button, optionId) ->
             button.setOnClickListener(null)
             val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(correctOption, userSelectedOption, button)
-            val percentage = idDescriptionVoteMap[optionId]?.second
+            val percentage = voteOptions.single { option ->  option.id == optionId }.vote
             val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)
         }
@@ -66,7 +66,6 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     private fun provideStyleToButtonAndProgressBar(correctOption: UUID?, userSelectedOption: UUID?, button: Button): Pair<Int, UUID?> {
         val percentageDrawable: Int
         val buttonId = buttonMap[button]
-
         if (hasUserSelectedCorrectOption(userSelectedOption, correctOption)) {
             if (isCurrentButtonSameAsCorrectOption(correctOption, buttonId)) {
                 percentageDrawable = R.drawable.progress_bar

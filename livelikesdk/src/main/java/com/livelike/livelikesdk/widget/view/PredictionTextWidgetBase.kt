@@ -23,10 +23,10 @@ import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.binding.Observer
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
+import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
 
 open class PredictionTextWidgetBase : ConstraintLayout, Observer {
     protected val timerDuration: Long = 7000
@@ -63,9 +63,9 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         })
     }
 
-    override fun optionListUpdated(idDescriptionVoteMap: LinkedHashMap<UUID?, Pair<String, Long>>, optionSelectedCallback: (UUID?) -> Unit, correctOptionWithUserSelection: Pair<UUID?, UUID?>) {
+    override fun optionListUpdated(voteOptions: MutableList<VoteOption>, optionSelectedCallback: (UUID?) -> Unit, correctOptionWithUserSelection: Pair<UUID?, UUID?>) {
         val textView = findViewById<TextView>(R.id.prediction_question_textView)
-        addNewlyCreatedButtonsToLayout(context, idDescriptionVoteMap, optionSelectedCallback)
+        addNewlyCreatedButtonsToLayout(context, voteOptions, optionSelectedCallback)
         applyConstraintsBetweenViews(constraintSet, textView)
     }
 
@@ -80,14 +80,14 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
     @SuppressLint("ClickableViewAccessibility")
     private fun addNewlyCreatedButtonsToLayout(
         context: Context,
-        optionMap: LinkedHashMap<UUID?, Pair<String, Long>>,
+        voteOptions: MutableList<VoteOption>,
         optionSelectedCallback: (UUID?) -> Unit) {
-        optionMap.forEach { (id, descriptionVotePair) ->
+        voteOptions.forEachIndexed{ index, option ->
             val button = Button(context)
             buttonList.add(button)
-            if (id != null) {
-                applyStyle(button, descriptionVotePair.first , context, id)
-                buttonMap[button] = id
+            if (option.id != null) {
+                applyStyle(button, option.description , context, voteOptions, index)
+                buttonMap[button] = option.id
                 button.setOnClickListener {
                     optionSelected = true
                     button.text.also {
@@ -97,12 +97,6 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
                     }
                 }
                 addHorizontalSwipeListener(button)
-
-            }
-            buttonList.forEachIndexed { index, _ ->
-                background = if (isLastButtonToBeAddedToLayout(buttonList, index)) {
-                    AppCompatResources.getDrawable(context, R.drawable.bottom_rounded_corner)
-                } else AppCompatResources.getDrawable(context, R.drawable.button_default)
             }
             layout.addView(button)
         }
@@ -126,9 +120,12 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
     private fun applyStyle(button: Button,
                            buttonText: String,
                            context: Context,
-                           optionId:UUID?) {
+                           voteOptions: MutableList<VoteOption>,
+                           index: Int) {
         button.apply {
-            background  = AppCompatResources.getDrawable(context, R.drawable.button_default)
+            background = if (isLastButtonToBeAddedToLayout(voteOptions, index)) {
+                AppCompatResources.getDrawable(context, R.drawable.bottom_rounded_corner)
+            } else AppCompatResources.getDrawable(context, R.drawable.button_default)
             setTextColor(ContextCompat.getColor(context, R.color.text_color))
             text = buttonText
             layoutParams = LayoutParams(
@@ -170,8 +167,8 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         constraintSet.applyTo(layout)
     }
 
-    private fun isLastButtonToBeAddedToLayout(buttonNames: ArrayList<Button>, index: Int) =
-            buttonNames[index] == buttonNames[buttonNames.size - 1]
+    private fun isLastButtonToBeAddedToLayout(options: MutableList<VoteOption>, index: Int) =
+        options[index] == options[options.size - 1]
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
     // functions to use and how we layout widget and chat we can think of these values more.
