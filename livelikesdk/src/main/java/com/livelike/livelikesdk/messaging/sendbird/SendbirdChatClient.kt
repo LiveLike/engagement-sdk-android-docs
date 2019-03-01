@@ -1,16 +1,21 @@
 package com.livelike.livelikesdk.messaging.sendbird
 
 import android.util.Log
+import com.google.gson.GsonBuilder
 import com.livelike.livelikesdk.messaging.ClientMessage
+import com.livelike.livelikesdk.util.DateDeserializer
 import com.sendbird.android.OpenChannel
+import java.util.*
 
-class SendbirdChatClient() : ChatClient {
+class SendbirdChatClient : ChatClient {
     private val TAG = javaClass.simpleName
+    private val gson = GsonBuilder().registerTypeAdapter(Date::class.java, DateDeserializer()).create()
 
     override fun sendMessage(message: ClientMessage) {
         OpenChannel.getChannel(message.channel) { openChannel, exception ->
             openChannel?.sendUserMessage(message.message.get("message").asString,
-                message.timeStamp.timeSinceEpochInMs.toString(), null, null) {
+                gson.toJson(SendbirdMessagingClient.MessageData(message.timeStampDate)), null, null
+            ) {
                     userMessage, exception ->
                 if (exception != null){
                     Log.e(TAG, "Error sending the message: ")
