@@ -8,6 +8,6 @@ interface Observer {
     fun optionListUpdated(
         idDescriptionVoteMap: LinkedHashMap<UUID?, Pair<String, Long>>,
         optionSelectedCallback: (UUID?) -> Unit,
-        correctOptionWithUserSelection: Pair<String?, String?>)
+        correctOptionWithUserSelection: Pair<UUID?, UUID?>)
     fun optionSelectedUpdated(selectedOptionId: UUID)
 }

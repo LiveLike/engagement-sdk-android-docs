@@ -55,19 +55,14 @@ data class PredictionWidgetFollowUpData(val predictionWidgetQuestionDataList: Mu
     }
 
     private fun getCorrectOptionWithUserSelection(predictionWidgetDataList: MutableList<WidgetData>)
-            : Pair<String?, String?> {
+            : Pair<UUID?, UUID?> {
 
-        var userSelection: String? = null
-        var correctOption : String? = null
+        var userSelectionId: UUID? = null
         // TODO: Need to add a check that questionWidget data id is equal to question widget data id.
         predictionWidgetDataList.forEach { questionWidgetData ->
-            userSelection = questionWidgetData.optionSelected.description
+            userSelectionId = questionWidgetData.optionSelected.id
         }
-        optionList.forEach { option ->
-            if (option.id == correctOptionId)
-                correctOption = option.description
-        }
-        return Pair(correctOption, userSelection)
+        return Pair(correctOptionId, userSelectionId)
     }
 
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptionsData>) {

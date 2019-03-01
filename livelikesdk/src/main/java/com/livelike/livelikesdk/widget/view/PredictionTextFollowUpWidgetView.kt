@@ -41,7 +41,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     override fun optionListUpdated(
         idDescriptionVoteMap: LinkedHashMap<UUID?, Pair<String, Long>>,
         optionSelectedCallback: (UUID?) -> Unit,
-        correctOptionWithUserSelection: Pair<String?, String?>) {
+        correctOptionWithUserSelection: Pair<UUID?, UUID?>) {
         super.optionListUpdated(idDescriptionVoteMap, optionSelectedCallback, correctOptionWithUserSelection)
 
         val correctOption = correctOptionWithUserSelection.first
@@ -63,41 +63,38 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         triggerTransitionOutAnimation()
     }
 
-    private fun provideStyleToButtonAndProgressBar(correctOption: String?, userSelectedOption: String?, button: Button): Pair<Int, CharSequence> {
+    private fun provideStyleToButtonAndProgressBar(correctOption: UUID?, userSelectedOption: UUID?, button: Button): Pair<Int, UUID?> {
         val percentageDrawable: Int
-        val buttonText = button.text
+        val buttonId = buttonMap[button]
 
         if (hasUserSelectedCorrectOption(userSelectedOption, correctOption)) {
-            if (isCurrentButtonTextSameAsCorrectOption(correctOption, buttonText)) {
+            if (isCurrentButtonSameAsCorrectOption(correctOption, buttonId)) {
                 percentageDrawable = R.drawable.progress_bar
-                selectedOptionCorrect(buttonText.toString())
+                selectedOptionCorrect(buttonId.toString())
             } else {
                 percentageDrawable = R.drawable.progress_bar_looser
             }
         } else {
             when {
-                isCurrentButtonTextSameAsCorrectOption(correctOption, buttonText) -> {
+                isCurrentButtonSameAsCorrectOption(correctOption, buttonId) -> {
                     percentageDrawable = R.drawable.progress_bar
-                    selectedOptionCorrect(buttonText.toString())
+                    selectedOptionCorrect(buttonId.toString())
                 }
-                isCurrentButtonUserSelectedOption(userSelectedOption, buttonText) -> {
+                isCurrentButtonSameAsCorrectOption(userSelectedOption, buttonId) -> {
                     percentageDrawable = R.drawable.progress_bar_wrong
-                    selectedOptionIncorrect(buttonText.toString())
+                    selectedOptionIncorrect(buttonId.toString())
                 }
                 else -> percentageDrawable = R.drawable.progress_bar_looser
             }
         }
-        return Pair(percentageDrawable, buttonText)
+        return Pair(percentageDrawable, buttonId)
     }
 
-    private fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
+    private fun hasUserSelectedCorrectOption(userSelectedOption: UUID?, correctOption: UUID?) =
         userSelectedOption == correctOption
 
-    private fun isCurrentButtonTextSameAsCorrectOption(correctOption: String?, buttonText: CharSequence?) =
-        buttonText == correctOption
-
-    private fun isCurrentButtonUserSelectedOption(userSelectedOption: String?, buttonText: CharSequence?) =
-            userSelectedOption == buttonText.toString()
+    private fun isCurrentButtonSameAsCorrectOption(correctOption: UUID?, buttonId: UUID?) =
+        buttonId == correctOption
 
     private fun selectedOptionCorrect(optionDescription: String) {
         outlineButton(optionDescription, R.drawable.correct_answer_outline)
