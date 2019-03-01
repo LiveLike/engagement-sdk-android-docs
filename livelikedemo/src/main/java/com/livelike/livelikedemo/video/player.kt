@@ -2,10 +2,12 @@ package com.livelike.livelikedemo.video
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.hls.HlsManifest
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
@@ -41,6 +43,25 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
             player?.repeatMode = Player.REPEAT_MODE_ALL
         }
 
+
+    }
+
+    override fun getPDT(): Long {
+        val position = player?.currentPosition
+        if (position != null) {
+            val currentManifest = player?.currentManifest as HlsManifest?
+            if (currentManifest?.mediaPlaylist?.hasProgramDateTime != null && currentManifest.mediaPlaylist?.hasProgramDateTime!!) {
+                val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
+                Log.i("Sync", "currentAbsoluteTimeMs $currentAbsoluteTimeMs")
+                return currentAbsoluteTimeMs
+            } else {
+                Log.i("Sync", "position $position")
+                return position // VOD or no PDT
+            }
+        } else {
+            Log.i("Sync", "noo... ${player == null}")
+            return 0 // No time information in this stream
+        }
     }
 
     private fun buildMediaSource(uri: Uri): HlsMediaSource {
@@ -107,6 +128,7 @@ interface VideoPlayer {
     fun release()
     fun position() : Long
     fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit)
+    fun getPDT(): Long
 }
 
 

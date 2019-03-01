@@ -25,7 +25,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintDimensionRatio="H,16:9"
-    />
+    >
+    </com.google.android.exoplayer2.ui.PlayerView>
 
     <Button
             android:id="@+id/startAd"
@@ -36,6 +37,27 @@
             app:layout_constraintLeft_toLeftOf="parent"
     />
 
+    <TextView
+            android:text="TextView"
+            android:layout_width="0dp"
+            android:layout_height="17dp" android:id="@+id/pdtText"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="@+id/playerView"
+            app:layout_constraintStart_toStartOf="@+id/playerView" android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" android:background="@color/colorPrimary"
+            android:textColor="@color/text_color" android:textAlignment="center" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <TextView
+            android:text="TextView"
+            android:layout_width="0dp"
+            android:layout_height="17dp" android:id="@+id/pdtText2"
+            app:layout_constraintStart_toStartOf="@+id/playerView" android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/text_color" android:textAlignment="center" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintBottom_toTopOf="@+id/pdtText"
+            app:layout_constraintVertical_bias="1.0"/>
     <Button
             android:id="@+id/selectChannelButton"
             android:text="@string/channel"

@@ -1,6 +1,5 @@
 package com.livelike.livelikedemo
 
-import android.app.Application
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
@@ -28,6 +27,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
+import java.util.*
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -79,6 +79,14 @@ class ExoPlayerActivity : AppCompatActivity() {
         val position = savedInstanceState?.getLong(POSITION) ?: 0
         startingState = PlayerState(0, position, !adsPlaying)
 
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                runOnUiThread {
+                    pdtText2?.text = Date(player.getPDT()).toString()
+                    pdtText?.text = player.getPDT().toString()
+                }
+            }
+        }, 0, 100)
 
         loadClientConfig(savedInstanceState?.getString(CHANNEL_NAME) ?: "")
         setUpAdClickListeners()
