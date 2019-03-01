@@ -16,8 +16,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient {
     private val client = OkHttpClient()
@@ -49,14 +47,6 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient {
             programData.extractStringOrEmpty("content_id"),
             programData.extractStringOrEmpty("id"),
             programData.extractStringOrEmpty("title"),
-            ZonedDateTime.parse(
-                programData.extractStringOrEmpty("created_at"),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ")
-            ).toInstant().toEpochMilli(),
-            ZonedDateTime.parse(
-                programData.extractStringOrEmpty("started_at"),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZZZZZ")
-            ).toInstant().toEpochMilli(),
             programData["widgets_enabled"].asBoolean,
             programData["chat_enabled"].asBoolean,
             programData.extractStringOrEmpty("subscribe_channel"),

@@ -92,25 +92,21 @@ class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
 
             @SuppressLint("NewApi")
             override fun message(pubnub: PubNub, message: PNMessageResult) {
-                val pdtString =
-                    message.message.asJsonObject.getAsJsonObject("payload").extractStringOrEmpty("program_date_time")
-                if (!pdtString.isNullOrEmpty()) {
-                    Log.i(
-                        "PubnubSync",
-                        ZonedDateTime.parse(pdtString, datePattern).toInstant().toEpochMilli().toString()
-                    )
-                }
+                val pdtString = message.message.asJsonObject.getAsJsonObject("payload")
+                    .extractStringOrEmpty("program_date_time")
+                val epochTimeMs = if (pdtString.isEmpty()) 0 else ZonedDateTime.parse(
+                    pdtString,
+                    datePattern
+                ).toInstant().toEpochMilli()
                 logMessage(message)
                 val clientMessage = ClientMessage(
                     message.message.asJsonObject,
                     message.channel,
-                    EpochTime(
-                        ZonedDateTime.parse(
-                            pdtString,
-                            datePattern
-                        ).toInstant().toEpochMilli()
-                    ), // PDT is like 2019-02-28T11:36:45.305000-05:00
-                    Duration.parse(message.message.asJsonObject.getAsJsonObject("payload").extractStringOrEmpty("timeout")).toMillis()
+                    EpochTime(epochTimeMs),
+                    Duration.parse(
+                        message.message.asJsonObject.getAsJsonObject("payload")
+                            .extractStringOrEmpty("timeout")
+                    ).toMillis()
                 )
                 listener?.onClientMessageEvent(client, clientMessage)
             }

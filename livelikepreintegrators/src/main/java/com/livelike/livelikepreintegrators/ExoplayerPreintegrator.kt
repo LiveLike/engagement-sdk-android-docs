@@ -1,6 +1,5 @@
 package com.livelike.livelikepreintegrators
 
-import android.util.Log
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.hls.HlsManifest
 import com.livelike.livelikesdk.LiveLikeContentSession
@@ -18,14 +17,14 @@ fun LiveLikeSDK.createExoplayerSession(
             val currentManifest = player()?.currentManifest as HlsManifest?
             if (currentManifest?.mediaPlaylist?.hasProgramDateTime != null && currentManifest.mediaPlaylist?.hasProgramDateTime!!) {
                 val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
-                Log.i("Sync", "currentAbsoluteTimeMs $currentAbsoluteTimeMs")
+//                Log.i("Sync", "currentAbsoluteTimeMs $currentAbsoluteTimeMs")
                 EpochTime(currentAbsoluteTimeMs)
             } else {
-                Log.i("Sync", "position $position")
+//                Log.i("Sync", "position $position")
                 EpochTime(position) // VOD or no PDT
             }
         } else {
-            Log.i("Sync", "noo... ${player() == null}")
+//            Log.i("Sync", "noo... ${player() == null}")
             EpochTime(0) // No time information in this stream
         }
     }, sessionReady)
