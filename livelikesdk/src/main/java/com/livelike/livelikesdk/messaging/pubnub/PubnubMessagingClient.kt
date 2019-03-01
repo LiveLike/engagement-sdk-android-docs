@@ -1,7 +1,5 @@
 package com.livelike.livelikesdk.messaging.pubnub
 
-import android.annotation.SuppressLint
-import android.os.Build
 import android.util.Log
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
@@ -18,9 +16,9 @@ import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
-import java.time.Duration
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+import org.threeten.bp.Duration
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
 
 class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
@@ -84,13 +82,9 @@ class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                 }
             }
 
-            val datePattern = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val datePattern =
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ")
-            } else {
-                TODO("VERSION.SDK_INT < O")
-            }
 
-            @SuppressLint("NewApi")
             override fun message(pubnub: PubNub, message: PNMessageResult) {
                 val pdtString = message.message.asJsonObject.getAsJsonObject("payload")
                     .extractStringOrEmpty("program_date_time")

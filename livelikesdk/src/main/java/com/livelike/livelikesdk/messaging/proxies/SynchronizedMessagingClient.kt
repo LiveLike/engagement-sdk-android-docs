@@ -46,7 +46,7 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
     fun processQueueForScheduledEvent() {
         val event = queue.peek()?:return
         //For now lets use the timestamp, we can implement minimumTime when sync timing comes in, timestamp of <= 0 is passthrough
-//        Log.i("Sync", "Event date  : ${event.timeStampDate}")
+//        Log.i("Sync", "Event date  : ${Date(event.timeStamp.timeSinceEpochInMs)}")
 //        Log.i("Sync", "Current date: ${Date(timeSource().timeSinceEpochInMs)}")
         if(event.timeStamp > EpochTime(0)) {
             if (event.timeStamp.timeSinceEpochInMs <= timeSource().timeSinceEpochInMs) {

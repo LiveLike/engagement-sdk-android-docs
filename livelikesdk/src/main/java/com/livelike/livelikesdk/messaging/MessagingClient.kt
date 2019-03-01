@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk.messaging
 
 import com.google.gson.JsonObject
-import java.util.*
 
 
 /**
@@ -32,9 +31,7 @@ data class ClientMessage(
     val channel: String,
     val timeStamp: EpochTime,
     val timeoutMs: Long = 4000
-) {
-    val timeStampDate = Date(timeStamp.timeSinceEpochInMs)
-}
+)
 
 /**
  * Represents a MessagingClient error that can be sent from a MessagingClient

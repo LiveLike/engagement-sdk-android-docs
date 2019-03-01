@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.network
 
-import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import com.google.gson.JsonObject
@@ -39,7 +38,6 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient {
         })
     }
 
-    @SuppressLint("NewApi")
     private fun parseProgramData(programData: JsonObject): Program {
         return Program(
             programData.extractStringOrEmpty("url"),
