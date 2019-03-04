@@ -219,5 +219,5 @@ class ExoPlayerActivity : AppCompatActivity() {
 }
 
 fun View.visibleOrGone(visible: Boolean) {
-    visibility = if(visible) View.VISIBLE else View.GONE
+    visibility = if (visible) View.VISIBLE else View.GONE
 }
