@@ -12,18 +12,18 @@ fun LiveLikeSDK.createExoplayerSession(
     sessionReady: (LiveLikeContentSession) -> Unit
 ) {
     return this.createContentSession(contentId, {
-        EpochTime(player()?.let {
-            it.currentTimeline?.run {
-                if (!isEmpty) {
-                    getWindow(it.currentWindowIndex, Timeline.Window()).windowStartTimeMs + it.currentPosition
-                } else {
-                    it.currentPosition
-            }
-            }
-        } ?: 0)
+        getExoplayerPdtTime(player)
     }, sessionReady)
 }
 
-
-
-
+fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): EpochTime {
+    return EpochTime(player()?.let {
+        it.currentTimeline?.run {
+            if (!isEmpty) {
+                getWindow(it.currentWindowIndex, Timeline.Window()).windowStartTimeMs + it.currentPosition
+            } else {
+                it.currentPosition
+            }
+        }
+    } ?: 0)
+}
