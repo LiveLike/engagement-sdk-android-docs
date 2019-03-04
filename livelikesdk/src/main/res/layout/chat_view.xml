@@ -1,36 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
                                              android:orientation="vertical"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
-                                             android:background="@color/colorPrimaryDark"
-    >
+                                             android:background="@drawable/chat_background"
+>
 
-    <ListView
-        android:id="@+id/chatdisplay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/chatBackground"
-        android:stackFromBottom="true"
-        android:layout_marginBottom="30dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/chatinput"
-        />
+    <View
+            android:id="@+id/chatinput"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/round_max_rect_shape_stroke_no_color"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/button_open_channel_chat_send"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageButton
+            android:id="@+id/button_open_channel_chat_send"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:gravity="center"
+            android:padding="5dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/chat_send"
+            android:textColor="#ffffff"
+            android:textSize="14dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/chatinput"/>
 
     <EditText
-        android:id="@+id/chatinput"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:importantForAutofill="no"
+            android:id="@+id/edittext_chat_message"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="Say Something..."
+            android:imeOptions="flagNoExtractUi"
+            android:maxLines="6"
+            android:textColor="#ffffff"
+            android:textColorHint="#8e8e8e"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/chatinput"
+            app:layout_constraintEnd_toStartOf="@+id/button_open_channel_chat_upload"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/chatinput"
+            app:layout_constraintTop_toTopOf="@+id/chatinput"/>
 
-        android:inputType="text"
-        android:textColor="@color/colorInputText"
-        android:background="@color/colorAccent"
-        android:textSize="18sp"
+    <ImageButton
+            android:id="@+id/button_open_channel_chat_upload"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="9dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="@+id/chatinput"
+            app:layout_constraintEnd_toEndOf="@+id/chatinput"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/chatinput"
+            app:layout_constraintTop_toTopOf="@+id/chatinput"
+            app:srcCompat="@drawable/emoji_ios_category_smileysandpeople"
+            tools:ignore="ContentDescription"/>
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+    <ListView
+            android:id="@+id/chatdisplay"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            tools:listitem="@layout/default_chat_cell"
+            android:stackFromBottom="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/chatinput"
+    />
+
 </android.support.constraint.ConstraintLayout>
+
+
+        <!--<EditText-->
+        <!--android:id="@+id/chatinput"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:importantForAutofill="no"-->
+
+        <!--android:inputType="text"-->
+        <!--android:textColor="@color/colorInputText"-->
+        <!--android:background="@color/colorAccent"-->
+        <!--android:textSize="18sp"-->
+
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--/>-->
+
+
