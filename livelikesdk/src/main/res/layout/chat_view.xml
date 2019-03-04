@@ -1,36 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             android:orientation="vertical"
+                                             xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent"
-                                             android:background="@color/colorPrimaryDark"
-    >
+                                             android:background="@drawable/chat_background"
+>
 
-    <ListView
-        android:id="@+id/chatdisplay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/chatBackground"
-        android:stackFromBottom="true"
-        android:layout_marginBottom="30dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/chatinput"
-        />
+        <include
+                android:id="@+id/chatInput"
+                layout="@layout/chat_input"
+                android:layout_height="0dp"
+                android:layout_width="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <EditText
-        android:id="@+id/chatinput"
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:importantForAutofill="no"
+        <ListView
+                android:id="@+id/chatdisplay"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                tools:listitem="@layout/default_chat_cell"
+                android:stackFromBottom="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/chatInput"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginBottom="8dp"/>
 
-        android:inputType="text"
-        android:textColor="@color/colorInputText"
-        android:background="@color/colorAccent"
-        android:textSize="18sp"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
 </android.support.constraint.ConstraintLayout>

@@ -12,30 +12,20 @@
             android:id="@+id/chatWidget"
             layout="@layout/widget_chat_stacked"
             android:layout_height="0dp"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/playerView"
             app:layout_constraintBottom_toBottomOf="parent"
-    />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/playerView"/>
 
     <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/playerView"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintDimensionRatio="H,16:9"
-    >
-    </com.google.android.exoplayer2.ui.PlayerView>
-
-    <Button
-            android:id="@+id/startAd"
-            android:text="@string/start_ad"
-            android:layout_height="40dp"
-            android:layout_width="100dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-    />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
             android:layout_width="0dp"
@@ -65,6 +55,16 @@
             app:layout_constraintLeft_toRightOf="@id/startAd"
             android:visibility="gone"
     />
+
+    <Button
+            android:id="@+id/startAd"
+            android:text="Start Ad"
+            android:layout_height="40dp"
+            android:layout_width="100dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+    />
+
     <View
             android:id="@+id/adOverlay"
             android:layout_height="match_parent"

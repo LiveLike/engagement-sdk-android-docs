@@ -1,25 +1,28 @@
 package com.livelike.livelikesdk.chat
 
+import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.BaseAdapter
-import com.google.gson.JsonObject
+import android.widget.TextView
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.MessagingClient
-import com.livelike.livelikesdk.messaging.MessagingEventListener
-import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
+import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
+import java.util.*
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -37,17 +40,18 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.*
 
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer  {
     override var chatListener: ChatEventListener? = null
+    override val chatContext: Context = context
 
-    val attrs: AttributeSet = attrs!!
-    private val TAG = javaClass.simpleName
-
+    private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
-    lateinit var chatAdapter: ChatAdapter
-    override val chatContext : Context = context
+    private lateinit var chatAdapter: ChatAdapter
 
     init {
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
+
+        (context as Activity).window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+        context.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -79,29 +83,74 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 val inputTextColor = getInteger(R.styleable.ChatView_inputTextColor, R.color.colorInputText)
                 val defaultText = getString(com.livelike.livelikesdk.R.styleable.ChatView_inputTextDefault)
 
-                chatinput.setTextColor(inputTextColor)
-                chatinput.setText(defaultText.orEmpty())
-                chatinput.setOnKeyListener(OnKeyListener { v, keyCode, event ->
-                    if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
-                        val newMessage = ChatMessage(
-                            chatinput.text.toString(),
-                            "user-id",
-                            "User123",
-                            "message_id"
-                        )
+                edittext_chat_message.setTextColor(inputTextColor)
+                edittext_chat_message.setText(defaultText.orEmpty())
 
-                        val timeData = session.getPlayheadTime()
-                        chatListener?.onChatMessageSend(newMessage, timeData)
-                        this@ChatView.chatAdapter.addMessage(newMessage)
-                        chatinput.setText("")
-                        return@OnKeyListener true
+                button_chat_send.visibility = View.GONE
+
+                edittext_chat_message.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+                    override fun afterTextChanged(s: Editable) {
+                        if (s.isNotEmpty()) {
+                            button_chat_send.isEnabled = true
+                            button_chat_send.visibility = View.VISIBLE
+                        } else {
+                            button_chat_send.isEnabled = false
+                            button_chat_send.visibility = View.GONE
+                        }
+                    }
+                })
+
+                // Send message on tap Enter
+                edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
+                    if (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER || actionId == EditorInfo.IME_ACTION_DONE)) {
+                        hideKeyboard(v)
+                        sendMessageNow()
                     }
                     false
-                })
+                }
+
+                button_chat_send.isEnabled = false
+                button_chat_send.setOnClickListener { v ->
+                    chatdisplay.post {
+                        chatdisplay.smoothScrollToPosition(chatdisplay.maxScrollAmount)
+                    }
+                    sendMessageNow()
+                }
+
             } finally {
                 recycle()
             }
         }
+    }
+
+    private fun hideKeyboard(textView: TextView) {
+        val inputManager =
+            context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        // Hide keyboard
+        inputManager.hideSoftInputFromWindow(
+            textView.windowToken,
+            InputMethodManager.HIDE_NOT_ALWAYS
+        )
+    }
+
+    fun sendMessageNow() {
+        val timeData = session.getPlayheadTime()
+        val newMessage = ChatMessage(
+            edittext_chat_message.text.toString(),
+            "user-id",
+            "User123",
+            "message_id",
+            Date(timeData.timeSinceEpochInMs).toString()
+        )
+
+        chatListener?.onChatMessageSend(newMessage, timeData)
+        this@ChatView.chatAdapter.addMessage(newMessage)
+        edittext_chat_message.setText("")
     }
 
 
@@ -118,8 +167,15 @@ interface ChatCell {
  *  @param senderId This is unique user id.
  *  @param senderDisplayName This is display name user is associated with.
  *  @param id A unique ID to identify the message.
+ *  @param timeStamp Message timeStamp.
  */
-data class ChatMessage(val message: String, val senderId: String, val senderDisplayName: String, val id: String)
+data class ChatMessage(
+    val message: String,
+    val senderId: String,
+    val senderDisplayName: String,
+    val id: String,
+    val timeStamp: String = ""
+)
 
 /**
  *
@@ -144,8 +200,9 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
     }
 
     override fun setMessage(message: ChatMessage) {
-        user.text = message.senderDisplayName
+        chat_nickname.text = message.senderDisplayName
         chatMessage.text = message.message
+        text_open_chat_time.text = message.timeStamp
     }
 
     override fun getView(): View {

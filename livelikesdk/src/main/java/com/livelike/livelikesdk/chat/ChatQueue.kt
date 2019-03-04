@@ -7,6 +7,7 @@ import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.sendbird.ChatClient
+import java.util.*
 
 class ChatQueue (upstream: MessagingClient, val chatClient: ChatClient): MessagingClientProxy(upstream), ChatEventListener {
     private val connectedChannels : MutableList<String> = mutableListOf()
@@ -56,7 +57,8 @@ class ChatQueue (upstream: MessagingClient, val chatClient: ChatClient): Messagi
                 event.message.get("message").asString,
                 event.message.get("sender_id").asString,
                 event.message.get("sender").asString,
-                event.message.get("id").asString
+                event.message.get("id").asString,
+                Date(event.timeStamp.timeSinceEpochInMs).toString()
             )
         )
     }
