@@ -42,8 +42,6 @@ data class Program(
     val clientId: String,
     val id: String,
     val title: String,
-    val created: Long,
-    val started: Long,
     val widgetsEnabled: Boolean,
     val chatEnabled: Boolean,
     val subscribeChannel: String,

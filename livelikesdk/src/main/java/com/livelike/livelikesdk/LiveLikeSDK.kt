@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 
@@ -21,7 +22,7 @@ class LiveLikeSDK(val appId: String, val applicationContext: Context) {
     private var configuration: SdkConfiguration? = null
     private val dataClient = LiveLikeDataClientImpl()
     init {
-
+        AndroidThreeTen.init(applicationContext)
     }
 
     /**

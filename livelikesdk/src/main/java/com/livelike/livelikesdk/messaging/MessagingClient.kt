@@ -26,7 +26,12 @@ interface MessagingEventListener {
 /**
  * Represents a client message that can be sent from a MessagingClient
  */
-data class ClientMessage(val message:JsonObject, val channel: String, val timeStamp:EpochTime)
+data class ClientMessage(
+    val message: JsonObject,
+    val channel: String,
+    val timeStamp: EpochTime,
+    val timeoutMs: Long = 4000
+)
 
 /**
  * Represents a MessagingClient error that can be sent from a MessagingClient

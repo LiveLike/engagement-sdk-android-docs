@@ -8,7 +8,6 @@ import com.livelike.livelikesdk.LiveLikeDataClient
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.LiveLikeSdkDataClient
 import com.livelike.livelikesdk.Program
-import com.livelike.livelikesdk.util.extractLong
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import okhttp3.Call
 import okhttp3.Callback
@@ -46,8 +45,6 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient {
             programData.extractStringOrEmpty("content_id"),
             programData.extractStringOrEmpty("id"),
             programData.extractStringOrEmpty("title"),
-            programData.extractLong("created_at"),
-            programData.extractLong("started_at"),
             programData["widgets_enabled"].asBoolean,
             programData["chat_enabled"].asBoolean,
             programData.extractStringOrEmpty("subscribe_channel"),

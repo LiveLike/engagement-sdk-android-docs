@@ -57,6 +57,7 @@ class LiveLikeContentSessionImpl(
         sdkConfiguration.subscribe {
             val pubNubMessagingClient = PubnubMessagingClient(it.pubNubKey)
             val widgetQueue = pubNubMessagingClient.syncTo(currentPlayheadTime).toWidgetQueue()
+            widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer
             this.widgetQueue = widgetQueue
@@ -67,6 +68,7 @@ class LiveLikeContentSessionImpl(
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext)
             val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime).toChatQueue(SendbirdChatClient())
+            chatQueue.unsubscribeAll()
             chatQueue.subscribe(listOf(program.chatChannel))
             chatQueue.renderer = chatRenderer
             this.chatQueue = chatQueue

@@ -1,8 +1,7 @@
 package com.livelike.livelikepreintegrators
 
-import android.util.Log
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.hls.HlsManifest
+import com.google.android.exoplayer2.Timeline
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.messaging.EpochTime
@@ -13,24 +12,18 @@ fun LiveLikeSDK.createExoplayerSession(
     sessionReady: (LiveLikeContentSession) -> Unit
 ) {
     return this.createContentSession(contentId, {
-        val position = player()?.currentPosition
-        if (position != null) {
-            val currentManifest = player()?.currentManifest as HlsManifest?
-            if (currentManifest?.mediaPlaylist?.hasProgramDateTime != null && currentManifest.mediaPlaylist?.hasProgramDateTime!!) {
-                val currentAbsoluteTimeMs = currentManifest.mediaPlaylist.startTimeUs / 1000 + position
-                Log.i("Sync", "currentAbsoluteTimeMs $currentAbsoluteTimeMs")
-                EpochTime(currentAbsoluteTimeMs)
-            } else {
-                Log.i("Sync", "position $position")
-                EpochTime(position) // VOD or no PDT
-            }
-        } else {
-            Log.i("Sync", "noo... ${player() == null}")
-            EpochTime(0) // No time information in this stream
-        }
+        getExoplayerPdtTime(player)
     }, sessionReady)
 }
 
-
-
-
+fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): EpochTime {
+    return EpochTime(player()?.let {
+        it.currentTimeline?.run {
+            if (!isEmpty) {
+                getWindow(it.currentWindowIndex, Timeline.Window()).windowStartTimeMs + it.currentPosition
+            } else {
+                it.currentPosition
+            }
+        }
+    } ?: 0)
+}
