@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.BaseAdapter
+import android.widget.TextView
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import kotlinx.android.synthetic.main.chat_input.view.*
@@ -106,14 +107,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 // Send message on tap Enter
                 edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
                     if (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER || actionId == EditorInfo.IME_ACTION_DONE)) {
-                        val inputManager =
-                            context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-                        // Hide keyboard
-                        inputManager.hideSoftInputFromWindow(
-                            v.windowToken,
-                            InputMethodManager.HIDE_NOT_ALWAYS
-                        )
+                        hideKeyboard(v)
                         sendMessageNow()
                     }
                     false
@@ -131,6 +125,17 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 recycle()
             }
         }
+    }
+
+    private fun hideKeyboard(textView: TextView) {
+        val inputManager =
+            context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        // Hide keyboard
+        inputManager.hideSoftInputFromWindow(
+            textView.windowToken,
+            InputMethodManager.HIDE_NOT_ALWAYS
+        )
     }
 
     fun sendMessageNow() {
