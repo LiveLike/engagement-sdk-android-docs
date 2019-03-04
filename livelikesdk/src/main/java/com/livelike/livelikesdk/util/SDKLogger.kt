@@ -42,7 +42,8 @@ inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
 }
 
 
-class LoggerSample {
+@Suppress("unused")
+private class LoggerSample {
     data class Fruit(val name: String, val qty: Int)
 
     val threeApples: Fruit? = Fruit("Apple", 3)
