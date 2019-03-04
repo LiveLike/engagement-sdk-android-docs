@@ -8,16 +8,11 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnKeyListener
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.MessagingClient
-import com.livelike.livelikesdk.messaging.MessagingEventListener
-import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
 
@@ -79,12 +74,12 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 val inputTextColor = getInteger(R.styleable.ChatView_inputTextColor, R.color.colorInputText)
                 val defaultText = getString(com.livelike.livelikesdk.R.styleable.ChatView_inputTextDefault)
 
-                chatinput.setTextColor(inputTextColor)
-                chatinput.setText(defaultText.orEmpty())
-                chatinput.setOnKeyListener(OnKeyListener { v, keyCode, event ->
-                    if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && chatinput.text.isNotEmpty()) {
+                edittext_chat_message.setTextColor(inputTextColor)
+                edittext_chat_message.setText(defaultText.orEmpty())
+                edittext_chat_message.setOnKeyListener(OnKeyListener { v, keyCode, event ->
+                    if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && edittext_chat_message.text.isNotEmpty()) {
                         val newMessage = ChatMessage(
-                            chatinput.text.toString(),
+                            edittext_chat_message.text.toString(),
                             "user-id",
                             "User123",
                             "message_id"
@@ -93,7 +88,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                         val timeData = session.getPlayheadTime()
                         chatListener?.onChatMessageSend(newMessage, timeData)
                         this@ChatView.chatAdapter.addMessage(newMessage)
-                        chatinput.setText("")
+                        edittext_chat_message.setText("")
                         return@OnKeyListener true
                     }
                     false
@@ -144,7 +139,7 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
     }
 
     override fun setMessage(message: ChatMessage) {
-        user.text = message.senderDisplayName
+        chat_nickname.text = message.senderDisplayName
         chatMessage.text = message.message
     }
 
