@@ -16,11 +16,10 @@ import com.livelike.livelikesdk.widget.WidgetEvent
 import com.livelike.livelikesdk.widget.WidgetEventListener
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.WidgetType
-import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUpData
-import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestionData
-import com.livelike.livelikesdk.widget.model.WidgetOptionsData
+import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
+import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
+import com.livelike.livelikesdk.widget.model.WidgetOptions
 import java.net.URI
-import java.util.*
 
 class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs),
     WidgetRenderer {
@@ -48,7 +47,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             WidgetType.TEXT_PREDICTION -> {
                 val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0)
                 predictionWidget.layoutParams = layoutParams
-                val widgetData = PredictionWidgetQuestionData()
+                val widgetData = PredictionWidgetQuestion()
                 widgetData.registerObserver(predictionWidget)
                 parseTextPredictionWidget(widgetData, payload)
                 container.addView(predictionWidget)
@@ -58,7 +57,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 val predictionWidget =
                     PredictionTextFollowUpWidgetView(context, null, 0)
                 predictionWidget.layoutParams = layoutParams
-                val followupWidgetData = PredictionWidgetFollowUpData(WidgetTestData.questionWidgetDataList)
+                val followupWidgetData = PredictionWidgetFollowUp(WidgetTestData.questionWidgetDataList)
                 followupWidgetData.registerObserver(predictionWidget)
                 WidgetTestData.fillDummyDataInTextPredictionFollowUpData(followupWidgetData)
                 container.addView(predictionWidget)
@@ -74,16 +73,16 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
 
-    private fun parseTextPredictionWidget(widgetData: PredictionWidgetQuestionData, payload: JsonObject) {
+    private fun parseTextPredictionWidget(widgetData: PredictionWidgetQuestion, payload: JsonObject) {
         widgetData.question = payload.extractStringOrEmpty("question")
         //widgetData.confirmationMessage = payload.extractStringOrEmpty("confirmation_message")
 
-        val options = mutableListOf<WidgetOptionsData>()
+        val options = mutableListOf<WidgetOptions>()
         for (option in payload["options"].asJsonArray) {
             val optionJson = option.asJsonObject
             options.add(
-                WidgetOptionsData(
-                    UUID.fromString(optionJson.extractStringOrEmpty("id")),
+                WidgetOptions(
+                    optionJson.extractStringOrEmpty("id"),
                     URI.create(optionJson.extractStringOrEmpty("vote_url")),
                     optionJson.extractStringOrEmpty("description"),
                     optionJson.extractLong("vote_count")

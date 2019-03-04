@@ -1,6 +1,6 @@
 package com.livelike.livelikesdk.binding
 
 interface Observable {
-    fun registerObserver(observer: Observer)
-    fun unRegisterObserver(observer: Observer)
+    fun registerObserver(widgetObserver: WidgetObserver)
+    fun unRegisterObserver(widgetObserver: WidgetObserver)
 }

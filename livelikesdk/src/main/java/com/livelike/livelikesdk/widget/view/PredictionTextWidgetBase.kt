@@ -21,25 +21,25 @@ import android.widget.TextView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
-import com.livelike.livelikesdk.binding.Observer
+import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
-import com.livelike.livelikesdk.widget.model.WidgetOptionsData
+import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
-import java.util.Random
+import java.util.*
 import kotlin.collections.ArrayList
 
-open class PredictionTextWidgetBase : ConstraintLayout, Observer {
+open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected val timerDuration: Long = 7000
     protected val widgetShowingDurationAfterConfirmMessage: Long = 3000
     protected val widgetOpacityFactor: Float = 0.2f
     protected val constraintSet = ConstraintSet()
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val animationHandler = AnimationHandler()
+    protected val buttonMap = mutableMapOf<Button, String>()
     protected var optionSelected = false
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub : ViewStub
-
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -63,41 +63,41 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         })
     }
 
-    override fun optionListUpdated(optionList: Map<String, Long>, optionSelectedCallback: (CharSequence?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
+    override fun optionListUpdated(voteOptions: List<VoteOption>, optionSelectedCallback: (String?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
         val textView = findViewById<TextView>(R.id.prediction_question_textView)
-        addNewlyCreatedButtonsToLayout(context, ArrayList(optionList.keys), optionSelectedCallback)
+        addNewlyCreatedButtonsToLayout(context, voteOptions, optionSelectedCallback)
         applyConstraintsBetweenViews(constraintSet, textView)
     }
 
-    override fun optionSelectedUpdated(selectedOption: WidgetOptionsData) {
-        buttonList.single { button ->
-            button.text == selectedOption.description
-        }.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
-
-        buttonList.filterNot { button ->
-            button.text == selectedOption.description
-        }.forEach{ button ->
-            button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
+    override fun optionSelectedUpdated(selectedOptionId: String?) {
+        buttonMap.forEach { (button, id) ->
+            if (selectedOptionId == id)
+                button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
+            else button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
         }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun addNewlyCreatedButtonsToLayout(
         context: Context,
-        optionList: List<String>,
-        optionSelectedCallback: (CharSequence?) -> Unit) {
-        optionList.forEachIndexed { index, element ->
+        voteOptions: List<VoteOption>,
+        optionSelectedCallback: (String?) -> Unit) {
+        voteOptions.forEachIndexed{ index, option ->
             val button = Button(context)
             buttonList.add(button)
-            applyStyle(button, optionList, index, context, element)
-            button.setOnClickListener {
-                optionSelected = true
-                button.text.also {
-                    logi("User selected option $it")
-                    optionSelectedCallback(it)
+            if (option.id != null) {
+                applyStyle(button, option.description , context, voteOptions, index)
+                buttonMap[button] = option.id
+                button.setOnClickListener {
+                    optionSelected = true
+                    button.text.also {
+                        logi("User selected option $it")
+                        val selectedButton = buttonMap[button]
+                        optionSelectedCallback(selectedButton)
+                    }
                 }
+                addHorizontalSwipeListener(button)
             }
-            addHorizontalSwipeListener(button)
             layout.addView(button)
         }
     }
@@ -118,23 +118,23 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         Log.i(T::class.java.simpleName, message)
 
     private fun applyStyle(button: Button,
-                           buttonNames: List<String>?,
-                           buttonIndex: Int,
+                           buttonText: String,
                            context: Context,
-                           buttonText: String) {
+                           voteOptions: List<VoteOption>,
+                           index: Int) {
         button.apply {
-            background = if (isLastButtonToBeAddedToLayout(buttonNames, buttonIndex))
+            background = if (isLastButtonToBeAddedToLayout(voteOptions, index)) {
                 AppCompatResources.getDrawable(context, R.drawable.bottom_rounded_corner)
-            else
-                AppCompatResources.getDrawable(context, R.drawable.button_default)
+            } else AppCompatResources.getDrawable(context, R.drawable.button_default)
             setTextColor(ContextCompat.getColor(context, R.color.text_color))
             text = buttonText
-            layoutParams = ConstraintLayout.LayoutParams(
+            layoutParams = LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT)
             elevation = dpToPx(4).toFloat()
             gravity = Gravity.START; Gravity.CENTER_VERTICAL
             id = View.generateViewId()
+
             typeface = ResourcesCompat.getFont(context, R.font.titillium_semibold)
             textSize = 15f
         }
@@ -167,8 +167,8 @@ open class PredictionTextWidgetBase : ConstraintLayout, Observer {
         constraintSet.applyTo(layout)
     }
 
-    private fun isLastButtonToBeAddedToLayout(buttonNames: List<String>?, index: Int) =
-            buttonNames!![index] == buttonNames[buttonNames.size - 1]
+    private fun isLastButtonToBeAddedToLayout(options: List<VoteOption>, index: Int) =
+        options[index] == options[options.size - 1]
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
     // functions to use and how we layout widget and chat we can think of these values more.
