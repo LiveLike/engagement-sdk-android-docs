@@ -11,4 +11,7 @@
 
     <color name="text_color">#ffffff</color>
 
+    <color name="openChatNicknameOther">#7b8391</color>
+    <color name="openChatNicknameMe">#00BCD4</color>
+
 </resources>

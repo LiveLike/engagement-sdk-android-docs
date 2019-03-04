@@ -2,10 +2,10 @@ package com.livelike.livelikesdk.chat
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
+import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -51,7 +51,6 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     init {
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
-
         (context as Activity).window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
         context.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
@@ -209,12 +208,12 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
         currentUser: LiveLikeUser
     ) {
         if (currentUser.userId == message.senderId) {
-            chat_nickname.setTextColor(Color.BLUE)
-            chat_nickname.text = message.senderDisplayName
-        } else {
+            chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameMe))
             chat_nickname.text = "(Me) ${message.senderDisplayName}"
+        } else {
+            chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameOther))
+            chat_nickname.text = message.senderDisplayName
         }
-        chat_nickname.text = message.senderDisplayName
         chatMessage.text = message.message
         text_open_chat_time.text = message.timeStamp
     }

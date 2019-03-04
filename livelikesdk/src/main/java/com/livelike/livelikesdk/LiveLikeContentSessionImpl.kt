@@ -27,6 +27,7 @@ class LiveLikeContentSessionImpl(
     private var widgetQueue: WidgetQueue? = null
     private var chatQueue: ChatQueue? = null
 
+    // TODO: fetch this from applications/{app-id}/session endpoint
     override val currentUser: LiveLikeUser
         get() {
             return LiveLikeUser("user-id", "User123")
