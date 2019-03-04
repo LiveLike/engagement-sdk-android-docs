@@ -21,6 +21,7 @@ import com.livelike.livelikesdk.R
 import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
+import java.util.*
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -133,14 +134,15 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     }
 
     fun sendMessageNow() {
+        val timeData = session.getPlayheadTime()
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
             "user-id",
             "User123",
-            "message_id"
+            "message_id",
+            Date(timeData.timeSinceEpochInMs).toString()
         )
 
-        val timeData = session.getPlayheadTime()
         chatListener?.onChatMessageSend(newMessage, timeData)
         this@ChatView.chatAdapter.addMessage(newMessage)
         edittext_chat_message.setText("")
@@ -160,8 +162,15 @@ interface ChatCell {
  *  @param senderId This is unique user id.
  *  @param senderDisplayName This is display name user is associated with.
  *  @param id A unique ID to identify the message.
+ *  @param timeStamp Message timeStamp.
  */
-data class ChatMessage(val message: String, val senderId: String, val senderDisplayName: String, val id: String)
+data class ChatMessage(
+    val message: String,
+    val senderId: String,
+    val senderDisplayName: String,
+    val id: String,
+    val timeStamp: String = ""
+)
 
 /**
  *
@@ -188,6 +197,7 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
     override fun setMessage(message: ChatMessage) {
         chat_nickname.text = message.senderDisplayName
         chatMessage.text = message.message
+        text_open_chat_time.text = message.timeStamp
     }
 
     override fun getView(): View {
