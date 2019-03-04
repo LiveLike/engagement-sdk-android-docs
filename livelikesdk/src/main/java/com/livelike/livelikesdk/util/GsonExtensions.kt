@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.util
 
 import android.util.Log
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -27,6 +28,11 @@ fun JsonObject.extractLong(propertyName: String, default: Long = 0): Long {
     }
     return returnVal
 }
+
+val gson = GsonBuilder()
+    .registerTypeAdapter(ZonedDateTime::class.java, DateDeserializer())
+    .registerTypeAdapter(ZonedDateTime::class.java, DateSerializer())
+    .create()
 
 private val isoUTCDateTimeFormatter =
     DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("UTC"))

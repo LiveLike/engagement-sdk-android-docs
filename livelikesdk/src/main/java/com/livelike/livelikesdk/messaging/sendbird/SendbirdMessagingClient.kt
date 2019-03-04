@@ -1,14 +1,12 @@
 package com.livelike.livelikesdk.messaging.sendbird
 
 import android.content.Context
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
-import com.livelike.livelikesdk.util.DateDeserializer
-import com.livelike.livelikesdk.util.DateSerializer
+import com.livelike.livelikesdk.util.gson
 import com.sendbird.android.BaseChannel
 import com.sendbird.android.BaseMessage
 import com.sendbird.android.OpenChannel
@@ -58,11 +56,6 @@ class SendbirdMessagingClient (subscribeKey: String, val context: Context) : Mes
     data class MessageData(
         val program_date_time: ZonedDateTime
     )
-
-    private val gson = GsonBuilder()
-        .registerTypeAdapter(ZonedDateTime::class.java, DateDeserializer())
-        .registerTypeAdapter(ZonedDateTime::class.java, DateSerializer())
-        .create()
 
     override fun subscribe(channels: List<String>) {
         channels.forEach {
