@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.messaging.pubnub
 
-import android.util.Log
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.EpochTime
@@ -8,6 +7,7 @@ import com.livelike.livelikesdk.messaging.Error
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
 import com.livelike.livelikesdk.util.extractStringOrEmpty
+import com.livelike.livelikesdk.util.logVerbose
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -108,11 +108,11 @@ class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
             override fun presence(pubnub: PubNub, presence: PNPresenceEventResult) {}
 
             fun logMessage(message: PNMessageResult) {
-                Log.i("Pubnub", "Message publisher: " + message.publisher)
-                Log.i("Pubnub", "Message Payload: " + message.message)
-                Log.i("Pubnub", "Message Subscription: " + message.subscription)
-                Log.i("Pubnub", "Message Channel: " + message.channel)
-                Log.i("Pubnub", "Message timetoken: " + message.timetoken!!)
+                logVerbose { "Message publisher: " + message.publisher }
+                logVerbose { "Message Payload: " + message.message }
+                logVerbose { "Message Subscription: " + message.subscription }
+                logVerbose { "Message Channel: " + message.channel }
+                logVerbose { "Message timetoken: " + message.timetoken!! }
             }
         })
     }
