@@ -17,11 +17,13 @@ class SendbirdChatClient : ChatClient {
         .registerTypeAdapter(ZonedDateTime::class.java, DateSerializer())
         .create()
 
+    private val zoneUTC = ZoneId.of("UTC")
+
     override fun sendMessage(message: ClientMessage) {
         val messageTimestamp = gson.toJson(
             SendbirdMessagingClient.MessageData(
                 ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(message.timeStamp.timeSinceEpochInMs), ZoneId.of("UTC")
+                    Instant.ofEpochMilli(message.timeStamp.timeSinceEpochInMs), zoneUTC
                 )
             )
         )

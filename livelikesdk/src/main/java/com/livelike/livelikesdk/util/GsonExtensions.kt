@@ -28,7 +28,8 @@ fun JsonObject.extractLong(propertyName: String, default: Long = 0): Long {
     return returnVal
 }
 
-private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("UTC"))
+private val isoUTCDateTimeFormatter =
+    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("UTC"))
 
 class DateDeserializer : JsonDeserializer<ZonedDateTime> {
 
@@ -36,7 +37,7 @@ class DateDeserializer : JsonDeserializer<ZonedDateTime> {
         val date = element.asString
 
         return try {
-            ZonedDateTime.parse(date, formatter)
+            ZonedDateTime.parse(date, isoUTCDateTimeFormatter)
         } catch (e: ParseException) {
             Log.e("Deserialize", "Failed to parse Date due to:", e)
             null
@@ -47,7 +48,7 @@ class DateDeserializer : JsonDeserializer<ZonedDateTime> {
 class DateSerializer : JsonSerializer<ZonedDateTime> {
     override fun serialize(src: ZonedDateTime?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
         val obj = JsonObject()
-        obj.addProperty("program_date_time", formatter.format(src).toString())
+        obj.addProperty("program_date_time", isoUTCDateTimeFormatter.format(src).toString())
         return obj.get("program_date_time")
     }
 }
