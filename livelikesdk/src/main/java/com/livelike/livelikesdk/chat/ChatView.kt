@@ -121,7 +121,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 button_chat_send.isEnabled = false
                 button_chat_send.setOnClickListener { v ->
                     chatdisplay.post {
-                        chatdisplay.smoothScrollToPosition(0)
+                        chatdisplay.smoothScrollToPosition(chatdisplay.maxScrollAmount)
                     }
                     sendMessageNow()
                 }
