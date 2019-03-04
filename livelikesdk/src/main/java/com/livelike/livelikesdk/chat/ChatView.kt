@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.chat
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
@@ -18,6 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.LiveLikeUser
 import com.livelike.livelikesdk.R
 import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
@@ -157,7 +159,10 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 }
 
 interface ChatCell {
-    fun setMessage(message: ChatMessage)
+    fun setMessage(
+        message: ChatMessage,
+        currentUser: LiveLikeUser
+    )
     fun getView() : View
 }
 
@@ -199,7 +204,16 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 .inflate(R.layout.default_chat_cell, this, true)
     }
 
-    override fun setMessage(message: ChatMessage) {
+    override fun setMessage(
+        message: ChatMessage,
+        currentUser: LiveLikeUser
+    ) {
+        if (currentUser.userId == message.senderId) {
+            chat_nickname.setTextColor(Color.BLUE)
+            chat_nickname.text = message.senderDisplayName
+        } else {
+            chat_nickname.text = "(Me) ${message.senderDisplayName}"
+        }
         chat_nickname.text = message.senderDisplayName
         chatMessage.text = message.message
         text_open_chat_time.text = message.timeStamp
@@ -246,7 +260,7 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
 
     fun addMessage(chat : ChatMessage) {
         val cell = cellFactory.getCell()
-        cell.setMessage(chat)
+        cell.setMessage(chat, session.currentUser)
         chatMessages.add(cell)
         notifyDataSetChanged()
     }

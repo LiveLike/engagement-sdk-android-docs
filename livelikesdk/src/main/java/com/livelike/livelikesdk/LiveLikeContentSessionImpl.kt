@@ -27,6 +27,11 @@ class LiveLikeContentSessionImpl(
     private var widgetQueue: WidgetQueue? = null
     private var chatQueue: ChatQueue? = null
 
+    override val currentUser: LiveLikeUser
+        get() {
+            return LiveLikeUser("user-id", "User123")
+        }
+
     override var widgetRenderer: WidgetRenderer? = null
         set(value) {
             field = value
