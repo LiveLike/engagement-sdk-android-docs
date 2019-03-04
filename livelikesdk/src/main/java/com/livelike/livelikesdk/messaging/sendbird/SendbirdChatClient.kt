@@ -25,9 +25,7 @@ class SendbirdChatClient : ChatClient {
                 message.message.get("message").asString,
                 messageTimestamp, null, null
             ) { userMessage, e ->
-                if (e != null) {
-                    logError { "Error sending the message: $e" }
-                }
+                e?.also { logError { "Error sending the message: $it" } }
             }
         }
     }
