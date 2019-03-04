@@ -1,15 +1,20 @@
 package com.livelike.livelikesdk.chat
 
+import android.app.Activity
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnKeyListener
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.BaseAdapter
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
@@ -32,17 +37,18 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.*
 
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer  {
     override var chatListener: ChatEventListener? = null
+    override val chatContext: Context = context
 
-    val attrs: AttributeSet = attrs!!
-    private val TAG = javaClass.simpleName
-
+    private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
-    lateinit var chatAdapter: ChatAdapter
-    override val chatContext : Context = context
+    private lateinit var chatAdapter: ChatAdapter
 
     init {
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
+
+        (context as Activity).window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+        context.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -76,27 +82,67 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
                 edittext_chat_message.setTextColor(inputTextColor)
                 edittext_chat_message.setText(defaultText.orEmpty())
-                edittext_chat_message.setOnKeyListener(OnKeyListener { v, keyCode, event ->
-                    if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER && edittext_chat_message.text.isNotEmpty()) {
-                        val newMessage = ChatMessage(
-                            edittext_chat_message.text.toString(),
-                            "user-id",
-                            "User123",
-                            "message_id"
-                        )
 
-                        val timeData = session.getPlayheadTime()
-                        chatListener?.onChatMessageSend(newMessage, timeData)
-                        this@ChatView.chatAdapter.addMessage(newMessage)
-                        edittext_chat_message.setText("")
-                        return@OnKeyListener true
+                button_chat_send.visibility = View.GONE
+
+                edittext_chat_message.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+                    override fun afterTextChanged(s: Editable) {
+                        if (s.isNotEmpty()) {
+                            button_chat_send.isEnabled = true
+                            button_chat_send.visibility = View.VISIBLE
+                        } else {
+                            button_chat_send.isEnabled = false
+                            button_chat_send.visibility = View.GONE
+                        }
+                    }
+                })
+
+                // Send message on tap Enter
+                edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
+                    if (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER || actionId == EditorInfo.IME_ACTION_DONE)) {
+                        val inputManager =
+                            context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+                        // Hide keyboard
+                        inputManager.hideSoftInputFromWindow(
+                            v.windowToken,
+                            InputMethodManager.HIDE_NOT_ALWAYS
+                        )
+                        sendMessageNow()
                     }
                     false
-                })
+                }
+
+                button_chat_send.isEnabled = false
+                button_chat_send.setOnClickListener { v ->
+                    chatdisplay.post {
+                        chatdisplay.smoothScrollToPosition(0)
+                    }
+                    sendMessageNow()
+                }
+
             } finally {
                 recycle()
             }
         }
+    }
+
+    fun sendMessageNow() {
+        val newMessage = ChatMessage(
+            edittext_chat_message.text.toString(),
+            "user-id",
+            "User123",
+            "message_id"
+        )
+
+        val timeData = session.getPlayheadTime()
+        chatListener?.onChatMessageSend(newMessage, timeData)
+        this@ChatView.chatAdapter.addMessage(newMessage)
+        edittext_chat_message.setText("")
     }
 
 

@@ -9,7 +9,7 @@
 >
 
     <View
-            android:id="@+id/chatinput"
+            android:id="@+id/chat_input_border"
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_alignParentBottom="true"
@@ -20,11 +20,12 @@
             android:background="@drawable/round_max_rect_shape_stroke_no_color"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button_open_channel_chat_send"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintEnd_toStartOf="@+id/button_chat_send"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/chatdisplay"/>
 
     <ImageButton
-            android:id="@+id/button_open_channel_chat_send"
+            android:id="@+id/button_chat_send"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="bottom"
@@ -37,11 +38,12 @@
             android:scaleType="fitXY"
             android:src="@drawable/chat_send"
             android:textColor="#ffffff"
-            android:textSize="14dp"
+            android:textSize="14sp"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/chatinput"/>
+            app:layout_constraintTop_toTopOf="@+id/chat_input_border"
+            android:focusable="true"/>
 
     <EditText
             android:id="@+id/edittext_chat_message"
@@ -58,14 +60,14 @@
             android:textColor="#ffffff"
             android:textColorHint="#8e8e8e"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@+id/chatinput"
-            app:layout_constraintEnd_toStartOf="@+id/button_open_channel_chat_upload"
+            app:layout_constraintBottom_toBottomOf="@+id/chat_input_border"
+            app:layout_constraintEnd_toStartOf="@+id/button_emoji"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/chatinput"
-            app:layout_constraintTop_toTopOf="@+id/chatinput"/>
+            app:layout_constraintStart_toStartOf="@+id/chat_input_border"
+            app:layout_constraintTop_toTopOf="@+id/chat_input_border"/>
 
     <ImageButton
-            android:id="@+id/button_open_channel_chat_upload"
+            android:id="@+id/button_emoji"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="bottom"
@@ -73,11 +75,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="9dp"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="@+id/chatinput"
-            app:layout_constraintEnd_toEndOf="@+id/chatinput"
+            app:layout_constraintBottom_toBottomOf="@+id/chat_input_border"
+            app:layout_constraintEnd_toEndOf="@+id/chat_input_border"
             app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/chatinput"
-            app:layout_constraintTop_toTopOf="@+id/chatinput"
+            app:layout_constraintStart_toStartOf="@+id/chat_input_border"
+            app:layout_constraintTop_toTopOf="@+id/chat_input_border"
             app:srcCompat="@drawable/emoji_ios_category_smileysandpeople"
             tools:ignore="ContentDescription"/>
 
@@ -88,26 +90,7 @@
             tools:listitem="@layout/default_chat_cell"
             android:stackFromBottom="true"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/chatinput"
+            app:layout_constraintBottom_toTopOf="@id/chat_input_border"
     />
 
 </android.support.constraint.ConstraintLayout>
-
-
-        <!--<EditText-->
-        <!--android:id="@+id/chatinput"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:importantForAutofill="no"-->
-
-        <!--android:inputType="text"-->
-        <!--android:textColor="@color/colorInputText"-->
-        <!--android:background="@color/colorAccent"-->
-        <!--android:textSize="18sp"-->
-
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--/>-->
-
-
