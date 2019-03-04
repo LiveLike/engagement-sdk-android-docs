@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.BaseAdapter
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
+import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
 
