@@ -20,6 +20,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import okio.ByteString
 import java.io.IOException
 
 class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
@@ -123,7 +124,16 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, Widget
     override fun vote(voteUrl: String) {
         val request = Request.Builder()
             .url(voteUrl)
+            .post(RequestBody.create(null,  ByteString.EMPTY))
             .build()
-        client.newCall(request).execute()
+        val call = client.newCall(request)
+        call.enqueue(object : Callback {
+            override fun onResponse(call: Call?, response: Response) {}
+
+            override fun onFailure(call: Call?, e: IOException?) {
+                //TODO handle error here, or at session level? Currently passing empty Json
+            }
+        })
+
     }
 }

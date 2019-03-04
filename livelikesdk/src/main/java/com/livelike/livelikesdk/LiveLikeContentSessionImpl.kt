@@ -77,7 +77,7 @@ class LiveLikeContentSessionImpl(
 
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
-            val widgetQueue = PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).asWidgetQueue()
+            val widgetQueue = PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).asWidgetQueue(llDataClient)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer
