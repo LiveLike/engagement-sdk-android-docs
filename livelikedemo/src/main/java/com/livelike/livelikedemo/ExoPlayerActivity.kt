@@ -81,9 +81,10 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
+                val pdtTime = player.getPDT()
                 runOnUiThread {
-                    pdtText2?.text = Date(player.getPDT()).toString()
-                    pdtText?.text = player.getPDT().toString()
+                    videoTextLine1?.text = Date(pdtTime).toString()
+                    videoTextLine2?.text = pdtTime.toString()
                 }
             }
         }, 0, 100)
