@@ -61,24 +61,34 @@
             android:visibility="visible"
             android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/videoTimestamp" android:textSize="13sp"/>
-    <Button
-            android:id="@+id/openLogs"
-            android:text="Logs"
-            android:layout_height="40dp"
-            android:layout_width="wrap_content"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="@+id/logsPreview"
-            android:layout_marginEnd="8dp" app:layout_constraintTop_toTopOf="@+id/logsPreview"
-            app:layout_constraintBottom_toBottomOf="@+id/logsPreview"/>
     <TextView
             android:text="TextView"
             android:layout_width="0dp"
-            android:layout_height="38dp"
+            android:layout_height="50dp"
             android:id="@+id/logsPreview"
             android:background="@color/colorPrimary"
             android:textColor="@color/colorInputText"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/playerView"
-            android:textAlignment="textStart"/>
+            android:textAlignment="textStart"
+            app:layout_constraintEnd_toStartOf="@+id/openLogs"/>
+    <TextView
+            android:text="TextView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/fullLogs"
+            android:background="@color/exo_error_message_background_color" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/playerView"
+            app:layout_constraintBottom_toBottomOf="parent" android:textAlignment="textStart" tools:text="ojokok"
+            android:textColor="@color/colorInputText" android:visibility="gone"/>
+    <Button
+            android:id="@+id/openLogs"
+            android:text="Logs"
+            android:layout_height="0dp"
+            android:layout_width="46dp"
+            android:visibility="visible"
+            app:layout_constraintTop_toTopOf="@+id/logsPreview"
+            app:layout_constraintBottom_toBottomOf="@+id/logsPreview" app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="8sp"/>
 
 </android.support.constraint.ConstraintLayout>

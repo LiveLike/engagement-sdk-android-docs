@@ -75,6 +75,10 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         player = ExoPlayerImpl(this, playerView)
 
+        openLogs.setOnClickListener {
+            fullLogs.visibility = if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
+        }
+
         adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
         val position = savedInstanceState?.getLong(POSITION) ?: 0
         startingState = PlayerState(0, position, !adsPlaying)
@@ -164,6 +168,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         registerLogsHandler(object : (String) -> Unit {
             override fun invoke(text: String) {
                 logsPreview.text = "$text \n ${logsPreview.text}"
+                fullLogs.text = "$text \n ${fullLogs.text}"
             }
         })
 
