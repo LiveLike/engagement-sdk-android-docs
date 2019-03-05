@@ -14,12 +14,13 @@ const val USE_DRAWER_LAYOUT = "use_drawer"
 
 class MainActivity : AppCompatActivity() {
 
-    data class PlayerInfo(val playerName : String, val cls: KClass<out Activity>)
+    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+    }
+/*
         //Add player activities by adding them to the list below.
         val  players = listOf(
             PlayerInfo("Exo Player", ExoPlayerActivity::class)
@@ -27,8 +28,9 @@ class MainActivity : AppCompatActivity() {
         )
 
         players.forEach { createPlayerButton(it) }
+        */
     }
-
+/*
     fun createPlayerButton(player : PlayerInfo) {
         val pButton = Button(this)
         pButton.layoutParams = LinearLayout.LayoutParams(400, 200)
@@ -40,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-fun Context.PlayerDetailIntent(player: MainActivity.PlayerInfo): Intent {
-    return Intent(this, player.cls.java)
-}
+fun Context.PlayerDetailIntent(player: MainActivity.PlayerInfo, useDrawer : Boolean): Intent {
+    return Intent(this, player.cls.java).apply {
+        putExtra(USE_DRAWER_LAYOUT, useDrawer )
+    }
+}*/
