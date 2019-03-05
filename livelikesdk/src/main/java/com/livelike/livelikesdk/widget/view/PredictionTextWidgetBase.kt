@@ -59,7 +59,6 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
-
     }
 
     @SuppressLint("ClickableViewAccessibility")

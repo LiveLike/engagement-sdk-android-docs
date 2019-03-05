@@ -46,6 +46,7 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
 
     private fun onTimerAnimationCompleted(animationHandler: AnimationHandler) {
         if (optionSelected) {
+
             prediction_confirm_message_textView.visibility = View.VISIBLE
 
             lottieAnimationPath = "confirmMessage"

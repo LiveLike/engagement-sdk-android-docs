@@ -27,7 +27,7 @@ abstract class Widget : Observable {
 
     protected fun optionSelectedUpdated(id: String?) {
         if (id == null) {
-            optionSelected = WidgetOptions(null, null, "", 0)
+            optionSelected = WidgetOptions(null, null, "", 0, null)
             return
         }
         optionSelected = optionList.single { option ->
@@ -36,7 +36,7 @@ abstract class Widget : Observable {
     }
 
     var optionSelected: WidgetOptions by observable(
-        WidgetOptions(null, null, "", 0)) { _, _, newValue ->
+        WidgetOptions(null, null, "", 0, null)) { _, _, newValue ->
         observers.forEach { observer ->
             observer.optionSelectedUpdated(newValue.id)
         }
@@ -69,7 +69,7 @@ class PredictionWidgetFollowUp : Widget() {
         val optionsWithVotePercentageMap = LinkedHashMap<String, Long>()
         newValue.forEach { data ->
             optionsWithVotePercentageMap[data.description] = data.voteCount
-            voteOptions.add(VoteOption(data.id, data.description, data.voteCount))
+            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl))
         }
     }
 
@@ -96,14 +96,15 @@ class PredictionWidgetFollowUp : Widget() {
 data class WidgetOptions(val id: String?,
                          val voteUrl: URI?,
                          var description: String,
-                         var voteCount: Long)
+                         var voteCount: Long,
+                         val imageUrl: String?)
 
 
 class PredictionWidgetQuestion : Widget(){
     override var optionList: List<WidgetOptions> by observable(emptyList()) { _, _, newValue ->
         val voteOptionList = mutableListOf<VoteOption>()
         newValue.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount))
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl))
         }
 
         observers.forEach { observer ->
@@ -112,4 +113,4 @@ class PredictionWidgetQuestion : Widget(){
     }
 }
 
-class VoteOption(val id: String?, val description: String, val votePercentage: Long)
+class VoteOption(val id: String?, val description: String, val votePercentage: Long, val imageUrl: String?)

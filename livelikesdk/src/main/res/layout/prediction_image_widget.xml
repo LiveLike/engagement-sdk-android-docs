@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="wrap_content"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             android:id="@+id/prediction_image_widget">
+
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/image_optionList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    <TextView
+            android:id="@+id/prediction_question_textView"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:background="@drawable/top_rounded_corner"
+            android:gravity="start|center_vertical"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/textView_text_size"
+            app:fontFamily="@font/titillium_bold"
+            app:layout_constraintTop_toBottomOf="@id/image_optionList"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <include layout="@layout/piechart"
+             android:id="@+id/common"/>
+
+</android.support.constraint.ConstraintLayout>

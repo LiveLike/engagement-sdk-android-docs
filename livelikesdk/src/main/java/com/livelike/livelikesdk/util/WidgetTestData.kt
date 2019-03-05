@@ -25,19 +25,22 @@ class WidgetTestData {
                 optionFirstId,
                 voteUrl,
                 optionFirstDescription,
-                0L
+                0L,
+                null
             ),
             WidgetOptions(
                 optionSecondId,
                 voteUrl,
                 optionSecondDescription,
-                0L
+                0L,
+                null
             ),
             WidgetOptions(
                 optionThirdId,
                 voteUrl,
                 optionThirdDescription,
-                0L
+                0L,
+                null
             )
         )
 

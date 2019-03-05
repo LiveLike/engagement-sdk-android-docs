@@ -19,6 +19,7 @@ import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
 import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.model.WidgetOptions
+import com.livelike.livelikesdk.widget.view.image.PredictionImageQuestionWidget
 import java.net.URI
 import java.util.*
 
@@ -74,6 +75,16 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 container.addView(predictionWidget)
                 currentWidget = followupWidgetData
             }
+
+            WidgetType.IMAGE_PREDICTION -> {
+                val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
+                predictionWidget.layoutParams = layoutParams
+                val widgetData = PredictionWidgetQuestion()
+                widgetData.registerObserver(predictionWidget)
+                parseTextPredictionWidget(widgetData, payload)
+                container.addView(predictionWidget)
+            }
+
             else -> {
             }
         }
@@ -121,7 +132,8 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                     optionJson.extractStringOrEmpty("id"),
                     URI.create(optionJson.extractStringOrEmpty("vote_url")),
                     optionJson.extractStringOrEmpty("description"),
-                    optionJson.extractLong("vote_count")
+                    optionJson.extractLong("vote_count"),
+                    optionJson.extractStringOrEmpty("image_url")
                 )
             )
         }
