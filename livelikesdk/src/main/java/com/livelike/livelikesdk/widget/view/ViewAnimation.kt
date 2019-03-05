@@ -8,6 +8,7 @@ import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import java.util.*
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.util.AndroidResource
 
 class ViewAnimation(val view: View, private val animationHandler: AnimationHandler) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
@@ -59,7 +60,7 @@ class ViewAnimation(val view: View, private val animationHandler: AnimationHandl
                            confirmMessageLottieAnimationView: LottieAnimationView) {
         confirmMessageTextView.visibility = View.VISIBLE
             val lottieAnimationPath = "confirmMessage"
-            val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath)
+            val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, view.context)
             if (lottieAnimation != null) {
                 confirmMessageLottieAnimationView.setAnimation("$lottieAnimationPath/$lottieAnimation")
                 confirmMessageLottieAnimationView.visibility = View.VISIBLE
@@ -71,23 +72,7 @@ class ViewAnimation(val view: View, private val animationHandler: AnimationHandl
             }
     }
 
-    private fun hideWidget() {
+    fun hideWidget() {
         view.visibility = View.INVISIBLE
-    }
-
-    // TODO: move these to util classes.
-    protected fun dpToPx(dp: Int): Int {
-        val scale = Resources.getSystem().displayMetrics.density
-        return (dp * scale + 0.5f).toInt()
-    }
-
-    protected fun selectRandomLottieAnimation(path: String): String? {
-        val asset = view.context?.assets
-        val assetList = asset?.list(path)
-        val random = Random()
-        return if (assetList!!.isNotEmpty()) {
-            val emojiIndex = random.nextInt(assetList.size)
-            assetList[emojiIndex]
-        } else return null
     }
 }

@@ -12,9 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.ImageButton
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.ViewAnimation
 import kotlinx.android.synthetic.main.pie_timer.view.*
@@ -51,10 +54,9 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
                 viewAnimation.showConfirmMessage(prediction_confirm_message_textView, prediction_confirm_message_animation)
                 performPredictionWidgetFadeOutOperations()
             } else {
-
+                viewAnimation.hideWidget()
             }
         }
-        // startWidgetAnimation(pieTimer)
     }
 
     private fun performPredictionWidgetFadeOutOperations() {
@@ -109,7 +111,11 @@ class ImageAdapter(private val optionList: List<VoteOption>,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val option = optionList[position]
         holder.optionText.text = option.description
-      //  Picasso.get().load(option.imageUrl).into(holder.optionButton)
+        val imageWidth = AndroidResource.dpToPx(74)
+        Glide.with(context)
+            .load(option.imageUrl)
+            .apply(RequestOptions().override(imageWidth, imageWidth))
+            .into(holder.optionButton)
 
         imageButtonMap[holder.optionButton] = option.id
 
