@@ -19,7 +19,9 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.chat.ChatAdapter
 import com.livelike.livelikesdk.chat.ChatTheme
 import com.livelike.livelikesdk.chat.DefaultChatCellFactory
+import kotlinx.android.synthetic.main.activity_exo_player.*
 import com.livelike.livelikesdk.util.registerLogsHandler
+import com.livelike.livelikesdk.util.logError
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
 import okhttp3.Callback
@@ -47,7 +49,6 @@ class ExoPlayerActivity : AppCompatActivity() {
     private val channelList: MutableList<Channel> = mutableListOf()
 
     private lateinit var player: VideoPlayer
-    var useDrawerLayout: Boolean = false
     private var session: LiveLikeContentSession? = null
     private var startingState: PlayerState? = null
     private var selectedChannel: Channel? = null
@@ -72,9 +73,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_exo_player)
 
-        useDrawerLayout = intent.getBooleanExtra(USE_DRAWER_LAYOUT, false)
-        if(!useDrawerLayout)
-            playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
+        playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
         player = ExoPlayerImpl(this, playerView)
 
@@ -90,8 +89,8 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                val pdtTime = player.getPDT()
                 runOnUiThread {
+                    val pdtTime = player.getPDT()
                     videoTimestamp?.text = Date(pdtTime).toString()
                 }
             }
@@ -128,7 +127,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: okhttp3.Call, e: IOException?) {
-                println("Request Failure.")
+                logError { "Request Failure: $e" }
             }
         })
     }
