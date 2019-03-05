@@ -22,6 +22,7 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
@@ -91,7 +92,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                 button.setOnClickListener {
                     optionSelected = true
                     button.text.also {
-                        logi("User selected option $it")
+                        logDebug { "Option selected: $it" }
                         val selectedButton = buttonMap[button]
                         optionSelectedCallback(selectedButton)
                     }
