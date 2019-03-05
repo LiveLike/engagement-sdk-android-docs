@@ -13,7 +13,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -117,13 +116,6 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
                 button_chat_send.visibility = View.GONE
 
-                edittext_chat_message.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-                    if (!hasFocus) {
-                        logDebug { "Lost focus" }
-                        hideKeyboard()
-                    }
-                }
-
                 edittext_chat_message.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
@@ -164,7 +156,6 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     }
 
     private fun hideKeyboard() {
-        logDebug { "Hiding Keyboard" }
         val inputManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(
