@@ -4,8 +4,10 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.support.constraint.Constraints
 import android.support.v7.app.AppCompatActivity
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.PopupMenu
 import com.livelike.livelikedemo.video.Channel
@@ -29,6 +31,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
 import java.util.*
+
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -78,6 +81,8 @@ class ExoPlayerActivity : AppCompatActivity() {
         openLogs.setOnClickListener {
             fullLogs.visibility = if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
         }
+        fullLogs.movementMethod = ScrollingMovementMethod()
+
 
         adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
         val position = savedInstanceState?.getLong(POSITION) ?: 0
@@ -167,8 +172,10 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         registerLogsHandler(object : (String) -> Unit {
             override fun invoke(text: String) {
-                logsPreview.text = "$text \n ${logsPreview.text}"
-                fullLogs.text = "$text \n ${fullLogs.text}"
+                Handler(mainLooper).post {
+                    logsPreview.text = "$text \n\n ${logsPreview.text}"
+                    fullLogs.text = "$text \n\n ${fullLogs.text}"
+                }
             }
         })
 
