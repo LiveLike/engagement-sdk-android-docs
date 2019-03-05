@@ -13,7 +13,6 @@ import com.livelike.livelikesdk.util.extractLong
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetEvent
-import com.livelike.livelikesdk.widget.WidgetEventListener
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
@@ -21,6 +20,7 @@ import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.model.WidgetOptions
 import java.net.URI
+import java.util.*
 
 class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs),
     WidgetRenderer {
@@ -102,9 +102,10 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     private fun parseTextPredictionCommon(widgetData: Widget, payload: JsonObject) {
         widgetData.question = payload.extractStringOrEmpty("question")
 
-        // Fixme: id for follow widget comes as id and for question widget it is text_prediction_id. Maybe talk to CMS team about this.
+        // Fixme: id for follow widget comes as id and for question widget it is missing, though there is
+        // text_prediction_id, which is the id of the widget it is connected to. For now generate an ID
         var widgetId = payload.extractStringOrEmpty("id")
-        if (widgetId == "")  widgetId = payload.extractStringOrEmpty("text_prediction_id")
+        if (widgetId == "")  widgetId = UUID.randomUUID().toString()
         widgetData.id = widgetId
         val options = mutableListOf<WidgetOptions>()
 
@@ -121,4 +122,10 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         }
         widgetData.optionList = options.toList()
     }
+}
+
+interface WidgetEventListener {
+    fun onAnalyticsEvent(data: Any)
+    fun onWidgetEvent(event: WidgetEvent)
+    fun onOptionVote(voteUrl: String)
 }

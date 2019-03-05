@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +21,7 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.binding.WidgetObserver
+
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 import com.livelike.livelikesdk.widget.model.VoteOption
@@ -125,8 +125,6 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
         dismissWidget?.invoke()
     }
 
-    private inline fun <reified T> T.logi(message: String) =
-        Log.i(T::class.java.simpleName, message)
 
     private fun applyStyle(button: Button,
                            buttonText: String,
