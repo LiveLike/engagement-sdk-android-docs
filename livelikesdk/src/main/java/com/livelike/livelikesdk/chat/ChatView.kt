@@ -17,7 +17,6 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.BaseAdapter
-import android.widget.TextView
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import kotlinx.android.synthetic.main.chat_input.view.*
@@ -46,12 +45,16 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
     private lateinit var chatAdapter: ChatAdapter
+    private val inputManager =
+        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
     init {
         LayoutInflater.from(context)
                 .inflate(R.layout.chat_view, this, true)
-        (context as Activity).window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
-        context.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        (context as Activity).window.setSoftInputMode(
+            WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+                    or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -107,7 +110,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 // Send message on tap Enter
                 edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
                     if (event != null && (event.keyCode == KeyEvent.KEYCODE_ENTER || actionId == EditorInfo.IME_ACTION_DONE)) {
-                        hideKeyboard(v)
+                        hideKeyboard()
                         sendMessageNow()
                     }
                     false
@@ -127,18 +130,15 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         }
     }
 
-    private fun hideKeyboard(textView: TextView) {
-        val inputManager =
-            context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
+    private fun hideKeyboard() {
         // Hide keyboard
         inputManager.hideSoftInputFromWindow(
-            textView.windowToken,
+            edittext_chat_message.windowToken,
             InputMethodManager.HIDE_NOT_ALWAYS
         )
     }
 
-    fun sendMessageNow() {
+    private fun sendMessageNow() {
         val timeData = session.getPlayheadTime()
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
@@ -189,7 +189,7 @@ interface ChatCellFactory {
 
 class DefaultChatCellFactory (val context: Context, cellattrs: AttributeSet?):
         ChatCellFactory {
-    val attrs = cellattrs
+    private val attrs = cellattrs
 
     override fun getCell(): ChatCell {
         return DefaultChatCell(context, attrs)
@@ -256,7 +256,7 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
         this.cellFactory = cellFactory
     }
 
-    val chatMessages = mutableListOf<ChatCell>()
+    private val chatMessages = mutableListOf<ChatCell>()
 
     fun addMessage(chat : ChatMessage) {
         val cell = cellFactory.getCell()
@@ -266,11 +266,11 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return chatMessages.get(position).getView()
+        return chatMessages[position].getView()
     }
 
     override fun getItem(index: Int): Any {
-        return chatMessages.get(index)
+        return chatMessages[index]
     }
 
     override fun getItemId(position: Int): Long {
