@@ -23,6 +23,8 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr, dismiss)
+
     companion object {
         const val correctAnswerLottieFilePath = "correctAnswer"
         const val wrongAnswerLottieFilePath = "wrongAnswer"
@@ -33,8 +35,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         pieTimerViewStub.inflate()
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
-        imageView.setOnClickListener { this.visibility = View.INVISIBLE }
-
+        imageView.setOnClickListener { dismissWidget() }
     }
 
     override fun optionListUpdated(
@@ -204,5 +205,4 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
             startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
         }, resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong())
     }
-
 }

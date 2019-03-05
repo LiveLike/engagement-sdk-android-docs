@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.model
 
 import com.livelike.livelikesdk.binding.Observable
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.logDebug
 import java.net.URI
 import java.util.Date
 import kotlin.properties.Delegates.observable
@@ -16,7 +17,7 @@ abstract class Widget : Observable {
 
     var createdAt : Date? = null
     var url: URI ? = null
-    var textPredictionId: String ? = null
+    var id: String ? = null
 
     var question: String by observable("") { _, _, newValue ->
         observers.forEach { observer ->
@@ -42,30 +43,25 @@ abstract class Widget : Observable {
     }
 }
 
-data class PredictionWidgetFollowUp(val predictionWidgetQuestionList: List<Widget>) : Widget() {
+class PredictionWidgetFollowUp : Widget() {
     private val voteOptions = mutableListOf<VoteOption>()
+    var questionWidgetId : String = ""
     var correctOptionId: String by observable("") { _, _, _ ->
         if (!optionList.isEmpty()) {
-            updateOptionList(predictionWidgetQuestionList)
+            updateOptionList()
         }
     }
 
     override var optionList: List<WidgetOptions> by observable(emptyList()) { _, _, newValue ->
         createOptionsWithVotePercentageMap(newValue)
         if (correctOptionId != "") {
-            updateOptionList(predictionWidgetQuestionList)
+            updateOptionList()
         }
     }
 
-    private fun getCorrectOptionWithUserSelection(predictionWidgetList: List<Widget>)
+    private fun getCorrectOptionWithUserSelection()
             : Pair<String?, String?> {
-
-        var userSelectionId: String? = null
-        // TODO: Need to add a check that questionWidget data id is equal to question widget data id.
-        predictionWidgetList.forEach { questionWidgetData ->
-            userSelectionId = questionWidgetData.optionSelected.id
-        }
-        return Pair(correctOptionId, userSelectionId)
+        return Pair(correctOptionId, optionSelected.id)
     }
 
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
@@ -88,11 +84,11 @@ data class PredictionWidgetFollowUp(val predictionWidgetQuestionList: List<Widge
         }
     }
 
-    private fun updateOptionList(predictionWidgetList: List<Widget>) {
+    private fun updateOptionList() {
         observers.forEach { observer ->
             observer.optionListUpdated(voteOptions,
                     { optionSelectedUpdated(it) },
-                    getCorrectOptionWithUserSelection(predictionWidgetList))
+                    getCorrectOptionWithUserSelection())
         }
     }
 }

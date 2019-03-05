@@ -10,7 +10,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +21,7 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.binding.WidgetObserver
+
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 import com.livelike.livelikesdk.widget.model.VoteOption
@@ -41,9 +41,15 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub : ViewStub
+    protected var dismissWidget :  (() -> Unit)? = null
+
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr) {
+        dismissWidget = dismiss
+    }
 
     init { inflate(context) }
 
@@ -110,13 +116,15 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
                     layout.removeAllViewsInLayout()
-                    layout.visibility = View.INVISIBLE
+                    dismissWidget()
                 }
             }) {})
     }
 
-    private inline fun <reified T> T.logi(message: String) =
-        Log.i(T::class.java.simpleName, message)
+    protected fun dismissWidget() {
+        dismissWidget?.invoke()
+    }
+
 
     private fun applyStyle(button: Button,
                            buttonText: String,

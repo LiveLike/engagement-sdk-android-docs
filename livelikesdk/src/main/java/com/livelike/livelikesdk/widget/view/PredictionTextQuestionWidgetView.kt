@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.widget.view
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.livelike.livelikesdk.animation.AnimationHandler
@@ -12,9 +13,11 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,  dismiss: () -> Unit) : super(context, attrs, defStyleAttr, dismiss)
 
     init {
         pieTimerViewStub.layoutResource = R.layout.pie_timer
@@ -52,16 +55,12 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
                 prediction_confirm_message_animation.visibility = View.VISIBLE
                 animationHandler.startAnimation(
                     prediction_confirm_message_animation,
-                    { hideWidget() },
+                    { dismissWidget() },
                     widgetShowingDurationAfterConfirmMessage
                 )
                 performPredictionWidgetFadeOutOperations()
             }
-        } else hideWidget()
-    }
-
-    private fun hideWidget() {
-        prediction_text_widget.visibility = View.INVISIBLE
+        } else dismissWidget()
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

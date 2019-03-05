@@ -7,9 +7,13 @@ import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
+import com.livelike.livelikesdk.widget.view.WidgetEventListener
 
-class WidgetQueue(upstream: MessagingClient) : MessagingClientProxy(upstream), ExternalMessageTrigger,
-    WidgetEventListener {
+/// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
+class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient) :
+        MessagingClientProxy(upstream),
+        ExternalMessageTrigger,
+        WidgetEventListener{
 
     var renderer: WidgetRenderer? = null
     set(value) {
@@ -32,6 +36,10 @@ class WidgetQueue(upstream: MessagingClient) : MessagingClientProxy(upstream), E
             }
             else -> {}
         }
+    }
+
+    override fun onOptionVote(voteUrl: String) {
+        dataClient.vote(voteUrl)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
@@ -69,20 +77,18 @@ interface WidgetRenderer {
     fun displayWidget(type: WidgetType, payload: JsonObject)
 }
 
-interface WidgetEventListener {
-    fun onAnalyticsEvent(data: Any)
-    fun onWidgetEvent(event: WidgetEvent)
-}
-
 enum class WidgetEvent{
     WIDGET_DISMISS,
     WIDGET_SHOWN
 }
 
-fun MessagingClient.toWidgetQueue() : WidgetQueue {
+interface WidgetDataClient {
+    fun vote(voteUrl:String)
+}
+
+fun MessagingClient.asWidgetManager(dataClient: WidgetDataClient) : WidgetManager {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
-    val widgetQueue = WidgetQueue(triggeredMessagingClient)
+    val widgetQueue = WidgetManager(triggeredMessagingClient, dataClient)
     triggeredMessagingClient.externalTrigger = widgetQueue
     return widgetQueue
 }
-
