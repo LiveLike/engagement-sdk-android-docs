@@ -7,12 +7,17 @@ import com.google.gson.JsonParser
 import com.livelike.livelikesdk.LiveLikeDataClient
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.LiveLikeSdkDataClient
+import com.livelike.livelikesdk.LiveLikeUser
 import com.livelike.livelikesdk.Program
 import com.livelike.livelikesdk.util.extractStringOrEmpty
+import com.livelike.livelikesdk.util.logError
+import com.livelike.livelikesdk.util.logVerbose
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
 
@@ -85,5 +90,32 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient {
             configData.extractStringOrEmpty("sessions_url"),
             configData.extractStringOrEmpty("sticker_packs_url")
         )
+    }
+
+    override fun getLiveLikeUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit) {
+        val requestString = "{}"
+        client.newCall(
+            Request.Builder().url(url).post(
+                RequestBody.create(
+                    MediaType.parse(requestString),
+                    requestString
+                )
+            ).build()
+        ).enqueue(object : Callback {
+            override fun onResponse(call: Call?, response: Response) {
+
+                val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                val user = LiveLikeUser(
+                    responseData.extractStringOrEmpty("id"),
+                    responseData.extractStringOrEmpty("nickname")
+                )
+                logVerbose { user }
+                mainHandler.post { responseCallback.invoke(user) }
+            }
+
+            override fun onFailure(call: Call?, e: IOException?) {
+                logError { e }
+            }
+        })
     }
 }

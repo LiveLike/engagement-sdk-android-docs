@@ -81,6 +81,5 @@ interface ChatRenderer {
 
 
 fun MessagingClient.toChatQueue(chatClient: ChatClient) : ChatQueue {
-    val chatQueue = ChatQueue(this, chatClient)
-    return chatQueue
+    return ChatQueue(this, chatClient)
 }

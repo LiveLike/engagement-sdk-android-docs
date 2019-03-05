@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.messaging.sendbird
 
 import android.content.Context
 import com.google.gson.JsonObject
+import com.livelike.livelikesdk.LiveLikeUser
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
@@ -18,7 +19,8 @@ import com.sendbird.android.UserMessage
 import org.threeten.bp.ZonedDateTime
 
 
-class SendbirdMessagingClient (subscribeKey: String, val context: Context) : MessagingClient {
+class SendbirdMessagingClient(subscribeKey: String, val context: Context, private val liveLikeUser: LiveLikeUser?) :
+    MessagingClient {
 
     private var listener : MessagingEventListener? = null
     private val TAG = javaClass.simpleName
@@ -44,13 +46,11 @@ class SendbirdMessagingClient (subscribeKey: String, val context: Context) : Mes
     }
 
     private fun fetchUserId() : String {
-        // TODO: Get username from backend session + local storage until we allow user to modify their username.
-        return "user-idoo"
+        return liveLikeUser?.userId ?: "no-idea"
     }
 
     private fun fetchUsername() : String {
-        // TODO: Get username from backend session + local storage until we allow user to modify their username.
-        return "Username-123oo"
+        return liveLikeUser?.userName ?: "John Doe"
     }
 
     data class MessageData(

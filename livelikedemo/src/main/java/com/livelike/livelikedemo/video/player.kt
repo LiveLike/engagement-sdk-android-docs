@@ -41,8 +41,6 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
             player?.seekToDefaultPosition()
             player?.repeatMode = Player.REPEAT_MODE_ALL
         }
-
-
     }
 
     override fun getPDT(): Long {
