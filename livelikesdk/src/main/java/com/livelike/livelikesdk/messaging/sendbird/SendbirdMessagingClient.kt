@@ -83,17 +83,7 @@ class SendbirdMessagingClient(subscribeKey: String, val context: Context, privat
                                     messageJson.addProperty("sender_id", message.sender.userId)
                                     messageJson.addProperty("id", message.messageId)
 
-                                    val timeMs: Long = if (message.data.isNullOrEmpty()
-                                        || gson.fromJson(message.data, MessageData::class.java) == null
-                                    ) {
-                                        0
-                                    }else{
-                                        gson.fromJson(
-                                            message.data,
-                                            MessageData::class.java
-                                        )?.program_date_time?.toInstant()?.toEpochMilli() ?: 0
-                                    }
-
+                                    val timeMs = getTimeMsFromMessageData(message.data)
                                     val timeData = EpochTime(timeMs)
                                     val clientMessage = ClientMessage(messageJson, channel.url, timeData)
                                     logDebug { "${Date(timeMs)} - Received message from SendBird: $clientMessage" }
@@ -105,6 +95,15 @@ class SendbirdMessagingClient(subscribeKey: String, val context: Context, privat
                 })
         }
 
+    }
+
+    fun getTimeMsFromMessageData(messageDataJson: String): Long {
+        return if (gson.fromJson(messageDataJson, MessageData::class.java) == null) {
+            0
+        } else {
+            val messageData = gson.fromJson(messageDataJson, MessageData::class.java)
+            messageData?.program_date_time?.toInstant()?.toEpochMilli() ?: 0 // return the value, or 0 if null
+        }
     }
 
     override fun unsubscribe(channels: List<String>) {
