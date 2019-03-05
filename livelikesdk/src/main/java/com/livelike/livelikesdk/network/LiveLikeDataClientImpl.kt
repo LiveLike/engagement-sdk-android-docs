@@ -120,11 +120,12 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, Widget
                 logError { e }
             }
         })
+    }
 
     override fun vote(voteUrl: String) {
         val request = Request.Builder()
             .url(voteUrl)
-            .post(RequestBody.create(null,  ByteString.EMPTY))
+            .post(RequestBody.create(null, ByteString.EMPTY))
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
@@ -137,3 +138,4 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, Widget
 
     }
 }
+
