@@ -17,7 +17,6 @@ import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.ViewAnimation
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.piechart.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
@@ -110,7 +109,7 @@ class ImageAdapter(private val optionList: List<VoteOption>,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val option = optionList[position]
         holder.optionText.text = option.description
-        Picasso.get().load(option.imageUrl).into(holder.optionButton)
+      //  Picasso.get().load(option.imageUrl).into(holder.optionButton)
 
         imageButtonMap[holder.optionButton] = option.id
 
