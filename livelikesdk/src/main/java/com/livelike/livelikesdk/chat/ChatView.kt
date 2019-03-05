@@ -158,8 +158,8 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
 interface ChatCell {
     fun setMessage(
-        message: ChatMessage,
-        isMe: Boolean
+        message: ChatMessage?,
+        isMe: Boolean?
     )
     fun getView() : View
 }
@@ -203,18 +203,20 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
     }
 
     override fun setMessage(
-        message: ChatMessage,
-        isMe: Boolean
+        message: ChatMessage?,
+        isMe: Boolean?
     ) {
-        if (isMe) {
-            chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameMe))
-            chat_nickname.text = "(Me) ${message.senderDisplayName}"
-        } else {
-            chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameOther))
-            chat_nickname.text = message.senderDisplayName
+        message?.apply {
+            if (isMe == true) {
+                chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameMe))
+                chat_nickname.text = "(Me) ${message.senderDisplayName}"
+            } else {
+                chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameOther))
+                chat_nickname.text = message.senderDisplayName
+            }
+            chatMessage.text = message.message
+            text_open_chat_time.text = message.timeStamp
         }
-        chatMessage.text = message.message
-        text_open_chat_time.text = message.timeStamp
     }
 
     override fun getView(): View {
