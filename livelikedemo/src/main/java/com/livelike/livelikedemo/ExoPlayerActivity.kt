@@ -4,8 +4,10 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.support.constraint.Constraints
 import android.support.v7.app.AppCompatActivity
+import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.PopupMenu
 import com.livelike.livelikedemo.video.Channel
@@ -18,6 +20,7 @@ import com.livelike.livelikesdk.chat.ChatAdapter
 import com.livelike.livelikesdk.chat.ChatTheme
 import com.livelike.livelikesdk.chat.DefaultChatCellFactory
 import com.livelike.livelikesdk.util.logError
+import com.livelike.livelikesdk.util.registerLogsHandler
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
 import okhttp3.Callback
@@ -29,6 +32,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.URL
 import java.util.*
+
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -51,15 +55,14 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var adsPlaying = false
     set(adsPlaying) {
         field = adsPlaying
-        adOverlay.visibleOrGone(adsPlaying)
-        stopAd.visibleOrGone(adsPlaying)
-        startAd.visibleOrGone(!adsPlaying)
 
         if(adsPlaying){
+            startAd.text = "Stop Ads"
             player.stop()
             session?.pause()
         }
         else{
+            startAd.text = "Start Ads"
             player.start()
             session?.resume()
         }
@@ -73,7 +76,12 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         player = ExoPlayerImpl(this, playerView)
 
-        adsPlaying = savedInstanceState?.getBoolean(AD_STATE) == true
+        openLogs.setOnClickListener {
+            fullLogs.visibility = if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
+        }
+        fullLogs.movementMethod = ScrollingMovementMethod()
+
+        adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
         val position = savedInstanceState?.getLong(POSITION) ?: 0
         startingState = PlayerState(0, position, !adsPlaying)
 
@@ -81,14 +89,14 @@ class ExoPlayerActivity : AppCompatActivity() {
             override fun run() {
                 runOnUiThread {
                     val pdtTime = player.getPDT()
-                    videoTextLine1?.text = Date(pdtTime).toString()
-                    videoTextLine2?.text = pdtTime.toString()
+                    videoTimestamp?.text = Date(pdtTime).toString()
                 }
             }
         }, 0, 100)
 
         loadClientConfig(savedInstanceState?.getString(CHANNEL_NAME) ?: "")
         setUpAdClickListeners()
+
     }
 
     private fun loadClientConfig(channelName: String) {
@@ -124,11 +132,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
     private fun setUpAdClickListeners() {
         startAd.setOnClickListener {
-            adsPlaying = true
-        }
-
-        stopAd.setOnClickListener {
-            adsPlaying = false
+            adsPlaying = !adsPlaying
         }
     }
 
@@ -163,6 +167,15 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private fun initializeLiveLikeSDK(channel: Channel) {
         selectedChannel = channel
+
+        registerLogsHandler(object : (String) -> Unit {
+            override fun invoke(text: String) {
+                Handler(mainLooper).post {
+                    logsPreview.text = "$text \n\n ${logsPreview.text}"
+                    fullLogs.text = "$text \n\n ${fullLogs.text}"
+                }
+            }
+        })
 
         val sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
         player.createSession(channel.llProgram.toString(), sdk) {
@@ -201,7 +214,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putString(CHANNEL_NAME, selectedChannel?.name ?: "")
-        outState?.putBoolean(AD_STATE, adOverlay.visibility == View.VISIBLE)
+        outState?.putBoolean(AD_STATE, adsPlaying)
         outState?.putLong(POSITION, player.position())
     }
 
@@ -214,8 +227,4 @@ class ExoPlayerActivity : AppCompatActivity() {
             URL(channelData.getString("livelike_program_url"))
         )
     }
-}
-
-fun View.visibleOrGone(visible: Boolean) {
-    visibility = if (visible) View.VISIBLE else View.GONE
 }

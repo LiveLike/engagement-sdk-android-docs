@@ -34,14 +34,12 @@ class MainActivity : AppCompatActivity() {
         pButton.layoutParams = LinearLayout.LayoutParams(400, 200)
         pButton.text = player.playerName
         pButton.setOnClickListener {
-            startActivity(PlayerDetailIntent(player, use_drawer.isChecked))
+            startActivity(PlayerDetailIntent(player))
         }
         main_layout.addView(pButton ,0)
     }
 }
 
-fun Context.PlayerDetailIntent(player: MainActivity.PlayerInfo, useDrawer : Boolean): Intent {
-    return Intent(this, player.cls.java).apply {
-        putExtra(USE_DRAWER_LAYOUT, useDrawer )
-    }
+fun Context.PlayerDetailIntent(player: MainActivity.PlayerInfo): Intent {
+    return Intent(this, player.cls.java)
 }

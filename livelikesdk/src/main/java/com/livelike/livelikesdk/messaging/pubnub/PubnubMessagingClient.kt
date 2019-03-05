@@ -7,6 +7,7 @@ import com.livelike.livelikesdk.messaging.Error
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
 import com.livelike.livelikesdk.util.extractStringOrEmpty
+import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logVerbose
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
@@ -102,6 +103,7 @@ class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                             .extractStringOrEmpty("timeout")
                     ).toMillis()
                 )
+                logDebug { "$pdtString - Received message from pubnub: $clientMessage" }
                 listener?.onClientMessageEvent(client, clientMessage)
             }
 
