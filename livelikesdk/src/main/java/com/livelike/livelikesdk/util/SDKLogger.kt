@@ -27,9 +27,15 @@ inline fun <reified T> T.logInfo(message: () -> Any?) = log(LogLevel.Info, messa
 inline fun <reified T> T.logWarn(message: () -> Any?) = log(LogLevel.Warn, message)
 inline fun <reified T> T.logError(message: () -> Any?) = log(LogLevel.Error, message)
 
+var handler: ((String) -> Unit)? = null
+
+fun registerLogsHandler(logHandler: (String) -> Unit) {
+    handler = logHandler
+}
+
 
 inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
-    if (level >= minimumLogLevel)
+    if (level >= minimumLogLevel) {
         message().let {
             val tag = T::class.java.name
             when (it) {
@@ -39,6 +45,10 @@ inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
                 else -> level.logger(tag, it.toString())
             }
         }
+        message().let {
+            handler?.invoke(it.toString())
+        }
+    }
 }
 
 

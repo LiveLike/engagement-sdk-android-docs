@@ -17,6 +17,7 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.chat.ChatAdapter
 import com.livelike.livelikesdk.chat.ChatTheme
 import com.livelike.livelikesdk.chat.DefaultChatCellFactory
+import com.livelike.livelikesdk.util.registerLogsHandler
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
 import okhttp3.Callback
@@ -159,6 +160,12 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private fun initializeLiveLikeSDK(channel: Channel) {
         selectedChannel = channel
+
+        registerLogsHandler(object : (String) -> Unit {
+            override fun invoke(text: String) {
+                logsPreview.text = "$text \n ${logsPreview.text}"
+            }
+        })
 
         val sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
         player.createSession(channel.llProgram.toString(), sdk) {
