@@ -83,11 +83,15 @@ class SendbirdMessagingClient (subscribeKey: String, val context: Context) : Mes
                                     messageJson.addProperty("sender_id", message.sender.userId)
                                     messageJson.addProperty("id", message.messageId)
 
-                                    val timeMs: Long = if (message.data.isNullOrEmpty()){
+                                    val timeMs: Long = if (message.data.isNullOrEmpty()
+                                        || gson.fromJson(message.data, MessageData::class.java) == null
+                                    ) {
                                         0
                                     }else{
-                                        gson.fromJson(message.data, MessageData::class.java).program_date_time
-                                            .toInstant().toEpochMilli()
+                                        gson.fromJson(
+                                            message.data,
+                                            MessageData::class.java
+                                        )?.program_date_time?.toInstant()?.toEpochMilli() ?: 0
                                     }
 
                                     val timeData = EpochTime(timeMs)
