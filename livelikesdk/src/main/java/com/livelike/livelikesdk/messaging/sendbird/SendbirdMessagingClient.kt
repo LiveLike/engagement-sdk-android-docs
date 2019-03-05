@@ -7,6 +7,7 @@ import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
 import com.livelike.livelikesdk.util.gson
+import com.livelike.livelikesdk.util.logDebug
 import com.sendbird.android.BaseChannel
 import com.sendbird.android.BaseMessage
 import com.sendbird.android.OpenChannel
@@ -16,6 +17,7 @@ import com.sendbird.android.SendBirdException
 import com.sendbird.android.User
 import com.sendbird.android.UserMessage
 import org.threeten.bp.ZonedDateTime
+import java.util.*
 
 
 class SendbirdMessagingClient (subscribeKey: String, val context: Context) : MessagingClient {
@@ -89,8 +91,9 @@ class SendbirdMessagingClient (subscribeKey: String, val context: Context) : Mes
                                     }
 
                                     val timeData = EpochTime(timeMs)
-
-                                    listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(messageJson, channel.url, timeData))
+                                    val clientMessage = ClientMessage(messageJson, channel.url, timeData)
+                                    logDebug { "${Date(timeMs)} - Received message from SendBird: $clientMessage" }
+                                    listener?.onClientMessageEvent(this@SendbirdMessagingClient, clientMessage)
                                 }
                             }
                         })

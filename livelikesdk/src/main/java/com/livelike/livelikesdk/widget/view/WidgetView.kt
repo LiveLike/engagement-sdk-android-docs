@@ -12,6 +12,7 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.util.WidgetTestData
 import com.livelike.livelikesdk.util.extractLong
 import com.livelike.livelikesdk.util.extractStringOrEmpty
+import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetEvent
 import com.livelike.livelikesdk.widget.WidgetEventListener
 import com.livelike.livelikesdk.widget.WidgetRenderer
@@ -37,6 +38,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     }
 
     override fun displayWidget(type: WidgetType, payload: JsonObject) {
+        logDebug { "NOW - Show Widget ${type.value} on screen: $payload" }
         val layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT

@@ -19,6 +19,7 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.util.logDebug
 import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
@@ -245,6 +246,7 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
     val chatMessages = mutableListOf<ChatCell>()
 
     fun addMessage(chat : ChatMessage) {
+        logDebug { "NOW - Show Message on screen: $chat" }
         val cell = cellFactory.getCell()
         cell.setMessage(chat)
         chatMessages.add(cell)
