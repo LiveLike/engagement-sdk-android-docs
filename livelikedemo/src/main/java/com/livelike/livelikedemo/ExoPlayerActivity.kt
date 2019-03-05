@@ -19,9 +19,8 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.chat.ChatAdapter
 import com.livelike.livelikesdk.chat.ChatTheme
 import com.livelike.livelikesdk.chat.DefaultChatCellFactory
-import kotlinx.android.synthetic.main.activity_exo_player.*
-import com.livelike.livelikesdk.util.registerLogsHandler
 import com.livelike.livelikesdk.util.logError
+import com.livelike.livelikesdk.util.registerLogsHandler
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
 import okhttp3.Callback
@@ -82,7 +81,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
         fullLogs.movementMethod = ScrollingMovementMethod()
 
-
         adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
         val position = savedInstanceState?.getLong(POSITION) ?: 0
         startingState = PlayerState(0, position, !adsPlaying)
@@ -98,6 +96,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         loadClientConfig(savedInstanceState?.getString(CHANNEL_NAME) ?: "")
         setUpAdClickListeners()
+
     }
 
     private fun loadClientConfig(channelName: String) {
