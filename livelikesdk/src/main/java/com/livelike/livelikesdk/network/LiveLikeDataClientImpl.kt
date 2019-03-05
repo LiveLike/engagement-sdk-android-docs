@@ -131,7 +131,7 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, Widget
             override fun onResponse(call: Call?, response: Response) {}
 
             override fun onFailure(call: Call?, e: IOException?) {
-                //TODO handle error here, or at session level? Currently passing empty Json
+                logError { e }
             }
         })
 
