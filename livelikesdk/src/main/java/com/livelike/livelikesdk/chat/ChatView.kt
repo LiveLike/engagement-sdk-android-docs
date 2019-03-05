@@ -11,19 +11,22 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.BaseAdapter
+import android.widget.EditText
 import com.livelike.livelikesdk.LiveLikeContentSession
-import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.util.logDebug
 import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
 import java.util.*
+
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -46,12 +49,11 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
     private lateinit var chatAdapter: ChatAdapter
-    private val inputManager =
-        context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
 
     init {
         LayoutInflater.from(context)
-                .inflate(R.layout.chat_view, this, true)
+            .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
         (context as Activity).window.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
@@ -70,6 +72,26 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         }
     }
 
+    // Hide keyboard when clicking outside of the EditText
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val v = (context as Activity).currentFocus
+
+        if (v != null &&
+            (ev?.action == MotionEvent.ACTION_UP || ev?.action == MotionEvent.ACTION_MOVE) &&
+            v is EditText &&
+            !v.javaClass.name.startsWith("android.webkit.")
+        ) {
+            val scrcoords = IntArray(2)
+            v.getLocationOnScreen(scrcoords)
+            val x = ev.rawX + v.left - scrcoords[0]
+            val y = ev.rawY + v.top - scrcoords[1]
+
+            if (x < v.left || x > v.right || y < v.top || y > v.bottom)
+                hideKeyboard()
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     /**
      *  Sets the data source for this view.
      *  @param chatAdapter ChatAdapter used for creating this view.
@@ -80,17 +102,27 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
         context.theme.obtainStyledAttributes(
                 attrs,
-                R.styleable.ChatView,
+            com.livelike.livelikesdk.R.styleable.ChatView,
                 0, 0).apply {
 
             try {
-                val inputTextColor = getInteger(R.styleable.ChatView_inputTextColor, R.color.colorInputText)
+                val inputTextColor = getInteger(
+                    com.livelike.livelikesdk.R.styleable.ChatView_inputTextColor,
+                    com.livelike.livelikesdk.R.color.colorInputText
+                )
                 val defaultText = getString(com.livelike.livelikesdk.R.styleable.ChatView_inputTextDefault)
 
                 edittext_chat_message.setTextColor(inputTextColor)
                 edittext_chat_message.setText(defaultText.orEmpty())
 
                 button_chat_send.visibility = View.GONE
+
+                edittext_chat_message.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        logDebug { "Lost focus" }
+                        hideKeyboard()
+                    }
+                }
 
                 edittext_chat_message.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -132,10 +164,12 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     }
 
     private fun hideKeyboard() {
-        // Hide keyboard
+        logDebug { "Hiding Keyboard" }
+        val inputManager =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(
             edittext_chat_message.windowToken,
-            InputMethodManager.HIDE_NOT_ALWAYS
+            0
         )
     }
 
@@ -200,7 +234,7 @@ class DefaultChatCellFactory (val context: Context, cellattrs: AttributeSet?):
 class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatCell {
     init {
         LayoutInflater.from(context)
-                .inflate(R.layout.default_chat_cell, this, true)
+            .inflate(com.livelike.livelikesdk.R.layout.default_chat_cell, this, true)
     }
 
     override fun setMessage(
@@ -209,10 +243,20 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
     ) {
         message?.apply {
             if (isMe == true) {
-                chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameMe))
+                chat_nickname.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        com.livelike.livelikesdk.R.color.openChatNicknameMe
+                    )
+                )
                 chat_nickname.text = "(Me) ${message.senderDisplayName}"
             } else {
-                chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameOther))
+                chat_nickname.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        com.livelike.livelikesdk.R.color.openChatNicknameOther
+                    )
+                )
                 chat_nickname.text = message.senderDisplayName
             }
             chatMessage.text = message.message
