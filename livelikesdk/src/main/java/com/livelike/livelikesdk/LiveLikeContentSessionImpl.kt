@@ -26,12 +26,29 @@ class LiveLikeContentSessionImpl(
 
     private var widgetQueue: WidgetQueue? = null
     private var chatQueue: ChatQueue? = null
+    private val userPreferences = applicationContext.getSharedPreferences("livelike-sdk", Context.MODE_PRIVATE)
 
-    // TODO: fetch this from applications/{app-id}/session endpoint
-    override val currentUser: LiveLikeUser
-        get() {
-            return LiveLikeUser("user-id", "User123")
+    init {
+        getUser()
+    }
+
+    private fun getUser() {
+        val userId = userPreferences.getString("UserId", "")
+        val username = userPreferences.getString("Username", "")
+        if (!userId.isNullOrEmpty() && !username.isNullOrEmpty()) {
+            currentUser = LiveLikeUser(userId, username)
+        } else {
+            sdkConfiguration.subscribe { configuration ->
+                llDataClient.getLiveLikeUserData(configuration.sessionsUrl) {
+                    currentUser = it
+                    userPreferences.edit().putString("UserId", it.userId).apply()
+                    userPreferences.edit().putString("Username", it.userName).apply()
+                }
+            }
         }
+    }
+
+    override var currentUser: LiveLikeUser? = null
 
     override var widgetRenderer: WidgetRenderer? = null
         set(value) {
@@ -72,7 +89,7 @@ class LiveLikeContentSessionImpl(
 
     private fun initializeChatMessaging(program: Program) {
         sdkConfiguration.subscribe {
-            val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext)
+            val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
             val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime).toChatQueue(SendbirdChatClient())
             chatQueue.unsubscribeAll()
             chatQueue.subscribe(listOf(program.chatChannel))

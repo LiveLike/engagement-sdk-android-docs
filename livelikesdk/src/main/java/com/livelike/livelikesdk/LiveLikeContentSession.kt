@@ -13,7 +13,7 @@ interface LiveLikeContentSession {
     val programUrl : String
     var widgetRenderer: WidgetRenderer?
     var chatRenderer: ChatRenderer?
-    val currentUser: LiveLikeUser
+    val currentUser: LiveLikeUser?
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -34,6 +34,7 @@ interface LiveLikeContentSession {
 
 internal interface LiveLikeDataClient {
     fun getLiveLikeProgramData(url: String, responseCallback: (program: Program) -> Unit)
+    fun getLiveLikeUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit)
 }
 
 

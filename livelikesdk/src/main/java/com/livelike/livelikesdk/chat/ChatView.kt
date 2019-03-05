@@ -19,7 +19,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.livelike.livelikesdk.LiveLikeContentSession
-import com.livelike.livelikesdk.LiveLikeUser
 import com.livelike.livelikesdk.R
 import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
@@ -143,9 +142,9 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         val timeData = session.getPlayheadTime()
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
-            "user-id",
-            "User123",
-            "message_id",
+            session.currentUser?.userId ?: "no-id",
+            session.currentUser?.userName ?: "John Doe",
+            UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString()
         )
 
@@ -160,7 +159,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 interface ChatCell {
     fun setMessage(
         message: ChatMessage,
-        currentUser: LiveLikeUser
+        isMe: Boolean
     )
     fun getView() : View
 }
@@ -205,9 +204,9 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
 
     override fun setMessage(
         message: ChatMessage,
-        currentUser: LiveLikeUser
+        isMe: Boolean
     ) {
-        if (currentUser.userId == message.senderId) {
+        if (isMe) {
             chat_nickname.setTextColor(ContextCompat.getColor(context, R.color.openChatNicknameMe))
             chat_nickname.text = "(Me) ${message.senderDisplayName}"
         } else {
@@ -259,7 +258,7 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
 
     fun addMessage(chat : ChatMessage) {
         val cell = cellFactory.getCell()
-        cell.setMessage(chat, session.currentUser)
+        cell.setMessage(chat, session.currentUser?.userId == chat.id)
         chatMessages.add(cell)
         notifyDataSetChanged()
     }
