@@ -123,6 +123,12 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, Widget
     }
 
     override fun vote(voteUrl: String) {
+        if (voteUrl == "null"
+            || voteUrl.isEmpty()
+        ) {
+            logError { "Voting for $voteUrl" }
+            return
+        }
         logVerbose { "Voting for $voteUrl" }
         val request = Request.Builder()
             .url(voteUrl)
