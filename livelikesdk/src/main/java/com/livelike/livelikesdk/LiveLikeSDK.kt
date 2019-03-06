@@ -16,7 +16,7 @@ import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 class LiveLikeSDK(val appId: String, val applicationContext: Context) {
 
     companion object {
-        const val CONFIG_URL = "https://livelike-blast.herokuapp.com/api/v1/applications/"
+        const val CONFIG_URL = "https://cf-blast.livelikecdn.com/api/v1/applications/"
     }
 
     private var configuration: SdkConfiguration? = null

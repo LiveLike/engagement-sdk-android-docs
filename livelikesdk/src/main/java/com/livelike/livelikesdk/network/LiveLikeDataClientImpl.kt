@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.stream.MalformedJsonException
 import com.livelike.livelikesdk.LiveLikeDataClient
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.LiveLikeSdkDataClient
@@ -36,11 +37,15 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, Widget
         call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
                 val responseData = response.body()?.string()
-                mainHandler.post { responseCallback.invoke(parseProgramData(JsonParser().parse(responseData).asJsonObject)) }
+                try {
+                    mainHandler.post { responseCallback.invoke(parseProgramData(JsonParser().parse(responseData).asJsonObject)) }
+                } catch (e : MalformedJsonException) {
+                    logError { e }
+                }
             }
 
             override fun onFailure(call: Call?, e: IOException?) {
-                //TODO handle error here, or at session level? Currently passing empty Json
+                logError { e }
                 mainHandler.post { responseCallback(parseProgramData(JsonObject())) }
             }
         })
@@ -70,11 +75,15 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, Widget
         call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
                 val responseData = response.body()?.string()
-                mainHandler.post { responseCallback.invoke(pareseSdkConfiguration(JsonParser().parse(responseData).asJsonObject)) }
+                try {
+                    mainHandler.post { responseCallback.invoke(pareseSdkConfiguration(JsonParser().parse(responseData).asJsonObject)) }
+                } catch ( e: MalformedJsonException) {
+                    logError { e }
+                }
             }
 
             override fun onFailure(call: Call?, e: IOException?) {
-                //TODO handle error here, or at session level? Currently passing empty Json
+                logError { e }
                 mainHandler.post { responseCallback(pareseSdkConfiguration(JsonObject())) }
             }
         })
