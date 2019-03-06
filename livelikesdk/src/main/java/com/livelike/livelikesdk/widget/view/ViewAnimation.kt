@@ -1,14 +1,14 @@
 package com.livelike.livelikesdk.widget.view
 
 import android.animation.ObjectAnimator
-import android.content.res.Resources
+import android.annotation.SuppressLint
 import android.view.View
+import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
-import java.util.*
-import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.util.AndroidResource
+import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 
 class ViewAnimation(val view: View, private val animationHandler: AnimationHandler) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
@@ -59,20 +59,31 @@ class ViewAnimation(val view: View, private val animationHandler: AnimationHandl
     fun showConfirmMessage(confirmMessageTextView: View,
                            confirmMessageLottieAnimationView: LottieAnimationView) {
         confirmMessageTextView.visibility = View.VISIBLE
-            val lottieAnimationPath = "confirmMessage"
-            val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, view.context)
-            if (lottieAnimation != null) {
-                confirmMessageLottieAnimationView.setAnimation("$lottieAnimationPath/$lottieAnimation")
-                confirmMessageLottieAnimationView.visibility = View.VISIBLE
-                animationHandler.startAnimation(
-                    confirmMessageLottieAnimationView,
-                    { hideWidget() },
-                    widgetShowingDurationAfterConfirmMessage
-                )
-            }
+        val lottieAnimationPath = "confirmMessage"
+        val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, view.context)
+        if (lottieAnimation != null) {
+            confirmMessageLottieAnimationView.setAnimation("$lottieAnimationPath/$lottieAnimation")
+            confirmMessageLottieAnimationView.visibility = View.VISIBLE
+            animationHandler.startAnimation(
+                confirmMessageLottieAnimationView,
+                { hideWidget() },
+                widgetShowingDurationAfterConfirmMessage
+            )
+        }
     }
 
-    fun hideWidget() {
-        view.visibility = View.INVISIBLE
+    fun hideWidget() { view.visibility = View.INVISIBLE }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun addHorizontalSwipeListener(view: View, layout: ViewGroup) {
+        view.setOnTouchListener(object : SwipeDismissTouchListener(layout,
+            null, object : DismissCallbacks {
+                override fun canDismiss(token: Any?) = true
+                override fun onDismiss(view: View?, token: Any?) {
+                    layout.removeAllViewsInLayout()
+                    layout.visibility = View.INVISIBLE
+                }
+            }
+        ) {})
     }
 }

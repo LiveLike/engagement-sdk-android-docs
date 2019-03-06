@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
 class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub : ViewStub
+    private lateinit var viewAnimation: ViewAnimation
     private val widgetOpacityFactor: Float = 0.2f
     private val animationHandler = AnimationHandler()
     private var optionSelected = false
@@ -47,7 +48,7 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        val viewAnimation = ViewAnimation(this, animationHandler)
+        viewAnimation = ViewAnimation(this, animationHandler)
         viewAnimation.startWidgetTransitionInAnimation()
         viewAnimation.startTimerAnimation(pieTimer, 7000) {
             if (optionSelected) {
@@ -77,10 +78,10 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     }
 
     override fun questionUpdated(questionText: String) {
-        prediction_question_textView.apply {
+        viewAnimation.addHorizontalSwipeListener(prediction_question_textView.apply {
             text = questionText
             isClickable = true
-        }
+        }, layout)
     }
 
     override fun optionListUpdated(voteOptions: List<VoteOption>,
@@ -92,13 +93,12 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
         image_optionList.adapter = ImageAdapter(voteOptions, context, optionSelectedCallback, imageButtonMap)
     }
 
-    // TODO: This code is duplicate of Text prediction.
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         optionSelected = true
         imageButtonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
-            else button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
+            else button.background = AppCompatResources.getDrawable(context, R.drawable.button_rounded_corners)
         }
     }
 }
@@ -118,7 +118,6 @@ class ImageAdapter(private val optionList: List<VoteOption>,
             .into(holder.optionButton)
 
         imageButtonMap[holder.optionButton] = option.id
-
         holder.optionButton.setOnClickListener {
             val selectedOption = imageButtonMap[holder.optionButton]
             optionSelectedCallback(selectedOption)
