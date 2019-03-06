@@ -297,7 +297,7 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
     fun addMessage(chat : ChatMessage) {
         logDebug { "NOW - Show Message on screen: $chat" }
         val cell = cellFactory.getCell()
-        cell.setMessage(chat, session.currentUser?.userId == chat.id)
+        cell.setMessage(chat, session.currentUser?.userId == chat.senderId)
         chatMessages.add(cell)
         notifyDataSetChanged()
     }
