@@ -123,6 +123,7 @@ class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, Widget
     }
 
     override fun vote(voteUrl: String) {
+        logVerbose { "Voting for $voteUrl" }
         val request = Request.Builder()
             .url(voteUrl)
             .post(RequestBody.create(null, ByteString.EMPTY))
