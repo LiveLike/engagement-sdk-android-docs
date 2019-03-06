@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.chat
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
@@ -105,10 +106,11 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
                 0, 0).apply {
 
             try {
-                val inputTextColor = getInteger(
+                val inputTextColor = getColor(
                     com.livelike.livelikesdk.R.styleable.ChatView_inputTextColor,
-                    com.livelike.livelikesdk.R.color.colorInputText
+                    resources.getColor(com.livelike.livelikesdk.R.color.colorInputText)
                 )
+                ColorStateList.valueOf(inputTextColor).toString()
                 val defaultText = getString(com.livelike.livelikesdk.R.styleable.ChatView_inputTextDefault)
 
                 edittext_chat_message.setTextColor(inputTextColor)
