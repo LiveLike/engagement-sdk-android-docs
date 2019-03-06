@@ -4,4 +4,14 @@
     <string name="stop_ad">Stop Ad</string>
     <string name="channel">Channel</string>
     <string name="app_id">pilot</string>
+    <string name="resize_btn_label">Resize</string>
+    <string name="settings_label">SETTINGS</string>
+    <string name="chat_only_btn_label">Chat Only</string>
+    <string name="widgets_only_btn_label">Widgets Only</string>
+    <string name="standalone_label">STANDALONE</string>
+    <string name="events_btn_label">Events</string>
+    <string name="layout_label">LAYOUT</string>
+    <string name="default_channel_label">No Event Channel Selected</string>
+    <string name="layout_side_content_description">layout side</string>
+    <string name="layout_overlay_content_description">layout overlay</string>
 </resources>
