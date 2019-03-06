@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.widget.view
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.view.View
+import com.livelike.livelikesdk.R
 import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.animation.AnimationEaseInterpolator

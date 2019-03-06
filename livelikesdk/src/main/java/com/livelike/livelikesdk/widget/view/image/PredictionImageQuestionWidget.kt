@@ -21,7 +21,7 @@ import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.ViewAnimation
 import kotlinx.android.synthetic.main.pie_timer.view.*
-import kotlinx.android.synthetic.main.piechart.view.*
+import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
@@ -30,8 +30,8 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var viewAnimation: ViewAnimation
     private val widgetOpacityFactor: Float = 0.2f
     private val animationHandler = AnimationHandler()
-    private var optionSelected = false
     private val imageButtonMap = HashMap<ImageButton, String?>()
+    private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
 
     constructor(context: Context?) : super(context)
@@ -48,6 +48,7 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
+        // TODO: Maybe inject this object.
         viewAnimation = ViewAnimation(this, animationHandler)
         viewAnimation.startWidgetTransitionInAnimation()
         viewAnimation.startTimerAnimation(pieTimer, 7000) {
@@ -112,6 +113,7 @@ class ImageAdapter(private val optionList: List<VoteOption>,
         val option = optionList[position]
         holder.optionText.text = option.description
         val imageWidth = AndroidResource.dpToPx(74)
+        // TODO: Move this to adapter layer.
         Glide.with(context)
             .load(option.imageUrl)
             .apply(RequestOptions().override(imageWidth, imageWidth))

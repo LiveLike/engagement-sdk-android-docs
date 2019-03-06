@@ -24,7 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <include layout="@layout/piechart"
-             android:id="@+id/common"/>
+    <include layout="@layout/confirm_message"
+             android:id="@+id/confirm_message"/>
 
 </android.support.constraint.ConstraintLayout>
