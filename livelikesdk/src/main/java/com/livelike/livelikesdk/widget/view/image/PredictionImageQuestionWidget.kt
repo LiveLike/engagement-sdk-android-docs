@@ -34,10 +34,14 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private val imageButtonMap = HashMap<ImageButton, String?>()
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
+    private var dismissWidget :  (() -> Unit)? = null
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr) {
+        dismissWidget = dismiss
+    }
 
     init { inflate(context) }
 
@@ -54,7 +58,9 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
         viewAnimation.startWidgetTransitionInAnimation()
         viewAnimation.startTimerAnimation(pieTimer, 7000) {
             if (optionSelected) {
-                viewAnimation.showConfirmMessage(prediction_confirm_message_textView, prediction_confirm_message_animation)
+                viewAnimation.showConfirmMessage(prediction_confirm_message_textView,
+                    prediction_confirm_message_animation,
+                    dismissWidget)
                 performPredictionWidgetFadeOutOperations()
             } else {
                 viewAnimation.hideWidget()
@@ -83,7 +89,7 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
         viewAnimation.addHorizontalSwipeListener(prediction_question_textView.apply {
             text = questionText
             isClickable = true
-        }, layout)
+        }, layout, dismissWidget)
     }
 
     override fun optionListUpdated(voteOptions: List<VoteOption>,

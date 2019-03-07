@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource
+import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 
 internal class ViewAnimation(val view: View, private val animationHandler: AnimationHandler) {
@@ -49,6 +50,19 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
         }
     }
 
+    fun triggerTransitionOutAnimation(dismissWidget: (() -> Unit)?) {
+        val animator = ObjectAnimator.ofFloat(
+            view,
+            "translationY",
+            0f, -dpToPx(250).toFloat()
+        )
+        animationHandler.bindListenerToAnimationView(animator) {
+            dismissWidget?.invoke()
+        }
+        // TODO: Get rid of hardcoded value once we have minimun viewable area defined.
+        startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
+    }
+
     fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: (Boolean) -> Unit) {
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
@@ -56,8 +70,11 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
             duration)
     }
 
-    fun showConfirmMessage(confirmMessageTextView: View,
-                           confirmMessageLottieAnimationView: LottieAnimationView) {
+    fun showConfirmMessage(
+        confirmMessageTextView: View,
+        confirmMessageLottieAnimationView: LottieAnimationView,
+        dismissWidget: (() -> Unit)?
+    ) {
         confirmMessageTextView.visibility = View.VISIBLE
         val lottieAnimationPath = "confirmMessage"
         val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, view.context)
@@ -66,7 +83,7 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
             confirmMessageLottieAnimationView.visibility = View.VISIBLE
             animationHandler.startAnimation(
                 confirmMessageLottieAnimationView,
-                { hideWidget() },
+                { triggerTransitionOutAnimation(dismissWidget) },
                 widgetShowingDurationAfterConfirmMessage
             )
         }
@@ -75,13 +92,17 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
     fun hideWidget() { view.visibility = View.INVISIBLE }
 
     @SuppressLint("ClickableViewAccessibility")
-    fun addHorizontalSwipeListener(view: View, layout: ViewGroup) {
+    fun addHorizontalSwipeListener(
+        view: View,
+        layout: ViewGroup,
+        dismissWidget: (() -> Unit)?
+    ) {
         view.setOnTouchListener(object : SwipeDismissTouchListener(layout,
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
                     layout.removeAllViewsInLayout()
-                    layout.visibility = View.INVISIBLE
+                    dismissWidget?.invoke()
                 }
             }
         ) {})

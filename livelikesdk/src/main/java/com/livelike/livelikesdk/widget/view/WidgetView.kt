@@ -73,7 +73,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             }
 
             WidgetType.IMAGE_PREDICTION -> {
-                val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
+                val predictionWidget = PredictionImageQuestionWidget(context, null, 0)  { dismissCurrentWidget() }
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion()
                 widgetData.registerObserver(predictionWidget)

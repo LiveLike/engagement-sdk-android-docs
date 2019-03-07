@@ -41,7 +41,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub : ViewStub
-    protected var dismissWidget :  (() -> Unit)? = null
+    private var dismissWidget :  (() -> Unit)? = null
 
 
     constructor(context: Context?) : super(context)
@@ -127,7 +127,6 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected fun dismissWidget() {
         dismissWidget?.invoke()
     }
-
 
     private fun applyStyle(button: Button,
                            buttonText: String,
