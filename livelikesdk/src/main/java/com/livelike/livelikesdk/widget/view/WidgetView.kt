@@ -7,10 +7,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
-import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.parser.WidgetParser
-import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetEvent
 import com.livelike.livelikesdk.widget.WidgetRenderer
@@ -66,8 +65,11 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 parser.parseTextPredictionFollowup(followupWidgetData,
                     payload,
                     previousWidgetSelections)
-                //Are we ever going to need these again? Remove for now
-                previousWidgetSelections.remove(followupWidgetData.questionWidgetId)
+                if (followupWidgetData.optionSelected.id.isNullOrEmpty()) {
+                    //user did not interact with previous widget, mark dismissed and don't show followup
+                    widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
+                    return
+                }
                 container.addView(predictionWidget)
                 currentWidget = followupWidgetData
             }
