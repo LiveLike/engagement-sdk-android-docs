@@ -18,7 +18,7 @@ import android.view.ViewStub
 import android.widget.Button
 import android.widget.TextView
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.binding.WidgetObserver
 
@@ -41,7 +41,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub : ViewStub
-    protected var dismissWidget :  (() -> Unit)? = null
+    private var dismissWidget :  (() -> Unit)? = null
 
 
     constructor(context: Context?) : super(context)
@@ -59,7 +59,6 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -68,6 +67,10 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             text = questionText
             isClickable = true
         })
+    }
+
+    override fun confirmMessageUpdated(confirmMessage: String) {
+        prediction_confirm_message_textView.text = confirmMessage
     }
 
     override fun optionListUpdated(voteOptions: List<VoteOption>, optionSelectedCallback: (String?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
@@ -124,7 +127,6 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected fun dismissWidget() {
         dismissWidget?.invoke()
     }
-
 
     private fun applyStyle(button: Button,
                            buttonText: String,

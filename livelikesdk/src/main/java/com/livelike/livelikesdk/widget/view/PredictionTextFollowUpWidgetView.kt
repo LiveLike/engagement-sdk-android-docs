@@ -15,7 +15,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_result
 
@@ -49,7 +49,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
 
         buttonMap.forEach{(button, optionId) ->
             button.setOnClickListener(null)
-            val (percentageDrawable: Int, buttonText) = provideStyleToButtonAndProgressBar(correctOption, userSelectedOption, button)
+            val (percentageDrawable: Int) = provideStyleToButtonAndProgressBar(correctOption, userSelectedOption, button)
             val percentage = voteOptions.single { option ->  option.id == optionId }.votePercentage
             val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)

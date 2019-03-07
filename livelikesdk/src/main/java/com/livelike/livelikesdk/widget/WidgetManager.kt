@@ -61,7 +61,7 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
 enum class WidgetType (val value: String) {
     TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
-    IMAGE_PREDICTION("imagePredictionResults"),
+    IMAGE_PREDICTION("image-prediction-created"),
     HTML5("html-widget"),
     NONE("none");
 

@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.animation
+package com.livelike.livelikesdk.animation.easing
 
 import android.animation.ValueAnimator
 

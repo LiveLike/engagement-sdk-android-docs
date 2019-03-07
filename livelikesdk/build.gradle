@@ -53,8 +53,12 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
+    // glide
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+
     // Mock library
-    testImplementation "org.mockito:mockito-core:2.8.9"
+    testImplementation "org.mockito:mockito-core:2.18.3"
 
     // Time lib
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.2'
@@ -63,4 +67,5 @@ dependencies {
 repositories {
     mavenCentral()
     maven { url "https://raw.githubusercontent.com/smilefam/SendBird-SDK-Android/master/" }
+    google()
 }

@@ -3,14 +3,13 @@ package com.livelike.livelikesdk.widget.view
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.livelike.livelikesdk.animation.AnimationHandler
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
 
@@ -46,6 +45,7 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
 
     private fun onTimerAnimationCompleted(animationHandler: AnimationHandler) {
         if (optionSelected) {
+
             prediction_confirm_message_textView.visibility = View.VISIBLE
 
             lottieAnimationPath = "confirmMessage"

@@ -1,9 +1,9 @@
-package com.livelike.livelikesdk.animation
+package com.livelike.livelikesdk.animation.easing
 
 import android.animation.ValueAnimator
 import com.daimajia.easing.Glider
 import com.daimajia.easing.Skill
-import com.livelike.livelikesdk.animation.AnimationEaseInterpolator.Ease
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator.Ease
 
 /**
  * Adapter layer for keeping the Easing library at the system boundary.

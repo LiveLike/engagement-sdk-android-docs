@@ -9,4 +9,5 @@ interface WidgetObserver {
         optionSelectedCallback: (String?) -> Unit,
         correctOptionWithUserSelection: Pair<String?, String?>)
     fun optionSelectedUpdated(selectedOptionId: String?)
+    fun confirmMessageUpdated(confirmMessage: String)
 }
