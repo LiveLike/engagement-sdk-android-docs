@@ -66,6 +66,11 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 val followupWidgetData = PredictionWidgetFollowUp()
                 followupWidgetData.registerObserver(predictionWidget)
                 parseTextPredictionFollowup(followupWidgetData, payload)
+                if(followupWidgetData.optionSelected.id.isNullOrEmpty()) {
+                    //user did not interact with previous widget, mark dismissed and don't show followup
+                    widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
+                    return
+                }
                 container.addView(predictionWidget)
                 currentWidget = followupWidgetData
             }
