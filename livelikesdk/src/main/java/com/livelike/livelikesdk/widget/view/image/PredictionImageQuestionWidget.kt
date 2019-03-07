@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.ImageButton
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
@@ -136,6 +137,6 @@ class ImageAdapter(private val optionList: List<VoteOption>,
 }
 
 class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    val optionButton = view.image_button!!
-    val optionText = view.item_text!!
+    val optionButton: ImageButton = view.image_button
+    val optionText: TextView = view.item_text
 }

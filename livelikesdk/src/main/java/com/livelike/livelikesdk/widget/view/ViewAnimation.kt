@@ -11,7 +11,7 @@ import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 
-class ViewAnimation(val view: View, private val animationHandler: AnimationHandler) {
+internal class ViewAnimation(val view: View, private val animationHandler: AnimationHandler) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
 
     fun startWidgetTransitionInAnimation() {

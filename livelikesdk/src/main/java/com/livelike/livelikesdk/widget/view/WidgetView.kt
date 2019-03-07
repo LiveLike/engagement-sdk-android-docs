@@ -45,7 +45,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         layoutParams.topMargin = 0
-
+        val parser = WidgetParser()
         when (type) {
             WidgetType.TEXT_PREDICTION -> {
                 val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0) { dismissCurrentWidget() }
@@ -53,7 +53,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 val widgetData = PredictionWidgetQuestion()
 
                 widgetData.registerObserver(predictionWidget)
-                WidgetParser.parseTextPredictionCommon(widgetData, payload)
+                parser.parseTextPredictionCommon(widgetData, payload)
                 container.addView(predictionWidget)
                 currentWidget = widgetData
             }
@@ -63,13 +63,11 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 predictionWidget.layoutParams = layoutParams
                 val followupWidgetData = PredictionWidgetFollowUp()
                 followupWidgetData.registerObserver(predictionWidget)
-                WidgetParser.parseTextPredictionFollowup(followupWidgetData, payload)
-                if(followupWidgetData.optionSelected.id.isNullOrEmpty()) {
-                    //user did not interact with previous widget, mark dismissed and don't show followup
-                    widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
-                    return
-                }
-
+                parser.parseTextPredictionFollowup(followupWidgetData,
+                    payload,
+                    previousWidgetSelections)
+                //Are we ever going to need these again? Remove for now
+                previousWidgetSelections.remove(followupWidgetData.questionWidgetId)
                 container.addView(predictionWidget)
                 currentWidget = followupWidgetData
             }
@@ -79,7 +77,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion()
                 widgetData.registerObserver(predictionWidget)
-                WidgetParser.parseTextPredictionCommon(widgetData, payload)
+                parser.parseTextPredictionCommon(widgetData, payload)
                 container.addView(predictionWidget)
             }
 

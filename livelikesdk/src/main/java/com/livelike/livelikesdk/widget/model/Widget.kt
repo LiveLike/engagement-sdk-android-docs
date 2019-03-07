@@ -27,7 +27,7 @@ abstract class Widget : Observable {
 
     protected fun optionSelectedUpdated(id: String?) {
         if (id == null) {
-            optionSelected = WidgetOptions(null, null, "", 0, null)
+            optionSelected = WidgetOptions(null, null, "", 0    )
             return
         }
         optionSelected = optionList.single { option ->
@@ -36,7 +36,7 @@ abstract class Widget : Observable {
     }
 
     var optionSelected: WidgetOptions by observable(
-        WidgetOptions(null, null, "", 0, null)) { _, _, newValue ->
+        WidgetOptions(null, null, "", 0)) { _, _, newValue ->
         observers.forEach { observer ->
             observer.optionSelectedUpdated(newValue.id)
         }
@@ -93,11 +93,12 @@ class PredictionWidgetFollowUp : Widget() {
     }
 }
 
-data class WidgetOptions(val id: String?,
-                         val voteUrl: URI?,
-                         var description: String,
-                         var voteCount: Long,
-                         val imageUrl: String?)
+data class WidgetOptions(val id: String? = null,
+                         val voteUrl: URI? = null,
+                         var description: String = "",
+                         var voteCount: Long = 0) {
+    var imageUrl: String? = null
+}
 
 
 class PredictionWidgetQuestion : Widget(){
