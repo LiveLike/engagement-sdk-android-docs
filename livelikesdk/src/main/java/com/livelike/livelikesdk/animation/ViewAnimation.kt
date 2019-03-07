@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget.view
+package com.livelike.livelikesdk.animation
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -6,8 +6,7 @@ import android.view.View
 import com.livelike.livelikesdk.R
 import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
-import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
-import com.livelike.livelikesdk.animation.AnimationHandler
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 

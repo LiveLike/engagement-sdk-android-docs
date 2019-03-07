@@ -41,6 +41,12 @@ abstract class Widget : Observable {
             observer.optionSelectedUpdated(newValue.id)
         }
     }
+
+    var confirmMessage: String by observable("") { _, _, newValue ->
+        observers.forEach { observer ->
+            observer.confirmMessageUpdated(newValue)
+        }
+    }
 }
 
 class PredictionWidgetFollowUp : Widget() {

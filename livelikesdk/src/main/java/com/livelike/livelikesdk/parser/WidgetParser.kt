@@ -13,6 +13,7 @@ import java.util.*
 internal class WidgetParser {
     fun parseTextPredictionCommon(widget: Widget, payload: JsonObject) {
         widget.question = payload.extractStringOrEmpty("question")
+        widget.confirmMessage = payload.extractStringOrEmpty("confirmation_message")
         // Fixme: id for follow widget comes as id and for question widget it is missing, though there is
         // text_prediction_id, which is the id of the widget it is connected to. For now generate an ID
         var widgetId = payload.extractStringOrEmpty("id")

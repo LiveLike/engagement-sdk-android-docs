@@ -6,6 +6,8 @@ import android.animation.ValueAnimator
 import android.util.Log
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 
 class AnimationHandler {
     private val TAG = this::class.java.simpleName
@@ -29,7 +31,8 @@ class AnimationHandler {
         val animatorSet = AnimatorSet()
 
         // TODO: remove hardcoded start position -400 to something meaningful.
-        animatorSet.playTogether(AnimationEaseAdapter()
+        animatorSet.playTogether(
+            AnimationEaseAdapter()
                 .createAnimationEffectWith(
                         ease,
                         forDuration,

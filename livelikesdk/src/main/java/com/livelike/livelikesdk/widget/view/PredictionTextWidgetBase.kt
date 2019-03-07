@@ -18,7 +18,7 @@ import android.view.ViewStub
 import android.widget.Button
 import android.widget.TextView
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.binding.WidgetObserver
 
@@ -67,6 +67,10 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             text = questionText
             isClickable = true
         })
+    }
+
+    override fun confirmMessageUpdated(confirmMessage: String) {
+        prediction_confirm_message_textView.text = confirmMessage
     }
 
     override fun optionListUpdated(voteOptions: List<VoteOption>, optionSelectedCallback: (String?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {

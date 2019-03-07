@@ -15,7 +15,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationEaseInterpolator
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_result
 

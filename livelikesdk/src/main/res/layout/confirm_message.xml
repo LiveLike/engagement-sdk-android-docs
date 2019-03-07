@@ -29,7 +29,6 @@
             android:paddingRight="16dp"
             android:paddingTop="30dp"
             android:paddingBottom="16dp"
-            android:text="@string/prediction_confirm_message"
             app:fontFamily="@font/titillium_semibold"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
