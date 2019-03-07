@@ -197,11 +197,15 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     // https://github.com/MasayukiSuda/EasingInterpolator
 
     private fun triggerTransitionOutAnimation() {
+        val animator = ObjectAnimator.ofFloat(this,
+            "translationY",
+            0f, -dpToPx(250).toFloat())
+        animationHandler.bindListenerToAnimationView(animator) {
+            dismissWidget()
+        }
         Handler().postDelayed({
             // TODO: Get rid of hardcoded value once we have minimun viewable area defined.
-            val animator = ObjectAnimator.ofFloat(this,
-                    "translationY",
-                    0f, -dpToPx(250).toFloat())
+
             startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
         }, resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong())
     }
