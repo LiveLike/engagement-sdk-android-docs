@@ -94,7 +94,8 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     override fun dismissCurrentWidget() {
         container.removeAllViews()
         val widget = currentWidget ?: return
-        previousWidgetSelections[widget.id ?: ""] = widget.optionSelected
+        previousWidgetSelections[widget.id ?: ""] =
+            widget.optionSelected // TODO: this should be saved in sharedPrefs as here it would not subsist across session
         val voteUrl = widget.optionSelected.voteUrl.toString()
         widgetListener?.onOptionVote(voteUrl)
         currentWidget = null
