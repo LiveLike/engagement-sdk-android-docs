@@ -6,6 +6,7 @@ import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
+import com.livelike.livelikesdk.util.logVerbose
 
 class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () -> EpochTime) :
     MessagingClientProxy(upstream) {
@@ -43,16 +44,26 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
         }
     }
 
+    val validEventBufferMs = 10000 // 10sec
+
     fun processQueueForScheduledEvent() {
         val event = queue.peek()?:return
         //For now lets use the timestamp, we can implement minimumTime when sync timing comes in, timestamp of <= 0 is passthrough
-//        Log.i("Sync", "Event date  : ${Date(event.timeStamp.timeSinceEpochInMs)}")
-//        Log.i("Sync", "Current date: ${Date(timeSource().timeSinceEpochInMs)}")
+//        logVerbose{"Event date  : ${Date(event.timeStamp.timeSinceEpochInMs)}"}
+//        logVerbose{"Current date: ${Date(timeSource().timeSinceEpochInMs)}"}
         if(event.timeStamp > EpochTime(0)) {
-            if (event.timeStamp.timeSinceEpochInMs <= timeSource().timeSinceEpochInMs) {
+            if (event.timeStamp <= timeSource()
+                && event.timeStamp.timeSinceEpochInMs >= timeSource().timeSinceEpochInMs - validEventBufferMs
+            ) {
+                logVerbose { "Publish Widget" }
                 publishEvent(queue.dequeue()!!)
+            } else if (event.timeStamp.timeSinceEpochInMs <= timeSource().timeSinceEpochInMs - validEventBufferMs) {
+                logVerbose { "Dismissed Widget -- the widget was too old!" }
+                // Dequeue all events older than currentTime-validEventBuffer
+                queue.dequeue()
             }
         } else {
+            logVerbose { "Publish instant Widget" }
             publishEvent(queue.dequeue()!!)
         }
     }
