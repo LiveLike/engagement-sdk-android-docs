@@ -1,6 +1,8 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
+import com.livelike.livelikesdk.analytics.InteractionLogger
+import com.livelike.livelikesdk.analytics.InteractionSession
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.toChatQueue
@@ -26,7 +28,7 @@ class LiveLikeContentSessionImpl(
     private var widgetQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
     private val userPreferences = applicationContext.getSharedPreferences("livelike-sdk", Context.MODE_PRIVATE)
-
+    private val interactionSession = InteractionLogger()
     init {
         getUser()
     }
@@ -74,7 +76,7 @@ class LiveLikeContentSessionImpl(
     }
 
     override fun contentSessionId() = program?.clientId ?: ""
-
+    override fun getInteractionSession(): InteractionSession { return InteractionLogger() }
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val widgetQueue = PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).asWidgetManager(llDataClient)

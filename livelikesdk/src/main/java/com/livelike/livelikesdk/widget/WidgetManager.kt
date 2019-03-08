@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.widget
 
 import com.google.gson.JsonObject
+import com.livelike.livelikesdk.analytics.InteractionSession
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -73,6 +74,7 @@ enum class WidgetType (val value: String) {
 
 interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
+
     fun dismissCurrentWidget()
     fun displayWidget(type: WidgetType, payload: JsonObject)
 }

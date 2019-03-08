@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub : ViewStub
     private lateinit var viewAnimation: ViewAnimation
+    private lateinit var userTapped : () -> Unit
     private val widgetOpacityFactor: Float = 0.2f
     private val animationHandler = AnimationHandler()
     private val imageButtonMap = HashMap<ImageButton, String?>()
@@ -98,7 +99,7 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         image_optionList.layoutManager = linearLayoutManager
-        image_optionList.adapter = ImageAdapter(voteOptions, context, optionSelectedCallback, imageButtonMap)
+        image_optionList.adapter = ImageAdapter(voteOptions, context, optionSelectedCallback, imageButtonMap, userTapped)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
@@ -113,12 +114,20 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     override fun confirmMessageUpdated(confirmMessage: String) {
         prediction_confirm_message_textView.text = confirmMessage
     }
+
+    fun userTappedCallback(userTapped: () -> Unit) {
+        this.userTapped = userTapped
+    }
 }
 
-class ImageAdapter(private val optionList: List<VoteOption>,
-                   private val context: Context,
-                   private val optionSelectedCallback: (String?) -> Unit,
-                   private val imageButtonMap: HashMap<ImageButton, String?>) : RecyclerView.Adapter<ViewHolder>() {
+class ImageAdapter(
+    private val optionList: List<VoteOption>,
+    private val context: Context,
+    private val optionSelectedCallback: (String?) -> Unit,
+    private val imageButtonMap: HashMap<ImageButton, String?>,
+    private val userTapped: () -> Unit
+
+) : RecyclerView.Adapter<ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val option = optionList[position]
@@ -134,6 +143,7 @@ class ImageAdapter(private val optionList: List<VoteOption>,
         holder.optionButton.setOnClickListener {
             val selectedOption = imageButtonMap[holder.optionButton]
             optionSelectedCallback(selectedOption)
+            userTapped.invoke()
         }
     }
 
