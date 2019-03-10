@@ -5,16 +5,16 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.util.Log
 import com.airbnb.lottie.LottieAnimationView
-import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 
 class AnimationHandler {
     private val TAG = this::class.java.simpleName
+    lateinit var animator: ValueAnimator
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: (Boolean) -> Unit,
                        duration: Long) {
-        val animator = ValueAnimator.ofFloat(0f, 1f)
+        animator = ValueAnimator.ofFloat(0f, 1f)
         bindListenerToAnimationView(animator, onAnimationCompletedCallback)
         animator.duration = duration
         animator.addUpdateListener { animation ->
@@ -23,6 +23,10 @@ class AnimationHandler {
 
         lottieAnimationView.playAnimation()
         animator.start()
+    }
+
+    fun cancelAnimation() {
+        animator.cancel()
     }
 
     fun createAnimationEffectWith(ease: AnimationEaseInterpolator.Ease,

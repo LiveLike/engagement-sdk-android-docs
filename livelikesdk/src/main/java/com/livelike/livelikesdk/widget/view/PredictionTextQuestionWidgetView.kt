@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
+import kotlinx.android.synthetic.main.confirm_message.view.*
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
 
@@ -45,12 +46,10 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
 
     private fun onTimerAnimationCompleted(animationHandler: AnimationHandler) {
         if (optionSelected) {
-
             prediction_confirm_message_textView.visibility = View.VISIBLE
-
             lottieAnimationPath = "confirmMessage"
             val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath)
-            if (lottieAnimation != null) {
+            if (lottieAnimation != null && prediction_confirm_message_animation != null) {
                 prediction_confirm_message_animation.setAnimation("$lottieAnimationPath/$lottieAnimation")
                 prediction_confirm_message_animation.visibility = View.VISIBLE
                 animationHandler.startAnimation(

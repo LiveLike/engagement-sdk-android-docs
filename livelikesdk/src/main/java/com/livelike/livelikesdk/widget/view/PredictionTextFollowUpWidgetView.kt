@@ -17,7 +17,7 @@ import android.widget.TextView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.widget.model.VoteOption
-import kotlinx.android.synthetic.main.prediction_text_widget.view.prediction_result
+import kotlinx.android.synthetic.main.confirm_message.view.*
 
 class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)

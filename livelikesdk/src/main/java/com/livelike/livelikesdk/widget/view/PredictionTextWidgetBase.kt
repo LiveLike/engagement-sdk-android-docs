@@ -25,6 +25,7 @@ import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 import com.livelike.livelikesdk.widget.model.VoteOption
+import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -118,6 +119,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
+                    animationHandler.cancelAnimation()
                     layout.removeAllViewsInLayout()
                     dismissWidget()
                 }
