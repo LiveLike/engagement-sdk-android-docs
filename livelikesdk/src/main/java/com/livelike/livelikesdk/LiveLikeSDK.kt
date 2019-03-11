@@ -13,7 +13,7 @@ import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
  * @param appId Application's id
  */
 
-class LiveLikeSDK(val appId: String, val applicationContext: Context) {
+class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
 
     companion object {
         const val CONFIG_URL = "https://cf-blast.livelikecdn.com/api/v1/applications/"

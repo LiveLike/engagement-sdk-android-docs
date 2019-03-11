@@ -32,7 +32,7 @@ fun JsonObject.extractLong(propertyName: String, default: Long = 0): Long {
 val gson = GsonBuilder()
     .registerTypeAdapter(ZonedDateTime::class.java, DateDeserializer())
     .registerTypeAdapter(ZonedDateTime::class.java, DateSerializer())
-    .create()
+    .create()!!
 
 private val isoUTCDateTimeFormatter =
     DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("UTC"))
