@@ -44,7 +44,7 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
         }
     }
 
-    val validEventBufferMs = 10000 // 10sec
+    private val validEventBufferMs = 10000L // 10sec
 
     fun processQueueForScheduledEvent() {
         val event = queue.peek()?:return
@@ -53,11 +53,11 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
 //        logVerbose{"Current date: ${Date(timeSource().timeSinceEpochInMs)}"}
         if(event.timeStamp > EpochTime(0)) {
             if (event.timeStamp <= timeSource()
-                && event.timeStamp.timeSinceEpochInMs >= timeSource().timeSinceEpochInMs - validEventBufferMs
+                && event.timeStamp >= timeSource() - validEventBufferMs
             ) {
                 logVerbose { "Publish Widget" }
                 publishEvent(queue.dequeue()!!)
-            } else if (event.timeStamp.timeSinceEpochInMs <= timeSource().timeSinceEpochInMs - validEventBufferMs) {
+            } else if (event.timeStamp <= timeSource() - validEventBufferMs) {
                 logVerbose { "Dismissed Widget -- the widget was too old!" }
                 // Dequeue all events older than currentTime-validEventBuffer
                 queue.dequeue()
