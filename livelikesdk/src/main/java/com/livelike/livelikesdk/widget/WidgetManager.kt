@@ -1,8 +1,7 @@
 package com.livelike.livelikesdk.widget
 
 import com.google.gson.JsonObject
-import com.livelike.livelikesdk.analytics.InteractionSession
-import com.livelike.livelikesdk.analytics.WidgetAnalytics
+import com.livelike.livelikesdk.analytics.InteractionLogger
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -16,7 +15,7 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
         WidgetEventListener{
-    private val analyticsListeners = HashSet<WidgetAnalytics>()
+    private val analyticsListeners = HashSet<WidgetAnalyticsObserver>()
     var renderer: WidgetRenderer? = null
     set(value) {
         field = value
@@ -59,13 +58,19 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
         }
     }
 
-    fun subscribeAnalytics(interactionSession: InteractionSession) {
-        analyticsListeners.add(interactionSession)
+    fun subscribeAnalytics(observer: WidgetAnalyticsObserver) {
+        analyticsListeners.add(observer)
     }
 
-    fun unsubscribeAnalytics(interactionSession: InteractionSession) {
-        if (analyticsListeners.contains(interactionSession))
-            analyticsListeners.remove(interactionSession)
+    fun unsubscribeAnalytics(observer: WidgetAnalyticsObserver) {
+        if (analyticsListeners.contains(observer))
+            analyticsListeners.remove(observer)
+    }
+
+    interface WidgetAnalyticsObserver {
+        fun widgetDismissed(widgetId: String)
+        fun widgetShown(widgetId: String)
+        fun widgetOptionSelected(widgetId: String)
     }
 }
 
@@ -89,7 +94,7 @@ interface WidgetRenderer {
     fun displayWidget(
         type: WidgetType,
         payload: JsonObject,
-        analyticsListeners: Set<WidgetAnalytics>
+        observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
     )
 }
 

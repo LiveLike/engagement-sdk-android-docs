@@ -2,7 +2,6 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.livelike.livelikesdk.analytics.InteractionLogger
-import com.livelike.livelikesdk.analytics.InteractionSession
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.toChatQueue

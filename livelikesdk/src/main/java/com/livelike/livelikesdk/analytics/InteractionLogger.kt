@@ -1,8 +1,9 @@
 package com.livelike.livelikesdk.analytics
 
 import com.livelike.livelikesdk.util.logInfo
+import com.livelike.livelikesdk.widget.WidgetManager
 
-class InteractionLogger : InteractionSession {
+class InteractionLogger : WidgetManager.WidgetAnalyticsObserver {
     override fun widgetDismissed(widgetId: String) {
         logInfo { "Interaction type Widget Dismissed $widgetId " }
     }

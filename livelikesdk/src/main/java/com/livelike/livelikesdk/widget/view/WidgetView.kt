@@ -9,11 +9,11 @@ import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.analytics.WidgetAnalytics
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetEvent
+import com.livelike.livelikesdk.widget.WidgetObserver
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
@@ -29,7 +29,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     private var container : FrameLayout
     private var currentWidget: Widget? = null
     private val previousWidgetSelections = mutableMapOf<String, WidgetOptions?>()
-    private lateinit var analyticsListeners: Set<WidgetAnalytics>
+    private lateinit var observerListeners: Set<WidgetObserver>
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
@@ -43,9 +43,9 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     override fun displayWidget(
         type: WidgetType,
         payload: JsonObject,
-        analyticsListeners: Set<WidgetAnalytics>
+        observerListeners: Set<WidgetObserver>
     ) {
-        this.analyticsListeners = analyticsListeners
+        this.observerListeners = observerListeners
         logDebug { "NOW - Show Widget ${type.value} on screen: $payload" }
         val layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -110,19 +110,19 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     }
 
     private fun emitWidgetOptionSelected(widgetId: String?) {
-        analyticsListeners.forEach { listener ->
+        observerListeners.forEach { listener ->
             widgetId?.let { listener.widgetOptionSelected(it) }
         }
     }
 
     private fun emitWidgetDismissed(widgetId: String?) {
-        analyticsListeners.forEach { listener ->
+        observerListeners.forEach { listener ->
             widgetId?.let { listener.widgetDismissed(it) }
         }
     }
 
     private fun emitWidgetShown(widgetId: String?) {
-        analyticsListeners.forEach { listener ->
+        observerListeners.forEach { listener ->
             widgetId?.let { listener.widgetShown(it) }
         }
     }

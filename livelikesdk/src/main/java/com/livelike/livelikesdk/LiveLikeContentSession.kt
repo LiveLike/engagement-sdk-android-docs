@@ -1,5 +1,4 @@
 package com.livelike.livelikesdk
-import com.livelike.livelikesdk.analytics.InteractionSession
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.widget.WidgetRenderer
