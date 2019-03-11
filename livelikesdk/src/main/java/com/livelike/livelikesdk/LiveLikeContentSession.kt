@@ -31,8 +31,6 @@ interface LiveLikeContentSession {
     fun getPlayheadTime(): EpochTime
 
     fun contentSessionId(): String
-
-    fun getInteractionSession(): InteractionSession
 }
 
 internal interface LiveLikeDataClient {

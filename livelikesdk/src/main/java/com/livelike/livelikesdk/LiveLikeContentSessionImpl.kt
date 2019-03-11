@@ -76,7 +76,6 @@ class LiveLikeContentSessionImpl(
     }
 
     override fun contentSessionId() = program?.clientId ?: ""
-    override fun getInteractionSession(): InteractionSession { return InteractionLogger() }
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val widgetQueue = PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).asWidgetManager(llDataClient)
