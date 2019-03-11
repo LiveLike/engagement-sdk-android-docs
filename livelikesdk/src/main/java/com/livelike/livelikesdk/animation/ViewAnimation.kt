@@ -101,6 +101,7 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
+                    animationHandler.cancelAnimation()
                     layout.removeAllViewsInLayout()
                     dismissWidget?.invoke()
                 }
