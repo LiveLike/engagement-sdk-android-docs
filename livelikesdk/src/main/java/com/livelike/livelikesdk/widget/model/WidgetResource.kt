@@ -3,23 +3,23 @@ package com.livelike.livelikesdk.widget.model
 import java.io.Serializable
 
 data class Resource(
-    var id: String = "",
-    var url: String = "",
-    var kind: String = "",
-    var question: String = "",
+    val id: String = "",
+    val url: String = "",
+    val kind: String = "",
+    val question: String = "",
     val timeout: String = "",
-    var subscribe_channel: String = "",
-    var program_id: String = "",
-    var created_at: String = "",
-    var published_at: String = "",
-    var follow_up_url: String = "",
-    var text_prediction_id: String = "",
-    var text_prediction_url: String = "",
-    var correct_option_id: String = "",
-    var confirmation_message: String = "",
-    var tweets: List<TweetItem>,
-    var choices: List<Option> = listOf(),
-    var options: List<Option> = listOf()
+    val subscribe_channel: String = "",
+    val program_id: String = "",
+    val created_at: String = "",
+    val published_at: String = "",
+    val follow_up_url: String = "",
+    val text_prediction_id: String = "",
+    val text_prediction_url: String = "",
+    val correct_option_id: String = "",
+    val confirmation_message: String = "",
+    val tweets: List<TweetItem>,
+    val choices: List<Option> = listOf(),
+    val options: List<Option> = listOf()
 ) : Serializable {
     val totalVotes: Float
         get() {
@@ -40,32 +40,31 @@ data class Resource(
 }
 
 data class Alert(
-    var id: String = "",
-    var url: String = "",
-    var kind: String = "",
+    val id: String = "",
+    val url: String = "",
+    val kind: String = "",
     val timeout: String = "",
-    var subscribe_channel: String = "",
-    var program_id: String = "",
-    var created_at: String = "",
-    var published_at: String = "",
-    var title: String = "",
-    var text: String = "",
-    var image_url: String = "",
-    var link_url: String = "",
-    var link_label: String = ""
+    val subscribe_channel: String = "",
+    val program_id: String = "",
+    val created_at: String = "",
+    val published_at: String = "",
+    val title: String = "",
+    val text: String = "",
+    val image_url: String = "",
+    val link_url: String = "",
+    val link_label: String = ""
 ) : Serializable
 
 data class Option(
     val id: String,
-    var url: String = "",
-    var description: String = "",
-    var is_correct: Boolean = false,
-    var answer_url: String = "",
-    var vote_url: String = "",
-    var image_url: String = "",
-    var state: String = "default",
-    var answer_count: Int = 0,
-    var vote_count: Int = 0
+    val url: String = "",
+    val description: String = "",
+    val is_correct: Boolean = false,
+    val answer_url: String = "",
+    val vote_url: String = "",
+    val image_url: String = "",
+    val answer_count: Int = 0,
+    val vote_count: Int = 0
 ) : Serializable {
     fun getPercentVote(total: Float): Int {
         if (total == 0F) return 0
@@ -80,9 +79,9 @@ data class Option(
 
 data class Vote(
     val id: String,
-    var url: String = "",
-    var choice_id: String = "",
-    var option_id: String = ""
+    val url: String = "",
+    val choice_id: String = "",
+    val option_id: String = ""
 ) : Serializable
 
 data class TweetItem(
