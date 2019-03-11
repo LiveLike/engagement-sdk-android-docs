@@ -9,7 +9,7 @@ import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.analytics.InteractionSession
+import com.livelike.livelikesdk.analytics.WidgetAnalytics
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.logDebug
@@ -29,13 +29,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     private var container : FrameLayout
     private var currentWidget: Widget? = null
     private val previousWidgetSelections = mutableMapOf<String, WidgetOptions?>()
-    private lateinit var interactionSession: InteractionSession
-
-    companion object {
-        private val USER_TAPPED = InteractionSession.InteractionType("widgetInteracted")
-        private val WIDGET_SHOWN = InteractionSession.InteractionType("widgetShown")
-        private val WIDGET_DISMISSED = InteractionSession.InteractionType("widgetDismissed")
-    }
+    private lateinit var analyticsListeners: Set<WidgetAnalytics>
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
@@ -44,10 +38,14 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
 
     fun setSession(session: LiveLikeContentSession) {
         session.widgetRenderer = this
-        interactionSession  = session.getInteractionSession()
     }
 
-    override fun displayWidget(type: WidgetType, payload: JsonObject) {
+    override fun displayWidget(
+        type: WidgetType,
+        payload: JsonObject,
+        analyticsListeners: Set<WidgetAnalytics>
+    ) {
+        this.analyticsListeners = analyticsListeners
         logDebug { "NOW - Show Widget ${type.value} on screen: $payload" }
         val layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -66,10 +64,10 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 widgetData.registerObserver(predictionWidget)
                 parser.parseTextPredictionCommon(widgetData, widgetResource)
                 predictionWidget.userTappedCallback {
-                    recordInteraction(widgetData, USER_TAPPED)
+                    emitWidgetOptionSelected(widgetData.id)
                 }
                 container.addView(predictionWidget)
-                recordInteraction(widgetData, WIDGET_SHOWN)
+                emitWidgetShown(widgetData.id)
                 currentWidget = widgetData
             }
 
@@ -88,7 +86,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                     return
                 }
                 container.addView(predictionWidget)
-                recordInteraction(followupWidgetData, WIDGET_SHOWN)
+                emitWidgetShown(followupWidgetData.id)
                 currentWidget = followupWidgetData
             }
 
@@ -99,10 +97,11 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 widgetData.registerObserver(predictionWidget)
                 parser.parseTextPredictionCommon(widgetData, widgetResource)
                 predictionWidget.userTappedCallback {
-                    recordInteraction(widgetData, USER_TAPPED)
+                    emitWidgetOptionSelected(widgetData.id)
                 }
                 container.addView(predictionWidget)
-                recordInteraction(widgetData, WIDGET_SHOWN)
+                emitWidgetShown(widgetData.id)
+                currentWidget = widgetData
             }
 
             else -> {
@@ -110,8 +109,22 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         }
     }
 
-    private fun recordInteraction(widget: Widget, interactionType: InteractionSession.InteractionType) {
-        widget.id?.let { interactionSession.recordInteraction(interactionType, it) }
+    private fun emitWidgetOptionSelected(widgetId: String?) {
+        analyticsListeners.forEach { listener ->
+            widgetId?.let { listener.widgetOptionSelected(it) }
+        }
+    }
+
+    private fun emitWidgetDismissed(widgetId: String?) {
+        analyticsListeners.forEach { listener ->
+            widgetId?.let { listener.widgetDismissed(it) }
+        }
+    }
+
+    private fun emitWidgetShown(widgetId: String?) {
+        analyticsListeners.forEach { listener ->
+            widgetId?.let { listener.widgetShown(it) }
+        }
     }
 
     override fun dismissCurrentWidget() {
@@ -119,7 +132,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         val widget = currentWidget ?: return
         previousWidgetSelections[widget.id ?: ""] =
             widget.optionSelected // TODO: this should be saved in sharedPrefs as here it would not subsist across session
-        widget.id?.let { interactionSession.recordInteraction(WIDGET_SHOWN, it) }
+        emitWidgetDismissed(widget.id)
         previousWidgetSelections[widget.id ?: ""] = widget.optionSelected
         val voteUrl = widget.optionSelected.voteUrl.toString()
         widgetListener?.onOptionVote(voteUrl)

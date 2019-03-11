@@ -84,6 +84,7 @@ class LiveLikeContentSessionImpl(
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer
             this.widgetQueue = widgetQueue
+            widgetQueue.subscribeAnalytics(interactionSession)
         }
     }
 

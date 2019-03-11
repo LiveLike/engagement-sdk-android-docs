@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget
 
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.analytics.InteractionSession
+import com.livelike.livelikesdk.analytics.WidgetAnalytics
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -15,7 +16,7 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
         WidgetEventListener{
-
+    private val analyticsListeners = HashSet<WidgetAnalytics>()
     var renderer: WidgetRenderer? = null
     set(value) {
         field = value
@@ -47,7 +48,7 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
         isProcessing = true
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         val payload = event.message["payload"].asJsonObject
-        renderer?.displayWidget(widgetType, payload)
+        renderer?.displayWidget(widgetType, payload, analyticsListeners)
         super.onClientMessageEvent(client, event)
     }
 
@@ -56,6 +57,15 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
         if (pause){
             renderer?.dismissCurrentWidget()
         }
+    }
+
+    fun subscribeAnalytics(interactionSession: InteractionSession) {
+        analyticsListeners.add(interactionSession)
+    }
+
+    fun unsubscribeAnalytics(interactionSession: InteractionSession) {
+        if (analyticsListeners.contains(interactionSession))
+            analyticsListeners.remove(interactionSession)
     }
 }
 
@@ -76,7 +86,11 @@ interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
 
     fun dismissCurrentWidget()
-    fun displayWidget(type: WidgetType, payload: JsonObject)
+    fun displayWidget(
+        type: WidgetType,
+        payload: JsonObject,
+        analyticsListeners: Set<WidgetAnalytics>
+    )
 }
 
 enum class WidgetEvent{

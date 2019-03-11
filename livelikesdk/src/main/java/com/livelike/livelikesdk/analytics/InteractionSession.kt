@@ -1,11 +1,5 @@
 package com.livelike.livelikesdk.analytics
 
-interface InteractionSession{
-    class InteractionType(val name : String) {
-        override fun toString(): String {
-            return "InteractionType $name"
-        }
-    }
+interface InteractionSession : WidgetAnalytics {
 
-    fun recordInteraction(interactionType: InteractionType, widgetId: String)
 }

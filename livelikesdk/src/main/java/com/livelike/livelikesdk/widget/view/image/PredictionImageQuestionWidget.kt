@@ -27,24 +27,30 @@ import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
 class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
-    private lateinit var pieTimerViewStub : ViewStub
+    private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
-    private lateinit var userTapped : () -> Unit
     private val widgetOpacityFactor: Float = 0.2f
     private val animationHandler = AnimationHandler()
-    private val imageButtonMap = HashMap<ImageButton, String?>()
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
-    private var dismissWidget :  (() -> Unit)? = null
+    private var dismissWidget: (() -> Unit)? = null
+    val imageButtonMap = HashMap<ImageButton, String?>()
+    lateinit var userTapped: () -> Unit
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
         dismissWidget = dismiss
     }
 
-    init { inflate(context) }
+    init {
+        inflate(context)
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun inflate(context: Context) {
@@ -59,9 +65,11 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
         viewAnimation.startWidgetTransitionInAnimation()
         viewAnimation.startTimerAnimation(pieTimer, 7000) {
             if (optionSelected) {
-                viewAnimation.showConfirmMessage(prediction_confirm_message_textView,
+                viewAnimation.showConfirmMessage(
+                    prediction_confirm_message_textView,
                     prediction_confirm_message_animation,
-                    dismissWidget)
+                    dismissWidget
+                )
                 performPredictionWidgetFadeOutOperations()
             } else {
                 viewAnimation.hideWidget()
@@ -93,13 +101,15 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
         }, layout, dismissWidget)
     }
 
-    override fun optionListUpdated(voteOptions: List<VoteOption>,
-                                   optionSelectedCallback: (String?) -> Unit,
-                                   correctOptionWithUserSelection: Pair<String?, String?>) {
+    override fun optionListUpdated(
+        voteOptions: List<VoteOption>,
+        optionSelectedCallback: (String?) -> Unit,
+        correctOptionWithUserSelection: Pair<String?, String?>
+    ) {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         image_optionList.layoutManager = linearLayoutManager
-        image_optionList.adapter = ImageAdapter(voteOptions, context, optionSelectedCallback, imageButtonMap, userTapped)
+        image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
@@ -118,45 +128,48 @@ class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     fun userTappedCallback(userTapped: () -> Unit) {
         this.userTapped = userTapped
     }
-}
 
-class ImageAdapter(
-    private val optionList: List<VoteOption>,
-    private val context: Context,
-    private val optionSelectedCallback: (String?) -> Unit,
-    private val imageButtonMap: HashMap<ImageButton, String?>,
-    private val userTapped: () -> Unit
+    inner class ImageAdapter(
+        private val optionList: List<VoteOption>,
+        private val optionSelectedCallback: (String?) -> Unit
 
-) : RecyclerView.Adapter<ViewHolder>() {
+    ) : RecyclerView.Adapter<ViewHolder>() {
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val option = optionList[position]
-        holder.optionText.text = option.description
-        val imageWidth = AndroidResource.dpToPx(74)
-        // TODO: Move this to adapter layer.
-        Glide.with(context)
-            .load(option.imageUrl)
-            .apply(RequestOptions().override(imageWidth, imageWidth))
-            .into(holder.optionButton)
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val option = optionList[position]
+            holder.optionText.text = option.description
+            val imageWidth = AndroidResource.dpToPx(74)
 
-        imageButtonMap[holder.optionButton] = option.id
-        holder.optionButton.setOnClickListener {
-            val selectedOption = imageButtonMap[holder.optionButton]
-            optionSelectedCallback(selectedOption)
-            userTapped.invoke()
+            // TODO: Move this to adapter layer.
+            Glide.with(context)
+                .load(option.imageUrl)
+                .apply(RequestOptions().override(imageWidth, imageWidth))
+                .into(holder.optionButton)
+            imageButtonMap[holder.optionButton] = option.id
+            holder.optionButton.setOnClickListener {
+                val selectedOption = imageButtonMap[holder.optionButton]
+                optionSelectedCallback(selectedOption)
+                userTapped.invoke()
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return ViewHolder(
+                LayoutInflater.from(context).inflate(
+                    R.layout.prediction_image_row_element,
+                    parent,
+                    false
+                )
+            )
+        }
+
+        override fun getItemCount(): Int {
+            return optionList.size
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(context).inflate(R.layout.prediction_image_row_element, parent, false))
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val optionButton: ImageButton = view.image_button
+        val optionText: TextView = view.item_text
     }
-
-    override fun getItemCount(): Int {
-        return optionList.size
-    }
-}
-
-class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    val optionButton: ImageButton = view.image_button
-    val optionText: TextView = view.item_text
 }
