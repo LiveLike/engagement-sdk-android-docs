@@ -14,4 +14,5 @@
     <string name="default_channel_label">No Event Channel Selected</string>
     <string name="layout_side_content_description">layout side</string>
     <string name="layout_overlay_content_description">layout overlay</string>
+    <string name="select_event">SELECT EVENT</string>
 </resources>

@@ -35,7 +35,6 @@ import java.util.*
 
 
 class ExoPlayerActivity : AppCompatActivity() {
-
     companion object {
         const val AD_STATE = "adstate"
         const val POSITION = "position"
@@ -43,9 +42,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val TEST_CONFIG_URL =
             "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-demo.json"
     }
-
-    private val client: OkHttpClient = OkHttpClient()
-    private val channelList: MutableList<Channel> = mutableListOf()
 
     private lateinit var player: VideoPlayer
     private var session: LiveLikeContentSession? = null
@@ -140,18 +136,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channels.size > 1) {
             selectChannelButton.visibility = View.VISIBLE
             selectChannelButton.setOnClickListener {
-                val popupMenu = PopupMenu(this, selectChannelButton)
-                popupMenu.setOnMenuItemClickListener {
-                    for (channel: Channel in channels) {
-                        if (it.title.equals(channel.name)) {
-                            selectChannel(channel)
-                        }
-                    }
-                    true
-                }
-                for (channel: Channel in channels)
-                    popupMenu.menu.add(channel.name)
-                popupMenu.show()
+
             }
         } else if (channels.size == 1) {
             selectChannel(channels[0])

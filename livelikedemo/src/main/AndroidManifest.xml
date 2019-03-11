@@ -7,6 +7,7 @@
 
     <application
             tools:ignore="GoogleAppIndexingWarning"
+            android:name=".LiveLikeApplication"
             android:allowBackup="true"
             android:versionCode="1"
             android:versionName="1"
