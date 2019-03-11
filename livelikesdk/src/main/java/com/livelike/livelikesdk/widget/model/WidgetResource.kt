@@ -17,26 +17,15 @@ data class Resource(
     val text_prediction_url: String = "",
     val correct_option_id: String = "",
     val confirmation_message: String = "",
-    val tweets: List<TweetItem>,
     val choices: List<Option> = listOf(),
     val options: List<Option> = listOf()
 ) : Serializable {
-    val totalVotes: Float
-        get() {
-            var tempValue = 0F
-            for (it in options) {
-                tempValue += it.vote_count
-            }
-            return tempValue
+    val totalVotes: Int by lazy {
+        options.map { it.vote_count }.sum()
         }
-    val totalAnswers: Float
-        get() {
-            var tempValue = 0F
-            for (it in choices) {
-                tempValue += it.answer_count
-            }
-            return tempValue
-        }
+    val totalAnswers: Int by lazy {
+        choices.map { it.answer_count }.sum()
+    }
 }
 
 data class Alert(
@@ -53,7 +42,7 @@ data class Alert(
     val image_url: String = "",
     val link_url: String = "",
     val link_label: String = ""
-) : Serializable
+)
 
 data class Option(
     val id: String,
@@ -65,7 +54,7 @@ data class Option(
     val image_url: String = "",
     val answer_count: Int = 0,
     val vote_count: Int = 0
-) : Serializable {
+) {
     fun getPercentVote(total: Float): Int {
         if (total == 0F) return 0
         return Math.round((vote_count / total) * 100)
@@ -82,8 +71,4 @@ data class Vote(
     val url: String = "",
     val choice_id: String = "",
     val option_id: String = ""
-) : Serializable
-
-data class TweetItem(
-    val tweet_id: Long
-) : Serializable
+)
