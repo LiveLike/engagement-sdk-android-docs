@@ -4,6 +4,7 @@ import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 
 /**
  * Use this class to initialize the LiveLike SDK. This is the entry point for SDK usage. This creates a singleton instance of LiveLike SDK.
@@ -22,7 +23,8 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
     private var configuration: SdkConfiguration? = null
     private val dataClient = LiveLikeDataClientImpl()
     init {
-        AndroidThreeTen.init(applicationContext)
+        AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
+        initLiveLikeSharedPrefs(applicationContext)
     }
 
     /**

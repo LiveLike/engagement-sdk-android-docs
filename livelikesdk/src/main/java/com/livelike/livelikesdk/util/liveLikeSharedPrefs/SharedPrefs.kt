@@ -12,7 +12,7 @@ private val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
 
 private var mAppContext: Context? = null
 
-fun init(appContext: Context) {
+fun initLiveLikeSharedPrefs(appContext: Context) {
     mAppContext = appContext
 }
 
@@ -38,17 +38,23 @@ fun getNickename(): String {
     return getSharedPreferences().getString(PREFERENCE_KEY_NICKNAME, "") ?: ""
 }
 
-fun addWidgetPredictionVoted(id: String) {
+fun addWidgetPredictionVoted(id: String, optionId: String) {
     val editor = getSharedPreferences().edit()
-    val idsList = gson.toJson(getWidgetPredictionVoted().toMutableSet().add(id))
-    editor.putString(PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, idsList).apply()
+    val idsList = getWidgetPredictionVoted().toMutableSet()
+    idsList.add(SavedWidgetVote(id, optionId))
+    editor.putString(PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, gson.toJson(idsList.toTypedArray())).apply()
 }
 
-fun getWidgetPredictionVoted(): Array<String> {
+fun getWidgetPredictionVoted(): Array<SavedWidgetVote> {
     val predictionVotedJson = getSharedPreferences().getString(PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, "") ?: ""
-    return gson.fromJson(predictionVotedJson, Array<String>::class.java) ?: emptyArray()
+    return gson.fromJson(predictionVotedJson, Array<SavedWidgetVote>::class.java) ?: emptyArray()
 }
 
-fun checkWidgetPredictionWasVote(id: String): Boolean {
-    return getWidgetPredictionVoted().contains(id)
+fun getWidgetPredictionVotedAnswerIdOrEmpty(id: String): String {
+    return getWidgetPredictionVoted().find { it.id == id }?.optionId ?: ""
 }
+
+data class SavedWidgetVote(
+    val id: String,
+    val optionId: String
+)

@@ -2,9 +2,10 @@ package com.livelike.livelikesdk.widget.model
 
 import com.livelike.livelikesdk.binding.Observable
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.logDebug
 import java.net.URI
 import java.util.Date
+import kotlin.collections.LinkedHashMap
+import kotlin.collections.set
 import kotlin.properties.Delegates.observable
 
 abstract class Widget : Observable {

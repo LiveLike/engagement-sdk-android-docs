@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk.parser
 
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.Widget
@@ -19,12 +20,12 @@ internal class WidgetParser {
 
     fun parseTextPredictionFollowup(
         widgetFollowUp: PredictionWidgetFollowUp,
-        payload: Resource,
-        previousWidgetSelections: MutableMap<String, WidgetOptions?>
+        payload: Resource
     ) {
         parseTextPredictionCommon(widgetFollowUp, payload)
         widgetFollowUp.questionWidgetId = payload.text_prediction_id
-        widgetFollowUp.optionSelected = previousWidgetSelections[widgetFollowUp.questionWidgetId] ?: return
         widgetFollowUp.correctOptionId = payload.correct_option_id
+        widgetFollowUp.optionSelected =
+            WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widgetFollowUp.questionWidgetId))
     }
 }

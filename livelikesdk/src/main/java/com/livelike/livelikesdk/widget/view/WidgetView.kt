@@ -11,6 +11,7 @@ import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetEvent
 import com.livelike.livelikesdk.widget.WidgetManager
@@ -20,7 +21,6 @@ import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
 import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.Widget
-import com.livelike.livelikesdk.widget.model.WidgetOptions
 import com.livelike.livelikesdk.widget.view.image.PredictionImageQuestionWidget
 
 class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs),
@@ -28,7 +28,6 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     override var widgetListener : WidgetEventListener? = null
     private var container : FrameLayout
     private var currentWidget: Widget? = null
-    private val previousWidgetSelections = mutableMapOf<String, WidgetOptions?>()
     private lateinit var observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
 
     init {
@@ -77,9 +76,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 predictionWidget.layoutParams = layoutParams
                 val followupWidgetData = PredictionWidgetFollowUp()
                 followupWidgetData.registerObserver(predictionWidget)
-                parser.parseTextPredictionFollowup(followupWidgetData,
-                    widgetResource,
-                    previousWidgetSelections)
+                parser.parseTextPredictionFollowup(followupWidgetData, widgetResource)
                 if (followupWidgetData.optionSelected.id.isNullOrEmpty()) {
                     //user did not interact with previous widget, mark dismissed and don't show followup
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
@@ -130,10 +127,8 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     override fun dismissCurrentWidget() {
         container.removeAllViews()
         val widget = currentWidget ?: return
-        previousWidgetSelections[widget.id ?: ""] =
-            widget.optionSelected // TODO: this should be saved in sharedPrefs as here it would not subsist across session
+        widget.id?.let { widget.optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
         emitWidgetDismissed(widget.id)
-        previousWidgetSelections[widget.id ?: ""] = widget.optionSelected
         val voteUrl = widget.optionSelected.voteUrl.toString()
         widgetListener?.onOptionVote(voteUrl)
         currentWidget = null
