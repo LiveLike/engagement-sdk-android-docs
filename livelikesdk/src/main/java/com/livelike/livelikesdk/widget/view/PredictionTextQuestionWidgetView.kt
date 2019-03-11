@@ -5,12 +5,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
-import com.livelike.livelikesdk.animation.AnimationHandler
-import kotlinx.android.synthetic.main.pie_timer.view.*
-import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import kotlinx.android.synthetic.main.confirm_message.view.*
+import kotlinx.android.synthetic.main.pie_timer.view.*
+import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
 class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
 
