@@ -13,7 +13,7 @@ import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetEvent
-import com.livelike.livelikesdk.widget.WidgetObserver
+import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
@@ -29,7 +29,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     private var container : FrameLayout
     private var currentWidget: Widget? = null
     private val previousWidgetSelections = mutableMapOf<String, WidgetOptions?>()
-    private lateinit var observerListeners: Set<WidgetObserver>
+    private lateinit var observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
@@ -43,7 +43,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     override fun displayWidget(
         type: WidgetType,
         payload: JsonObject,
-        observerListeners: Set<WidgetObserver>
+        observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
     ) {
         this.observerListeners = observerListeners
         logDebug { "NOW - Show Widget ${type.value} on screen: $payload" }
