@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.LinearLayout
 import com.livelike.livelikedemo.R
-import com.livelike.livelikedemo.video.Channel
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.logDebug
 import kotlinx.android.synthetic.main.channel_select_bottom.view.*

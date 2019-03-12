@@ -113,16 +113,3 @@ interface VideoPlayer {
     fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit)
     fun getPDT(): Long
 }
-
-
-/*
-Class Representing a Demo App channel which comes from service via json like:
-	{
-      "name": "Android Demo Channel 1",
-      "video_url": "http://livecut-streams.livelikecdn.com/live/colorbars-angle1/index.m3u8",
-      "video_thumbnail_url": "http://lorempixel.com/200/200/?2",
-      "livelike_program_url": "https://livelike-blast.herokuapp.com/api/v1/programs/00f4cdfd-6a19-4853-9c21-51aa46d070a0/"
-    }
-}*/
-
-data class Channel(val name: String, val video: URL, val thumbnail: URL, val llProgram: URL)

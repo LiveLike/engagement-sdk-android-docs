@@ -10,9 +10,10 @@ class LiveLikeApplication : Application() {
             "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-demo.json"
     }
 
-    val channelManager: ChannelManager = ChannelManager(TEST_CONFIG_URL)
+    lateinit var channelManager: ChannelManager
 
     override fun onCreate() {
         super.onCreate()
+        channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
     }
 }
