@@ -6,11 +6,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.constraint.Constraints
-import android.support.design.widget.BottomSheetDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
-import android.view.ViewGroup
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
@@ -21,7 +19,6 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.chat.ChatAdapter
 import com.livelike.livelikesdk.chat.ChatTheme
 import com.livelike.livelikesdk.chat.DefaultChatCellFactory
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.registerLogsHandler
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
@@ -92,15 +89,13 @@ class ExoPlayerActivity : AppCompatActivity() {
             selectChannel(it)
         }
 
-        val mBottomSheetDialog = BottomSheetDialog(this)
-        (channelManager?.view?.parent as ViewGroup).removeView(channelManager?.view)
-        val sheetView = channelManager?.view
+
         channelManager?.addChannelSelectListener {
-            mBottomSheetDialog.hide()
+            channelManager?.hide()
             selectChannel(it)
         }
-        mBottomSheetDialog.setContentView(sheetView)
-        selectChannelButton.setOnClickListener {  mBottomSheetDialog.show() }
+        val activity = this
+        selectChannelButton.setOnClickListener {  channelManager?.show(activity) }
     }
 
     private fun setUpAdClickListeners() {

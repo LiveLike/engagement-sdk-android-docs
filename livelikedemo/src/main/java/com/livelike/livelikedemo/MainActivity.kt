@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialog
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.reflect.KClass
@@ -34,16 +33,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(playerDetailIntent(player, true))
         }
 
-        val mBottomSheetDialog = BottomSheetDialog(this)
-        val sheetView = channelManager.view
-        mBottomSheetDialog.setContentView(sheetView)
-
+        val activity = this
         events_button.setOnClickListener {
-            mBottomSheetDialog.show()
+            channelManager.show(activity)
         }
 
         channelManager.addChannelSelectListener {
-            mBottomSheetDialog.hide()
+            channelManager.hide()
             events_label.text = it.name
         }
     }
