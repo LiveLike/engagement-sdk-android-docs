@@ -13,6 +13,7 @@ import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
+import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetEvent
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetRenderer
@@ -125,6 +126,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     }
 
     override fun dismissCurrentWidget() {
+        logVerbose { "Dismissing the widget: ${currentWidget?.id ?: ""}" }
         container.removeAllViews()
         val widget = currentWidget ?: return
         widget.id?.let { widget.optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
