@@ -1,45 +1,54 @@
 package com.livelike.livelikedemo
 
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Button
-import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.reflect.KClass
+
 
 const val USE_DRAWER_LAYOUT = "use_drawer"
 
 class MainActivity : AppCompatActivity() {
 
-    data class PlayerInfo(val playerName : String, val cls: KClass<out Activity>)
+    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>)
+    lateinit var  application : LiveLikeApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        application = getApplication() as LiveLikeApplication
+        val channelManager = application.channelManager
         setContentView(R.layout.activity_main)
 
-        //Add player activities by adding them to the list below.
-        val  players = listOf(
-            PlayerInfo("Exo Player", ExoPlayerActivity::class)
-            //PlayerInfo("notExoPlauyer", ExoPlayerActivity::class)
-        )
+        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class)
 
-        players.forEach { createPlayerButton(it) }
-    }
-
-    fun createPlayerButton(player : PlayerInfo) {
-        val pButton = Button(this)
-        pButton.layoutParams = LinearLayout.LayoutParams(400, 200)
-        pButton.text = player.playerName
-        pButton.setOnClickListener {
-            startActivity(PlayerDetailIntent(player))
+        layout_overlay.setOnClickListener {
+            startActivity(playerDetailIntent(player))
         }
-        main_layout.addView(pButton ,0)
+
+        layout_side_panel.setOnClickListener {
+            startActivity(playerDetailIntent(player, true))
+        }
+
+        events_button.setOnClickListener {
+            channelManager.show(this)
+        }
+
+        channelManager.addChannelSelectListener {
+            channelManager.hide()
+            events_label.text = it.name
+        }
+
+        widgets_only_button.setOnClickListener { startActivity(Intent(this, WidgetOnlyActivity::class.java)) }
+        chat_only_button.setOnClickListener { startActivity(Intent(this, ChatOnlyActivity::class.java)) }
     }
 }
 
-fun Context.PlayerDetailIntent(player: MainActivity.PlayerInfo): Intent {
-    return Intent(this, player.cls.java)
+fun Context.playerDetailIntent(player: MainActivity.PlayerInfo, useDrawer : Boolean = false): Intent {
+    return Intent(this, player.cls.java).apply {
+        putExtra(USE_DRAWER_LAYOUT, useDrawer )
+    }
 }
