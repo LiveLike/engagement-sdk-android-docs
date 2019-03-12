@@ -14,7 +14,7 @@ internal class WidgetParser {
         widget.confirmMessage = resource.confirmation_message
         widget.id = resource.id
         widget.optionList = resource.options.map {
-            WidgetOptions(it.id, URI.create(it.vote_url), it.description, it.vote_count.toLong())
+            WidgetOptions(it.id, URI.create(it.vote_url), it.description, it.vote_count.toLong(), it.image_url)
         }
     }
 

@@ -103,10 +103,9 @@ class PredictionWidgetFollowUp : Widget() {
 data class WidgetOptions(val id: String? = null,
                          val voteUrl: URI? = null,
                          var description: String = "",
-                         var voteCount: Long = 0) {
-    var imageUrl: String? = null
-}
-
+                         var voteCount: Long = 0,
+                         var imageUrl: String? = null
+)
 
 class PredictionWidgetQuestion : Widget(){
     override var optionList: List<WidgetOptions> by observable(emptyList()) { _, _, newValue ->
