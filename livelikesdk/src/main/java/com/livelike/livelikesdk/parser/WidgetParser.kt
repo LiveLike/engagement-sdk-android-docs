@@ -23,8 +23,8 @@ internal class WidgetParser {
         previousWidgetSelections: MutableMap<String, WidgetOptions?>
     ) {
         parseTextPredictionCommon(widgetFollowUp, payload)
-        widgetFollowUp.correctOptionId = payload.correct_option_id
         widgetFollowUp.questionWidgetId = payload.text_prediction_id
         widgetFollowUp.optionSelected = previousWidgetSelections[widgetFollowUp.questionWidgetId] ?: return
+        widgetFollowUp.correctOptionId = payload.correct_option_id
     }
 }
