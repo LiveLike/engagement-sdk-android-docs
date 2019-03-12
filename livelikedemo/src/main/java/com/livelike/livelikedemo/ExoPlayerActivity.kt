@@ -79,14 +79,11 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         }, 0, 100)
 
-
         setUpAdClickListeners()
-
-        selectChannel(channelManager!!.selectedChannel)
-        channelManager!!.addChannelSelectListener {
-            selectChannel(it)
+        
+        channelManager?.let {
+            selectChannel(it.selectedChannel)
         }
-
 
         channelManager?.addChannelSelectListener {
             channelManager?.hide()
