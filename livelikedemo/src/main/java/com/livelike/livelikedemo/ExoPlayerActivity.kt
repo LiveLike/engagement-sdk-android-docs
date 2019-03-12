@@ -94,8 +94,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             channelManager?.hide()
             selectChannel(it)
         }
-        val activity = this
-        selectChannelButton.setOnClickListener {  channelManager?.show(activity) }
+
+        selectChannelButton.setOnClickListener {  channelManager?.show(this) }
     }
 
     private fun setUpAdClickListeners() {
@@ -166,13 +166,4 @@ class ExoPlayerActivity : AppCompatActivity() {
         outState?.putLong(POSITION, player.position())
     }
 
-    //TODO move this to common ground
-    private fun getChannelFor(channelData: JSONObject): Channel {
-        return Channel(
-            channelData.getString("name"),
-            URL(channelData.getString("video_url")),
-            URL(channelData.getString("video_thumbnail_url")),
-            URL(channelData.getString("livelike_program_url"))
-        )
-    }
 }

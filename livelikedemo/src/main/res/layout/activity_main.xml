@@ -72,6 +72,7 @@
                             tools:text="Events"
                             />
                     <TextView
+                            android:id="@+id/events_label"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/default_channel_label"
