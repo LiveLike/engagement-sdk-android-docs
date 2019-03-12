@@ -33,9 +33,8 @@ class MainActivity : AppCompatActivity() {
             startActivity(playerDetailIntent(player, true))
         }
 
-        val activity = this
         events_button.setOnClickListener {
-            channelManager.show(activity)
+            channelManager.show(this)
         }
 
         channelManager.addChannelSelectListener {

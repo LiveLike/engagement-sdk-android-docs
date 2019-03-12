@@ -30,8 +30,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val AD_STATE = "adstate"
         const val POSITION = "position"
         const val CHANNEL_NAME = "channelName"
-        const val TEST_CONFIG_URL =
-            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-demo.json"
     }
 
     private lateinit var player: VideoPlayer
@@ -165,5 +163,4 @@ class ExoPlayerActivity : AppCompatActivity() {
         outState?.putBoolean(AD_STATE, adsPlaying)
         outState?.putLong(POSITION, player.position())
     }
-
 }
