@@ -43,7 +43,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub : ViewStub
     private var dismissWidget :  (() -> Unit)? = null
-
+    private lateinit var userTapped : () -> Unit
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -60,6 +60,10 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
+    }
+
+    fun userTappedCallback(userTapped: () -> Unit) {
+        this.userTapped = userTapped
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -105,6 +109,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                         logDebug { "Option selected: $it" }
                         val selectedButton = buttonMap[button]
                         optionSelectedCallback(selectedButton)
+                        userTapped.invoke()
                     }
                 }
                 addHorizontalSwipeListener(button)
@@ -223,4 +228,5 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             assetList[emojiIndex]
         } else return null
     }
+
 }

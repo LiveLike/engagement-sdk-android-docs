@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.widget
 
 import com.google.gson.JsonObject
+import com.livelike.livelikesdk.analytics.InteractionLogger
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -14,7 +15,7 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
         WidgetEventListener{
-
+    private val analyticsListeners = HashSet<WidgetAnalyticsObserver>()
     var renderer: WidgetRenderer? = null
     set(value) {
         field = value
@@ -46,7 +47,7 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
         isProcessing = true
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         val payload = event.message["payload"].asJsonObject
-        renderer?.displayWidget(widgetType, payload)
+        renderer?.displayWidget(widgetType, payload, analyticsListeners)
         super.onClientMessageEvent(client, event)
     }
 
@@ -55,6 +56,22 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
         if (pause){
             renderer?.dismissCurrentWidget()
         }
+    }
+
+    fun subscribeAnalytics(observer: WidgetAnalyticsObserver) {
+        analyticsListeners.add(observer)
+    }
+
+    fun unsubscribeAnalytics(observer: WidgetAnalyticsObserver) {
+        if (analyticsListeners.contains(observer))
+            analyticsListeners.remove(observer)
+    }
+
+    // TODO: Name should be changed to more generic and avoid terms like analytics.
+    interface WidgetAnalyticsObserver {
+        fun widgetDismissed(widgetId: String)
+        fun widgetShown(widgetId: String)
+        fun widgetOptionSelected(widgetId: String)
     }
 }
 
@@ -73,8 +90,13 @@ enum class WidgetType (val value: String) {
 
 interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
+
     fun dismissCurrentWidget()
-    fun displayWidget(type: WidgetType, payload: JsonObject)
+    fun displayWidget(
+        type: WidgetType,
+        payload: JsonObject,
+        observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
+    )
 }
 
 enum class WidgetEvent{

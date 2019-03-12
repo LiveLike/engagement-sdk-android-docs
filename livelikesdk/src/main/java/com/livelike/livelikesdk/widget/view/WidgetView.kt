@@ -13,6 +13,7 @@ import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetEvent
+import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
@@ -24,11 +25,11 @@ import com.livelike.livelikesdk.widget.view.image.PredictionImageQuestionWidget
 
 class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs),
     WidgetRenderer {
-
     override var widgetListener : WidgetEventListener? = null
     private var container : FrameLayout
     private var currentWidget: Widget? = null
     private val previousWidgetSelections = mutableMapOf<String, WidgetOptions?>()
+    private lateinit var observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
@@ -39,7 +40,12 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         session.widgetRenderer = this
     }
 
-    override fun displayWidget(type: WidgetType, payload: JsonObject) {
+    override fun displayWidget(
+        type: WidgetType,
+        payload: JsonObject,
+        observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
+    ) {
+        this.observerListeners = observerListeners
         logDebug { "NOW - Show Widget ${type.value} on screen: $payload" }
         val layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -51,17 +57,23 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         when (type) {
             WidgetType.TEXT_PREDICTION -> {
                 val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0) { dismissCurrentWidget() }
+
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion()
 
                 widgetData.registerObserver(predictionWidget)
                 parser.parseTextPredictionCommon(widgetData, widgetResource)
+                predictionWidget.userTappedCallback {
+                    emitWidgetOptionSelected(widgetData.id)
+                }
                 container.addView(predictionWidget)
+                emitWidgetShown(widgetData.id)
                 currentWidget = widgetData
             }
 
             WidgetType.TEXT_PREDICTION_RESULTS -> {
                 val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0) { dismissCurrentWidget() }
+
                 predictionWidget.layoutParams = layoutParams
                 val followupWidgetData = PredictionWidgetFollowUp()
                 followupWidgetData.registerObserver(predictionWidget)
@@ -74,6 +86,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                     return
                 }
                 container.addView(predictionWidget)
+                emitWidgetShown(followupWidgetData.id)
                 currentWidget = followupWidgetData
             }
 
@@ -83,11 +96,34 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 val widgetData = PredictionWidgetQuestion()
                 widgetData.registerObserver(predictionWidget)
                 parser.parseTextPredictionCommon(widgetData, widgetResource)
+                predictionWidget.userTappedCallback {
+                    emitWidgetOptionSelected(widgetData.id)
+                }
                 container.addView(predictionWidget)
+                emitWidgetShown(widgetData.id)
+                currentWidget = widgetData
             }
 
             else -> {
             }
+        }
+    }
+
+    private fun emitWidgetOptionSelected(widgetId: String?) {
+        observerListeners.forEach { listener ->
+            widgetId?.let { listener.widgetOptionSelected(it) }
+        }
+    }
+
+    private fun emitWidgetDismissed(widgetId: String?) {
+        observerListeners.forEach { listener ->
+            widgetId?.let { listener.widgetDismissed(it) }
+        }
+    }
+
+    private fun emitWidgetShown(widgetId: String?) {
+        observerListeners.forEach { listener ->
+            widgetId?.let { listener.widgetShown(it) }
         }
     }
 
@@ -96,6 +132,8 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
         val widget = currentWidget ?: return
         previousWidgetSelections[widget.id ?: ""] =
             widget.optionSelected // TODO: this should be saved in sharedPrefs as here it would not subsist across session
+        emitWidgetDismissed(widget.id)
+        previousWidgetSelections[widget.id ?: ""] = widget.optionSelected
         val voteUrl = widget.optionSelected.voteUrl.toString()
         widgetListener?.onOptionVote(voteUrl)
         currentWidget = null
