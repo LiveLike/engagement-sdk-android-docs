@@ -68,22 +68,24 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         val buttonId = buttonMap[button]
         if (hasUserSelectedCorrectOption(userSelectedOption, correctOption)) {
             if (isCurrentButtonSameAsCorrectOption(correctOption, buttonId)) {
-                percentageDrawable = R.drawable.progress_bar
-                selectedOptionCorrect(buttonId.toString())
+                percentageDrawable = R.drawable.progress_bar_user_correct
+                button.background = AppCompatResources.getDrawable(context, R.drawable.button_correct_answer_outline)
             } else {
-                percentageDrawable = R.drawable.progress_bar_looser
+                percentageDrawable = R.drawable.progress_bar_wrong_option
             }
         } else {
             when {
                 isCurrentButtonSameAsCorrectOption(correctOption, buttonId) -> {
-                    percentageDrawable = R.drawable.progress_bar
-                    selectedOptionCorrect(buttonId.toString())
+                    percentageDrawable = R.drawable.progress_bar_user_correct
+                    button.background = AppCompatResources.getDrawable(context, R.drawable.button_correct_answer_outline)
                 }
                 isCurrentButtonSameAsCorrectOption(userSelectedOption, buttonId) -> {
-                    percentageDrawable = R.drawable.progress_bar_wrong
-                    selectedOptionIncorrect(buttonId.toString())
+                    percentageDrawable = R.drawable.progress_bar_user_selection_wrong
+                    button.background = AppCompatResources.getDrawable(context, R.drawable.button_wrong_answer_outline)
                 }
-                else -> percentageDrawable = R.drawable.progress_bar_looser
+                else -> {
+                    percentageDrawable = R.drawable.progress_bar_wrong_option
+                }
             }
         }
         return Pair(percentageDrawable, buttonId)
@@ -95,23 +97,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     private fun isCurrentButtonSameAsCorrectOption(correctOption: String?, buttonId: String?) =
         buttonId == correctOption
 
-    private fun selectedOptionCorrect(optionDescription: String) {
-        outlineButton(optionDescription, R.drawable.correct_answer_outline)
-    }
-
-    private fun selectedOptionIncorrect(optionDescription: String) {
-        outlineButton(optionDescription, R.drawable.wrong_answer_outline)
-    }
-
-    private fun outlineButton(optionDescription: String, drawableId: Int) {
-        val singleOrNull = buttonList.singleOrNull { button ->
-            button.text == optionDescription
-        }
-        singleOrNull?.background = AppCompatResources.getDrawable(context, drawableId)
-    }
-
-
-    private fun createResultView(context: Context, percentage: Long?, percentageDrawable: Int): Pair<ProgressBar, TextView> {
+    private fun createResultView(context: Context, percentage: Int, percentageDrawable: Int): Pair<ProgressBar, TextView> {
         val progressBar = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal)
         addStyleToProgressBar(progressBar, context, percentage, percentageDrawable)
 
@@ -123,7 +109,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         return Pair(progressBar, textViewPercentage)
     }
 
-    private fun addStyleToShowResultTextView(textViewPercentage: TextView, percentage: Long?) {
+    private fun addStyleToShowResultTextView(textViewPercentage: TextView, percentage: Int) {
         textViewPercentage.apply {
             setTextColor(Color.WHITE)
             text = percentage.toString().plus("%")
@@ -138,14 +124,14 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
         }
     }
 
-    private fun addStyleToProgressBar(progressBar: ProgressBar, context: Context, percentage: Long?, percentageDrawable: Int) {
+    private fun addStyleToProgressBar(progressBar: ProgressBar, context: Context, percentage: Int, percentageDrawable: Int) {
         progressBar.apply {
             layoutParams = LayoutParams(
                     0,
                     0)
             elevation = dpToPx(1).toFloat()
             max = 100
-            progress = percentage!!.toInt()
+            progress = percentage
             isIndeterminate = false
             progressDrawable = AppCompatResources.getDrawable(context, percentageDrawable)
             id = View.generateViewId()
