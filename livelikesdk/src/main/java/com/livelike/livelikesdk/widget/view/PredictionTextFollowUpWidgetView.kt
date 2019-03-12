@@ -51,7 +51,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
             button.setOnClickListener(null)
             val (percentageDrawable: Int) = provideStyleToButtonAndProgressBar(correctOption, userSelectedOption, button)
             val percentage = voteOptions.single { option ->  option.id == optionId }.votePercentage
-            val (progressBar, textViewPercentage) = createResultView(context, percentage, percentageDrawable)
+            val (progressBar, textViewPercentage) = createResultView(context, percentage.toInt(), percentageDrawable)
             applyConstraintsBetweenProgressBarAndButton(progressBar, button, textViewPercentage)
         }
 
