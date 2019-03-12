@@ -67,6 +67,7 @@ class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient)
             analyticsListeners.remove(observer)
     }
 
+    // TODO: Name should be changed to more generic and avoid terms like analytics.
     interface WidgetAnalyticsObserver {
         fun widgetDismissed(widgetId: String)
         fun widgetShown(widgetId: String)
