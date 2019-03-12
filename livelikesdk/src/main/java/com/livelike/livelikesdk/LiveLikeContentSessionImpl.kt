@@ -11,6 +11,10 @@ import com.livelike.livelikesdk.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getNickename
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setNickname
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setUserId
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.asWidgetManager
@@ -33,16 +37,16 @@ class LiveLikeContentSessionImpl(
     }
 
     private fun getUser() {
-        val userId = userPreferences.getString("UserId", "")
-        val username = userPreferences.getString("Username", "")
-        if (!userId.isNullOrEmpty() && !username.isNullOrEmpty()) {
+        val userId = getUserId()
+        val username = getNickename()
+        if (!userId.isEmpty() && !username.isEmpty()) {
             currentUser = LiveLikeUser(userId, username)
         } else {
             sdkConfiguration.subscribe { configuration ->
                 llDataClient.getLiveLikeUserData(configuration.sessionsUrl) {
                     currentUser = it
-                    userPreferences.edit().putString("UserId", it.userId).apply()
-                    userPreferences.edit().putString("Username", it.userName).apply()
+                    setUserId(it.userId)
+                    setNickname(it.userName)
                 }
             }
         }
