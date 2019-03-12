@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         val channelManager = application.channelManager
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class);
+        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class)
 
         layout_overlay.setOnClickListener {
             startActivity(playerDetailIntent(player))
@@ -41,6 +41,9 @@ class MainActivity : AppCompatActivity() {
             channelManager.hide()
             events_label.text = it.name
         }
+
+        widgets_only_button.setOnClickListener { startActivity(Intent(this, WidgetOnlyActivity::class.java)) }
+        chat_only_button.setOnClickListener { startActivity(Intent(this, ChatOnlyActivity::class.java)) }
     }
 }
 

@@ -6,7 +6,6 @@ import android.os.Looper
 import android.support.annotation.NonNull
 import android.support.design.widget.BottomSheetDialog
 import android.view.ViewGroup
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -39,7 +38,6 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
         for (listener in channelSelectListeners)
             listener.invoke(channel)
     }
-
 
     init {
         loadClientConfig()
@@ -121,15 +119,5 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             (view.parent as ViewGroup).removeView(view)
     }
 }
-
-/*
-Class Representing a Demo App channel which comes from service via json like:
-	{
-      "name": "Android Demo Channel 1",
-      "video_url": "http://livecut-streams.livelikecdn.com/live/colorbars-angle1/index.m3u8",
-      "video_thumbnail_url": "http://lorempixel.com/200/200/?2",
-      "livelike_program_url": "https://livelike-blast.herokuapp.com/api/v1/programs/00f4cdfd-6a19-4853-9c21-51aa46d070a0/"
-    }
-}*/
 
 data class Channel(val name: String, val video: URL? = null, val thumbnail: URL? = null, val llProgram: URL? = null)
