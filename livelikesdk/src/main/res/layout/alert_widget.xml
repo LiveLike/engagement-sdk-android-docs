@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+            android:id="@+id/widgetContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:animateLayoutChanges="true"
+            android:paddingBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/backgroundLabel"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <View
+                android:id="@+id/backgroundPrompt"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="12dp"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/headerbg_default"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        <ImageView
+                android:id="@+id/image"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:contentDescription="the image"
+                android:foreground="?attr/selectableItemBackground"
+                android:visibility="visible"
+                app:image_url="@{alertResource.image_url}"
+                app:layout_constraintBottom_toTopOf="@+id/backgroundLink"
+                app:layout_constraintEnd_toEndOf="@+id/backgroundPrompt"
+                app:layout_constraintStart_toEndOf="@+id/text_body"
+                app:layout_constraintTop_toTopOf="@+id/backgroundPrompt"/>
+
+        <TextView
+                android:id="@+id/text_body"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="90dp"
+                android:layout_marginBottom="20dp"
+                android:text="@{alertResource.text}"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@+id/backgroundLink"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/backgroundPrompt"
+                app:layout_constraintTop_toTopOf="@+id/backgroundPrompt"
+                tools:text="Burger King: 2 for $10 Meal Deal"/>
+
+        <View
+                android:id="@+id/backgroundLink"
+                android:layout_width="0dp"
+                android:layout_height="32dp"
+                android:animateLayoutChanges="true"
+                android:background="#33000000"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/backgroundPrompt"
+                app:layout_constraintEnd_toEndOf="@+id/backgroundPrompt"
+                app:layout_constraintStart_toStartOf="@+id/backgroundPrompt"
+                app:layout_constraintTop_toTopOf="@+id/backgroundPrompt"
+                app:layout_constraintVertical_bias="1.0"/>
+
+        <View
+                android:id="@+id/linkArrow"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="8dp"
+                android:animateLayoutChanges="true"
+                android:background="@drawable/notification_ic_arrow"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/backgroundLink"
+                app:layout_constraintEnd_toEndOf="@+id/backgroundLink"
+                app:layout_constraintTop_toTopOf="@+id/backgroundLink"/>
+
+        <TextView
+                android:id="@+id/text_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="@{alertResource.link_label}"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@+id/backgroundLink"
+                app:layout_constraintStart_toStartOf="@+id/backgroundLink"
+                app:layout_constraintTop_toTopOf="@+id/backgroundLink"
+                tools:text="I want coupons"/>
+
+
+    </android.support.constraint.ConstraintLayout>
+
+    <View
+            android:id="@+id/backgroundLabel2"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="13dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/headerbg_notification_label"
+            android:backgroundTint="@color/black"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/widgetContainer"
+            app:layout_constraintEnd_toEndOf="@+id/text_title"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/text_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"/>
+
+    <View
+            android:id="@+id/backgroundLabel"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/headerbg_notification_label"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/widgetContainer"
+            app:layout_constraintEnd_toEndOf="@+id/text_title"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/text_title"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"/>
+
+    <TextView
+            android:id="@+id/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@{alertResource.title}"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/backgroundLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/backgroundLabel"
+            tools:text="DEAL"/>
+
+</android.support.constraint.ConstraintLayout>
