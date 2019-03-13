@@ -126,7 +126,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
     }
 
     override fun dismissCurrentWidget() {
-        logVerbose { "Dismissing the widget: ${currentWidget?.id ?: ""}" }
+        logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
         container.removeAllViews()
         val widget = currentWidget ?: return
         widget.id?.let { widget.optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
