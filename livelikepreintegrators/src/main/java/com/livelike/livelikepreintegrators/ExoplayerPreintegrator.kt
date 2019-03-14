@@ -13,7 +13,8 @@ fun LiveLikeSDK.createExoplayerSession(
 ) {
     return this.createContentSession(contentId, {
         getExoplayerPdtTime(player)
-    }, sessionReady)
+    }, sessionReady,
+        null)
 }
 
 fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): EpochTime {

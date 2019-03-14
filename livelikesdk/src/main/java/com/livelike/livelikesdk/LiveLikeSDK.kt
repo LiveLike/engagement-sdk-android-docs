@@ -3,6 +3,7 @@ package com.livelike.livelikesdk
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.livelikesdk.messaging.EpochTime
+import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 
@@ -34,8 +35,9 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
      */
     fun createContentSession(contentId: String,
                              currentPlayheadTime: () -> EpochTime,
-                             sessionReady: (LiveLikeContentSession) -> Unit) {
-        sessionReady.invoke(createContentSession(contentId, currentPlayheadTime))
+                             sessionReady: (LiveLikeContentSession) -> Unit,
+                             messagingClient: MessagingClient?) {
+        sessionReady.invoke(createContentSession(contentId, currentPlayheadTime, messagingClient))
     }
 
     /**
@@ -43,7 +45,7 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
      *  @param contentId
      *  @param currentPlayheadTime
      */
-    fun createContentSession(contentId: String, currentPlayheadTime: () -> EpochTime) : LiveLikeContentSession {
+    fun createContentSession(contentId: String, currentPlayheadTime: () -> EpochTime, messagingClient: MessagingClient?) : LiveLikeContentSession {
         return LiveLikeContentSessionImpl(contentId, currentPlayheadTime, object : Provider<SdkConfiguration> {
             override fun subscribe(ready: (SdkConfiguration) -> Unit) {
                 if (configuration != null) ready(configuration!!)
@@ -52,7 +54,8 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
                     ready(it)
                 }
             }
-        }, applicationContext)
+        }, applicationContext,
+            messagingClient)
     }
 
     data class SdkConfiguration(
