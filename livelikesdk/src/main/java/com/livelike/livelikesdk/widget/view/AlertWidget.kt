@@ -44,13 +44,7 @@ class AlertWidget : ConstraintLayout {
         bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
-        resourceAlert.image_url.apply {
-            if (!isNullOrEmpty()) {
-                Glide.with(context)
-                    .load(resourceAlert.image_url)
-                    .into(bodyImage)
-            }
-        }
+
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
             linkBackground.setOnClickListener {
@@ -69,6 +63,12 @@ class AlertWidget : ConstraintLayout {
             val params = bodyText.layoutParams as ConstraintLayout.LayoutParams
             params.rightMargin = 16.dpToPx(resources)
             bodyText.requestLayout()
+        } else {
+            resourceAlert.image_url.apply {
+                Glide.with(context)
+                    .load(resourceAlert.image_url)
+                    .into(bodyImage)
+            }
         }
 
         if (resourceAlert.title.isNullOrEmpty()) {
@@ -85,6 +85,12 @@ class AlertWidget : ConstraintLayout {
 
         if (resourceAlert.text.isNullOrEmpty()) {
             bodyText.visibility = View.GONE
+            if (!resourceAlert.image_url.isNullOrEmpty()) {
+                // Image Only
+                val params = widgetContainer.layoutParams as ConstraintLayout.LayoutParams
+                params.height = 200.dpToPx(resources)
+                widgetContainer.requestLayout()
+            }
         }
 
         // Show the widget
