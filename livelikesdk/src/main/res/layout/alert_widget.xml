@@ -35,7 +35,7 @@
         <ImageView
                 android:id="@+id/bodyImage"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:animateLayoutChanges="true"
                 android:contentDescription="the image"
                 android:foreground="?attr/selectableItemBackground"
@@ -43,7 +43,9 @@
                 app:layout_constraintBottom_toTopOf="@+id/linkBackground"
                 app:layout_constraintEnd_toEndOf="@+id/bodyBackground"
                 app:layout_constraintStart_toEndOf="@+id/bodyText"
-                app:layout_constraintTop_toTopOf="@+id/bodyBackground"/>
+                app:layout_constraintTop_toTopOf="@+id/bodyBackground"
+                tools:src="@tools:sample/backgrounds/scenic"
+        />
 
         <TextView
                 android:id="@+id/bodyText"
@@ -61,7 +63,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/bodyBackground"
                 app:layout_constraintTop_toTopOf="@+id/bodyBackground"
-                tools:text="Burger King: 2 for $10 Meal Deal"/>
+                tools:text="@tools:sample/lorem/random"/>
 
         <View
                 android:id="@+id/linkBackground"
@@ -103,7 +105,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/linkBackground"
                 app:layout_constraintStart_toStartOf="@+id/linkBackground"
                 app:layout_constraintTop_toTopOf="@+id/linkBackground"
-                tools:text="I want coupons"/>
+                tools:text="I want coupons !"/>
 
 
     </android.support.constraint.ConstraintLayout>
