@@ -66,7 +66,10 @@ class AlertWidget : ConstraintLayout {
 
         if (resourceAlert.image_url.isNullOrEmpty()) {
             bodyImage.visibility = View.GONE
-        } // TODO: Modify the margin of the text body to be 0 instead of 90 when the image is not here
+            val params = bodyText.layoutParams as ConstraintLayout.LayoutParams
+            params.rightMargin = 16.dpToPx(resources)
+            bodyText.requestLayout()
+        }
 
         if (resourceAlert.title.isNullOrEmpty()) {
             labelBackground.visibility = View.GONE
