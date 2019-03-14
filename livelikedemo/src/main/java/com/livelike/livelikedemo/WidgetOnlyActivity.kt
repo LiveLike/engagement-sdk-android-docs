@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo
 
+import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +15,10 @@ import kotlinx.android.synthetic.main.activity_widget_only.*
 import kotlinx.android.synthetic.main.widget_only_row_element.view.*
 
 class WidgetOnlyActivity : AppCompatActivity() {
+    companion object {
+        const val WIDGET_TYPE = "widgetType"
+        const val WIDGET_VARIANCE = "widgetVariance"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,48 +29,58 @@ class WidgetOnlyActivity : AppCompatActivity() {
             setNavigationIcon(R.drawable.ic_close_black_24dp)
             setBackgroundColor(Color.parseColor("#00ae8b"))
             setNavigationOnClickListener {
+                startActivity(Intent(context, MainActivity::class.java))
             }
         }
 
-        val widgetsList = mutableListOf<Widgets>()
-
-        widgetsList.add(Widgets("POLL", "Text", "Image", null))
-        widgetsList.add(Widgets("QUIZ", "Text", "Image", null))
-        widgetsList.add(Widgets("PREDICTION", "Text", "Image", null))
-        widgetsList.add(Widgets("CHEER_METER", "Clapping", null, null))
-        widgetsList.add(Widgets("EMOJI", "Poll", "Slider", null))
-        widgetsList.add(Widgets("ALERT", "NEWS", "STATS", "SPONSOR"))
-        widgetsList.add(Widgets("INFORMATION", "Weather", "Twitter", null))
+        val availableWidgetTypeList = mutableListOf<WidgetType>()
+        updateWidgetTypeList(availableWidgetTypeList)
 
         val linearLayoutManager = LinearLayoutManager(baseContext)
         widget_only.layoutManager = linearLayoutManager
-        widget_only.adapter = WidgetAdapter(widgetsList)
-
+        widget_only.adapter = WidgetAdapter(availableWidgetTypeList)
     }
 
-    inner class WidgetAdapter(private val widgetList: MutableList<Widgets>) : RecyclerView.Adapter<ViewHolder>() {
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val option = widgetList[position]
-            holder.type.text = option.type
+    private fun updateWidgetTypeList(availableWidgetTypeList: MutableList<WidgetType>) {
+        availableWidgetTypeList.add(WidgetType("POLL", "Text", "Image", null))
+        availableWidgetTypeList.add(WidgetType("QUIZ", "Text", "Image", null))
+        availableWidgetTypeList.add(WidgetType("PREDICTION", "Text", "Image", null))
+        availableWidgetTypeList.add(WidgetType("CHEER_METER", "Clapping", null, null))
+        availableWidgetTypeList.add(WidgetType("EMOJI", "Poll", "Slider", null))
+        availableWidgetTypeList.add(WidgetType("ALERT", "NEWS", "STATS", "SPONSOR"))
+        availableWidgetTypeList.add(WidgetType("INFORMATION", "Weather", "Twitter", null))
+    }
 
-            if (option.option1 != null) holder.button1.text = option.option1
-            else holder.button1.visibility = View.GONE
+    inner class WidgetAdapter(private val widgetList: MutableList<WidgetType>) : RecyclerView.Adapter<WidgetTypeViewHolder>() {
 
-            if (option.option2 != null) holder.button2.text = option.option2
-            else {
-                holder.divider1.visibility = View.GONE
-                holder.button2.visibility = View.GONE
-            }
+        override fun onBindViewHolder(holder: WidgetTypeViewHolder, position: Int) {
+            val widget = widgetList[position]
+            holder.widgetLabelTextView.text = widget.label
+            val intent = Intent(baseContext, WidgetCommandActivity::class.java)
+            intent.putExtra(Companion.WIDGET_TYPE, widget.label)
 
-            if (option.option3 != null) holder.button3.text = option.option3
-            else  {
-                holder.divider.visibility = View.GONE
-                holder.button3.visibility = View.GONE
+            updateView(widget.variance1, holder.widgetVarianceButton1, null)
+            updateView(widget.variance2, holder.widgetVarianceButton2, holder.divider1)
+            updateView(widget.variance3, holder.widgetVarianceButton3, holder.divider)
+        }
+
+        private fun updateView(varianceText: String?, widgetVarianceButton: Button, divider: View?) {
+            if (varianceText != null) updateButton(widgetVarianceButton, varianceText)
+             else visibilityGone(widgetVarianceButton, divider)
+        }
+
+        private fun updateButton(widgetVarianceButton: Button, varianceText: String?) {
+            widgetVarianceButton.text = varianceText
+            widgetVarianceButton.setOnClickListener {
             }
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(
+        private fun visibilityGone(vararg view: View?) {
+            view.forEach { v -> v?.visibility = View.GONE }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WidgetTypeViewHolder {
+            return WidgetTypeViewHolder(
                 LayoutInflater.from(baseContext).inflate(
                     R.layout.widget_only_row_element,
                     parent,
@@ -79,14 +94,14 @@ class WidgetOnlyActivity : AppCompatActivity() {
         }
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val type : TextView = view.standalone_label
-        val button1 : Button = view.widgets_only_button_1
-        val button2 : Button = view.widgets_only_button_2
-        val button3 : Button = view.widgets_only_button_3
+    class WidgetTypeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val widgetLabelTextView : TextView = view.widget_type_label
+        val widgetVarianceButton1 : Button = view.widgets_variance_1
+        val widgetVarianceButton2 : Button = view.widgets_variance_2
+        val widgetVarianceButton3 : Button = view.widgets_variance_3
         val divider1 : View = view.standalone_divider
         val divider : View = view.standalone_divider_2
     }
 }
 
-data class Widgets(val type: String, val option1: String?, val option2: String?, val option3: String?)
+data class WidgetType(val label: String, val variance1: String?, val variance2: String?, val variance3: String?)
