@@ -93,7 +93,8 @@ class LiveLikeContentSessionImpl(
     private fun initializeChatMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
-            val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime).toChatQueue(SendbirdChatClient())
+            //validEventBufferMs for chat is currently 24 hours
+            val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime, 86400000L).toChatQueue(SendbirdChatClient())
             chatQueue.unsubscribeAll()
             chatQueue.subscribe(listOf(program.chatChannel))
             chatQueue.renderer = chatRenderer
