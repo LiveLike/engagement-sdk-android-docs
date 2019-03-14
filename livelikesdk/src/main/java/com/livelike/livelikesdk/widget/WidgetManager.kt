@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk.widget
 
 import com.google.gson.JsonObject
-import com.livelike.livelikesdk.analytics.InteractionLogger
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -80,6 +79,7 @@ enum class WidgetType (val value: String) {
     TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("image-prediction-created"),
     HTML5("html-widget"),
+    ALERT("alert-created"),
     NONE("none");
 
     companion object {
