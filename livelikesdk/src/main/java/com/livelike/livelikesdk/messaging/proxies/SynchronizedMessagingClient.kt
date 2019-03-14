@@ -33,7 +33,11 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        queue.enqueue(event)
+        when {
+            shouldPublishEvent(event) -> publishEvent(event)
+            shouldDismissEvent(event) -> return
+            else -> queue.enqueue(event)
+        }
     }
 
     override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
@@ -47,30 +51,30 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
     private val validEventBufferMs = 10000L // 10sec
 
     fun processQueueForScheduledEvent() {
-        val event = queue.peek()?:return
-        //For now lets use the timestamp, we can implement minimumTime when sync timing comes in, timestamp of <= 0 is passthrough
-//        logVerbose{"Event date  : ${Date(event.timeStamp.timeSinceEpochInMs)}"}
-//        logVerbose{"Current date: ${Date(timeSource().timeSinceEpochInMs)}"}
-        if(event.timeStamp > EpochTime(0)) {
-            if (event.timeStamp <= timeSource()
-                && event.timeStamp >= timeSource() - validEventBufferMs
-            ) {
-                logVerbose { "Publish Widget" }
-                publishEvent(queue.dequeue()!!)
-            } else if (event.timeStamp <= timeSource() - validEventBufferMs) {
-                logVerbose { "Dismissed Widget -- the widget was too old!" }
-                // Dequeue all events older than currentTime-validEventBuffer
+        val event = queue.peek() ?: return
+        when {
+            shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
+            shouldDismissEvent(event) -> {
+                logVerbose { "Dismissed Client Message -- the message was too old!" }
                 queue.dequeue()
             }
-        } else {
-            logVerbose { "Publish instant Widget" }
-            publishEvent(queue.dequeue()!!)
         }
     }
 
     fun publishEvent(event: ClientMessage) {
+        logVerbose { "Publish ClientMessage" }
         listener?.onClientMessageEvent(this, event)
     }
+
+    fun shouldPublishEvent(event: ClientMessage) : Boolean =
+         event.timeStamp <= EpochTime(0) ||
+                (event.timeStamp <= timeSource() && event.timeStamp >= timeSource() - validEventBufferMs)
+
+
+    fun shouldDismissEvent(event: ClientMessage) : Boolean =
+         event.timeStamp > EpochTime(0) &&
+                (event.timeStamp < timeSource() - validEventBufferMs)
+
 }
 
 class SyncTimer(val task: Runnable, val period: Long) {
