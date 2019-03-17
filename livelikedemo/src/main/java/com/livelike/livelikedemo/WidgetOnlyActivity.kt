@@ -11,22 +11,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_widget_only.*
-import kotlinx.android.synthetic.main.widget_only_row_element.view.*
+import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.*
+import kotlinx.android.synthetic.main.widget_type_with_variance_row_element.view.*
 
 class WidgetOnlyActivity : AppCompatActivity() {
-    companion object {
-        const val WIDGET_TYPE = "widgetType"
-        const val WIDGET_VARIANCE = "widgetVariance"
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_widget_only)
+        setContentView(R.layout.activity_each_widget_type_with_variance)
 
         toolbar.apply {
             title = "Widgets"
-            setNavigationIcon(R.drawable.ic_close_black_24dp)
+            setNavigationIcon(R.drawable.ic_close_white_24dp)
             setBackgroundColor(Color.parseColor("#00ae8b"))
             setNavigationOnClickListener {
                 startActivity(Intent(context, MainActivity::class.java))
@@ -42,36 +37,48 @@ class WidgetOnlyActivity : AppCompatActivity() {
     }
 
     private fun updateWidgetTypeList(availableWidgetTypeList: MutableList<WidgetType>) {
-        availableWidgetTypeList.add(WidgetType("POLL", "Text", "Image", null))
-        availableWidgetTypeList.add(WidgetType("QUIZ", "Text", "Image", null))
-        availableWidgetTypeList.add(WidgetType("PREDICTION", "Text", "Image", null))
-        availableWidgetTypeList.add(WidgetType("CHEER_METER", "Clapping", null, null))
-        availableWidgetTypeList.add(WidgetType("EMOJI", "Poll", "Slider", null))
-        availableWidgetTypeList.add(WidgetType("ALERT", "NEWS", "STATS", "SPONSOR"))
-        availableWidgetTypeList.add(WidgetType("INFORMATION", "Weather", "Twitter", null))
+        availableWidgetTypeList.add(WidgetType(getString(R.string.poll), getString(R.string.text), getString(R.string.image), null))
+        availableWidgetTypeList.add(WidgetType(getString(R.string.quiz), getString(R.string.text), getString(R.string.image), null))
+        availableWidgetTypeList.add(WidgetType(getString(R.string.prediction), getString(R.string.text), getString(R.string.image), null))
+        availableWidgetTypeList.add(WidgetType(getString(R.string.cheerMeter), getString(R.string.clapping), null, null))
+        availableWidgetTypeList.add(WidgetType(getString(R.string.emoji), getString(R.string.poll_lowercase), getString(
+                    R.string.slider), null))
+        availableWidgetTypeList.add(WidgetType(getString(R.string.alert), getString(R.string.news), getString(R.string.stats), getString(
+                    R.string.sponsor)))
+        availableWidgetTypeList.add(WidgetType(getString(R.string.information), getString(R.string.weather), getString(R.string.twitter), null))
     }
 
-    inner class WidgetAdapter(private val widgetList: MutableList<WidgetType>) : RecyclerView.Adapter<WidgetTypeViewHolder>() {
+    inner class WidgetAdapter(private val widgetList: List<WidgetType>) : RecyclerView.Adapter<WidgetTypeViewHolder>() {
 
         override fun onBindViewHolder(holder: WidgetTypeViewHolder, position: Int) {
             val widget = widgetList[position]
             holder.widgetLabelTextView.text = widget.label
-            val intent = Intent(baseContext, WidgetCommandActivity::class.java)
-            intent.putExtra(Companion.WIDGET_TYPE, widget.label)
+            val intent = Intent(baseContext, WidgetStandaloneActivity::class.java)
+            intent.putExtra(getString(R.string.widget_type), widget.label)
 
-            updateView(widget.variance1, holder.widgetVarianceButton1, null)
-            updateView(widget.variance2, holder.widgetVarianceButton2, holder.divider1)
-            updateView(widget.variance3, holder.widgetVarianceButton3, holder.divider)
+            updateView(widget.variance1, holder.widgetVarianceButton1, null, intent)
+            updateView(widget.variance2, holder.widgetVarianceButton2, holder.divider1, intent)
+            updateView(widget.variance3, holder.widgetVarianceButton3, holder.divider, intent)
         }
 
-        private fun updateView(varianceText: String?, widgetVarianceButton: Button, divider: View?) {
-            if (varianceText != null) updateButton(widgetVarianceButton, varianceText)
+        private fun updateView(
+            varianceText: String?,
+            widgetVarianceButton: Button,
+            divider: View?,
+            intent: Intent
+        ) {
+            if (varianceText != null) updateButton(widgetVarianceButton, varianceText, intent)
              else visibilityGone(widgetVarianceButton, divider)
         }
 
-        private fun updateButton(widgetVarianceButton: Button, varianceText: String?) {
+        private fun updateButton(
+            widgetVarianceButton: Button,
+            varianceText: String?,
+            intent: Intent
+        ) {
             widgetVarianceButton.text = varianceText
             widgetVarianceButton.setOnClickListener {
+                startActivity(varianceText, intent)
             }
         }
 
@@ -79,10 +86,15 @@ class WidgetOnlyActivity : AppCompatActivity() {
             view.forEach { v -> v?.visibility = View.GONE }
         }
 
+        private fun startActivity(variance: String?, intent: Intent) {
+            intent.putExtra(getString(R.string.widget_variance), variance)
+            startActivity(intent)
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WidgetTypeViewHolder {
             return WidgetTypeViewHolder(
                 LayoutInflater.from(baseContext).inflate(
-                    R.layout.widget_only_row_element,
+                    R.layout.widget_type_with_variance_row_element,
                     parent,
                     false
                 )

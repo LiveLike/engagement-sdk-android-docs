@@ -1,0 +1,40 @@
+{
+  "id":"c95cb5b3-4277-486b-9bac-973d900ab583",
+  "url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/text-predictions\/c95cb5b3-4277-486b-9bac-973d900ab583\/",
+  "kind":"text-prediction",
+  "program_id":"00f4cdfd-6a19-4853-9c21-51aa46d070a0",
+  "created_at":"2019-03-13T21:19:22.686036-04:00",
+  "published_at":"2019-03-13T21:19:22.686071-04:00",
+  "follow_up_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/text-prediction-follow-ups\/",
+  "question":"Who is the best player?",
+  "confirmation_message":"Stay tuned for results!",
+  "timeout":"P0DT00H00M07S",
+  "options":[
+    {
+      "id":"16df640c-06e3-46d1-a77d-030988b7d547",
+      "description":"Messi",
+      "vote_count":0,
+      "vote_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/text-prediction-options\/16df640c-06e3-46d1-a77d-030988b7d547\/votes\/"
+    },
+    {
+      "id":"c2912bab-3673-46b6-8662-47c232f2b392",
+      "description":"Ronaldo",
+      "vote_count":0,
+      "vote_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/text-prediction-options\/c2912bab-3673-46b6-8662-47c232f2b392\/votes\/"
+    },
+    {
+      "id":"8796e86e-a33b-451a-92d6-63198f658c9f",
+      "description":"Pele",
+      "vote_count":0,
+      "vote_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/text-prediction-options\/8796e86e-a33b-451a-92d6-63198f658c9f\/votes\/"
+    },
+    {
+      "id":"91fc2eff-a8fb-4de8-b342-964a70bd8906",
+      "description":"Maradona",
+      "vote_count":0,
+      "vote_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/text-prediction-options\/91fc2eff-a8fb-4de8-b342-964a70bd8906\/votes\/"
+    }
+  ],
+  "subscribe_channel":"text_prediction_c95cb5b3_4277_486b_9bac_973d900ab583",
+  "program_date_time":null
+}

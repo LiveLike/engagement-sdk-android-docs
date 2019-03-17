@@ -22,6 +22,8 @@
         </activity>
         <activity android:name=".WidgetOnlyActivity">
         </activity>
+        <activity android:name=".WidgetStandaloneActivity">
+        </activity>
         <activity android:name=".ExoPlayerActivity">
         </activity>
         <activity android:name=".MainActivity">
