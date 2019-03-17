@@ -1,13 +1,16 @@
 package com.livelike.livelikesdk
 
+import android.content.Context
 import android.support.test.InstrumentationRegistry
 import android.support.test.annotation.UiThreadTest
 import android.view.LayoutInflater
+import android.view.View
 import com.facebook.testing.screenshot.Screenshot
 import com.facebook.testing.screenshot.ViewHelpers
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.view.AlertWidget
 import kotlinx.android.synthetic.main.widget_view.view.*
+import org.junit.Before
 import org.junit.Test
 
 
@@ -21,13 +24,17 @@ import org.junit.Test
 * */
 
 class MyTests {
-    @Test
+
+    private lateinit var widgetView: View
+    private lateinit var context: Context
+
+    @Before
     @UiThreadTest
-    fun doScreenshot() {
-        val targetContext = InstrumentationRegistry.getInstrumentation().context
-        val inflater = LayoutInflater.from(targetContext)
-        val view = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
-        val alertWidget = AlertWidget(targetContext)
+    fun setup() {
+        context = InstrumentationRegistry.getInstrumentation().context
+        val inflater = LayoutInflater.from(context)
+        widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
+        val alertWidget = AlertWidget(context)
         alertWidget.initialize(
             {}, Alert(
                 "an-id",
@@ -39,30 +46,30 @@ class MyTests {
                 "time",
                 "time",
                 "DEAL",
-                "This is the text bodyyyyy",
+                "",
                 "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
                 "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
                 "Click here please"
             )
         )
 
-//
-//        ViewHelpers.setupView(alertWidget)
-//            .setExactWidthDp(300)
-//            .setExactHeightDp(200)
-//            .layout()
-
-
-        ViewHelpers.setupView(view)
+        ViewHelpers.setupView(alertWidget)
             .setExactWidthDp(300)
             .setExactHeightDp(200)
             .layout()
 
-        view.containerView.addView(alertWidget)
+        widgetView.containerView.addView(alertWidget)
+
+        ViewHelpers.setupView(widgetView)
+            .setExactWidthDp(300)
+            .setExactHeightDp(200)
+            .layout()
+    }
+
+    @Test
+    fun doScreenshot() {
         Screenshot
-            .snap(view)
+            .snap(widgetView)
             .record()
-
-
     }
 }
