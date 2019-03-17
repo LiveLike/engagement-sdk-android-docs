@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.animation
 
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.view.View
 import com.livelike.livelikesdk.R
@@ -13,7 +14,7 @@ import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 
 internal class ViewAnimation(val view: View, private val animationHandler: AnimationHandler) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
-
+    private val animator = ValueAnimator.ofFloat(0f, 1f)
     fun startWidgetTransitionInAnimation() {
         val heightToReach = view.measuredHeight.toFloat()
         // TODO: remove hardcoded start position -400 to something meaningful.
@@ -67,7 +68,9 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
-            duration)
+            duration,
+            ValueAnimator.ofFloat(0f, 1f)
+        )
     }
 
     fun showConfirmMessage(
@@ -84,7 +87,8 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
             animationHandler.startAnimation(
                 confirmMessageLottieAnimationView,
                 { triggerTransitionOutAnimation(dismissWidget) },
-                widgetShowingDurationAfterConfirmMessage
+                widgetShowingDurationAfterConfirmMessage,
+                animator
             )
         }
     }
@@ -101,7 +105,7 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    animationHandler.cancelAnimation()
+                    animationHandler.cancelAnimation(animator)
                     layout.removeAllViewsInLayout()
                     dismissWidget?.invoke()
                 }

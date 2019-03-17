@@ -9,12 +9,11 @@ import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.logDebug
 
 class AnimationHandler {
-    private var animator: ValueAnimator = ValueAnimator.ofFloat(0f, 0f)
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: (Boolean) -> Unit,
-                       duration: Long) {
+                       duration: Long,
+                       animator: ValueAnimator) {
         bindListenerToAnimationView(animator, onAnimationCompletedCallback)
-        animator = ValueAnimator.ofFloat(0f, 1f)
         animator.duration = duration
         animator.addUpdateListener { animation ->
             lottieAnimationView.progress = animation.animatedValue as Float
@@ -24,7 +23,7 @@ class AnimationHandler {
         animator.start()
     }
 
-    fun cancelAnimation() {
+    fun cancelAnimation(animator: ValueAnimator) {
         animator.cancel()
     }
 
