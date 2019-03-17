@@ -6,7 +6,6 @@ import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.messaging.EpochTime
-import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.syncTo
 import com.livelike.livelikesdk.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
@@ -24,8 +23,7 @@ class LiveLikeContentSessionImpl(
     override val programUrl: String,
     val currentPlayheadTime: () -> EpochTime,
     val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
-    val applicationContext: Context,
-    var messageClient: MessagingClient?
+    val applicationContext: Context
 ) : LiveLikeContentSession {
 
     private val llDataClient = LiveLikeDataClientImpl()
@@ -84,13 +82,12 @@ class LiveLikeContentSessionImpl(
     override fun contentSessionId() = program?.clientId ?: ""
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
-            if (messageClient == null) messageClient = PubnubMessagingClient(it.pubNubKey)
-            val widgetQueue = messageClient.let { client -> client?.syncTo(currentPlayheadTime)?.asWidgetManager(llDataClient) }
-            widgetQueue?.unsubscribeAll()
-            widgetQueue?.subscribe(listOf(program.subscribeChannel))
-            widgetQueue?.renderer = widgetRenderer
+            val widgetQueue = PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).asWidgetManager(llDataClient)
+            widgetQueue.unsubscribeAll()
+            widgetQueue.subscribe(listOf(program.subscribeChannel))
+            widgetQueue.renderer = widgetRenderer
             this.widgetQueue = widgetQueue
-            widgetQueue?.subscribeAnalytics(interactionSession)
+            widgetQueue.subscribeAnalytics(interactionSession)
         }
     }
 

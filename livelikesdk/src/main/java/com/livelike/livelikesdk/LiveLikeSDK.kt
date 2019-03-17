@@ -35,9 +35,8 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
      */
     fun createContentSession(contentId: String,
                              currentPlayheadTime: () -> EpochTime,
-                             sessionReady: (LiveLikeContentSession) -> Unit,
-                             messagingClient: MessagingClient?) {
-        sessionReady.invoke(createContentSession(contentId, currentPlayheadTime, messagingClient))
+                             sessionReady: (LiveLikeContentSession) -> Unit) {
+        sessionReady.invoke(createContentSession(contentId, currentPlayheadTime))
     }
 
     /**
@@ -45,7 +44,7 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
      *  @param contentId
      *  @param currentPlayheadTime
      */
-    fun createContentSession(contentId: String, currentPlayheadTime: () -> EpochTime, messagingClient: MessagingClient?) : LiveLikeContentSession {
+    fun createContentSession(contentId: String, currentPlayheadTime: () -> EpochTime) : LiveLikeContentSession {
         return LiveLikeContentSessionImpl(contentId, currentPlayheadTime, object : Provider<SdkConfiguration> {
             override fun subscribe(ready: (SdkConfiguration) -> Unit) {
                 if (configuration != null) ready(configuration!!)
@@ -54,8 +53,7 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
                     ready(it)
                 }
             }
-        }, applicationContext,
-            messagingClient)
+        }, applicationContext)
     }
 
     data class SdkConfiguration(
