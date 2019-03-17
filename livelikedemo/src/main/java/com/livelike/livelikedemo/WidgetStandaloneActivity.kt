@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.registerLogsHandler
 import com.livelike.livelikesdk.widget.WidgetType
@@ -33,7 +34,8 @@ class WidgetStandaloneActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_standalone_widget)
-
+        // This is needed so SharedPreference class gets a context.
+        LiveLikeSDK("standalone", baseContext)
         val (type, variance) = getWidgetTypeWithVariance()
         updateToolbar()
         registerLogHandler()
