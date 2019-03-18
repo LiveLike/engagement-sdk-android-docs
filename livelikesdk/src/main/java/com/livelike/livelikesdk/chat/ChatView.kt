@@ -1,5 +1,8 @@
 package com.livelike.livelikesdk.chat
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
@@ -16,11 +19,17 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
+import android.view.animation.LinearInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.EditText
 import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.logDebug
 import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
@@ -43,12 +52,19 @@ import java.util.*
  */
 
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer  {
+    companion object {
+        const val SNAP_TO_LIVE_ANIMATION_DURATION = 300L
+        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 95
+    }
+
     override var chatListener: ChatEventListener? = null
     override val chatContext: Context = context
 
     private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
     private lateinit var chatAdapter: ChatAdapter
+    private var snapToLiveAnimation : AnimatorSet? = null
+    private var showingSnapToLive : Boolean = false
 
 
     init {
@@ -104,6 +120,19 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     fun setDataSource(chatAdapter: ChatAdapter) {
         this.chatAdapter = chatAdapter
         chatdisplay.adapter = this.chatAdapter
+        chatdisplay.setOnScrollListener(object :AbsListView.OnScrollListener {
+            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+                if(view?.lastVisiblePosition == totalItemCount - 1)
+                    hideSnapToLive()
+                else
+                    showSnapToLive()
+            }
+            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+        })
+
+        snap_live.setOnClickListener {
+            chatdisplay.smoothScrollToPosition(chatAdapter.count - 1)
+        }
 
         context.theme.obtainStyledAttributes(
                 attrs,
@@ -162,6 +191,14 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         }
     }
 
+    fun showLoadingSpinner() {
+        loadingSpinner.visibility = View.VISIBLE
+    }
+
+    fun hideLoadingSpinner() {
+        loadingSpinner.visibility = View.GONE
+    }
+
     private fun hideKeyboard() {
         val inputManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -187,12 +224,33 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         edittext_chat_message.setText("")
     }
 
-    fun showLoadingSpinner() {
-        loadingSpinner.visibility = View.VISIBLE
+    private fun hideSnapToLive() {
+        if(!showingSnapToLive)
+            return
+        showingSnapToLive = false
+        animateSnapToLive()
     }
 
-    fun hideLoadingSpinner() {
-        loadingSpinner.visibility = View.GONE
+    private fun showSnapToLive() {
+        if(showingSnapToLive)
+            return
+        showingSnapToLive = true
+        animateSnapToLive()
+    }
+
+    private fun animateSnapToLive() {
+        snapToLiveAnimation?.cancel()
+
+        val translateAnimation = ObjectAnimator.ofFloat(snap_live, "translationY", if(showingSnapToLive) 0f else dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION).toFloat())
+        translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION
+
+        val alphaAnimation = ObjectAnimator.ofFloat(snap_live, "alpha", if(showingSnapToLive) 1f else 0f)
+        alphaAnimation.duration = SNAP_TO_LIVE_ANIMATION_DURATION
+
+        snapToLiveAnimation = AnimatorSet()
+        snapToLiveAnimation?.play(translateAnimation)?.with(alphaAnimation)
+        snapToLiveAnimation?.interpolator = LinearInterpolator()
+        snapToLiveAnimation?.start()
     }
 }
 
