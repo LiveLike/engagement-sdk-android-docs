@@ -6,8 +6,6 @@
                                              android:layout_height="match_parent"
                                              android:background="@drawable/chat_background"
 >
-
-
     <include
             android:id="@+id/chatInput"
             layout="@layout/chat_input"
@@ -31,9 +29,7 @@
             android:elevation="1dp"
             android:paddingTop="1dp"
             android:translationY="50dp"
-            android:alpha="0"
-    />
-
+            android:alpha="0"/>
 
     <ListView
             android:id="@+id/chatdisplay"
@@ -46,8 +42,7 @@
             app:layout_constraintBottom_toTopOf="@+id/chatInput"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="8dp"
-            />
+            android:layout_marginBottom="8dp"/>
 
     <ProgressBar
             android:id="@+id/loadingSpinner"
@@ -58,6 +53,4 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="visible"/>
-
-
 </android.support.constraint.ConstraintLayout>
