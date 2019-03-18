@@ -57,6 +57,7 @@ import java.util.*
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer  {
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
+        const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
         const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
     }
 
@@ -126,7 +127,8 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         chatdisplay.adapter = this.chatAdapter
         chatdisplay.setOnScrollListener(object :AbsListView.OnScrollListener {
             override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
-                if(view?.lastVisiblePosition == totalItemCount - 1)
+                val lastpos = view?.lastVisiblePosition ?: 0
+                if(lastpos >= totalItemCount - 3)
                     hideSnapToLive()
                 else
                     showSnapToLive()
@@ -135,7 +137,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         })
 
         snap_live.setOnClickListener {
-            chatdisplay.smoothScrollToPosition(chatdisplay.maxScrollAmount)
+            chatdisplay.smoothScrollToPosition(chatAdapter.count - 1)
         }
 
         context.theme.obtainStyledAttributes(
@@ -183,9 +185,6 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
                 button_chat_send.isEnabled = false
                 button_chat_send.setOnClickListener { v ->
-                    chatdisplay.post {
-                        chatdisplay.smoothScrollToPosition(chatdisplay.maxScrollAmount)
-                    }
                     sendMessageNow()
                 }
 
@@ -225,6 +224,8 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         chatListener?.onChatMessageSend(newMessage, timeData)
         hideLoadingSpinner()
         this@ChatView.chatAdapter.addMessage(newMessage)
+
+        chatdisplay.smoothScrollToPosition(chatAdapter.count - 1)
         edittext_chat_message.setText("")
     }
 
@@ -250,8 +251,8 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         val finalTranslationAnimator = animationEaseAdapter.createAnimationEffectWith(AnimationEaseInterpolator.Ease.EaseOutCubic, SNAP_TO_LIVE_ANIMATION_DURATION, translateAnimation)
 
         val alphaAnimation = ObjectAnimator.ofFloat(snap_live, "alpha", if(showingSnapToLive) 1f else 0f)
-        alphaAnimation.duration = (SNAP_TO_LIVE_ANIMATION_DURATION - 80).toLong()
-        val finalAlphaAnimator = animationEaseAdapter.createAnimationEffectWith(AnimationEaseInterpolator.Ease.EaseOutCubic, SNAP_TO_LIVE_ANIMATION_DURATION - 80, alphaAnimation)
+        alphaAnimation.duration = (SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION).toLong()
+        val finalAlphaAnimator = animationEaseAdapter.createAnimationEffectWith(AnimationEaseInterpolator.Ease.EaseOutCubic, SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION, alphaAnimation)
         finalAlphaAnimator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationEnd(animation: Animator) {
                 snap_live.visibility = if(showingSnapToLive) View.VISIBLE else View.GONE
