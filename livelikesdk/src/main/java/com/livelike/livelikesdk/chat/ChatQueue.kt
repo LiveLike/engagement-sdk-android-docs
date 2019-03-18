@@ -7,6 +7,7 @@ import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.sendbird.ChatClient
+import com.livelike.livelikesdk.util.extractStringOrEmpty
 import java.util.*
 
 class ChatQueue (upstream: MessagingClient, val chatClient: ChatClient): MessagingClientProxy(upstream), ChatEventListener {
@@ -51,16 +52,20 @@ class ChatQueue (upstream: MessagingClient, val chatClient: ChatClient): Messagi
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        //send message to chat view
-        renderer?.displayChatMessage(
-            ChatMessage(
-                event.message.get("message").asString,
-                event.message.get("sender_id").asString,
-                event.message.get("sender").asString,
-                event.message.get("id").asString,
-                Date(event.timeStamp.timeSinceEpochInMs).toString()
+        val controlMessage = event.message.extractStringOrEmpty("control")
+
+        when(controlMessage) {
+            ("load_complete") -> renderer?.loadComplete()
+            else -> renderer?.displayChatMessage(
+                ChatMessage(
+                    event.message.get("message").asString,
+                    event.message.get("sender_id").asString,
+                    event.message.get("sender").asString,
+                    event.message.get("id").asString,
+                    Date(event.timeStamp.timeSinceEpochInMs).toString()
+                )
             )
-        )
+        }
     }
 
     fun toggleEmission(pause: Boolean) {
@@ -77,6 +82,7 @@ interface ChatRenderer {
     var chatListener: ChatEventListener?
     val chatContext: Context
     fun displayChatMessage(message: ChatMessage)
+    fun loadComplete()
 }
 
 

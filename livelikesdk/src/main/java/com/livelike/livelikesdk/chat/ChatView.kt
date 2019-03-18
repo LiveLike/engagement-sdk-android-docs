@@ -61,15 +61,20 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     }
 
     fun setSession(session: LiveLikeContentSession) {
+        showLoadingSpinner()
         this.session = session
         session.chatRenderer = this
     }
 
     override fun displayChatMessage(message: ChatMessage) {
-        //Might not need the looper here?
+        hideLoadingSpinner()
         Handler(Looper.getMainLooper()).post {
             this@ChatView.chatAdapter.addMessage(message)
         }
+    }
+
+    override fun loadComplete() {
+        hideLoadingSpinner()
     }
 
     // Hide keyboard when clicking outside of the EditText
@@ -177,11 +182,18 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         )
 
         chatListener?.onChatMessageSend(newMessage, timeData)
+        hideLoadingSpinner();
         this@ChatView.chatAdapter.addMessage(newMessage)
         edittext_chat_message.setText("")
     }
 
+    fun showLoadingSpinner() {
+        loadingSpinner.visibility = View.VISIBLE
+    }
 
+    fun hideLoadingSpinner() {
+        loadingSpinner.visibility = View.GONE
+    }
 }
 
 interface ChatCell {
