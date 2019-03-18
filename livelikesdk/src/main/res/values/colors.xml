@@ -13,5 +13,7 @@
 
     <color name="openChatNicknameOther">#7b8391</color>
     <color name="openChatNicknameMe">#00BCD4</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 
 </resources>

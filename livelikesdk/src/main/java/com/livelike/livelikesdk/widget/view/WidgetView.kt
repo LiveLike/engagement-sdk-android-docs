@@ -18,9 +18,11 @@ import com.livelike.livelikesdk.widget.WidgetEvent
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.WidgetType
+import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
 import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
 import com.livelike.livelikesdk.widget.model.Resource
+import com.livelike.livelikesdk.widget.model.SimpleWidget
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.view.image.PredictionImageQuestionWidget
 
@@ -52,10 +54,11 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         layoutParams.topMargin = 0
-        val parser = WidgetParser()
-        val widgetResource = gson.fromJson(payload, Resource::class.java)
+
         when (type) {
             WidgetType.TEXT_PREDICTION -> {
+                val parser = WidgetParser()
+                val widgetResource = gson.fromJson(payload, Resource::class.java)
                 val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0) { dismissCurrentWidget() }
 
                 predictionWidget.layoutParams = layoutParams
@@ -72,6 +75,8 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             }
 
             WidgetType.TEXT_PREDICTION_RESULTS -> {
+                val parser = WidgetParser()
+                val widgetResource = gson.fromJson(payload, Resource::class.java)
                 val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0) { dismissCurrentWidget() }
 
                 predictionWidget.layoutParams = layoutParams
@@ -89,6 +94,8 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
             }
 
             WidgetType.IMAGE_PREDICTION -> {
+                val parser = WidgetParser()
+                val widgetResource = gson.fromJson(payload, Resource::class.java)
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)  { dismissCurrentWidget() }
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion()
@@ -102,7 +109,17 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 currentWidget = widgetData
             }
 
+            WidgetType.ALERT -> {
+                val alertWidget = AlertWidget(context, null).apply {
+                    val alertResource = gson.fromJson(payload, Alert::class.java)
+                    initialize({ dismissCurrentWidget() }, alertResource)
+                    currentWidget = SimpleWidget().apply { id = alertResource.id }
+                }
+                container.addView(alertWidget)
+            }
+
             else -> {
+                logDebug { "Received Widget is not Implemented." }
             }
         }
     }
