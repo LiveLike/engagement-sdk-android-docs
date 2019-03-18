@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat.startActivity
 import android.util.AttributeSet
@@ -69,9 +70,11 @@ class AlertWidget : ConstraintLayout {
             bodyText.requestLayout()
         } else {
             resourceAlert.image_url.apply {
-                Glide.with(context)
-                    .load(resourceAlert.image_url)
-                    .into(bodyImage)
+                Handler(Looper.getMainLooper()).post {
+                    Glide.with(context)
+                        .load(resourceAlert.image_url)
+                        .into(bodyImage)
+                }
             }
         }
 
