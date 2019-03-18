@@ -29,7 +29,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         chat_view.setSession(session)
 
         prePopulateChatWithMessages()
-        pushMessageIntoChatView()
+        pushMessageIntoChatViewAtFixedRate()
     }
 
     private fun updateToolbar() {
@@ -43,8 +43,9 @@ class ChatOnlyActivity : AppCompatActivity() {
         }
     }
 
-    private fun pushMessageIntoChatView() {
+    private fun pushMessageIntoChatViewAtFixedRate() {
         var senderId = 0
+        val messageUpdateRate: Long = 5000
         Timer().scheduleAtFixedRate(
             object : TimerTask() {
                 override fun run() {
@@ -59,14 +60,18 @@ class ChatOnlyActivity : AppCompatActivity() {
                         )
                     )
                 }
-            }, 0, 5000
+            }, 0, messageUpdateRate
         )
     }
 
     private fun prePopulateChatWithMessages() {
         updateChatMessageList()
+        pushMessageOnView()
+    }
+
+    private fun pushMessageOnView() {
         for (i in 1..3)
-            chatMessageList.forEach{message -> chat_view.displayChatMessage(message)}
+            chatMessageList.forEach { message -> chat_view.displayChatMessage(message) }
     }
 
     private fun updateChatMessageList() {
