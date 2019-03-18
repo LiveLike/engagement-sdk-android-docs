@@ -24,8 +24,16 @@ internal class WidgetParser {
     ) {
         parseTextPredictionCommon(widgetFollowUp, payload)
         widgetFollowUp.questionWidgetId = payload.text_prediction_id
+        when {
+            payload.testTag == "Correct Answer" -> widgetFollowUp.optionSelected =
+                widgetFollowUp.optionList.single { widgetOptions -> widgetOptions.id == payload.correct_option_id
+                }
+            payload.testTag == "Wrong Answer" ->  widgetFollowUp.optionSelected =
+                widgetFollowUp.optionList.first { widgetOptions -> widgetOptions.id != payload.correct_option_id }
+
+            else -> widgetFollowUp.optionSelected =
+                WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widgetFollowUp.questionWidgetId))
+        }
         widgetFollowUp.correctOptionId = payload.correct_option_id
-        widgetFollowUp.optionSelected =
-            WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widgetFollowUp.questionWidgetId))
     }
 }

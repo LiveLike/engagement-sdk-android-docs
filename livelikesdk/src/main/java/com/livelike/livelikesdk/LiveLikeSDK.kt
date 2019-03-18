@@ -3,6 +3,7 @@ package com.livelike.livelikesdk
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.livelikesdk.messaging.EpochTime
+import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 

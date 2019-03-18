@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.widget.view
 
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
@@ -38,6 +39,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val animationHandler = AnimationHandler()
     protected val buttonMap = mutableMapOf<Button, String>()
+    protected val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
     protected var optionSelected = false
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
@@ -124,7 +126,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    animationHandler.cancelAnimation()
+                    animationHandler.cancelAnimation(animator)
                     layout.removeAllViewsInLayout()
                     dismissWidget()
                 }
