@@ -66,7 +66,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
     private fun updateToolbar() {
         setSupportActionBar(toolbar)
         toolbar.apply {
-            setNavigationIcon(R.drawable.ic_close_white_24dp)
+            setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
             setBackgroundColor(Color.parseColor("#00ae8b"))
             setNavigationOnClickListener {
                 startActivity(Intent(context, MainActivity::class.java))

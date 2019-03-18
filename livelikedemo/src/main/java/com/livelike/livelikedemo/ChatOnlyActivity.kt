@@ -1,12 +1,100 @@
 package com.livelike.livelikedemo
 
-import android.support.v7.app.AppCompatActivity
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.LiveLikeUser
+import com.livelike.livelikesdk.chat.ChatAdapter
+import com.livelike.livelikesdk.chat.ChatMessage
+import com.livelike.livelikesdk.chat.ChatRenderer
+import com.livelike.livelikesdk.chat.ChatTheme
+import com.livelike.livelikesdk.chat.DefaultChatCellFactory
+import com.livelike.livelikesdk.messaging.EpochTime
+import com.livelike.livelikesdk.widget.WidgetRenderer
+import kotlinx.android.synthetic.main.activity_chat_only.*
+import java.util.*
 
 class ChatOnlyActivity : AppCompatActivity() {
-
+    private val chatMessageList = mutableListOf<ChatMessage>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_only)
+        LiveLikeSDK("1234", baseContext)
+        updateToolbar()
+        val session = TestSession()
+        chat_view.setDataSource(ChatAdapter(session, ChatTheme(), DefaultChatCellFactory(baseContext, null)))
+        chat_view.setSession(session)
+
+        prePopulateChatWithMessages()
+        pushMessageIntoChatView()
+    }
+
+    private fun updateToolbar() {
+        chat_toolbar.apply {
+            title = "Chat Only"
+            setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
+            setBackgroundColor(Color.parseColor("#00ae8b"))
+            setNavigationOnClickListener {
+                startActivity(Intent(context, MainActivity::class.java))
+            }
+        }
+    }
+
+    private fun pushMessageIntoChatView() {
+        var senderId = 0
+        Timer().scheduleAtFixedRate(
+            object : TimerTask() {
+                override fun run() {
+                    senderId++
+                    chat_view.displayChatMessage(
+                        ChatMessage(
+                            "Pushed message $senderId",
+                            senderId.toString(),
+                            "Admin $senderId",
+                            senderId.toString(),
+                            "$senderId:00:00"
+                        )
+                    )
+                }
+            }, 0, 5000
+        )
+    }
+
+    private fun prePopulateChatWithMessages() {
+        updateChatMessageList()
+        for (i in 1..3)
+            chatMessageList.forEach{message -> chat_view.displayChatMessage(message)}
+    }
+
+    private fun updateChatMessageList() {
+        chatMessageList.add(ChatMessage("We will rock you!", "1", "Queen", "1", "12:00:00"))
+        chatMessageList.add(ChatMessage("Stairway to heaven", "2", "Led Zeppelin", "2", "11:00:00"))
+        chatMessageList.add(ChatMessage("Pour some sugar on me", "3", "Def Leppard", "3", "10:00:00"))
+        chatMessageList.add(ChatMessage("Fear of the dark", "4", "Iron Maiden", "5", "7:00:00"))
+        chatMessageList.add(ChatMessage("Another brick in the wall", "5", "Pink Floyd", "5", "6:00:00"))
+        chatMessageList.add(ChatMessage("Turbo lover", "6", "Judas Priest", "6", "5:00:00"))
+    }
+
+    inner class TestSession : LiveLikeContentSession {
+        override val programUrl: String get() = ""
+        override var widgetRenderer: WidgetRenderer?
+            get() = null
+            set(value) {}
+        override var chatRenderer: ChatRenderer?
+            get() = null
+            set(value) {}
+        override val currentUser: LiveLikeUser?
+            get() = LiveLikeUser("1234", "TestUser")
+
+        override fun pause() {}
+        override fun resume() {}
+        override fun clearChatHistory() {}
+        override fun clearFeedbackQueue() {}
+        override fun close() {}
+        override fun getPlayheadTime(): EpochTime { return EpochTime(1000L) }
+        override fun contentSessionId(): String { return "TestSession" }
     }
 }
