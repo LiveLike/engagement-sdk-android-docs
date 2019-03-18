@@ -120,4 +120,11 @@ class PredictionWidgetQuestion : Widget(){
     }
 }
 
+class SimpleWidget : Widget() {
+    override var optionList: List<WidgetOptions>
+        get() = emptyList()
+        set(value) {}
+
+}
+
 class VoteOption(val id: String?, val description: String, val votePercentage: Long, val imageUrl: String?)

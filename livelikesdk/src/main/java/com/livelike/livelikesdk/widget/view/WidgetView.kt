@@ -22,6 +22,7 @@ import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
 import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
 import com.livelike.livelikesdk.widget.model.Resource
+import com.livelike.livelikesdk.widget.model.SimpleWidget
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.view.image.PredictionImageQuestionWidget
 
@@ -112,7 +113,7 @@ class WidgetView(context: Context, attrs: AttributeSet?): ConstraintLayout(conte
                 val alertWidget = AlertWidget(context, null).apply {
                     val alertResource = gson.fromJson(payload, Alert::class.java)
                     initialize({ dismissCurrentWidget() }, alertResource)
-                    currentWidget = PredictionWidgetQuestion().apply { id = alertResource.id }
+                    currentWidget = SimpleWidget().apply { id = alertResource.id }
                 }
                 container.addView(alertWidget)
             }

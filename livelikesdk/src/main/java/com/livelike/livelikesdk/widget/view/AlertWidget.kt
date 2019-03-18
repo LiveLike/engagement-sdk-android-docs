@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.Alert
 import kotlinx.android.synthetic.main.alert_widget.view.*
 import org.threeten.bp.Duration
@@ -78,11 +79,11 @@ class AlertWidget : ConstraintLayout {
             labelBackground.visibility = View.GONE
             labelText.visibility = View.GONE
             val params = bodyBackground.layoutParams as ConstraintLayout.LayoutParams
-            params.topMargin = 0.dpToPx(resources)
+            params.topMargin = AndroidResource.dpToPx(0)
             bodyBackground.requestLayout()
         } else {
             val params = bodyBackground.layoutParams as ConstraintLayout.LayoutParams
-            params.topMargin = 12.dpToPx(resources)
+            params.topMargin = AndroidResource.dpToPx(12)
             bodyBackground.requestLayout()
         }
 
@@ -91,15 +92,13 @@ class AlertWidget : ConstraintLayout {
             if (!resourceAlert.image_url.isNullOrEmpty()) {
                 // Image Only
                 val params = widgetContainer.layoutParams as ConstraintLayout.LayoutParams
-                params.height = 200.dpToPx(resources)
+                params.height = AndroidResource.dpToPx(200)
                 widgetContainer.requestLayout()
             }
         }
 
-        // Show the widget
         viewAnimation.startWidgetTransitionInAnimation()
 
-        // Start dismiss timeout
         val timeout = Duration.parse(resourceAlert.timeout).toMillis()
         Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
     }
