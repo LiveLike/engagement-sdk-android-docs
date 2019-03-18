@@ -37,6 +37,7 @@ class AlertWidget : ConstraintLayout {
         inflate(context)
     }
 
+
     private fun inflate(context: Context) {
         layout = LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
         viewAnimation = ViewAnimation(alertWidget, animationHandler)
@@ -48,8 +49,10 @@ class AlertWidget : ConstraintLayout {
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
             linkBackground.setOnClickListener {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(resourceAlert.link_url))
-                startActivity(context, browserIntent, Bundle.EMPTY)
+                openBrowser(context)
+            }
+            bodyBackground.setOnClickListener {
+                openBrowser(context)
             }
         } else {
             linkArrow.visibility = View.GONE
@@ -99,6 +102,11 @@ class AlertWidget : ConstraintLayout {
         // Start dismiss timeout
         val timeout = Duration.parse(resourceAlert.timeout).toMillis()
         Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
+    }
+
+    private fun openBrowser(context: Context) {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(resourceAlert.link_url))
+        startActivity(context, browserIntent, Bundle.EMPTY)
     }
 }
 
