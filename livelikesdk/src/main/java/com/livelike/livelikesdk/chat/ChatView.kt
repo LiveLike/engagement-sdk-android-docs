@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk.chat
 
+import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -29,6 +30,8 @@ import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.EditText
 import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.logDebug
 import kotlinx.android.synthetic.main.chat_input.view.*
@@ -53,8 +56,8 @@ import java.util.*
 
 class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer  {
     companion object {
-        const val SNAP_TO_LIVE_ANIMATION_DURATION = 300L
-        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 95
+        const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
+        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
     }
 
     override var chatListener: ChatEventListener? = null
@@ -65,6 +68,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     private lateinit var chatAdapter: ChatAdapter
     private var snapToLiveAnimation : AnimatorSet? = null
     private var showingSnapToLive : Boolean = false
+    private val animationEaseAdapter = AnimationEaseAdapter()
 
 
     init {
@@ -131,7 +135,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         })
 
         snap_live.setOnClickListener {
-            chatdisplay.smoothScrollToPosition(chatAdapter.count - 1)
+            chatdisplay.smoothScrollToPosition(chatdisplay.maxScrollAmount)
         }
 
         context.theme.obtainStyledAttributes(
@@ -219,7 +223,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         )
 
         chatListener?.onChatMessageSend(newMessage, timeData)
-        hideLoadingSpinner();
+        hideLoadingSpinner()
         this@ChatView.chatAdapter.addMessage(newMessage)
         edittext_chat_message.setText("")
     }
@@ -242,14 +246,27 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         snapToLiveAnimation?.cancel()
 
         val translateAnimation = ObjectAnimator.ofFloat(snap_live, "translationY", if(showingSnapToLive) 0f else dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION).toFloat())
-        translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION
+        translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
+        val finalTranslationAnimator = animationEaseAdapter.createAnimationEffectWith(AnimationEaseInterpolator.Ease.EaseOutCubic, SNAP_TO_LIVE_ANIMATION_DURATION, translateAnimation)
 
         val alphaAnimation = ObjectAnimator.ofFloat(snap_live, "alpha", if(showingSnapToLive) 1f else 0f)
-        alphaAnimation.duration = SNAP_TO_LIVE_ANIMATION_DURATION
+        alphaAnimation.duration = (SNAP_TO_LIVE_ANIMATION_DURATION - 80).toLong()
+        val finalAlphaAnimator = animationEaseAdapter.createAnimationEffectWith(AnimationEaseInterpolator.Ease.EaseOutCubic, SNAP_TO_LIVE_ANIMATION_DURATION - 80, alphaAnimation)
+        finalAlphaAnimator.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationEnd(animation: Animator) {
+                snap_live.visibility = if(showingSnapToLive) View.VISIBLE else View.GONE
+            }
+
+            override fun onAnimationStart(animation: Animator) {
+                snap_live.visibility = View.VISIBLE
+            }
+
+            override fun onAnimationCancel(animation: Animator) {}
+            override fun onAnimationRepeat(animation: Animator) {}
+        })
 
         snapToLiveAnimation = AnimatorSet()
-        snapToLiveAnimation?.play(translateAnimation)?.with(alphaAnimation)
-        snapToLiveAnimation?.interpolator = LinearInterpolator()
+        snapToLiveAnimation?.play(finalTranslationAnimator)?.with(finalAlphaAnimator)
         snapToLiveAnimation?.start()
     }
 }
