@@ -50,7 +50,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
-        if (id == R.id.action_favorite) {
+        if (id == R.id.action_add_new) {
             startActivity(Intent(baseContext, WidgetOnlyActivity::class.java))
         }
 
@@ -184,10 +184,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                 showWidget(WidgetType.TEXT_PREDICTION_RESULTS, payload)
             } else if (isVariance(getString(R.string.image))) {
                 // TODO: Change this after implementing image result widget
-                showWidget(
-                    WidgetType.TEXT_PREDICTION_RESULTS,
-                    getPayload("prediction/text/prediction_question_result.json")
-                )
+
             }
         }
 

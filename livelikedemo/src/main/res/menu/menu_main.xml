@@ -5,9 +5,9 @@
       tools:context=".WidgetStandaloneActivity">
 
     <item
-            android:id="@+id/action_favorite"
+            android:id="@+id/action_add_new"
             android:orderInCategory="300"
-            android:title="Widgets"
+            android:title="@string/widgets"
             android:icon="@drawable/ic_add_white_24dp"
             app:showAsAction="always"/>
 </menu>

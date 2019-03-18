@@ -41,4 +41,5 @@
     <string name="twitter">Twitter</string>
     <string name="widget_type">widgetType</string>
     <string name="widget_variance">widgetVariance</string>
+    <string name="widgets">Widgets</string>
 </resources>
