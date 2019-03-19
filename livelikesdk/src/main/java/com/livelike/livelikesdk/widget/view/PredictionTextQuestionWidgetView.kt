@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.widget.view
 
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -42,7 +43,9 @@ internal class PredictionTextQuestionWidgetView : PredictionTextWidgetBase {
         animationHandler.startAnimation(
                 pieTimer.findViewById(R.id.prediction_pie_updater_animation),
                 { onTimerAnimationCompleted(animationHandler) },
-                timerDuration)
+            timerDuration,
+            animator
+        )
     }
 
     private fun onTimerAnimationCompleted(animationHandler: AnimationHandler) {
@@ -56,7 +59,8 @@ internal class PredictionTextQuestionWidgetView : PredictionTextWidgetBase {
                 animationHandler.startAnimation(
                     prediction_confirm_message_animation,
                     { dismissWidget() },
-                    widgetShowingDurationAfterConfirmMessage
+                    widgetShowingDurationAfterConfirmMessage,
+                    ValueAnimator.ofFloat(0f, 1f)
                 )
                 performPredictionWidgetFadeOutOperations()
             }

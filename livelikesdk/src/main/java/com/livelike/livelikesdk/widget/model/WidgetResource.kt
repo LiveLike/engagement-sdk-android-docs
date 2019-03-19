@@ -15,6 +15,7 @@ internal data class Resource(
     val text_prediction_url: String = "",
     val correct_option_id: String = "",
     val confirmation_message: String = "",
+    val testTag: String = "",
     val choices: List<Option> = listOf(),
     val options: List<Option> = listOf()
 ) {

@@ -19,8 +19,10 @@ import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.asWidgetManager
 
+
 internal class LiveLikeContentSessionImpl(
-    override val programUrl: String, val currentPlayheadTime: () -> EpochTime,
+    override val programUrl: String,
+    val currentPlayheadTime: () -> EpochTime,
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
     private val applicationContext: Context
 ) : LiveLikeContentSession {

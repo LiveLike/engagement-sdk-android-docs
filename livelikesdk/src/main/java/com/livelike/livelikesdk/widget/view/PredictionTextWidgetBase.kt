@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.widget.view
 
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.support.constraint.ConstraintLayout
@@ -28,17 +29,18 @@ import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
 open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
-    val timerDuration: Long = 7000
-    val widgetShowingDurationAfterConfirmMessage: Long = 3000
-    val widgetOpacityFactor: Float = 0.2f
-    val constraintSet = ConstraintSet()
-    val buttonList: ArrayList<Button> = ArrayList()
-    val animationHandler = AnimationHandler()
-    val buttonMap = mutableMapOf<Button, String>()
-    var optionSelected = false
-    var layout = ConstraintLayout(context, null, 0)
-    var lottieAnimationPath = ""
-    lateinit var pieTimerViewStub: ViewStub
+    protected val timerDuration: Long = 7000
+    protected val widgetShowingDurationAfterConfirmMessage: Long = 3000
+    protected val widgetOpacityFactor: Float = 0.2f
+    protected val constraintSet = ConstraintSet()
+    protected val buttonList: ArrayList<Button> = ArrayList()
+    protected val animationHandler = AnimationHandler()
+    protected val buttonMap = mutableMapOf<Button, String>()
+    protected val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
+    protected var optionSelected = false
+    protected var layout = ConstraintLayout(context, null, 0)
+    protected var lottieAnimationPath = ""
+    protected lateinit var pieTimerViewStub: ViewStub
     private var dismissWidget :  (() -> Unit)? = null
     private lateinit var userTapped : () -> Unit
 
@@ -121,7 +123,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    animationHandler.cancelAnimation()
+                    animationHandler.cancelAnimation(animator)
                     layout.removeAllViewsInLayout()
                     dismissWidget()
                 }

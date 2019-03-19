@@ -26,6 +26,7 @@ import com.livelike.livelikesdk.widget.model.SimpleWidget
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.view.image.PredictionImageQuestionWidget
 
+
 open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs),
     WidgetRenderer {
     override var widgetListener : WidgetEventListener? = null
