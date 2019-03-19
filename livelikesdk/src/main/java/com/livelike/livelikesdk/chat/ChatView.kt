@@ -3,7 +3,6 @@ package com.livelike.livelikesdk.chat
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
@@ -20,16 +19,13 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
-import android.view.animation.AnimationSet
-import android.view.animation.LinearInterpolator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.EditText
 import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
@@ -228,6 +224,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
         chatdisplay.smoothScrollToPosition(chatAdapter.count - 1)
         edittext_chat_message.setText("")
+        analyticService.trackMessageSent(false)
     }
 
     private fun hideSnapToLive() {
