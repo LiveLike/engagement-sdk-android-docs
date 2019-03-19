@@ -1,5 +1,7 @@
 package com.livelike.livelikesdk.widget
 
+import android.os.Handler
+import android.os.Looper
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
@@ -46,7 +48,9 @@ class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDat
         isProcessing = true
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         val payload = event.message["payload"].asJsonObject
-        renderer?.displayWidget(widgetType, payload, analyticsListeners)
+        Handler(Looper.getMainLooper()).post {
+            renderer?.displayWidget(widgetType, payload, analyticsListeners)
+        }
         super.onClientMessageEvent(client, event)
     }
 
