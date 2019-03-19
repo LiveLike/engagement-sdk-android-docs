@@ -9,6 +9,7 @@ import android.support.constraint.Constraints
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
+import android.view.WindowManager
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
@@ -55,6 +56,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_exo_player)
 
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
@@ -152,6 +154,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         player.release()
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
