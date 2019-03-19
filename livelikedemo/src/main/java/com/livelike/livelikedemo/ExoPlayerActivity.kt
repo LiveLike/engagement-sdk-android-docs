@@ -118,9 +118,6 @@ class ExoPlayerActivity : AppCompatActivity() {
             player.createSession(channel.llProgram.toString(), sdk) {
                 this.session = it
 
-//                val chatAdapter = ChatAdapter(it, chatTheme, DefaultChatCellFactory(applicationContext, null))
-//                chat_view.setDataSource(chatAdapter)
-
                 chat_view.setSession(it)
                 widget_view.setSession(it)
 
