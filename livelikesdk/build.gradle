@@ -58,7 +58,6 @@ dependencies {
     {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
 
     // glide
     implementation 'com.github.bumptech.glide:glide:4.9.0'
