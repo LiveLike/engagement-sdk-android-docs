@@ -6,7 +6,6 @@ import android.os.Looper
 import android.support.annotation.NonNull
 import android.support.design.widget.BottomSheetDialog
 import android.view.ViewGroup
-import com.livelike.livelikesdk.util.logError
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -68,13 +67,11 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                         view.channelList = channelList
                         view.channelSelectListener = { channel -> selectedChannel = channel }
                     } catch (e: JSONException) {
-                        logError { e }
                     }
                 }
             }
 
             override fun onFailure(call: okhttp3.Call, e: IOException?) {
-                logError { "Request Failure: $e" }
             }
         })
     }

@@ -4,7 +4,6 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.Timeline
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.messaging.EpochTime
 
 fun LiveLikeSDK.createExoplayerSession(
     player: () -> SimpleExoPlayer?,
@@ -16,8 +15,8 @@ fun LiveLikeSDK.createExoplayerSession(
     }, sessionReady)
 }
 
-fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): EpochTime {
-    return EpochTime(player()?.let {
+fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): Long {
+    return player()?.let {
         it.currentTimeline?.run {
             if (!isEmpty) {
                 getWindow(it.currentWindowIndex, Timeline.Window()).windowStartTimeMs + it.currentPosition
@@ -25,5 +24,5 @@ fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): EpochTime {
                 it.currentPosition
             }
         }
-    } ?: 0)
+    } ?: 0
 }

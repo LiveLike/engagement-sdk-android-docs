@@ -8,7 +8,7 @@ import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator.Ease
 /**
  * Adapter layer for keeping the Easing library at the system boundary.
  */
-class AnimationEaseAdapter : AnimationEaseInterpolator {
+internal class AnimationEaseAdapter : AnimationEaseInterpolator {
 
     override fun createAnimationEffectWith(ease: AnimationEaseInterpolator.Ease,
                                            forDuration: Float,

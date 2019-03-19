@@ -1,6 +1,6 @@
 package com.livelike.livelikesdk.util
 
-class Queue<T> {
+internal class Queue<T> {
     val elements: MutableList<T> = mutableListOf()
     fun isEmpty() = elements.isEmpty()
     fun count() = elements.size
@@ -11,4 +11,4 @@ class Queue<T> {
     override fun toString(): String = elements.toString()
 }
 
-fun <T> Queue<T>.push(items: Collection<T>) = items.forEach { this.enqueue(it) }
+internal fun <T> Queue<T>.push(items: Collection<T>) = items.forEach { this.enqueue(it) }

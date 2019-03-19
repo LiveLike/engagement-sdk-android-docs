@@ -8,7 +8,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 
-class SendbirdChatClient : ChatClient {
+internal class SendbirdChatClient : ChatClient {
     private val TAG = javaClass.simpleName
     private val zoneUTC = ZoneId.of("UTC")
 

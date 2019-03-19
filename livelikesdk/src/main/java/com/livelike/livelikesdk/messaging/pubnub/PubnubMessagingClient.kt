@@ -21,7 +21,7 @@ import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
-class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
+internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
     private var pubnub : PubNub
     private var listener : MessagingEventListener? = null

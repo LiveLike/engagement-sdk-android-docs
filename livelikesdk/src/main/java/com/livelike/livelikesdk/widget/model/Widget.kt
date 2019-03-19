@@ -8,7 +8,7 @@ import kotlin.collections.LinkedHashMap
 import kotlin.collections.set
 import kotlin.properties.Delegates.observable
 
-abstract class Widget : Observable {
+internal abstract class Widget : Observable {
     protected var observers = mutableSetOf<WidgetObserver>()
 
     override fun registerObserver(widgetObserver: WidgetObserver) { observers.add(widgetObserver) }
@@ -50,7 +50,7 @@ abstract class Widget : Observable {
     }
 }
 
-class PredictionWidgetFollowUp : Widget() {
+internal class PredictionWidgetFollowUp : Widget() {
     private val voteOptions = mutableListOf<VoteOption>()
     var questionWidgetId : String = ""
     var correctOptionId: String by observable("") { _, _, _ ->
@@ -100,14 +100,15 @@ class PredictionWidgetFollowUp : Widget() {
     }
 }
 
-data class WidgetOptions(val id: String? = null,
-                         val voteUrl: URI? = null,
-                         var description: String = "",
-                         var voteCount: Long = 0,
-                         var imageUrl: String? = null
+internal data class WidgetOptions(
+    val id: String? = null,
+    val voteUrl: URI? = null,
+    var description: String = "",
+    var voteCount: Long = 0,
+    var imageUrl: String? = null
 )
 
-class PredictionWidgetQuestion : Widget(){
+internal class PredictionWidgetQuestion : Widget() {
     override var optionList: List<WidgetOptions> by observable(emptyList()) { _, _, newValue ->
         val voteOptionList = mutableListOf<VoteOption>()
         newValue.forEach { data ->
@@ -120,7 +121,7 @@ class PredictionWidgetQuestion : Widget(){
     }
 }
 
-class SimpleWidget : Widget() {
+internal class SimpleWidget : Widget() {
     override var optionList: List<WidgetOptions>
         get() = emptyList()
         set(value) {}

@@ -13,6 +13,7 @@ import com.livelike.livelikesdk.util.logError
 import com.sendbird.android.BaseChannel
 import com.sendbird.android.BaseMessage
 import com.sendbird.android.OpenChannel
+import com.sendbird.android.PreviousMessageListQuery
 import com.sendbird.android.SendBird
 import com.sendbird.android.SendBird.UserInfoUpdateHandler
 import com.sendbird.android.SendBirdException
@@ -20,11 +21,13 @@ import com.sendbird.android.User
 import com.sendbird.android.UserMessage
 import org.threeten.bp.ZonedDateTime
 import java.util.*
-import com.sendbird.android.PreviousMessageListQuery
-import java.lang.Exception
 
 
-class SendbirdMessagingClient(subscribeKey: String, val context: Context, private val liveLikeUser: LiveLikeUser?) :
+internal class SendbirdMessagingClient(
+    subscribeKey: String,
+    val context: Context,
+    private val liveLikeUser: LiveLikeUser?
+) :
     MessagingClient {
 
     companion object {
