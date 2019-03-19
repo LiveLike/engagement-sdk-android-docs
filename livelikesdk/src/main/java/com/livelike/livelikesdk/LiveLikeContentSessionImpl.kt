@@ -2,7 +2,7 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.livelike.livelikesdk.analytics.InteractionLogger
-import com.livelike.livelikesdk.analytics.mixpanelAnalytics
+import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.toChatQueue
@@ -43,16 +43,16 @@ internal class LiveLikeContentSessionImpl(
         val username = getNickename()
         if (!userId.isEmpty() && !username.isEmpty()) {
             currentUser = LiveLikeUser(userId, username)
-            mixpanelAnalytics.identifyUser(userId)
-            mixpanelAnalytics.trackUsername(username)
+            analyticService.identifyUser(userId)
+            analyticService.trackUsername(username)
         } else {
             sdkConfiguration.subscribe { configuration ->
                 llDataClient.getLiveLikeUserData(configuration.sessionsUrl) {
                     currentUser = it
                     setUserId(it.userId)
                     setNickname(it.userName)
-                    mixpanelAnalytics.identifyUser(it.userId)
-                    mixpanelAnalytics.trackUsername(it.userName)
+                    analyticService.identifyUser(it.userId)
+                    analyticService.trackUsername(it.userName)
                 }
             }
         }

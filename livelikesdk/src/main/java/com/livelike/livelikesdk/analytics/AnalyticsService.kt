@@ -16,7 +16,7 @@ internal interface AnalyticsService {
     fun trackUsername(username: String)
 }
 
-internal val mixpanelAnalytics = MixpanelAnalytics()
+internal val analyticService = MixpanelAnalytics()
 
 internal class MixpanelAnalytics : AnalyticsService {
 

@@ -2,7 +2,7 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.livelike.livelikesdk.analytics.mixpanelAnalytics
+import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
@@ -28,7 +28,7 @@ open class LiveLikeSDK(val appId: String, private val applicationContext: Contex
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
-        mixpanelAnalytics.initialize(applicationContext, MIXPANEL_TOKEN)
+        analyticService.initialize(applicationContext, MIXPANEL_TOKEN)
     }
 
     /**
