@@ -62,6 +62,9 @@ dependencies {
 
     // Time lib
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.2'
+
+    // Analytics
+    implementation 'com.mixpanel.android:mixpanel-android:5.5.2'
 }
 
 repositories {

@@ -19,6 +19,7 @@ internal abstract class Widget : Observable {
     var createdAt : Date? = null
     var url: URI ? = null
     var id: String ? = null
+    var kind: String ? = null
 
     var question: String by observable("") { _, _, newValue ->
         observers.forEach { observer ->
