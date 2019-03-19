@@ -20,8 +20,7 @@
             android:id="@+id/snap_live"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
-            android:background="@drawable/ripple_oval"
+            android:src="@drawable/ic_chat_ic_live"
             app:layout_constraintBottom_toTopOf="@id/chatInput"
             app:layout_constraintEnd_toEndOf="@id/chatdisplay"
             android:layout_marginEnd="20dp"
@@ -29,7 +28,8 @@
             android:elevation="1dp"
             android:paddingTop="1dp"
             android:translationY="50dp"
-            android:alpha="0"/>
+            android:alpha="0"
+            tools:alpha="1"/>
 
     <ListView
             android:id="@+id/chatdisplay"
