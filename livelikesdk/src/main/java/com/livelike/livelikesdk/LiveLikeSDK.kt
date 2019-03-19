@@ -2,9 +2,11 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.livelike.livelikesdk.analytics.mixpanelAnalytics
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
+
 
 /**
  * Use this class to initialize the LiveLike SDK. This is the entry point for SDK usage. This creates a singleton instance of LiveLike SDK.
@@ -18,6 +20,7 @@ open class LiveLikeSDK(val appId: String, private val applicationContext: Contex
 
     companion object {
         const val CONFIG_URL = "https://cf-blast.livelikecdn.com/api/v1/applications/"
+        val MIXPANEL_TOKEN = "5c82369365be76b28b3716f260fbd2f5" // TODO: This should come from CMS
     }
 
     private var configuration: SdkConfiguration? = null
@@ -25,6 +28,7 @@ open class LiveLikeSDK(val appId: String, private val applicationContext: Contex
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
+        mixpanelAnalytics.initialize(applicationContext, MIXPANEL_TOKEN)
     }
 
     /**
@@ -70,6 +74,7 @@ open class LiveLikeSDK(val appId: String, private val applicationContext: Contex
         val sessionsUrl: String,
         val stickerPackUrl: String
     )
+
 }
 
 internal interface LiveLikeSdkDataClient {

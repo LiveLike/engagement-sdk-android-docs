@@ -72,9 +72,9 @@ class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDat
 
     // TODO: Name should be changed to more generic and avoid terms like analytics.
     interface WidgetAnalyticsObserver {
-        fun widgetDismissed(widgetId: String)
-        fun widgetShown(widgetId: String)
-        fun widgetOptionSelected(widgetId: String)
+        fun widgetDismissed(widgetId: String, kind: String)
+        fun widgetShown(widgetId: String, kind: String)
+        fun widgetOptionSelected(widgetId: String, kind: String)
     }
 }
 

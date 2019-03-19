@@ -68,10 +68,10 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 widgetData.registerObserver(predictionWidget)
                 parser.parseTextPredictionCommon(widgetData, widgetResource)
                 predictionWidget.userTappedCallback {
-                    emitWidgetOptionSelected(widgetData.id)
+                    emitWidgetOptionSelected(widgetData.id, widgetResource.kind)
                 }
                 container.addView(predictionWidget)
-                emitWidgetShown(widgetData.id)
+                emitWidgetShown(widgetData.id, widgetResource.kind)
                 currentWidget = widgetData
             }
 
@@ -90,7 +90,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                     return
                 }
                 container.addView(predictionWidget)
-                emitWidgetShown(followupWidgetData.id)
+                emitWidgetShown(followupWidgetData.id, widgetResource.kind)
                 currentWidget = followupWidgetData
             }
 
@@ -103,10 +103,10 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 widgetData.registerObserver(predictionWidget)
                 parser.parseTextPredictionCommon(widgetData, widgetResource)
                 predictionWidget.userTappedCallback {
-                    emitWidgetOptionSelected(widgetData.id)
+                    emitWidgetOptionSelected(widgetData.id, widgetResource.kind)
                 }
                 container.addView(predictionWidget)
-                emitWidgetShown(widgetData.id)
+                emitWidgetShown(widgetData.id, widgetResource.kind)
                 currentWidget = widgetData
             }
 
@@ -115,6 +115,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                     val alertResource = gson.fromJson(payload, Alert::class.java)
                     initialize({ dismissCurrentWidget() }, alertResource)
                     currentWidget = SimpleWidget().apply { id = alertResource.id }
+                    emitWidgetShown(alertResource.id, alertResource.kind)
                 }
                 container.addView(alertWidget)
             }
@@ -125,21 +126,21 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
         }
     }
 
-    private fun emitWidgetOptionSelected(widgetId: String?) {
+    private fun emitWidgetOptionSelected(widgetId: String?, kind: String) {
         observerListeners.forEach { listener ->
-            widgetId?.let { listener.widgetOptionSelected(it) }
+            widgetId?.let { listener.widgetOptionSelected(it,kind) }
         }
     }
 
-    private fun emitWidgetDismissed(widgetId: String?) {
+    private fun emitWidgetDismissed(widgetId: String?, kind: String) {
         observerListeners.forEach { listener ->
-            widgetId?.let { listener.widgetDismissed(it) }
+            widgetId?.let { listener.widgetDismissed(it,kind) }
         }
     }
 
-    private fun emitWidgetShown(widgetId: String?) {
+    private fun emitWidgetShown(widgetId: String?, kind: String) {
         observerListeners.forEach { listener ->
-            widgetId?.let { listener.widgetShown(it) }
+            widgetId?.let { listener.widgetShown(it,kind) }
         }
     }
 
@@ -148,7 +149,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
         container.removeAllViews()
         val widget = currentWidget ?: return
         widget.id?.let { widget.optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
-        emitWidgetDismissed(widget.id)
+        emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
         val voteUrl = widget.optionSelected.voteUrl.toString()
         widgetListener?.onOptionVote(voteUrl)
         currentWidget = null

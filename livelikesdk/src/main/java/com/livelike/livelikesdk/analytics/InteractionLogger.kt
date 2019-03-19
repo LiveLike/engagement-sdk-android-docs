@@ -4,16 +4,19 @@ import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.widget.WidgetManager
 
 internal class InteractionLogger : WidgetManager.WidgetAnalyticsObserver {
-    override fun widgetDismissed(widgetId: String) {
+    override fun widgetDismissed(widgetId: String, kind: String) {
         logInfo { "Interaction type Widget Dismissed $widgetId " }
+        mixpanelAnalytics.trackWidgetDismiss(widgetId, kind)
     }
 
-    override fun widgetShown(widgetId: String) {
+    override fun widgetShown(widgetId: String, kind: String) {
         logInfo { "Interaction type Widget Shown $widgetId " }
+        mixpanelAnalytics.trackWidgetReceived(widgetId, kind)
     }
 
-    override fun widgetOptionSelected(widgetId: String) {
+    override fun widgetOptionSelected(widgetId: String, kind: String) {
         logInfo { "Interaction type Widget option selected $widgetId " }
+        mixpanelAnalytics.trackInteraction(widgetId, kind, "OptionSelected")
     }
 
 }
