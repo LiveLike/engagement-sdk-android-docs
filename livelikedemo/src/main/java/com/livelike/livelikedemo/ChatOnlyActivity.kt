@@ -75,12 +75,16 @@ class ChatOnlyActivity : AppCompatActivity() {
     }
 
     private fun updateChatMessageList() {
+        val emojiMessage =
+            "emojiMessage ${getEmojiByUnicode(0x1F60A)} ${getEmojiByUnicode(0x1F604)} ${getEmojiByUnicode(0x1F64C)}"
         chatMessageList.add(ChatMessage("We will rock you!", "1", "Queen", "1", "12:00:00"))
         chatMessageList.add(ChatMessage("Stairway to heaven", "2", "Led Zeppelin", "2", "11:00:00"))
         chatMessageList.add(ChatMessage("Pour some sugar on me", "3", "Def Leppard", "3", "10:00:00"))
         chatMessageList.add(ChatMessage("Fear of the dark", "4", "Iron Maiden", "5", "7:00:00"))
         chatMessageList.add(ChatMessage("Another brick in the wall", "5", "Pink Floyd", "5", "6:00:00"))
         chatMessageList.add(ChatMessage("Turbo lover", "6", "Judas Priest", "6", "5:00:00"))
+        chatMessageList.add(ChatMessage(getString(R.string.longChatMessage), "7", "Random", "7", "4:00:00"))
+        chatMessageList.add(ChatMessage(emojiMessage, "8", "Emojicon", "8", "3:00:00"))
     }
 
     inner class TestSession : LiveLikeContentSession {
@@ -101,5 +105,9 @@ class ChatOnlyActivity : AppCompatActivity() {
         override fun close() {}
         override fun getPlayheadTime(): EpochTime { return EpochTime(1000L) }
         override fun contentSessionId(): String { return "TestSession" }
+    }
+
+    fun getEmojiByUnicode(unicode: Int) : String {
+        return String(Character.toChars(unicode))
     }
 }

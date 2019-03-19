@@ -42,4 +42,7 @@
     <string name="widget_type">widgetType</string>
     <string name="widget_variance">widgetVariance</string>
     <string name="widgets">Widgets</string>
+    <string name="longChatMessage">This is a very very very long message which demonstrates that chat views will handle
+        150 characters. The number of characters in this message are 150.
+    </string>
 </resources>
