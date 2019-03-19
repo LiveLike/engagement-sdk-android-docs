@@ -8,7 +8,8 @@ interface AnimationEaseInterpolator {
         EaseInElastic,
         EaseOutElastic,
         EaseInBounce,
-        EaseOutQuad
+        EaseOutQuad,
+        EaseOutCubic
     }
 
     fun createAnimationEffectWith(ease: Ease, forDuration: Float, animator: ValueAnimator) : ValueAnimator

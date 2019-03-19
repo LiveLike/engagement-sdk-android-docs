@@ -29,6 +29,10 @@ class AnimationEaseAdapter : AnimationEaseInterpolator {
             Ease.EaseOutQuad -> {
                 Glider.glide(Skill.QuadEaseOut, forDuration, animator)
             }
+
+            Ease.EaseOutCubic -> {
+                Glider.glide(Skill.CubicEaseOut, forDuration, animator)
+            }
         }
     }
 }
