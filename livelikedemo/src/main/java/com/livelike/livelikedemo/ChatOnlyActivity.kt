@@ -7,11 +7,8 @@ import android.support.v7.app.AppCompatActivity
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.LiveLikeUser
-import com.livelike.livelikesdk.chat.ChatAdapter
 import com.livelike.livelikesdk.chat.ChatMessage
 import com.livelike.livelikesdk.chat.ChatRenderer
-import com.livelike.livelikesdk.chat.ChatTheme
-import com.livelike.livelikesdk.chat.DefaultChatCellFactory
 import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import kotlinx.android.synthetic.main.activity_chat_only.*
@@ -25,7 +22,6 @@ class ChatOnlyActivity : AppCompatActivity() {
         LiveLikeSDK("1234", baseContext)
         updateToolbar()
         val session = TestSession()
-        chat_view.setDataSource(ChatAdapter(session, ChatTheme(), DefaultChatCellFactory(baseContext, null)))
         chat_view.setSession(session)
 
         prePopulateChatWithMessages()
