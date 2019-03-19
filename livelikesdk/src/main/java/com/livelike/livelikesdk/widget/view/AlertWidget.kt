@@ -2,7 +2,6 @@ package com.livelike.livelikesdk.widget.view
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -10,7 +9,6 @@ import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat.startActivity
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
@@ -22,7 +20,7 @@ import com.livelike.livelikesdk.widget.model.Alert
 import kotlinx.android.synthetic.main.alert_widget.view.*
 import org.threeten.bp.Duration
 
-class AlertWidget : ConstraintLayout {
+internal class AlertWidget : ConstraintLayout {
     private val animationHandler = AnimationHandler()
     private lateinit var viewAnimation: ViewAnimation
     private var layout = ConstraintLayout(context, null, 0)
@@ -66,7 +64,7 @@ class AlertWidget : ConstraintLayout {
         if (resourceAlert.image_url.isNullOrEmpty()) {
             bodyImage.visibility = View.GONE
             val params = bodyText.layoutParams as ConstraintLayout.LayoutParams
-            params.rightMargin = 16.dpToPx(resources)
+            params.rightMargin = AndroidResource.dpToPx(16)
             bodyText.requestLayout()
         } else {
             resourceAlert.image_url.apply {
@@ -110,12 +108,4 @@ class AlertWidget : ConstraintLayout {
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(resourceAlert.link_url))
         startActivity(context, browserIntent, Bundle.EMPTY)
     }
-}
-
-private fun Int.dpToPx(resources: Resources?): Int {
-    return TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        this.toFloat(),
-        resources?.displayMetrics
-    ).toInt()
 }

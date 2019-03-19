@@ -9,11 +9,12 @@ import android.widget.Button
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
+import com.livelike.livelikesdk.util.AndroidResource.Companion.selectRandomLottieAnimation
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
-class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
+internal class PredictionTextQuestionWidgetView : PredictionTextWidgetBase {
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -42,15 +43,16 @@ class PredictionTextQuestionWidgetView  : PredictionTextWidgetBase {
         animationHandler.startAnimation(
                 pieTimer.findViewById(R.id.prediction_pie_updater_animation),
                 { onTimerAnimationCompleted(animationHandler) },
-                timerDuration,
-                animator)
+            timerDuration,
+            animator
+        )
     }
 
     private fun onTimerAnimationCompleted(animationHandler: AnimationHandler) {
         if (optionSelected) {
             prediction_confirm_message_textView.visibility = View.VISIBLE
             lottieAnimationPath = "confirmMessage"
-            val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath)
+            val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath, context)
             if (lottieAnimation != null && prediction_confirm_message_animation != null) {
                 prediction_confirm_message_animation.setAnimation("$lottieAnimationPath/$lottieAnimation")
                 prediction_confirm_message_animation.visibility = View.VISIBLE

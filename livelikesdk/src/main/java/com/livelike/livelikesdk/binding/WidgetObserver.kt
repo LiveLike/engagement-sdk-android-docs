@@ -2,7 +2,7 @@ package com.livelike.livelikesdk.binding
 
 import com.livelike.livelikesdk.widget.model.VoteOption
 
-interface WidgetObserver {
+internal interface WidgetObserver {
     fun questionUpdated(questionText: String)
     fun optionListUpdated(
         voteOptions: List<VoteOption>,

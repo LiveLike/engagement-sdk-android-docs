@@ -15,7 +15,6 @@ import android.widget.Button
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.registerLogsHandler
 import com.livelike.livelikesdk.widget.WidgetType
 import kotlinx.android.synthetic.main.activity_standalone_widget.*
@@ -98,7 +97,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
         })
     }
 
-    private fun getPayload(fileName: String) : JsonObject{
+    private fun getPayload(fileName: String): JsonObject {
         return JsonParser().parse(loadJsonFile(fileName)).asJsonObject
     }
 
@@ -111,8 +110,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
             inputStream.read(buffer)
             inputStream.close()
             json = String(buffer, Charset.defaultCharset())
-        } catch (e : IOException) {
-            logError { "Cannot read file $fileName" }
+        } catch (e: IOException) {
             return null
         }
         return json
@@ -139,28 +137,44 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                             // into it's own class.
                             when {
                                 predictionType -> showPredictionQuestionWidget()
-                                pollType -> {}
-                                quizType -> {}
-                                cheerMeterType -> {}
-                                emojiType -> {}
-                                alertType -> {}
-                                informationType -> {}
+                                pollType -> {
+                                }
+                                quizType -> {
+                                }
+                                cheerMeterType -> {
+                                }
+                                emojiType -> {
+                                }
+                                alertType -> {
+                                }
+                                informationType -> {
+                                }
                             }
                         }
                         hideCommand -> widget_view.dismissCurrentWidget()
                         correctAnswerCommand -> {
                             when {
-                                predictionType -> { showPredictionResultWidgetAs(correctAnswerCommand) }
-                                pollType -> {}
-                                quizType -> {}
-                                cheerMeterType -> {}
-                                emojiType -> {}
-                                alertType -> {}
-                                informationType -> {}
+                                predictionType -> {
+                                    showPredictionResultWidgetAs(correctAnswerCommand)
+                                }
+                                pollType -> {
+                                }
+                                quizType -> {
+                                }
+                                cheerMeterType -> {
+                                }
+                                emojiType -> {
+                                }
+                                alertType -> {
+                                }
+                                informationType -> {
+                                }
                             }
                         }
                         wrongAnswerCommand -> {
-                            if (predictionType) { showPredictionResultWidgetAs(wrongAnswerCommand) }
+                            if (predictionType) {
+                                showPredictionResultWidgetAs(wrongAnswerCommand)
+                            }
                         }
                     }
                 }
@@ -199,7 +213,8 @@ class WidgetStandaloneActivity : AppCompatActivity() {
             widget_view.displayWidget(
                 widgetType,
                 payload,
-                emptySet())
+                emptySet()
+            )
         }
 
 
@@ -219,6 +234,6 @@ class WidgetStandaloneActivity : AppCompatActivity() {
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val commandButton : Button = view.command
+        val commandButton: Button = view.command
     }
 }

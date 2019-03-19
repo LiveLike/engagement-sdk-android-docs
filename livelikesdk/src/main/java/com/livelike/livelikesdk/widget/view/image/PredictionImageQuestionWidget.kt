@@ -17,16 +17,16 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationHandler
+import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.animation.ViewAnimation
-import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.confirm_message.view.*
+import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
-class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
+internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
     private val widgetOpacityFactor: Float = 0.2f

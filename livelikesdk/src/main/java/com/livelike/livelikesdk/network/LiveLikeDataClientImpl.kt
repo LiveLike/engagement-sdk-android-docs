@@ -24,7 +24,7 @@ import okhttp3.Response
 import okio.ByteString
 import java.io.IOException
 
-class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
+internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
     private val client = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
 

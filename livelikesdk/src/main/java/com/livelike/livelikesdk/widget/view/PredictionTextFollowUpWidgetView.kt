@@ -16,10 +16,12 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
+import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
+import com.livelike.livelikesdk.util.AndroidResource.Companion.selectRandomLottieAnimation
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.confirm_message.view.*
 
-class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
+internal class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -169,7 +171,7 @@ class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
                 heightToReach / 2, 0f)
 
         animationHandler.bindListenerToAnimationView(animator) {
-            val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath)
+            val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath, context)
             if (lottieAnimation != null)
                 prediction_result.setAnimation("$lottieAnimationPath/$lottieAnimation")
             prediction_result.visibility = View.VISIBLE

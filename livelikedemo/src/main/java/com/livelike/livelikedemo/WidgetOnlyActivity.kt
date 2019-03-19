@@ -2,8 +2,8 @@ package com.livelike.livelikedemo
 
 import android.content.Intent
 import android.graphics.Color
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -37,15 +37,60 @@ class WidgetOnlyActivity : AppCompatActivity() {
     }
 
     private fun updateWidgetTypeList(availableWidgetTypeList: MutableList<WidgetType>) {
-        availableWidgetTypeList.add(WidgetType(getString(R.string.poll), getString(R.string.text), getString(R.string.image), null))
-        availableWidgetTypeList.add(WidgetType(getString(R.string.quiz), getString(R.string.text), getString(R.string.image), null))
-        availableWidgetTypeList.add(WidgetType(getString(R.string.prediction), getString(R.string.text), getString(R.string.image), null))
-        availableWidgetTypeList.add(WidgetType(getString(R.string.cheerMeter), getString(R.string.clapping), null, null))
-        availableWidgetTypeList.add(WidgetType(getString(R.string.emoji), getString(R.string.poll_lowercase), getString(
-                    R.string.slider), null))
-        availableWidgetTypeList.add(WidgetType(getString(R.string.alert), getString(R.string.news), getString(R.string.stats), getString(
-                    R.string.sponsor)))
-        availableWidgetTypeList.add(WidgetType(getString(R.string.information), getString(R.string.weather), getString(R.string.twitter), null))
+        availableWidgetTypeList.add(
+            WidgetType(
+                getString(R.string.poll),
+                getString(R.string.text),
+                getString(R.string.image),
+                null
+            )
+        )
+        availableWidgetTypeList.add(
+            WidgetType(
+                getString(R.string.quiz),
+                getString(R.string.text),
+                getString(R.string.image),
+                null
+            )
+        )
+        availableWidgetTypeList.add(
+            WidgetType(
+                getString(R.string.prediction),
+                getString(R.string.text),
+                getString(R.string.image),
+                null
+            )
+        )
+        availableWidgetTypeList.add(
+            WidgetType(
+                getString(R.string.cheerMeter),
+                getString(R.string.clapping),
+                null,
+                null
+            )
+        )
+        availableWidgetTypeList.add(
+            WidgetType(
+                getString(R.string.emoji), getString(R.string.poll_lowercase), getString(
+                    R.string.slider
+                ), null
+            )
+        )
+        availableWidgetTypeList.add(
+            WidgetType(
+                getString(R.string.alert), getString(R.string.news), getString(R.string.stats), getString(
+                    R.string.sponsor
+                )
+            )
+        )
+        availableWidgetTypeList.add(
+            WidgetType(
+                getString(R.string.information),
+                getString(R.string.weather),
+                getString(R.string.twitter),
+                null
+            )
+        )
     }
 
     inner class WidgetAdapter(private val widgetList: List<WidgetType>) : RecyclerView.Adapter<WidgetTypeViewHolder>() {
@@ -68,7 +113,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             intent: Intent
         ) {
             if (varianceText != null) updateButton(widgetVarianceButton, varianceText, intent)
-             else visibilityGone(widgetVarianceButton, divider)
+            else visibilityGone(widgetVarianceButton, divider)
         }
 
         private fun updateButton(
@@ -107,12 +152,12 @@ class WidgetOnlyActivity : AppCompatActivity() {
     }
 
     class WidgetTypeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val widgetLabelTextView : TextView = view.widget_type_label
-        val widgetVarianceButton1 : Button = view.widgets_variance_1
-        val widgetVarianceButton2 : Button = view.widgets_variance_2
-        val widgetVarianceButton3 : Button = view.widgets_variance_3
-        val divider1 : View = view.standalone_divider
-        val divider : View = view.standalone_divider_2
+        val widgetLabelTextView: TextView = view.widget_type_label
+        val widgetVarianceButton1: Button = view.widgets_variance_1
+        val widgetVarianceButton2: Button = view.widgets_variance_2
+        val widgetVarianceButton3: Button = view.widgets_variance_3
+        val divider1: View = view.standalone_divider
+        val divider: View = view.standalone_divider_2
     }
 }
 

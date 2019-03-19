@@ -11,15 +11,16 @@ import com.google.gson.JsonSerializer
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.DateTimeParseException
 import java.lang.reflect.Type
 import java.text.ParseException
 
 
-fun JsonObject.extractStringOrEmpty(propertyName: String): String {
+internal fun JsonObject.extractStringOrEmpty(propertyName: String): String {
     return if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asString else ""
 }
 
-fun JsonObject.extractLong(propertyName: String, default: Long = 0): Long {
+internal fun JsonObject.extractLong(propertyName: String, default: Long = 0): Long {
     var returnVal = default
     try {
         returnVal = if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asLong else default
@@ -29,7 +30,7 @@ fun JsonObject.extractLong(propertyName: String, default: Long = 0): Long {
     return returnVal
 }
 
-val gson = GsonBuilder()
+internal val gson = GsonBuilder()
     .registerTypeAdapter(ZonedDateTime::class.java, DateDeserializer())
     .registerTypeAdapter(ZonedDateTime::class.java, DateSerializer())
     .create()!!
@@ -37,7 +38,7 @@ val gson = GsonBuilder()
 private val isoUTCDateTimeFormatter =
     DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("UTC"))
 
-class DateDeserializer : JsonDeserializer<ZonedDateTime> {
+internal class DateDeserializer : JsonDeserializer<ZonedDateTime> {
 
     override fun deserialize(element: JsonElement, arg1: Type, arg2: JsonDeserializationContext): ZonedDateTime? {
         val date = element.asString
@@ -47,11 +48,14 @@ class DateDeserializer : JsonDeserializer<ZonedDateTime> {
         } catch (e: ParseException) {
             Log.e("Deserialize", "Failed to parse Date due to:", e)
             null
+        } catch (e: DateTimeParseException) {
+            Log.e("Deserialize", "Failed to parse Date due to:", e)
+            null
         }
     }
 }
 
-class DateSerializer : JsonSerializer<ZonedDateTime> {
+internal class DateSerializer : JsonSerializer<ZonedDateTime> {
     override fun serialize(src: ZonedDateTime?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
         val obj = JsonObject()
         obj.addProperty("program_date_time", isoUTCDateTimeFormatter.format(src).toString())

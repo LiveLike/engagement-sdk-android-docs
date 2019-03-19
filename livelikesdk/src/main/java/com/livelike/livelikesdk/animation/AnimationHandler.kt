@@ -12,7 +12,8 @@ class AnimationHandler {
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: (Boolean) -> Unit,
                        duration: Long,
-                       animator: ValueAnimator) {
+                       animator: ValueAnimator
+    ) {
         bindListenerToAnimationView(animator, onAnimationCompletedCallback)
         animator.duration = duration
         animator.addUpdateListener { animation ->

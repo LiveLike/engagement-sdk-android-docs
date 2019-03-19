@@ -85,6 +85,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         showLoadingSpinner()
         this.session = session
         session.chatRenderer = this
+        setDataSource(ChatAdapter(session, ChatTheme(), DefaultChatCellFactory(context, null)))
     }
 
     override fun displayChatMessage(message: ChatMessage) {
@@ -122,7 +123,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
      *  Sets the data source for this view.
      *  @param chatAdapter ChatAdapter used for creating this view.
      */
-    fun setDataSource(chatAdapter: ChatAdapter) {
+    private fun setDataSource(chatAdapter: ChatAdapter) {
         this.chatAdapter = chatAdapter
         chatdisplay.adapter = this.chatAdapter
         chatdisplay.setOnScrollListener(object :AbsListView.OnScrollListener {
@@ -272,7 +273,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     }
 }
 
-interface ChatCell {
+internal interface ChatCell {
     fun setMessage(
         message: ChatMessage?,
         isMe: Boolean?
@@ -299,11 +300,11 @@ data class ChatMessage(
 /**
  *
  */
-interface ChatCellFactory {
+internal interface ChatCellFactory {
     fun getCell() : ChatCell
 }
 
-class DefaultChatCellFactory (val context: Context, cellattrs: AttributeSet?):
+internal class DefaultChatCellFactory(val context: Context, cellattrs: AttributeSet?) :
         ChatCellFactory {
     private val attrs = cellattrs
 
@@ -312,7 +313,7 @@ class DefaultChatCellFactory (val context: Context, cellattrs: AttributeSet?):
     }
 }
 
-class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatCell {
+internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatCell {
     init {
         LayoutInflater.from(context)
             .inflate(com.livelike.livelikesdk.R.layout.default_chat_cell, this, true)
@@ -355,17 +356,16 @@ class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout
  * and [ChatCellFactory] in this case. See the overloaded constructor for providing custom [ChatTheme] and [ChatCellFactory]
  * @param session The [LiveLikeContentSession] which needs to be bounded with the Chat.
  */
-open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
+internal class ChatAdapter() : BaseAdapter() {
     private lateinit var session : LiveLikeContentSession
     private lateinit var theme: ChatTheme
     private lateinit var cellFactory: ChatCellFactory
 
     /**
      *  Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter] and provide custom [ChatTheme].
-     *  @param session The [LiveLikeContentSession] which needs to be bounded with the Chat.
-     *  @param theme The theme which would be applied to the Chat session.
+     *  @param chatTheme The theme which would be applied to the Chat session.
      */
-    constructor(session: LiveLikeContentSession, chatTheme: ChatTheme) : this(session) {
+    constructor(chatTheme: ChatTheme) : this() {
         this.theme = chatTheme
     }
 
@@ -376,7 +376,7 @@ open class ChatAdapter(session: LiveLikeContentSession) : BaseAdapter() {
      *  @param theme The theme which would be applied to the Chat session.
      *  @param cellFactory The [ChatCell] which needs to be inflated when the chat session is created.
      */
-    constructor(session: LiveLikeContentSession, theme: ChatTheme, cellFactory: ChatCellFactory) : this(session, theme) {
+    constructor(session: LiveLikeContentSession, theme: ChatTheme, cellFactory: ChatCellFactory) : this(theme) {
         this.session = session
         this.theme = theme
         this.cellFactory = cellFactory

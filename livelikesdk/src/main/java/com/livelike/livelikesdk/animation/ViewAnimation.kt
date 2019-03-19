@@ -4,9 +4,9 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.view.View
-import com.livelike.livelikesdk.R
 import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
+import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx

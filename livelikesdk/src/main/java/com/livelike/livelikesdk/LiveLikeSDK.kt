@@ -3,7 +3,6 @@ package com.livelike.livelikesdk
 import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.livelikesdk.messaging.EpochTime
-import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 
@@ -15,7 +14,7 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
  * @param appId Application's id
  */
 
-class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
+open class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
 
     companion object {
         const val CONFIG_URL = "https://cf-blast.livelikecdn.com/api/v1/applications/"
@@ -34,7 +33,7 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
      *  @param currentPlayheadTime
      */
     fun createContentSession(contentId: String,
-                             currentPlayheadTime: () -> EpochTime,
+                             currentPlayheadTime: () -> Long,
                              sessionReady: (LiveLikeContentSession) -> Unit) {
         sessionReady.invoke(createContentSession(contentId, currentPlayheadTime))
     }
@@ -44,8 +43,11 @@ class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
      *  @param contentId
      *  @param currentPlayheadTime
      */
-    fun createContentSession(contentId: String, currentPlayheadTime: () -> EpochTime) : LiveLikeContentSession {
-        return LiveLikeContentSessionImpl(contentId, currentPlayheadTime, object : Provider<SdkConfiguration> {
+    fun createContentSession(contentId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
+        return LiveLikeContentSessionImpl(
+            contentId,
+            { EpochTime(currentPlayheadTime()) },
+            object : Provider<SdkConfiguration> {
             override fun subscribe(ready: (SdkConfiguration) -> Unit) {
                 if (configuration != null) ready(configuration!!)
                 else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(appId)) {

@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import java.util.*
 
-class AndroidResource {
+internal class AndroidResource {
     companion object {
         fun dpToPx(dp: Int): Int {
             val scale = Resources.getSystem().displayMetrics.density

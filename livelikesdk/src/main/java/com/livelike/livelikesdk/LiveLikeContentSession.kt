@@ -38,7 +38,7 @@ internal interface LiveLikeDataClient {
 }
 
 
-data class Program(
+internal data class Program(
     val programUrl: String,
     val timelineUrl: String,
     val clientId: String,

@@ -1,7 +1,5 @@
 package com.livelike.livelikedemo
 
-import android.graphics.Color
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -17,9 +15,6 @@ import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.chat.ChatAdapter
-import com.livelike.livelikesdk.chat.ChatTheme
-import com.livelike.livelikesdk.chat.DefaultChatCellFactory
 import com.livelike.livelikesdk.util.registerLogsHandler
 import kotlinx.android.synthetic.main.activity_exo_player.*
 import kotlinx.android.synthetic.main.widget_chat_stacked.*
@@ -124,13 +119,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         } else {
             player.createSession(channel.llProgram.toString(), sdk) {
                 this.session = it
-                // Bind the chatView object here with the session.
-                val chatTheme = ChatTheme.Builder()
-                    .backgroundColor(Color.RED)
-                    .cellFont(Typeface.SANS_SERIF)
-                    .build()
-                val chatAdapter = ChatAdapter(it, chatTheme, DefaultChatCellFactory(applicationContext, null))
-                chat_view.setDataSource(chatAdapter)
 
                 chat_view.setSession(it)
                 widget_view.setSession(it)

@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
 import android.support.constraint.ConstraintLayout
 import android.support.constraint.ConstraintSet
 import android.support.v4.content.ContextCompat
@@ -19,17 +18,15 @@ import android.view.ViewStub
 import android.widget.Button
 import android.widget.TextView
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.animation.AnimationHandler
+import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.binding.WidgetObserver
-
+import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
-import java.util.*
-import kotlin.collections.ArrayList
 
 open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected val timerDuration: Long = 7000
@@ -43,7 +40,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     protected var optionSelected = false
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
-    protected lateinit var pieTimerViewStub : ViewStub
+    protected lateinit var pieTimerViewStub: ViewStub
     private var dismissWidget :  (() -> Unit)? = null
     private lateinit var userTapped : () -> Unit
 
@@ -192,7 +189,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
     // functions to use and how we layout widget and chat we can think of these values more.
-    protected fun startEasingAnimation(
+    fun startEasingAnimation(
         animationHandler: AnimationHandler,
         ease: AnimationEaseInterpolator.Ease,
         animator: ObjectAnimator) {
@@ -215,20 +212,4 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             else -> {}
         }
     }
-
-    protected fun dpToPx(dp: Int): Int {
-        val scale = Resources.getSystem().displayMetrics.density
-        return (dp * scale + 0.5f).toInt()
-    }
-
-    protected fun selectRandomLottieAnimation(path: String): String? {
-        val asset = context?.assets
-        val assetList = asset?.list(path)
-        val random = Random()
-        return if (assetList!!.isNotEmpty()) {
-            val emojiIndex = random.nextInt(assetList.size)
-            assetList[emojiIndex]
-        } else return null
-    }
-
 }

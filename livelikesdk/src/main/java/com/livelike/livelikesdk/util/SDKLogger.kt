@@ -21,20 +21,20 @@ enum class LogLevel(
 var minimumLogLevel: LogLevel = LogLevel.Verbose
 
 
-inline fun <reified T> T.logVerbose(message: () -> Any?) = log(LogLevel.Verbose, message)
-inline fun <reified T> T.logDebug(message: () -> Any?) = log(LogLevel.Debug, message)
-inline fun <reified T> T.logInfo(message: () -> Any?) = log(LogLevel.Info, message)
-inline fun <reified T> T.logWarn(message: () -> Any?) = log(LogLevel.Warn, message)
-inline fun <reified T> T.logError(message: () -> Any?) = log(LogLevel.Error, message)
+internal inline fun <reified T> T.logVerbose(message: () -> Any?) = log(LogLevel.Verbose, message)
+internal inline fun <reified T> T.logDebug(message: () -> Any?) = log(LogLevel.Debug, message)
+internal inline fun <reified T> T.logInfo(message: () -> Any?) = log(LogLevel.Info, message)
+internal inline fun <reified T> T.logWarn(message: () -> Any?) = log(LogLevel.Warn, message)
+internal inline fun <reified T> T.logError(message: () -> Any?) = log(LogLevel.Error, message)
 
-var handler: ((String) -> Unit)? = null
+private var handler: ((String) -> Unit)? = null
 
 fun registerLogsHandler(logHandler: (String) -> Unit) {
     handler = logHandler
 }
 
 
-inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
+internal inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
     if (level >= minimumLogLevel) {
         message().let {
             val tag = T::class.java.name

@@ -19,11 +19,12 @@ import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.asWidgetManager
 
-class LiveLikeContentSessionImpl(
+
+internal class LiveLikeContentSessionImpl(
     override val programUrl: String,
     val currentPlayheadTime: () -> EpochTime,
-    val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
-    val applicationContext: Context
+    private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
+    private val applicationContext: Context
 ) : LiveLikeContentSession {
 
     private val llDataClient = LiveLikeDataClientImpl()
@@ -31,7 +32,6 @@ class LiveLikeContentSessionImpl(
 
     private var widgetQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
-    private val userPreferences = applicationContext.getSharedPreferences("livelike-sdk", Context.MODE_PRIVATE)
     private val interactionSession = InteractionLogger()
     init {
         getUser()
@@ -126,6 +126,6 @@ class LiveLikeContentSessionImpl(
     }
 }
 
-interface Provider<T> {
+internal interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
 }

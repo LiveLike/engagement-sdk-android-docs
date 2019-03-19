@@ -14,7 +14,6 @@ import com.livelike.livelikepreintegrators.createExoplayerSession
 import com.livelike.livelikepreintegrators.getExoplayerPdtTime
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
-import java.net.URL
 
 data class PlayerState(var window: Int = 0,
                        var position: Long = 0,
@@ -44,7 +43,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     }
 
     override fun getPDT(): Long {
-        return getExoplayerPdtTime { getPlayer() }.timeSinceEpochInMs
+        return getExoplayerPdtTime { getPlayer() }
     }
 
     private fun buildMediaSource(uri: Uri): HlsMediaSource {

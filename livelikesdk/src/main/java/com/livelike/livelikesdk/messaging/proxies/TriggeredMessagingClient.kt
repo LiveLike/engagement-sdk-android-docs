@@ -5,7 +5,7 @@ import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
 
 
-class TriggeredMessagingClient(upstream: MessagingClient) :
+internal class TriggeredMessagingClient(upstream: MessagingClient) :
         MessagingClientProxy(upstream), ExternalTriggerListener {
     val queue = Queue<ClientMessage>()
     var externalTrigger: ExternalMessageTrigger = EmptyTrigger()
@@ -33,7 +33,7 @@ class TriggeredMessagingClient(upstream: MessagingClient) :
     }
 }
 
-class EmptyTrigger : ExternalMessageTrigger {
+internal class EmptyTrigger : ExternalMessageTrigger {
     override var triggerListener: ExternalTriggerListener? = null
     override var isProcessing = false
 }
@@ -43,7 +43,7 @@ interface ExternalTriggerListener {
     fun toggleEmission(pause: Boolean)
 }
 
-interface ExternalMessageTrigger {
+internal interface ExternalMessageTrigger {
     var isProcessing: Boolean
     var triggerListener: ExternalTriggerListener?
 }

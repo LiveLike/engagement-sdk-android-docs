@@ -1,8 +1,6 @@
 package com.livelike.livelikesdk.widget.model
 
-import java.io.Serializable
-
-data class Resource(
+internal data class Resource(
     val id: String = "",
     val url: String = "",
     val kind: String = "",
@@ -20,7 +18,7 @@ data class Resource(
     val testTag: String = "",
     val choices: List<Option> = listOf(),
     val options: List<Option> = listOf()
-) : Serializable {
+) {
     val totalVotes: Int by lazy {
         options.map { it.vote_count }.sum()
         }
@@ -29,7 +27,7 @@ data class Resource(
     }
 }
 
-data class Alert(
+internal data class Alert(
     val id: String = "",
     val url: String = "",
     val kind: String = "",
@@ -45,7 +43,7 @@ data class Alert(
     val link_label: String = ""
 )
 
-data class Option(
+internal data class Option(
     val id: String,
     val url: String = "",
     val description: String = "",
@@ -67,7 +65,7 @@ data class Option(
     }
 }
 
-data class Vote(
+internal data class Vote(
     val id: String,
     val url: String = "",
     val choice_id: String = "",

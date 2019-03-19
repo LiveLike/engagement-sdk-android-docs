@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo.channel
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.drawable.ColorDrawable
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
@@ -8,8 +9,6 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.LinearLayout
 import com.livelike.livelikedemo.R
-import com.livelike.livelikesdk.util.AndroidResource
-import com.livelike.livelikesdk.util.logDebug
 import kotlinx.android.synthetic.main.channel_select_bottom.view.*
 
 class ChannelSelectionView : LinearLayout {
@@ -32,16 +31,21 @@ class ChannelSelectionView : LinearLayout {
             val channelOption = LayoutInflater.from(context).inflate(R.layout.test_app_button, null) as Button
             channelOption.text = channel.name
             channelOption.setOnClickListener {
-                logDebug { "Channel Selected" + channel.name }
                 channelSelectListener?.invoke(channel)
             }
             this.channel_list.addView(channelOption)
             val divider = LayoutInflater.from(context).inflate(R.layout.test_app_divider, null)
-            val dividerParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, AndroidResource.dpToPx(1))
-            dividerParams.marginStart = AndroidResource.dpToPx(16)
+            val dividerParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(1))
+            dividerParams.marginStart = dpToPx(16)
             divider.layoutParams = dividerParams
             divider.background = ColorDrawable(ContextCompat.getColor(context, R.color.colorDivider))
             this.channel_list.addView(divider)
         }
+        field = channels
+    }
+
+    fun dpToPx(dp: Int): Int {
+        val scale = Resources.getSystem().displayMetrics.density
+        return (dp * scale + 0.5f).toInt()
     }
 }

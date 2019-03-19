@@ -10,7 +10,7 @@ import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
 import com.livelike.livelikesdk.widget.view.WidgetEventListener
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
-class WidgetManager(upstream: MessagingClient, val dataClient: WidgetDataClient) :
+class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
         WidgetEventListener{
@@ -108,7 +108,7 @@ interface WidgetDataClient {
     fun vote(voteUrl:String)
 }
 
-fun MessagingClient.asWidgetManager(dataClient: WidgetDataClient) : WidgetManager {
+internal fun MessagingClient.asWidgetManager(dataClient: WidgetDataClient): WidgetManager {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
     val widgetQueue = WidgetManager(triggeredMessagingClient, dataClient)
     triggeredMessagingClient.externalTrigger = widgetQueue

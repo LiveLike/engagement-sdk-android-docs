@@ -10,7 +10,8 @@ import com.livelike.livelikesdk.messaging.sendbird.ChatClient
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import java.util.*
 
-class ChatQueue (upstream: MessagingClient, val chatClient: ChatClient): MessagingClientProxy(upstream), ChatEventListener {
+internal class ChatQueue(upstream: MessagingClient, val chatClient: ChatClient) : MessagingClientProxy(upstream),
+    ChatEventListener {
     private val connectedChannels : MutableList<String> = mutableListOf()
 
     var renderer: ChatRenderer? = null
@@ -86,6 +87,6 @@ interface ChatRenderer {
 }
 
 
-fun MessagingClient.toChatQueue(chatClient: ChatClient) : ChatQueue {
+internal fun MessagingClient.toChatQueue(chatClient: ChatClient): ChatQueue {
     return ChatQueue(this, chatClient)
 }

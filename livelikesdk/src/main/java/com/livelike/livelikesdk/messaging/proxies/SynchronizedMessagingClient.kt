@@ -8,7 +8,11 @@ import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
 import com.livelike.livelikesdk.util.logVerbose
 
-class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () -> EpochTime, val validEventBufferMs: Long) :
+internal class SynchronizedMessagingClient(
+    upstream: MessagingClient,
+    var timeSource: () -> EpochTime,
+    val validEventBufferMs: Long
+) :
     MessagingClientProxy(upstream) {
 
     companion object {
@@ -75,7 +79,7 @@ class SynchronizedMessagingClient(upstream: MessagingClient, var timeSource: () 
 
 }
 
-class SyncTimer(val task: Runnable, val period: Long) {
+internal class SyncTimer(val task: Runnable, val period: Long) {
     var running = false
     val handler = Handler()
     private var innerRunnable = Runnable {
@@ -102,6 +106,9 @@ class SyncTimer(val task: Runnable, val period: Long) {
 }
 
 //Extension for MessagingClient to be synced
-fun MessagingClient.syncTo(timeSource: () -> EpochTime, validEventBufferMs: Long = 10000L): SynchronizedMessagingClient {
+internal fun MessagingClient.syncTo(
+    timeSource: () -> EpochTime,
+    validEventBufferMs: Long = 10000L
+): SynchronizedMessagingClient {
     return SynchronizedMessagingClient(this, timeSource, validEventBufferMs)
 }
