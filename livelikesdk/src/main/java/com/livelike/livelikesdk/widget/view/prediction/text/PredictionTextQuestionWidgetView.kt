@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget.view
+package com.livelike.livelikesdk.widget.view.prediction.text
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -14,7 +14,8 @@ import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
-internal class PredictionTextQuestionWidgetView : PredictionTextWidgetBase {
+internal class PredictionTextQuestionWidgetView :
+    PredictionTextWidgetBase {
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)

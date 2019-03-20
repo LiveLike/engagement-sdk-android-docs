@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget.view.image
+package com.livelike.livelikesdk.widget.view.prediction.image
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -62,17 +62,18 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         val pieTimer = pieTimerViewStub.inflate()
         // TODO: Maybe inject this object.
         viewAnimation = ViewAnimation(this, animationHandler)
-        viewAnimation.startWidgetTransitionInAnimation()
-        viewAnimation.startTimerAnimation(pieTimer, 7000) {
-            if (optionSelected) {
-                viewAnimation.showConfirmMessage(
-                    prediction_confirm_message_textView,
-                    prediction_confirm_message_animation,
-                    dismissWidget
-                )
-                performPredictionWidgetFadeOutOperations()
-            } else {
-                viewAnimation.hideWidget()
+        viewAnimation.startWidgetTransitionInAnimation {
+            viewAnimation.startTimerAnimation(pieTimer, 7000) {
+                if (optionSelected) {
+                    viewAnimation.showConfirmMessage(
+                        prediction_confirm_message_textView,
+                        prediction_confirm_message_animation,
+                        dismissWidget
+                    )
+                    performPredictionWidgetFadeOutOperations()
+                } else {
+                    viewAnimation.hideWidget()
+                }
             }
         }
     }

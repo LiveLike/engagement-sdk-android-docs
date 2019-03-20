@@ -24,7 +24,10 @@ import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.SimpleWidget
 import com.livelike.livelikesdk.widget.model.Widget
-import com.livelike.livelikesdk.widget.view.image.PredictionImageQuestionWidget
+import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFollowupWidget
+import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
+import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
+import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
 
 
 open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs),
@@ -60,7 +63,12 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
             WidgetType.TEXT_PREDICTION -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
-                val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0) { dismissCurrentWidget() }
+                val predictionWidget =
+                    PredictionTextQuestionWidgetView(
+                        context,
+                        null,
+                        0
+                    ) { dismissCurrentWidget() }
 
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion()
@@ -108,6 +116,25 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 container.addView(predictionWidget)
                 emitWidgetShown(widgetData.id, widgetResource.kind)
                 currentWidget = widgetData
+            }
+
+            WidgetType.IMAGE_PREDICTION_RESULTS -> {
+                val parser = WidgetParser()
+                val widgetResource = gson.fromJson(payload, Resource::class.java)
+                val predictionWidget = PredictionImageFollowupWidget(context, null, 0) { dismissCurrentWidget() }
+
+                predictionWidget.layoutParams = layoutParams
+                val followupWidgetData = PredictionWidgetFollowUp()
+                followupWidgetData.registerObserver(predictionWidget)
+                parser.parseTextPredictionFollowup(followupWidgetData, widgetResource)
+                if (followupWidgetData.optionSelected.id.isNullOrEmpty()) {
+                    //user did not interact with previous widget, mark dismissed and don't show followup
+                    widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
+                    return
+                }
+                container.addView(predictionWidget)
+                emitWidgetShown(followupWidgetData.id, widgetResource.kind)
+                currentWidget = followupWidgetData
             }
 
             WidgetType.ALERT -> {

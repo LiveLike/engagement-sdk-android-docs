@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget.view
+package com.livelike.livelikesdk.widget.view.prediction.text
 
 import android.animation.ObjectAnimator
 import android.content.Context
@@ -21,7 +21,8 @@ import com.livelike.livelikesdk.util.AndroidResource.Companion.selectRandomLotti
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.confirm_message.view.*
 
-internal class PredictionTextFollowUpWidgetView : PredictionTextWidgetBase {
+internal class PredictionTextFollowUpWidgetView :
+    PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)

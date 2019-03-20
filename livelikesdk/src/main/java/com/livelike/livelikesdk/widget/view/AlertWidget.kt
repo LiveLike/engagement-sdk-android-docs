@@ -98,7 +98,7 @@ internal class AlertWidget : ConstraintLayout {
             }
         }
 
-        viewAnimation.startWidgetTransitionInAnimation()
+        viewAnimation.startWidgetTransitionInAnimation {}
 
         val timeout = Duration.parse(resourceAlert.timeout).toMillis()
         Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)

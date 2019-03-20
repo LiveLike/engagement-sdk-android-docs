@@ -187,7 +187,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
             } else if (isVariance(getString(R.string.image))) {
                 showWidget(
                     WidgetType.IMAGE_PREDICTION,
-                    getPayload("prediction/image/prediction_question_question_image.json")
+                    getPayload("prediction/image/prediction_question_image.json")
                 )
             }
         }
@@ -197,7 +197,9 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                 updatePayload(testTag)
                 showWidget(WidgetType.TEXT_PREDICTION_RESULTS, payload)
             } else if (isVariance(getString(R.string.image))) {
-                // TODO: Change this after implementing image result widget
+                payload = getPayload("prediction/image/prediction_question_image_result.json")
+                payload.addProperty("testTag", testTag)
+                showWidget(WidgetType.IMAGE_PREDICTION_RESULTS, payload)
 
             }
         }

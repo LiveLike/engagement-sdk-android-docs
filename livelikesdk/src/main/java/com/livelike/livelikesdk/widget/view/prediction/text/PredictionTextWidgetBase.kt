@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget.view
+package com.livelike.livelikesdk.widget.view.prediction.text
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator

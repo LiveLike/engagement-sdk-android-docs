@@ -82,6 +82,7 @@ enum class WidgetType (val value: String) {
     TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("image-prediction-created"),
+    IMAGE_PREDICTION_RESULTS("image-prediction-follow-up-created"),
     HTML5("html-widget"),
     ALERT("alert-created"),
     NONE("none");
