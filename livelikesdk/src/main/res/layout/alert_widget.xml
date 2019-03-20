@@ -149,6 +149,7 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:textAllCaps="true"
+            android:maxLength="30"
             android:textColor="@color/white"
             android:textSize="12sp"
             android:textStyle="bold"
