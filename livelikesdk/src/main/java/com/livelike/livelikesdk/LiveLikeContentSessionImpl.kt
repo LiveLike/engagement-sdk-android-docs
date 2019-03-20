@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
-import android.widget.FrameLayout
 import com.livelike.livelikesdk.analytics.InteractionLogger
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.chat.ChatQueue
@@ -18,10 +17,8 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setUserId
 import com.livelike.livelikesdk.widget.WidgetManager
+import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.asWidgetManager
-import com.livelike.livelikesdk.widget.view.WidgetRendererImpl
-import com.livelike.livelikesdk.widget.view.WidgetView
-import kotlinx.android.synthetic.main.widget_view.view.*
 
 
 internal class LiveLikeContentSessionImpl(
@@ -61,13 +58,13 @@ internal class LiveLikeContentSessionImpl(
         }
     }
 
-    private var widgetContainer: FrameLayout? = null
-
-    override fun setWidgetContainer(container: WidgetView){
-        widgetContainer = container.containerView
-    }
-
     override var currentUser: LiveLikeUser? = null
+
+    override var widgetRenderer: WidgetRenderer? = null
+        set(value) {
+            field = value
+            widgetQueue?.renderer = widgetRenderer
+        }
 
     override var chatRenderer: ChatRenderer? = null
         set(renderer) {
@@ -92,14 +89,10 @@ internal class LiveLikeContentSessionImpl(
         sdkConfiguration.subscribe {
             val widgetQueue = PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).asWidgetManager(llDataClient)
             widgetQueue.unsubscribeAll()
-            widgetQueue.unsubscribeAnalytics(interactionSession)
-            widgetContainer?.apply {
-                widgetQueue.subscribe(listOf(program.subscribeChannel))
-                widgetQueue.renderer = WidgetRendererImpl(applicationContext, containerView)
-                this@LiveLikeContentSessionImpl.widgetQueue = widgetQueue
-                widgetQueue.subscribeAnalytics(interactionSession)
-            }
-
+            widgetQueue.subscribe(listOf(program.subscribeChannel))
+            widgetQueue.renderer = widgetRenderer
+            this.widgetQueue = widgetQueue
+            widgetQueue.subscribeAnalytics(interactionSession)
         }
     }
 

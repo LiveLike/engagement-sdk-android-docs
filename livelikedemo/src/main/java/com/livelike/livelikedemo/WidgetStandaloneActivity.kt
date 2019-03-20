@@ -16,12 +16,11 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.registerLogsHandler
+import com.livelike.livelikesdk.widget.WidgetType
 import kotlinx.android.synthetic.main.activity_standalone_widget.*
 import kotlinx.android.synthetic.main.widget_command_row_element.view.*
 import java.io.IOException
 import java.nio.charset.Charset
-
-// TODO: Find a way around this as the Widget Type are not part of the public API
 
 class WidgetStandaloneActivity : AppCompatActivity() {
     private val commandList = mutableListOf<String>()
@@ -137,7 +136,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                             // TODO: Once we start to implement other widget types, this logic can be either collated by moving this
                             // into it's own class.
                             when {
-//                                predictionType -> showPredictionQuestionWidget()
+                                predictionType -> showPredictionQuestionWidget()
                                 pollType -> {
                                 }
                                 quizType -> {
@@ -152,11 +151,11 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 }
                             }
                         }
-//                        hideCommand -> widget_view.containerView.removeAllViews()
+                        hideCommand -> widget_view.dismissCurrentWidget()
                         correctAnswerCommand -> {
                             when {
                                 predictionType -> {
-//                                    showPredictionResultWidgetAs(correctAnswerCommand)
+                                    showPredictionResultWidgetAs(correctAnswerCommand)
                                 }
                                 pollType -> {
                                 }
@@ -174,7 +173,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                         }
                         wrongAnswerCommand -> {
                             if (predictionType) {
-//                                showPredictionResultWidgetAs(wrongAnswerCommand)
+                                showPredictionResultWidgetAs(wrongAnswerCommand)
                             }
                         }
                     }
@@ -182,26 +181,26 @@ class WidgetStandaloneActivity : AppCompatActivity() {
             }
         }
 
-//        private fun showPredictionQuestionWidget() {
-//            if (isVariance(getString(R.string.text))) {
-//                showWidget(WidgetType.TEXT_PREDICTION, getPayload("prediction/text/prediction_question_text.json"))
-//            } else if (isVariance(getString(R.string.image))) {
-//                showWidget(
-//                    WidgetType.IMAGE_PREDICTION,
-//                    getPayload("prediction/image/prediction_question_question_image.json")
-//                )
-//            }
-//        }
+        private fun showPredictionQuestionWidget() {
+            if (isVariance(getString(R.string.text))) {
+                showWidget(WidgetType.TEXT_PREDICTION, getPayload("prediction/text/prediction_question_text.json"))
+            } else if (isVariance(getString(R.string.image))) {
+                showWidget(
+                    WidgetType.IMAGE_PREDICTION,
+                    getPayload("prediction/image/prediction_question_question_image.json")
+                )
+            }
+        }
 
-//        private fun showPredictionResultWidgetAs(testTag: String) {
-//            if (isVariance(getString(R.string.text))) {
-//                updatePayload(testTag)
-//                showWidget(WidgetType.TEXT_PREDICTION_RESULTS, payload)
-//            } else if (isVariance(getString(R.string.image))) {
-//                // TODO: Change this after implementing image result widget
-//
-//            }
-//        }
+        private fun showPredictionResultWidgetAs(testTag: String) {
+            if (isVariance(getString(R.string.text))) {
+                updatePayload(testTag)
+                showWidget(WidgetType.TEXT_PREDICTION_RESULTS, payload)
+            } else if (isVariance(getString(R.string.image))) {
+                // TODO: Change this after implementing image result widget
+
+            }
+        }
 
         private fun updatePayload(testTag: String) {
             payload = getPayload("prediction/text/prediction_question_text_result.json")
@@ -210,14 +209,13 @@ class WidgetStandaloneActivity : AppCompatActivity() {
 
         private fun isVariance(variance: String?) = this.variance == variance
 
-//        private fun showWidget(widgetType: WidgetType, payload: JsonObject) {
-//
-//            widget_view.displayWidget(
-//                widgetType,
-//                payload,
-//                emptySet()
-//            )
-//        }
+        private fun showWidget(widgetType: WidgetType, payload: JsonObject) {
+            widget_view.displayWidget(
+                widgetType,
+                payload,
+                emptySet()
+            )
+        }
 
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

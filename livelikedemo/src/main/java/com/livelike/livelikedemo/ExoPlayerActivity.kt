@@ -121,7 +121,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 this.session = it
 
                 chat_view.setSession(it)
-                it.setWidgetContainer(widget_view)
+                widget_view.setSession(it)
 
                 player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
             }
