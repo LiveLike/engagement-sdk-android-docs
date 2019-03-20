@@ -45,7 +45,7 @@ dependencies {
     implementation 'com.android.support:support-media-compat:28.0.0'
 
     //gson
-    implementation group: 'com.pubnub', name: 'pubnub-gson', version: '4.21.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
 
     //sdk
     implementation project(":livelikesdk")

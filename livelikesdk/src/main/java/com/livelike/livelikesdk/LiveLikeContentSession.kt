@@ -1,7 +1,7 @@
 package com.livelike.livelikesdk
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.messaging.EpochTime
-import com.livelike.livelikesdk.widget.WidgetRenderer
+import com.livelike.livelikesdk.widget.view.WidgetView
 
 /**
  *  Represents a playable session which LiveLike uses deliver widgets and associate user with the Chat
@@ -11,7 +11,6 @@ import com.livelike.livelikesdk.widget.WidgetRenderer
  */
 interface LiveLikeContentSession {
     val programUrl : String
-    var widgetRenderer: WidgetRenderer?
     var chatRenderer: ChatRenderer?
     val currentUser: LiveLikeUser?
 
@@ -30,6 +29,7 @@ interface LiveLikeContentSession {
     fun getPlayheadTime(): EpochTime
 
     fun contentSessionId(): String
+    fun setWidgetContainer(container: WidgetView)
 }
 
 internal interface LiveLikeDataClient {

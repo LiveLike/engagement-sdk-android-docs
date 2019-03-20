@@ -10,7 +10,7 @@ import com.livelike.livelikesdk.LiveLikeUser
 import com.livelike.livelikesdk.chat.ChatMessage
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.messaging.EpochTime
-import com.livelike.livelikesdk.widget.WidgetRenderer
+import com.livelike.livelikesdk.widget.view.WidgetView
 import kotlinx.android.synthetic.main.activity_chat_only.*
 import java.util.*
 
@@ -84,10 +84,10 @@ class ChatOnlyActivity : AppCompatActivity() {
     }
 
     inner class TestSession : LiveLikeContentSession {
+        override fun setWidgetContainer(container: WidgetView) {
+        }
+
         override val programUrl: String get() = ""
-        override var widgetRenderer: WidgetRenderer?
-            get() = null
-            set(value) {}
         override var chatRenderer: ChatRenderer?
             get() = null
             set(value) {}

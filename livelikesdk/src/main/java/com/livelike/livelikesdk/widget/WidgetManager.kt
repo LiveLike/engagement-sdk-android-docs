@@ -12,7 +12,7 @@ import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
 import com.livelike.livelikesdk.widget.view.WidgetEventListener
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
-class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
+internal class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
         WidgetEventListener{
@@ -78,7 +78,7 @@ class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDat
     }
 }
 
-enum class WidgetType (val value: String) {
+internal enum class WidgetType (val value: String) {
     TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("image-prediction-created"),
@@ -92,7 +92,7 @@ enum class WidgetType (val value: String) {
     }
 }
 
-interface WidgetRenderer {
+internal interface WidgetRenderer {
     var widgetListener: WidgetEventListener?
 
     fun dismissCurrentWidget()
@@ -103,12 +103,12 @@ interface WidgetRenderer {
     )
 }
 
-enum class WidgetEvent{
+internal enum class WidgetEvent{
     WIDGET_DISMISS,
     WIDGET_SHOWN
 }
 
-interface WidgetDataClient {
+internal interface WidgetDataClient {
     fun vote(voteUrl:String)
 }
 
