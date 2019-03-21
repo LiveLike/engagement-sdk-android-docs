@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.widget.view.prediction.text
 
-import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
 import android.os.Handler
@@ -15,9 +14,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
+import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
-import com.livelike.livelikesdk.util.AndroidResource.Companion.selectRandomLottieAnimation
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.confirm_message.view.*
 
@@ -32,6 +30,7 @@ internal class PredictionTextFollowUpWidgetView :
         const val correctAnswerLottieFilePath = "correctAnswer"
         const val wrongAnswerLottieFilePath = "wrongAnswer"
     }
+    private var viewAnimation: ViewAnimation
 
     init {
         pieTimerViewStub.layoutResource = R.layout.cross_image
@@ -39,6 +38,7 @@ internal class PredictionTextFollowUpWidgetView :
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
         imageView.setOnClickListener { dismissWidget() }
+        viewAnimation = ViewAnimation(this)
     }
 
     override fun optionListUpdated(
@@ -62,8 +62,7 @@ internal class PredictionTextFollowUpWidgetView :
             correctAnswerLottieFilePath
         else wrongAnswerLottieFilePath
 
-        triggerTransitionInAnimation()
-        triggerTransitionOutAnimation()
+        transitionAnimation()
     }
 
     private fun provideStyleToButtonAndProgressBar(correctOption: String?, userSelectedOption: String?, button: Button): Pair<Int, String?> {
@@ -163,39 +162,13 @@ internal class PredictionTextFollowUpWidgetView :
         constraintSet.applyTo(layout)
     }
 
-    private fun triggerTransitionInAnimation() {
-        val heightToReach = this.measuredHeight.toFloat()
-        val animator = ObjectAnimator.ofFloat(this,
-                "translationY",
-                -400f,
-                heightToReach,
-                heightToReach / 2, 0f)
-
-        animationHandler.bindListenerToAnimationView(animator) {
-            val lottieAnimation = selectRandomLottieAnimation(lottieAnimationPath, context)
-            if (lottieAnimation != null)
-                prediction_result.setAnimation("$lottieAnimationPath/$lottieAnimation")
-            prediction_result.visibility = View.VISIBLE
-            prediction_result.playAnimation()
+    private fun transitionAnimation() {
+        viewAnimation.startWidgetTransitionInAnimation{
+            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
         }
-
-        startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutElastic, animator)
-    }
-
-    // TODO: EaseOutQuad needs to be EaseOutQuart. Current library does not support it so we will have to switch soon to
-    // https://github.com/MasayukiSuda/EasingInterpolator
-
-    private fun triggerTransitionOutAnimation() {
-        val animator = ObjectAnimator.ofFloat(this,
-            "translationY",
-            0f, -dpToPx(250).toFloat())
-        animationHandler.bindListenerToAnimationView(animator) {
-            dismissWidget()
-        }
-        Handler().postDelayed({
-            // TODO: Get rid of hardcoded value once we have minimun viewable area defined.
-
-            startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
-        }, resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong())
+        Handler().postDelayed(
+            { viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } },
+            resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong()
+        )
     }
 }

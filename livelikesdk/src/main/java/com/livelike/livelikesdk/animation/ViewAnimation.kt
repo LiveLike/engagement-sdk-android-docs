@@ -13,9 +13,11 @@ import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 
-internal class ViewAnimation(val view: View, private val animationHandler: AnimationHandler) {
+internal class ViewAnimation(val view: View) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
     private val animator = ValueAnimator.ofFloat(0f, 1f)
+    private val animationHandler = AnimationHandler()
+
     fun startWidgetTransitionInAnimation(onAnimationCompletedCallback: () -> Unit) {
         val heightToReach = view.measuredHeight.toFloat()
         // TODO: remove hardcoded start position -400 to something meaningful.

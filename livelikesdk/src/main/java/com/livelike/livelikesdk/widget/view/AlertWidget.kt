@@ -40,7 +40,7 @@ internal class AlertWidget : ConstraintLayout {
 
     private fun inflate(context: Context) {
         layout = LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
-        viewAnimation = ViewAnimation(alertWidget, animationHandler)
+        viewAnimation = ViewAnimation(alertWidget)
 
         bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title

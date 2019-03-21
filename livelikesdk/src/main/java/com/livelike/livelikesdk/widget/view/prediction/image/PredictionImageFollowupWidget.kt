@@ -18,7 +18,6 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
@@ -33,7 +32,6 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private var dismissWidget: (() -> Unit)? = null
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
-    private val animationHandler = AnimationHandler()
     private var layout = ConstraintLayout(context, null, 0)
     private var lottieAnimationPath = ""
 
@@ -63,7 +61,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub.inflate()
 
         updateCrossImage()
-        viewAnimation = ViewAnimation(this, animationHandler)
+        viewAnimation = ViewAnimation(this)
     }
 
     private fun updateCrossImage() {
