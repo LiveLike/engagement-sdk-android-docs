@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.animation
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
@@ -12,10 +13,12 @@ import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 
-internal class ViewAnimation(val view: View, private val animationHandler: AnimationHandler) {
+internal class ViewAnimation(val view: View) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
     private val animator = ValueAnimator.ofFloat(0f, 1f)
-    fun startWidgetTransitionInAnimation() {
+    private val animationHandler = AnimationHandler()
+
+    fun startWidgetTransitionInAnimation(onAnimationCompletedCallback: () -> Unit) {
         val heightToReach = view.measuredHeight.toFloat()
         // TODO: remove hardcoded start position -400 to something meaningful.
         val animator = ObjectAnimator.ofFloat(view,
@@ -24,6 +27,7 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
             heightToReach,
             heightToReach / 2, 0f)
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutElastic, animator)
+        animationHandler.bindListenerToAnimationView(animator) {onAnimationCompletedCallback.invoke()}
     }
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
@@ -71,6 +75,14 @@ internal class ViewAnimation(val view: View, private val animationHandler: Anima
             duration,
             ValueAnimator.ofFloat(0f, 1f)
         )
+    }
+
+    fun startResultAnimation(lottieAnimationPath: String, context: Context, prediction_result: LottieAnimationView) {
+        val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, context)
+        if (lottieAnimation != null)
+            prediction_result.setAnimation("$lottieAnimationPath/$lottieAnimation")
+        prediction_result.visibility = View.VISIBLE
+        prediction_result.playAnimation()
     }
 
     fun showConfirmMessage(

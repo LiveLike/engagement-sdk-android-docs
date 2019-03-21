@@ -3,8 +3,21 @@
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              android:layout_width="wrap_content"
                                              android:layout_height="wrap_content"
+                                             android:background="#99000000"
                                              android:paddingStart="5dp"
                                              android:paddingEnd="5dp">
+    <ProgressBar
+            android:id="@+id/determinateBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="invisible"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"/>
 
     <ImageButton
             android:layout_width="167dp"
@@ -17,15 +30,34 @@
             android:scaleType="fitStart"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintVertical_bias="1.0"/>
+            app:layout_constraintVertical_bias="1.0"
+            android:contentDescription="TODO"/>
+
+
+    <TextView
+            android:id="@+id/result_percentage_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/determinateBar"
+            app:layout_constraintStart_toStartOf="@+id/determinateBar"
+            app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
+            android:elevation="8dp"
+            android:textColor="@color/text_color"
+            android:textSize="18sp"
+            android:gravity="end"
+            app:fontFamily="@font/titillium_bold"
+            app:layout_constraintHorizontal_bias="1.0"
+            android:layout_marginEnd="10dp"/>
+
     <TextView
             android:id="@+id/item_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/image_button"
-            app:layout_constraintEnd_toEndOf="@id/image_button"
-            app:layout_constraintTop_toTopOf="@+id/image_button"
-            app:layout_constraintStart_toStartOf="@+id/image_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             android:elevation="4dp"
             android:textColor="@color/text_color"
             android:textSize="14sp"

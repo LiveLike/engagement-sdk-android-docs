@@ -8,7 +8,7 @@ import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.logDebug
 
-class AnimationHandler {
+internal class AnimationHandler {
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: (Boolean) -> Unit,
                        duration: Long,
@@ -46,9 +46,9 @@ class AnimationHandler {
         animatorSet.start()
     }
 
-    fun bindListenerToAnimationView(view: Animator,
+    fun bindListenerToAnimationView(animator: Animator,
                                     onAnimationCompletedCallback: (Boolean) -> Unit) {
-        view.addListener(object : Animator.AnimatorListener {
+        animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
                 logDebug { "Animation start" }
             }

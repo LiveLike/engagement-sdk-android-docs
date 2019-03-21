@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget.view.image
+package com.livelike.livelikesdk.widget.view.prediction.image
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -16,7 +16,6 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
@@ -30,7 +29,6 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
     private val widgetOpacityFactor: Float = 0.2f
-    private val animationHandler = AnimationHandler()
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
@@ -61,18 +59,19 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
         // TODO: Maybe inject this object.
-        viewAnimation = ViewAnimation(this, animationHandler)
-        viewAnimation.startWidgetTransitionInAnimation()
-        viewAnimation.startTimerAnimation(pieTimer, 7000) {
-            if (optionSelected) {
-                viewAnimation.showConfirmMessage(
-                    prediction_confirm_message_textView,
-                    prediction_confirm_message_animation,
-                    dismissWidget
-                )
-                performPredictionWidgetFadeOutOperations()
-            } else {
-                viewAnimation.hideWidget()
+        viewAnimation = ViewAnimation(this)
+        viewAnimation.startWidgetTransitionInAnimation {
+            viewAnimation.startTimerAnimation(pieTimer, 7000) {
+                if (optionSelected) {
+                    viewAnimation.showConfirmMessage(
+                        prediction_confirm_message_textView,
+                        prediction_confirm_message_animation,
+                        dismissWidget
+                    )
+                    performPredictionWidgetFadeOutOperations()
+                } else {
+                    viewAnimation.hideWidget()
+                }
             }
         }
     }

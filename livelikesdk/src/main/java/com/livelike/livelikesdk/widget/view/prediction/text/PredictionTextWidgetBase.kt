@@ -1,6 +1,5 @@
-package com.livelike.livelikesdk.widget.view
+package com.livelike.livelikesdk.widget.view.prediction.text
 
-import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
@@ -18,31 +17,26 @@ import android.view.ViewStub
 import android.widget.Button
 import android.widget.TextView
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationHandler
-import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
+import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.logDebug
-import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
 open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
-    protected val timerDuration: Long = 7000
-    protected val widgetShowingDurationAfterConfirmMessage: Long = 3000
     protected val widgetOpacityFactor: Float = 0.2f
     protected val constraintSet = ConstraintSet()
     protected val buttonList: ArrayList<Button> = ArrayList()
-    protected val animationHandler = AnimationHandler()
     protected val buttonMap = mutableMapOf<Button, String>()
-    protected val animator: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
     protected var optionSelected = false
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub: ViewStub
-    private var dismissWidget :  (() -> Unit)? = null
+    protected var dismissWidget :  (() -> Unit)? = null
     private lateinit var userTapped : () -> Unit
+    private lateinit var viewAnimation: ViewAnimation
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -59,6 +53,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
+        viewAnimation = ViewAnimation(this)
     }
 
     fun userTappedCallback(userTapped: () -> Unit) {
@@ -67,10 +62,10 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun questionUpdated(questionText: String) {
-        addHorizontalSwipeListener(prediction_question_textView.apply {
+        viewAnimation.addHorizontalSwipeListener(prediction_question_textView.apply {
             text = questionText
             isClickable = true
-        })
+        }, layout, dismissWidget)
     }
 
     override fun confirmMessageUpdated(confirmMessage: String) {
@@ -111,23 +106,10 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
                         userTapped.invoke()
                     }
                 }
-                addHorizontalSwipeListener(button)
+                viewAnimation.addHorizontalSwipeListener(button, layout, dismissWidget)
             }
             layout.addView(button)
         }
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun addHorizontalSwipeListener(view: View) {
-        view.setOnTouchListener(object : SwipeDismissTouchListener(layout,
-            null, object : DismissCallbacks {
-                override fun canDismiss(token: Any?) = true
-                override fun onDismiss(view: View?, token: Any?) {
-                    animationHandler.cancelAnimation(animator)
-                    layout.removeAllViewsInLayout()
-                    dismissWidget()
-                }
-            }) {})
     }
 
     protected fun dismissWidget() {
@@ -186,30 +168,4 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
 
     private fun isLastButtonToBeAddedToLayout(options: List<VoteOption>, index: Int) =
         options[index] == options[options.size - 1]
-
-    // Would have to think more on how to not use hard coded values. I think once we have more easing
-    // functions to use and how we layout widget and chat we can think of these values more.
-    fun startEasingAnimation(
-        animationHandler: AnimationHandler,
-        ease: AnimationEaseInterpolator.Ease,
-        animator: ObjectAnimator) {
-        val animationDuration = 1000f
-        when(ease)  {
-            AnimationEaseInterpolator.Ease.EaseOutElastic -> {
-                animationHandler.createAnimationEffectWith(
-                    ease,
-                    animationDuration,
-                    animator)
-            }
-            AnimationEaseInterpolator.Ease.EaseOutQuad -> {
-                animationHandler.createAnimationEffectWith(
-                    ease,
-                    animationDuration,
-                    animator
-                )
-            }
-
-            else -> {}
-        }
-    }
 }
