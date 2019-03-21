@@ -1,82 +1,43 @@
 package com.livelike.livelikesdk.widget.model
 
-import com.livelike.livelikesdk.binding.Observable
 import com.livelike.livelikesdk.binding.WidgetObserver
 import java.net.URI
-import java.util.Date
-import kotlin.collections.LinkedHashMap
-import kotlin.collections.set
-import kotlin.properties.Delegates.observable
 
-internal abstract class Widget : Observable {
-    protected var observers = mutableSetOf<WidgetObserver>()
+internal class Widget {
+    var observers = mutableSetOf<WidgetObserver>()
+    var optionList: List<WidgetOptions> = emptyList()
+    var url: URI? = null
+    var id: String? = null
+    var kind: String? = null
+    var question: String = ""
+    var optionSelected: WidgetOptions = WidgetOptions()
+    var confirmMessage: String = ""
+    var correctOptionId: String = ""
 
-    override fun registerObserver(widgetObserver: WidgetObserver) { observers.add(widgetObserver) }
-    override fun unRegisterObserver(widgetObserver: WidgetObserver) { observers.remove(widgetObserver) }
-
-    abstract var optionList : List<WidgetOptions>
-
-    var createdAt : Date? = null
-    var url: URI ? = null
-    var id: String ? = null
-    var kind: String ? = null
-
-    var question: String by observable("") { _, _, newValue ->
-        observers.forEach { observer ->
-            observer.questionUpdated(newValue)
-        }
-    }
-
-    protected fun optionSelectedUpdated(id: String?) {
+    fun optionSelectedUpdated(id: String?) {
         if (id == null) {
-            optionSelected = WidgetOptions(null, null, "", 0    )
+            optionSelected = WidgetOptions()
             return
         }
-        optionSelected = optionList.single { option ->
-            option.id == id
-        }
+        optionSelected = optionList.single { option -> option.id == id }
+        observers.forEach { observer -> observer.optionSelectedUpdated(optionSelected.id) }
     }
 
-    var optionSelected: WidgetOptions by observable(
-        WidgetOptions(null, null, "", 0)) { _, _, newValue ->
-        observers.forEach { observer ->
-            observer.optionSelectedUpdated(newValue.id)
-        }
-    }
-
-    var confirmMessage: String by observable("") { _, _, newValue ->
-        observers.forEach { observer ->
-            observer.confirmMessageUpdated(newValue)
-        }
+    fun registerObserver(widgetObserver: WidgetObserver) {
+        observers.add(widgetObserver)
     }
 }
 
-internal class PredictionWidgetFollowUp : Widget() {
+internal class PredictionWidgetFollowUp(val widget: Widget) {
     private val voteOptions = mutableListOf<VoteOption>()
-    var questionWidgetId : String = ""
-    var correctOptionId: String by observable("") { _, _, _ ->
-        if (!optionList.isEmpty()) {
-            updateOptionList()
-        }
-    }
-
-    override var optionList: List<WidgetOptions> by observable(emptyList()) { _, _, newValue ->
-        createOptionsWithVotePercentageMap(newValue)
-        if (correctOptionId != "") {
-            updateOptionList()
-        }
-    }
-
     private fun getCorrectOptionWithUserSelection()
             : Pair<String?, String?> {
-        return Pair(correctOptionId, optionSelected.id)
+        return Pair(widget.correctOptionId, widget.optionSelected.id)
     }
 
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
         calculateVotePercentage(newValue)
-        val optionsWithVotePercentageMap = LinkedHashMap<String, Long>()
         newValue.forEach { data ->
-            optionsWithVotePercentageMap[data.description] = data.voteCount
             voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl))
         }
     }
@@ -92,11 +53,16 @@ internal class PredictionWidgetFollowUp : Widget() {
         }
     }
 
-    private fun updateOptionList() {
-        observers.forEach { observer ->
-            observer.optionListUpdated(voteOptions,
-                    { optionSelectedUpdated(it) },
-                    getCorrectOptionWithUserSelection())
+    fun notifyDataSetChange() {
+        createOptionsWithVotePercentageMap(widget.optionList)
+        widget.observers.forEach { observer ->
+            observer.questionUpdated(widget.question)
+            observer.confirmMessageUpdated(widget.confirmMessage)
+            observer.optionListUpdated(
+                voteOptions,
+                { widget.optionSelectedUpdated(it) },
+                getCorrectOptionWithUserSelection()
+            )
         }
     }
 }
@@ -109,24 +75,19 @@ internal data class WidgetOptions(
     var imageUrl: String? = null
 )
 
-internal class PredictionWidgetQuestion : Widget() {
-    override var optionList: List<WidgetOptions> by observable(emptyList()) { _, _, newValue ->
+internal class PredictionWidgetQuestion(val widget: Widget) {
+    val id = widget.id
+    fun notifyDataSetChange() {
         val voteOptionList = mutableListOf<VoteOption>()
-        newValue.forEach { data ->
+        widget.optionList.forEach { data ->
             voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl))
         }
-
-        observers.forEach { observer ->
-            observer.optionListUpdated(voteOptionList, { optionSelectedUpdated(it) }, Pair(null, null))
+        widget.observers.forEach { observer ->
+            observer.questionUpdated(widget.question)
+            observer.confirmMessageUpdated(widget.confirmMessage)
+            observer.optionListUpdated(voteOptionList, { widget.optionSelectedUpdated(it) }, Pair(null, null))
         }
     }
-}
-
-internal class SimpleWidget : Widget() {
-    override var optionList: List<WidgetOptions>
-        get() = emptyList()
-        set(value) {}
-
 }
 
 class VoteOption(val id: String?, val description: String, val votePercentage: Long, val imageUrl: String?)
