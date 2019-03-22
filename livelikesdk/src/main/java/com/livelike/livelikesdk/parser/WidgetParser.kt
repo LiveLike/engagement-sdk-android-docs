@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk.parser
 
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
-import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.model.WidgetOptions
@@ -19,23 +18,19 @@ internal class WidgetParser {
         }
     }
 
-    fun parseTextPredictionFollowup(
-        widgetFollowUp: PredictionWidgetFollowUp,
-        payload: Resource
-    ) {
-        parseTextPredictionCommon(widgetFollowUp, payload)
-        widgetFollowUp.questionWidgetId = payload.text_prediction_id
+    fun parseTextPredictionFollowup(widget: Widget, payload: Resource) {
+        parseTextPredictionCommon(widget, payload)
         when {
-            payload.testTag == "Correct Answer" -> widgetFollowUp.optionSelected =
-                widgetFollowUp.optionList.single { widgetOptions ->
+            payload.testTag == "Correct Answer" -> widget.optionSelected =
+                widget.optionList.single { widgetOptions ->
                     widgetOptions.id == payload.correct_option_id
                 }
-            payload.testTag == "Wrong Answer" -> widgetFollowUp.optionSelected =
-                widgetFollowUp.optionList.first { widgetOptions -> widgetOptions.id != payload.correct_option_id }
+            payload.testTag == "Wrong Answer" -> widget.optionSelected =
+                widget.optionList.first { widgetOptions -> widgetOptions.id != payload.correct_option_id }
 
-            else -> widgetFollowUp.optionSelected =
-                WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widgetFollowUp.questionWidgetId))
+            else -> widget.optionSelected =
+                WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(payload.text_prediction_id))
         }
-        widgetFollowUp.correctOptionId = payload.correct_option_id
+        widget.correctOptionId = payload.correct_option_id
     }
 }
