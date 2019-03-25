@@ -12,6 +12,7 @@ internal data class Resource(
     val published_at: String = "",
     val follow_up_url: String = "",
     val text_prediction_id: String = "",
+    val image_prediction_id: String="",
     val text_prediction_url: String = "",
     val correct_option_id: String = "",
     val confirmation_message: String = "",

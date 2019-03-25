@@ -18,7 +18,7 @@ internal class WidgetParser {
         }
     }
 
-    fun parseTextPredictionFollowup(widget: Widget, payload: Resource) {
+    fun parsePredictionFollowup(widget: Widget, payload: Resource) {
         parseTextPredictionCommon(widget, payload)
         when {
             payload.testTag == "Correct Answer" -> widget.optionSelected =
@@ -28,8 +28,11 @@ internal class WidgetParser {
             payload.testTag == "Wrong Answer" -> widget.optionSelected =
                 widget.optionList.first { widgetOptions -> widgetOptions.id != payload.correct_option_id }
 
-            else -> widget.optionSelected =
+            payload.text_prediction_id != "" -> widget.optionSelected =
                 WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(payload.text_prediction_id))
+
+            else -> widget.optionSelected =
+                WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(payload.image_prediction_id))
         }
         widget.correctOptionId = payload.correct_option_id
     }

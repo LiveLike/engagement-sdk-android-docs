@@ -71,6 +71,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                     performPredictionWidgetFadeOutOperations()
                 } else {
                     viewAnimation.hideWidget()
+                    dismissWidget?.invoke()
                 }
             }
         }
