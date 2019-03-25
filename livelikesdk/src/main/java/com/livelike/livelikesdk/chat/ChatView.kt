@@ -17,6 +17,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -134,7 +135,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         })
 
         snap_live.setOnClickListener {
-            chatdisplay.smoothScrollToPosition(chatAdapter.count - 1)
+            snapToLive()
         }
 
         context.theme.obtainStyledAttributes(
@@ -222,7 +223,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         hideLoadingSpinner()
         this@ChatView.chatAdapter.addMessage(newMessage)
 
-        chatdisplay.smoothScrollToPosition(chatAdapter.count - 1)
+        snapToLive()
         edittext_chat_message.setText("")
         analyticService.trackMessageSent(false)
     }
@@ -231,17 +232,17 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         if(!showingSnapToLive)
             return
         showingSnapToLive = false
-        animateSnapToLive()
+        animateSnapToLiveButton()
     }
 
     private fun showSnapToLive() {
         if(showingSnapToLive)
             return
         showingSnapToLive = true
-        animateSnapToLive()
+        animateSnapToLiveButton()
     }
 
-    private fun animateSnapToLive() {
+    private fun animateSnapToLiveButton() {
         snapToLiveAnimation?.cancel()
 
         val translateAnimation = ObjectAnimator.ofFloat(snap_live, "translationY", if(showingSnapToLive) 0f else dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION).toFloat())
@@ -267,6 +268,10 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         snapToLiveAnimation = AnimatorSet()
         snapToLiveAnimation?.play(finalTranslationAnimator)?.with(finalAlphaAnimator)
         snapToLiveAnimation?.start()
+    }
+
+    private fun snapToLive() {
+        chatdisplay.smoothScrollToPositionFromTop(chatAdapter.count - 1, 0, 500)
     }
 }
 
