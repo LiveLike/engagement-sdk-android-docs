@@ -22,16 +22,15 @@ import com.sendbird.android.UserMessage
 import org.threeten.bp.ZonedDateTime
 import java.util.*
 
-
 internal class SendbirdMessagingClient(
     subscribeKey: String,
     val context: Context,
     private val liveLikeUser: LiveLikeUser?
 ) :
-    MessagingClient {
+    MessagingClient, ChatClientResultHandler {
 
     companion object {
-        private val CHAT_HISTORY_LIMIT = 200
+        val CHAT_HISTORY_LIMIT = 50
     }
 
     private var listener : MessagingEventListener? = null
@@ -87,8 +86,8 @@ internal class SendbirdMessagingClient(
                             override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
                                 if (message != null && channel != null) {
                                     message as UserMessage
-                                    val clientMessage = clientMessageFromBaseMessage(message, channel)
-                                    logDebug { "${Date(getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
+                                    val clientMessage = SendBirdUtils.clientMessageFromBaseMessage(message, channel)
+                                    logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
                                     listener?.onClientMessageEvent(this@SendbirdMessagingClient, clientMessage)
                                 }
                             }
@@ -105,7 +104,7 @@ internal class SendbirdMessagingClient(
                                 return@MessageListQueryResult
                             }
                             for (message: BaseMessage in messages.reversed()) {
-                                listener?.onClientMessageEvent(this@SendbirdMessagingClient, clientMessageFromBaseMessage(message as UserMessage, openChannel))
+                                listener?.onClientMessageEvent(this@SendbirdMessagingClient, SendBirdUtils.clientMessageFromBaseMessage(message as UserMessage, openChannel))
                             }
 
                             val messageJson = JsonObject()
@@ -115,35 +114,6 @@ internal class SendbirdMessagingClient(
                 })
         }
 
-    }
-
-    fun clientMessageFromBaseMessage(message : UserMessage, channel: BaseChannel, batch: Boolean = false) : ClientMessage {
-        val messageJson = JsonObject()
-        messageJson.addProperty("message", message.message)
-        messageJson.addProperty("sender", message.sender.nickname)
-        messageJson.addProperty("sender_id", message.sender.userId)
-        messageJson.addProperty("id", message.messageId)
-       
-
-        val timeMs = getTimeMsFromMessageData(message.data)
-        val timeData = EpochTime(timeMs)
-        return ClientMessage(messageJson, channel.url, timeData)
-    }
-
-    fun getTimeMsFromMessageData(messageDataJson: String): Long {
-        try {
-            return if (gson.fromJson(messageDataJson, MessageData::class.java) == null) {
-                0
-            } else {
-                val messageData = gson.fromJson(messageDataJson, MessageData::class.java)
-                messageData?.program_date_time?.toInstant()?.toEpochMilli() ?: 0 // return the value, or 0 if null
-            }
-        } catch (e : Exception) {
-            //This is here because on some channels historic messages may have Date/Time format is not correct, or Json is off
-            logError { e }
-
-        }
-        return 0
     }
 
     override fun unsubscribe(channels: List<String>) {
@@ -159,5 +129,11 @@ internal class SendbirdMessagingClient(
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {
         this.listener = listener
+    }
+
+    override fun handleMessages(messages: List<ClientMessage>) {
+        messages.forEach {
+            listener?.onClientMessageEvent(this, it)
+        }
     }
 }

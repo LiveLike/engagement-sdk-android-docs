@@ -7,12 +7,17 @@ import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.sendbird.ChatClient
+import com.livelike.livelikesdk.messaging.sendbird.ChatClientResultHandler
+import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
+import com.livelike.livelikesdk.util.Queue
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import java.util.*
 
 internal class ChatQueue(upstream: MessagingClient, val chatClient: ChatClient) : MessagingClientProxy(upstream),
     ChatEventListener {
     private val connectedChannels : MutableList<String> = mutableListOf()
+    private var lastChatMessage: Pair<String, String>? = null
+    private var paused = false
 
     var renderer: ChatRenderer? = null
         set(value) {
@@ -57,20 +62,27 @@ internal class ChatQueue(upstream: MessagingClient, val chatClient: ChatClient) 
 
         when(controlMessage) {
             ("load_complete") -> renderer?.loadComplete()
-            else -> renderer?.displayChatMessage(
-                ChatMessage(
+            else -> {
+                val newMessage = ChatMessage(
                     event.message.get("message").asString,
                     event.message.get("sender_id").asString,
                     event.message.get("sender").asString,
                     event.message.get("id").asString,
                     Date(event.timeStamp.timeSinceEpochInMs).toString()
                 )
-            )
+                if (!paused) {
+                    renderer?.displayChatMessage(newMessage)
+                    lastChatMessage = Pair(newMessage.id, event.channel)
+                }
+            }
         }
     }
 
     fun toggleEmission(pause: Boolean) {
-        //TODO: implement pause / resume for chat
+        paused = pause
+        val lastMessage = lastChatMessage
+        if(!paused && lastMessage != null)
+            chatClient.updateMessagesSinceMessage(lastMessage.first, lastMessage.second)
     }
 }
 
