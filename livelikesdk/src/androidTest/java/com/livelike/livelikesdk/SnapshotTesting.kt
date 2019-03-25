@@ -24,15 +24,24 @@ import org.junit.Test
 * */
 
 class AlertWidgetImage {
-    private lateinit var widgetView: View
     private lateinit var context: Context
+    private lateinit var imageOnly: View
+    private lateinit var imageAndLabel: View
+    private lateinit var imageAndLabelAndLink: View
+    private lateinit var textOnly: View
+    private lateinit var textAndLabel: View
+    private lateinit var textAndLabelAndLink: View
 
-    @Before
-    @UiThreadTest
-    fun setup() {
+    val bodyText = "This is the body This is the body This is the body This is the body This is the body This is the body This is the body"
+    val labelTitle = "DEAL"
+    val imageUrl = "https://cf-blast-storage.livelikecdn.com/assets/8569d8c0-3fe5-47e9-b852-751ee18383ff.png"
+    val linkText = "Click on me, I'm a link"
+    val linkUrl = "https://www.google.com/"
+
+    private fun setupView(title : String = "", bodyText : String = "", imageUrl : String = "", linkUrl : String = "", linkText : String = ""): View {
         context = InstrumentationRegistry.getInstrumentation().context
         val inflater = LayoutInflater.from(context)
-        widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
+        val widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
         val alertWidget = AlertWidget(context)
         alertWidget.initialize(
             {}, Alert(
@@ -44,11 +53,11 @@ class AlertWidgetImage {
                 "something",
                 "time",
                 "time",
-                "DEAL",
-                "",
-                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
-                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
-                "Click here please"
+                title,
+                bodyText,
+                imageUrl,
+                linkUrl,
+                linkText
             )
         )
 
@@ -63,165 +72,35 @@ class AlertWidgetImage {
             .setExactWidthDp(300)
             .setExactHeightDp(200)
             .layout()
+
+        return widgetView ?: View(context)
     }
 
-    @Test
-    fun doScreenshot() {
+    private fun takeScreenshot(view: View, name: String){
         Screenshot
-            .snap(widgetView).setName("Alert-Widget-Image")
+            .snap(view)
+            .setName(name)
             .record()
     }
-}
-
-class AlertWidgetBody {
-    private lateinit var widgetView: View
-    private lateinit var context: Context
 
     @Before
     @UiThreadTest
-    fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().context
-        val inflater = LayoutInflater.from(context)
-        widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
-        val alertWidget = AlertWidget(context)
-        alertWidget.initialize(
-            {}, Alert(
-                "an-id",
-                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
-                "alert",
-                "nothing",
-                "something",
-                "something",
-                "time",
-                "time",
-                "DEAL",
-                "This is the body This is the body This is the body This is the body This is the body This is the body This is the body",
-                "",
-                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
-                "Click here please"
-            )
-        )
-
-        ViewHelpers.setupView(alertWidget)
-            .setExactWidthDp(300)
-            .setExactHeightDp(200)
-            .layout()
-
-        widgetView.containerView.addView(alertWidget)
-
-        ViewHelpers.setupView(widgetView)
-            .setExactWidthDp(300)
-            .setExactHeightDp(200)
-            .layout()
+    fun setup(){
+        imageOnly = setupView(imageUrl = imageUrl)
+        imageAndLabel = setupView(labelTitle, imageUrl = imageUrl)
+        imageAndLabelAndLink = setupView(labelTitle, "", imageUrl, linkUrl, linkText)
+        textOnly = setupView(bodyText = bodyText)
+        textAndLabel = setupView(labelTitle, bodyText = bodyText)
+        textAndLabelAndLink = setupView(labelTitle, bodyText,"", linkUrl, linkText)
     }
 
     @Test
     fun doScreenshot() {
-        Screenshot
-            .snap(widgetView)
-            .setName("Alert-Widget-Body")
-            .record()
-    }
-}
-
-class AlertWidgetBodyNoLinkNoLabel {
-    private lateinit var widgetView: View
-    private lateinit var context: Context
-
-    @Before
-    @UiThreadTest
-    fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().context
-        val inflater = LayoutInflater.from(context)
-        widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
-        val alertWidget = AlertWidget(context)
-        alertWidget.initialize(
-            {}, Alert(
-                "an-id",
-                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
-                "alert",
-                "nothing",
-                "something",
-                "something",
-                "time",
-                "time",
-                "",
-                "This is the body This is the body This is the body This is the body This is the body This is the body This is the body",
-                "",
-                "",
-                ""
-            )
-        )
-
-        ViewHelpers.setupView(alertWidget)
-            .setExactWidthDp(300)
-            .setExactHeightDp(200)
-            .layout()
-
-        widgetView.containerView.addView(alertWidget)
-
-        ViewHelpers.setupView(widgetView)
-            .setExactWidthDp(300)
-            .setExactHeightDp(200)
-            .layout()
-    }
-
-    @Test
-    fun doScreenshot() {
-        Screenshot
-            .snap(widgetView)
-            .setName("Alert-Widget-Body-NoLink-NoLabel")
-            .record()
-    }
-}
-
-class AlertWidgetImageNoLinkNoLabel {
-    private lateinit var widgetView: View
-    private lateinit var context: Context
-
-    @Before
-    @UiThreadTest
-    fun setup() {
-        context = InstrumentationRegistry.getInstrumentation().context
-        val inflater = LayoutInflater.from(context)
-        widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
-        val alertWidget = AlertWidget(context)
-        alertWidget.initialize(
-            {}, Alert(
-                "an-id",
-                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
-                "alert",
-                "nothing",
-                "something",
-                "something",
-                "time",
-                "time",
-                "",
-                "",
-                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
-                "",
-                ""
-            )
-        )
-
-        ViewHelpers.setupView(alertWidget)
-            .setExactWidthDp(300)
-            .setExactHeightDp(200)
-            .layout()
-
-        widgetView.containerView.addView(alertWidget)
-
-        ViewHelpers.setupView(widgetView)
-            .setExactWidthDp(300)
-            .setExactHeightDp(200)
-            .layout()
-    }
-
-    @Test
-    fun doScreenshot() {
-        Screenshot
-            .snap(widgetView)
-            .setName("Alert-Widget-Image-NoLink-NoLabel")
-            .record()
+        takeScreenshot(imageOnly, "Alert-Widget-Image-Only")
+        takeScreenshot(imageAndLabel, "Alert-Widget-Image-Label")
+        takeScreenshot(imageAndLabelAndLink, "Alert-Widget-Image-Label-Link")
+        takeScreenshot(textOnly, "Alert-Widget-Body-Only")
+        takeScreenshot(textAndLabel, "Alert-Widget-Body-Label")
+        takeScreenshot(textAndLabelAndLink, "Alert-Widget-Body-Label-Link")
     }
 }
