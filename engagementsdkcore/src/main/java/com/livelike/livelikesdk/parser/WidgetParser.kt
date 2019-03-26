@@ -14,8 +14,24 @@ internal class WidgetParser {
         widget.confirmMessage = resource.confirmation_message
         widget.id = resource.id
         widget.kind = resource.kind
-        widget.optionList = resource.options.map {
-            WidgetOptions(it.id, URI.create(it.vote_url), it.description, it.vote_count.toLong(), it.image_url)
+        if (widget.kind == "image-quiz")
+            widget.optionList = resource.choices.map {
+                WidgetOptions(it.id,
+                    null,
+                    it.description,
+                    it.vote_count.toLong(),
+                    it.image_url,
+                    it.answer_count.toLong(),
+                    it.answer_url)
+            }
+        else widget.optionList = resource.options.map {
+            WidgetOptions(it.id,
+                URI.create(it.vote_url),
+                it.description,
+                it.vote_count.toLong(),
+                it.image_url,
+                it.answer_count.toLong(),
+                it.answer_url)
         }
         widget.timeout = parseDuration(resource.timeout)
     }

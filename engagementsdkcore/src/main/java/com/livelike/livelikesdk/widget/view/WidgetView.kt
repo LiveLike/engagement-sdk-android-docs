@@ -29,6 +29,7 @@ import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFollowupWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
+import com.livelike.livelikesdk.widget.view.prediction.quiz.QuizImageWidget
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
 import kotlinx.android.synthetic.main.widget_view.view.*
@@ -161,6 +162,30 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 containerView.addView(predictionWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
                 widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
+                currentWidget = widget
+            }
+
+            WidgetType.IMAGE_QUIZ -> {
+                val parser = WidgetParser()
+                val widgetResource = gson.fromJson(payload, Resource::class.java)
+                val predictionWidget = QuizImageWidget(context, null, 0) { dismissCurrentWidget() }
+
+                predictionWidget.layoutParams = layoutParams
+
+                parser.parsePredictionFollowup(widget, widgetResource)
+                val followupWidgetData = PredictionWidgetFollowUp(widget)
+                widget.registerObserver(predictionWidget)
+                followupWidgetData.notifyDataSetChange()
+                predictionWidget.userTappedCallback {
+                    //emitWidgetOptionSelected(followupWidgetData.id, widgetResource.kind)
+                }
+//                if (widget.optionSelected.id.isNullOrEmpty()) {
+//                    //user did not interact with previous widget, mark dismissed and don't show followup
+//                    widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
+//                    return
+//                }
+                container.addView(predictionWidget)
+                emitWidgetShown(widget.id, widgetResource.kind)
                 currentWidget = widget
             }
 

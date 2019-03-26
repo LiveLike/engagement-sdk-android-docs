@@ -79,6 +79,7 @@ enum class WidgetType (val value: String) {
     IMAGE_PREDICTION("image-prediction-created"),
     IMAGE_PREDICTION_RESULTS("image-prediction-follow-up-created"),
     HTML5("html-widget"),
+    IMAGE_QUIZ("image-quiz-created"),
     ALERT("alert-created"),
     NONE("none");
 

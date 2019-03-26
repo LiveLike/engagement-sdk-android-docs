@@ -39,18 +39,23 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
         calculateVotePercentage(newValue)
         newValue.forEach { data ->
-            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl))
+            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount))
         }
     }
 
     private fun calculateVotePercentage(optionList: List<WidgetOptions>) {
         var voteTotal = 0L
+        var answerTotal = 0L
         optionList.forEach { option ->
             voteTotal += option.voteCount
+            answerTotal += option.answerCount
         }
+
         optionList.forEach { option ->
-            if (voteTotal == 0L) return
-            option.voteCount = (option.voteCount * 100) / voteTotal
+            if (voteTotal != 0L)
+                option.voteCount = (option.voteCount * 100) / voteTotal
+            if (answerTotal != 0L)
+                option.answerCount = (option.answerCount * 100) / answerTotal
         }
     }
 
@@ -73,7 +78,9 @@ internal data class WidgetOptions(
     val voteUrl: URI? = null,
     var description: String = "",
     var voteCount: Long = 0,
-    var imageUrl: String? = null
+    var imageUrl: String? = null,
+    var answerCount: Long = 0,
+    var answerUrl: String? = null
 )
 
 internal class PredictionWidgetQuestion(val widget: Widget) {
@@ -81,7 +88,7 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     fun notifyDataSetChange() {
         val voteOptionList = mutableListOf<VoteOption>()
         widget.optionList.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl))
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount))
         }
         widget.observers.forEach { observer ->
             observer.questionUpdated(widget.question)
@@ -91,4 +98,8 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     }
 }
 
-class VoteOption(val id: String?, val description: String, val votePercentage: Long, val imageUrl: String?)
+class VoteOption(val id: String?,
+                 val description: String,
+                 val votePercentage: Long,
+                 val imageUrl: String?,
+                 val answerCount: Long)
