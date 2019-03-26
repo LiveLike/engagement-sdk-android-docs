@@ -13,6 +13,7 @@ internal class Widget {
     var optionSelected: WidgetOptions = WidgetOptions()
     var confirmMessage: String = ""
     var correctOptionId: String = ""
+    var timeout: Long = 7000L
 
     fun optionSelectedUpdated(id: String?) {
         if (id == null) {

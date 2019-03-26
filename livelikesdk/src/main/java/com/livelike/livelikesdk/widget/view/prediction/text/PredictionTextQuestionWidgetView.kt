@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.widget.view.prediction.text
 
 import android.content.Context
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
@@ -25,22 +26,21 @@ internal class PredictionTextQuestionWidgetView : PredictionTextWidgetBase {
         startWidgetAnimation(pieTimer)
     }
 
-    private fun startWidgetAnimation(pieTimer: View) {
+    private fun startWidgetAnimation(pieTimer: View, timeout : Long) {
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, 7000) {
+            viewAnimation.startTimerAnimation(pieTimer, timeout) {
                 if (optionSelected) {
                     viewAnimation.showConfirmMessage(
                         prediction_confirm_message_textView,
-                        prediction_confirm_message_animation,
-                        dismissWidget
-                    )
+                        prediction_confirm_message_animation
+                    ) {}
                     performPredictionWidgetFadeOutOperations()
                 } else {
                     viewAnimation.hideWidget()
-                    dismissWidget?.invoke()
                 }
             }
         }
+        Handler().postDelayed({viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() }},timeout)
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

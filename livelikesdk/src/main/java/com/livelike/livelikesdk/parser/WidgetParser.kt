@@ -16,6 +16,7 @@ internal class WidgetParser {
         widget.optionList = resource.options.map {
             WidgetOptions(it.id, URI.create(it.vote_url), it.description, it.vote_count.toLong(), it.image_url)
         }
+        widget.timeout
     }
 
     fun parsePredictionFollowup(widget: Widget, payload: Resource) {
