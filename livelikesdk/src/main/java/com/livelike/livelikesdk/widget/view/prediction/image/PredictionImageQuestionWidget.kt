@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.view.prediction.image
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
@@ -59,16 +60,13 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 if (optionSelected) {
                     viewAnimation.showConfirmMessage(
                         prediction_confirm_message_textView,
-                        prediction_confirm_message_animation,
-                        dismissWidget
-                    )
+                        prediction_confirm_message_animation
+                    ) {}
                     performPredictionWidgetFadeOutOperations()
-                } else {
-                    viewAnimation.hideWidget()
-                    dismissWidget?.invoke()
                 }
             }
         }
+        Handler().postDelayed({viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() }},timeout)
     }
 
     private fun performPredictionWidgetFadeOutOperations() {
