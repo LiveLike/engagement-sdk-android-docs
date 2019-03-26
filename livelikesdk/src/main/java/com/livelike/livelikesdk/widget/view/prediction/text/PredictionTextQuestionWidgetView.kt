@@ -37,6 +37,7 @@ internal class PredictionTextQuestionWidgetView : PredictionTextWidgetBase {
                     performPredictionWidgetFadeOutOperations()
                 } else {
                     viewAnimation.hideWidget()
+                    dismissWidget?.invoke()
                 }
             }
         }

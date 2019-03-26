@@ -89,7 +89,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
 
                 predictionWidget.layoutParams = layoutParams
 
-                parser.parseTextPredictionFollowup(widget, widgetResource)
+                parser.parsePredictionFollowup(widget, widgetResource)
                 val followupWidgetData = PredictionWidgetFollowUp(widget)
                 widget.registerObserver(predictionWidget)
                 followupWidgetData.notifyDataSetChange()
@@ -127,7 +127,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
 
                 predictionWidget.layoutParams = layoutParams
 
-                parser.parseTextPredictionFollowup(widget, widgetResource)
+                parser.parsePredictionFollowup(widget, widgetResource)
                 val followupWidgetData = PredictionWidgetFollowUp(widget)
                 widget.registerObserver(predictionWidget)
                 followupWidgetData.notifyDataSetChange()
