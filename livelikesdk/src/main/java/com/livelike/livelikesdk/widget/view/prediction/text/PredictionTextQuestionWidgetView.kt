@@ -16,14 +16,14 @@ internal class PredictionTextQuestionWidgetView : PredictionTextWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int,  dismiss: () -> Unit) : super(context, attrs, defStyleAttr, dismiss)
-    private var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimation
 
-    init {
+    override fun initialize(dismiss : ()->Unit, timeout : Long) {
+        super.initialize(dismiss, timeout)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
         viewAnimation = ViewAnimation(this)
-        startWidgetAnimation(pieTimer)
+        startWidgetAnimation(pieTimer, timeout)
     }
 
     private fun startWidgetAnimation(pieTimer: View, timeout : Long) {

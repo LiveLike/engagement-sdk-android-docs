@@ -38,16 +38,12 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
-        dismissWidget = dismiss
-    }
 
-    init {
+    private var timeout = 0L
+    fun initialize(dismiss: () -> Unit, timeout: Long) {
         inflate(context)
+        dismissWidget = dismiss
+        this.timeout = timeout
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -77,7 +73,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         }
         Handler().postDelayed(
             { viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } },
-            resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong()
+            timeout
         )
     }
 
