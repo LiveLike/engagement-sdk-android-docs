@@ -17,7 +17,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
@@ -192,11 +191,11 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         }
     }
 
-    fun showLoadingSpinner() {
+    private fun showLoadingSpinner() {
         loadingSpinner.visibility = View.VISIBLE
     }
 
-    fun hideLoadingSpinner() {
+    private fun hideLoadingSpinner() {
         loadingSpinner.visibility = View.GONE
     }
 

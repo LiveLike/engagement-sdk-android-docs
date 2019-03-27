@@ -7,13 +7,10 @@ import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.sendbird.ChatClient
-import com.livelike.livelikesdk.messaging.sendbird.ChatClientResultHandler
-import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
-import com.livelike.livelikesdk.util.Queue
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import java.util.*
 
-internal class ChatQueue(upstream: MessagingClient, val chatClient: ChatClient) : MessagingClientProxy(upstream),
+internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient) : MessagingClientProxy(upstream),
     ChatEventListener {
     private val connectedChannels : MutableList<String> = mutableListOf()
     private var lastChatMessage: Pair<String, String>? = null
@@ -53,10 +50,6 @@ internal class ChatQueue(upstream: MessagingClient, val chatClient: ChatClient) 
         }
     }
 
-    override fun onAnalyticsEvent(data: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         val controlMessage = event.message.extractStringOrEmpty("control")
 
@@ -87,7 +80,6 @@ internal class ChatQueue(upstream: MessagingClient, val chatClient: ChatClient) 
 }
 
 interface ChatEventListener {
-    fun onAnalyticsEvent(data: Any)
     fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
 }
 
@@ -97,7 +89,6 @@ interface ChatRenderer {
     fun displayChatMessage(message: ChatMessage)
     fun loadComplete()
 }
-
 
 internal fun MessagingClient.toChatQueue(chatClient: ChatClient): ChatQueue {
     return ChatQueue(this, chatClient)

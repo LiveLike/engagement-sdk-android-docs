@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
-import com.livelike.livelikesdk.analytics.InteractionLogger
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.ChatRenderer
@@ -33,7 +32,6 @@ internal class LiveLikeContentSessionImpl(
 
     private var widgetQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
-    private val interactionSession = InteractionLogger()
     init {
         getUser()
     }
@@ -92,7 +90,6 @@ internal class LiveLikeContentSessionImpl(
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer
             this.widgetQueue = widgetQueue
-            widgetQueue.subscribeAnalytics(interactionSession)
         }
     }
 

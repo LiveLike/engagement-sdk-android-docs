@@ -1,28 +1,9 @@
 package com.livelike.livelikedemo
 
-import android.content.Intent
-import android.graphics.Color
-import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.util.registerLogsHandler
-import com.livelike.livelikesdk.widget.WidgetType
-import kotlinx.android.synthetic.main.activity_standalone_widget.*
-import kotlinx.android.synthetic.main.widget_command_row_element.view.*
-import java.io.IOException
-import java.nio.charset.Charset
 
 class WidgetStandaloneActivity : AppCompatActivity() {
+    /*
     private val commandList = mutableListOf<String>()
     private val windowTitle = "Widgets"
     private val showCommand = "Show"
@@ -238,4 +219,5 @@ class WidgetStandaloneActivity : AppCompatActivity() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val commandButton: Button = view.command
     }
+    */
 }

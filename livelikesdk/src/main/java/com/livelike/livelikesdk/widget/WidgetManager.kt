@@ -12,11 +12,10 @@ import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
 import com.livelike.livelikesdk.widget.view.WidgetEventListener
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
-class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
+internal class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
         WidgetEventListener{
-    private val analyticsListeners = HashSet<WidgetAnalyticsObserver>()
     var renderer: WidgetRenderer? = null
     set(value) {
         field = value
@@ -46,10 +45,10 @@ class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDat
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         isProcessing = true
-        val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
+        val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         Handler(Looper.getMainLooper()).post {
-            renderer?.displayWidget(widgetType, payload, analyticsListeners)
+            renderer?.displayWidget(widgetType, payload)
         }
         super.onClientMessageEvent(client, event)
     }
@@ -61,15 +60,6 @@ class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDat
         }
     }
 
-    fun subscribeAnalytics(observer: WidgetAnalyticsObserver) {
-        analyticsListeners.add(observer)
-    }
-
-    fun unsubscribeAnalytics(observer: WidgetAnalyticsObserver) {
-        if (analyticsListeners.contains(observer))
-            analyticsListeners.remove(observer)
-    }
-
     // TODO: Name should be changed to more generic and avoid terms like analytics.
     interface WidgetAnalyticsObserver {
         fun widgetDismissed(widgetId: String, kind: String)
@@ -78,7 +68,7 @@ class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDat
     }
 }
 
-enum class WidgetType (val value: String) {
+internal enum class WidgetType (val value: String) {
     TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("image-prediction-created"),
@@ -98,9 +88,8 @@ interface WidgetRenderer {
 
     fun dismissCurrentWidget()
     fun displayWidget(
-        type: WidgetType,
-        payload: JsonObject,
-        observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
+        type: String,
+        payload: JsonObject
     )
 }
 
@@ -109,7 +98,7 @@ enum class WidgetEvent{
     WIDGET_SHOWN
 }
 
-interface WidgetDataClient {
+internal interface WidgetDataClient {
     fun vote(voteUrl:String)
 }
 

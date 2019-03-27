@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
@@ -46,19 +47,18 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
     }
 
     override fun displayWidget(
-        type: WidgetType,
-        payload: JsonObject,
-        observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
+        type: String,
+        payload: JsonObject
     ) {
         this.observerListeners = observerListeners
-        logDebug { "NOW - Show Widget ${type.value} on screen: $payload" }
+        logDebug { "NOW - Show Widget $type on screen: $payload" }
         val layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         layoutParams.topMargin = 0
         val widget = Widget()
-        when (type) {
+        when (WidgetType.fromString(type)) {
             WidgetType.TEXT_PREDICTION -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
@@ -158,21 +158,15 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
     }
 
     private fun emitWidgetOptionSelected(widgetId: String?, kind: String) {
-        observerListeners.forEach { listener ->
-            widgetId?.let { listener.widgetOptionSelected(it,kind) }
-        }
+        analyticService.trackInteraction(widgetId ?: "", kind, "OptionSelected")
     }
 
     private fun emitWidgetDismissed(widgetId: String?, kind: String) {
-        observerListeners.forEach { listener ->
-            widgetId?.let { listener.widgetDismissed(it,kind) }
-        }
+        analyticService.trackWidgetDismiss(widgetId ?: "", kind)
     }
 
     private fun emitWidgetShown(widgetId: String?, kind: String) {
-        observerListeners.forEach { listener ->
-            widgetId?.let { listener.widgetShown(it,kind) }
-        }
+        analyticService.trackWidgetReceived(widgetId ?: "", kind)
     }
 
     override fun dismissCurrentWidget() {
