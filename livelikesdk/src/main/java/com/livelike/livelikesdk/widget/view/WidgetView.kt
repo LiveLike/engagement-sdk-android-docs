@@ -62,15 +62,16 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
             WidgetType.TEXT_PREDICTION -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
+                parser.parseTextPredictionCommon(widget, widgetResource)
                 val predictionWidget =
                     PredictionTextQuestionWidgetView(
                         context,
                         null,
                         0
-                    ) { dismissCurrentWidget() }
+                    ).apply { initialize({dismissCurrentWidget()}, widget.timeout) }
 
                 predictionWidget.layoutParams = layoutParams
-                parser.parseTextPredictionCommon(widget, widgetResource)
+
                 val widgetData = PredictionWidgetQuestion(widget)
                 widget.registerObserver(predictionWidget)
                 widgetData.notifyDataSetChange()
@@ -85,11 +86,12 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
             WidgetType.TEXT_PREDICTION_RESULTS -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
-                val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0) { dismissCurrentWidget() }
+                parser.parsePredictionFollowup(widget, widgetResource)
+                val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0)
+                    .apply { initialize({dismissCurrentWidget()}, widget.timeout) }
 
                 predictionWidget.layoutParams = layoutParams
 
-                parser.parsePredictionFollowup(widget, widgetResource)
                 val followupWidgetData = PredictionWidgetFollowUp(widget)
                 widget.registerObserver(predictionWidget)
                 followupWidgetData.notifyDataSetChange()
@@ -106,10 +108,11 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
             WidgetType.IMAGE_PREDICTION -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
-                val predictionWidget = PredictionImageQuestionWidget(context, null, 0)  { dismissCurrentWidget() }
+                parser.parseTextPredictionCommon(widget, widgetResource)
+                val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
+                    .apply { initialize({dismissCurrentWidget()}, widget.timeout) }
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion(widget)
-                parser.parseTextPredictionCommon(widget, widgetResource)
                 widget.registerObserver(predictionWidget)
                 widgetData.notifyDataSetChange()
                 predictionWidget.userTappedCallback {
@@ -123,11 +126,12 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
             WidgetType.IMAGE_PREDICTION_RESULTS -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
-                val predictionWidget = PredictionImageFollowupWidget(context, null, 0) { dismissCurrentWidget() }
+                parser.parsePredictionFollowup(widget, widgetResource)
+                val predictionWidget = PredictionImageFollowupWidget(context, null, 0)
+                    .apply { initialize({dismissCurrentWidget()}, widget.timeout) }
 
                 predictionWidget.layoutParams = layoutParams
 
-                parser.parsePredictionFollowup(widget, widgetResource)
                 val followupWidgetData = PredictionWidgetFollowUp(widget)
                 widget.registerObserver(predictionWidget)
                 followupWidgetData.notifyDataSetChange()

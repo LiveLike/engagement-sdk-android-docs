@@ -16,11 +16,9 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.util.AndroidResource
-import com.livelike.livelikesdk.util.logError
+import com.livelike.livelikesdk.util.AndroidResource.Companion.parseDuration
 import com.livelike.livelikesdk.widget.model.Alert
 import kotlinx.android.synthetic.main.alert_widget.view.*
-import org.threeten.bp.Duration
-import org.threeten.bp.format.DateTimeParseException
 
 internal class AlertWidget : ConstraintLayout {
     private val animationHandler = AnimationHandler()
@@ -103,12 +101,7 @@ internal class AlertWidget : ConstraintLayout {
         viewAnimation.startWidgetTransitionInAnimation {}
 
         // Start dismiss timeout
-        var timeout = 6000L
-        try {
-            timeout = Duration.parse(resourceAlert.timeout).toMillis()
-        } catch (e: DateTimeParseException) {
-            logError { "Duration ${resourceAlert.timeout} can't be parsed." }
-        }
+        var timeout = parseDuration(resourceAlert.timeout)
 
         Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
     }

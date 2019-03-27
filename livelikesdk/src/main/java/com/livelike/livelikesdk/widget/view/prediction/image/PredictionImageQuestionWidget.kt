@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.view.prediction.image
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
@@ -38,20 +39,14 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
+
+    fun initialize(dismiss: () -> Unit, timeout: Long) {
+        inflate(context, timeout)
         dismissWidget = dismiss
     }
 
-    init {
-        inflate(context)
-    }
-
     @SuppressLint("ClickableViewAccessibility")
-    private fun inflate(context: Context) {
+    private fun inflate(context: Context, timeout: Long) {
         LayoutInflater.from(context)
             .inflate(R.layout.prediction_image_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_image_widget)
@@ -61,20 +56,17 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         // TODO: Maybe inject this object.
         viewAnimation = ViewAnimation(this)
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, 7000) {
+            viewAnimation.startTimerAnimation(pieTimer, timeout) {
                 if (optionSelected) {
                     viewAnimation.showConfirmMessage(
                         prediction_confirm_message_textView,
-                        prediction_confirm_message_animation,
-                        dismissWidget
-                    )
+                        prediction_confirm_message_animation
+                    ) {}
                     performPredictionWidgetFadeOutOperations()
-                } else {
-                    viewAnimation.hideWidget()
-                    dismissWidget?.invoke()
                 }
             }
         }
+        Handler().postDelayed({viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() }},timeout)
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

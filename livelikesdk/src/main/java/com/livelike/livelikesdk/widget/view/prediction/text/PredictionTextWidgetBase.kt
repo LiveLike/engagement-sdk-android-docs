@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.widget.view.prediction.text
 
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.support.constraint.ConstraintLayout
@@ -41,11 +40,11 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr) {
+
+    open fun initialize(dismiss: ()->Unit, timeout: Long) {
+        inflate(context)
         dismissWidget = dismiss
     }
-
-    init { inflate(context) }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun inflate(context: Context) {

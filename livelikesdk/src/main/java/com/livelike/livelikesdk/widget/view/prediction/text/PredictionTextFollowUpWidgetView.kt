@@ -24,21 +24,23 @@ internal class PredictionTextFollowUpWidgetView :
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(context, attrs, defStyleAttr, dismiss)
 
     companion object {
         const val correctAnswerLottieFilePath = "correctAnswer"
         const val wrongAnswerLottieFilePath = "wrongAnswer"
     }
-    private var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimation
+    private var timeout: Long = 7000
 
-    init {
+    override fun initialize(dismiss : ()->Unit, timeout: Long) {
+        super.initialize(dismiss, timeout)
         pieTimerViewStub.layoutResource = R.layout.cross_image
         pieTimerViewStub.inflate()
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
         imageView.setOnClickListener { dismissWidget() }
         viewAnimation = ViewAnimation(this)
+        this.timeout = timeout
     }
 
     override fun optionListUpdated(
@@ -168,7 +170,7 @@ internal class PredictionTextFollowUpWidgetView :
         }
         Handler().postDelayed(
             { viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } },
-            resources.getInteger(R.integer.prediction_widget_follow_transition_out_in_milliseconds).toLong()
+            timeout
         )
     }
 }

@@ -2,6 +2,8 @@ package com.livelike.livelikesdk.util
 
 import android.content.Context
 import android.content.res.Resources
+import org.threeten.bp.Duration
+import org.threeten.bp.format.DateTimeParseException
 import java.util.*
 
 internal class AndroidResource {
@@ -19,6 +21,16 @@ internal class AndroidResource {
                 val emojiIndex = random.nextInt(assetList.size)
                 assetList[emojiIndex]
             } else return null
+        }
+
+        fun parseDuration(durationString: String) : Long {
+            var timeout = 7000L
+            try {
+                timeout = Duration.parse(durationString).toMillis()
+            } catch (e: DateTimeParseException) {
+                logError { "Duration $durationString can't be parsed." }
+            }
+            return timeout
         }
     }
 

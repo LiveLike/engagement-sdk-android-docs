@@ -55,14 +55,14 @@ internal class ViewAnimation(val view: View) {
         }
     }
 
-    fun triggerTransitionOutAnimation(dismissWidget: (() -> Unit)?) {
+    fun triggerTransitionOutAnimation(onCompleteCallback: (() -> Unit)?) {
         val animator = ObjectAnimator.ofFloat(
             view,
             "translationY",
             0f, -dpToPx(250).toFloat()
         )
         animationHandler.bindListenerToAnimationView(animator) {
-            dismissWidget?.invoke()
+            onCompleteCallback?.invoke()
         }
         // TODO: Get rid of hardcoded value once we have minimun viewable area defined.
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
@@ -88,7 +88,7 @@ internal class ViewAnimation(val view: View) {
     fun showConfirmMessage(
         confirmMessageTextView: View,
         confirmMessageLottieAnimationView: LottieAnimationView,
-        dismissWidget: (() -> Unit)?
+        onCompleteCallback: (() -> Unit)?
     ) {
         confirmMessageTextView.visibility = View.VISIBLE
         val lottieAnimationPath = "confirmMessage"
@@ -98,7 +98,7 @@ internal class ViewAnimation(val view: View) {
             confirmMessageLottieAnimationView.visibility = View.VISIBLE
             animationHandler.startAnimation(
                 confirmMessageLottieAnimationView,
-                { triggerTransitionOutAnimation(dismissWidget) },
+                { triggerTransitionOutAnimation(onCompleteCallback) },
                 widgetShowingDurationAfterConfirmMessage,
                 animator
             )
@@ -111,7 +111,7 @@ internal class ViewAnimation(val view: View) {
     fun addHorizontalSwipeListener(
         view: View,
         layout: ViewGroup,
-        dismissWidget: (() -> Unit)?
+        onSwipeCallback: (() -> Unit)?
     ) {
         view.setOnTouchListener(object : SwipeDismissTouchListener(layout,
             null, object : DismissCallbacks {
@@ -119,7 +119,7 @@ internal class ViewAnimation(val view: View) {
                 override fun onDismiss(view: View?, token: Any?) {
                     animationHandler.cancelAnimation(animator)
                     layout.removeAllViewsInLayout()
-                    dismissWidget?.invoke()
+                    onSwipeCallback?.invoke()
                 }
             }
         ) {})
