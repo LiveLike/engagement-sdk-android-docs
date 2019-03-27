@@ -19,7 +19,7 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 open class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
 
     companion object {
-        const val CONFIG_URL = "https://cf-blast.livelikecdn.com/api/v1/applications/"
+        const val CONFIG_URL = BuildConfig.CONFIG_URL
         val MIXPANEL_TOKEN = "5c82369365be76b28b3716f260fbd2f5" // TODO: This should come from CMS
     }
 
