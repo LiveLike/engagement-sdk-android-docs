@@ -4,13 +4,13 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.engagementsdkapi.ChatMessage
+import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.EpochTime
+import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.LiveLikeUser
-import com.livelike.livelikesdk.chat.ChatMessage
-import com.livelike.livelikesdk.chat.ChatRenderer
-import com.livelike.livelikesdk.messaging.EpochTime
-import com.livelike.livelikesdk.widget.WidgetRenderer
 import kotlinx.android.synthetic.main.activity_chat_only.*
 import java.util.*
 

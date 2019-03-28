@@ -24,7 +24,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.EditText
-import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.engagementsdkapi.ChatEventListener
+import com.livelike.engagementsdkapi.ChatMessage
+import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
@@ -50,7 +53,7 @@ import java.util.*
  *  using [setDataSource]. See [ChatAdapter] class on how to create a data source.
  */
 
-class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer  {
+class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer {
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
         const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
@@ -282,21 +285,6 @@ internal interface ChatCell {
     fun getView() : View
 }
 
-/**
- *  Represents a chat message.
- *  @param message The message user wants to send.
- *  @param senderId This is unique user id.
- *  @param senderDisplayName This is display name user is associated with.
- *  @param id A unique ID to identify the message.
- *  @param timeStamp Message timeStamp.
- */
-data class ChatMessage(
-    val message: String,
-    val senderId: String,
-    val senderDisplayName: String,
-    val id: String,
-    val timeStamp: String = ""
-)
 
 /**
  *

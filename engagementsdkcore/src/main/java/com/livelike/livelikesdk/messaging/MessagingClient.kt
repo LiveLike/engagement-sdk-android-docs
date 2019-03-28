@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.messaging
 
 import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.EpochTime
 
 
 /**
@@ -44,14 +45,4 @@ data class Error(val type: String, val message: String)
 enum class ConnectionStatus {
     CONNECTED,
     DISCONNECTED
-}
-
-
-class EpochTime(val timeSinceEpochInMs: Long) : Comparable<EpochTime> {
-    override fun compareTo(other: EpochTime): Int {
-        return timeSinceEpochInMs.compareTo(other.timeSinceEpochInMs)
-    }
-
-    operator fun minus(et: EpochTime) = EpochTime(timeSinceEpochInMs - et.timeSinceEpochInMs)
-    operator fun minus(timeStamp: Long) = EpochTime(timeSinceEpochInMs - timeStamp)
 }

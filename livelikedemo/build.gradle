@@ -48,6 +48,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 
     //sdk
-    implementation project(':engagementsdkcore')
+    api project(':engagementsdkapi')
+    implementation project(path: ':engagementsdkcore')
     implementation project(path: ':pluginexoplayer')
 }

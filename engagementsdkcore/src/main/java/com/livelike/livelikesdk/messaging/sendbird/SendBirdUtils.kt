@@ -1,8 +1,8 @@
 package com.livelike.livelikesdk.messaging.sendbird
 
 import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.logError
 import com.sendbird.android.BaseChannel

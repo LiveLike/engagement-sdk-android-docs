@@ -2,20 +2,21 @@ package com.livelike.livelikesdk.widget
 
 import android.os.Handler
 import android.os.Looper
-import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.WidgetEvent
+import com.livelike.engagementsdkapi.WidgetEventListener
+import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
-import com.livelike.livelikesdk.widget.view.WidgetEventListener
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
-        WidgetEventListener{
+    WidgetEventListener {
     var renderer: WidgetRenderer? = null
     set(value) {
         field = value
@@ -83,20 +84,6 @@ internal enum class WidgetType (val value: String) {
     }
 }
 
-interface WidgetRenderer {
-    var widgetListener: WidgetEventListener?
-
-    fun dismissCurrentWidget()
-    fun displayWidget(
-        type: String,
-        payload: JsonObject
-    )
-}
-
-enum class WidgetEvent{
-    WIDGET_DISMISS,
-    WIDGET_SHOWN
-}
 
 internal interface WidgetDataClient {
     fun vote(voteUrl:String)

@@ -8,7 +8,7 @@ import com.google.gson.stream.MalformedJsonException
 import com.livelike.livelikesdk.LiveLikeDataClient
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.LiveLikeSdkDataClient
-import com.livelike.livelikesdk.LiveLikeUser
+import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.Program
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.util.logError
