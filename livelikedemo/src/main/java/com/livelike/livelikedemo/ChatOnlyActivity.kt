@@ -85,12 +85,10 @@ class ChatOnlyActivity : AppCompatActivity() {
 
     inner class TestSession : LiveLikeContentSession {
         override val programUrl: String get() = ""
-        override var widgetRenderer: WidgetRenderer?
+        override var widgetRenderer: WidgetRenderer? = null
             get() = null
-            set(value) {}
-        override var chatRenderer: ChatRenderer?
+        override var chatRenderer: ChatRenderer? = null
             get() = null
-            set(value) {}
         override val currentUser: LiveLikeUser?
             get() = LiveLikeUser("1234", "TestUser")
 

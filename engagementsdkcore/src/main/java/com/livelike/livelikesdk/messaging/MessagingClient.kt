@@ -7,7 +7,7 @@ import com.livelike.engagementsdkapi.EpochTime
 /**
  *  Represents a messaging client which LiveLike uses to communicate with a widget or chat backend source
  */
-interface MessagingClient {
+internal interface MessagingClient {
     fun subscribe(channels: List<String>)
     fun unsubscribe(channels: List<String>)
     fun unsubscribeAll()
@@ -17,7 +17,7 @@ interface MessagingClient {
 /**
  *  Represents a messaging client triggerListener which will receive MessagingClient messages
  */
-interface MessagingEventListener {
+internal interface MessagingEventListener {
     fun onClientMessageEvent(client: MessagingClient, event: ClientMessage)
     fun onClientMessageError(client: MessagingClient, error: Error)
     fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus)
@@ -27,7 +27,7 @@ interface MessagingEventListener {
 /**
  * Represents a client message that can be sent from a MessagingClient
  */
-data class ClientMessage(
+internal data class ClientMessage(
     val message: JsonObject,
     val channel: String,
     val timeStamp: EpochTime,
@@ -37,12 +37,12 @@ data class ClientMessage(
 /**
  * Represents a MessagingClient error that can be sent from a MessagingClient
  */
-data class Error(val type: String, val message: String)
+internal data class Error(val type: String, val message: String)
 
 /**
  * Represents the ConnectionStatus of a MessagingClient
  */
-enum class ConnectionStatus {
+internal enum class ConnectionStatus {
     CONNECTED,
     DISCONNECTED
 }

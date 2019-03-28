@@ -8,7 +8,7 @@ import com.livelike.livelikesdk.messaging.MessagingEventListener
 
 
 //TODO Look into removing MessageClientProxy and replacing with Kotlin MessageClient by upstream
-abstract class MessagingClientProxy (val upstream: MessagingClient) : MessagingClient, MessagingEventListener {
+internal abstract class MessagingClientProxy (val upstream: MessagingClient) : MessagingClient, MessagingEventListener {
 
     var listener : MessagingEventListener? = null
 

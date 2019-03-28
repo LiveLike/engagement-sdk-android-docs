@@ -8,7 +8,7 @@ import com.livelike.livelikesdk.util.logError
 import com.sendbird.android.BaseChannel
 import com.sendbird.android.UserMessage
 
-class SendBirdUtils {
+internal class SendBirdUtils {
     companion object {
         fun clientMessageFromBaseMessage(message: UserMessage, channel: BaseChannel): ClientMessage {
             val messageJson = JsonObject()
