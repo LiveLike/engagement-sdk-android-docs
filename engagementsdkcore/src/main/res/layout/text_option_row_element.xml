@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="wrap_content"
+                                             android:background="#99000000">
+
+    <Button
+            android:id="@+id/text_button"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/button_default"
+            android:elevation="4dp"
+            android:gravity="start|center_vertical"
+            android:scaleType="fitStart"
+            android:fontFamily="@font/titillium_semibold"
+            android:textSize="15sp"
+            android:textColor="@color/text_color"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Some Hockey Player"
+    />
+
+    <ProgressBar
+            android:id="@+id/determinateBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="1dp"
+            android:layout_height="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="invisible"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            tools:progress="80"/>
+
+    <TextView
+            android:id="@+id/result_percentage_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/determinateBar"
+            app:layout_constraintStart_toStartOf="@+id/determinateBar"
+            app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
+            android:elevation="8dp"
+            android:textColor="@color/text_color"
+            android:textSize="18sp"
+            android:gravity="end"
+            app:fontFamily="@font/titillium_bold"
+            app:layout_constraintHorizontal_bias="1.0"
+            android:layout_marginEnd="10dp"
+            tools:text="80%"/>
+</android.support.constraint.ConstraintLayout>
+
