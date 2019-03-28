@@ -16,8 +16,9 @@ interface WidgetRenderer {
 interface WidgetEventListener {
     fun onAnalyticsEvent(data: Any)
     fun onWidgetEvent(event: WidgetEvent)
-    fun onOptionVote(voteUrl: String)
+    fun onOptionVote(voteUrl: String, subscribeChannel: String)
     fun onWidgetDisplayed(impressionUrl: String)
+    fun onFetchingQuizResult(answerUrl: String)
 }
 
 enum class WidgetEvent{

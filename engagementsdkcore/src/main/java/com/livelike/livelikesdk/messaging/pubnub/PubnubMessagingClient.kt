@@ -94,14 +94,18 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                     datePattern
                 ).toInstant().toEpochMilli()
                 logMessage(message)
+                var timeoutMs = 4000L
+                val payload = message.message.asJsonObject.getAsJsonObject("payload")
+                val timeoutReceived = payload.extractStringOrEmpty("timeout")
+                if (timeoutReceived != "") {
+                    timeoutMs = Duration.parse(timeoutReceived).toMillis()
+                }
+
                 val clientMessage = ClientMessage(
                     message.message.asJsonObject,
                     message.channel,
                     EpochTime(epochTimeMs),
-                    Duration.parse(
-                        message.message.asJsonObject.getAsJsonObject("payload")
-                            .extractStringOrEmpty("timeout")
-                    ).toMillis()
+                    timeoutMs
                 )
                 logDebug { "$pdtString - Received message from pubnub: $clientMessage" }
                 listener?.onClientMessageEvent(client, clientMessage)

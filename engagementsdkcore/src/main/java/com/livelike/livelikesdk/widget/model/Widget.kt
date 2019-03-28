@@ -1,10 +1,12 @@
 package com.livelike.livelikesdk.widget.model
 
+import com.livelike.livelikesdk.binding.QuizWidgetObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import java.net.URI
 
 internal class Widget {
     var observers = mutableSetOf<WidgetObserver>()
+    var quizResultObserver = mutableSetOf<QuizWidgetObserver>()
     var optionList: List<WidgetOptions> = emptyList()
     var url: URI? = null
     var id: String? = null
@@ -14,6 +16,7 @@ internal class Widget {
     var confirmMessage: String = ""
     var correctOptionId: String = ""
     var timeout: Long = 7000L
+    var subscribeChannel: String = ""
 
     fun optionSelectedUpdated(id: String?) {
         if (id == null) {
@@ -39,7 +42,7 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
         calculateVotePercentage(newValue)
         newValue.forEach { data ->
-            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount))
+            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount))
         }
     }
 
@@ -88,7 +91,7 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     fun notifyDataSetChange() {
         val voteOptionList = mutableListOf<VoteOption>()
         widget.optionList.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount))
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount))
         }
         widget.observers.forEach { observer ->
             observer.questionUpdated(widget.question)
@@ -102,4 +105,5 @@ class VoteOption(val id: String?,
                  val description: String,
                  val votePercentage: Long,
                  val imageUrl: String?,
+                 val answerUrl: String?,
                  val answerCount: Long)

@@ -10,30 +10,30 @@ import java.net.URI
 // TODO: Refine this class more.
 internal class WidgetParser {
     fun parseTextPredictionCommon(widget: Widget, resource: Resource) {
-        widget.question = resource.question
-        widget.confirmMessage = resource.confirmation_message
-        widget.id = resource.id
-        widget.kind = resource.kind
-        if (widget.kind == "image-quiz")
-            widget.optionList = resource.choices.map {
-                WidgetOptions(it.id,
-                    null,
-                    it.description,
-                    it.vote_count.toLong(),
-                    it.image_url,
-                    it.answer_count.toLong(),
-                    it.answer_url)
-            }
-        else widget.optionList = resource.options.map {
-            WidgetOptions(it.id,
+        mapResourceToWidget(widget, resource)
+
+        widget.optionList = resource.options.map {
+            WidgetOptions(
+                it.id,
                 URI.create(it.vote_url),
                 it.description,
                 it.vote_count.toLong(),
                 it.image_url,
                 it.answer_count.toLong(),
-                it.answer_url)
+                it.answer_url
+            )
         }
         widget.timeout = parseDuration(resource.timeout)
+    }
+
+    private fun mapResourceToWidget(
+        widget: Widget,
+        resource: Resource
+    ) {
+        widget.question = resource.question
+        widget.confirmMessage = resource.confirmation_message
+        widget.id = resource.id
+        widget.kind = resource.kind
     }
 
     fun parsePredictionFollowup(widget: Widget, payload: Resource) {
@@ -53,5 +53,34 @@ internal class WidgetParser {
                 WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(payload.image_prediction_id))
         }
         widget.correctOptionId = payload.correct_option_id
+    }
+
+    fun parseQuiz(widget: Widget, resource: Resource) {
+        mapResourceToWidget(widget, resource)
+        widget.subscribeChannel = resource.subscribe_channel
+
+        widget.optionList = resource.choices.map {
+            WidgetOptions(
+                it.id,
+                null,
+                it.description,
+                it.vote_count.toLong(),
+                it.image_url,
+                it.answer_count.toLong(),
+                it.answer_url
+            )
+        }
+    }
+
+    // TODO: Refine this method
+    fun parseQuizResult(widget: Widget, resource: Resource) {
+        widget.optionList.forEach { option ->
+            resource.choices.forEach { choice ->
+                if (option.id == choice.id)
+                    option.answerCount = choice.answer_count.toLong()
+            }
+        }
+        widget.optionSelected =
+            WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(resource.id))
     }
 }

@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.ImageButton
-import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -26,14 +25,16 @@ import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
 class QuizImageWidget : ConstraintLayout, WidgetObserver {
-    private var dismissWidget: (() -> Unit)? = null
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
-    private var layout = ConstraintLayout(context, null, 0)
     private var optionSelected = false
-    private val imageButtonMap = HashMap<ImageButton, VoteOption?>()
-    private val viewOptions = ArrayList<ViewOption>()
+    private var layout = ConstraintLayout(context, null, 0)
+    private var dismissWidget: (() -> Unit)? = null
+    private var fetchResult: ((List<String>) -> Unit)? = null
+    val imageButtonMap = HashMap<ImageButton, String?>()
     lateinit var userTapped: () -> Unit
+    private val answerUrlList = arrayListOf<String>()
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -45,9 +46,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
         dismissWidget = dismiss
     }
 
-    init {
-        inflate(context)
-    }
+    init { inflate(context) }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun inflate(context: Context) {
@@ -56,14 +55,16 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
         layout = findViewById(R.id.prediction_image_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
-
         val pieTimer = pieTimerViewStub.inflate()
         // TODO: Maybe inject this object.
         viewAnimation = ViewAnimation(this)
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, 7000)
-            {
-                viewAnimation.hideWidget()
+            viewAnimation.startTimerAnimation(pieTimer, 7000) {
+                if (optionSelected)
+                    fetchResult?.invoke(answerUrlList)
+                 else
+                    viewAnimation.hideWidget()
+
                 dismissWidget?.invoke()
             }
         }
@@ -84,29 +85,15 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         image_optionList.layoutManager = linearLayoutManager
-        val imageScrollAdapter =
-            ImageAdapter(voteOptions, optionSelectedCallback)
-        image_optionList.adapter = imageScrollAdapter
+        image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         optionSelected = true
-        viewOptions.forEach{ option ->
-            if (selectedOptionId == option.id) {
-                option.button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
-                option.progressBar.apply {
-                    progressDrawable = AppCompatResources.getDrawable(context, R.drawable.progress_bar_user_correct)
-                    visibility = View.VISIBLE
-                }
-                option.percentageTextView.visibility = View.VISIBLE
-            } else {
-                option.progressBar.apply {
-                    progressDrawable = AppCompatResources.getDrawable(context, R.drawable.progress_bar_wrong_option)
-                    visibility = View.VISIBLE
-                }
-                option.percentageTextView.visibility = View.VISIBLE
-                option.button.background = AppCompatResources.getDrawable(context, R.drawable.button_rounded_corners)
-            }
+        imageButtonMap.forEach { (button, id) ->
+            if (selectedOptionId == id)
+                button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
+            else button.background = AppCompatResources.getDrawable(context, R.drawable.button_rounded_corners)
         }
     }
 
@@ -127,6 +114,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val option = optionList[position]
             holder.optionText.text = option.description
+            option.answerUrl?.let { answerUrlList.add(it) }
             val imageWidth = AndroidResource.dpToPx(74)
 
             // TODO: Move this to adapter layer.
@@ -134,15 +122,10 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
                 .load(option.imageUrl)
                 .apply(RequestOptions().override(imageWidth, imageWidth))
                 .into(holder.optionButton)
-            imageButtonMap[holder.optionButton] = option
-            holder.percentageText.visibility = View.INVISIBLE
-            holder.progressBar.visibility = View.INVISIBLE
-            holder.percentageText.text = option.answerCount.toString().plus("%")
-            holder.progressBar.progress = option.votePercentage.toInt()
-            viewOptions.add(ViewOption(holder.optionButton, option.id, holder.progressBar, holder.percentageText))
+            imageButtonMap[holder.optionButton] = option.id
             holder.optionButton.setOnClickListener {
                 val selectedOption = imageButtonMap[holder.optionButton]
-                optionSelectedCallback(selectedOption?.id)
+                optionSelectedCallback(selectedOption)
                 userTapped.invoke()
             }
         }
@@ -162,17 +145,8 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
         }
     }
 
-    class ViewOption(
-        val button: ImageButton,
-        val id: String?,
-        val progressBar: ProgressBar,
-        val percentageTextView: TextView
-    )
-
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val optionButton: ImageButton = view.image_button
         val optionText: TextView = view.item_text
-        val percentageText: TextView = view.result_percentage_text
-        val progressBar: ProgressBar = view.determinateBar
     }
 }

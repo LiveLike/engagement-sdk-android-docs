@@ -140,6 +140,11 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 pollType -> {
                                 }
                                 quizType -> {
+                                    if (isVariance(getString(R.string.text))) {
+                                        //showWidget(WidgetType.TEXT_PREDICTION, getPayload("prediction/quiz/quiz_widget.json"))
+                                    } else if (isVariance(getString(R.string.image))) {
+                                        showWidget(WidgetType.IMAGE_QUIZ, getPayload("prediction/quiz/quiz_widget.json"))
+                                    }
                                 }
                                 cheerMeterType -> {
                                 }

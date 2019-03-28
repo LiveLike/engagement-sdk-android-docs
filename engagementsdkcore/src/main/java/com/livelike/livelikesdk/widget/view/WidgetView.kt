@@ -20,6 +20,7 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
+import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
@@ -29,6 +30,7 @@ import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFollowupWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
+import com.livelike.livelikesdk.widget.view.prediction.quiz.QuizFollowup
 import com.livelike.livelikesdk.widget.view.prediction.quiz.QuizImageWidget
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
@@ -172,21 +174,36 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
                 predictionWidget.layoutParams = layoutParams
 
-                parser.parsePredictionFollowup(widget, widgetResource)
-                val followupWidgetData = PredictionWidgetFollowUp(widget)
+                parser.parseQuiz(widget, widgetResource)
+                val followupWidgetData = PredictionWidgetQuestion(widget)
                 widget.registerObserver(predictionWidget)
                 followupWidgetData.notifyDataSetChange()
                 predictionWidget.userTappedCallback {
-                    //emitWidgetOptionSelected(followupWidgetData.id, widgetResource.kind)
+                    emitWidgetOptionSelected(widget.id, widgetResource.kind)
                 }
-//                if (widget.optionSelected.id.isNullOrEmpty()) {
-//                    //user did not interact with previous widget, mark dismissed and don't show followup
-//                    widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
-//                    return
-//                }
-                container.addView(predictionWidget)
+
+                containerView.addView(predictionWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
                 currentWidget = widget
+            }
+
+            WidgetType.IMAGE_QUIZ_RESULT -> {
+                logInfo { "Abhishek Image result" }
+                val parser = WidgetParser()
+                val widgetResource = gson.fromJson(payload, Resource::class.java)
+                val predictionWidget = QuizFollowup(context, null, 0) { dismissCurrentWidget() }
+
+                predictionWidget.layoutParams = layoutParams
+
+                currentWidget?.let {
+                    logInfo { "Abhishek ${it.question}" }
+                    parser.parseQuizResult(it, widgetResource)
+                    val followupWidgetData = PredictionWidgetFollowUp(currentWidget!!)
+                    widget.registerObserver(predictionWidget)
+                    followupWidgetData.notifyDataSetChange()
+                    emitWidgetShown(widget.id, widgetResource.kind)
+                    currentWidget = widget
+                }
             }
 
             WidgetType.ALERT -> {
@@ -218,15 +235,21 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         analyticService.trackWidgetReceived(widgetId ?: "", kind)
     }
 
+    // TODO: CLean this method
     override fun dismissCurrentWidget() {
         logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
         containerView.removeAllViews()
+        if (currentWidget?.kind != "image-quiz") {
+            logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
+            containerView.removeAllViews()
+        }
         val widget = currentWidget ?: return
         widget.id?.let { widget.optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
         emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
         val voteUrl = widget.optionSelected.voteUrl.toString()
-        widgetListener?.onOptionVote(voteUrl)
-        currentWidget = null
+        val answerUrl = widget.optionSelected.answerUrl.toString()
+        widgetListener?.onOptionVote(voteUrl, widget.subscribeChannel)
+        widgetListener?.onFetchingQuizResult(answerUrl)
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
 
