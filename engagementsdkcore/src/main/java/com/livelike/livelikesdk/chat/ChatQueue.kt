@@ -1,9 +1,11 @@
 package com.livelike.livelikesdk.chat
 
-import android.content.Context
 import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.ChatEventListener
+import com.livelike.engagementsdkapi.ChatMessage
+import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.sendbird.ChatClient
@@ -77,17 +79,6 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
         if(!paused && lastMessage != null)
             chatClient.updateMessagesSinceMessage(lastMessage.first, lastMessage.second)
     }
-}
-
-interface ChatEventListener {
-    fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
-}
-
-interface ChatRenderer {
-    var chatListener: ChatEventListener?
-    val chatContext: Context
-    fun displayChatMessage(message: ChatMessage)
-    fun loadComplete()
 }
 
 internal fun MessagingClient.toChatQueue(chatClient: ChatClient): ChatQueue {

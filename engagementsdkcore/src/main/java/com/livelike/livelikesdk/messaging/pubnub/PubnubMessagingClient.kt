@@ -1,8 +1,8 @@
 package com.livelike.livelikesdk.messaging.pubnub
 
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.Error
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener

@@ -7,7 +7,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
-import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.WidgetEvent
+import com.livelike.engagementsdkapi.WidgetEventListener
+import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.parser.WidgetParser
@@ -15,9 +18,7 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logVerbose
-import com.livelike.livelikesdk.widget.WidgetEvent
 import com.livelike.livelikesdk.widget.WidgetManager
-import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
@@ -35,7 +36,6 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
     override var widgetListener : WidgetEventListener? = null
     private var container : FrameLayout
     private var currentWidget: Widget? = null
-    private lateinit var observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
@@ -50,7 +50,6 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
         type: String,
         payload: JsonObject
     ) {
-        this.observerListeners = observerListeners
         logDebug { "NOW - Show Widget $type on screen: $payload" }
         val layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -184,10 +183,4 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
         currentWidget = null
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
-}
-
-interface WidgetEventListener {
-    fun onAnalyticsEvent(data: Any)
-    fun onWidgetEvent(event: WidgetEvent)
-    fun onOptionVote(voteUrl: String)
 }

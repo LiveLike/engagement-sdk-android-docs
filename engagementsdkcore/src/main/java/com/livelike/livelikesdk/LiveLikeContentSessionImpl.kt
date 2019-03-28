@@ -1,11 +1,14 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
+import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.EpochTime
+import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.chat.ChatQueue
-import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.toChatQueue
-import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.proxies.syncTo
 import com.livelike.livelikesdk.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
@@ -16,7 +19,6 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setUserId
 import com.livelike.livelikesdk.widget.WidgetManager
-import com.livelike.livelikesdk.widget.WidgetRenderer
 import com.livelike.livelikesdk.widget.asWidgetManager
 
 

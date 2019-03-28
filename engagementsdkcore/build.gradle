@@ -72,6 +72,9 @@ dependencies {
 
     // Analytics
     implementation 'com.mixpanel.android:mixpanel-android:5.5.2'
+
+    // Engagement SDK API
+    api project(path: ':engagementsdkapi')
 }
 
 repositories {

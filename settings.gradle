@@ -1,1 +1,1 @@
-include ':livelikedemo', ':engagementsdkcore', ':pluginexoplayer', ':engagementsdkapi'
+include ':livelikedemo', ':engagementsdkcore', ':pluginexoplayer', ':engagementsdkapi', ':engagementsdk'

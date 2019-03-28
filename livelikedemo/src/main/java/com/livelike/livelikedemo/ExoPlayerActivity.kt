@@ -8,12 +8,12 @@ import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.view.WindowManager
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.registerLogsHandler
 import kotlinx.android.synthetic.main.activity_exo_player.*

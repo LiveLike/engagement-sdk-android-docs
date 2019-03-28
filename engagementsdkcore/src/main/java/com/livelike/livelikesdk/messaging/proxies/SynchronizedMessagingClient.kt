@@ -1,9 +1,9 @@
 package com.livelike.livelikesdk.messaging.proxies
 
 import android.os.Handler
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
-import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
 import com.livelike.livelikesdk.util.logVerbose
