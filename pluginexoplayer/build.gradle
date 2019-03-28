@@ -33,7 +33,7 @@ dependencies {
     compileOnly 'com.google.android.exoplayer:exoplayer:2.9.3'
 
     // livelike SDKs
-    compileOnly project(path: ':livelikesdk')
+    compileOnly project(path: ':engagementsdkcore')
 }
 repositories {
     mavenCentral()
