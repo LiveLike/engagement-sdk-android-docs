@@ -49,6 +49,6 @@ dependencies {
 
     //sdk
     api project(':engagementsdkapi')
-    implementation project(path: ':engagementsdkcore')
+    api project(path: ':engagementsdkcore')
     implementation project(path: ':pluginexoplayer')
 }

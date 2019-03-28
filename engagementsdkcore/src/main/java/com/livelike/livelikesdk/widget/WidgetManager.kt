@@ -69,7 +69,7 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 }
 
-internal enum class WidgetType (val value: String) {
+enum class WidgetType (val value: String) {
     TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_RESULTS("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("image-prediction-created"),

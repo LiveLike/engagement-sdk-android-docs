@@ -36,7 +36,6 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
     override var widgetListener : WidgetEventListener? = null
     private var container : FrameLayout
     private var currentWidget: Widget? = null
-    private lateinit var observerListeners: Set<WidgetManager.WidgetAnalyticsObserver>
 
     init {
         LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
@@ -51,7 +50,6 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
         type: String,
         payload: JsonObject
     ) {
-        this.observerListeners = observerListeners
         logDebug { "NOW - Show Widget $type on screen: $payload" }
         val layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
