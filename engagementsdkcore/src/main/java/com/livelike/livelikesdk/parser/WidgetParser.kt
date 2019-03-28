@@ -67,7 +67,8 @@ internal class WidgetParser {
                 it.vote_count.toLong(),
                 it.image_url,
                 it.answer_count.toLong(),
-                it.answer_url
+                it.answer_url,
+                it.is_correct
             )
         }
     }

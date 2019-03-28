@@ -1,5 +1,7 @@
 package com.livelike.livelikesdk.binding
 
-internal interface QuizWidgetObserver : WidgetObserver {
-    fun updateVoteCount(vote: Long)
+import com.livelike.livelikesdk.widget.model.VoteOption
+
+internal interface QuizWidgetObserver {
+    fun updateVoteCount(voteOptions: List<VoteOption>)
 }

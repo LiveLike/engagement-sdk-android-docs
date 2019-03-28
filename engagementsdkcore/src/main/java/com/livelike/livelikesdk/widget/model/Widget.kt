@@ -6,7 +6,7 @@ import java.net.URI
 
 internal class Widget {
     var observers = mutableSetOf<WidgetObserver>()
-    var quizResultObserver = mutableSetOf<QuizWidgetObserver>()
+
     var optionList: List<WidgetOptions> = emptyList()
     var url: URI? = null
     var id: String? = null
@@ -42,7 +42,7 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
         calculateVotePercentage(newValue)
         newValue.forEach { data ->
-            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount))
+            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
         }
     }
 
@@ -83,7 +83,8 @@ internal data class WidgetOptions(
     var voteCount: Long = 0,
     var imageUrl: String? = null,
     var answerCount: Long = 0,
-    var answerUrl: String? = null
+    var answerUrl: String? = null,
+    var isCorrect: Boolean? = null
 )
 
 internal class PredictionWidgetQuestion(val widget: Widget) {
@@ -91,7 +92,7 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     fun notifyDataSetChange() {
         val voteOptionList = mutableListOf<VoteOption>()
         widget.optionList.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount))
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
         }
         widget.observers.forEach { observer ->
             observer.questionUpdated(widget.question)
@@ -101,9 +102,26 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     }
 }
 
+internal class QuizWidgetResult(val widget: Widget) {
+    private val voteOptionList = mutableListOf<VoteOption>()
+    var observers = mutableSetOf<QuizWidgetObserver>()
+    fun registerObserver(widgetObserver: QuizWidgetObserver) {
+        observers.add(widgetObserver)
+    }
+    fun notifyDataSetChange() {
+        widget.optionList.forEach { data ->
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
+        }
+        observers.forEach { observer ->
+            observer.updateVoteCount(voteOptionList)
+        }
+    }
+}
+
 class VoteOption(val id: String?,
                  val description: String,
                  val votePercentage: Long,
                  val imageUrl: String?,
                  val answerUrl: String?,
-                 val answerCount: Long)
+                 val answerCount: Long,
+                 val isCorrect: Boolean?)

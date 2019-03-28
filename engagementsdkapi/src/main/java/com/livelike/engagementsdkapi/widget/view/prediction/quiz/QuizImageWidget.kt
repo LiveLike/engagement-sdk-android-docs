@@ -12,19 +12,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.binding.QuizWidgetObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
+import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
-class QuizImageWidget : ConstraintLayout, WidgetObserver {
+class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
     private var optionSelected = false
@@ -32,8 +34,12 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
     private var dismissWidget: (() -> Unit)? = null
     private var fetchResult: ((List<String>) -> Unit)? = null
     val imageButtonMap = HashMap<ImageButton, String?>()
+    var selectedOption: String? = null
+    var correctOption: String? = null
     lateinit var userTapped: () -> Unit
     private val answerUrlList = arrayListOf<String>()
+    private val viewOptions = ArrayList<ViewOption>()
+    private var lottieAnimationPath = ""
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -62,8 +68,6 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
             viewAnimation.startTimerAnimation(pieTimer, 7000) {
                 if (optionSelected)
                     fetchResult?.invoke(answerUrlList)
-                 else
-                    viewAnimation.hideWidget()
 
                 dismissWidget?.invoke()
             }
@@ -105,6 +109,78 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
         this.userTapped = userTapped
     }
 
+    // TODO: Remove double iteration and use map instead.
+    override fun updateVoteCount(voteOptions: List<VoteOption>) {
+        viewOptions.forEach { view ->
+            voteOptions.forEach { option ->
+                if (view.id == option.id) {
+                    view.progressBar.progress = option.answerCount.toInt()
+                    view.percentageTextView.text = option.answerCount.toString().plus("%")
+                    updateViewDrawable(option, view.progressBar, view.button, option.answerCount.toInt())
+                }
+
+            }
+        }
+    }
+    private fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
+        userSelectedOption == correctOption
+
+    private fun findResultAnimationPath(correctOption: String?, userSelectedOption: String?): String {
+        return if (hasUserSelectedCorrectOption(correctOption, userSelectedOption))
+            PredictionTextFollowUpWidgetView.correctAnswerLottieFilePath
+        else PredictionTextFollowUpWidgetView.wrongAnswerLottieFilePath
+    }
+    private fun updateViewDrawable(option: VoteOption, progressBar: ProgressBar, optionButton: ImageButton, percentage: Int) {
+        lottieAnimationPath = findResultAnimationPath(correctOption, selectedOption)
+        if (hasUserSelectedCorrectOption(selectedOption, correctOption)) {
+            if (isCurrentButtonSameAsCorrectOption(correctOption, option.id)) {
+                updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
+                updateImageButton(optionButton, R.drawable.button_correct_answer_outline)
+            } else {
+                updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
+            }
+        } else {
+            when {
+                isCurrentButtonSameAsCorrectOption(correctOption, option.id) -> {
+                    updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
+                    updateImageButton(optionButton, R.drawable.button_correct_answer_outline)
+                }
+                isCurrentButtonSameAsCorrectOption(selectedOption, option.id) -> {
+                    updateProgressBar(progressBar, R.drawable.progress_bar_user_selection_wrong, percentage)
+                    updateImageButton(optionButton, R.drawable.button_wrong_answer_outline)
+                }
+                else -> {
+                    updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
+                }
+            }
+        }
+    }
+
+    private fun updateProgressBar(progressBar: ProgressBar, drawable: Int, percentage: Int) {
+        progressBar.apply {
+            progressDrawable = AppCompatResources.getDrawable(context, drawable)
+            visibility = View.VISIBLE
+            progress = percentage
+        }
+    }
+
+    private fun updateImageButton(button: ImageButton, drawable: Int) {
+        button.background = AppCompatResources.getDrawable(context, drawable)
+        setOnClickListener(null)
+    }
+
+    private fun overrideButtonPadding(optionButton: ImageButton) {
+        optionButton.setPadding(
+            AndroidResource.dpToPx(2),
+            AndroidResource.dpToPx(14),
+            AndroidResource.dpToPx(48),
+            AndroidResource.dpToPx(2)
+        )
+    }
+
+    private fun isCurrentButtonSameAsCorrectOption(correctOption: String?, buttonId: String?) =
+        buttonId == correctOption
+
     inner class ImageAdapter(
         private val optionList: List<VoteOption>,
         private val optionSelectedCallback: (String?) -> Unit
@@ -115,19 +191,19 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
             val option = optionList[position]
             holder.optionText.text = option.description
             option.answerUrl?.let { answerUrlList.add(it) }
-            val imageWidth = AndroidResource.dpToPx(74)
+            option.isCorrect?.let { if(it) correctOption = option.id }
 
             // TODO: Move this to adapter layer.
             Glide.with(context)
                 .load(option.imageUrl)
-                .apply(RequestOptions().override(imageWidth, imageWidth))
                 .into(holder.optionButton)
             imageButtonMap[holder.optionButton] = option.id
             holder.optionButton.setOnClickListener {
-                val selectedOption = imageButtonMap[holder.optionButton]
+                selectedOption = imageButtonMap[holder.optionButton]
                 optionSelectedCallback(selectedOption)
                 userTapped.invoke()
             }
+            viewOptions.add(ViewOption(holder.optionButton, option.id, holder.progressBar, holder.percentageText))
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -144,9 +220,17 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver {
             return optionList.size
         }
     }
+    class ViewOption(
+        val button: ImageButton,
+        val id: String?,
+        val progressBar: ProgressBar,
+        val percentageTextView: TextView
+    )
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val optionButton: ImageButton = view.image_button
         val optionText: TextView = view.item_text
+        val percentageText: TextView = view.result_percentage_text
+        val progressBar: ProgressBar = view.determinateBar
     }
 }

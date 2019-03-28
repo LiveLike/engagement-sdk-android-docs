@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.binding.QuizWidgetObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
@@ -28,7 +29,7 @@ import kotlinx.android.synthetic.main.cross_image.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
-class QuizFollowup  : ConstraintLayout, WidgetObserver {
+class QuizFollowup  : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
     private var dismissWidget: (() -> Unit)? = null
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
@@ -115,7 +116,10 @@ class QuizFollowup  : ConstraintLayout, WidgetObserver {
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {}
     override fun confirmMessageUpdated(confirmMessage: String) {}
+    // TODO: update percentage
+    override fun updateVoteCount(voteOptions: List<VoteOption>) {
 
+    }
     fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
         userSelectedOption == correctOption
 

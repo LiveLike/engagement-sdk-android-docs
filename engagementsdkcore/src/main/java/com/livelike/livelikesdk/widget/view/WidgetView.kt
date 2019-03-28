@@ -26,11 +26,11 @@ import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
 import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
+import com.livelike.livelikesdk.widget.model.QuizWidgetResult
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFollowupWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
-import com.livelike.livelikesdk.widget.view.prediction.quiz.QuizFollowup
 import com.livelike.livelikesdk.widget.view.prediction.quiz.QuizImageWidget
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
@@ -41,6 +41,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     override var widgetListener: WidgetEventListener? = null
     private var currentWidget: Widget? = null
     private var viewRoot: View = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
+    private lateinit var quizWidget : QuizImageWidget
 
     companion object {
         private const val WIDGET_MINIMUM_SIZE_DP = 260
@@ -170,36 +171,31 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_QUIZ -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
-                val predictionWidget = QuizImageWidget(context, null, 0) { dismissCurrentWidget() }
+                quizWidget = QuizImageWidget(context, null, 0) { dismissCurrentWidget() }
 
-                predictionWidget.layoutParams = layoutParams
-
+                quizWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
                 val followupWidgetData = PredictionWidgetQuestion(widget)
-                widget.registerObserver(predictionWidget)
+                widget.registerObserver(quizWidget)
                 followupWidgetData.notifyDataSetChange()
-                predictionWidget.userTappedCallback {
+                quizWidget.userTappedCallback {
                     emitWidgetOptionSelected(widget.id, widgetResource.kind)
                 }
 
                 containerView.addView(predictionWidget)
+                container.addView(quizWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
                 currentWidget = widget
             }
 
             WidgetType.IMAGE_QUIZ_RESULT -> {
-                logInfo { "Abhishek Image result" }
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
-                val predictionWidget = QuizFollowup(context, null, 0) { dismissCurrentWidget() }
-
-                predictionWidget.layoutParams = layoutParams
-
                 currentWidget?.let {
                     logInfo { "Abhishek ${it.question}" }
                     parser.parseQuizResult(it, widgetResource)
-                    val followupWidgetData = PredictionWidgetFollowUp(currentWidget!!)
-                    widget.registerObserver(predictionWidget)
+                    val followupWidgetData = QuizWidgetResult(currentWidget!!)
+                    followupWidgetData.registerObserver(quizWidget)
                     followupWidgetData.notifyDataSetChange()
                     emitWidgetShown(widget.id, widgetResource.kind)
                     currentWidget = widget
