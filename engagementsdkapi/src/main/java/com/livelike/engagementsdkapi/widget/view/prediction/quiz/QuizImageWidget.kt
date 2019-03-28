@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.view.prediction.quiz
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
@@ -32,7 +33,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
-    private var fetchResult: ((List<String>) -> Unit)? = null
+    private var fetchResult: (() -> Unit)? = null
     val imageButtonMap = HashMap<ImageButton, String?>()
     var selectedOption: String? = null
     var correctOption: String? = null
@@ -44,12 +45,13 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit) : super(
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit, fetch: () -> Unit) : super(
         context,
         attrs,
         defStyleAttr
     ) {
         dismissWidget = dismiss
+        fetchResult = fetch
     }
 
     init { inflate(context) }
@@ -66,10 +68,9 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
         viewAnimation = ViewAnimation(this)
         viewAnimation.startWidgetTransitionInAnimation {
             viewAnimation.startTimerAnimation(pieTimer, 7000) {
-                if (optionSelected)
-                    fetchResult?.invoke(answerUrlList)
-
-                dismissWidget?.invoke()
+                if (!optionSelected)
+                    dismissWidget?.invoke()
+                else fetchResult?.invoke()
             }
         }
     }
@@ -111,6 +112,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
 
     // TODO: Remove double iteration and use map instead.
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
+        Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, 6000)
         viewOptions.forEach { view ->
             voteOptions.forEach { option ->
                 if (view.id == option.id) {
@@ -118,7 +120,6 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
                     view.percentageTextView.text = option.answerCount.toString().plus("%")
                     updateViewDrawable(option, view.progressBar, view.button, option.answerCount.toInt())
                 }
-
             }
         }
     }
@@ -130,8 +131,11 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
             PredictionTextFollowUpWidgetView.correctAnswerLottieFilePath
         else PredictionTextFollowUpWidgetView.wrongAnswerLottieFilePath
     }
+
     private fun updateViewDrawable(option: VoteOption, progressBar: ProgressBar, optionButton: ImageButton, percentage: Int) {
         lottieAnimationPath = findResultAnimationPath(correctOption, selectedOption)
+        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
+
         if (hasUserSelectedCorrectOption(selectedOption, correctOption)) {
             if (isCurrentButtonSameAsCorrectOption(correctOption, option.id)) {
                 updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)

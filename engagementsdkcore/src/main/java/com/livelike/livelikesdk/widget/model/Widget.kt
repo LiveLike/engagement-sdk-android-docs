@@ -30,23 +30,8 @@ internal class Widget {
     fun registerObserver(widgetObserver: WidgetObserver) {
         observers.add(widgetObserver)
     }
-}
 
-internal class PredictionWidgetFollowUp(val widget: Widget) {
-    private val voteOptions = mutableListOf<VoteOption>()
-    private fun getCorrectOptionWithUserSelection()
-            : Pair<String?, String?> {
-        return Pair(widget.correctOptionId, widget.optionSelected.id)
-    }
-
-    private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
-        calculateVotePercentage(newValue)
-        newValue.forEach { data ->
-            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
-        }
-    }
-
-    private fun calculateVotePercentage(optionList: List<WidgetOptions>) {
+    fun calculateVotePercentage(optionList: List<WidgetOptions>) {
         var voteTotal = 0L
         var answerTotal = 0L
         optionList.forEach { option ->
@@ -61,6 +46,23 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
                 option.answerCount = (option.answerCount * 100) / answerTotal
         }
     }
+}
+
+internal class PredictionWidgetFollowUp(val widget: Widget) {
+    private val voteOptions = mutableListOf<VoteOption>()
+    private fun getCorrectOptionWithUserSelection()
+            : Pair<String?, String?> {
+        return Pair(widget.correctOptionId, widget.optionSelected.id)
+    }
+
+    private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
+        widget.calculateVotePercentage(newValue)
+        newValue.forEach { data ->
+            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
+        }
+    }
+
+
 
     fun notifyDataSetChange() {
         createOptionsWithVotePercentageMap(widget.optionList)
@@ -109,6 +111,7 @@ internal class QuizWidgetResult(val widget: Widget) {
         observers.add(widgetObserver)
     }
     fun notifyDataSetChange() {
+        widget.calculateVotePercentage(widget.optionList)
         widget.optionList.forEach { data ->
             voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
         }

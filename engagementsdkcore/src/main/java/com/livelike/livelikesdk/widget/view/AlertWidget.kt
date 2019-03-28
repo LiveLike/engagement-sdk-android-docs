@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationHandler
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.parseDuration
@@ -21,7 +20,6 @@ import com.livelike.livelikesdk.widget.model.Alert
 import kotlinx.android.synthetic.main.alert_widget.view.*
 
 internal class AlertWidget : ConstraintLayout {
-    private val animationHandler = AnimationHandler()
     private lateinit var viewAnimation: ViewAnimation
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null

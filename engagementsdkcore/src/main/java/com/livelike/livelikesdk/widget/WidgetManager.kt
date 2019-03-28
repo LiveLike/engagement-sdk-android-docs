@@ -11,7 +11,10 @@ import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
+import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logInfo
+import com.livelike.livelikesdk.util.logVerbose
+import java.lang.Exception
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
@@ -46,12 +49,17 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onOptionVote(voteUrl: String, channel: String) {
-        dataClient.vote(voteUrl)
         if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
+        if (voteUrl == "null" || voteUrl.isEmpty()) {
+            logError { "Failed sending voting request for $voteUrl" }
+            return
+        }
+        logVerbose { "Voting for $voteUrl" }
+        dataClient.vote(voteUrl)
+
     }
 
     override fun onFetchingQuizResult(answerUrl: String) {
-        dataClient.fetchQuizResult(answerUrl)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

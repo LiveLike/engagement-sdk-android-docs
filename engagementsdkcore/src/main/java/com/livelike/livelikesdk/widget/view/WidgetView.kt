@@ -171,7 +171,8 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_QUIZ -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
-                quizWidget = QuizImageWidget(context, null, 0) { dismissCurrentWidget() }
+                quizWidget = QuizImageWidget(context, null, 0, { dismissCurrentWidget() },
+                    { currentWidget?.let { emitWidgetEvents(it) } })
 
                 quizWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
@@ -231,7 +232,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         analyticService.trackWidgetReceived(widgetId ?: "", kind)
     }
 
-    // TODO: CLean this method
     override fun dismissCurrentWidget() {
         logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
         containerView.removeAllViews()
@@ -239,14 +239,18 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
             containerView.removeAllViews()
         }
+        container.removeAllViews()
         val widget = currentWidget ?: return
-        widget.id?.let { widget.optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
         emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
-        val voteUrl = widget.optionSelected.voteUrl.toString()
-        val answerUrl = widget.optionSelected.answerUrl.toString()
-        widgetListener?.onOptionVote(voteUrl, widget.subscribeChannel)
-        widgetListener?.onFetchingQuizResult(answerUrl)
+        emitWidgetEvents(widget)
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
 
 }
+    private fun emitWidgetEvents(widget: Widget) {
+        val optionSelected = widget.optionSelected
+        widget.id?.let { optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
+        widgetListener?.onOptionVote(optionSelected.voteUrl.toString(), widget.subscribeChannel, optionSelected.answerUrl.toString())
+        widgetListener?.onFetchingQuizResult(optionSelected.answerUrl.toString())
+    }
+
