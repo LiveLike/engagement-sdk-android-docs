@@ -48,6 +48,6 @@ dependencies {
     implementation group: 'com.pubnub', name: 'pubnub-gson', version: '4.21.0'
 
     //sdk
-    implementation project(":livelikesdk")
-    implementation project(path: ':livelikepreintegrators')
+    implementation project(':engagementsdkcore')
+    implementation project(path: ':pluginexoplayer')
 }

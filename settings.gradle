@@ -1,1 +1,1 @@
-include ':livelikedemo', ':livelikesdk', ':livelikepreintegrators'
+include ':livelikedemo', ':engagementsdkcore', ':pluginexoplayer', ':engagementsdkapi'
