@@ -11,6 +11,7 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
+import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
@@ -29,14 +30,14 @@ import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollow
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
 
 
-open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
+class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null
     private var container: FrameLayout
     private var currentWidget: Widget? = null
 
     init {
-        LayoutInflater.from(context).inflate(com.livelike.livelikesdk.R.layout.widget_view, this, true)
-        container = findViewById(com.livelike.livelikesdk.R.id.containerView)
+        LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
+        container = findViewById(R.id.containerView)
     }
 
     fun setSession(session: LiveLikeContentSession) {
