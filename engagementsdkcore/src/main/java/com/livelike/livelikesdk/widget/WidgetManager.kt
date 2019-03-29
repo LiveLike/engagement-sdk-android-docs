@@ -11,6 +11,7 @@ import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
+import com.livelike.livelikesdk.util.logVerbose
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
@@ -44,8 +45,14 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         }
     }
 
-    override fun onOptionVote(voteUrl: String) {
+    override fun onOptionVote(voteUrl: String, channel: String) {
         dataClient.vote(voteUrl)
+        if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
+    }
+
+    override fun onFetchingQuizResult(answerUrl: String) {
+        if(answerUrl.isNotEmpty()) isProcessing = false
+        dataClient.fetchQuizResult(answerUrl)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
@@ -64,13 +71,6 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
             renderer?.dismissCurrentWidget()
         }
     }
-
-    // TODO: Name should be changed to more generic and avoid terms like analytics.
-    interface WidgetAnalyticsObserver {
-        fun widgetDismissed(widgetId: String, kind: String)
-        fun widgetShown(widgetId: String, kind: String)
-        fun widgetOptionSelected(widgetId: String, kind: String)
-    }
 }
 
 enum class WidgetType (val value: String) {
@@ -79,6 +79,8 @@ enum class WidgetType (val value: String) {
     IMAGE_PREDICTION("image-prediction-created"),
     IMAGE_PREDICTION_RESULTS("image-prediction-follow-up-created"),
     HTML5("html-widget"),
+    IMAGE_QUIZ("image-quiz-created"),
+    IMAGE_QUIZ_RESULT("image-quiz-results"),
     ALERT("alert-created"),
     NONE("none");
 
@@ -92,6 +94,7 @@ enum class WidgetType (val value: String) {
 internal interface WidgetDataClient {
     fun vote(voteUrl:String)
     fun registerImpression(impressionUrl: String)
+    fun fetchQuizResult(answerUrl: String)
 }
 
 internal fun MessagingClient.asWidgetManager(dataClient: WidgetDataClient): WidgetManager {

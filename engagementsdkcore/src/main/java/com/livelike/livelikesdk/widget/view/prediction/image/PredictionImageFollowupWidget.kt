@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.support.constraint.ConstraintLayout
-import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -22,6 +21,7 @@ import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.cross_image.view.*
@@ -32,14 +32,15 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private var dismissWidget: (() -> Unit)? = null
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
+    lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private var layout = ConstraintLayout(context, null, 0)
     private var lottieAnimationPath = ""
+    private var timeout = 0L
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private var timeout = 0L
     fun initialize(dismiss: () -> Unit, timeout: Long) {
         inflate(context)
         dismissWidget = dismiss
@@ -58,6 +59,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
         updateCrossImage()
         viewAnimation = ViewAnimation(this)
+        widgetResultDisplayUtil =
+            WidgetResultDisplayUtil(context, viewAnimation)
     }
 
     private fun updateCrossImage() {
@@ -125,17 +128,16 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
             val optionButton = holder.optionButton
 
             holder.optionText.text = option.description
-            updatePercentageText(holder.percentageText, option)
+            widgetResultDisplayUtil.updatePercentageText(holder.percentageText, option)
             loadImage(option, dpToPx(74), optionButton)
-            updateViewDrawable(option, progressBar, optionButton, option.votePercentage.toInt())
+            widgetResultDisplayUtil.updateViewDrawable(option,
+                progressBar,
+                optionButton,
+                option.votePercentage.toInt(),
+                correctOption,
+                userSelectedOption,
+                prediction_result)
             overrideButtonPadding(optionButton)
-        }
-
-        private fun updatePercentageText(percentageText: TextView, option: VoteOption) {
-            percentageText.apply {
-                visibility = View.VISIBLE
-                text = option.votePercentage.toString().plus("%")
-            }
         }
 
         private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageButton) {
@@ -145,50 +147,9 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                 .into(optionButton)
         }
 
-        private fun updateViewDrawable(option: VoteOption, progressBar: ProgressBar, optionButton: ImageButton, percentage: Int) {
-            if (hasUserSelectedCorrectOption(userSelectedOption, correctOption)) {
-                if (isCurrentButtonSameAsCorrectOption(correctOption, option.id)) {
-                    updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
-                    updateImageButton(optionButton, R.drawable.button_correct_answer_outline)
-                } else {
-                    updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
-                }
-            } else {
-                when {
-                    isCurrentButtonSameAsCorrectOption(correctOption, option.id) -> {
-                        updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
-                        updateImageButton(optionButton, R.drawable.button_correct_answer_outline)
-                    }
-                    isCurrentButtonSameAsCorrectOption(userSelectedOption, option.id) -> {
-                        updateProgressBar(progressBar, R.drawable.progress_bar_user_selection_wrong, percentage)
-                        updateImageButton(optionButton, R.drawable.button_wrong_answer_outline)
-                    }
-                    else -> {
-                        updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
-                    }
-                }
-            }
-        }
-
-        private fun updateProgressBar(progressBar: ProgressBar, drawable: Int, percentage: Int) {
-            progressBar.apply {
-                progressDrawable = AppCompatResources.getDrawable(context, drawable)
-                visibility = View.VISIBLE
-                progress = percentage
-            }
-        }
-
-        private fun updateImageButton(button: ImageButton, drawable: Int) {
-            button.background = AppCompatResources.getDrawable(context, drawable)
-            setOnClickListener(null)
-        }
-
         private fun overrideButtonPadding(optionButton: ImageButton) {
             optionButton.setPadding(dpToPx(2), dpToPx(14), dpToPx(48), dpToPx(2))
         }
-
-        private fun isCurrentButtonSameAsCorrectOption(correctOption: String?, buttonId: String?) =
-            buttonId == correctOption
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(

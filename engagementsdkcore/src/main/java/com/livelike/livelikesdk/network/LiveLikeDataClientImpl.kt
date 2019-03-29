@@ -161,26 +161,33 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
     }
 
     override fun vote(voteUrl: String) {
-        if (voteUrl == "null"
-            || voteUrl.isEmpty()
-        ) {
-            logError { "Voting for $voteUrl" }
+        if (voteUrl == "null" || voteUrl.isEmpty()) {
+            logError { "Voting failed as voteUrl is empty" }
             return
         }
         logVerbose { "Voting for $voteUrl" }
+        post(voteUrl)
+    }
+
+    override fun fetchQuizResult(answerUrl: String) {
+        if (answerUrl == "null" || answerUrl.isEmpty()) {
+            logError { "Cannot make a post request to answerUrl as it is empty" }
+            return
+        }
+        logVerbose { "Sending post request for $answerUrl" }
+        post(answerUrl)
+    }
+
+    private fun post(url: String) {
         val request = Request.Builder()
-            .url(voteUrl)
+            .url(url)
             .post(RequestBody.create(null, ByteString.EMPTY))
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {}
-
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
+            override fun onFailure(call: Call?, e: IOException?) { logError { e } }
         })
-
     }
 }
 

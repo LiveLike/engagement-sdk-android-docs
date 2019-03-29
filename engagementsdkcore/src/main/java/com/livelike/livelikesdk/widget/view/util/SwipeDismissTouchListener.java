@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget;
+package com.livelike.livelikesdk.widget.view.util;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

@@ -1,5 +1,7 @@
 package com.livelike.livelikesdk.animation
 
+import android.animation.Animator
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
@@ -8,10 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
-import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
+import com.livelike.livelikesdk.util.logDebug
+import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
 internal class ViewAnimation(val view: View) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
@@ -27,7 +31,7 @@ internal class ViewAnimation(val view: View) {
             heightToReach,
             heightToReach / 2, 0f)
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutElastic, animator)
-        animationHandler.bindListenerToAnimationView(animator) {onAnimationCompletedCallback.invoke()}
+        animationHandler.bindListenerToAnimationView(animator) { onAnimationCompletedCallback.invoke() }
     }
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
@@ -68,7 +72,7 @@ internal class ViewAnimation(val view: View) {
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
     }
 
-    fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: (Boolean) -> Unit) {
+    fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: () -> Unit) {
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
@@ -123,5 +127,62 @@ internal class ViewAnimation(val view: View) {
                 }
             }
         ) {})
+    }
+}
+
+private class AnimationHandler {
+    fun startAnimation(lottieAnimationView: LottieAnimationView,
+                       onAnimationCompletedCallback: () -> Unit,
+                       duration: Long,
+                       animator: ValueAnimator
+    ) {
+        bindListenerToAnimationView(animator, onAnimationCompletedCallback)
+        animator.duration = duration
+        animator.addUpdateListener { animation ->
+            lottieAnimationView.progress = animation.animatedValue as Float
+        }
+
+        lottieAnimationView.playAnimation()
+        animator.start()
+    }
+
+    fun cancelAnimation(animator: ValueAnimator) {
+        animator.cancel()
+    }
+
+    fun createAnimationEffectWith(ease: AnimationEaseInterpolator.Ease,
+                                  forDuration: Float,
+                                  animator: ValueAnimator) {
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(
+            AnimationEaseAdapter()
+                .createAnimationEffectWith(
+                    ease,
+                    forDuration,
+                    animator
+                ))
+
+        animatorSet.duration = forDuration.toLong()
+        animatorSet.start()
+    }
+
+    fun bindListenerToAnimationView(animator: Animator,
+                                    onAnimationCompletedCallback: () -> Unit) {
+        animator.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+                logDebug { "Animation start" }
+            }
+            override fun onAnimationEnd(animation: Animator) {
+                onAnimationCompletedCallback.invoke()
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+                logDebug { "Animation cancel" }
+            }
+
+            override fun onAnimationRepeat(animation: Animator) {
+                logDebug { "Animation repeat" }
+            }
+        })
     }
 }

@@ -6,6 +6,7 @@ import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.Error
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
+import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logVerbose
@@ -17,7 +18,6 @@ import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
-import org.threeten.bp.Duration
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -94,14 +94,15 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                     datePattern
                 ).toInstant().toEpochMilli()
                 logMessage(message)
+                val payload = message.message.asJsonObject.getAsJsonObject("payload")
+                val timeoutReceived = payload.extractStringOrEmpty("timeout")
+                val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
+
                 val clientMessage = ClientMessage(
                     message.message.asJsonObject,
                     message.channel,
                     EpochTime(epochTimeMs),
-                    Duration.parse(
-                        message.message.asJsonObject.getAsJsonObject("payload")
-                            .extractStringOrEmpty("timeout")
-                    ).toMillis()
+                    timeoutMs
                 )
                 logDebug { "$pdtString - Received message from pubnub: $clientMessage" }
                 listener?.onClientMessageEvent(client, clientMessage)

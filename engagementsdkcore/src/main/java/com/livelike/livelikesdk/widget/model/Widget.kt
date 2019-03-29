@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk.widget.model
 
+import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import java.net.URI
 
@@ -10,14 +11,15 @@ internal class Widget {
     var id: String? = null
     var kind: String? = null
     var question: String = ""
-    var optionSelected: WidgetOptions = WidgetOptions()
+    var optionSelected: WidgetOptions = WidgetOptions("")
     var confirmMessage: String = ""
     var correctOptionId: String = ""
     var timeout: Long = 7000L
+    var subscribeChannel: String = ""
 
     fun optionSelectedUpdated(id: String?) {
         if (id == null) {
-            optionSelected = WidgetOptions()
+            optionSelected = WidgetOptions("")
             return
         }
         optionSelected = optionList.single { option -> option.id == id }
@@ -26,6 +28,22 @@ internal class Widget {
 
     fun registerObserver(widgetObserver: WidgetObserver) {
         observers.add(widgetObserver)
+    }
+
+    fun calculateVotePercentage(optionList: List<WidgetOptions>) {
+        var voteTotal = 0L
+        var answerTotal = 0L
+        optionList.forEach { option ->
+            voteTotal += option.voteCount
+            answerTotal += option.answerCount
+        }
+
+        optionList.forEach { option ->
+            if (voteTotal != 0L)
+                option.voteCount = (option.voteCount * 100) / voteTotal
+            if (answerTotal != 0L)
+                option.answerCount = (option.answerCount * 100) / answerTotal
+        }
     }
 }
 
@@ -37,20 +55,9 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
     }
 
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
-        calculateVotePercentage(newValue)
+        widget.calculateVotePercentage(newValue)
         newValue.forEach { data ->
-            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl))
-        }
-    }
-
-    private fun calculateVotePercentage(optionList: List<WidgetOptions>) {
-        var voteTotal = 0L
-        optionList.forEach { option ->
-            voteTotal += option.voteCount
-        }
-        optionList.forEach { option ->
-            if (voteTotal == 0L) return
-            option.voteCount = (option.voteCount * 100) / voteTotal
+            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
         }
     }
 
@@ -69,11 +76,14 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
 }
 
 internal data class WidgetOptions(
-    val id: String? = null,
+    val id: String,
     val voteUrl: URI? = null,
     var description: String = "",
     var voteCount: Long = 0,
-    var imageUrl: String? = null
+    var imageUrl: String = "",
+    var answerCount: Long = 0,
+    var answerUrl: String? = null,
+    var isCorrect: Boolean = false
 )
 
 internal class PredictionWidgetQuestion(val widget: Widget) {
@@ -81,7 +91,7 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     fun notifyDataSetChange() {
         val voteOptionList = mutableListOf<VoteOption>()
         widget.optionList.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl))
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
         }
         widget.observers.forEach { observer ->
             observer.questionUpdated(widget.question)
@@ -91,4 +101,26 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     }
 }
 
-class VoteOption(val id: String?, val description: String, val votePercentage: Long, val imageUrl: String?)
+internal class QuizWidgetResult(val widget: Widget) {
+    private val voteOptionList = mutableListOf<VoteOption>()
+    private var observers = mutableSetOf<QuizVoteObserver>()
+    fun registerObserver(voteObserver: QuizVoteObserver) {
+        observers.add(voteObserver)
+    }
+    fun notifyDataSetChange() {
+        widget.calculateVotePercentage(widget.optionList)
+        widget.optionList.forEach { data ->
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
+        }
+        observers.forEach { observer ->
+            observer.updateVoteCount(voteOptionList)
+        }
+    }
+}
+
+class VoteOption(val id: String,
+                 val description: String = "",
+                 val votePercentage: Long = 0,
+                 val imageUrl: String = "",
+                 val answerCount: Long = 0,
+                 val isCorrect: Boolean = false)
