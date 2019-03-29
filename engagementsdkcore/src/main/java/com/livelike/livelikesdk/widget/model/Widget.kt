@@ -2,7 +2,6 @@ package com.livelike.livelikesdk.widget.model
 
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.logInfo
 import java.net.URI
 
 internal class Widget {
@@ -20,7 +19,6 @@ internal class Widget {
 
     fun optionSelectedUpdated(id: String?) {
         if (id == null) {
-            logInfo { "Abhishek id is null" }
             optionSelected = WidgetOptions("")
             return
         }

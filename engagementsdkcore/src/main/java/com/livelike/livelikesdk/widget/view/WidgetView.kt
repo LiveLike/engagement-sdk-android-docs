@@ -232,8 +232,12 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     override fun dismissCurrentWidget() {
         removeView()
         val widget = currentWidget ?: return
-        emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
+        emitWidgetDismissEvents(widget)
         optionSelectionEvents()
+    }
+
+    private fun emitWidgetDismissEvents(widget: Widget) {
+        emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
 
@@ -244,6 +248,12 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
     private fun optionSelectionEvents() {
         val optionSelected = currentWidget?.optionSelected
+        if (optionSelected?.id == "") {
+            removeView()
+            currentWidget?.let { emitWidgetDismissEvents(it) }
+            return
+        }
+
         currentWidget?.id?.let {
             optionSelected?.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) }
         }

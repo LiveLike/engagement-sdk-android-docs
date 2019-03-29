@@ -51,7 +51,7 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onFetchingQuizResult(answerUrl: String) {
-        isProcessing = false
+        if(answerUrl.isNotEmpty()) isProcessing = false
         dataClient.fetchQuizResult(answerUrl)
     }
 

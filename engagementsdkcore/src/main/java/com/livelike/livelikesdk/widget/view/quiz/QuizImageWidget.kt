@@ -68,9 +68,9 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
     fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit) {
         this.timeout = timeout
-        inflate(context)
         dismissWidget = dismiss
         fetchResult = fetch
+        inflate(context)
     }
 
     override fun questionUpdated(questionText: String) {
