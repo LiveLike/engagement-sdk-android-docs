@@ -73,7 +73,6 @@ internal class WidgetParser {
         }
     }
 
-    // TODO: Refine this method
     fun parseQuizResult(widget: Widget, resource: Resource) {
         widget.optionList.forEach { option ->
             resource.choices.forEach { choice ->
