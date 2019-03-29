@@ -31,10 +31,9 @@ import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollow
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
 
 
-open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs),
-    WidgetRenderer {
-    override var widgetListener : WidgetEventListener? = null
-    private var container : FrameLayout
+open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
+    override var widgetListener: WidgetEventListener? = null
+    private var container: FrameLayout
     private var currentWidget: Widget? = null
 
     init {
@@ -67,7 +66,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                         context,
                         null,
                         0
-                    ).apply { initialize({dismissCurrentWidget()}, widget.timeout) }
+                    ).apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
 
                 predictionWidget.layoutParams = layoutParams
 
@@ -87,7 +86,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
                 parser.parsePredictionFollowup(widget, widgetResource)
                 val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0)
-                    .apply { initialize({dismissCurrentWidget()}, widget.timeout) }
+                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
 
                 predictionWidget.layoutParams = layoutParams
 
@@ -109,7 +108,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
                 parser.parseTextPredictionCommon(widget, widgetResource)
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
-                    .apply { initialize({dismissCurrentWidget()}, widget.timeout) }
+                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
                 predictionWidget.layoutParams = layoutParams
                 val widgetData = PredictionWidgetQuestion(widget)
                 widget.registerObserver(predictionWidget)
@@ -127,7 +126,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
                 parser.parsePredictionFollowup(widget, widgetResource)
                 val predictionWidget = PredictionImageFollowupWidget(context, null, 0)
-                    .apply { initialize({dismissCurrentWidget()}, widget.timeout) }
+                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
 
                 predictionWidget.layoutParams = layoutParams
 
