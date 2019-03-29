@@ -18,7 +18,6 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logVerbose
-import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
@@ -31,7 +30,7 @@ import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollow
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
 
 
-open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
+class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null
     private var container: FrameLayout
     private var currentWidget: Widget? = null
@@ -78,6 +77,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 }
                 container.addView(predictionWidget)
                 emitWidgetShown(widgetData.id, widgetResource.kind)
+                widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
                 currentWidget = widget
             }
 
@@ -100,6 +100,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 }
                 container.addView(predictionWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
+                widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
                 currentWidget = widget
             }
 
@@ -118,6 +119,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 }
                 container.addView(predictionWidget)
                 emitWidgetShown(widgetData.id, widgetResource.kind)
+                widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
                 currentWidget = widget
             }
 
@@ -140,6 +142,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 }
                 container.addView(predictionWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
+                widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
                 currentWidget = widget
             }
 
@@ -149,6 +152,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                     initialize({ dismissCurrentWidget() }, alertResource)
                     currentWidget = Widget().apply { id = alertResource.id }
                     emitWidgetShown(alertResource.id, alertResource.kind)
+                    widgetListener?.onWidgetDisplayed(alertResource.impression_url)
                 }
                 container.addView(alertWidget)
             }

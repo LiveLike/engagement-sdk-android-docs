@@ -5,17 +5,19 @@ import android.os.Looper
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.MalformedJsonException
+import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.LiveLikeDataClient
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.LiveLikeSdkDataClient
-import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.Program
 import com.livelike.livelikesdk.util.extractStringOrEmpty
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.FormBody
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -25,6 +27,33 @@ import okio.ByteString
 import java.io.IOException
 
 internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
+    override fun registerImpression(impressionUrl: String) {
+        if (impressionUrl.isNullOrEmpty()) {
+            return
+        }
+        val client = OkHttpClient()
+        val formBody = FormBody.Builder()
+            .add("session_id", getUserId())
+            .build()
+        try {
+            val request = Request.Builder()
+                .url(impressionUrl)
+                .post(formBody)
+                .build()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    logError { "failed to register impression" }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    logVerbose { "impression registered " + response.message() }
+                }
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private val client = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
 
