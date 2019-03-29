@@ -102,7 +102,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             viewMap[holder] = option.id
 
             if (showResults) {
-                setResultsBG(holder, option.id, option.votePercentage.toInt())
+                setResultsBackground(holder, option.id, option.votePercentage.toInt())
                 button.setOnClickListener(null)
             } else {
                 button.setOnClickListener {
@@ -125,7 +125,7 @@ open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
             )
         }
 
-        private fun setResultsBG(viewHolder: ViewHolder, optionId: String?, votePercentage: Int) {
+        private fun setResultsBackground(viewHolder: ViewHolder, optionId: String?, votePercentage: Int) {
             val correctOption = correctOptionWithUserSelection.first
             val userSelectedOption = correctOptionWithUserSelection.second
             val optionCorrect = optionId == correctOption
