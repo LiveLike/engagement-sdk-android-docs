@@ -13,6 +13,11 @@ internal class AndroidResource {
             return (dp * scale + 0.5f).toInt()
         }
 
+        fun pxToDp(px: Int): Int {
+            val scale = Resources.getSystem().displayMetrics.density
+            return ((px - 0.5f) / scale).toInt()
+        }
+
         fun selectRandomLottieAnimation(path: String, context: Context): String? {
             val asset = context.assets
             val assetList = asset?.list(path)

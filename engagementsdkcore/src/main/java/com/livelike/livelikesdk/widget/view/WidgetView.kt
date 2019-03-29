@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
@@ -14,9 +15,11 @@ import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.parser.WidgetParser
+import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
+import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
@@ -36,8 +39,19 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     private var currentWidget: Widget? = null
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
+        val viewRoot = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
         container = findViewById(R.id.containerView)
+        verifyViewMinWidth(viewRoot)
+    }
+
+    private fun verifyViewMinWidth(view: View) {
+        visibility = View.VISIBLE
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val width = pxToDp(view.width)
+        if (width < 260) {
+            visibility = View.GONE
+            logError { "The Widget zone is too small to be displayed. Minimum size is 260dp. Measured size here is: $width" }
+        }
     }
 
     fun setSession(session: LiveLikeContentSession) {
