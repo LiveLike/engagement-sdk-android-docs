@@ -38,6 +38,10 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     private var container: FrameLayout
     private var currentWidget: Widget? = null
 
+    companion object {
+        private const val WidgetMinimumWidthDp = 260
+    }
+
     init {
         val viewRoot = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
         container = findViewById(R.id.containerView)
@@ -48,7 +52,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         visibility = View.VISIBLE
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val width = pxToDp(view.width)
-        if (width < 260) {
+        if (width < Companion.WidgetMinimumWidthDp) {
             visibility = View.GONE
             logError { "The Widget zone is too small to be displayed. Minimum size is 260dp. Measured size here is: $width" }
         }
@@ -200,4 +204,5 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         currentWidget = null
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
+
 }
