@@ -31,31 +31,31 @@ import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFoll
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
+import kotlinx.android.synthetic.main.widget_view.view.*
 
 
 class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null
-    private var container: FrameLayout
     private var currentWidget: Widget? = null
+    private var viewRoot: View = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
 
     companion object {
-        private const val WidgetMinimumWidthDp = 260
-    }
-
-    init {
-        val viewRoot = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
-        container = findViewById(R.id.containerView)
-        verifyViewMinWidth(viewRoot)
+        private const val WIDGET_MINIMUM_SIZE_DP = 260
     }
 
     private fun verifyViewMinWidth(view: View) {
         visibility = View.VISIBLE
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val width = pxToDp(view.width)
-        if (width < Companion.WidgetMinimumWidthDp) {
+        if (width < WIDGET_MINIMUM_SIZE_DP) {
             visibility = View.GONE
-            logError { "The Widget zone is too small to be displayed. Minimum size is 260dp. Measured size here is: $width" }
+            logError { "The Widget zone is too small to be displayed. Minimum size is $WIDGET_MINIMUM_SIZE_DP dp. Measured size here is: $width dp" }
         }
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        verifyViewMinWidth(viewRoot)
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -93,7 +93,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 predictionWidget.userTappedCallback {
                     emitWidgetOptionSelected(widgetData.id, widgetResource.kind)
                 }
-                container.addView(predictionWidget)
+                containerView.addView(predictionWidget)
                 emitWidgetShown(widgetData.id, widgetResource.kind)
                 widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
                 currentWidget = widget
@@ -116,7 +116,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
-                container.addView(predictionWidget)
+                containerView.addView(predictionWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
                 widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
                 currentWidget = widget
@@ -135,7 +135,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 predictionWidget.userTappedCallback {
                     emitWidgetOptionSelected(widgetData.id, widgetResource.kind)
                 }
-                container.addView(predictionWidget)
+                containerView.addView(predictionWidget)
                 emitWidgetShown(widgetData.id, widgetResource.kind)
                 widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
                 currentWidget = widget
@@ -158,7 +158,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
-                container.addView(predictionWidget)
+                containerView.addView(predictionWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
                 widgetListener?.onWidgetDisplayed(widgetResource.impression_url)
                 currentWidget = widget
@@ -172,7 +172,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     emitWidgetShown(alertResource.id, alertResource.kind)
                     widgetListener?.onWidgetDisplayed(alertResource.impression_url)
                 }
-                container.addView(alertWidget)
+                containerView.addView(alertWidget)
             }
 
             else -> {
@@ -195,7 +195,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
     override fun dismissCurrentWidget() {
         logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
-        container.removeAllViews()
+        containerView.removeAllViews()
         val widget = currentWidget ?: return
         widget.id?.let { widget.optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
         emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
