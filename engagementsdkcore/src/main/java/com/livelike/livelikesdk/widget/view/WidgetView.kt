@@ -22,13 +22,18 @@ import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetType
-import com.livelike.livelikesdk.widget.model.*
+import com.livelike.livelikesdk.widget.model.Alert
+import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
+import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
+import com.livelike.livelikesdk.widget.model.QuizWidgetResult
+import com.livelike.livelikesdk.widget.model.Resource
+import com.livelike.livelikesdk.widget.model.Widget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFollowupWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
-import kotlinx.android.synthetic.main.widget_view.view.*
 import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
+import kotlinx.android.synthetic.main.widget_view.view.*
 
 
 class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
@@ -166,9 +171,9 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
                 quizWidget = QuizImageWidget(context,
-                        null,
-                        0)
-                        .apply { initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionActions() }) }
+                    null,
+                    0)
+                    .apply { initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionEvents() }) }
 
                 quizWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
@@ -179,8 +184,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     emitWidgetOptionSelected(widget.id, widgetResource.kind)
                 }
 
-                containerView.addView(predictionWidget)
-                container.addView(quizWidget)
+                containerView.addView(quizWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
                 currentWidget = widget
             }
@@ -193,8 +197,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     val followupWidgetData = QuizWidgetResult(currentWidget!!)
                     followupWidgetData.registerObserver(quizWidget)
                     followupWidgetData.notifyDataSetChange()
-                    emitWidgetShown(widget.id, widgetResource.kind)
-                    currentWidget = widget
                 }
             }
 
@@ -228,53 +230,24 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     override fun dismissCurrentWidget() {
-<<<<<<< HEAD
-        logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
-        containerView.removeAllViews()
-        if (currentWidget?.kind != "image-quiz") {
-            logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
-            containerView.removeAllViews()
-        }
-        container.removeAllViews()
-=======
         removeView()
->>>>>>> 83ed36f... SDK-223: Some PR fixup
         val widget = currentWidget ?: return
-        emitWidgetDismissEvents(widget)
-        optionSelectionActions()
-    }
-
-    private fun emitWidgetDismissEvents(widget: Widget) {
         emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
+        optionSelectionEvents()
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
 
     private fun removeView() {
         logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
-        container.removeAllViews()
+        containerView.removeAllViews()
     }
 
-    private fun optionSelectionActions() {
+    private fun optionSelectionEvents() {
         val optionSelected = currentWidget?.optionSelected
-        if (optionSelected?.id == "") {
-            removeView()
-            currentWidget?.let { emitWidgetDismissEvents(it) }
-        }
-
         currentWidget?.id?.let {
             optionSelected?.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) }
         }
         currentWidget?.subscribeChannel?.let { widgetListener?.onOptionVote(optionSelected?.voteUrl.toString(), it) }
         widgetListener?.onFetchingQuizResult(optionSelected?.answerUrl.toString())
     }
-}
-    private fun emitWidgetEvents(widget: Widget) {
-
-
-    }
-private fun performPostWidgetDismissalActions(widget: Widget) {
-    val optionSelected = widget.optionSelected
-    widget.id?.let { optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
-    widgetListener?.onOptionVote(optionSelected.voteUrl.toString(), widget.subscribeChannel)
-    widgetListener?.onFetchingQuizResult(optionSelected.answerUrl.toString())
 }

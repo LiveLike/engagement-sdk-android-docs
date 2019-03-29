@@ -46,13 +46,6 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onOptionVote(voteUrl: String, channel: String) {
-        if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
-        if (voteUrl == "null" || voteUrl.isEmpty()) {
-            return
-        }
-        logVerbose { "Voting for $voteUrl" }
-        dataClient.vote(voteUrl)
-
         dataClient.vote(voteUrl)
         if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
     }
