@@ -11,9 +11,12 @@ import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
-import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logInfo
+<<<<<<< HEAD
 import com.livelike.livelikesdk.util.logVerbose
+=======
+import com.livelike.livelikesdk.widget.view.WidgetEventListener
+>>>>>>> 4e3a895... SDK-233: Update Quiz widget
 import java.lang.Exception
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
@@ -49,6 +52,7 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onOptionVote(voteUrl: String, channel: String) {
+<<<<<<< HEAD
         if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
         if (voteUrl == "null" || voteUrl.isEmpty()) {
             logError { "Failed sending voting request for $voteUrl" }
@@ -57,16 +61,21 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         logVerbose { "Voting for $voteUrl" }
         dataClient.vote(voteUrl)
 
+=======
+        dataClient.vote(voteUrl)
+        if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
+>>>>>>> 4e3a895... SDK-233: Update Quiz widget
     }
 
     override fun onFetchingQuizResult(answerUrl: String) {
+        isProcessing = false
+        dataClient.fetchQuizResult(answerUrl)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         isProcessing = true
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
-        logInfo { "Abhishek $payload" }
         Handler(Looper.getMainLooper()).post {
             renderer?.displayWidget(widgetType, payload)
         }

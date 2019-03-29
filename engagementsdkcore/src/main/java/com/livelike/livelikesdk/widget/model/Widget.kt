@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.model
 
 import com.livelike.livelikesdk.binding.QuizWidgetObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.logInfo
 import java.net.URI
 
 internal class Widget {
@@ -58,11 +59,9 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
         widget.calculateVotePercentage(newValue)
         newValue.forEach { data ->
-            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
+            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
         }
     }
-
-
 
     fun notifyDataSetChange() {
         createOptionsWithVotePercentageMap(widget.optionList)
@@ -94,7 +93,7 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     fun notifyDataSetChange() {
         val voteOptionList = mutableListOf<VoteOption>()
         widget.optionList.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
         }
         widget.observers.forEach { observer ->
             observer.questionUpdated(widget.question)
@@ -113,7 +112,7 @@ internal class QuizWidgetResult(val widget: Widget) {
     fun notifyDataSetChange() {
         widget.calculateVotePercentage(widget.optionList)
         widget.optionList.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerUrl, data.answerCount, data.isCorrect))
+            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
         }
         observers.forEach { observer ->
             observer.updateVoteCount(voteOptionList)
@@ -125,6 +124,5 @@ class VoteOption(val id: String?,
                  val description: String,
                  val votePercentage: Long,
                  val imageUrl: String?,
-                 val answerUrl: String?,
                  val answerCount: Long,
                  val isCorrect: Boolean?)

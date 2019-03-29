@@ -160,8 +160,22 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         })
     }
 
-    override fun vote(url: String) {
-        post(url)
+    override fun vote(voteUrl: String) {
+        if (voteUrl == "null" || voteUrl.isEmpty()) {
+            logError { "Voting for $voteUrl" }
+            return
+        }
+        logVerbose { "Voting for $voteUrl" }
+        post(voteUrl)
+    }
+
+    override fun fetchQuizResult(answerUrl: String) {
+        if (answerUrl == "null" || answerUrl.isEmpty()) {
+            logError { "Answer url for $answerUrl" }
+            return
+        }
+        logVerbose { "Sending post request for $answerUrl" }
+        post(answerUrl)
     }
 
     private fun post(url: String) {

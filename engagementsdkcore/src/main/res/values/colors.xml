@@ -16,5 +16,11 @@
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
+    <color name="prediction_question_start_color">#003264</color>
+    <color name="prediction_question_end_color">#0096c8</color>
+    <color name="quiz_question_start_color">#f76b1c</color>
+    <color name="quiz_question_end_color">#ffb400</color>
+    <color name="prediction_button_pressed">#00b4c8</color>
+    <color name="quiz_button_pressed">#ffc800</color>
 
 </resources>

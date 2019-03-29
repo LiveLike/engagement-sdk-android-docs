@@ -108,7 +108,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         optionSelected = true
         imageButtonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
-                button.background = AppCompatResources.getDrawable(context, R.drawable.button_pressed)
+                button.background = AppCompatResources.getDrawable(context, R.drawable.prediction_button_pressed)
             else button.background = AppCompatResources.getDrawable(context, R.drawable.button_rounded_corners)
         }
     }
