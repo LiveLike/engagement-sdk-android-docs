@@ -21,7 +21,7 @@ import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.widget.view.WidgetResultDisplayUtil
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.cross_image.view.*
@@ -59,7 +59,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
         updateCrossImage()
         viewAnimation = ViewAnimation(this)
-        widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+        widgetResultDisplayUtil =
+            WidgetResultDisplayUtil(context, viewAnimation)
     }
 
     private fun updateCrossImage() {

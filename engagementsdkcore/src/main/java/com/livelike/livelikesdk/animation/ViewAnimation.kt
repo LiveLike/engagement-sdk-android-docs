@@ -15,7 +15,7 @@ import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.logDebug
-import com.livelike.livelikesdk.widget.SwipeDismissTouchListener
+import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
 internal class ViewAnimation(val view: View) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
