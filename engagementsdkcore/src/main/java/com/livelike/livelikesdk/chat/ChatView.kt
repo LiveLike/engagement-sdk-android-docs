@@ -32,7 +32,9 @@ import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
+import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
 import com.livelike.livelikesdk.util.logDebug
+import com.livelike.livelikesdk.util.logError
 import kotlinx.android.synthetic.main.chat_input.view.*
 import kotlinx.android.synthetic.main.chat_view.view.*
 import kotlinx.android.synthetic.main.default_chat_cell.view.*
@@ -58,6 +60,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
         const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
         const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
+        private const val CHAT_MINIMUM_SIZE_DP = 292
     }
 
     override var chatListener: ChatEventListener? = null
@@ -69,15 +72,30 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     private var snapToLiveAnimation : AnimatorSet? = null
     private var showingSnapToLive : Boolean = false
     private val animationEaseAdapter = AnimationEaseAdapter()
+    private var viewRoot: View = LayoutInflater.from(context)
+        .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
 
 
     init {
-        LayoutInflater.from(context)
-            .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
         (context as Activity).window.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
+    }
+
+    private fun verifyViewMinWidth(view: View) {
+        visibility = View.VISIBLE
+        view.measure(View.MeasureSpec.EXACTLY, View.MeasureSpec.EXACTLY)
+        val width = pxToDp(view.width)
+        if (width < CHAT_MINIMUM_SIZE_DP) {
+            visibility = View.GONE
+            logError { "The Chat zone is too small to be displayed. Minimum size is $CHAT_MINIMUM_SIZE_DP dp. Measured size here is: $width dp" }
+        }
+    }
+
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+        verifyViewMinWidth(viewRoot)
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -96,6 +114,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
 
     override fun loadComplete() {
         hideLoadingSpinner()
+
     }
 
     // Hide keyboard when clicking outside of the EditText
