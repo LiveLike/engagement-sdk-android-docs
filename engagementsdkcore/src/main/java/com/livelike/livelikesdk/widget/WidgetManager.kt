@@ -17,6 +17,10 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
     WidgetEventListener {
+    override fun onWidgetDisplayed(impressionUrl: String) {
+        dataClient.registerImpression(impressionUrl)
+    }
+
     var renderer: WidgetRenderer? = null
     set(value) {
         field = value
@@ -87,6 +91,7 @@ enum class WidgetType (val value: String) {
 
 internal interface WidgetDataClient {
     fun vote(voteUrl:String)
+    fun registerImpression(impressionUrl: String)
 }
 
 internal fun MessagingClient.asWidgetManager(dataClient: WidgetDataClient): WidgetManager {
