@@ -16,10 +16,13 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.AndroidResource
+import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
@@ -30,28 +33,19 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
+    private lateinit var userTapped: () -> Unit
+    private val imageButtonMap = HashMap<ImageButton, String?>()
+    private val viewOptions = HashMap<String?, ViewOption>()
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     private var fetchResult: (() -> Unit)? = null
-    private val imageButtonMap = HashMap<ImageButton, String?>()
     private var selectedOption : String? = null
-    var correctOption: String? = null
-    lateinit var userTapped: () -> Unit
-    private val viewOptions = HashMap<String?, ViewOption>()
+    private var correctOption: String? = null
+    private var timeout = 0L
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int, dismiss: () -> Unit, fetch: () -> Unit) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
-        dismissWidget = dismiss
-        fetchResult = fetch
-    }
-
-    init { inflate(context) }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun inflate(context: Context) {
@@ -64,13 +58,19 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         // TODO: Maybe inject this object.
         viewAnimation = ViewAnimation(this)
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, 7000) {
-                if (selectedOption == null)
-                    dismissWidget?.invoke()
-                else fetchResult?.invoke()
+            viewAnimation.startTimerAnimation(pieTimer, timeout) {
+                fetchResult?.invoke()
             }
         }
+
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+    }
+
+    fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit) {
+        this.timeout = timeout
+        inflate(context)
+        dismissWidget = dismiss
+        fetchResult = fetch
     }
 
     override fun questionUpdated(questionText: String) {
@@ -93,6 +93,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
+        selectedOption = selectedOptionId
         imageButtonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, R.drawable.quiz_button_pressed)
@@ -109,7 +110,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
-        Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, 6000)
+        Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {
@@ -123,7 +124,17 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                     selectedOption,
                     prediction_result)
             }
+            viewOption?.button?.let { overrideButtonPadding(it) }
         }
+    }
+
+    private fun overrideButtonPadding(optionButton: ImageButton) {
+        optionButton.setPadding(
+            AndroidResource.dpToPx(2),
+            AndroidResource.dpToPx(14),
+            AndroidResource.dpToPx(48),
+            AndroidResource.dpToPx(2)
+        )
     }
 
     inner class ImageAdapter(
@@ -134,11 +145,12 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val option = optionList[position]
             holder.optionText.text = option.description
-            option.isCorrect?.let { if(it) correctOption = option.id }
+            option.isCorrect.let { if(it) correctOption = option.id }
 
             // TODO: Move this to adapter layer.
             Glide.with(context)
                 .load(option.imageUrl)
+                .apply(RequestOptions().override(AndroidResource.dpToPx(74), AndroidResource.dpToPx(74)))
                 .into(holder.optionButton)
             imageButtonMap[holder.optionButton] = option.id
             holder.optionButton.setOnClickListener {

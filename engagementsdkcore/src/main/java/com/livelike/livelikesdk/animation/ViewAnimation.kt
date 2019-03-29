@@ -31,7 +31,7 @@ internal class ViewAnimation(val view: View) {
             heightToReach,
             heightToReach / 2, 0f)
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutElastic, animator)
-        animationHandler.bindListenerToAnimationView(animator) {onAnimationCompletedCallback.invoke()}
+        animationHandler.bindListenerToAnimationView(animator) { onAnimationCompletedCallback.invoke() }
     }
 
     // Would have to think more on how to not use hard coded values. I think once we have more easing
@@ -72,7 +72,7 @@ internal class ViewAnimation(val view: View) {
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
     }
 
-    fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: (Boolean) -> Unit) {
+    fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: () -> Unit) {
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
@@ -132,7 +132,7 @@ internal class ViewAnimation(val view: View) {
 
 private class AnimationHandler {
     fun startAnimation(lottieAnimationView: LottieAnimationView,
-                       onAnimationCompletedCallback: (Boolean) -> Unit,
+                       onAnimationCompletedCallback: () -> Unit,
                        duration: Long,
                        animator: ValueAnimator
     ) {
@@ -154,8 +154,6 @@ private class AnimationHandler {
                                   forDuration: Float,
                                   animator: ValueAnimator) {
         val animatorSet = AnimatorSet()
-
-        // TODO: remove hardcoded start position -400 to something meaningful.
         animatorSet.playTogether(
             AnimationEaseAdapter()
                 .createAnimationEffectWith(
@@ -169,13 +167,13 @@ private class AnimationHandler {
     }
 
     fun bindListenerToAnimationView(animator: Animator,
-                                    onAnimationCompletedCallback: (Boolean) -> Unit) {
+                                    onAnimationCompletedCallback: () -> Unit) {
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
                 logDebug { "Animation start" }
             }
             override fun onAnimationEnd(animation: Animator) {
-                onAnimationCompletedCallback(true)
+                onAnimationCompletedCallback.invoke()
             }
 
             override fun onAnimationCancel(animation: Animator) {

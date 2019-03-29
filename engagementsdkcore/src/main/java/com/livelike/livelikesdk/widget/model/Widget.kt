@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.model
 
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.logInfo
 import java.net.URI
 
 internal class Widget {
@@ -11,7 +12,7 @@ internal class Widget {
     var id: String? = null
     var kind: String? = null
     var question: String = ""
-    var optionSelected: WidgetOptions = WidgetOptions()
+    var optionSelected: WidgetOptions = WidgetOptions("")
     var confirmMessage: String = ""
     var correctOptionId: String = ""
     var timeout: Long = 7000L
@@ -19,7 +20,8 @@ internal class Widget {
 
     fun optionSelectedUpdated(id: String?) {
         if (id == null) {
-            optionSelected = WidgetOptions()
+            logInfo { "Abhishek id is null" }
+            optionSelected = WidgetOptions("")
             return
         }
         optionSelected = optionList.single { option -> option.id == id }
@@ -76,14 +78,14 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
 }
 
 internal data class WidgetOptions(
-    val id: String? = null,
+    val id: String,
     val voteUrl: URI? = null,
     var description: String = "",
     var voteCount: Long = 0,
-    var imageUrl: String? = null,
+    var imageUrl: String = "",
     var answerCount: Long = 0,
     var answerUrl: String? = null,
-    var isCorrect: Boolean? = null
+    var isCorrect: Boolean = false
 )
 
 internal class PredictionWidgetQuestion(val widget: Widget) {
@@ -118,9 +120,9 @@ internal class QuizWidgetResult(val widget: Widget) {
     }
 }
 
-class VoteOption(val id: String?,
-                 val description: String,
-                 val votePercentage: Long,
-                 val imageUrl: String?,
-                 val answerCount: Long,
-                 val isCorrect: Boolean?)
+class VoteOption(val id: String,
+                 val description: String = "",
+                 val votePercentage: Long = 0,
+                 val imageUrl: String = "",
+                 val answerCount: Long = 0,
+                 val isCorrect: Boolean = false)

@@ -35,12 +35,12 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private var layout = ConstraintLayout(context, null, 0)
     private var lottieAnimationPath = ""
+    private var timeout = 0L
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    private var timeout = 0L
     fun initialize(dismiss: () -> Unit, timeout: Long) {
         inflate(context)
         dismissWidget = dismiss

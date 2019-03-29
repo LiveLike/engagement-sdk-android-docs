@@ -162,7 +162,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
 
     override fun vote(voteUrl: String) {
         if (voteUrl == "null" || voteUrl.isEmpty()) {
-            logError { "Voting for $voteUrl" }
+            logError { "Voting failed as voteUrl is empty" }
             return
         }
         logVerbose { "Voting for $voteUrl" }
@@ -171,7 +171,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
 
     override fun fetchQuizResult(answerUrl: String) {
         if (answerUrl == "null" || answerUrl.isEmpty()) {
-            logError { "Answer url for $answerUrl" }
+            logError { "Cannot make a post request to answerUrl as it is empty" }
             return
         }
         logVerbose { "Sending post request for $answerUrl" }

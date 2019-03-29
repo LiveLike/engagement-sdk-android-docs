@@ -22,12 +22,7 @@ import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetType
-import com.livelike.livelikesdk.widget.model.Alert
-import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
-import com.livelike.livelikesdk.widget.model.PredictionWidgetQuestion
-import com.livelike.livelikesdk.widget.model.QuizWidgetResult
-import com.livelike.livelikesdk.widget.model.Resource
-import com.livelike.livelikesdk.widget.model.Widget
+import com.livelike.livelikesdk.widget.model.*
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFollowupWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
@@ -39,10 +34,7 @@ import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null
     private var currentWidget: Widget? = null
-<<<<<<< HEAD
     private var viewRoot: View = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
-=======
->>>>>>> 1df7de2... SDK-223: Fixup after pulling changes for sdk and api
     private lateinit var quizWidget : QuizImageWidget
 
     companion object {
@@ -173,12 +165,10 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_QUIZ -> {
                 val parser = WidgetParser()
                 val widgetResource = gson.fromJson(payload, Resource::class.java)
-                quizWidget =
-                    QuizImageWidget(context,
+                quizWidget = QuizImageWidget(context,
                         null,
-                        0,
-                        { dismissCurrentWidget() },
-                        { currentWidget?.let { emitWidgetCompletionEvents() } })
+                        0)
+                        .apply { initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionActions() }) }
 
                 quizWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
@@ -238,6 +228,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     override fun dismissCurrentWidget() {
+<<<<<<< HEAD
         logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
         containerView.removeAllViews()
         if (currentWidget?.kind != "image-quiz") {
@@ -245,16 +236,33 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             containerView.removeAllViews()
         }
         container.removeAllViews()
+=======
+        removeView()
+>>>>>>> 83ed36f... SDK-223: Some PR fixup
         val widget = currentWidget ?: return
+        emitWidgetDismissEvents(widget)
+        optionSelectionActions()
+    }
+
+    private fun emitWidgetDismissEvents(widget: Widget) {
         emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
-        emitWidgetCompletionEvents()
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
 
-    private fun emitWidgetCompletionEvents() {
+    private fun removeView() {
+        logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
+        container.removeAllViews()
+    }
+
+    private fun optionSelectionActions() {
         val optionSelected = currentWidget?.optionSelected
-        currentWidget?.id?.let { optionSelected?.id?.let {
-                optionId -> addWidgetPredictionVoted(it, optionId) }
+        if (optionSelected?.id == "") {
+            removeView()
+            currentWidget?.let { emitWidgetDismissEvents(it) }
+        }
+
+        currentWidget?.id?.let {
+            optionSelected?.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) }
         }
         currentWidget?.subscribeChannel?.let { widgetListener?.onOptionVote(optionSelected?.voteUrl.toString(), it) }
         widgetListener?.onFetchingQuizResult(optionSelected?.answerUrl.toString())

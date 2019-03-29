@@ -23,8 +23,7 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
                            selectedOption: String?,
                            prediction_result: LottieAnimationView) {
 
-        lottieAnimationPath = findResultAnimationPath(correctOption, selectedOption)
-        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
+        startResultAnimation(correctOption, selectedOption, prediction_result)
 
         if (hasUserSelectedCorrectOption(selectedOption, correctOption)) {
             if (isCurrentButtonSameAsCorrectOption(correctOption, option.id)) {
@@ -48,6 +47,15 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
                 }
             }
         }
+    }
+
+    private fun startResultAnimation(
+        correctOption: String?,
+        selectedOption: String?,
+        prediction_result: LottieAnimationView
+    ) {
+        lottieAnimationPath = findResultAnimationPath(correctOption, selectedOption)
+        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
     }
 
     private fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
