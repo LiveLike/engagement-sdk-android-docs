@@ -39,7 +39,10 @@ import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null
     private var currentWidget: Widget? = null
+<<<<<<< HEAD
     private var viewRoot: View = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
+=======
+>>>>>>> 1df7de2... SDK-223: Fixup after pulling changes for sdk and api
     private lateinit var quizWidget : QuizImageWidget
 
     companion object {
@@ -175,7 +178,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                         null,
                         0,
                         { dismissCurrentWidget() },
-                        { currentWidget?.let { emitWidgetCompletionEvents(it) } })
+                        { currentWidget?.let { emitWidgetCompletionEvents() } })
 
                 quizWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
@@ -244,15 +247,17 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         container.removeAllViews()
         val widget = currentWidget ?: return
         emitWidgetDismissed(widget.id, widget.kind ?: "unknown")
-        emitWidgetCompletionEvents(widget)
+        emitWidgetCompletionEvents()
         widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
     }
 
-    private fun emitWidgetCompletionEvents(widget: Widget) {
-        val optionSelected = widget.optionSelected
-        widget.id?.let { optionSelected.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) } }
-        widgetListener?.onOptionVote(optionSelected.voteUrl.toString(), widget.subscribeChannel)
-        widgetListener?.onFetchingQuizResult(optionSelected.answerUrl.toString())
+    private fun emitWidgetCompletionEvents() {
+        val optionSelected = currentWidget?.optionSelected
+        currentWidget?.id?.let { optionSelected?.id?.let {
+                optionId -> addWidgetPredictionVoted(it, optionId) }
+        }
+        currentWidget?.subscribeChannel?.let { widgetListener?.onOptionVote(optionSelected?.voteUrl.toString(), it) }
+        widgetListener?.onFetchingQuizResult(optionSelected?.answerUrl.toString())
     }
 }
     private fun emitWidgetEvents(widget: Widget) {

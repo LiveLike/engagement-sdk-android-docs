@@ -1,13 +1,11 @@
 package com.livelike.livelikesdk.widget.model
 
-import com.livelike.livelikesdk.binding.QuizWidgetObserver
+import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.logInfo
 import java.net.URI
 
 internal class Widget {
     var observers = mutableSetOf<WidgetObserver>()
-
     var optionList: List<WidgetOptions> = emptyList()
     var url: URI? = null
     var id: String? = null
@@ -105,9 +103,9 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
 
 internal class QuizWidgetResult(val widget: Widget) {
     private val voteOptionList = mutableListOf<VoteOption>()
-    var observers = mutableSetOf<QuizWidgetObserver>()
-    fun registerObserver(widgetObserver: QuizWidgetObserver) {
-        observers.add(widgetObserver)
+    private var observers = mutableSetOf<QuizVoteObserver>()
+    fun registerObserver(voteObserver: QuizVoteObserver) {
+        observers.add(voteObserver)
     }
     fun notifyDataSetChange() {
         widget.calculateVotePercentage(widget.optionList)

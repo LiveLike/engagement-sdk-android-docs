@@ -165,6 +165,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 pollType -> {
                                 }
                                 quizType -> {
+                                    showWidget(WidgetType.IMAGE_QUIZ_RESULT, getPayload("prediction/quiz/quiz_result.json"))
                                 }
                                 cheerMeterType -> {
                                 }

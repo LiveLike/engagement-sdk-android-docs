@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget.view.prediction.quiz
+package com.livelike.livelikesdk.widget.view.quiz
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -18,23 +18,23 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
-import com.livelike.livelikesdk.binding.QuizWidgetObserver
+import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.widget.view.WidgetResultDisplayUtil
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
-class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
+class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     private var fetchResult: (() -> Unit)? = null
-    val imageButtonMap = HashMap<ImageButton, String?>()
-    var selectedOption: String? = null
+    private val imageButtonMap = HashMap<ImageButton, String?>()
+    private var selectedOption : String? = null
     var correctOption: String? = null
     lateinit var userTapped: () -> Unit
     private val viewOptions = HashMap<String?, ViewOption>()
@@ -142,11 +142,15 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
                 .into(holder.optionButton)
             imageButtonMap[holder.optionButton] = option.id
             holder.optionButton.setOnClickListener {
-                selectedOption = imageButtonMap[holder.optionButton]
+                selectedOption = imageButtonMap[holder.optionButton].toString()
                 optionSelectedCallback(selectedOption)
                 userTapped.invoke()
             }
-            viewOptions[option.id] = ViewOption(holder.optionButton, holder.progressBar, holder.percentageText)
+            viewOptions[option.id] = ViewOption(
+                holder.optionButton,
+                holder.progressBar,
+                holder.percentageText
+            )
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -163,6 +167,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizWidgetObserver {
             return optionList.size
         }
     }
+
     class ViewOption(
         val button: ImageButton,
         val progressBar: ProgressBar,
