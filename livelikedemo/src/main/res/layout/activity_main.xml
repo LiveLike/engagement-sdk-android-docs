@@ -47,7 +47,7 @@
                             android:id="@+id/layout_overlay"
                             android:layout_width="160dp"
                             android:layout_height="160dp"
-                            android:src="@drawable/overlay"
+                            android:src="@drawable/sync"
                             android:layout_marginTop="16dp"
                             android:contentDescription="@string/layout_overlay_content_description"
                             app:layout_constraintTop_toBottomOf="@id/layout_label"
