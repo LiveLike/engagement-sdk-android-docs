@@ -24,13 +24,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val player = PlayerInfo("Exo Player", ExoPlayerActivity::class)
+        val drawerDemoActivity = PlayerInfo("Exo Player", DrawerDemoActivity::class)
+
+        layout_side_panel.setOnClickListener {
+            startActivity(playerDetailIntent(drawerDemoActivity))
+        }
 
         layout_overlay.setOnClickListener {
             startActivity(playerDetailIntent(player))
-        }
-
-        layout_side_panel.setOnClickListener {
-            startActivity(playerDetailIntent(player, true))
         }
 
         events_button.setOnClickListener {
