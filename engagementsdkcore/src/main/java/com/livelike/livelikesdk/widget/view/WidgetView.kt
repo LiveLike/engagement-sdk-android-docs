@@ -11,14 +11,14 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
 import com.livelike.livelikesdk.util.logDebug
+import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
-import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.PredictionWidgetFollowUp
@@ -29,6 +29,13 @@ import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFoll
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.FormBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.IOException
 
 
 open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
@@ -37,8 +44,8 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
     private var currentWidget: Widget? = null
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
-        container = findViewById(R.id.containerView)
+        LayoutInflater.from(context).inflate(com.livelike.livelikesdk.R.layout.widget_view, this, true)
+        container = findViewById(com.livelike.livelikesdk.R.id.containerView)
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -78,6 +85,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 }
                 container.addView(predictionWidget)
                 emitWidgetShown(widgetData.id, widgetResource.kind)
+                registerImpression(widgetResource.impression_url)
                 currentWidget = widget
             }
 
@@ -100,6 +108,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 }
                 container.addView(predictionWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
+                registerImpression(widgetResource.impression_url)
                 currentWidget = widget
             }
 
@@ -118,6 +127,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 }
                 container.addView(predictionWidget)
                 emitWidgetShown(widgetData.id, widgetResource.kind)
+                registerImpression(widgetResource.impression_url)
                 currentWidget = widget
             }
 
@@ -140,6 +150,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                 }
                 container.addView(predictionWidget)
                 emitWidgetShown(widget.id, widgetResource.kind)
+                registerImpression(widgetResource.impression_url)
                 currentWidget = widget
             }
 
@@ -149,6 +160,7 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
                     initialize({ dismissCurrentWidget() }, alertResource)
                     currentWidget = Widget().apply { id = alertResource.id }
                     emitWidgetShown(alertResource.id, alertResource.kind)
+                    registerImpression(alertResource.impression_url)
                 }
                 container.addView(alertWidget)
             }
@@ -169,6 +181,33 @@ open class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout
 
     private fun emitWidgetShown(widgetId: String?, kind: String) {
         analyticService.trackWidgetReceived(widgetId ?: "", kind)
+    }
+
+    private fun registerImpression(impressionUrl: String) {
+        if (impressionUrl.isNullOrEmpty()) {
+            return
+        }
+        val client = OkHttpClient()
+        val formBody = FormBody.Builder()
+            .add("session_id", getUserId())
+            .build()
+        try {
+            val request = Request.Builder()
+                .url(impressionUrl)
+                .post(formBody)
+                .build()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    logError { "failed to register impression" }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    logVerbose { "impression registered " + response.message() }
+                }
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun dismissCurrentWidget() {

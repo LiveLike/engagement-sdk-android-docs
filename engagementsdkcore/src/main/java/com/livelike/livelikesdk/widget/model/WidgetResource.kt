@@ -18,7 +18,8 @@ internal data class Resource(
     val confirmation_message: String = "",
     val testTag: String = "",
     val choices: List<Option> = listOf(),
-    val options: List<Option> = listOf()
+    val options: List<Option> = listOf(),
+    val impression_url: String = ""
 ) {
     val totalVotes: Int by lazy {
         options.map { it.vote_count }.sum()
@@ -41,7 +42,8 @@ internal data class Alert(
     val text: String = "",
     val image_url: String = "",
     val link_url: String = "",
-    val link_label: String = ""
+    val link_label: String = "",
+    val impression_url: String = ""
 )
 
 internal data class Option(
