@@ -19,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
@@ -36,15 +37,17 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private var layout = ConstraintLayout(context, null, 0)
     private var lottieAnimationPath = ""
     private var timeout = 0L
+    private var parentWidth = 0
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
         inflate(context)
         dismissWidget = dismiss
         this.timeout = timeout
+        this.parentWidth = parentWidth
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -138,6 +141,20 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                 userSelectedOption,
                 prediction_result)
             overrideButtonPadding(optionButton)
+            setImageViewMargin(option, optionList, holder)
+        }
+
+        // TODO: there is a util method for this in WidgetDisplayUtil but that is specific to ImageQuizHolder. Unless
+        // TODO: We have a unified adapter, this is only specific to each adapter.
+        private fun setImageViewMargin(option: VoteOption, optionList: List<VoteOption>, holder: ViewHolder) {
+            if (option == optionList.last()) {
+                val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+                holder.itemView.layoutParams = params
+            } else {
+                val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+                params.marginEnd = AndroidResource.dpToPx(5)
+                holder.itemView.layoutParams = params
+            }
         }
 
         private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageButton) {
@@ -152,12 +169,14 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(context).inflate(
+                R.layout.prediction_image_row_element,
+                parent,
+                false
+            )
+            view.layoutParams.width = parentWidth/2
             return ViewHolder(
-                LayoutInflater.from(context).inflate(
-                    R.layout.prediction_image_row_element,
-                    parent,
-                    false
-                )
+                view
             )
         }
 

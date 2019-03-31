@@ -43,7 +43,8 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private var correctOption: String? = null
     private var timeout = 0L
     private var showResults = false
-
+    var parentWidth = 0
+    
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -59,19 +60,20 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         // TODO: Maybe inject this object.
         viewAnimation = ViewAnimation(this)
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout) {
+            viewAnimation.startTimerAnimation(pieTimer, 15000) {
                 fetchResult?.invoke()
                 showResults = true
             }
         }
-
+        logInfo { "Abhishek inflate" }
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit, parentWidth: Int) {
         this.timeout = timeout
         dismissWidget = dismiss
         fetchResult = fetch
+        this.parentWidth = parentWidth
         inflate(context)
     }
 
@@ -167,15 +169,19 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 holder.progressBar,
                 holder.percentageText
             )
+            resultDisplayUtil.setImageViewMargin(option, optionList, holder)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(context).inflate(
+                R.layout.prediction_image_row_element,
+                parent,
+                false
+            )
+
+            view.layoutParams.width = parentWidth/2
             return ViewHolder(
-                LayoutInflater.from(context).inflate(
-                    R.layout.prediction_image_row_element,
-                    parent,
-                    false
-                )
+                view
             )
         }
 

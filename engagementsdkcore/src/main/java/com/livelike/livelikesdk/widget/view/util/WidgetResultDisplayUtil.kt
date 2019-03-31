@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.view.util
 
 import android.content.Context
 import android.support.v7.content.res.AppCompatResources
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
@@ -9,8 +10,10 @@ import android.widget.TextView
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
+import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 
 internal class WidgetResultDisplayUtil(val context: Context, private val viewAnimation: ViewAnimation) {
     private var lottieAnimationPath = ""
@@ -87,6 +90,17 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
         percentageText.apply {
             visibility = View.VISIBLE
             text = option.votePercentage.toString().plus("%")
+        }
+    }
+
+    fun setImageViewMargin(option: VoteOption, optionList: List<VoteOption>, imageQuizHolder: QuizImageWidget.ViewHolder) {
+        if (option == optionList.last()) {
+            val params = imageQuizHolder.itemView.layoutParams as RecyclerView.LayoutParams
+            imageQuizHolder.itemView.layoutParams = params
+        } else {
+            val params = imageQuizHolder.itemView.layoutParams as RecyclerView.LayoutParams
+            params.marginEnd = AndroidResource.dpToPx(5)
+            imageQuizHolder.itemView.layoutParams = params
         }
     }
 }

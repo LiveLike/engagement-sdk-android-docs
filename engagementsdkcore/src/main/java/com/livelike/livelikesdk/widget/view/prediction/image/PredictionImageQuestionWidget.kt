@@ -33,6 +33,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
+    private var parentWidth = 0
     val imageButtonMap = HashMap<ImageButton, String?>()
     lateinit var userTapped: () -> Unit
 
@@ -40,9 +41,10 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
         inflate(context, timeout)
         dismissWidget = dismiss
+        this.parentWidth = parentWidth
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -143,15 +145,31 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 optionSelectedCallback(selectedOption)
                 userTapped.invoke()
             }
+            setImageViewMargin(option, optionList, holder)
+        }
+
+        // TODO: there is a util method for this in WidgetDisplayUtil but that is specific to ImageQuizHolder. Unless
+        // TODO: We have a unified adapter, this is only specific to each adapter.
+        private fun setImageViewMargin(option: VoteOption, optionList: List<VoteOption>, holder: ViewHolder) {
+            if (option == optionList.last()) {
+                val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+                holder.itemView.layoutParams = params
+            } else {
+                val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+                params.marginEnd = AndroidResource.dpToPx(5)
+                holder.itemView.layoutParams = params
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(context).inflate(
+                R.layout.prediction_image_row_element,
+                parent,
+                false
+            )
+            view.layoutParams.width = parentWidth/2
             return ViewHolder(
-                LayoutInflater.from(context).inflate(
-                    R.layout.prediction_image_row_element,
-                    parent,
-                    false
-                )
+                view
             )
         }
 

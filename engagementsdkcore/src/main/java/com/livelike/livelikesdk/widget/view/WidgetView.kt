@@ -76,6 +76,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         val widget = Widget()
         val parser = WidgetParser()
         val widgetResource = gson.fromJson(payload, Resource::class.java)
+        val parentWidth = this.width
 
         when (WidgetType.fromString(type)) {
             WidgetType.TEXT_PREDICTION -> {
@@ -120,7 +121,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_PREDICTION -> {
                 parser.parseTextPredictionCommon(widget, widgetResource)
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
-                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
+                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
                 predictionWidget.layoutParams = layoutParams
                 widget.registerObserver(predictionWidget)
                 widget.notifyDataSetChange()
@@ -135,7 +136,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_PREDICTION_RESULTS -> {
                 parser.parsePredictionFollowup(widget, widgetResource)
                 val predictionWidget = PredictionImageFollowupWidget(context, null, 0)
-                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
+                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
 
                 predictionWidget.layoutParams = layoutParams
 
@@ -182,7 +183,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val quizWidget = QuizImageWidget(context,
                     null,
                     0)
-                    .apply { initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionEvents() }) }
+                    .apply { initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionEvents() }, parentWidth) }
 
                 quizWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
