@@ -57,7 +57,7 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
     private fun createOptionsWithVotePercentageMap(newValue: List<WidgetOptions>) {
         widget.calculateVotePercentage(newValue)
         newValue.forEach { data ->
-            voteOptions.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
+            voteOptions.add(VoteOption(data.id, data.description ?: "", data.voteCount, data.description ?: "", data.answerCount, data.isCorrect))
         }
     }
 
@@ -78,9 +78,9 @@ internal class PredictionWidgetFollowUp(val widget: Widget) {
 internal data class WidgetOptions(
     val id: String,
     val voteUrl: URI? = null,
-    var description: String = "",
+    var description: String? = null,
     var voteCount: Long = 0,
-    var imageUrl: String = "",
+    var imageUrl: String? = null,
     var answerCount: Long = 0,
     var answerUrl: String? = null,
     var isCorrect: Boolean = false
@@ -91,7 +91,7 @@ internal class PredictionWidgetQuestion(val widget: Widget) {
     fun notifyDataSetChange() {
         val voteOptionList = mutableListOf<VoteOption>()
         widget.optionList.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
+            voteOptionList.add(VoteOption(data.id, data.description ?: "", data.voteCount, data.imageUrl ?: "", data.answerCount, data.isCorrect))
         }
         widget.observers.forEach { observer ->
             observer.questionUpdated(widget.question)
@@ -110,7 +110,7 @@ internal class QuizWidgetResult(val widget: Widget) {
     fun notifyDataSetChange() {
         widget.calculateVotePercentage(widget.optionList)
         widget.optionList.forEach { data ->
-            voteOptionList.add(VoteOption(data.id, data.description, data.voteCount, data.imageUrl, data.answerCount, data.isCorrect))
+            voteOptionList.add(VoteOption(data.id, data.description ?: "", data.voteCount, data.description ?: "", data.answerCount, data.isCorrect))
         }
         observers.forEach { observer ->
             observer.updateVoteCount(voteOptionList)
