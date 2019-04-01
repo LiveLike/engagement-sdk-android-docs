@@ -10,9 +10,6 @@
             android:layout_height="match_parent"
             android:id="@+id/view"
             android:visibility="visible"
-            app:stickTo="bottom"
-            app:offsetDistance="10dp"
-            app:changeStateOnTap="false"
     >
         <RelativeLayout
                 android:layout_width="match_parent"
@@ -20,8 +17,17 @@
                 android:background="#2D2D31">
             <com.livelike.livelikesdk.chat.ChatView android:layout_width="match_parent"
                                                     android:layout_height="match_parent"
+                                                    android:layout_below="@id/handle"
                                                     android:id="@+id/chatView">
             </com.livelike.livelikesdk.chat.ChatView>
+
+            <View android:layout_width="match_parent"
+                  android:layout_height="30dp"
+                  android:id="@+id/handle"
+                  android:background="#940505"
+                  android:backgroundTint="#940505"
+                  android:layout_alignParentTop="true">
+            </View>
         </RelativeLayout>
     </com.livelike.livelikesdk.slidinglayer.SlidingLayer>
 
