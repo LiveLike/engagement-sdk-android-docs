@@ -17,13 +17,12 @@ import android.widget.TextView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import kotlinx.android.synthetic.main.text_option_row_element.view.*
 
-open class PredictionTextWidgetBase : ConstraintLayout, WidgetObserver {
+open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected val widgetOpacityFactor: Float = 0.2f
     protected val constraintSet = ConstraintSet()
     protected val buttonList: ArrayList<Button> = ArrayList()
