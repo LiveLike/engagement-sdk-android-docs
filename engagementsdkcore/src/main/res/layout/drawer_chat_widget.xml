@@ -13,20 +13,29 @@
     >
         <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+        >
             <com.livelike.livelikesdk.chat.ChatView android:layout_width="match_parent"
                                                     android:layout_height="match_parent"
                                                     android:layout_below="@id/handle"
                                                     android:id="@+id/chatView">
             </com.livelike.livelikesdk.chat.ChatView>
 
-            <View android:layout_width="match_parent"
-                  android:layout_height="30dp"
-                  android:id="@+id/handle"
-                  android:background="#940505"
-                  android:backgroundTint="#940505"
-                  android:layout_alignParentTop="true">
-            </View>
+            <android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+                                                         android:layout_height="30dp"
+                                                         android:id="@+id/handle"
+                                                         android:background="#0C000000">
+                <ImageView android:src="@drawable/ic_chat_chevron"
+                           android:layout_height="wrap_content"
+                           android:rotation="90"
+                           android:contentDescription="a chevron"
+                           android:id="@+id/chevron"
+                           app:layout_constraintRight_toLeftOf="parent"
+                           app:layout_constraintLeft_toRightOf="parent"
+                           app:layout_constraintTop_toBottomOf="parent"
+                           app:layout_constraintBottom_toTopOf="parent"
+                           android:layout_width="wrap_content"/>
+            </android.support.constraint.ConstraintLayout>
         </RelativeLayout>
     </com.livelike.livelikesdk.slidinglayer.SlidingLayer>
 

@@ -9,12 +9,24 @@
         android:background="@color/chatBackground"
         tools:context=".ExoPlayerActivity">
 
+    <ImageView
+            android:id="@+id/image"
+            android:layout_height="0dp"
+            android:layout_width="0dp"
+            android:src="@drawable/sync"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintTop_toBottomOf="@+id/playerView"/>
+
     <com.livelike.livelikesdk.DrawerWidgetChat
             android:id="@+id/chatWidget"
             android:layout_height="0dp"
             android:layout_width="0dp"
+            app:handle_size="20"
             app:stick_to="bottom"
-            app:change_state_on_tap="false"
+            app:chat_background_color="#686868"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
