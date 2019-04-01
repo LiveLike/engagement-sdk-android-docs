@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
+import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -35,6 +36,8 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
         setDrawerOrientation(ta.getInt(R.styleable.DrawerWidgetChat_stick_to, STICK_TO_RIGHT))
 
         view.setChangeStateOnTap(true)
+
+        view.setBackgroundColor(ta.getColor(R.styleable.DrawerWidgetChat_chat_background_color, Color.TRANSPARENT))
 
         view.setChangeStateOnTap(ta.getBoolean(R.styleable.DrawerWidgetChat_change_state_on_tap, true))
         view.openLayer(false) // open drawer immediately

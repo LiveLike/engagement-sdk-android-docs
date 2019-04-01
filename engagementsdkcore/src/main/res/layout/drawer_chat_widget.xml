@@ -13,8 +13,7 @@
     >
         <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#2D2D31">
+                android:layout_height="match_parent">
             <com.livelike.livelikesdk.chat.ChatView android:layout_width="match_parent"
                                                     android:layout_height="match_parent"
                                                     android:layout_below="@id/handle"

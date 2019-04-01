@@ -2,6 +2,8 @@
 <resources>
 
     <declare-styleable name="DrawerWidgetChat">
+        <attr name="chat_background_color"
+              format="color"/>
         <attr name="preview_size"
               format="integer"/>
         <attr name="change_state_on_tap"
