@@ -14,7 +14,6 @@ import com.livelike.livelikesdk.slidinglayer.SlidingLayer.STICK_TO_LEFT
 import com.livelike.livelikesdk.slidinglayer.SlidingLayer.STICK_TO_RIGHT
 import com.livelike.livelikesdk.slidinglayer.SlidingLayer.STICK_TO_TOP
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
-import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.widget.view.WidgetView
 import kotlinx.android.synthetic.main.drawer_chat_widget.view.*
 
@@ -46,49 +45,31 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
 
         view.setOnInteractListener(object : SlidingLayer.OnInteractListener {
             override fun onOpened() {
-                logError { "onOpened" }
             }
 
             override fun onClosed() {
-                logError { "onClosed" }
                 view.openPreview(true)
             }
 
             override fun onOpen() {
-                logError { "onOpen" }
                 chevron.alpha = 1f
-                when (orientation) {
-                    STICK_TO_BOTTOM -> {
-                        chevron.rotation = -90f
-                    }
-                    STICK_TO_TOP -> {
-                        chevron.rotation = 90f
-                    }
-                    STICK_TO_RIGHT -> {
-                        chevron.rotation = 180f
-                    }
-                    STICK_TO_LEFT -> {
-                        chevron.rotation = 0f
-                    }
+                chevron.rotation = when (orientation) {
+                    STICK_TO_BOTTOM -> -90f
+                    STICK_TO_TOP -> 90f
+                    STICK_TO_RIGHT -> 180f
+                    STICK_TO_LEFT -> 0f
+                    else -> 0f
                 }
             }
 
             override fun onShowPreview() {
-                logError { "onClose" }
                 chevron.alpha = 0.2f
-                when (orientation) {
-                    STICK_TO_BOTTOM -> {
-                        chevron.rotation = 90f
-                    }
-                    STICK_TO_TOP -> {
-                        chevron.rotation = -90f
-                    }
-                    STICK_TO_RIGHT -> {
-                        chevron.rotation = 0f
-                    }
-                    STICK_TO_LEFT -> {
-                        chevron.rotation = 180f
-                    }
+                chevron.rotation = when (orientation) {
+                    STICK_TO_BOTTOM -> 90f
+                    STICK_TO_TOP -> -90f
+                    STICK_TO_RIGHT -> 0f
+                    STICK_TO_LEFT -> 180f
+                    else -> -180f
                 }
             }
 
@@ -97,8 +78,6 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
             }
 
             override fun onPreviewShowed() {}
-
-
         })
 
         view.openLayer(false) // open drawer immediately
