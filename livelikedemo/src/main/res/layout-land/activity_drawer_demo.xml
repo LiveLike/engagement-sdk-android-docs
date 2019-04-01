@@ -24,6 +24,7 @@
             android:layout_height="0dp"
             android:layout_width="261dp"
             app:stick_to="right"
+            app:handle_size="20"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
