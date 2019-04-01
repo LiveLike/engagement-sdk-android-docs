@@ -59,7 +59,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         // TODO: Maybe inject this object.
         viewAnimation = ViewAnimation(this)
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, 15000) {
+            viewAnimation.startTimerAnimation(pieTimer, timeout) {
                 fetchResult?.invoke()
                 showResults = true
             }
