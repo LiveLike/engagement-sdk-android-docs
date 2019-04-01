@@ -160,7 +160,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                 parent,
                 false
             )
-            view.layoutParams.width = parentWidth/2
+            widgetResultDisplayUtil.setImageItemWidth(optionList, view, parentWidth)
             return ViewHolder(
                 view
             )

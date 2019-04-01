@@ -157,9 +157,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 parent,
                 false
             )
-            if (optionList.size > 2)
-                view.layoutParams.width = ((parentWidth/2.5).toInt())
-            else view.layoutParams.width = parentWidth/2
+            widgetResultDisplayUtil.setImageItemWidth(optionList, view, parentWidth)
 
             return ViewHolder(
                 view

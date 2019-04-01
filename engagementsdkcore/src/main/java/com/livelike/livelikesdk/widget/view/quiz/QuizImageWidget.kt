@@ -179,7 +179,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 false
             )
 
-            view.layoutParams.width = parentWidth/2
+            resultDisplayUtil.setImageItemWidth(optionList, view, parentWidth)
             return ViewHolder(
                 view
             )

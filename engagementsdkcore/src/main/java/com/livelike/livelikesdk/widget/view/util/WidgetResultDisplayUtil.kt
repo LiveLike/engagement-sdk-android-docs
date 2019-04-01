@@ -103,4 +103,10 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
             view.layoutParams = params
         }
     }
+
+    fun setImageItemWidth(optionList: List<VoteOption>, view: View, parentWidth: Int) {
+        if (optionList.size > 2)
+            view.layoutParams.width = ((parentWidth / 2.5).toInt())
+        else view.layoutParams.width = parentWidth / 2
+    }
 }
