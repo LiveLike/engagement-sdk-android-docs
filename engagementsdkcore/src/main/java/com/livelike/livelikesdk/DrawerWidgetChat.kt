@@ -43,42 +43,7 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
 
         view.setChangeStateOnTap(ta.getBoolean(R.styleable.DrawerWidgetChat_change_state_on_tap, true))
 
-        view.setOnInteractListener(object : SlidingLayer.OnInteractListener {
-            override fun onOpened() {
-            }
-
-            override fun onClosed() {
-                view.openPreview(true)
-            }
-
-            override fun onOpen() {
-                chevron.alpha = 1f
-                chevron.rotation = when (orientation) {
-                    STICK_TO_BOTTOM -> -90f
-                    STICK_TO_TOP -> 90f
-                    STICK_TO_RIGHT -> 180f
-                    STICK_TO_LEFT -> 0f
-                    else -> 0f
-                }
-            }
-
-            override fun onShowPreview() {
-                chevron.alpha = 0.2f
-                chevron.rotation = when (orientation) {
-                    STICK_TO_BOTTOM -> 90f
-                    STICK_TO_TOP -> -90f
-                    STICK_TO_RIGHT -> 0f
-                    STICK_TO_LEFT -> 180f
-                    else -> -180f
-                }
-            }
-
-            override fun onClose() {
-                view.openPreview(true)
-            }
-
-            override fun onPreviewShowed() {}
-        })
+        view.setOnInteractListener(onInteractListener())
 
         view.openLayer(false) // open drawer immediately
     }
@@ -116,6 +81,43 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
                 }
             }
         }
+    }
+
+    private fun onInteractListener() = object : SlidingLayer.OnInteractListener {
+        override fun onOpened() {
+        }
+
+        override fun onClosed() {
+            view.openPreview(true)
+        }
+
+        override fun onOpen() {
+            chevron.alpha = 1f
+            chevron.rotation = when (orientation) {
+                STICK_TO_BOTTOM -> -90f
+                STICK_TO_TOP -> 90f
+                STICK_TO_RIGHT -> 180f
+                STICK_TO_LEFT -> 0f
+                else -> 0f
+            }
+        }
+
+        override fun onShowPreview() {
+            chevron.alpha = 0.2f
+            chevron.rotation = when (orientation) {
+                STICK_TO_BOTTOM -> 90f
+                STICK_TO_TOP -> -90f
+                STICK_TO_RIGHT -> 0f
+                STICK_TO_LEFT -> 180f
+                else -> -180f
+            }
+        }
+
+        override fun onClose() {
+            view.openPreview(true)
+        }
+
+        override fun onPreviewShowed() {}
     }
 
 }
