@@ -22,7 +22,6 @@ import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
-import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
@@ -65,7 +64,6 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 showResults = true
             }
         }
-        logInfo { "Abhishek inflate" }
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
