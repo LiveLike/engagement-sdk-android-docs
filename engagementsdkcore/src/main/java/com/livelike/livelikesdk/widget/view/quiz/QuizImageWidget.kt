@@ -169,7 +169,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 holder.progressBar,
                 holder.percentageText
             )
-            resultDisplayUtil.setImageViewMargin(option, optionList, holder)
+            resultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

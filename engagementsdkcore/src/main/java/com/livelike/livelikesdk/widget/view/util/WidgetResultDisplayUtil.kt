@@ -93,14 +93,14 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
         }
     }
 
-    fun setImageViewMargin(option: VoteOption, optionList: List<VoteOption>, imageQuizHolder: QuizImageWidget.ViewHolder) {
+    fun setImageViewMargin(option: VoteOption, optionList: List<VoteOption>, view: View) {
         if (option == optionList.last()) {
-            val params = imageQuizHolder.itemView.layoutParams as RecyclerView.LayoutParams
-            imageQuizHolder.itemView.layoutParams = params
+            val params = view.layoutParams as RecyclerView.LayoutParams
+            view.layoutParams = params
         } else {
-            val params = imageQuizHolder.itemView.layoutParams as RecyclerView.LayoutParams
+            val params = view.layoutParams as RecyclerView.LayoutParams
             params.marginEnd = AndroidResource.dpToPx(5)
-            imageQuizHolder.itemView.layoutParams = params
+            view.layoutParams = params
         }
     }
 }

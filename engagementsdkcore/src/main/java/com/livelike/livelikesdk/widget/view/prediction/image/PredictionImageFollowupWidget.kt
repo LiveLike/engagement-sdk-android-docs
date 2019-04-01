@@ -62,8 +62,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
         updateCrossImage()
         viewAnimation = ViewAnimation(this)
-        widgetResultDisplayUtil =
-            WidgetResultDisplayUtil(context, viewAnimation)
+        widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
     private fun updateCrossImage() {
@@ -141,20 +140,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                 userSelectedOption,
                 prediction_result)
             overrideButtonPadding(optionButton)
-            setImageViewMargin(option, optionList, holder)
-        }
-
-        // TODO: there is a util method for this in WidgetDisplayUtil but that is specific to ImageQuizHolder. Unless
-        // TODO: We have a unified adapter, this is only specific to each adapter.
-        private fun setImageViewMargin(option: VoteOption, optionList: List<VoteOption>, holder: ViewHolder) {
-            if (option == optionList.last()) {
-                val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
-                holder.itemView.layoutParams = params
-            } else {
-                val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
-                params.marginEnd = AndroidResource.dpToPx(5)
-                holder.itemView.layoutParams = params
-            }
+            widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 
         private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageButton) {

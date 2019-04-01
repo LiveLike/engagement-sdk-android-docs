@@ -21,6 +21,7 @@ import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
@@ -29,6 +30,7 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
+    lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private val widgetOpacityFactor: Float = 0.2f
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
@@ -68,6 +70,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 }
             }
         }
+        widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() }},timeout)
     }
 
@@ -145,20 +148,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 optionSelectedCallback(selectedOption)
                 userTapped.invoke()
             }
-            setImageViewMargin(option, optionList, holder)
-        }
-
-        // TODO: there is a util method for this in WidgetDisplayUtil but that is specific to ImageQuizHolder. Unless
-        // TODO: We have a unified adapter, this is only specific to each adapter.
-        private fun setImageViewMargin(option: VoteOption, optionList: List<VoteOption>, holder: ViewHolder) {
-            if (option == optionList.last()) {
-                val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
-                holder.itemView.layoutParams = params
-            } else {
-                val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
-                params.marginEnd = AndroidResource.dpToPx(5)
-                holder.itemView.layoutParams = params
-            }
+            widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -167,7 +157,10 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 parent,
                 false
             )
-            view.layoutParams.width = parentWidth/2
+            if (optionList.size > 2)
+                view.layoutParams.width = ((parentWidth/2.5).toInt())
+            else view.layoutParams.width = parentWidth/2
+
             return ViewHolder(
                 view
             )
