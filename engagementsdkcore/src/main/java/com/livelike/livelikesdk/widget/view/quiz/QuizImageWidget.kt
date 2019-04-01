@@ -22,7 +22,6 @@ import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
-import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
@@ -43,7 +42,8 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private var correctOption: String? = null
     private var timeout = 0L
     private var showResults = false
-
+    var parentWidth = 0
+    
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -64,14 +64,14 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 showResults = true
             }
         }
-
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit, parentWidth: Int) {
         this.timeout = timeout
         dismissWidget = dismiss
         fetchResult = fetch
+        this.parentWidth = parentWidth
         inflate(context)
     }
 
@@ -167,15 +167,19 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 holder.progressBar,
                 holder.percentageText
             )
+            resultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(context).inflate(
+                R.layout.prediction_image_row_element,
+                parent,
+                false
+            )
+
+            resultDisplayUtil.setImageItemWidth(optionList, view, parentWidth)
             return ViewHolder(
-                LayoutInflater.from(context).inflate(
-                    R.layout.prediction_image_row_element,
-                    parent,
-                    false
-                )
+                view
             )
         }
 

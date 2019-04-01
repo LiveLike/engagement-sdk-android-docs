@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.view.util
 
 import android.content.Context
 import android.support.v7.content.res.AppCompatResources
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
@@ -9,8 +10,10 @@ import android.widget.TextView
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
+import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 
 internal class WidgetResultDisplayUtil(val context: Context, private val viewAnimation: ViewAnimation) {
     private var lottieAnimationPath = ""
@@ -88,5 +91,22 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
             visibility = View.VISIBLE
             text = option.votePercentage.toString().plus("%")
         }
+    }
+
+    fun setImageViewMargin(option: VoteOption, optionList: List<VoteOption>, view: View) {
+        if (option == optionList.last()) {
+            val params = view.layoutParams as RecyclerView.LayoutParams
+            view.layoutParams = params
+        } else {
+            val params = view.layoutParams as RecyclerView.LayoutParams
+            params.marginEnd = AndroidResource.dpToPx(5)
+            view.layoutParams = params
+        }
+    }
+
+    fun setImageItemWidth(optionList: List<VoteOption>, view: View, parentWidth: Int) {
+        if (optionList.size > 2)
+            view.layoutParams.width = ((parentWidth / 2.5).toInt())
+        else view.layoutParams.width = parentWidth / 2
     }
 }

@@ -21,6 +21,7 @@ import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
@@ -29,10 +30,12 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
+    lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private val widgetOpacityFactor: Float = 0.2f
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
+    private var parentWidth = 0
     val imageButtonMap = HashMap<ImageButton, String?>()
     lateinit var userTapped: () -> Unit
 
@@ -40,9 +43,10 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
         inflate(context, timeout)
         dismissWidget = dismiss
+        this.parentWidth = parentWidth
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -66,6 +70,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 }
             }
         }
+        widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() }},timeout)
     }
 
@@ -143,15 +148,19 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 optionSelectedCallback(selectedOption)
                 userTapped.invoke()
             }
+            widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(context).inflate(
+                R.layout.prediction_image_row_element,
+                parent,
+                false
+            )
+            widgetResultDisplayUtil.setImageItemWidth(optionList, view, parentWidth)
+
             return ViewHolder(
-                LayoutInflater.from(context).inflate(
-                    R.layout.prediction_image_row_element,
-                    parent,
-                    false
-                )
+                view
             )
         }
 

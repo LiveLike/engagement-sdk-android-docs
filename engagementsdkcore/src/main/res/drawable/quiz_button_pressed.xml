@@ -8,6 +8,6 @@
                 android:topRightRadius="6dp"
                 android:bottomLeftRadius="6dp"/>
 
-    <stroke android:color="@color/prediction_button_pressed"
+    <stroke android:color="@color/quiz_button_pressed"
             android:width="2dp"/>
 </shape>
