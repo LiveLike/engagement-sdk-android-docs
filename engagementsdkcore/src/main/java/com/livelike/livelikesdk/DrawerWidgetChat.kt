@@ -36,8 +36,8 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
 
         view.setChangeStateOnTap(true)
 
+        view.setChangeStateOnTap(ta.getBoolean(R.styleable.DrawerWidgetChat_change_state_on_tap, true))
         view.openLayer(false) // open drawer immediately
-//        view.setChangeStateOnTap(ta.getBoolean(R.styleable.DrawerWidgetChat_change_state_on_tap, false))
     }
 
     private fun setDrawerOrientation(orientation: Int) {
