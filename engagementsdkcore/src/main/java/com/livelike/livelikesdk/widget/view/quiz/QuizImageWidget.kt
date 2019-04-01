@@ -42,6 +42,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private var selectedOption : String? = null
     private var correctOption: String? = null
     private var timeout = 0L
+    private var showResults = false
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -60,6 +61,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         viewAnimation.startWidgetTransitionInAnimation {
             viewAnimation.startTimerAnimation(pieTimer, timeout) {
                 fetchResult?.invoke()
+                showResults = true
             }
         }
 
@@ -90,6 +92,8 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         image_optionList.layoutManager = linearLayoutManager
         image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
+        if(showResults)
+            updateVoteCount(voteOptions)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
