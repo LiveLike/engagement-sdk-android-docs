@@ -87,46 +87,33 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
         view.setStickTo(orientation)
         this.orientation = orientation
 
-        (chatView.layoutParams as RelativeLayout.LayoutParams).removeRule(RelativeLayout.BELOW)
-        (chatView.layoutParams as RelativeLayout.LayoutParams).removeRule(RelativeLayout.ABOVE)
-        (chatView.layoutParams as RelativeLayout.LayoutParams).removeRule(RelativeLayout.RIGHT_OF)
-        (chatView.layoutParams as RelativeLayout.LayoutParams).removeRule(RelativeLayout.ABOVE)
-
-        when (orientation) {
-            STICK_TO_BOTTOM -> {
-                chatView.apply {
-                    val params = layoutParams as RelativeLayout.LayoutParams
-                    params.addRule(RelativeLayout.BELOW, R.id.handle)
-
+        (chatView.layoutParams as RelativeLayout.LayoutParams).apply {
+            removeRule(RelativeLayout.BELOW)
+            removeRule(RelativeLayout.ABOVE)
+            removeRule(RelativeLayout.RIGHT_OF)
+            removeRule(RelativeLayout.ABOVE)
+            addRule(
+                when (orientation) {
+                    STICK_TO_BOTTOM -> RelativeLayout.BELOW
+                    STICK_TO_TOP -> RelativeLayout.ABOVE
+                    STICK_TO_RIGHT -> RelativeLayout.RIGHT_OF
+                    STICK_TO_LEFT -> RelativeLayout.LEFT_OF
+                    else -> RelativeLayout.GONE
                 }
-                handle.layoutParams.height = dpToPx(previewSize)
-                handle.layoutParams.width = LayoutParams.MATCH_PARENT
-            }
-            STICK_TO_TOP -> {
-                chatView.apply {
-                    val params = layoutParams as RelativeLayout.LayoutParams
-                    params.addRule(RelativeLayout.ABOVE, R.id.handle)
+                , R.id.handle
+            )
+        }
 
+        handle.layoutParams.apply {
+            when (orientation) {
+                STICK_TO_BOTTOM, STICK_TO_TOP -> {
+                    height = dpToPx(previewSize)
+                    width = LayoutParams.MATCH_PARENT
                 }
-                handle.layoutParams.height = dpToPx(previewSize)
-                handle.layoutParams.width = LayoutParams.MATCH_PARENT
-            }
-            STICK_TO_RIGHT -> {
-                chatView.apply {
-                    val params = layoutParams as RelativeLayout.LayoutParams
-                    params.addRule(RelativeLayout.RIGHT_OF, R.id.handle)
+                STICK_TO_RIGHT, STICK_TO_LEFT -> {
+                    height = LayoutParams.MATCH_PARENT
+                    width = dpToPx(previewSize)
                 }
-                handle.layoutParams.width = dpToPx(previewSize)
-                handle.layoutParams.height = LayoutParams.MATCH_PARENT
-            }
-            STICK_TO_LEFT -> {
-                chatView.apply {
-                    val params = layoutParams as RelativeLayout.LayoutParams
-                    params.addRule(RelativeLayout.LEFT_OF, R.id.handle)
-
-                }
-                handle.layoutParams.width = dpToPx(previewSize)
-                handle.layoutParams.height = LayoutParams.MATCH_PARENT
             }
         }
     }
