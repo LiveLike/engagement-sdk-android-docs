@@ -76,9 +76,11 @@ internal class ImagePreloaderMessagingClient(
         val msg = processingList.first { msg -> msg == imageMessage }
         processingList.remove(msg)
         msg.imagePreloaded++
-        processingList.add(msg)
         if (msg.imageCount == msg.imagePreloaded) {
             listener?.onClientMessageEvent(imageMessage.messagingClient, imageMessage.clientMessage)
+
+        } else {
+            processingList.add(msg)
         }
     }
 
