@@ -33,22 +33,10 @@ internal class QuizTextWidget : TextOptionWidgetBase {
     private fun startWidgetAnimation(pieTimer: View, timeout: Long) {
         viewAnimation.startWidgetTransitionInAnimation {
             viewAnimation.startTimerAnimation(pieTimer, timeout) {
-                if (!showResults) {
-                    showResults = true
-                    buttonList.forEach { button ->
-                        disableButtons(button)
-                    }
-                    fetchResult?.invoke()
-                } else {
-                    viewAnimation.hideWidget()
-                    //Not sure if this is needed
-                    Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
-                }
+                showResults = true
+                fetchResult?.invoke()
+                Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
             }
         }
-    }
-
-    private fun disableButtons(button: Button) {
-        button.isEnabled = false
     }
 }

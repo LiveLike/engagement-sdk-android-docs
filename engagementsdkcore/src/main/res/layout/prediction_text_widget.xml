@@ -14,13 +14,14 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/textView_text_size"
             app:fontFamily="@font/titillium_bold"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Question Text goes here"/>
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/option_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            android:orientation="vertical"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
