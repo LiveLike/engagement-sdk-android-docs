@@ -101,7 +101,7 @@ internal class AlertWidget : ConstraintLayout {
         // Start dismiss timeout
         var timeout = parseDuration(resourceAlert.timeout)
 
-        Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     private fun openBrowser(context: Context) {

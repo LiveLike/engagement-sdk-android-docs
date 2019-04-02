@@ -19,11 +19,10 @@ import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.cross_image.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
@@ -76,10 +75,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         viewAnimation.startWidgetTransitionInAnimation{
             viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
         }
-        Handler().postDelayed(
-            { viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } },
-            timeout
-        )
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     override fun questionUpdated(questionText: String) {

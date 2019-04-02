@@ -166,9 +166,15 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 }
                                 quizType -> {
                                     if (isVariance(getString(R.string.text))) {
-                                        showWidget(WidgetType.TEXT_QUIZ_RESULT, getPayload("quiz/text/quiz_text_result.json"))
+                                        showWidget(
+                                            WidgetType.TEXT_QUIZ_RESULT,
+                                            getPayload("quiz/text/quiz_text_result.json")
+                                        )
                                     } else if (isVariance(getString(R.string.image))) {
-                                        showWidget(WidgetType.IMAGE_QUIZ_RESULT, getPayload("quiz/image/quiz_result.json"))
+                                        showWidget(
+                                            WidgetType.IMAGE_QUIZ_RESULT,
+                                            getPayload("quiz/image/quiz_result.json")
+                                        )
                                     }
 
                                 }

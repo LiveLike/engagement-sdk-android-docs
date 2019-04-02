@@ -4,15 +4,9 @@ import android.content.Context
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
-import com.livelike.livelikesdk.binding.QuizVoteObserver
-import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetBase
-import kotlinx.android.synthetic.main.confirm_message.view.*
-import kotlinx.android.synthetic.main.pie_timer.view.*
-import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
 internal class QuizTextWidget : TextOptionWidgetBase {
     constructor(context: Context?) : super(context)
@@ -35,8 +29,8 @@ internal class QuizTextWidget : TextOptionWidgetBase {
             viewAnimation.startTimerAnimation(pieTimer, timeout) {
                 showResults = true
                 fetchResult?.invoke()
-                Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
             }
         }
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
     }
 }

@@ -50,9 +50,6 @@ internal class PredictionTextFollowUpWidgetView :
         viewAnimation.startWidgetTransitionInAnimation{
             viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
         }
-        Handler().postDelayed(
-            { viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } },
-            timeout
-        )
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 }

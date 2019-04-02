@@ -350,7 +350,6 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
                 chat_nickname.text = message.senderDisplayName
             }
             chatMessage.text = message.message
-            text_open_chat_time.text = message.timeStamp
         }
     }
 

@@ -92,8 +92,10 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         optionSelectedCallback: (String?) -> Unit,
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
-        image_optionList.adapter?.let { if(showResults)
-            updateVoteCount(voteOptions)  } ?: run {image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)}
+        image_optionList.adapter?.let {
+            if (showResults)
+                updateVoteCount(voteOptions)
+        } ?: run { image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
@@ -114,7 +116,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
-        Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
 
         resultDisplayUtil.startResultAnimation(correctOption == selectedOption, prediction_result)
         voteOptions.forEach { option ->
@@ -122,12 +124,14 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
             if (viewOption != null) {
                 viewOption.progressBar.progress = option.answerCount.toInt()
                 viewOption.percentageTextView.text = option.answerCount.toString().plus("%")
-                resultDisplayUtil.updateViewDrawable(option.id,
+                resultDisplayUtil.updateViewDrawable(
+                    option.id,
                     viewOption.progressBar,
                     viewOption.button,
                     option.answerCount.toInt(),
                     correctOption,
-                    selectedOption)
+                    selectedOption
+                )
             }
             viewOption?.button?.setOnClickListener(null)
             viewOption?.button?.let { overrideButtonPadding(it) }

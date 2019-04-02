@@ -35,12 +35,10 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
                         prediction_confirm_message_animation
                     ) {}
                     performPredictionWidgetFadeOutOperations()
-                } else {
-                    viewAnimation.hideWidget()
                 }
             }
         }
-        Handler().postDelayed({viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() }},timeout)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

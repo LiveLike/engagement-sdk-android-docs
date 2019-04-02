@@ -71,7 +71,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             }
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
-        Handler().postDelayed({viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() }},timeout)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

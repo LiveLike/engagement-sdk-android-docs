@@ -3,6 +3,7 @@ package com.livelike.livelikesdk
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -23,9 +24,11 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
     var widgets: WidgetView
     var previewSize: Int
     var orientation: Int = STICK_TO_RIGHT
+    var widgetBackground: Drawable
 
     init {
         val viewRoot: View = LayoutInflater.from(context).inflate(R.layout.drawer_chat_widget, this, true)
+        widgetBackground = viewRoot.widgetView.background
         view.isSlidingEnabled = true
 
         chat = viewRoot.chatView
@@ -88,6 +91,7 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
 
     private fun onInteractListener() = object : SlidingLayer.OnInteractListener {
         override fun onOpened() {
+            widgetView.background = widgetBackground
         }
 
         override fun onClosed() {
@@ -106,6 +110,7 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
         }
 
         override fun onShowPreview() {
+            widgetView.background = null
             chevron.alpha = 0.2f
             chevron.rotation = when (orientation) {
                 STICK_TO_BOTTOM -> 90f
