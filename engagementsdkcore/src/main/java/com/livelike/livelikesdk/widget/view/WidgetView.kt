@@ -226,7 +226,16 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     override fun dismissCurrentWidget() {
-        ViewAnimation(widget_view.parent as View).triggerTransitionOutAnimation {
+        try {
+            ViewAnimation(widget_view.parent as View).triggerTransitionOutAnimation {
+                removeView()
+                (widget_view.parent as View).translationY = 0f
+                currentWidget?.apply {
+                    emitWidgetDismissEvents(this)
+                    optionSelectionEvents()
+                }
+            }
+        } catch (e: ClassCastException) {
             removeView()
             (widget_view.parent as View).translationY = 0f
             currentWidget?.apply {
@@ -234,6 +243,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 optionSelectionEvents()
             }
         }
+
     }
 
     private fun emitWidgetDismissEvents(widget: Widget) {
