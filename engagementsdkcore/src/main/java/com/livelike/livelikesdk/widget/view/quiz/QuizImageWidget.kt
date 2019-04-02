@@ -91,7 +91,8 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         image_optionList.layoutManager = linearLayoutManager
-        image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
+        if(image_optionList.adapter == null)
+            image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
         if(showResults)
             updateVoteCount(voteOptions)
     }

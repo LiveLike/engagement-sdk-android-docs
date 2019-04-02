@@ -30,9 +30,8 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
 
     private fun setViewOutline(view: View, isUserSelected: Boolean, isCorrect: Boolean) {
         if (isCorrect) updateViewBackground(view, R.drawable.button_correct_answer_outline)
-        else if (isUserSelected) {
-            updateViewBackground(view, R.drawable.button_wrong_answer_outline )
-        }
+        else if (isUserSelected) updateViewBackground(view, R.drawable.button_wrong_answer_outline )
+
     }
 
     private fun setProgressBarColor(progressBar: ProgressBar, isUserSelected: Boolean, isCorrect: Boolean, percentage: Int) {
