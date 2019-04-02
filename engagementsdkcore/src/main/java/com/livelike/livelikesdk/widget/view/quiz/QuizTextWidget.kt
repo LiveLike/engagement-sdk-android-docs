@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
-import android.widget.Button
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetBase
@@ -28,19 +27,10 @@ internal class QuizTextWidget : TextOptionWidgetBase {
     private fun startWidgetAnimation(pieTimer: View, timeout: Long) {
         viewAnimation.startWidgetTransitionInAnimation {
             viewAnimation.startTimerAnimation(pieTimer, timeout) {
-                if (!showResults) {
-                    showResults = true
-                    buttonList.forEach { button ->
-                        disableButtons(button)
-                    }
-                    fetchResult?.invoke()
-                }
+                showResults = true
+                fetchResult?.invoke()
             }
         }
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
-    }
-
-    private fun disableButtons(button: Button) {
-        button.isEnabled = false
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
     }
 }

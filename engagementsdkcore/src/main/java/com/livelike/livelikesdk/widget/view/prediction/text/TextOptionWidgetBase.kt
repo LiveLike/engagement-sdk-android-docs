@@ -3,7 +3,7 @@ package com.livelike.livelikesdk.widget.view.prediction.text
 import android.annotation.SuppressLint
 import android.content.Context
 import android.support.constraint.ConstraintLayout
-import android.support.constraint.ConstraintSet
+
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -18,13 +18,14 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.widget.model.VoteOption
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import kotlinx.android.synthetic.main.text_option_row_element.view.*
 
+
 open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected val widgetOpacityFactor: Float = 0.2f
-    protected val constraintSet = ConstraintSet()
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val buttonMap = mutableMapOf<Button, String?>()
     protected val viewMap = mutableMapOf<ViewHolder, String?>()
@@ -33,9 +34,11 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub: ViewStub
     protected var dismissWidget :  (() -> Unit)? = null
-    protected var showResults = false;
+    protected var showResults = false
     private lateinit var userTapped : () -> Unit
     private lateinit var viewAnimation: ViewAnimation
+    private lateinit var  resultDisplayUtil : WidgetResultDisplayUtil
+    private var adapter : TextOptionAdapter? = null
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -53,6 +56,8 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         viewAnimation = ViewAnimation(this)
+        viewAnimation.addHorizontalSwipeListener(prediction_question_textView, layout, dismissWidget)
+        resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
     fun userTappedCallback(userTapped: () -> Unit) {
@@ -61,10 +66,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun questionUpdated(questionText: String) {
-        viewAnimation.addHorizontalSwipeListener(prediction_question_textView.apply {
-            text = questionText
-            isClickable = true
-        }, layout, dismissWidget)
+        prediction_question_textView.text = questionText
     }
 
     override fun confirmMessageUpdated(confirmMessage: String) {
@@ -72,14 +74,17 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     }
 
     override fun optionListUpdated(voteOptions: List<VoteOption>, optionSelectedCallback: (String?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
-        option_list.adapter = TextOptionAdapter(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
+        adapter?.updateOptionList(voteOptions, correctOptionWithUserSelection) ?: run {
+            adapter = TextOptionAdapter(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
+            option_list.adapter = adapter
+        }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
-                button.background = AppCompatResources.getDrawable(context, R.drawable.prediction_button_pressed)
-            else button.background = AppCompatResources.getDrawable(context, R.drawable.button_default)
+                button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
+            else button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
         }
     }
 
@@ -88,9 +93,17 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     }
 
     inner class TextOptionAdapter(
-        private val optionList: List<VoteOption>,
+        private var optionList: List<VoteOption>,
         private val optionSelectedCallback: (String?) -> Unit,
-        private val correctOptionWithUserSelection: Pair<String?, String?>) : RecyclerView.Adapter<ViewHolder>() {
+        private var correctOptionWithUserSelection: Pair<String?, String?>) : RecyclerView.Adapter<ViewHolder>() {
+
+        fun updateOptionList(data: List<VoteOption>, correctOptionWithUserSelection: Pair<String?, String?>) {
+            this.correctOptionWithUserSelection = correctOptionWithUserSelection
+            optionList = data
+            if(showResults)
+                resultDisplayUtil.startResultAnimation(correctOptionWithUserSelection.first == correctOptionWithUserSelection.second, prediction_result)
+            notifyDataSetChanged()
+        }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val option = optionList[position]
@@ -102,7 +115,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
             if (showResults) {
                 setResultsBackground(holder, option.id, option.votePercentage.toInt())
-                button.setOnClickListener(null)
             } else {
                 button.setOnClickListener {
                     optionSelected = true
@@ -111,44 +123,29 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                     userTapped.invoke()
                 }
             }
-
-            if(position == optionList.lastIndex)
-                button.background = AppCompatResources.getDrawable(context, R.drawable.bottom_rounded_corner)
-
             viewAnimation.addHorizontalSwipeListener(button, layout, dismissWidget)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(
-                LayoutInflater.from(context).inflate(R.layout.text_option_row_element, parent, false)
-            )
+            val itemView = LayoutInflater.from(context).inflate(R.layout.text_option_row_element, parent, false)
+            val lp = RecyclerView.LayoutParams((parent as RecyclerView).layoutManager!!.width, ViewGroup.LayoutParams.WRAP_CONTENT)
+            itemView.layoutParams = lp
+            return ViewHolder(itemView)
         }
 
-        private fun setResultsBackground(viewHolder: ViewHolder, optionId: String?, votePercentage: Int) {
-            val correctOption = correctOptionWithUserSelection.first
-            val userSelectedOption = correctOptionWithUserSelection.second
-            val optionCorrect = optionId == correctOption
-
+        private fun setResultsBackground(viewHolder: ViewHolder, optionId: String, votePercentage: Int) {
             viewHolder.optionButton.setOnClickListener(null)
-
-            viewHolder.optionButton.background = if (optionCorrect)
-                AppCompatResources.getDrawable(context, R.drawable.button_correct_answer_outline)
-            else
-                AppCompatResources.getDrawable(context, R.drawable.button_wrong_answer_outline)
-
-            if (optionCorrect)
-                viewHolder.progressBar.progressDrawable =
-                        AppCompatResources.getDrawable(context, R.drawable.progress_bar_user_correct)
-            else
-                viewHolder.progressBar.progressDrawable = if (optionId == userSelectedOption)
-                    AppCompatResources.getDrawable(context, R.drawable.progress_bar_user_selection_wrong)
-                        else AppCompatResources.getDrawable(context, R.drawable.progress_bar_wrong_option)
-
             viewHolder.percentText.text = votePercentage.toString().plus("%")
             viewHolder.progressBar.apply {
                 visibility = View.VISIBLE
                 progress = votePercentage
             }
+            resultDisplayUtil.updateViewDrawable(optionId,
+                viewHolder.progressBar,
+                viewHolder.optionButton,
+                votePercentage,
+                correctOptionWithUserSelection.first,
+                correctOptionWithUserSelection.second)
         }
 
         override fun getItemCount(): Int {

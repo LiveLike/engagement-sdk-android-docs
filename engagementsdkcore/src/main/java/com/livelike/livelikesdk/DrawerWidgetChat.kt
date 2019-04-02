@@ -95,7 +95,7 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
         }
 
         override fun onClosed() {
-            view.openPreview(true)
+            view.openPreview(false)
         }
 
         override fun onOpen() {
@@ -122,7 +122,7 @@ class DrawerWidgetChat(context: Context, attrs: AttributeSet?) : ConstraintLayou
         }
 
         override fun onClose() {
-            view.openPreview(true)
+            view.openPreview(false)
         }
 
         override fun onPreviewShowed() {}

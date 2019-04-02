@@ -10,6 +10,7 @@ import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.messaging.proxies.syncTo
+import com.livelike.livelikesdk.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
@@ -87,7 +88,9 @@ internal class LiveLikeContentSessionImpl(
     override fun contentSessionId() = program?.clientId ?: ""
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
-            val widgetQueue = PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).asWidgetManager(llDataClient)
+            val widgetQueue =
+                PubnubMessagingClient(it.pubNubKey).syncTo(currentPlayheadTime).withPreloader(applicationContext)
+                    .asWidgetManager(llDataClient)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer

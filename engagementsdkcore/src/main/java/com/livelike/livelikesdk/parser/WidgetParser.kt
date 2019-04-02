@@ -78,9 +78,11 @@ internal class WidgetParser {
             resource.choices.forEach { choice ->
                 if (option.id == choice.id)
                     option.answerCount = choice.answer_count.toLong()
+                if(option.isCorrect)
+                    widget.correctOptionId = option.id
             }
         }
         widget.optionSelected =
-            WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(resource.id))
+            WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widget.id?:""))
     }
 }

@@ -64,6 +64,10 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 showResults = true
             }
         }
+        val linearLayoutManager = LinearLayoutManager(context)
+        linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
+        image_optionList.layoutManager = linearLayoutManager
+
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
@@ -88,12 +92,10 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         optionSelectedCallback: (String?) -> Unit,
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
-        val linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
-        image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
-        if(showResults)
-            updateVoteCount(voteOptions)
+        image_optionList.adapter?.let {
+            if (showResults)
+                updateVoteCount(voteOptions)
+        } ?: run { image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
@@ -115,19 +117,23 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
+
+        resultDisplayUtil.startResultAnimation(correctOption == selectedOption, prediction_result)
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {
                 viewOption.progressBar.progress = option.answerCount.toInt()
                 viewOption.percentageTextView.text = option.answerCount.toString().plus("%")
-                resultDisplayUtil.updateViewDrawable(option,
+                resultDisplayUtil.updateViewDrawable(
+                    option.id,
                     viewOption.progressBar,
                     viewOption.button,
                     option.answerCount.toInt(),
                     correctOption,
-                    selectedOption,
-                    prediction_result)
+                    selectedOption
+                )
             }
+            viewOption?.button?.setOnClickListener(null)
             viewOption?.button?.let { overrideButtonPadding(it) }
         }
     }

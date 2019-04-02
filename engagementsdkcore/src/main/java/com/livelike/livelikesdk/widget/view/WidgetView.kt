@@ -5,8 +5,6 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetEvent
@@ -68,12 +66,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         payload: JsonObject
     ) {
         logDebug { "NOW - Show Widget $type on screen: $payload" }
-        val layoutParams = FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        layoutParams.topMargin = 0
-
         val widget = Widget()
         val parser = WidgetParser()
         val widgetResource = gson.fromJson(payload, Resource::class.java)
@@ -89,8 +81,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                         0
                     ).apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
 
-                predictionWidget.layoutParams = layoutParams
-
                 widget.registerObserver(predictionWidget)
                 widget.notifyDataSetChange()
 
@@ -104,8 +94,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 parser.parsePredictionFollowup(widget, widgetResource)
                 val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0)
                     .apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
-
-                predictionWidget.layoutParams = layoutParams
 
                 widget.registerObserver(predictionWidget)
                 widget.notifyDataSetChange()
@@ -139,8 +127,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val predictionWidget = PredictionImageFollowupWidget(context, null, 0)
                     .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
 
-                predictionWidget.layoutParams = layoutParams
-
                 widget.registerObserver(predictionWidget)
                 widget.notifyDataSetChange()
                 if (widget.optionSelected.id.isNullOrEmpty()) {
@@ -159,7 +145,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     0)
                     .apply { initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionEvents() }) }
 
-               // quizTextWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
 
                 quizTextWidget.userTappedCallback {
