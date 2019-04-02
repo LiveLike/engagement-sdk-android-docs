@@ -94,6 +94,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                                    correctOptionWithUserSelection: Pair<String?, String?>) {
         val correctOption = correctOptionWithUserSelection.first
         val userSelectedOption = correctOptionWithUserSelection.second
+        widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result)
         initAdapter(voteOptions, correctOption, userSelectedOption)
         lottieAnimationPath = findResultAnimationPath(correctOption, userSelectedOption)
         transitionAnimation()
@@ -132,13 +133,12 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
             holder.optionText.text = option.description
             widgetResultDisplayUtil.updatePercentageText(holder.percentageText, option)
             loadImage(option, dpToPx(74), optionButton)
-            widgetResultDisplayUtil.updateViewDrawable(option,
+            widgetResultDisplayUtil.updateViewDrawable(option.id,
                 progressBar,
                 optionButton,
                 option.votePercentage.toInt(),
                 correctOption,
-                userSelectedOption,
-                prediction_result)
+                userSelectedOption)
             overrideButtonPadding(optionButton)
             widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }

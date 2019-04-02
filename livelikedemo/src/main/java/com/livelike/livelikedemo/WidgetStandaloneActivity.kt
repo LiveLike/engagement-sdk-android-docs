@@ -141,9 +141,9 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 }
                                 quizType -> {
                                     if (isVariance(getString(R.string.text))) {
-                                        //showWidget(WidgetType.TEXT_PREDICTION, getPayload("prediction/quiz/quiz_widget.json"))
+                                        showWidget(WidgetType.TEXT_QUIZ, getPayload("quiz/text/quiz_text_widget.json"))
                                     } else if (isVariance(getString(R.string.image))) {
-                                        showWidget(WidgetType.IMAGE_QUIZ, getPayload("prediction/quiz/quiz_widget.json"))
+                                        showWidget(WidgetType.IMAGE_QUIZ, getPayload("quiz/image/quiz_widget.json"))
                                     }
                                 }
                                 cheerMeterType -> {
@@ -165,7 +165,12 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 pollType -> {
                                 }
                                 quizType -> {
-                                    showWidget(WidgetType.IMAGE_QUIZ_RESULT, getPayload("prediction/quiz/quiz_result.json"))
+                                    if (isVariance(getString(R.string.text))) {
+                                        showWidget(WidgetType.TEXT_QUIZ_RESULT, getPayload("quiz/text/quiz_text_result.json"))
+                                    } else if (isVariance(getString(R.string.image))) {
+                                        showWidget(WidgetType.IMAGE_QUIZ_RESULT, getPayload("quiz/image/quiz_result.json"))
+                                    }
+
                                 }
                                 cheerMeterType -> {
                                 }

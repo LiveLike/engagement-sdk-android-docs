@@ -18,54 +18,41 @@ import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 internal class WidgetResultDisplayUtil(val context: Context, private val viewAnimation: ViewAnimation) {
     private var lottieAnimationPath = ""
 
-    fun updateViewDrawable(option: VoteOption,
+    fun updateViewDrawable(optionId: String,
                            progressBar: ProgressBar,
-                           optionButton: ImageButton,
+                           optionButton: View,
                            percentage: Int,
                            correctOption: String?,
-                           selectedOption: String?,
-                           prediction_result: LottieAnimationView) {
+                           selectedOption: String?) {
+        setViewOutline(optionButton,selectedOption == optionId, correctOption == optionId )
+        setProgressBarColor(progressBar, selectedOption == optionId, correctOption == optionId, percentage)
+    }
 
-        startResultAnimation(correctOption, selectedOption, prediction_result)
-
-        if (hasUserSelectedCorrectOption(selectedOption, correctOption)) {
-            if (isCurrentButtonSameAsCorrectOption(correctOption, option.id)) {
-                updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
-                updateImageButton(optionButton, R.drawable.button_correct_answer_outline)
-            } else {
-                updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
-            }
-        } else {
-            when {
-                isCurrentButtonSameAsCorrectOption(correctOption, option.id) -> {
-                    updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
-                    updateImageButton(optionButton, R.drawable.button_correct_answer_outline)
-                }
-                isCurrentButtonSameAsCorrectOption(selectedOption, option.id) -> {
-                    updateProgressBar(progressBar, R.drawable.progress_bar_user_selection_wrong, percentage)
-                    updateImageButton(optionButton, R.drawable.button_wrong_answer_outline)
-                }
-                else -> {
-                    updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
-                }
-            }
+    private fun setViewOutline(view: View, isUserSelected: Boolean, isCorrect: Boolean) {
+        if (isCorrect) updateViewBackground(view, R.drawable.button_correct_answer_outline)
+        else if (isUserSelected) {
+            updateViewBackground(view, R.drawable.button_wrong_answer_outline )
         }
     }
 
-    private fun startResultAnimation(
-        correctOption: String?,
-        selectedOption: String?,
+    private fun setProgressBarColor(progressBar: ProgressBar, isUserSelected: Boolean, isCorrect: Boolean, percentage: Int) {
+        when {
+            isCorrect -> updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
+            isUserSelected -> updateProgressBar(progressBar, R.drawable.progress_bar_user_selection_wrong, percentage)
+            else -> updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
+        }
+    }
+
+    fun startResultAnimation(
+        isCorrect: Boolean,
         prediction_result: LottieAnimationView
     ) {
-        lottieAnimationPath = findResultAnimationPath(correctOption, selectedOption)
+        lottieAnimationPath = findResultAnimationPath(isCorrect)
         viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
     }
 
-    private fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
-        userSelectedOption == correctOption
-
-    private fun findResultAnimationPath(correctOption: String?, userSelectedOption: String?): String {
-        return if (hasUserSelectedCorrectOption(correctOption, userSelectedOption))
+    private fun findResultAnimationPath(isCorrect: Boolean): String {
+        return if (isCorrect)
             PredictionTextFollowUpWidgetView.correctAnswerLottieFilePath
         else PredictionTextFollowUpWidgetView.wrongAnswerLottieFilePath
     }
@@ -78,13 +65,9 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
         }
     }
 
-    private fun updateImageButton(button: ImageButton, drawable: Int) {
-        button.background = AppCompatResources.getDrawable(context, drawable)
-        button.setOnClickListener(null)
+    private fun updateViewBackground(view: View, drawable: Int) {
+        view.background = AppCompatResources.getDrawable(context, drawable)
     }
-
-    private fun isCurrentButtonSameAsCorrectOption(correctOption: String?, buttonId: String?) =
-        buttonId == correctOption
 
     fun updatePercentageText(percentageText: TextView, option: VoteOption) {
         percentageText.apply {

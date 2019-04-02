@@ -115,19 +115,21 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
         Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
+
+        resultDisplayUtil.startResultAnimation(correctOption == selectedOption, prediction_result)
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {
                 viewOption.progressBar.progress = option.answerCount.toInt()
                 viewOption.percentageTextView.text = option.answerCount.toString().plus("%")
-                resultDisplayUtil.updateViewDrawable(option,
+                resultDisplayUtil.updateViewDrawable(option.id,
                     viewOption.progressBar,
                     viewOption.button,
                     option.answerCount.toInt(),
                     correctOption,
-                    selectedOption,
-                    prediction_result)
+                    selectedOption)
             }
+            viewOption?.button?.setOnClickListener(null)
             viewOption?.button?.let { overrideButtonPadding(it) }
         }
     }
