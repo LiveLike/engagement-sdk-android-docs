@@ -2,58 +2,51 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content"
-                                             android:background="@drawable/rounded_rectangle_chat"
+
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              xmlns:tools="http://schemas.android.com/tools"
     >
 
-    <TextView
-            android:id="@+id/chat_nickname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:text="Terry"
-            tools:text="@tools:sample/full_names"
-            android:textColor="#66ffffff"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="HardcodedText"/>
+    <android.support.constraint.ConstraintLayout android:id="@+id/chatBackground"
+                                                 android:background="@drawable/rounded_rectangle_chat"
+                                                 android:layout_height="wrap_content"
+                                                 android:layout_width="wrap_content"
+                                                 android:layout_margin="16dp"
+                                                 app:layout_constraintStart_toStartOf="parent"
+                                                 app:layout_constraintBottom_toBottomOf="parent">
 
-    <TextView
-            android:id="@+id/chatMessage"
-            android:text="message"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#dfdfdf"
-            android:layout_below="@id/chat_nickname"
-            android:layout_alignStart="@id/chat_nickname"
-            android:layout_marginTop="4dp"
-            app:layout_constraintTop_toBottomOf="@+id/chat_nickname"
-            tools:ignore="HardcodedText"
-            tools:text="@tools:sample/lorem"
-            app:layout_constraintStart_toStartOf="parent"
-            android:textAlignment="viewStart"
-            app:layout_constraintWidth_max="390dp"
-            app:layout_constraintWidth_min="0dp"
-            app:layout_constrainedWidth="true"
-    />
+        <TextView
+                android:id="@+id/chat_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="Terry"
+                tools:text="@tools:sample/full_names"
+                android:textColor="#66ffffff"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText"
+                app:layout_constraintTop_toTopOf="@+id/chatBackground"
+                app:layout_constraintStart_toStartOf="@+id/chatBackground"/>
 
+        <TextView
+                android:id="@+id/chatMessage"
+                android:text="message"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="#dfdfdf"
+                android:layout_below="@id/chat_nickname"
+                android:layout_alignStart="@id/chat_nickname"
+                app:layout_constraintTop_toBottomOf="@+id/chat_nickname"
+                tools:ignore="HardcodedText"
+                tools:text="@tools:sample/lorem"
+                android:textAlignment="viewStart"
+                app:layout_constraintWidth_max="390dp"
+                app:layout_constraintWidth_min="0dp"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintStart_toStartOf="@+id/chatBackground"/>
 
-    <TextView
-            android:text="11:36"
-            android:id="@+id/text_open_chat_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/chat_nickname"
-            android:layout_alignBaseline="@id/chat_nickname"
-            android:textSize="10sp"
-            android:textColor="#bebed1"
-            app:layout_constraintStart_toEndOf="@+id/chat_nickname"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/chat_nickname"
-            app:layout_constraintTop_toTopOf="@+id/chat_nickname"
-            tools:ignore="HardcodedText"/>
+    </android.support.constraint.ConstraintLayout>
+
 </android.support.constraint.ConstraintLayout>
