@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              android:layout_width="match_parent"
+                                             android:id="@+id/drawerChatWidget"
                                              android:layout_height="match_parent">
 
 
@@ -40,12 +41,12 @@
     </com.livelike.livelikesdk.slidinglayer.SlidingLayer>
 
     <com.livelike.livelikesdk.widget.view.WidgetView android:layout_width="0dp"
-                                                     android:layout_height="200dp"
+                                                     android:layout_height="wrap_content"
+                                                     android:background="@drawable/widget_container_background"
                                                      app:layout_constraintTop_toTopOf="parent"
                                                      app:layout_constraintStart_toStartOf="parent"
                                                      app:layout_constraintEnd_toEndOf="parent"
                                                      android:id="@+id/widgetView">
-
     </com.livelike.livelikesdk.widget.view.WidgetView>
 
 
