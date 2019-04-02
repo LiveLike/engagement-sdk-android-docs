@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.messaging.proxies
 
-import android.content.Context
 import android.os.Handler
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.messaging.ClientMessage
@@ -112,11 +111,4 @@ internal fun MessagingClient.syncTo(
     validEventBufferMs: Long = 10000L
 ): SynchronizedMessagingClient {
     return SynchronizedMessagingClient(this, timeSource, validEventBufferMs)
-}
-
-//Extension for MessagingClient to be synced
-internal fun MessagingClient.withPreloader(
-    context: Context
-): ImagePreloaderMessagingClient {
-    return ImagePreloaderMessagingClient(this, context)
 }

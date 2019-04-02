@@ -101,3 +101,10 @@ internal class ImagePreloaderMessagingClient(
         return imagesList
     }
 }
+
+
+internal fun MessagingClient.withPreloader(
+    context: Context
+): ImagePreloaderMessagingClient {
+    return ImagePreloaderMessagingClient(this, context)
+}
