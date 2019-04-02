@@ -89,7 +89,11 @@ internal class ImagePreloaderMessagingClient(
         val elements = jsonObject.entrySet()
         elements.forEach { element ->
             when {
-                element.key == "image_url" -> imagesList.add(element.value.asString)
+                element.key == "image_url" -> {
+                    if (!element.value.isJsonNull) {
+                        imagesList.add(element.value.asString)
+                    }
+                }
                 element.value.isJsonObject -> getImagesFromJson(element.value.asJsonObject, imagesList)
                 element.value.isJsonArray -> element.value.asJsonArray.forEach {
                     if (it.isJsonObject) {
