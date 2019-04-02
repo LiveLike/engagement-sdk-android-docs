@@ -64,6 +64,10 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 showResults = true
             }
         }
+        val linearLayoutManager = LinearLayoutManager(context)
+        linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
+        image_optionList.layoutManager = linearLayoutManager
+
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
@@ -88,13 +92,8 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         optionSelectedCallback: (String?) -> Unit,
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
-        val linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
-        if(image_optionList.adapter == null)
-            image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
-        if(showResults)
-            updateVoteCount(voteOptions)
+        image_optionList.adapter?.let { if(showResults)
+            updateVoteCount(voteOptions)  } ?: run {image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)}
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
