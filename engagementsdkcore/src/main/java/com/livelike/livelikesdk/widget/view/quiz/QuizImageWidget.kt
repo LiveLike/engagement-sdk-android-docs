@@ -114,7 +114,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
-        Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {

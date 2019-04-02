@@ -7,12 +7,7 @@ import android.view.View
 import android.widget.Button
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
-import com.livelike.livelikesdk.binding.QuizVoteObserver
-import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetBase
-import kotlinx.android.synthetic.main.confirm_message.view.*
-import kotlinx.android.synthetic.main.pie_timer.view.*
-import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 
 internal class QuizTextWidget : TextOptionWidgetBase {
     constructor(context: Context?) : super(context)
@@ -39,13 +34,10 @@ internal class QuizTextWidget : TextOptionWidgetBase {
                         disableButtons(button)
                     }
                     fetchResult?.invoke()
-                } else {
-                    viewAnimation.hideWidget()
-                    //Not sure if this is needed
-                    Handler().postDelayed({ viewAnimation.triggerTransitionOutAnimation { dismissWidget?.invoke() } }, timeout)
                 }
             }
         }
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     private fun disableButtons(button: Button) {

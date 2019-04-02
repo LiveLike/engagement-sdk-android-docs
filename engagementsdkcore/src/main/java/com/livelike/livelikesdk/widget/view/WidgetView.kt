@@ -14,6 +14,7 @@ import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.analytics.analyticService
+import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
 import com.livelike.livelikesdk.util.gson
@@ -94,7 +95,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 widget.notifyDataSetChange()
 
                 predictionWidget.userTappedCallback { emitWidgetOptionSelected(widget.id, widgetResource.kind) }
-                containerView.addView(predictionWidget)
+                widget_view.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -113,7 +114,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
-                containerView.addView(predictionWidget)
+                widget_view.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -128,7 +129,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 predictionWidget.userTappedCallback {
                     emitWidgetOptionSelected(widget.id, widgetResource.kind)
                 }
-                containerView.addView(predictionWidget)
+                widget_view.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -147,7 +148,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
-                containerView.addView(predictionWidget)
+                widget_view.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -167,7 +168,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
                 widget.registerObserver(quizTextWidget)
                 widget.notifyDataSetChange()
-                containerView.addView(quizTextWidget)
+                widget_view.addView(quizTextWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -193,7 +194,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     emitWidgetOptionSelected(widget.id, widgetResource.kind)
                 }
 
-                containerView.addView(quizWidget)
+                widget_view.addView(quizWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -213,7 +214,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     emitWidgetShown(alertResource.id, alertResource.kind)
                     widgetListener?.onWidgetDisplayed(alertResource.impression_url)
                 }
-                containerView.addView(alertWidget)
+                widget_view.addView(alertWidget)
             }
 
             else -> {
@@ -240,10 +241,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     override fun dismissCurrentWidget() {
-        removeView()
-        val widget = currentWidget ?: return
-        emitWidgetDismissEvents(widget)
-        optionSelectionEvents()
+        ViewAnimation(widget_view.parent as View).triggerTransitionOutAnimation {
+            removeView()
+            (widget_view.parent as View).translationY = 0f
+            currentWidget?.apply {
+                emitWidgetDismissEvents(this)
+                optionSelectionEvents()
+            }
+        }
     }
 
     private fun emitWidgetDismissEvents(widget: Widget) {
@@ -253,7 +258,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
     private fun removeView() {
         logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
-        containerView.removeAllViews()
+        widget_view.removeAllViews()
     }
 
     private fun optionSelectionEvents() {
