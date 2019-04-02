@@ -84,11 +84,11 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     }
 
     private fun verifyViewMinWidth(view: View) {
-        visibility = View.VISIBLE
+//        visibility = View.VISIBLE
         view.measure(View.MeasureSpec.EXACTLY, View.MeasureSpec.EXACTLY)
         val width = pxToDp(view.width)
         if (width < CHAT_MINIMUM_SIZE_DP) {
-            visibility = View.GONE
+//            visibility = View.GONE
             logError { "The Chat zone is too small to be displayed. Minimum size is $CHAT_MINIMUM_SIZE_DP dp. Measured size here is: $width dp" }
         }
     }

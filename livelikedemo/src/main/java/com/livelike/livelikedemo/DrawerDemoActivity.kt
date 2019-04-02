@@ -13,7 +13,6 @@ import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeSDK
 import kotlinx.android.synthetic.main.activity_drawer_demo.*
-import kotlinx.android.synthetic.main.widget_chat_stacked.*
 import java.util.*
 
 
@@ -71,8 +70,8 @@ class DrawerDemoActivity : AppCompatActivity() {
             player.createSession(channel.llProgram.toString(), sdk) {
                 this.session = it
 
-                chat_view.setSession(it)
-                widget_view.setSession(it)
+                chatWidget.chat.setSession(it)
+                chatWidget.widgets.setSession(it)
 
                 player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
             }

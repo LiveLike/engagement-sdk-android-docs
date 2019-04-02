@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="DrawerWidgetChat">
+        <attr name="chat_background_color"
+              format="color"/>
+        <attr name="handle_size"
+              format="integer"/>
+        <attr name="change_state_on_tap"
+              format="boolean"/>
+        <attr name="stick_to"
+              format="enum">
+            <enum name="right"
+                  value="-1"/>
+            <enum name="left"
+                  value="-2"/>
+            <enum name="top"
+                  value="-3"/>
+            <enum name="bottom"
+                  value="-4"/>
+        </attr>
+    </declare-styleable>
+
+</resources>
