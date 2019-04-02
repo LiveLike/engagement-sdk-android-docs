@@ -1,7 +1,5 @@
 {
-  "event": "text-quiz-results",
-  "payload": {
-    "choices": [
+    "choices":[
       {
         "id": "06e5c6bb-f562-43b8-8429-7c48d22c6db6",
         "is_correct": true,
@@ -13,5 +11,4 @@
         "answer_count": 60
       }
     ]
-  }
 }
