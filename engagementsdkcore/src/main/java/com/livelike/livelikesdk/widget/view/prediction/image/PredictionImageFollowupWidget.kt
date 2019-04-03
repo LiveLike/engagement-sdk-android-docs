@@ -11,7 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
-import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -131,22 +131,22 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
             loadImage(option, dpToPx(74), optionButton)
             widgetResultDisplayUtil.updateViewDrawable(option.id,
                 progressBar,
-                optionButton,
+                holder.button,
                 option.votePercentage.toInt(),
                 correctOption,
                 userSelectedOption)
-            overrideButtonPadding(optionButton)
+//            overrideButtonPadding(holder.button)
             widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 
-        private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageButton) {
+        private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageView) {
             Glide.with(context)
                 .load(option.imageUrl)
                 .apply(RequestOptions().override(imageWidth, imageWidth))
                 .into(optionButton)
         }
 
-        private fun overrideButtonPadding(optionButton: ImageButton) {
+        private fun overrideButtonPadding(optionButton: View) {
             optionButton.setPadding(dpToPx(2), dpToPx(14), dpToPx(48), dpToPx(2))
         }
 
@@ -168,7 +168,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val optionButton: ImageButton = view.image_button
+        val button: View = view.button
+        val optionButton: ImageView = view.image_button
         val optionText: TextView = view.item_text
         val percentageText: TextView = view.result_percentage_text
         val progressBar: ProgressBar = view.determinateBar

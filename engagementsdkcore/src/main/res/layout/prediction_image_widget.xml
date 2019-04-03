@@ -13,9 +13,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:orientation="horizontal"
             tools:itemCount="2"
             tools:listitem="@layout/prediction_image_row_element"
-            app:layout_constraintBottom_toTopOf="@+id/prediction_question_textView"
             app:layout_constraintHorizontal_bias="0.0"/>
 
     <TextView
@@ -33,7 +33,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintVertical_bias="1.0"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            tools:text="Are you ready for this"/>
 
     <include layout="@layout/confirm_message"
              android:id="@+id/confirm_message"

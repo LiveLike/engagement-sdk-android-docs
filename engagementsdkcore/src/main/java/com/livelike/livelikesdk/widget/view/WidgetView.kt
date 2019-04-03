@@ -170,7 +170,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val quizWidget = QuizImageWidget(context,
                     null,
                     0)
-                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout, { optionSelectionEvents() }, 1080) }
+                    .apply {
+                        initialize(
+                            { dismissCurrentWidget() },
+                            widget.timeout,
+                            { optionSelectionEvents() },
+                            parentWidth
+                        )
+                    }
 
                 parser.parseQuiz(widget, widgetResource)
                 widget.registerObserver(quizWidget)

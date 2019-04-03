@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -21,7 +21,7 @@ class WidgetAdapter(
     private var correctOption: String?,
     private val context: Context,
     private val viewOptions : MutableMap<String?, ViewOption>,
-    private val imageButtonMap : HashMap<ImageButton, String?>,
+    private val imageButtonMap: HashMap<View, String?>,
     var selectedOption: String? = null,
     var userTapped: () -> Unit
 ) : RecyclerView.Adapter<ViewHolder>() {
@@ -35,14 +35,14 @@ class WidgetAdapter(
         Glide.with(context)
             .load(option.imageUrl)
             .into(holder.optionButton)
-        imageButtonMap[holder.optionButton] = option.id
+        imageButtonMap[holder.button] = option.id
         holder.optionButton.setOnClickListener {
-            selectedOption = imageButtonMap[holder.optionButton]
+            selectedOption = imageButtonMap[holder.button]
             optionSelectedCallback(selectedOption)
             userTapped.invoke()
         }
         viewOptions[option.id] = ViewOption(
-            holder.optionButton,
+            holder.button,
             holder.progressBar,
             holder.percentageText
         )
@@ -63,13 +63,14 @@ class WidgetAdapter(
     }
 }
 class ViewOption(
-    val button: ImageButton,
+    val button: View,
     val progressBar: ProgressBar,
     val percentageTextView: TextView
 )
 
 class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-    val optionButton: ImageButton = view.image_button
+    val button: View = view.button
+    val optionButton: ImageView = view.image_button
     val optionText: TextView = view.item_text
     val percentageText: TextView = view.result_percentage_text
     val progressBar: ProgressBar = view.determinateBar

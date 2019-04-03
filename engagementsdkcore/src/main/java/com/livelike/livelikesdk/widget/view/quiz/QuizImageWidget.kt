@@ -12,7 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
-import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -33,7 +33,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var viewAnimation: ViewAnimation
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private lateinit var userTapped: () -> Unit
-    private val imageButtonMap = HashMap<ImageButton, String?>()
+    private val imageButtonMap = HashMap<View, String?>()
     private val viewOptions = HashMap<String?, ViewOption>()
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
@@ -138,7 +138,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         }
     }
 
-    private fun overrideButtonPadding(optionButton: ImageButton) {
+    private fun overrideButtonPadding(optionButton: View) {
         optionButton.setPadding(
             AndroidResource.dpToPx(2),
             AndroidResource.dpToPx(14),
@@ -162,14 +162,14 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 .load(option.imageUrl)
                 .apply(RequestOptions().override(AndroidResource.dpToPx(74), AndroidResource.dpToPx(74)))
                 .into(holder.optionButton)
-            imageButtonMap[holder.optionButton] = option.id
-            holder.optionButton.setOnClickListener {
-                selectedOption = imageButtonMap[holder.optionButton].toString()
+            imageButtonMap[holder.button] = option.id
+            holder.button.setOnClickListener {
+                selectedOption = imageButtonMap[holder.button].toString()
                 optionSelectedCallback(selectedOption)
                 userTapped.invoke()
             }
             viewOptions[option.id] = ViewOption(
-                holder.optionButton,
+                holder.button,
                 holder.progressBar,
                 holder.percentageText
             )
@@ -195,13 +195,14 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     class ViewOption(
-        val button: ImageButton,
+        val button: View,
         val progressBar: ProgressBar,
         val percentageTextView: TextView
     )
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val optionButton: ImageButton = view.image_button
+        val button: View = view.button
+        val optionButton: ImageView = view.image_button
         val optionText: TextView = view.item_text
         val percentageText: TextView = view.result_percentage_text
         val progressBar: ProgressBar = view.determinateBar
