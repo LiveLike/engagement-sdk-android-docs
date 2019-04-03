@@ -113,7 +113,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 parser.parseTextPredictionCommon(widget, widgetResource)
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
                     .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
-                predictionWidget.layoutParams = layoutParams
                 widget.registerObserver(predictionWidget)
                 widget.notifyDataSetChange()
                 predictionWidget.userTappedCallback {
@@ -173,7 +172,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     0)
                     .apply { initialize({ dismissCurrentWidget() }, widget.timeout, { optionSelectionEvents() }, 1080) }
 
-                quizWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
                 widget.registerObserver(quizWidget)
                 widget.notifyDataSetChange()
