@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
@@ -142,12 +143,12 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageView) {
             Glide.with(context)
                 .load(option.imageUrl)
-                .apply(RequestOptions().override(imageWidth, imageWidth))
+                .apply(
+                    RequestOptions()
+                        .override(imageWidth, imageWidth)
+                        .transform(RoundedCorners(12))
+                )
                 .into(optionButton)
-        }
-
-        private fun overrideButtonPadding(optionButton: View) {
-            optionButton.setPadding(dpToPx(2), dpToPx(14), dpToPx(48), dpToPx(2))
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

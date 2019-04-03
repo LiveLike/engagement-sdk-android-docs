@@ -16,6 +16,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
@@ -134,18 +135,9 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 )
             }
             viewOption?.button?.setOnClickListener(null)
-            viewOption?.button?.let { overrideButtonPadding(it) }
         }
     }
 
-    private fun overrideButtonPadding(optionButton: View) {
-        optionButton.setPadding(
-            AndroidResource.dpToPx(2),
-            AndroidResource.dpToPx(14),
-            AndroidResource.dpToPx(48),
-            AndroidResource.dpToPx(2)
-        )
-    }
 
     inner class ImageAdapter(
         private val optionList: List<VoteOption>,
@@ -160,7 +152,11 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
             // TODO: Move this to adapter layer.
             Glide.with(context)
                 .load(option.imageUrl)
-                .apply(RequestOptions().override(AndroidResource.dpToPx(74), AndroidResource.dpToPx(74)))
+                .apply(
+                    RequestOptions().override(AndroidResource.dpToPx(74), AndroidResource.dpToPx(74)).transform(
+                        RoundedCorners(12)
+                    )
+                )
                 .into(holder.optionButton)
             imageButtonMap[holder.button] = option.id
             holder.button.setOnClickListener {
