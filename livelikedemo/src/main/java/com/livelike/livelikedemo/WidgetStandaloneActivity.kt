@@ -3,6 +3,7 @@ package com.livelike.livelikedemo
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -14,6 +15,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.livelike.engagementsdkapi.WidgetEvent
+import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.registerLogsHandler
 import com.livelike.livelikesdk.widget.WidgetType
@@ -29,6 +32,8 @@ class WidgetStandaloneActivity : AppCompatActivity() {
     private val hideCommand = "Hide"
     private val correctAnswerCommand = "Correct Answer"
     private val wrongAnswerCommand = "Wrong Answer"
+    private val displayResults = "Display Results"
+    private val quizDisplayHandler = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,8 +91,6 @@ class WidgetStandaloneActivity : AppCompatActivity() {
         when (type) {
             this.getString(R.string.quiz) -> {
                 commandList.add(showCommand)
-                commandList.add(hideCommand)
-                commandList.add(correctAnswerCommand)
             }
             else -> {
                 commandList.add(showCommand)
@@ -150,11 +153,9 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 pollType -> {
                                 }
                                 quizType -> {
-                                    if (isVariance(getString(R.string.text))) {
-                                        showWidget(WidgetType.TEXT_QUIZ, getPayload("quiz/text/quiz_text_widget.json"))
-                                    } else if (isVariance(getString(R.string.image))) {
-                                        showWidget(WidgetType.IMAGE_QUIZ, getPayload("quiz/image/quiz_widget.json"))
-                                    }
+                                    commandList.remove(showCommand)
+                                    updateCommandAdapter()
+                                    showQuizWidget()
                                 }
                                 cheerMeterType -> {
                                 }
@@ -174,19 +175,6 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 }
                                 pollType -> {
                                 }
-                                quizType -> {
-                                    if (isVariance(getString(R.string.text))) {
-                                        showWidget(
-                                            WidgetType.TEXT_QUIZ_RESULT,
-                                            getPayload("quiz/text/quiz_text_result.json")
-                                        )
-                                    } else if (isVariance(getString(R.string.image))) {
-                                        showWidget(
-                                            WidgetType.IMAGE_QUIZ_RESULT,
-                                            getPayload("quiz/image/quiz_result.json")
-                                        )
-                                    }
-                                }
                                 cheerMeterType -> {
                                 }
                                 emojiType -> {
@@ -202,8 +190,65 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 showPredictionResultWidgetAs(wrongAnswerCommand)
                             }
                         }
+
+                        displayResults -> {
+                            when {
+                                quizType -> {
+                                    commandList.remove(displayResults)
+                                    updateCommandAdapter()
+                                    if (isVariance(getString(R.string.text))) {
+                                        showWidget(
+                                            WidgetType.TEXT_QUIZ_RESULT,
+                                            getPayload("quiz/text/quiz_text_result.json")
+                                        )
+                                    } else if (isVariance(getString(R.string.image))) {
+                                        showWidget(
+                                            WidgetType.IMAGE_QUIZ_RESULT,
+                                            getPayload("quiz/image/quiz_result.json")
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+            }
+        }
+
+        private fun updateCommandAdapter() {
+            val (type, variance) = getWidgetTypeWithVariance()
+            createAdapter(type, variance)
+        }
+
+        private fun showQuizWidget() {
+            quizDisplayHandler.postDelayed({
+                commandList.add(displayResults)
+                updateCommandAdapter()
+            }, 7500L)
+            widget_view.widgetListener = null
+            widget_view.widgetListener = object : WidgetEventListener {
+                override fun onAnalyticsEvent(data: Any) {}
+
+                override fun onWidgetDisplayed(impressionUrl: String) {}
+
+                override fun onOptionVote(voteUrl: String, channel: String) {}
+
+                override fun onFetchingQuizResult(answerUrl: String) {}
+
+                override fun onWidgetEvent(event: WidgetEvent) {
+                    if(event == WidgetEvent.WIDGET_DISMISS) {
+                        quizDisplayHandler.removeCallbacksAndMessages(null)
+                        commandList.clear()
+                        commandList.add(showCommand)
+                        updateCommandAdapter()
+                    }
+                }
+            }
+
+            if (isVariance(getString(R.string.text))) {
+                showWidget(WidgetType.TEXT_QUIZ, getPayload("quiz/text/quiz_text_widget.json"))
+            } else if (isVariance(getString(R.string.image))) {
+                showWidget(WidgetType.IMAGE_QUIZ, getPayload("quiz/image/quiz_widget.json"))
             }
         }
 
