@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetEvent
@@ -37,6 +38,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     override var widgetListener: WidgetEventListener? = null
     private var currentWidget: Widget? = null
     private var viewRoot: View = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
+    private var containerView = widgetContainerView as FrameLayout
 
     companion object {
         private const val WIDGET_MINIMUM_SIZE_DP = 260
@@ -85,7 +87,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 widget.notifyDataSetChange()
 
                 predictionWidget.userTappedCallback { emitWidgetOptionSelected(widget.id, widgetResource.kind) }
-                widget_view.addView(predictionWidget)
+                containerView.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -102,7 +104,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
-                widget_view.addView(predictionWidget)
+                containerView.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -117,7 +119,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 predictionWidget.userTappedCallback {
                     emitWidgetOptionSelected(widget.id, widgetResource.kind)
                 }
-                widget_view.addView(predictionWidget)
+                containerView.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -134,7 +136,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
-                widget_view.addView(predictionWidget)
+                containerView.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -153,7 +155,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
                 widget.registerObserver(quizTextWidget)
                 widget.notifyDataSetChange()
-                widget_view.addView(quizTextWidget)
+                containerView.addView(quizTextWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -169,7 +171,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val quizWidget = QuizImageWidget(context,
                     null,
                     0)
-                    .apply { initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionEvents() }, parentWidth) }
+                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout, { optionSelectionEvents() }, 1080) }
 
                 quizWidget.layoutParams = layoutParams
                 parser.parseQuiz(widget, widgetResource)
@@ -179,7 +181,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     emitWidgetOptionSelected(widget.id, widgetResource.kind)
                 }
 
-                widget_view.addView(quizWidget)
+                containerView.addView(quizWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -199,7 +201,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     emitWidgetShown(alertResource.id, alertResource.kind)
                     widgetListener?.onWidgetDisplayed(alertResource.impression_url)
                 }
-                widget_view.addView(alertWidget)
+                containerView.addView(alertWidget)
             }
 
             else -> {
@@ -226,24 +228,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     override fun dismissCurrentWidget() {
-        try {
-            ViewAnimation(widget_view.parent as View).triggerTransitionOutAnimation {
-                removeView()
-                (widget_view.parent as View).translationY = 0f
-                currentWidget?.apply {
-                    emitWidgetDismissEvents(this)
-                    optionSelectionEvents()
-                }
-            }
-        } catch (e: ClassCastException) {
+        ViewAnimation(containerView.parent as View).triggerTransitionOutAnimation {
             removeView()
-            (widget_view.parent as View).translationY = 0f
+            (containerView.parent as View).translationY = 0f
             currentWidget?.apply {
                 emitWidgetDismissEvents(this)
                 optionSelectionEvents()
             }
         }
-
     }
 
     private fun emitWidgetDismissEvents(widget: Widget) {
@@ -253,7 +245,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
     private fun removeView() {
         logVerbose { "Dismissing the widget: ${currentWidget?.id ?: "empty ID"}" }
-        widget_view.removeAllViews()
+        containerView.removeAllViews()
     }
 
     private fun optionSelectionEvents() {
