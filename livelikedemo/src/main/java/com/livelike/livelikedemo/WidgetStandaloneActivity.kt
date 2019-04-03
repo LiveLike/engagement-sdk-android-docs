@@ -82,10 +82,20 @@ class WidgetStandaloneActivity : AppCompatActivity() {
     }
 
     private fun addCommands() {
-        commandList.add(showCommand)
-        commandList.add(hideCommand)
-        commandList.add(correctAnswerCommand)
-        commandList.add(wrongAnswerCommand)
+        val (type, variance) = getWidgetTypeWithVariance()
+        when (type) {
+            this.getString(R.string.quiz) -> {
+                commandList.add(showCommand)
+                commandList.add(hideCommand)
+                commandList.add(correctAnswerCommand)
+            }
+            else -> {
+                commandList.add(showCommand)
+                commandList.add(hideCommand)
+                commandList.add(correctAnswerCommand)
+                commandList.add(wrongAnswerCommand)
+            }
+        }
     }
 
     private fun registerLogHandler() {
@@ -176,7 +186,6 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                             getPayload("quiz/image/quiz_result.json")
                                         )
                                     }
-
                                 }
                                 cheerMeterType -> {
                                 }

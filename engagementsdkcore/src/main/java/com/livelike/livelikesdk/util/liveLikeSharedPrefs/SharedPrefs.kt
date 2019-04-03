@@ -41,6 +41,7 @@ internal fun getNickename(): String {
 internal fun addWidgetPredictionVoted(id: String, optionId: String) {
     val editor = getSharedPreferences().edit()
     val idsList = getWidgetPredictionVoted().toMutableSet()
+    idsList.remove(idsList.find { savedWidgetVote -> savedWidgetVote.id == id })
     idsList.add(SavedWidgetVote(id, optionId))
     editor.putString(PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, gson.toJson(idsList.toTypedArray())).apply()
 }
