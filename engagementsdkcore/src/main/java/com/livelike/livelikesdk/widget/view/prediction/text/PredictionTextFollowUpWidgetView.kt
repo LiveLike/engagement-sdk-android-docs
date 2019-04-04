@@ -22,8 +22,8 @@ internal class PredictionTextFollowUpWidgetView :
     private lateinit var viewAnimation: ViewAnimation
     private var timeout: Long = 7000
 
-    override fun initialize(dismiss : ()->Unit, timeout: Long) {
-        super.initialize(dismiss, timeout)
+    override fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
+        super.initialize(dismiss, timeout, parentWidth)
         showResults = true
         pieTimerViewStub.layoutResource = R.layout.cross_image
         pieTimerViewStub.inflate()

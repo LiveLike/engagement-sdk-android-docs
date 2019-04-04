@@ -11,10 +11,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
-import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
@@ -43,10 +46,10 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
-        inflate(context)
         dismissWidget = dismiss
         this.timeout = timeout
         this.parentWidth = parentWidth
+        inflate(context)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -62,6 +65,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         updateCrossImage()
         viewAnimation = ViewAnimation(this)
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+        prediction_question_textView.layoutParams.width = parentWidth
     }
 
     private fun updateCrossImage() {
@@ -131,23 +135,22 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
             loadImage(option, dpToPx(74), optionButton)
             widgetResultDisplayUtil.updateViewDrawable(option.id,
                 progressBar,
-                optionButton,
+                holder.button,
                 option.votePercentage.toInt(),
                 correctOption,
                 userSelectedOption)
-            overrideButtonPadding(optionButton)
             widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 
-        private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageButton) {
+        private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageView) {
             Glide.with(context)
                 .load(option.imageUrl)
-                .apply(RequestOptions().override(imageWidth, imageWidth))
+                .apply(
+                    RequestOptions()
+                        .override(imageWidth, imageWidth)
+                        .transform(MultiTransformation(FitCenter(), RoundedCorners(12)))
+                )
                 .into(optionButton)
-        }
-
-        private fun overrideButtonPadding(optionButton: ImageButton) {
-            optionButton.setPadding(dpToPx(2), dpToPx(14), dpToPx(48), dpToPx(2))
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -168,7 +171,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val optionButton: ImageButton = view.image_button
+        val button: View = view.button
+        val optionButton: ImageView = view.image_button
         val optionText: TextView = view.item_text
         val percentageText: TextView = view.result_percentage_text
         val progressBar: ProgressBar = view.determinateBar

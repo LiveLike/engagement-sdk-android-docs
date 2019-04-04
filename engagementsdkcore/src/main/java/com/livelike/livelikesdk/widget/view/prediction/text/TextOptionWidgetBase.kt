@@ -44,9 +44,10 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    open fun initialize(dismiss: ()->Unit, timeout: Long) {
+    open fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
         inflate(context)
         dismissWidget = dismiss
+        prediction_question_textView.layoutParams.width = parentWidth
     }
 
     @SuppressLint("ClickableViewAccessibility")

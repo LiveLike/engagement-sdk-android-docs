@@ -1,35 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="wrap_content"
                                              android:layout_height="wrap_content"
-                                             android:background="@drawable/layout_rounded_corners">
+                                             tools:showIn="@layout/prediction_image_widget"
+                                             android:background="@drawable/layout_rounded_corners"
+                                             android:minWidth="125dp">
     <ProgressBar
             android:id="@+id/determinateBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/image_option_background_progressbar"
             android:layout_width="0dp"
             android:layout_height="22dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="invisible"
+            tools:visibility="visible"
+            tools:progress="50"
             android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"/>
 
-    <ImageButton
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+    <ImageView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:id="@+id/image_button"
-            android:scaleType="fitStart"
+            android:scaleType="centerCrop"
             android:background="@drawable/button_rounded_corners"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintVertical_bias="1.0"
-            android:contentDescription="TODO"/>
+            android:contentDescription="TODO"
+            tools:src="@tools:sample/avatars"
+            android:layout_marginTop="16dp"/>
+
+    <View
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:id="@+id/text_background"
+            android:background="@drawable/image_option_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@tools:sample/avatars"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
 
     <TextView
@@ -38,31 +53,43 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/determinateBar"
-            app:layout_constraintStart_toStartOf="@+id/determinateBar"
             app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
             android:elevation="8dp"
             android:textColor="@color/text_color"
             android:textSize="18sp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            tools:text="50%"
             android:gravity="end"
             app:fontFamily="@font/titillium_bold"
-            app:layout_constraintHorizontal_bias="1.0"
             android:layout_marginEnd="10dp"/>
 
     <TextView
             android:id="@+id/item_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/text_background"
+            app:layout_constraintEnd_toEndOf="@+id/text_background"
+            app:layout_constraintTop_toTopOf="@+id/text_background"
+            app:layout_constraintStart_toStartOf="@+id/text_background"
             android:elevation="4dp"
             android:textColor="@color/text_color"
             android:textSize="14sp"
-            android:layout_marginTop="35dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintHorizontal_bias="1.0"/>
+            tools:text="blah blah blah blah blah blah blah blah "
+            android:layout_marginStart="8dp"
+            android:textAlignment="textEnd"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"/>
+
+    <View android:layout_width="0dp"
+          android:layout_height="0dp"
+          android:id="@+id/button"
+          android:background="@color/transparent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintBottom_toBottomOf="parent"
+    />
 
 </android.support.constraint.ConstraintLayout>

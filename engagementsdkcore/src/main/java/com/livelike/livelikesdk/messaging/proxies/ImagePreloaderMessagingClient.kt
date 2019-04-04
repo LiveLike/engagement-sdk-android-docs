@@ -20,6 +20,7 @@ internal class ImagePreloaderMessagingClient(
     MessagingClientProxy(upstream) {
 
     private val processingList = mutableListOf<ImageMessage>()
+    private val downloadedImages = mutableListOf<String>()
 
     class ImageMessage(
         val clientMessage: ClientMessage,
@@ -45,7 +46,6 @@ internal class ImagePreloaderMessagingClient(
         val currentImageMessage = ImageMessage(event, client, imageList.size)
 
         processingList.add(currentImageMessage)
-
         imageList.forEach {
             Glide.with(context)
                 .load(it)
@@ -68,7 +68,7 @@ internal class ImagePreloaderMessagingClient(
                         return true
                     }
                 })
-                .preload()
+                .preload(80, 80)
         }
     }
 
@@ -78,7 +78,6 @@ internal class ImagePreloaderMessagingClient(
         msg.imagePreloaded++
         if (msg.imageCount == msg.imagePreloaded) {
             listener?.onClientMessageEvent(imageMessage.messagingClient, imageMessage.clientMessage)
-
         } else {
             processingList.add(msg)
         }
@@ -90,8 +89,9 @@ internal class ImagePreloaderMessagingClient(
         elements.forEach { element ->
             when {
                 element.key == "image_url" -> {
-                    if (!element.value.isJsonNull) {
+                    if (!element.value.isJsonNull && !downloadedImages.contains(element.value.asString)) {
                         imagesList.add(element.value.asString)
+                        downloadedImages.add(element.value.asString)
                     }
                 }
                 element.value.isJsonObject -> getImagesFromJson(element.value.asJsonObject, imagesList)

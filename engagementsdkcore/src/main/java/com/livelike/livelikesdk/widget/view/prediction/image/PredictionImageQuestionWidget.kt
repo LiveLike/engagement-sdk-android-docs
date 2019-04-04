@@ -12,9 +12,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
-import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
@@ -36,7 +39,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     private var parentWidth = 0
-    val imageButtonMap = HashMap<ImageButton, String?>()
+    val imageButtonMap = HashMap<View, String?>()
     lateinit var userTapped: () -> Unit
 
     constructor(context: Context?) : super(context)
@@ -44,9 +47,9 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
-        inflate(context, timeout)
         dismissWidget = dismiss
         this.parentWidth = parentWidth
+        inflate(context, timeout)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -71,7 +74,8 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             }
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
+        prediction_question_textView.layoutParams.width = parentWidth
     }
 
     private fun performPredictionWidgetFadeOutOperations() {
@@ -140,11 +144,11 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             // TODO: Move this to adapter layer.
             Glide.with(context)
                 .load(option.imageUrl)
-                .apply(RequestOptions().override(imageWidth, imageWidth))
+                .apply(RequestOptions().transform(MultiTransformation(FitCenter(), RoundedCorners(12))))
                 .into(holder.optionButton)
-            imageButtonMap[holder.optionButton] = option.id
-            holder.optionButton.setOnClickListener {
-                val selectedOption = imageButtonMap[holder.optionButton]
+            imageButtonMap[holder.button] = option.id
+            holder.button.setOnClickListener {
+                val selectedOption = imageButtonMap[holder.button]
                 optionSelectedCallback(selectedOption)
                 userTapped.invoke()
             }
@@ -170,7 +174,8 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val optionButton: ImageButton = view.image_button
+        val button: View = view.button
+        val optionButton: ImageView = view.image_button
         val optionText: TextView = view.item_text
     }
 }

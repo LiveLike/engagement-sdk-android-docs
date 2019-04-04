@@ -9,24 +9,29 @@
     <TextView
             android:id="@+id/prediction_question_textView"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"
+            android:layout_width="400dp"
             android:background="@drawable/top_rounded_corner"
             android:textColor="@color/text_color"
             android:textSize="@dimen/textView_text_size"
             app:fontFamily="@font/titillium_bold"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Question Text goes here"/>
+            tools:text="Question Text goes here"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/option_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            tools:itemCount="4"
+            tools:listitem="@layout/text_option_row_element"
             android:orientation="vertical"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/prediction_question_textView"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+    />
 
     <include layout="@layout/confirm_message"
              android:id="@+id/confirm_message"/>
