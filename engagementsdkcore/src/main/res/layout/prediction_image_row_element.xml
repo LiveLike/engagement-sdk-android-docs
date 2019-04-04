@@ -44,9 +44,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:src="@tools:sample/avatars"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
 
 
     <TextView
@@ -59,6 +57,8 @@
             android:elevation="8dp"
             android:textColor="@color/text_color"
             android:textSize="18sp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             tools:text="50%"
             android:gravity="end"
             app:fontFamily="@font/titillium_bold"
@@ -68,19 +68,19 @@
             android:id="@+id/item_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/text_background"
+            app:layout_constraintEnd_toEndOf="@+id/text_background"
+            app:layout_constraintTop_toTopOf="@+id/text_background"
+            app:layout_constraintStart_toStartOf="@+id/text_background"
             android:elevation="4dp"
             android:textColor="@color/text_color"
             android:textSize="14sp"
-            android:layout_marginTop="35dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="10dp"
             tools:text="blah blah blah blah blah blah blah blah "
-            android:layout_marginStart="10dp"
-            android:textAlignment="textEnd"/>
+            android:layout_marginStart="8dp"
+            android:textAlignment="textEnd"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"/>
 
     <View android:layout_width="0dp"
           android:layout_height="0dp"
