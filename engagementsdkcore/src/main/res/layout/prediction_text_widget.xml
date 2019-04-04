@@ -9,7 +9,7 @@
     <TextView
             android:id="@+id/prediction_question_textView"
             android:layout_height="wrap_content"
-            android:layout_width="100dp"
+            android:layout_width="400dp"
             android:background="@drawable/top_rounded_corner"
             android:textColor="@color/text_color"
             android:textSize="@dimen/textView_text_size"

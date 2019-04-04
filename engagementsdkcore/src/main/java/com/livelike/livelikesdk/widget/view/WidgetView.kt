@@ -83,7 +83,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                         context,
                         null,
                         0
-                    ).apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
+                    ).apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
 
                 widget.registerObserver(predictionWidget)
                 widget.notifyDataSetChange()
@@ -97,7 +97,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.TEXT_PREDICTION_RESULTS -> {
                 parser.parsePredictionFollowup(widget, widgetResource)
                 val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0)
-                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout) }
+                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
 
                 widget.registerObserver(predictionWidget)
                 widget.notifyDataSetChange()
@@ -146,7 +146,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val quizTextWidget = QuizTextWidget(context,
                     null,
                     0)
-                    .apply { initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionEvents() }) }
+                    .apply {
+                        initialize(
+                            { dismissCurrentWidget() },
+                            widget.timeout,
+                            { optionSelectionEvents() },
+                            parentWidth
+                        )
+                    }
 
                 parser.parseQuiz(widget, widgetResource)
 

@@ -15,8 +15,8 @@ internal class QuizTextWidget : TextOptionWidgetBase {
     private lateinit var viewAnimation: ViewAnimation
     private var fetchResult: (() -> Unit)? = null
 
-    fun initialize(dismiss : ()->Unit, timeout : Long, fetch: () -> Unit) {
-        super.initialize(dismiss, timeout)
+    fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit, parentWidth: Int) {
+        super.initialize(dismiss, timeout, parentWidth)
         fetchResult = fetch
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()

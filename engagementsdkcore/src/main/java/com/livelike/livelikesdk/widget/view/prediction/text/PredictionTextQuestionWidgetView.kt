@@ -18,8 +18,8 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     private lateinit var viewAnimation: ViewAnimation
 
-    override fun initialize(dismiss : ()->Unit, timeout : Long) {
-        super.initialize(dismiss, timeout)
+    override fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
+        super.initialize(dismiss, timeout, parentWidth)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
         viewAnimation = ViewAnimation(this)
