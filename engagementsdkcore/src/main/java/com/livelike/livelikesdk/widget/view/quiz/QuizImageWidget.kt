@@ -70,6 +70,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         image_optionList.layoutManager = linearLayoutManager
 
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+        prediction_question_textView.layoutParams.width = parentWidth
     }
 
     fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit, parentWidth: Int) {

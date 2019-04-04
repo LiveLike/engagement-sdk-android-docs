@@ -45,9 +45,9 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
-        inflate(context, timeout)
         dismissWidget = dismiss
         this.parentWidth = parentWidth
+        inflate(context, timeout)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -73,6 +73,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
+        prediction_question_textView.layoutParams.width = parentWidth
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

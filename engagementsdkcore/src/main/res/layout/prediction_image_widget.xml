@@ -40,6 +40,9 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="8dp"
             tools:text="blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah "
-            android:textAlignment="textStart"/>
+            android:textAlignment="textStart"
+            android:paddingRight="16dp"
+            android:paddingLeft="16dp"
+    />
 
 </android.support.constraint.ConstraintLayout>

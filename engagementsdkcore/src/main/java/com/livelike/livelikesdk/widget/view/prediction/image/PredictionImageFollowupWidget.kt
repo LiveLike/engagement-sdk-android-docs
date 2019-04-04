@@ -44,10 +44,10 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
-        inflate(context)
         dismissWidget = dismiss
         this.timeout = timeout
         this.parentWidth = parentWidth
+        inflate(context)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -63,6 +63,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         updateCrossImage()
         viewAnimation = ViewAnimation(this)
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+        prediction_question_textView.layoutParams.width = parentWidth
     }
 
     private fun updateCrossImage() {
