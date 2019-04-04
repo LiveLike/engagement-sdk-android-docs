@@ -68,7 +68,7 @@ internal class ImagePreloaderMessagingClient(
                         return true
                     }
                 })
-                .preload()
+                .preload(80, 80)
         }
     }
 
