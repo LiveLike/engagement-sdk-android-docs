@@ -72,7 +72,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             }
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
         prediction_question_textView.layoutParams.width = parentWidth
     }
 
