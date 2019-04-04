@@ -45,7 +45,6 @@ internal class ImagePreloaderMessagingClient(
         val currentImageMessage = ImageMessage(event, client, imageList.size)
 
         processingList.add(currentImageMessage)
-
         imageList.forEach {
             Glide.with(context)
                 .load(it)
