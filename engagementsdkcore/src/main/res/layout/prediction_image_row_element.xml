@@ -27,7 +27,7 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:id="@+id/image_button"
-            android:scaleType="fitStart"
+            android:scaleType="centerCrop"
             android:background="@drawable/button_rounded_corners"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -44,7 +44,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:src="@tools:sample/avatars"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"/>
 
 
     <TextView
@@ -64,7 +66,7 @@
 
     <TextView
             android:id="@+id/item_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -76,10 +78,9 @@
             android:layout_marginTop="35dp"
             android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintHorizontal_bias="1.0"
-            tools:text="@tools:sample/full_names"
-    />
+            tools:text="blah blah blah blah blah blah blah blah "
+            android:layout_marginStart="10dp"
+            android:textAlignment="textEnd"/>
 
     <View android:layout_width="0dp"
           android:layout_height="0dp"

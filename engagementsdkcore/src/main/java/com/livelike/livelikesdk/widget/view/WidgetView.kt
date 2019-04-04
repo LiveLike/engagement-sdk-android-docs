@@ -15,6 +15,7 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.parser.WidgetParser
+import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
@@ -39,6 +40,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     private var currentWidget: Widget? = null
     private var viewRoot: View = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
     private var containerView = widgetContainerView as FrameLayout
+    private var marginSize = dpToPx(40)
 
     companion object {
         private const val WIDGET_MINIMUM_SIZE_DP = 260
@@ -71,7 +73,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         val widget = Widget()
         val parser = WidgetParser()
         val widgetResource = gson.fromJson(payload, Resource::class.java)
-        val parentWidth = this.width
+        val parentWidth = this.width - marginSize
 
         when (WidgetType.fromString(type)) {
             WidgetType.TEXT_PREDICTION -> {
