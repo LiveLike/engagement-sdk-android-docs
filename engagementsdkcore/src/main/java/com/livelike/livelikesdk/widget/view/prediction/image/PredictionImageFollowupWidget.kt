@@ -15,6 +15,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
@@ -137,7 +139,6 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                 option.votePercentage.toInt(),
                 correctOption,
                 userSelectedOption)
-//            overrideButtonPadding(holder.button)
             widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 
@@ -147,7 +148,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                 .apply(
                     RequestOptions()
                         .override(imageWidth, imageWidth)
-                        .transform(RoundedCorners(12))
+                        .transform(MultiTransformation(FitCenter(), RoundedCorners(12)))
                 )
                 .into(optionButton)
         }

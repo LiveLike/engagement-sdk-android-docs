@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:tools="http://schemas.android.com/tools"
-       xmlns:app="http://schemas.android.com/apk/res-auto"
-       xmlns:android="http://schemas.android.com/apk/res/android">
+<merge
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android">
     <ViewStub
             android:id="@+id/prediction_pie"
             android:layout_width="18dp"
@@ -15,7 +15,7 @@
 
     <TextView
             android:id="@+id/prediction_confirm_message_textView"
-            android:layout_width="0dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="26dp"
             android:layout_marginEnd="26dp"

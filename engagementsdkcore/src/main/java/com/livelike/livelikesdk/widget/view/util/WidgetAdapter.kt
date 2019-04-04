@@ -9,6 +9,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.MultiTransformation
+import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
@@ -39,7 +41,7 @@ class WidgetAdapter(
             .load(option.imageUrl)
             .apply(
                 RequestOptions().override(AndroidResource.dpToPx(80), AndroidResource.dpToPx(80))
-                    .transform(RoundedCorners(12))
+                    .transform(MultiTransformation(FitCenter(), RoundedCorners(12)))
             )
             .into(holder.optionButton)
         imageButtonMap[holder.button] = option.id
