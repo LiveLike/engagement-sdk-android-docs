@@ -17,10 +17,23 @@ import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
-internal class ViewAnimation(val view: View, animatorStartValue: Float = 0f, animatorEndValue: Float = 1f, val resultAnimationPath: String? = null) {
-    private val widgetShowingDurationAfterConfirmMessage: Long = 3000
-    private var animator = ValueAnimator.ofFloat(animatorStartValue, animatorEndValue)
+internal class ViewAnimationManager(val view: View) {
+
+    private lateinit var timerAnimator : ValueAnimator
+    private lateinit var resultAnimator : ValueAnimator
+    private var resultAnimationPath: String? = null
+
     private val animationHandler = AnimationHandler()
+    private val widgetShowingDurationAfterConfirmMessage: Long = 3000
+
+    fun initializeTimerProperties(timerProperties: AnimationProperties) {
+        timerAnimator = ValueAnimator.ofFloat(timerProperties.animatorStartValue, timerProperties.animatorEndValue)
+    }
+
+    fun initializeResultProperties(resultProperties: AnimationProperties) {
+        resultAnimationPath = resultProperties.resultAnimationPath
+        resultAnimator = ValueAnimator.ofFloat(resultProperties.animatorStartValue, resultProperties.animatorEndValue)
+    }
 
     fun startWidgetTransitionInAnimation(onAnimationCompletedCallback: () -> Unit) {
         val heightToReach = view.measuredHeight.toFloat()
@@ -77,7 +90,7 @@ internal class ViewAnimation(val view: View, animatorStartValue: Float = 0f, ani
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
             duration,
-            animator,
+            timerAnimator,
             progressUpdater
         )
     }
@@ -98,7 +111,7 @@ internal class ViewAnimation(val view: View, animatorStartValue: Float = 0f, ani
         } else prediction_result.setAnimation(resultAnimationPath)
 
         prediction_result.visibility = View.VISIBLE
-        animationHandler.startAnimation(prediction_result, {}, widgetShowingDurationAfterConfirmMessage, animator, {
+        animationHandler.startAnimation(prediction_result, {}, widgetShowingDurationAfterConfirmMessage, resultAnimator, {
             progressUpdater.invoke(it)
         })
     }
@@ -124,8 +137,6 @@ internal class ViewAnimation(val view: View, animatorStartValue: Float = 0f, ani
         }
     }
 
-    fun hideWidget() { view.visibility = View.INVISIBLE }
-
     @SuppressLint("ClickableViewAccessibility")
     fun addHorizontalSwipeListener(
         view: View,
@@ -136,7 +147,8 @@ internal class ViewAnimation(val view: View, animatorStartValue: Float = 0f, ani
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    animationHandler.cancelAnimation(animator)
+                    animationHandler.cancelAnimation(timerAnimator)
+                    animationHandler.cancelAnimation(resultAnimator)
                     layout.removeAllViewsInLayout()
                     onSwipeCallback?.invoke()
                 }
@@ -156,7 +168,6 @@ private class AnimationHandler {
         animator.duration = duration
         animator.addUpdateListener { animation ->
             val progress = animation.animatedValue as Float
-            //logInfo { "Abhishek progress $progress" }
             lottieAnimationView.progress = progress
             progressUpdater.invoke(progress)
         }
@@ -165,8 +176,8 @@ private class AnimationHandler {
         animator.start()
     }
 
-    fun cancelAnimation(animator: ValueAnimator) {
-        animator.cancel()
+    fun cancelAnimation(animator: ValueAnimator?) {
+        animator?.cancel()
     }
 
     fun createAnimationEffectWith(ease: AnimationEaseInterpolator.Ease,
@@ -205,3 +216,7 @@ private class AnimationHandler {
         })
     }
 }
+
+internal class AnimationProperties(val animatorStartValue: Float = 0f,
+                                   val animatorEndValue: Float = 1f,
+                                   val resultAnimationPath: String? = null)

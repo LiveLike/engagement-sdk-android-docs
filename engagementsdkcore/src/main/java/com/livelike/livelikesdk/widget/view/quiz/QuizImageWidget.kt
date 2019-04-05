@@ -21,7 +21,7 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
@@ -33,7 +33,7 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
 class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var pieTimerViewStub: ViewStub
-    private lateinit var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimationManager
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private lateinit var userTapped: () -> Unit
     private val imageButtonMap = HashMap<View, String?>()
@@ -79,7 +79,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         timeout: Long,
         fetch: () -> Unit,
         parentWidth: Int,
-        viewAnimation: ViewAnimation
+        viewAnimation: ViewAnimationManager
     ) {
         this.timeout = timeout
         dismissWidget = dismiss
@@ -128,7 +128,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
 
-        resultDisplayUtil.startResultAnimation(correctOption == selectedOption, prediction_result)
+        resultDisplayUtil.startResultAnimation(correctOption == selectedOption, prediction_result, {}, {})
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {

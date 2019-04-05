@@ -8,11 +8,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 
-internal class WidgetResultDisplayUtil(val context: Context, private val viewAnimation: ViewAnimation) {
+internal class WidgetResultDisplayUtil(val context: Context, private val viewAnimation: ViewAnimationManager) {
     private var lottieAnimationPath = ""
     companion object {
         const val correctAnswerLottieFilePath = "correctAnswer"
@@ -44,10 +44,12 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
 
     fun startResultAnimation(
         isCorrect: Boolean,
-        prediction_result: LottieAnimationView
+        prediction_result: LottieAnimationView,
+        progressUpdater: (Float) -> Unit,
+        animationPath: (String) -> Unit
     ) {
         lottieAnimationPath = findResultAnimationPath(isCorrect)
-        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result,  {}, {})
+        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, progressUpdater, animationPath)
     }
 
     private fun findResultAnimationPath(isCorrect: Boolean): String {

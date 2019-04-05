@@ -20,7 +20,7 @@ import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver {
     private var dismissWidget: (() -> Unit)? = null
     private lateinit var pieTimerViewStub: ViewStub
-    private lateinit var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimationManager
     lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private var layout = ConstraintLayout(context, null, 0)
     private var lottieAnimationPath = ""
@@ -47,7 +47,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimation) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimationManager) {
         dismissWidget = dismiss
         this.timeout = timeout
         this.parentWidth = parentWidth
@@ -81,7 +81,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         viewAnimation.startWidgetTransitionInAnimation{
 //            widgetResultDisplayUtil.startResultAnimation()
 //            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
-//               // transientState.pieTimerProgress = it
+//               // transientState.remainingTime = it
 //               // state.invoke(transientState)
 //            }, {})
         }
@@ -100,7 +100,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                                    correctOptionWithUserSelection: Pair<String?, String?>) {
         val correctOption = correctOptionWithUserSelection.first
         val userSelectedOption = correctOptionWithUserSelection.second
-        widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result)
+        widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result, {}, {})
         initAdapter(voteOptions, correctOption, userSelectedOption)
         lottieAnimationPath = findResultAnimationPath(correctOption, userSelectedOption)
         transitionAnimation()

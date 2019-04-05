@@ -39,8 +39,10 @@ interface WidgetStateProcessor {
 class WidgetTransientState {
     var timeout = 0L
     var userSelection: String? = null
-    var pieTimerProgress = 0f
+    var remainingTime = 0f
     var type: String? = null
     var payload: JsonObject? = null
-    var resultPath: String? = null
+    // Maybe a map for below
+    var resultAnimationPath: String? = null
+    var resultAnimationTimeRemaining = 0f
 }

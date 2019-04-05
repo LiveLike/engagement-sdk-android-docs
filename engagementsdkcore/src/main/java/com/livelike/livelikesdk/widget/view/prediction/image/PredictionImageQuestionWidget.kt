@@ -21,7 +21,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
@@ -33,7 +33,7 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
-    private lateinit var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimationManager
     lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private lateinit var state: WidgetTransientState
     private val widgetOpacityFactor: Float = 0.2f
@@ -48,7 +48,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimation) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimationManager) {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
         this.parentWidth = parentWidth

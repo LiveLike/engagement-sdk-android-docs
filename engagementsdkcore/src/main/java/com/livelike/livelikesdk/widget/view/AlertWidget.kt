@@ -13,14 +13,14 @@ import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.parseDuration
 import com.livelike.livelikesdk.widget.model.Alert
 import kotlinx.android.synthetic.main.alert_widget.view.*
 
 internal class AlertWidget : ConstraintLayout {
-    private lateinit var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimationManager
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     lateinit var resourceAlert: Alert
@@ -29,7 +29,7 @@ internal class AlertWidget : ConstraintLayout {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismissWidget: () -> Unit, alertData: Alert, viewAnimation: ViewAnimation) {
+    fun initialize(dismissWidget: () -> Unit, alertData: Alert, viewAnimation: ViewAnimationManager) {
         this.dismissWidget = dismissWidget
         this.resourceAlert = alertData
         this.viewAnimation = viewAnimation

@@ -6,10 +6,8 @@ import android.util.AttributeSet
 import android.widget.ImageView
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
-import com.livelike.livelikesdk.util.logInfo
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.VoteOption
-import kotlinx.android.synthetic.main.confirm_message.view.*
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -22,14 +20,17 @@ internal class PredictionTextFollowUpWidgetView :
         showResults = true
     }
 
-
-    private lateinit var viewAnimation: ViewAnimation
+    companion object {
+        const val correctAnswerLottieFilePath = "correctAnswer"
+        const val wrongAnswerLottieFilePath = "wrongAnswer"
+    }
+    private lateinit var viewAnimation: ViewAnimationManager
     private var timeout = 0L
     private var initialTimeout = 0L
-    var executor = ScheduledThreadPoolExecutor(15)
+    private var executor = ScheduledThreadPoolExecutor(15)
     lateinit var future: ScheduledFuture<*>
 
-    override fun initialize(dismiss: ()->Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimation, state: (WidgetTransientState) -> Unit) {
+    override fun initialize(dismiss: ()->Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
         super.initialize(dismiss, timeout, parentWidth, viewAnimation, state)
         showResults = true
         buttonClickEnabled = false

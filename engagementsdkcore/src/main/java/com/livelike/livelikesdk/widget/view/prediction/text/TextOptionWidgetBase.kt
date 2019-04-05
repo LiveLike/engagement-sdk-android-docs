@@ -15,7 +15,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logInfo
@@ -35,13 +35,12 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected var optionSelectedId = ""
     protected var prevOptionSelectedId = ""
     protected var layout = ConstraintLayout(context, null, 0)
-    protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub: ViewStub
     protected var dismissWidget :  (() -> Unit)? = null
     protected var showResults = false
     protected var buttonClickEnabled = true
     private lateinit var userTapped : () -> Unit
-    private lateinit var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimationManager
     private lateinit var  resultDisplayUtil : WidgetResultDisplayUtil
     private var optionAdapter : TextOptionAdapter? = null
     protected lateinit var state: (WidgetTransientState) -> Unit
@@ -51,7 +50,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    internal open fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimation, state: (WidgetTransientState) -> Unit) {
+    internal open fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
         this.state = state
@@ -124,11 +123,22 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
             optionList = data
             notifyDataSetChanged()
             if(showResults) {
-                resultDisplayUtil.startResultAnimation(
-                    correctOptionWithUserSelection.first == correctOptionWithUserSelection.second,
-                    prediction_result
-                )
+                viewAnimation.startWidgetTransitionInAnimation {
+                    resultDisplayUtil.startResultAnimation(
+                        correctOptionWithUserSelection.first == correctOptionWithUserSelection.second,
+                        prediction_result,
+                        {
+                            transientState.resultAnimationTimeRemaining = it
+                            state.invoke(transientState)
+                        },
+                        {
+                            transientState.resultAnimationPath = it
+                            state.invoke(transientState)
+                        }
+                    )
+                }
             }
+            notifyDataSetChanged()
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -137,7 +147,8 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
             holder.option = option
             buttonMap[button] = option.id
-            // This is needed here as notifyDataSetChanged() is behaving asynchronously.
+            // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
+            // a way to update user selection.
             if (option == optionList[optionList.size -1]  && transientState.userSelection != null)
                 optionSelectedUpdated(transientState.userSelection)
 

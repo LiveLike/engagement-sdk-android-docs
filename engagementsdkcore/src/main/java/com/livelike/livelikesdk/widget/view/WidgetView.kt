@@ -15,7 +15,8 @@ import com.livelike.engagementsdkapi.WidgetStateProcessor
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.analytics.analyticService
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.AnimationProperties
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
@@ -23,7 +24,6 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
-import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
@@ -105,7 +105,9 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     { dismissCurrentWidget() },
                     timeout,
                     parentWidth,
-                    ViewAnimation(predictionWidget, pieTimerAnimatorStartValue),
+                    ViewAnimationManager(predictionWidget).apply {
+                        initializeTimerProperties(AnimationProperties(pieTimerAnimatorStartValue))
+                    },
                     { saveState(id, newState, payload, type, it) }
                 )
 
@@ -137,7 +139,9 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     dismissCurrentWidget() },
                     timeout,
                     parentWidth,
-                    ViewAnimation(predictionWidget),
+                    ViewAnimationManager(predictionWidget).apply {
+                        initializeResultProperties(AnimationProperties(pieTimerAnimatorStartValue, 1f, previousState?.resultAnimationPath))
+                    },
                     { saveState(widget.id.toString(), newState, payload, type, it) }
                 )
                 widget.notifyDataSetChange()
@@ -152,7 +156,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
 
                 newState?.timeout = widget.timeout
-                predictionWidget.initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth, ViewAnimation(predictionWidget))
+                predictionWidget.initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth, ViewAnimationManager(predictionWidget))
                 widget.id?.let { newState?.let { it1 -> widgetStateProcessor?.updateWidgetState(it, it1) } }
                 predictionWidget.layoutParams = layoutParams
                 widget.registerObserver(predictionWidget)
@@ -169,7 +173,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 parser.parsePredictionFollowup(widget, widgetResource)
                 val predictionWidget = PredictionImageFollowupWidget(context, null, 0)
                 newState?.timeout = widget.timeout
-                predictionWidget.initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth, ViewAnimation(predictionWidget))
+                predictionWidget.initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth, ViewAnimationManager(predictionWidget))
 
                 predictionWidget.layoutParams = layoutParams
 
@@ -190,7 +194,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     null,
                     0)
                 quizTextWidget.initialize({dismissCurrentWidget()},
-                    widget.timeout, { optionSelectionEvents() }, parentWidth, ViewAnimation(quizTextWidget), {})
+                    widget.timeout, { optionSelectionEvents() }, parentWidth, ViewAnimationManager(quizTextWidget), {})
 
                 parser.parseQuiz(widget, widgetResource)
 
@@ -217,7 +221,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     null,
                     0)
                 newState?.timeout = widget.timeout
-                quizWidget.initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionEvents() }, parentWidth, ViewAnimation(quizWidget))
+                quizWidget.initialize({dismissCurrentWidget()}, widget.timeout, { optionSelectionEvents() }, parentWidth, ViewAnimationManager(quizWidget))
 
                 parser.parseQuiz(widget, widgetResource)
                 widget.registerObserver(quizWidget)
@@ -275,7 +279,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val alertWidget = AlertWidget(context, null)
                 val alertResource = gson.fromJson(payload, Alert::class.java)
                 newState?.timeout = alertResource.timeout.toLong()
-                alertWidget.initialize({ dismissCurrentWidget() }, alertResource, ViewAnimation(alertWidget))
+                alertWidget.initialize({ dismissCurrentWidget() }, alertResource, ViewAnimationManager(alertWidget))
                 currentWidget = Widget().apply { id = alertResource.id }
                 emitWidgetShown(alertResource.id, alertResource.kind)
                 widgetListener?.onWidgetDisplayed(alertResource.impression_url)
@@ -289,7 +293,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     private fun restoreState(previousState: WidgetTransientState) {
-        pieTimerAnimatorStartValue = previousState.pieTimerProgress
+        pieTimerAnimatorStartValue = previousState.remainingTime
         timeout = previousState.timeout
     }
 
@@ -304,8 +308,10 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         newState.payload = payload
         newState.type = type
         newState.timeout = timeout
-        newState.pieTimerProgress = previousState.pieTimerProgress
+        newState.remainingTime = previousState.remainingTime
         newState.userSelection = previousState.userSelection
+        newState.resultAnimationPath = previousState.resultAnimationPath
+        newState.resultAnimationTimeRemaining = previousState.resultAnimationTimeRemaining
         newState.let { state -> widgetStateProcessor?.updateWidgetState(id, state) }
     }
 
@@ -327,7 +333,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     override fun dismissCurrentWidget() {
-        ViewAnimation(containerView.parent as View).triggerTransitionOutAnimation {
+        ViewAnimationManager(containerView.parent as View).triggerTransitionOutAnimation {
             removeView()
             resetState()
 
