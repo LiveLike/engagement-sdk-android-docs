@@ -3,7 +3,6 @@ package com.livelike.livelikesdk.widget.view.prediction.text
 import android.annotation.SuppressLint
 import android.content.Context
 import android.support.constraint.ConstraintLayout
-
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -14,10 +13,12 @@ import android.view.ViewStub
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.logDebug
+import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
@@ -42,15 +43,19 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     private lateinit var userTapped : () -> Unit
     private lateinit var viewAnimation: ViewAnimation
     private lateinit var  resultDisplayUtil : WidgetResultDisplayUtil
-    private var adapter : TextOptionAdapter? = null
+    private var optionAdapter : TextOptionAdapter? = null
+    protected lateinit var state: (WidgetTransientState) -> Unit
+    protected var transientState = WidgetTransientState()
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    open fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
-        inflate(context)
+    internal open fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimation, state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
+        this.viewAnimation = viewAnimation
+        this.state = state
+        inflate(context)
         prediction_question_textView.layoutParams.width = parentWidth
     }
 
@@ -60,7 +65,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
-        viewAnimation = ViewAnimation(this)
         viewAnimation.addHorizontalSwipeListener(prediction_question_textView, layout, dismissWidget)
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
@@ -79,14 +83,19 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     }
 
     override fun optionListUpdated(voteOptions: List<VoteOption>, optionSelectedCallback: (String?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
-        adapter?.updateOptionList(voteOptions, correctOptionWithUserSelection) ?: run {
-            adapter = TextOptionAdapter(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
-            option_list.adapter = adapter
+        optionAdapter?.updateOptionList(voteOptions, correctOptionWithUserSelection) ?: run {
+            optionAdapter = TextOptionAdapter(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
+            option_list.adapter = optionAdapter
+            option_list.apply {
+                adapter = optionAdapter
+                optionAdapter?.updateOptionList(voteOptions, correctOptionWithUserSelection)
+            }
         }
 
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
+        transientState.userSelection = selectedOptionId
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
@@ -114,6 +123,12 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
             this.correctOptionWithUserSelection = correctOptionWithUserSelection
             optionList = data
             notifyDataSetChanged()
+            if(showResults) {
+                resultDisplayUtil.startResultAnimation(
+                    correctOptionWithUserSelection.first == correctOptionWithUserSelection.second,
+                    prediction_result
+                )
+            }
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -122,6 +137,10 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
             holder.option = option
             buttonMap[button] = option.id
+            // This is needed here as notifyDataSetChanged() is behaving asynchronously.
+            if (option == optionList[optionList.size -1]  && transientState.userSelection != null)
+                optionSelectedUpdated(transientState.userSelection)
+
 
             if (showResults) {
                 setResultsBackground(holder, option.id, option.votePercentage.toInt())

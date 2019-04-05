@@ -47,10 +47,11 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimation) {
         dismissWidget = dismiss
         this.timeout = timeout
         this.parentWidth = parentWidth
+        this.viewAnimation = viewAnimation
         inflate(context)
     }
 
@@ -65,7 +66,6 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub.inflate()
 
         updateCrossImage()
-        viewAnimation = ViewAnimation(this)
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         prediction_question_textView.layoutParams.width = parentWidth
     }
@@ -79,7 +79,11 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
     private fun transitionAnimation() {
         viewAnimation.startWidgetTransitionInAnimation{
-            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
+//            widgetResultDisplayUtil.startResultAnimation()
+//            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
+//               // transientState.pieTimerProgress = it
+//               // state.invoke(transientState)
+//            }, {})
         }
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }

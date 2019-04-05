@@ -60,12 +60,11 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
         // TODO: Maybe inject this object.
-        viewAnimation = ViewAnimation(this)
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout) {
+            viewAnimation.startTimerAnimation(pieTimer, timeout, {
                 fetchResult?.invoke()
                 showResults = true
-            }
+            }, { })
         }
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
@@ -75,10 +74,17 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         prediction_question_textView.layoutParams.width = parentWidth
     }
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit, parentWidth: Int) {
+    internal fun initialize(
+        dismiss: () -> Unit,
+        timeout: Long,
+        fetch: () -> Unit,
+        parentWidth: Int,
+        viewAnimation: ViewAnimation
+    ) {
         this.timeout = timeout
         dismissWidget = dismiss
         fetchResult = fetch
+        this.viewAnimation = viewAnimation
         this.parentWidth = parentWidth
         inflate(context)
     }

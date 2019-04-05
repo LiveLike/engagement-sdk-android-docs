@@ -5,16 +5,16 @@ import android.os.Looper
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
+import com.livelike.engagementsdkapi.WidgetStateProcessor
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
-import com.livelike.livelikesdk.util.logVerbose
 
 /// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
-internal class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient) :
+internal class WidgetManager(upstream: MessagingClient, private val dataClient: WidgetDataClient, private val stateProcessor: WidgetStateProcessor) :
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
     WidgetEventListener {
@@ -26,6 +26,7 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     set(value) {
         field = value
         value?.widgetListener = this
+        value?.widgetStateProcessor = stateProcessor
     }
 
     override var isProcessing: Boolean = false
@@ -114,9 +115,12 @@ internal interface WidgetDataClient {
     fun fetchQuizResult(answerUrl: String)
 }
 
-internal fun MessagingClient.asWidgetManager(dataClient: WidgetDataClient): WidgetManager {
+internal fun MessagingClient.asWidgetManager(
+    dataClient: WidgetDataClient,
+    stateProcessor: WidgetStateProcessor
+): WidgetManager {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
-    val widgetQueue = WidgetManager(triggeredMessagingClient, dataClient)
+    val widgetQueue = WidgetManager(triggeredMessagingClient, dataClient, stateProcessor)
     triggeredMessagingClient.externalTrigger = widgetQueue
     return widgetQueue
 }

@@ -17,9 +17,9 @@ import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
-internal class ViewAnimation(val view: View) {
+internal class ViewAnimation(val view: View, animatorStartValue: Float = 0f, animatorEndValue: Float = 1f, val resultAnimationPath: String? = null) {
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
-    private val animator = ValueAnimator.ofFloat(0f, 1f)
+    private var animator = ValueAnimator.ofFloat(animatorStartValue, animatorEndValue)
     private val animationHandler = AnimationHandler()
 
     fun startWidgetTransitionInAnimation(onAnimationCompletedCallback: () -> Unit) {
@@ -72,21 +72,35 @@ internal class ViewAnimation(val view: View) {
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
     }
 
-    fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: () -> Unit) {
+    fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: () -> Unit, progressUpdater: (Float) -> Unit) {
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
             duration,
-            ValueAnimator.ofFloat(0f, 1f)
+            animator,
+            progressUpdater
         )
     }
 
-    fun startResultAnimation(lottieAnimationPath: String, context: Context, prediction_result: LottieAnimationView) {
-        val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, context)
-        if (lottieAnimation != null)
-            prediction_result.setAnimation("$lottieAnimationPath/$lottieAnimation")
+    // TODO: Context can be injected at class level
+    fun startResultAnimation(lottieAnimationPath: String,
+                             context: Context,
+                             prediction_result: LottieAnimationView,
+                             progressUpdater: (Float) -> Unit,
+                             animationPath: (String) -> Unit) {
+        if (resultAnimationPath == null) {
+            val relativePath = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, context)
+            if (relativePath != null) {
+                val absoluteAnimationPath = "$lottieAnimationPath/$relativePath"
+                animationPath.invoke(absoluteAnimationPath)
+                prediction_result.setAnimation(absoluteAnimationPath)
+            }
+        } else prediction_result.setAnimation(resultAnimationPath)
+
         prediction_result.visibility = View.VISIBLE
-        prediction_result.playAnimation()
+        animationHandler.startAnimation(prediction_result, {}, widgetShowingDurationAfterConfirmMessage, animator, {
+            progressUpdater.invoke(it)
+        })
     }
 
     fun showConfirmMessage(
@@ -94,6 +108,7 @@ internal class ViewAnimation(val view: View) {
         confirmMessageLottieAnimationView: LottieAnimationView,
         onCompleteCallback: (() -> Unit)?
     ) {
+        // TODO: apply callback
         confirmMessageTextView.visibility = View.VISIBLE
         val lottieAnimationPath = "confirmMessage"
         val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, view.context)
@@ -104,8 +119,8 @@ internal class ViewAnimation(val view: View) {
                 confirmMessageLottieAnimationView,
                 { triggerTransitionOutAnimation(onCompleteCallback) },
                 widgetShowingDurationAfterConfirmMessage,
-                animator
-            )
+                ValueAnimator.ofFloat(0f, 1f),
+                {})
         }
     }
 
@@ -134,12 +149,16 @@ private class AnimationHandler {
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: () -> Unit,
                        duration: Long,
-                       animator: ValueAnimator
+                       animator: ValueAnimator,
+                       progressUpdater: (Float) -> Unit
     ) {
         bindListenerToAnimationView(animator, onAnimationCompletedCallback)
         animator.duration = duration
         animator.addUpdateListener { animation ->
-            lottieAnimationView.progress = animation.animatedValue as Float
+            val progress = animation.animatedValue as Float
+            //logInfo { "Abhishek progress $progress" }
+            lottieAnimationView.progress = progress
+            progressUpdater.invoke(progress)
         }
 
         lottieAnimationView.playAnimation()

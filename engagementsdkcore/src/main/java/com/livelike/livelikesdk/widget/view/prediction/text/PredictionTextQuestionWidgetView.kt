@@ -5,6 +5,7 @@ import android.os.Handler
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Button
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.widget.model.VoteOption
@@ -19,17 +20,21 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
     private lateinit var viewAnimation: ViewAnimation
 
-    override fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
-        super.initialize(dismiss, timeout, parentWidth)
+    override fun initialize(dismiss: ()->Unit,
+                            timeout: Long,
+                            parentWidth: Int,
+                            viewAnimation: ViewAnimation,
+                            state: (WidgetTransientState) -> Unit) {
+        super.initialize(dismiss, timeout, parentWidth, viewAnimation, state)
+        this.viewAnimation = viewAnimation
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        viewAnimation = ViewAnimation(this)
         startWidgetAnimation(pieTimer, timeout)
     }
 
     private fun startWidgetAnimation(pieTimer: View, timeout : Long) {
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout) {
+            viewAnimation.startTimerAnimation(pieTimer, timeout, {
                 if (optionSelectedId.isNotEmpty()) {
                     viewAnimation.showConfirmMessage(
                         prediction_confirm_message_textView,
@@ -37,7 +42,12 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
                     ) {}
                     performPredictionWidgetFadeOutOperations()
                 }
-            }
+            }, {
+                if (it < 0.9) {
+                    transientState.pieTimerProgress = it
+                    state.invoke(transientState)
+                }
+            })
         }
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }

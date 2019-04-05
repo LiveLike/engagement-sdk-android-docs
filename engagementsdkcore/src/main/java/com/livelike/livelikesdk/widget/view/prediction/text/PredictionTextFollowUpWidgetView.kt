@@ -4,32 +4,43 @@ import android.content.Context
 import android.os.Handler
 import android.util.AttributeSet
 import android.widget.ImageView
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.confirm_message.view.*
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 internal class PredictionTextFollowUpWidgetView :
     TextOptionWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        showResults = true
+    }
 
 
     private lateinit var viewAnimation: ViewAnimation
-    private var timeout: Long = 7000
+    private var timeout = 0L
+    private var initialTimeout = 0L
+    var executor = ScheduledThreadPoolExecutor(15)
+    lateinit var future: ScheduledFuture<*>
 
-    override fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
-        super.initialize(dismiss, timeout, parentWidth)
+    override fun initialize(dismiss: ()->Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimation, state: (WidgetTransientState) -> Unit) {
+        super.initialize(dismiss, timeout, parentWidth, viewAnimation, state)
         showResults = true
         buttonClickEnabled = false
+        this.viewAnimation = viewAnimation
         pieTimerViewStub.layoutResource = R.layout.cross_image
         pieTimerViewStub.inflate()
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
         imageView.setOnClickListener { dismissWidget() }
-        viewAnimation = ViewAnimation(this)
         this.timeout = timeout
+        future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
     }
 
     override fun optionListUpdated(
@@ -38,6 +49,31 @@ internal class PredictionTextFollowUpWidgetView :
         correctOptionWithUserSelection: Pair<String?, String?>) {
         super.optionListUpdated(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
         super.showResultsAnimation(correctOptionWithUserSelection)
+        transitionAnimation()
+    }
+
+    private fun transitionAnimation() {
+        viewAnimation.startWidgetTransitionInAnimation{
+//            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
+//                transientState.pieTimerProgress = it
+//                state.invoke(transientState)
+//            }, {
+//                transientState.resultPath = it
+//                state.invoke(transientState)
+//            })
+        }
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
+    }
+
+    inner class Updater: Runnable {
+        override fun run() {
+            transientState.timeout = timeout - initialTimeout
+            state.invoke(transientState)
+            val updateRate = 1000
+            initialTimeout += updateRate
+            if (timeout == initialTimeout) {
+                future.cancel(false)
+            }
+        }
     }
 }

@@ -19,6 +19,7 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
@@ -34,6 +35,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimation
     lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
+    private lateinit var state: WidgetTransientState
     private val widgetOpacityFactor: Float = 0.2f
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
@@ -46,8 +48,9 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
+    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimation) {
         dismissWidget = dismiss
+        this.viewAnimation = viewAnimation
         this.parentWidth = parentWidth
         inflate(context, timeout)
     }
@@ -61,9 +64,8 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
         // TODO: Maybe inject this object.
-        viewAnimation = ViewAnimation(this)
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout) {
+            viewAnimation.startTimerAnimation(pieTimer, timeout, {
                 if (optionSelected) {
                     viewAnimation.showConfirmMessage(
                         prediction_confirm_message_textView,
@@ -71,7 +73,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                     ) {}
                     performPredictionWidgetFadeOutOperations()
                 }
-            }
+            }, {})
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)

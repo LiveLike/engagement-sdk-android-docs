@@ -47,7 +47,7 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
         prediction_result: LottieAnimationView
     ) {
         lottieAnimationPath = findResultAnimationPath(isCorrect)
-        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
+        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result,  {}, {})
     }
 
     private fun findResultAnimationPath(isCorrect: Boolean): String {

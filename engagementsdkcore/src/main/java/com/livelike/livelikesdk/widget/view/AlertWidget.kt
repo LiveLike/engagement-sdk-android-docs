@@ -29,16 +29,16 @@ internal class AlertWidget : ConstraintLayout {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismissWidget: () -> Unit, alertData: Alert) {
+    fun initialize(dismissWidget: () -> Unit, alertData: Alert, viewAnimation: ViewAnimation) {
         this.dismissWidget = dismissWidget
         this.resourceAlert = alertData
+        this.viewAnimation = viewAnimation
         inflate(context)
     }
 
 
     private fun inflate(context: Context) {
         layout = LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
-        viewAnimation = ViewAnimation(alertWidget)
 
         bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title
