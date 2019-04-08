@@ -18,15 +18,6 @@
             tools:listitem="@layout/prediction_image_row_element"
             app:layout_constraintHorizontal_bias="0.0"/>
 
-
-
-    <include layout="@layout/confirm_message"
-             android:id="@+id/confirm_message"
-             app:layout_constraintTop_toTopOf="parent"
-             app:layout_constraintBottom_toBottomOf="parent"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintEnd_toEndOf="parent"/>
-
     <TextView
             android:id="@+id/prediction_question_textView"
             android:layout_height="wrap_content"
@@ -44,5 +35,12 @@
             android:paddingRight="16dp"
             android:paddingLeft="16dp"
     />
+
+    <include layout="@layout/confirm_message"
+             android:id="@+id/confirm_message"
+             app:layout_constraintTop_toTopOf="parent"
+             app:layout_constraintBottom_toBottomOf="parent"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintEnd_toEndOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>
