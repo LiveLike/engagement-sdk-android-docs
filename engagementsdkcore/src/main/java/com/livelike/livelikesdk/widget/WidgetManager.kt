@@ -30,6 +30,13 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
 
     override var isProcessing: Boolean = false
     override var triggerListener: ExternalTriggerListener? = null
+    set(listener) {
+        field = listener
+        listener?.exemptionList = listOf(
+            Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
+            Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value)
+        )
+    }
 
     override fun onAnalyticsEvent(data: Any) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
