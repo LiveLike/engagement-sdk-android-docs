@@ -4,10 +4,10 @@ import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
 
-
 internal class TriggeredMessagingClient(upstream: MessagingClient) :
         MessagingClientProxy(upstream), ExternalTriggerListener {
     val queue = Queue<ClientMessage>()
+    override var exemptionList: List<Pair<String, String>>? = null
     var externalTrigger: ExternalMessageTrigger = EmptyTrigger()
     set(value) {
         field = value
@@ -22,7 +22,8 @@ internal class TriggeredMessagingClient(upstream: MessagingClient) :
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        if(externalTrigger.isProcessing || isPaused)
+        val exemption = exemptionList?.any { event.message[it.first].asString == it.second } ?: false
+        if(!exemption && externalTrigger.isProcessing || isPaused)
             queue.enqueue(event)
         else
             super.onClientMessageEvent(client, event)
@@ -39,6 +40,7 @@ internal class EmptyTrigger : ExternalMessageTrigger {
 }
 
 interface ExternalTriggerListener {
+    var exemptionList: List<Pair<String, String>>?
     fun onTrigger(data: Any)
     fun toggleEmission(pause: Boolean)
 }
