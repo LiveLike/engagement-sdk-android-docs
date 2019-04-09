@@ -26,6 +26,7 @@ import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.Widget
+import com.livelike.livelikesdk.widget.view.poll.PollTextWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFollowupWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
@@ -77,7 +78,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
         when (WidgetType.fromString(type)) {
             WidgetType.TEXT_PREDICTION -> {
-                parser.parseTextPredictionCommon(widget, widgetResource)
+                parser.parseTextOptionCommon(widget, widgetResource)
                 val predictionWidget =
                     PredictionTextQuestionWidgetView(
                         context,
@@ -112,7 +113,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             }
 
             WidgetType.IMAGE_PREDICTION -> {
-                parser.parseTextPredictionCommon(widget, widgetResource)
+                parser.parseTextOptionCommon(widget, widgetResource)
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
                     .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
                 widget.registerObserver(predictionWidget)
@@ -207,6 +208,39 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 }
             }
 
+            WidgetType.TEXT_POLL -> {
+                val pollTextWidget = PollTextWidget(context,
+                    null,
+                    0)
+                    .apply {
+                        initialize(
+                            { dismissCurrentWidget() },
+                            widget.timeout,
+                            { optionSelectionEvents() },
+                            parentWidth
+                        )
+                    }
+
+                parser.parsePoll(widget, widgetResource)
+
+                pollTextWidget.userTappedCallback {
+                    emitWidgetOptionSelected(widget.id, widgetResource.kind)
+                }
+
+                widget.registerObserver(pollTextWidget)
+                widget.notifyDataSetChange()
+                containerView.addView(pollTextWidget)
+                widgetShown(widgetResource)
+                currentWidget = widget
+            }
+
+            WidgetType.TEXT_POLL_RESULT -> {
+                currentWidget?.let {
+                    parser.parsePollResult(it, widgetResource)
+                    it.notifyDataSetChange()
+                }
+            }
+
             WidgetType.ALERT -> {
                 val alertWidget = AlertWidget(context, null).apply {
                     val alertResource = gson.fromJson(payload, Alert::class.java)
@@ -273,7 +307,12 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         currentWidget?.id?.let {
             optionSelected?.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) }
         }
-        currentWidget?.subscribeChannel?.let { widgetListener?.onOptionVote(optionSelected?.voteUrl.toString(), it) }
+        currentWidget?.subscribeChannel?.let {
+            if(currentWidget?.selectedVoteChangeUrl.isNullOrEmpty())
+                widgetListener?.onOptionVote(optionSelected?.voteUrl.toString(), it) {changeUrl -> currentWidget?.selectedVoteChangeUrl = changeUrl}
+            else
+                widgetListener?.onOptionVoteUpdate(currentWidget?.selectedVoteChangeUrl.orEmpty(), optionSelected?.id.orEmpty(), it) {changeUrl -> currentWidget?.selectedVoteChangeUrl = changeUrl}
+        }
         widgetListener?.onFetchingQuizResult(optionSelected?.answerUrl.toString())
     }
 }

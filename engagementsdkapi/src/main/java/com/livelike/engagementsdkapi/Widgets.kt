@@ -17,7 +17,8 @@ interface WidgetEventListener {
     fun onAnalyticsEvent(data: Any)
     fun onWidgetEvent(event: WidgetEvent)
     fun onWidgetDisplayed(impressionUrl: String)
-    fun onOptionVote(voteUrl: String, channel : String)
+    fun onOptionVote(voteUrl: String, channel : String, voteUpdateCallback: ((String)-> Unit)?)
+    fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String , channel: String, voteUpdateCallback: ((String)-> Unit)?)
     fun onFetchingQuizResult(answerUrl: String)
 }
 

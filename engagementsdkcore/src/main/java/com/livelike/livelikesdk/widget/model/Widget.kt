@@ -15,6 +15,7 @@ internal class Widget {
     var correctOptionId: String = ""
     var timeout: Long = 7000L
     var subscribeChannel: String = ""
+    var selectedVoteChangeUrl: String = ""
 
     private fun optionSelectedUpdated(id: String?) {
         if (id == null) {

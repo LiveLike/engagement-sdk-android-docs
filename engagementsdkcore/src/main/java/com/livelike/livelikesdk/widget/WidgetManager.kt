@@ -34,7 +34,8 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         field = listener
         listener?.exemptionList = listOf(
             Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
-            Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value)
+            Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value),
+            Pair("event", WidgetType.TEXT_POLL_RESULT.value)
         )
     }
 
@@ -52,9 +53,15 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         }
     }
 
-    override fun onOptionVote(voteUrl: String, channel: String) {
-        dataClient.vote(voteUrl)
+    override fun onOptionVote(voteUrl: String, channel: String, voteChangeCallback: ((String) -> Unit)?) {
+        logDebug { "SHANE option vote " + voteUrl }
+        dataClient.vote(voteUrl, voteChangeCallback)
         if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
+    }
+
+    override fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String , channel: String, voteUpdateCallback: ((String)-> Unit)?) {
+        dataClient.changeVote(oldVoteUrl, newVoteId, voteUpdateCallback)
+       // if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
     }
 
     override fun onFetchingQuizResult(answerUrl: String) {
@@ -90,6 +97,8 @@ enum class WidgetType (val value: String) {
     TEXT_QUIZ_RESULT("text-quiz-results"),
     IMAGE_QUIZ("image-quiz-created"),
     IMAGE_QUIZ_RESULT("image-quiz-results"),
+    TEXT_POLL("text-poll-created"),
+    TEXT_POLL_RESULT("text-poll-results"),
     ALERT("alert-created"),
     NONE("none");
 
@@ -101,7 +110,8 @@ enum class WidgetType (val value: String) {
 
 
 internal interface WidgetDataClient {
-    fun vote(voteUrl:String)
+    fun vote(voteUrl:String, voteUpdateCallback: ((String) -> Unit)?)
+    fun changeVote(voteUrl:String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?)
     fun registerImpression(impressionUrl: String)
     fun fetchQuizResult(answerUrl: String)
 }

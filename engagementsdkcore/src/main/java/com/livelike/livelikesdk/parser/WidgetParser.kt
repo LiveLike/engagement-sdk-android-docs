@@ -9,7 +9,7 @@ import java.net.URI
 
 // TODO: Refine this class more.
 internal class WidgetParser {
-    fun parseTextPredictionCommon(widget: Widget, resource: Resource) {
+    fun parseTextOptionCommon(widget: Widget, resource: Resource) {
         mapResourceToWidget(widget, resource)
 
         widget.optionList = resource.options.map {
@@ -37,7 +37,7 @@ internal class WidgetParser {
     }
 
     fun parsePredictionFollowup(widget: Widget, payload: Resource) {
-        parseTextPredictionCommon(widget, payload)
+        parseTextOptionCommon(widget, payload)
         when {
             payload.testTag == "Correct Answer" -> widget.optionSelected =
                 widget.optionList.single { widgetOptions ->
@@ -84,5 +84,21 @@ internal class WidgetParser {
         }
         widget.optionSelected =
             WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widget.id?:""))
+    }
+
+    fun parsePoll(widget: Widget, resource: Resource) {
+        parseTextOptionCommon(widget, resource)
+        widget.subscribeChannel = resource.subscribe_channel
+    }
+
+    fun parsePollResult(widget: Widget, resource: Resource) {
+        widget.optionList.forEach { option ->
+            resource.options.forEach { choice ->
+                if (option.id == choice.id)
+                    option.voteCount = choice.vote_count.toLong()
+            }
+        }
+        widget.optionSelected =
+                WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widget.id?:""))
     }
 }
