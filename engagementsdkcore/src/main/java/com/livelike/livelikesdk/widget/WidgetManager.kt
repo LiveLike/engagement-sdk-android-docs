@@ -54,14 +54,12 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onOptionVote(voteUrl: String, channel: String, voteChangeCallback: ((String) -> Unit)?) {
-        logDebug { "SHANE option vote " + voteUrl }
         dataClient.vote(voteUrl, voteChangeCallback)
         if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
     }
 
     override fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String , channel: String, voteUpdateCallback: ((String)-> Unit)?) {
         dataClient.changeVote(oldVoteUrl, newVoteId, voteUpdateCallback)
-       // if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
     }
 
     override fun onFetchingQuizResult(answerUrl: String) {
