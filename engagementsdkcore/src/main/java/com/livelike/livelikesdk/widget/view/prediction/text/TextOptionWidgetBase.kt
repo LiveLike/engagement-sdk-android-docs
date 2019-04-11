@@ -17,8 +17,6 @@ import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.logDebug
-import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
@@ -45,14 +43,16 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     private var optionAdapter : TextOptionAdapter? = null
     protected lateinit var state: (WidgetTransientState) -> Unit
     protected var transientState = WidgetTransientState()
+    protected lateinit var properties: WidgetTransientState
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    internal open fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
+    internal open fun initialize(dismiss: () -> Unit, properties: WidgetTransientState, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
+        this.properties = properties
         this.state = state
         inflate(context)
         prediction_question_textView.layoutParams.width = parentWidth
@@ -121,22 +121,21 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         fun updateOptionList(data: List<VoteOption>, correctOptionWithUserSelection: Pair<String?, String?>) {
             this.correctOptionWithUserSelection = correctOptionWithUserSelection
             optionList = data
+
             notifyDataSetChanged()
-            if(showResults) {
-                viewAnimation.startWidgetTransitionInAnimation {
-                    resultDisplayUtil.startResultAnimation(
-                        correctOptionWithUserSelection.first == correctOptionWithUserSelection.second,
-                        prediction_result,
-                        {
-                            transientState.resultAnimationTimeRemaining = it
-                            state.invoke(transientState)
-                        },
-                        {
-                            transientState.resultAnimationPath = it
-                            state.invoke(transientState)
-                        }
-                    )
-                }
+            if (showResults) {
+                resultDisplayUtil.startResultAnimation(
+                    correctOptionWithUserSelection.first == correctOptionWithUserSelection.second,
+                    prediction_result,
+                    {
+                        transientState.resultAnimatorStartPhase = it
+                        state.invoke(transientState)
+                    },
+                    {
+                        transientState.resultAnimationPath = it
+                        state.invoke(transientState)
+                    }, properties
+                )
             }
             notifyDataSetChanged()
         }

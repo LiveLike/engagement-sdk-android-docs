@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.widget.ImageView
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.animation.AnimationProperties
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.VoteOption
 import java.util.concurrent.ScheduledFuture
@@ -30,8 +31,8 @@ internal class PredictionTextFollowUpWidgetView :
     private var executor = ScheduledThreadPoolExecutor(15)
     lateinit var future: ScheduledFuture<*>
 
-    override fun initialize(dismiss: ()->Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
-        super.initialize(dismiss, timeout, parentWidth, viewAnimation, state)
+    override fun initialize(dismiss: ()->Unit, properties: WidgetTransientState, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
+        super.initialize(dismiss, properties, parentWidth, viewAnimation, state)
         showResults = true
         buttonClickEnabled = false
         this.viewAnimation = viewAnimation
@@ -40,7 +41,7 @@ internal class PredictionTextFollowUpWidgetView :
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
         imageView.setOnClickListener { dismissWidget() }
-        this.timeout = timeout
+        this.timeout = properties.timeout
         future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
     }
 

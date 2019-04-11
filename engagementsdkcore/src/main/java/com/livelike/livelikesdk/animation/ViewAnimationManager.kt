@@ -9,6 +9,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
@@ -19,21 +20,8 @@ import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
 internal class ViewAnimationManager(val view: View) {
 
-    private lateinit var timerAnimator : ValueAnimator
-    private lateinit var resultAnimator : ValueAnimator
-    private var resultAnimationPath: String? = null
-
     private val animationHandler = AnimationHandler()
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
-
-    fun initializeTimerProperties(timerProperties: AnimationProperties) {
-        timerAnimator = ValueAnimator.ofFloat(timerProperties.animatorStartValue, timerProperties.animatorEndValue)
-    }
-
-    fun initializeResultProperties(resultProperties: AnimationProperties) {
-        resultAnimationPath = resultProperties.resultAnimationPath
-        resultAnimator = ValueAnimator.ofFloat(resultProperties.animatorStartValue, resultProperties.animatorEndValue)
-    }
 
     fun startWidgetTransitionInAnimation(onAnimationCompletedCallback: () -> Unit) {
         val heightToReach = view.measuredHeight.toFloat()
@@ -85,12 +73,12 @@ internal class ViewAnimationManager(val view: View) {
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
     }
 
-    fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: () -> Unit, progressUpdater: (Float) -> Unit) {
+    fun startTimerAnimation(pieTimer: View, duration: Long, timerProperties: WidgetTransientState, onAnimationCompletedCallback: () -> Unit, progressUpdater: (Float) -> Unit) {
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
             duration,
-            timerAnimator,
+            ValueAnimator.ofFloat(timerProperties.timerAnimatorStartPhase, 1f),
             progressUpdater
         )
     }
@@ -100,16 +88,20 @@ internal class ViewAnimationManager(val view: View) {
                              context: Context,
                              prediction_result: LottieAnimationView,
                              progressUpdater: (Float) -> Unit,
-                             animationPath: (String) -> Unit) {
+                             animationPath: (String) -> Unit,
+                             resultProperties: WidgetTransientState) {
+        var resultAnimationPath = resultProperties.resultAnimationPath
+        val resultAnimator = ValueAnimator.ofFloat(resultProperties.resultAnimatorStartPhase, 1f)
+
         if (resultAnimationPath == null) {
             val relativePath = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, context)
             if (relativePath != null) {
-                val absoluteAnimationPath = "$lottieAnimationPath/$relativePath"
-                animationPath.invoke(absoluteAnimationPath)
-                prediction_result.setAnimation(absoluteAnimationPath)
+                resultAnimationPath = "$lottieAnimationPath/$relativePath"
+                prediction_result.setAnimation(resultAnimationPath)
             }
         } else prediction_result.setAnimation(resultAnimationPath)
 
+        resultAnimationPath?.let { animationPath.invoke(it) }
         prediction_result.visibility = View.VISIBLE
         animationHandler.startAnimation(prediction_result, {}, widgetShowingDurationAfterConfirmMessage, resultAnimator, {
             progressUpdater.invoke(it)
@@ -147,8 +139,9 @@ internal class ViewAnimationManager(val view: View) {
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    animationHandler.cancelAnimation(timerAnimator)
-                    animationHandler.cancelAnimation(resultAnimator)
+                    //animationHandler.cancelAnimation(timerAnimator)
+                    // TODO: remove this and add as param
+                    //animationHandler.cancelAnimation(resultAnimator)
                     layout.removeAllViewsInLayout()
                     onSwipeCallback?.invoke()
                 }
@@ -219,4 +212,5 @@ private class AnimationHandler {
 
 internal class AnimationProperties(val animatorStartValue: Float = 0f,
                                    val animatorEndValue: Float = 1f,
+                                   val timeout: Long = 0L,
                                    val resultAnimationPath: String? = null)

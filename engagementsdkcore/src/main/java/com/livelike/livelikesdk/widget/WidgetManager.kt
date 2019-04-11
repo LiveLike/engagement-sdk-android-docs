@@ -6,6 +6,7 @@ import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.engagementsdkapi.WidgetStateProcessor
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
@@ -73,7 +74,7 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         Handler(Looper.getMainLooper()).post {
-            renderer?.displayWidget(widgetType, payload)
+            renderer?.displayWidget(widgetType, payload, WidgetTransientState())
         }
         super.onClientMessageEvent(client, event)
     }

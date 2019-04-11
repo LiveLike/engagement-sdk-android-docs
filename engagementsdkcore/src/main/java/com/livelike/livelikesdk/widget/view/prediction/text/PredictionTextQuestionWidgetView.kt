@@ -8,7 +8,9 @@ import android.widget.Button
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.widget.model.VoteOption
+import com.livelike.livelikesdk.animation.AnimationProperties
 import com.livelike.livelikesdk.animation.ViewAnimationManager
+import com.livelike.livelikesdk.util.logInfo
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
@@ -21,20 +23,21 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     private lateinit var viewAnimation: ViewAnimationManager
 
     override fun initialize(dismiss: ()->Unit,
-                            timeout: Long,
+                            properties: WidgetTransientState,
                             parentWidth: Int,
                             viewAnimation: ViewAnimationManager,
                             state: (WidgetTransientState) -> Unit) {
-        super.initialize(dismiss, timeout, parentWidth, viewAnimation, state)
+        super.initialize(dismiss, properties, parentWidth, viewAnimation, state)
         this.viewAnimation = viewAnimation
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        startWidgetAnimation(pieTimer, timeout)
+        startWidgetAnimation(pieTimer, properties.timeout)
     }
 
     private fun startWidgetAnimation(pieTimer: View, timeout : Long) {
+        logInfo { "Abhishek prediction $timeout" }
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout, {
+            viewAnimation.startTimerAnimation(pieTimer, timeout, properties, {
                 if (optionSelectedId.isNotEmpty()) {
                     viewAnimation.showConfirmMessage(
                         prediction_confirm_message_textView,
@@ -43,10 +46,8 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
                     performPredictionWidgetFadeOutOperations()
                 }
             }, {
-                if (it < 0.9) {
-                    transientState.remainingTime = it
-                    state.invoke(transientState)
-                }
+                transientState.timerAnimatorStartPhase = it
+                state.invoke(transientState)
             })
         }
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)

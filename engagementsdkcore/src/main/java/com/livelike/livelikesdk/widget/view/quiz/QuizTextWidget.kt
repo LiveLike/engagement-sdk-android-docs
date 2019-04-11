@@ -17,23 +17,35 @@ internal class QuizTextWidget : TextOptionWidgetBase {
     private lateinit var viewAnimation: ViewAnimationManager
     private var fetchResult: (() -> Unit)? = null
 
-    fun initialize(dismiss : ()->Unit, timeout : Long, fetch: () -> Unit, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
-        super.initialize(dismiss, timeout, parentWidth, viewAnimation, state)
+    fun initialize(dismiss : ()->Unit,
+                   properties: WidgetTransientState,
+                   fetch: () -> Unit,
+                   parentWidth: Int,
+                   viewAnimation: ViewAnimationManager,
+                   state: (WidgetTransientState) -> Unit) {
+        super.initialize(dismiss, properties, parentWidth, viewAnimation, state)
         fetchResult = fetch
         pieTimerViewStub.layoutResource = R.layout.pie_timer
+        this.viewAnimation = viewAnimation
         val pieTimer = pieTimerViewStub.inflate()
-        startWidgetAnimation(pieTimer, timeout)
+        startWidgetAnimation(pieTimer, properties)
     }
 
-    private fun startWidgetAnimation(pieTimer: View, timeout: Long) {
-        viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout, {
-                showResults = true
-                buttonClickEnabled = false
-                fetchResult?.invoke()
-            }, {})
+    private fun startWidgetAnimation(pieTimer: View, properties: WidgetTransientState) {
+        if (properties.timerAnimatorStartPhase != 1f) {
+            viewAnimation.startWidgetTransitionInAnimation {
+                viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
+                    showResults = true
+                    buttonClickEnabled = false
+                    fetchResult?.invoke()
+                }, {
+                    transientState.timerAnimatorStartPhase = it
+                    state.invoke(transientState)
+                })
+            }
         }
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
+        Handler().postDelayed(
+            { dismissWidget?.invoke() }, properties.timeout * 2)
     }
 
     override fun optionListUpdated(

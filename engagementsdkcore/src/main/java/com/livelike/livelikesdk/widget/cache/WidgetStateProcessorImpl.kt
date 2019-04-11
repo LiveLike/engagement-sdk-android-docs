@@ -9,7 +9,7 @@ class WidgetStateProcessorImpl(
     private val currentWidgetMap: HashMap<String, String>
 ):
     WidgetStateProcessor {
-    override var currentWidget: String ? = null
+    override var currentWidgetId: String ? = null
 
     override fun getWidgetState(id: String): WidgetTransientState? {
         return  widgetStateMap[id]
@@ -20,7 +20,7 @@ class WidgetStateProcessorImpl(
     }
 
     override fun release(id: String) {
-        currentWidget = null
+        currentWidgetId = null
         widgetStateMap.remove(id)
         currentWidgetMap.clear()
     }

@@ -10,7 +10,7 @@ interface WidgetRenderer {
     fun displayWidget(
         type: String,
         payload: JsonObject,
-        previousState: WidgetTransientState? = null
+        previousState: WidgetTransientState
     )
 }
 
@@ -29,7 +29,7 @@ enum class WidgetEvent{
 }
 
 interface WidgetStateProcessor {
-    var currentWidget: String ?
+    var currentWidgetId: String ?
     fun getWidgetState(id: String): WidgetTransientState?
     fun updateWidgetState(id: String, state: WidgetTransientState)
     fun release(id: String)
@@ -39,10 +39,10 @@ interface WidgetStateProcessor {
 class WidgetTransientState {
     var timeout = 0L
     var userSelection: String? = null
-    var remainingTime = 0f
+    var timerAnimatorStartPhase = 0f
     var type: String? = null
     var payload: JsonObject? = null
     // Maybe a map for below
     var resultAnimationPath: String? = null
-    var resultAnimationTimeRemaining = 0f
+    var resultAnimatorStartPhase = 0f
 }

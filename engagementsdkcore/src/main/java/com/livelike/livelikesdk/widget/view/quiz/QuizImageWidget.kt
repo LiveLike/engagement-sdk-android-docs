@@ -20,6 +20,7 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.QuizVoteObserver
@@ -36,6 +37,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var viewAnimation: ViewAnimationManager
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private lateinit var userTapped: () -> Unit
+    private lateinit var properties: WidgetTransientState
     private val imageButtonMap = HashMap<View, String?>()
     private val viewOptions = HashMap<String?, ViewOption>()
     private var layout = ConstraintLayout(context, null, 0)
@@ -61,7 +63,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         val pieTimer = pieTimerViewStub.inflate()
         // TODO: Maybe inject this object.
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout, {
+            viewAnimation.startTimerAnimation(pieTimer, timeout, properties,{
                 fetchResult?.invoke()
                 showResults = true
             }, { })
@@ -76,12 +78,13 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
     internal fun initialize(
         dismiss: () -> Unit,
-        timeout: Long,
+        properties: WidgetTransientState,
         fetch: () -> Unit,
         parentWidth: Int,
         viewAnimation: ViewAnimationManager
     ) {
-        this.timeout = timeout
+        this.properties = properties
+        this.timeout = properties.timeout
         dismissWidget = dismiss
         fetchResult = fetch
         this.viewAnimation = viewAnimation
@@ -128,7 +131,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
 
-        resultDisplayUtil.startResultAnimation(correctOption == selectedOption, prediction_result, {}, {})
+        resultDisplayUtil.startResultAnimation(correctOption == selectedOption, prediction_result, {}, {}, properties)
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {

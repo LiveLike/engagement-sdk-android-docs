@@ -19,12 +19,12 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.wrongAnswerLottieFilePath
@@ -32,6 +32,9 @@ import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.cross_image.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver {
     private var dismissWidget: (() -> Unit)? = null
@@ -39,19 +42,27 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private lateinit var viewAnimation: ViewAnimationManager
     lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private var layout = ConstraintLayout(context, null, 0)
-    private var lottieAnimationPath = ""
     private var timeout = 0L
+    private var initialTimeout = 0L
     private var parentWidth = 0
-
+    private lateinit var state: (WidgetTransientState) -> Unit
+    private lateinit var animationProperties: WidgetTransientState
+    private var transientState = WidgetTransientState()
+    // TODO: Duplicate of text follow up. Move out.
+    private var executor = ScheduledThreadPoolExecutor(15)
+    lateinit var future: ScheduledFuture<*>
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimationManager) {
+    fun initialize(dismiss: () -> Unit, properties: WidgetTransientState, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
-        this.timeout = timeout
+        this.timeout = properties.timeout
         this.parentWidth = parentWidth
         this.viewAnimation = viewAnimation
+        this.state = state
+        this.animationProperties = properties
+        future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
         inflate(context)
     }
 
@@ -77,15 +88,16 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         }
     }
 
-    private fun transitionAnimation() {
-        viewAnimation.startWidgetTransitionInAnimation{
-//            widgetResultDisplayUtil.startResultAnimation()
-//            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
-//               // transientState.remainingTime = it
-//               // state.invoke(transientState)
-//            }, {})
+    inner class Updater: Runnable {
+        override fun run() {
+            transientState.timeout = timeout - initialTimeout
+            state.invoke(transientState)
+            val updateRate = 1000
+            initialTimeout += updateRate
+            if (timeout == initialTimeout) {
+                future.cancel(false)
+            }
         }
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     override fun questionUpdated(questionText: String) {
@@ -100,7 +112,17 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                                    correctOptionWithUserSelection: Pair<String?, String?>) {
         val correctOption = correctOptionWithUserSelection.first
         val userSelectedOption = correctOptionWithUserSelection.second
-        widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result, {}, {})
+        viewAnimation.startWidgetTransitionInAnimation {
+            widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result,
+                {
+                    transientState.resultAnimatorStartPhase = it
+                    state.invoke(transientState)
+                },
+                {
+                    transientState.resultAnimationPath = it
+                    state.invoke(transientState)
+                }, animationProperties)
+        }
         initAdapter(voteOptions, correctOption, userSelectedOption)
         lottieAnimationPath = findResultAnimationPath(correctOption, userSelectedOption)
         transitionAnimation()
@@ -110,6 +132,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         return if (hasUserSelectedCorrectOption(correctOption, userSelectedOption))
             correctAnswerLottieFilePath
         else wrongAnswerLottieFilePath
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     private fun initAdapter(voteOptions: List<VoteOption>, correctOption: String?, userSelectedOption: String?) {
@@ -121,9 +144,6 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {}
     override fun confirmMessageUpdated(confirmMessage: String) {}
-
-    fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
-        userSelectedOption == correctOption
 
     inner class ImageAdapter(
         private val optionList: List<VoteOption>,

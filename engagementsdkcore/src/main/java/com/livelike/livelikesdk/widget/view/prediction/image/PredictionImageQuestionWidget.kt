@@ -23,7 +23,6 @@ import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
@@ -34,8 +33,8 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimationManager
+    private lateinit var properties: WidgetTransientState
     lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
-    private lateinit var state: WidgetTransientState
     private val widgetOpacityFactor: Float = 0.2f
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
@@ -43,15 +42,24 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private var parentWidth = 0
     val imageButtonMap = HashMap<View, String?>()
     lateinit var userTapped: () -> Unit
+    private lateinit var state: (WidgetTransientState) -> Unit
+    private var transientState = WidgetTransientState()
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int, viewAnimation: ViewAnimationManager) {
+    fun initialize(dismiss: () -> Unit,
+                   timeout: Long,
+                   animationProperties: WidgetTransientState,
+                   parentWidth: Int,
+                   viewAnimation: ViewAnimationManager,
+                   state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
+        this.properties = animationProperties
         this.parentWidth = parentWidth
+        this.state = state
         inflate(context, timeout)
     }
 
@@ -63,9 +71,8 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        // TODO: Maybe inject this object.
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout, {
+            viewAnimation.startTimerAnimation(pieTimer, timeout, properties, {
                 if (optionSelected) {
                     viewAnimation.showConfirmMessage(
                         prediction_confirm_message_textView,
@@ -73,7 +80,10 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                     ) {}
                     performPredictionWidgetFadeOutOperations()
                 }
-            }, {})
+            }, {
+                transientState.timerAnimatorStartPhase = it
+                state.invoke(transientState)
+            })
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
@@ -117,6 +127,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         optionSelected = true
+        transientState.userSelection = selectedOptionId
         imageButtonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, R.drawable.prediction_button_pressed)
@@ -141,7 +152,6 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val option = optionList[position]
             holder.optionText.text = option.description
-            val imageWidth = AndroidResource.dpToPx(74)
 
             // TODO: Move this to adapter layer.
             Glide.with(context)
@@ -149,6 +159,11 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 .apply(RequestOptions().transform(MultiTransformation(FitCenter(), RoundedCorners(12))))
                 .into(holder.optionButton)
             imageButtonMap[holder.button] = option.id
+            // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
+            // a way to update user selection.
+            if (option == optionList[optionList.size -1]  && transientState.userSelection != null)
+                optionSelectedUpdated(transientState.userSelection)
+
             holder.button.setOnClickListener {
                 val selectedOption = imageButtonMap[holder.button]
                 optionSelectedCallback(selectedOption)
