@@ -1,6 +1,5 @@
 package com.livelike.livelikedemo
 
-import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.Constraints
 import android.support.v7.app.AppCompatActivity
@@ -67,14 +66,14 @@ class DrawerDemoActivity : AppCompatActivity() {
         if (channel == ChannelManager.NONE_CHANNEL) {
             session?.close()
         } else {
-            player.createSession(channel.llProgram.toString(), sdk) {
-                this.session = it
-
-                chatWidget.chat.setSession(it)
-                chatWidget.widgets.setSession(it)
-
-                player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
-            }
+//            player.createSession(channel.llProgram.toString(), sdk) {
+//                this.session = it
+//
+//                chatWidget.chat.setSession(it)
+//                chatWidget.widgets.setSession(it)
+//
+//                player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
+//            }
         }
     }
 

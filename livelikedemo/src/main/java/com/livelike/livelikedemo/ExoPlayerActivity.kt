@@ -117,14 +117,14 @@ class ExoPlayerActivity : AppCompatActivity() {
         if(channel == ChannelManager.NONE_CHANNEL) {
             session?.close()
         } else {
-            player.createSession(channel.llProgram.toString(), sdk) {
-                this.session = it
+            val session = player.createSession(channel.llProgram.toString(), sdk)
 
-                chat_view.setSession(it)
-                widget_view.setSession(it)
+            chat_view.setSession(session)
+            widget_view.setSession(session)
 
-                player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
-            }
+            this.session = session
+
+            player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
     }
 

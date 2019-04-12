@@ -7,12 +7,11 @@ import com.livelike.livelikesdk.LiveLikeSDK
 
 fun LiveLikeSDK.createExoplayerSession(
     player: () -> SimpleExoPlayer?,
-    contentId: String,
-    sessionReady: (LiveLikeContentSession) -> Unit
-) {
-    return this.createContentSession(contentId, {
+    contentId: String
+): LiveLikeContentSession {
+    return this.createContentSession(contentId) {
         getExoplayerPdtTime(player)
-    }, sessionReady)
+    }
 }
 
 fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): Long {

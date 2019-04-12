@@ -51,11 +51,10 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
             DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
     }
 
-    override fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit) {
+    override fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
         return sdk.createExoplayerSession(
             { getPlayer() },
-            sessionId,
-            sessionReady
+            sessionId
         )
     }
 
@@ -109,6 +108,6 @@ interface VideoPlayer {
     fun seekTo(position: Long)
     fun release()
     fun position() : Long
-    fun createSession(sessionId: String, sdk: LiveLikeSDK, sessionReady: (LiveLikeContentSession) -> Unit)
+    fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession
     fun getPDT(): Long
 }
