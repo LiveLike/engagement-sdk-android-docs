@@ -130,15 +130,6 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                 }, startingState)
         }
         initAdapter(voteOptions, correctOption, userSelectedOption)
-        lottieAnimationPath = findResultAnimationPath(correctOption, userSelectedOption)
-        transitionAnimation()
-    }
-
-    private fun findResultAnimationPath(correctOption: String?, userSelectedOption: String?): String {
-        return if (hasUserSelectedCorrectOption(correctOption, userSelectedOption))
-            correctAnswerLottieFilePath
-        else wrongAnswerLottieFilePath
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     private fun initAdapter(voteOptions: List<VoteOption>, correctOption: String?, userSelectedOption: String?) {

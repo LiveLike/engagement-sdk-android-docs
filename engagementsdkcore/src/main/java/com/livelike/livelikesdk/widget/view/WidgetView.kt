@@ -246,17 +246,18 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             }
 
             WidgetType.TEXT_POLL -> {
-                val pollTextWidget = PollTextWidget(context,
-                    null,
-                    0)
-                    .apply {
-                        initialize(
-                            { dismissCurrentWidget() },
-                            widget.timeout,
-                            { optionSelectionEvents() },
-                            parentWidth
-                        )
-                    }
+                val pollTextWidget = PollTextWidget(context, null, 0)
+
+                startingState.timeout = widget.timeout
+
+                pollTextWidget.initialize(
+                    { dismissCurrentWidget() },
+                    startingState,
+                    progressedState,
+                    { optionSelectionEvents() },
+                    parentWidth,
+                    ViewAnimationManager(pollTextWidget),
+                    { saveState(widget.id.toString(), payload, widgetType, it) })
 
                 parser.parsePoll(widget, widgetResource)
 

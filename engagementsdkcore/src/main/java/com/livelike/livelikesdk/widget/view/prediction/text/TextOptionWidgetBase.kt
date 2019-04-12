@@ -41,6 +41,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected var optionSelectedId = ""
     protected var prevOptionSelectedId = ""
     protected var layout = ConstraintLayout(context, null, 0)
+    protected var lottieAnimationPath = ""
     protected var dismissWidget :  (() -> Unit)? = null
     protected var showResults = false
     protected var buttonClickEnabled = true
@@ -108,15 +109,22 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         }
     }
 
+    protected fun dismissWidget() {
+        dismissWidget?.invoke()
+    }
+
     protected fun showResultsAnimation(correctOptionWithUserSelection: Pair<String?, String?>) {
         lottieAnimationPath = if (correctOptionWithUserSelection.first == correctOptionWithUserSelection.second)
             correctAnswerLottieFilePath
         else wrongAnswerLottieFilePath
-        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
-    }
-
-    protected fun dismissWidget() {
-        dismissWidget?.invoke()
+        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
+            progressedState.resultAnimatorStartPhase = it
+            progressedStateCallback.invoke(progressedState)
+        },
+            {
+                progressedState.resultAnimationPath = it
+                progressedStateCallback.invoke(progressedState)
+            }, startingState)
     }
 
     inner class TextOptionAdapter(
@@ -128,21 +136,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
             this.correctOptionWithUserSelection = correctOptionWithUserSelection
             optionList = data
 
-            notifyDataSetChanged()
-            if (showResults) {
-                resultDisplayUtil.startResultAnimation(
-                    correctOptionWithUserSelection.first == correctOptionWithUserSelection.second,
-                    prediction_result,
-                    {
-                        progressedState.resultAnimatorStartPhase = it
-                        progressedStateCallback.invoke(progressedState)
-                    },
-                    {
-                        progressedState.resultAnimationPath = it
-                        progressedStateCallback.invoke(progressedState)
-                    }, startingState
-                )
-            }
             notifyDataSetChanged()
         }
 
