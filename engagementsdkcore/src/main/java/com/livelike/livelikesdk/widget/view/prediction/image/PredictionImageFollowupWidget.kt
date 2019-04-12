@@ -40,14 +40,14 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private var dismissWidget: (() -> Unit)? = null
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimationManager
-    lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
+    private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
+    private lateinit var progressedState: WidgetTransientState
+    private lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
+    private lateinit var startingState: WidgetTransientState
     private var layout = ConstraintLayout(context, null, 0)
     private var timeout = 0L
     private var initialTimeout = 0L
     private var parentWidth = 0
-    private lateinit var state: (WidgetTransientState) -> Unit
-    private lateinit var animationProperties: WidgetTransientState
-    private var transientState = WidgetTransientState()
     // TODO: Duplicate of text follow up. Move out.
     private var executor = ScheduledThreadPoolExecutor(15)
     lateinit var future: ScheduledFuture<*>
@@ -55,13 +55,19 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, properties: WidgetTransientState, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
+    fun initialize(dismiss: () -> Unit,
+                   startingState: WidgetTransientState,
+                   progressedState: WidgetTransientState,
+                   parentWidth: Int,
+                   viewAnimation: ViewAnimationManager,
+                   state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
-        this.timeout = properties.timeout
+        this.timeout = startingState.timeout
         this.parentWidth = parentWidth
         this.viewAnimation = viewAnimation
-        this.state = state
-        this.animationProperties = properties
+        this.progressedStateCallback = state
+        this.startingState = startingState
+        this.progressedState = progressedState
         future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
         inflate(context)
     }
@@ -90,8 +96,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
     inner class Updater: Runnable {
         override fun run() {
-            transientState.timeout = timeout - initialTimeout
-            state.invoke(transientState)
+            progressedState.timeout = timeout - initialTimeout
+            progressedStateCallback.invoke(progressedState)
             val updateRate = 1000
             initialTimeout += updateRate
             if (timeout == initialTimeout) {
@@ -115,13 +121,13 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         viewAnimation.startWidgetTransitionInAnimation {
             widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result,
                 {
-                    transientState.resultAnimatorStartPhase = it
-                    state.invoke(transientState)
+                    progressedState.resultAnimatorStartPhase = it
+                    progressedStateCallback.invoke(progressedState)
                 },
                 {
-                    transientState.resultAnimationPath = it
-                    state.invoke(transientState)
-                }, animationProperties)
+                    progressedState.resultAnimationPath = it
+                    progressedStateCallback.invoke(progressedState)
+                }, startingState)
         }
         initAdapter(voteOptions, correctOption, userSelectedOption)
         lottieAnimationPath = findResultAnimationPath(correctOption, userSelectedOption)

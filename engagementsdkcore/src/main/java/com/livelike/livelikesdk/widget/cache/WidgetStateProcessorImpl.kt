@@ -2,7 +2,6 @@ package com.livelike.livelikesdk.widget.cache
 
 import com.livelike.engagementsdkapi.WidgetStateProcessor
 import com.livelike.engagementsdkapi.WidgetTransientState
-import com.livelike.livelikesdk.util.logInfo
 
 class WidgetStateProcessorImpl(
     private val widgetStateMap: HashMap<String, WidgetTransientState>,

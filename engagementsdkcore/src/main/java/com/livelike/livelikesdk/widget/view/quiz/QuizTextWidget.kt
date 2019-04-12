@@ -18,34 +18,54 @@ internal class QuizTextWidget : TextOptionWidgetBase {
     private var fetchResult: (() -> Unit)? = null
 
     fun initialize(dismiss : ()->Unit,
-                   properties: WidgetTransientState,
+                   startingState: WidgetTransientState,
+                   progressedState: WidgetTransientState,
                    fetch: () -> Unit,
                    parentWidth: Int,
                    viewAnimation: ViewAnimationManager,
                    state: (WidgetTransientState) -> Unit) {
-        super.initialize(dismiss, properties, parentWidth, viewAnimation, state)
+        super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, state)
         fetchResult = fetch
-        pieTimerViewStub.layoutResource = R.layout.pie_timer
         this.viewAnimation = viewAnimation
-        val pieTimer = pieTimerViewStub.inflate()
-        startWidgetAnimation(pieTimer, properties)
+        startWidgetAnimation(startingState)
     }
 
-    private fun startWidgetAnimation(pieTimer: View, properties: WidgetTransientState) {
-        if (properties.timerAnimatorStartPhase != 1f) {
-            viewAnimation.startWidgetTransitionInAnimation {
-                viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
-                    showResults = true
-                    buttonClickEnabled = false
-                    fetchResult?.invoke()
-                }, {
-                    transientState.timerAnimatorStartPhase = it
-                    state.invoke(transientState)
-                })
+    private fun startWidgetAnimation(properties: WidgetTransientState) {
+        when {
+            isWidgetDisplayedFirstTime(properties) -> viewAnimation.startWidgetTransitionInAnimation {
+                pieTimerViewStub.layoutResource = R.layout.pie_timer
+                val pieTimer = pieTimerViewStub.inflate()
+                startPieTimer(pieTimer, properties)
+            }
+            isWidgetRestoredFromQuestionPhase(properties) -> {
+                pieTimerViewStub.layoutResource = R.layout.pie_timer
+                val pieTimer = pieTimerViewStub.inflate()
+                startPieTimer(pieTimer, properties)
+            }
+            else -> {
+                pieTimerViewStub.layoutResource = R.layout.cross_image
+                pieTimerViewStub.inflate()
+                showResults = true
             }
         }
-        Handler().postDelayed(
-            { dismissWidget?.invoke() }, properties.timeout * 2)
+
+        Handler().postDelayed({ dismissWidget?.invoke() }, properties.timeout * 2)
+    }
+
+    private fun isWidgetRestoredFromQuestionPhase(properties: WidgetTransientState) =
+        properties.timerAnimatorStartPhase > 0f && properties.resultAnimatorStartPhase == 0f
+
+    private fun isWidgetDisplayedFirstTime(properties: WidgetTransientState) =
+        properties.timerAnimatorStartPhase == 0f
+
+    private fun startPieTimer(pieTimer: View, properties: WidgetTransientState) {
+        viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
+            showResults = true
+            fetchResult?.invoke()
+        }, {
+            progressedState.timerAnimatorStartPhase = it
+            progressedStateCallback.invoke(progressedState)
+        })
     }
 
     override fun optionListUpdated(

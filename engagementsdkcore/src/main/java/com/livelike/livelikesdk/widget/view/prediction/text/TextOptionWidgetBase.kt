@@ -27,33 +27,39 @@ import kotlinx.android.synthetic.main.text_option_row_element.view.*
 
 
 open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
+    private lateinit var userTapped : () -> Unit
+    private lateinit var viewAnimation: ViewAnimationManager
+    private lateinit var  resultDisplayUtil : WidgetResultDisplayUtil
+    private var optionAdapter : TextOptionAdapter? = null
+    protected lateinit var pieTimerViewStub: ViewStub
+    protected lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
+    protected lateinit var startingState: WidgetTransientState
+    protected lateinit var progressedState: WidgetTransientState
     protected val widgetOpacityFactor: Float = 0.2f
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val buttonMap = mutableMapOf<Button, String?>()
     protected var optionSelectedId = ""
     protected var prevOptionSelectedId = ""
     protected var layout = ConstraintLayout(context, null, 0)
-    protected lateinit var pieTimerViewStub: ViewStub
     protected var dismissWidget :  (() -> Unit)? = null
     protected var showResults = false
     protected var buttonClickEnabled = true
-    private lateinit var userTapped : () -> Unit
-    private lateinit var viewAnimation: ViewAnimationManager
-    private lateinit var  resultDisplayUtil : WidgetResultDisplayUtil
-    private var optionAdapter : TextOptionAdapter? = null
-    protected lateinit var state: (WidgetTransientState) -> Unit
-    protected var transientState = WidgetTransientState()
-    protected lateinit var properties: WidgetTransientState
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    internal open fun initialize(dismiss: () -> Unit, properties: WidgetTransientState, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
+    internal open fun initialize(dismiss: () -> Unit,
+                                 startingState: WidgetTransientState,
+                                 progressedState: WidgetTransientState,
+                                 parentWidth: Int,
+                                 viewAnimation: ViewAnimationManager,
+                                 progressedStateCallback: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
-        this.properties = properties
-        this.state = state
+        this.startingState = startingState
+        this.progressedState = progressedState
+        this.progressedStateCallback = progressedStateCallback
         inflate(context)
         prediction_question_textView.layoutParams.width = parentWidth
     }
@@ -94,7 +100,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
-        transientState.userSelection = selectedOptionId
+        progressedState.userSelection = selectedOptionId
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
@@ -128,13 +134,13 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                     correctOptionWithUserSelection.first == correctOptionWithUserSelection.second,
                     prediction_result,
                     {
-                        transientState.resultAnimatorStartPhase = it
-                        state.invoke(transientState)
+                        progressedState.resultAnimatorStartPhase = it
+                        progressedStateCallback.invoke(progressedState)
                     },
                     {
-                        transientState.resultAnimationPath = it
-                        state.invoke(transientState)
-                    }, properties
+                        progressedState.resultAnimationPath = it
+                        progressedStateCallback.invoke(progressedState)
+                    }, startingState
                 )
             }
             notifyDataSetChanged()
@@ -148,8 +154,8 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
             buttonMap[button] = option.id
             // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
             // a way to update user selection.
-            if (option == optionList[optionList.size -1]  && transientState.userSelection != null)
-                optionSelectedUpdated(transientState.userSelection)
+            if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
+                optionSelectedUpdated(progressedState.userSelection)
 
 
             if (showResults) {

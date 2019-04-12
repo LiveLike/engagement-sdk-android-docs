@@ -10,7 +10,7 @@ interface WidgetRenderer {
     fun displayWidget(
         type: String,
         payload: JsonObject,
-        previousState: WidgetTransientState
+        startingState: WidgetTransientState
     )
 }
 
@@ -42,7 +42,7 @@ class WidgetTransientState {
     var timerAnimatorStartPhase = 0f
     var type: String? = null
     var payload: JsonObject? = null
-    // Maybe a map for below
     var resultAnimationPath: String? = null
     var resultAnimatorStartPhase = 0f
+    var timeStamp = 0L
 }

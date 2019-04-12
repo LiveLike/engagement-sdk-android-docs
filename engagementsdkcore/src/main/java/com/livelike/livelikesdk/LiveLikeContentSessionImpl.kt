@@ -39,6 +39,8 @@ internal class LiveLikeContentSessionImpl(
     private var chatQueue: ChatQueue? = null
     private val widgetStateMap = HashMap<String, WidgetTransientState>()
     private val currentWidgetMap = HashMap<String, String>()
+    private val stateStorage: WidgetStateProcessor by lazy { WidgetStateProcessorImpl(widgetStateMap, currentWidgetMap) }
+
     init {
         getUser()
     }
@@ -89,18 +91,15 @@ internal class LiveLikeContentSessionImpl(
         return currentPlayheadTime()
     }
 
-    private fun getStateStorage(): WidgetStateProcessor {
-        return WidgetStateProcessorImpl(widgetStateMap, currentWidgetMap)
-    }
 
     override fun contentSessionId() = program?.clientId ?: ""
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
-                    .syncTo(currentPlayheadTime)
+                  //  .syncTo(currentPlayheadTime)
                     .withPreloader(applicationContext)
-                    .asWidgetManager(llDataClient, getStateStorage())
+                    .asWidgetManager(llDataClient, stateStorage)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer

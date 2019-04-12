@@ -33,7 +33,9 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimationManager
-    private lateinit var properties: WidgetTransientState
+    private lateinit var startingState: WidgetTransientState
+    private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
+    private lateinit var progressedState: WidgetTransientState
     lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private val widgetOpacityFactor: Float = 0.2f
     private var optionSelected = false
@@ -42,8 +44,6 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private var parentWidth = 0
     val imageButtonMap = HashMap<View, String?>()
     lateinit var userTapped: () -> Unit
-    private lateinit var state: (WidgetTransientState) -> Unit
-    private var transientState = WidgetTransientState()
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -51,15 +51,17 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
 
     fun initialize(dismiss: () -> Unit,
                    timeout: Long,
-                   animationProperties: WidgetTransientState,
+                   startingState: WidgetTransientState,
+                   progressedState: WidgetTransientState,
                    parentWidth: Int,
                    viewAnimation: ViewAnimationManager,
                    state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
-        this.properties = animationProperties
+        this.startingState = startingState
         this.parentWidth = parentWidth
-        this.state = state
+        this.progressedState = progressedState
+        this.progressedStateCallback = state
         inflate(context, timeout)
     }
 
@@ -71,23 +73,30 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout, properties, {
-                if (optionSelected) {
-                    viewAnimation.showConfirmMessage(
-                        prediction_confirm_message_textView,
-                        prediction_confirm_message_animation
-                    ) {}
-                    performPredictionWidgetFadeOutOperations()
-                }
-            }, {
-                transientState.timerAnimatorStartPhase = it
-                state.invoke(transientState)
-            })
+        if (startingState.timerAnimatorStartPhase != 0f) {
+            startPieTimer(pieTimer, timeout)
+        }
+        else viewAnimation.startWidgetTransitionInAnimation {
+            startPieTimer(pieTimer, timeout)
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
         prediction_question_textView.layoutParams.width = parentWidth
+    }
+
+    private fun startPieTimer(pieTimer: View, timeout: Long) {
+        viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
+            if (optionSelected) {
+                viewAnimation.showConfirmMessage(
+                    prediction_confirm_message_textView,
+                    prediction_confirm_message_animation
+                ) {}
+                performPredictionWidgetFadeOutOperations()
+            }
+        }, {
+            progressedState.timerAnimatorStartPhase = it
+            progressedStateCallback.invoke(progressedState)
+        })
     }
 
     private fun performPredictionWidgetFadeOutOperations() {
@@ -127,7 +136,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         optionSelected = true
-        transientState.userSelection = selectedOptionId
+        progressedState.userSelection = selectedOptionId
         imageButtonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, R.drawable.prediction_button_pressed)
@@ -161,8 +170,8 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             imageButtonMap[holder.button] = option.id
             // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
             // a way to update user selection.
-            if (option == optionList[optionList.size -1]  && transientState.userSelection != null)
-                optionSelectedUpdated(transientState.userSelection)
+            if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
+                optionSelectedUpdated(progressedState.userSelection)
 
             holder.button.setOnClickListener {
                 val selectedOption = imageButtonMap[holder.button]

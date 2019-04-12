@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.widget.ImageView
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationProperties
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.VoteOption
 import java.util.concurrent.ScheduledFuture
@@ -31,8 +30,8 @@ internal class PredictionTextFollowUpWidgetView :
     private var executor = ScheduledThreadPoolExecutor(15)
     lateinit var future: ScheduledFuture<*>
 
-    override fun initialize(dismiss: ()->Unit, properties: WidgetTransientState, parentWidth: Int, viewAnimation: ViewAnimationManager, state: (WidgetTransientState) -> Unit) {
-        super.initialize(dismiss, properties, parentWidth, viewAnimation, state)
+    override fun initialize(dismiss: ()->Unit, startingState: WidgetTransientState, progressedState: WidgetTransientState, parentWidth: Int, viewAnimation: ViewAnimationManager, progressedStateCallback: (WidgetTransientState) -> Unit) {
+        super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, progressedStateCallback)
         showResults = true
         buttonClickEnabled = false
         this.viewAnimation = viewAnimation
@@ -41,7 +40,7 @@ internal class PredictionTextFollowUpWidgetView :
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
         imageView.setOnClickListener { dismissWidget() }
-        this.timeout = properties.timeout
+        this.timeout = startingState.timeout
         future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
     }
 
@@ -69,8 +68,8 @@ internal class PredictionTextFollowUpWidgetView :
 
     inner class Updater: Runnable {
         override fun run() {
-            transientState.timeout = timeout - initialTimeout
-            state.invoke(transientState)
+            progressedState.timeout = timeout - initialTimeout
+            progressedStateCallback.invoke(progressedState)
             val updateRate = 1000
             initialTimeout += updateRate
             if (timeout == initialTimeout) {

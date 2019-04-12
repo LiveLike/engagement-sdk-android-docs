@@ -10,7 +10,6 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.animation.AnimationProperties
 import com.livelike.livelikesdk.animation.ViewAnimationManager
-import com.livelike.livelikesdk.util.logInfo
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
@@ -23,34 +22,41 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     private lateinit var viewAnimation: ViewAnimationManager
 
     override fun initialize(dismiss: ()->Unit,
-                            properties: WidgetTransientState,
+                            startingState: WidgetTransientState,
+                            progressedState: WidgetTransientState,
                             parentWidth: Int,
                             viewAnimation: ViewAnimationManager,
-                            state: (WidgetTransientState) -> Unit) {
-        super.initialize(dismiss, properties, parentWidth, viewAnimation, state)
+                            progressedStateCallback: (WidgetTransientState) -> Unit) {
+        super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, progressedStateCallback)
         this.viewAnimation = viewAnimation
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        startWidgetAnimation(pieTimer, properties.timeout)
+        startWidgetAnimation(pieTimer, startingState.timeout)
     }
 
     private fun startWidgetAnimation(pieTimer: View, timeout : Long) {
-        logInfo { "Abhishek prediction $timeout" }
-        viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout, properties, {
-                if (optionSelectedId.isNotEmpty()) {
-                    viewAnimation.showConfirmMessage(
-                        prediction_confirm_message_textView,
-                        prediction_confirm_message_animation
-                    ) {}
-                    performPredictionWidgetFadeOutOperations()
-                }
-            }, {
-                transientState.timerAnimatorStartPhase = it
-                state.invoke(transientState)
-            })
+        if (startingState.timerAnimatorStartPhase != 0f) {
+            startPieTimer(pieTimer, timeout)
+        }
+        else viewAnimation.startWidgetTransitionInAnimation {
+            startPieTimer(pieTimer, timeout)
         }
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
+    }
+
+    private fun startPieTimer(pieTimer: View, timeout: Long) {
+        viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
+            if (optionSelectedId.isNotEmpty()) {
+                viewAnimation.showConfirmMessage(
+                    prediction_confirm_message_textView,
+                    prediction_confirm_message_animation
+                ) {}
+                performPredictionWidgetFadeOutOperations()
+            }
+        }, {
+            progressedState.timerAnimatorStartPhase = it
+            progressedStateCallback.invoke(progressedState)
+        })
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

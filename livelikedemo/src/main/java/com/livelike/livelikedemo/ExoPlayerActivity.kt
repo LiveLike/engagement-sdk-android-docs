@@ -87,6 +87,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         channelManager?.addChannelSelectListener {
             channelManager?.hide()
+            (application as LiveLikeApplication).session = null
             selectChannel(it)
         }
 
