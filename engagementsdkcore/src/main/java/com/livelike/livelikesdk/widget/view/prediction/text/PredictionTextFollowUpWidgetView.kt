@@ -15,16 +15,14 @@ internal class PredictionTextFollowUpWidgetView :
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    companion object {
-        const val correctAnswerLottieFilePath = "correctAnswer"
-        const val wrongAnswerLottieFilePath = "wrongAnswer"
-    }
+
     private lateinit var viewAnimation: ViewAnimation
     private var timeout: Long = 7000
 
     override fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
         super.initialize(dismiss, timeout, parentWidth)
         showResults = true
+        buttonClickEnabled = false
         pieTimerViewStub.layoutResource = R.layout.cross_image
         pieTimerViewStub.inflate()
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
@@ -38,18 +36,8 @@ internal class PredictionTextFollowUpWidgetView :
         voteOptions: List<VoteOption>,
         optionSelectedCallback: (String?) -> Unit,
         correctOptionWithUserSelection: Pair<String?, String?>) {
-
         super.optionListUpdated(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
-        lottieAnimationPath = if (correctOptionWithUserSelection.first == correctOptionWithUserSelection.second)
-            correctAnswerLottieFilePath
-        else wrongAnswerLottieFilePath
-        transitionAnimation()
-    }
-
-    private fun transitionAnimation() {
-        viewAnimation.startWidgetTransitionInAnimation{
-            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
-        }
+        super.showResultsAnimation(correctOptionWithUserSelection)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 }

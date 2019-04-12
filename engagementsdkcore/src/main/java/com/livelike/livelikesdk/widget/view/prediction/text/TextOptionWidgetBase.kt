@@ -17,8 +17,11 @@ import android.widget.TextView
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.wrongAnswerLottieFilePath
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
 import kotlinx.android.synthetic.main.text_option_row_element.view.*
@@ -28,13 +31,14 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected val widgetOpacityFactor: Float = 0.2f
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val buttonMap = mutableMapOf<Button, String?>()
-    protected val viewMap = mutableMapOf<ViewHolder, String?>()
-    protected var optionSelected = false
+    protected var optionSelectedId = ""
+    protected var prevOptionSelectedId = ""
     protected var layout = ConstraintLayout(context, null, 0)
     protected var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub: ViewStub
     protected var dismissWidget :  (() -> Unit)? = null
     protected var showResults = false
+    protected var buttonClickEnabled = true
     private lateinit var userTapped : () -> Unit
     private lateinit var viewAnimation: ViewAnimation
     private lateinit var  resultDisplayUtil : WidgetResultDisplayUtil
@@ -79,6 +83,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
             adapter = TextOptionAdapter(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
             option_list.adapter = adapter
         }
+
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
@@ -87,6 +92,13 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
             else button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
         }
+    }
+
+    protected fun showResultsAnimation(correctOptionWithUserSelection: Pair<String?, String?>) {
+        lottieAnimationPath = if (correctOptionWithUserSelection.first == correctOptionWithUserSelection.second)
+            correctAnswerLottieFilePath
+        else wrongAnswerLottieFilePath
+        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
     }
 
     protected fun dismissWidget() {
@@ -101,8 +113,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         fun updateOptionList(data: List<VoteOption>, correctOptionWithUserSelection: Pair<String?, String?>) {
             this.correctOptionWithUserSelection = correctOptionWithUserSelection
             optionList = data
-            if(showResults)
-                resultDisplayUtil.startResultAnimation(correctOptionWithUserSelection.first == correctOptionWithUserSelection.second, prediction_result)
             notifyDataSetChanged()
         }
 
@@ -110,20 +120,24 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
             val option = optionList[position]
             val button = holder.optionButton
 
-            button.text = option.description
+            holder.option = option
             buttonMap[button] = option.id
-            viewMap[holder] = option.id
 
             if (showResults) {
                 setResultsBackground(holder, option.id, option.votePercentage.toInt())
-            } else {
+            }
+
+            if (buttonClickEnabled) {
                 button.setOnClickListener {
-                    optionSelected = true
-                    val selectedButton = buttonMap[button]
-                    optionSelectedCallback(selectedButton)
+                    prevOptionSelectedId = optionSelectedId
+                    optionSelectedId = option.id
+                    optionSelectedCallback(option.id)
                     userTapped.invoke()
                 }
+            } else {
+                button.setOnClickListener(null)
             }
+
             viewAnimation.addHorizontalSwipeListener(button, layout, dismissWidget)
         }
 
@@ -135,7 +149,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         }
 
         private fun setResultsBackground(viewHolder: ViewHolder, optionId: String, votePercentage: Int) {
-            viewHolder.optionButton.setOnClickListener(null)
             viewHolder.percentText.text = votePercentage.toString().plus("%")
             viewHolder.progressBar.apply {
                 visibility = View.VISIBLE
@@ -158,5 +171,11 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         val optionButton: Button = view.text_button
         val percentText: TextView = view.result_percentage_text
         val progressBar: ProgressBar = view.determinateBar
+
+        var option: VoteOption? = null
+        set(voteOption)  {
+            field = voteOption
+            optionButton.text = voteOption?.description
+        }
     }
 }

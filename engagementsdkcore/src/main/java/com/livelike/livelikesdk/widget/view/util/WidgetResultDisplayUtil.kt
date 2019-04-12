@@ -4,7 +4,6 @@ import android.content.Context
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.airbnb.lottie.LottieAnimationView
@@ -12,12 +11,13 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
-import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 
 internal class WidgetResultDisplayUtil(val context: Context, private val viewAnimation: ViewAnimation) {
     private var lottieAnimationPath = ""
-
+    companion object {
+        const val correctAnswerLottieFilePath = "correctAnswer"
+        const val wrongAnswerLottieFilePath = "wrongAnswer"
+    }
     fun updateViewDrawable(optionId: String,
                            progressBar: ProgressBar,
                            optionButton: View,
@@ -52,8 +52,8 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
 
     private fun findResultAnimationPath(isCorrect: Boolean): String {
         return if (isCorrect)
-            PredictionTextFollowUpWidgetView.correctAnswerLottieFilePath
-        else PredictionTextFollowUpWidgetView.wrongAnswerLottieFilePath
+            correctAnswerLottieFilePath
+        else wrongAnswerLottieFilePath
     }
 
     private fun updateProgressBar(progressBar: ProgressBar, drawable: Int, percentage: Int) {

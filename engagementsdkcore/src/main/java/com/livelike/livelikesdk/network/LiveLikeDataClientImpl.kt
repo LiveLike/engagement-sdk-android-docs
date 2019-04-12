@@ -27,6 +27,7 @@ import okio.ByteString
 import java.io.IOException
 
 internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
+
     override fun registerImpression(impressionUrl: String) {
         if (impressionUrl.isNullOrEmpty()) {
             return
@@ -160,13 +161,28 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         })
     }
 
-    override fun vote(voteUrl: String) {
+    override fun vote(voteUrl: String, voteUpdateCallback: ((String) -> Unit)?) {
         if (voteUrl == "null" || voteUrl.isEmpty()) {
             logError { "Voting failed as voteUrl is empty" }
             return
         }
         logVerbose { "Voting for $voteUrl" }
-        post(voteUrl)
+        post(voteUrl) { responseJson ->
+            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
+        }
+    }
+
+    override fun changeVote(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?) {
+        if (voteUrl == "null" || voteUrl.isEmpty()) {
+            logError { "Vote Change failed as voteUrl is empty" }
+            return
+        }
+        put(voteUrl, FormBody.Builder()
+            .add("option_id", newVoteId)
+            .build()) {
+                responseJson ->
+            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
+        }
     }
 
     override fun fetchQuizResult(answerUrl: String) {
@@ -178,14 +194,34 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         post(answerUrl)
     }
 
-    private fun post(url: String) {
+    private fun post(url: String, responseCallback: ((JsonObject) -> Unit)? = null) {
         val request = Request.Builder()
             .url(url)
             .post(RequestBody.create(null, ByteString.EMPTY))
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {}
+            override fun onResponse(call: Call?, response: Response) {
+                mainHandler.post {
+                    responseCallback?.invoke(JsonParser().parse(response.body()?.string()).asJsonObject)
+                }
+            }
+            override fun onFailure(call: Call?, e: IOException?) { logError { e } }
+        })
+    }
+
+    private fun put(url: String, body: FormBody, responseCallback: ((JsonObject) -> Unit)? = null) {
+        val request = Request.Builder()
+            .url(url)
+            .put(body)
+            .build()
+        val call = client.newCall(request)
+        call.enqueue(object : Callback {
+            override fun onResponse(call: Call?, response: Response) {
+                mainHandler.post {
+                    responseCallback?.invoke(JsonParser().parse(response.body()?.string()).asJsonObject)
+                }
+            }
             override fun onFailure(call: Call?, e: IOException?) { logError { e } }
         })
     }

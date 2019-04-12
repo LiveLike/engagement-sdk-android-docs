@@ -26,6 +26,8 @@ import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
+import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.wrongAnswerLottieFilePath
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.cross_image.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
@@ -102,8 +104,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
     private fun findResultAnimationPath(correctOption: String?, userSelectedOption: String?): String {
         return if (hasUserSelectedCorrectOption(correctOption, userSelectedOption))
-            PredictionTextFollowUpWidgetView.correctAnswerLottieFilePath
-        else PredictionTextFollowUpWidgetView.wrongAnswerLottieFilePath
+            correctAnswerLottieFilePath
+        else wrongAnswerLottieFilePath
     }
 
     private fun initAdapter(voteOptions: List<VoteOption>, correctOption: String?, userSelectedOption: String?) {

@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Button
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.widget.model.VoteOption
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.pie_timer.view.*
 import kotlinx.android.synthetic.main.prediction_text_widget.view.*
@@ -29,7 +30,7 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     private fun startWidgetAnimation(pieTimer: View, timeout : Long) {
         viewAnimation.startWidgetTransitionInAnimation {
             viewAnimation.startTimerAnimation(pieTimer, timeout) {
-                if (optionSelected) {
+                if (optionSelectedId.isNotEmpty()) {
                     viewAnimation.showConfirmMessage(
                         prediction_confirm_message_textView,
                         prediction_confirm_message_animation

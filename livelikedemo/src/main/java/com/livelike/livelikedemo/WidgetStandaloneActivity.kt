@@ -227,11 +227,14 @@ class WidgetStandaloneActivity : AppCompatActivity() {
             }, 7500L)
             widget_view.widgetListener = null
             widget_view.widgetListener = object : WidgetEventListener {
+                override fun onOptionVoteUpdate(
+                    oldVoteUrl: String, newVoteId: String, channel: String, voteUpdateCallback: ((String) -> Unit)?) {}
+
                 override fun onAnalyticsEvent(data: Any) {}
 
                 override fun onWidgetDisplayed(impressionUrl: String) {}
 
-                override fun onOptionVote(voteUrl: String, channel: String) {}
+                override fun onOptionVote(voteUrl: String, channel: String, voteUpdateCallback:((String) -> Unit)?) {}
 
                 override fun onFetchingQuizResult(answerUrl: String) {}
 
