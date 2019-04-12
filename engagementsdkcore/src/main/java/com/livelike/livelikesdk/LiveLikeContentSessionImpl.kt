@@ -6,6 +6,8 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.WidgetRenderer
+import com.livelike.engagementsdkapi.WidgetStateProcessor
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
@@ -21,6 +23,7 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setUserId
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
+import com.livelike.livelikesdk.widget.cache.WidgetStateProcessorImpl
 
 
 internal class LiveLikeContentSessionImpl(
@@ -32,9 +35,12 @@ internal class LiveLikeContentSessionImpl(
 
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
-
     private var widgetQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
+    private val widgetStateMap = HashMap<String, WidgetTransientState>()
+    private val currentWidgetMap = HashMap<String, String>()
+    private val stateStorage: WidgetStateProcessor by lazy { WidgetStateProcessorImpl(widgetStateMap, currentWidgetMap) }
+
     init {
         getUser()
     }
@@ -85,14 +91,15 @@ internal class LiveLikeContentSessionImpl(
         return currentPlayheadTime()
     }
 
+
     override fun contentSessionId() = program?.clientId ?: ""
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
-                    .syncTo(currentPlayheadTime)
+                  //  .syncTo(currentPlayheadTime)
                     .withPreloader(applicationContext)
-                    .asWidgetManager(llDataClient)
+                    .asWidgetManager(llDataClient, stateStorage)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer

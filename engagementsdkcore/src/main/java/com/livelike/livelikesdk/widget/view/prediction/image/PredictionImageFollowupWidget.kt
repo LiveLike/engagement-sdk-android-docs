@@ -19,12 +19,12 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollowUpWidgetView
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.wrongAnswerLottieFilePath
@@ -32,25 +32,43 @@ import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.cross_image.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver {
     private var dismissWidget: (() -> Unit)? = null
     private lateinit var pieTimerViewStub: ViewStub
-    private lateinit var viewAnimation: ViewAnimation
-    lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
+    private lateinit var viewAnimation: ViewAnimationManager
+    private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
+    private lateinit var progressedState: WidgetTransientState
+    private lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
+    private lateinit var startingState: WidgetTransientState
     private var layout = ConstraintLayout(context, null, 0)
-    private var lottieAnimationPath = ""
     private var timeout = 0L
+    private var initialTimeout = 0L
     private var parentWidth = 0
-
+    // TODO: Duplicate of text follow up. Move out.
+    private var executor = ScheduledThreadPoolExecutor(15)
+    lateinit var future: ScheduledFuture<*>
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
+    fun initialize(dismiss: () -> Unit,
+                   startingState: WidgetTransientState,
+                   progressedState: WidgetTransientState,
+                   parentWidth: Int,
+                   viewAnimation: ViewAnimationManager,
+                   state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
-        this.timeout = timeout
+        this.timeout = startingState.timeout
         this.parentWidth = parentWidth
+        this.viewAnimation = viewAnimation
+        this.progressedStateCallback = state
+        this.startingState = startingState
+        this.progressedState = progressedState
+        future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
         inflate(context)
     }
 
@@ -65,7 +83,6 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub.inflate()
 
         updateCrossImage()
-        viewAnimation = ViewAnimation(this)
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         prediction_question_textView.layoutParams.width = parentWidth
     }
@@ -77,11 +94,16 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         }
     }
 
-    private fun transitionAnimation() {
-        viewAnimation.startWidgetTransitionInAnimation{
-            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result)
+    inner class Updater: Runnable {
+        override fun run() {
+            progressedState.timeout = timeout - initialTimeout
+            progressedStateCallback.invoke(progressedState)
+            val updateRate = 1000
+            initialTimeout += updateRate
+            if (timeout == initialTimeout) {
+                future.cancel(false)
+            }
         }
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
     override fun questionUpdated(questionText: String) {
@@ -96,16 +118,18 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                                    correctOptionWithUserSelection: Pair<String?, String?>) {
         val correctOption = correctOptionWithUserSelection.first
         val userSelectedOption = correctOptionWithUserSelection.second
-        widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result)
+        viewAnimation.startWidgetTransitionInAnimation {
+            widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result,
+                {
+                    progressedState.resultAnimatorStartPhase = it
+                    progressedStateCallback.invoke(progressedState)
+                },
+                {
+                    progressedState.resultAnimationPath = it
+                    progressedStateCallback.invoke(progressedState)
+                }, startingState)
+        }
         initAdapter(voteOptions, correctOption, userSelectedOption)
-        lottieAnimationPath = findResultAnimationPath(correctOption, userSelectedOption)
-        transitionAnimation()
-    }
-
-    private fun findResultAnimationPath(correctOption: String?, userSelectedOption: String?): String {
-        return if (hasUserSelectedCorrectOption(correctOption, userSelectedOption))
-            correctAnswerLottieFilePath
-        else wrongAnswerLottieFilePath
     }
 
     private fun initAdapter(voteOptions: List<VoteOption>, correctOption: String?, userSelectedOption: String?) {
@@ -117,9 +141,6 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {}
     override fun confirmMessageUpdated(confirmMessage: String) {}
-
-    fun hasUserSelectedCorrectOption(userSelectedOption: String?, correctOption: String?) =
-        userSelectedOption == correctOption
 
     inner class ImageAdapter(
         private val optionList: List<VoteOption>,

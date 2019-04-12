@@ -9,6 +9,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import com.airbnb.lottie.LottieAnimationView
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
@@ -17,10 +18,10 @@ import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
-internal class ViewAnimation(val view: View) {
-    private val widgetShowingDurationAfterConfirmMessage: Long = 3000
-    private val animator = ValueAnimator.ofFloat(0f, 1f)
+internal class ViewAnimationManager(val view: View) {
+
     private val animationHandler = AnimationHandler()
+    private val widgetShowingDurationAfterConfirmMessage: Long = 3000
 
     fun startWidgetTransitionInAnimation(onAnimationCompletedCallback: () -> Unit) {
         val heightToReach = view.measuredHeight.toFloat()
@@ -72,21 +73,39 @@ internal class ViewAnimation(val view: View) {
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
     }
 
-    fun startTimerAnimation(pieTimer: View, duration: Long, onAnimationCompletedCallback: () -> Unit) {
+    fun startTimerAnimation(pieTimer: View, duration: Long, timerProperties: WidgetTransientState, onAnimationCompletedCallback: () -> Unit, progressUpdater: (Float) -> Unit) {
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
             duration,
-            ValueAnimator.ofFloat(0f, 1f)
+            ValueAnimator.ofFloat(timerProperties.timerAnimatorStartPhase, 1f),
+            progressUpdater
         )
     }
 
-    fun startResultAnimation(lottieAnimationPath: String, context: Context, prediction_result: LottieAnimationView) {
-        val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, context)
-        if (lottieAnimation != null)
-            prediction_result.setAnimation("$lottieAnimationPath/$lottieAnimation")
+    // TODO: Context can be injected at class level
+    fun startResultAnimation(lottieAnimationPath: String,
+                             context: Context,
+                             prediction_result: LottieAnimationView,
+                             progressUpdater: (Float) -> Unit,
+                             animationPath: (String) -> Unit,
+                             resultProperties: WidgetTransientState) {
+        var resultAnimationPath = resultProperties.resultAnimationPath
+        val resultAnimator = ValueAnimator.ofFloat(resultProperties.resultAnimatorStartPhase, 1f)
+
+        if (resultAnimationPath == null) {
+            val relativePath = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, context)
+            if (relativePath != null) {
+                resultAnimationPath = "$lottieAnimationPath/$relativePath"
+                prediction_result.setAnimation(resultAnimationPath)
+            }
+        } else prediction_result.setAnimation(resultAnimationPath)
+
+        resultAnimationPath?.let { animationPath.invoke(it) }
         prediction_result.visibility = View.VISIBLE
-        prediction_result.playAnimation()
+        animationHandler.startAnimation(prediction_result, {}, widgetShowingDurationAfterConfirmMessage, resultAnimator, {
+            progressUpdater.invoke(it)
+        })
     }
 
     fun showConfirmMessage(
@@ -94,6 +113,7 @@ internal class ViewAnimation(val view: View) {
         confirmMessageLottieAnimationView: LottieAnimationView,
         onCompleteCallback: (() -> Unit)?
     ) {
+        // TODO: apply callback
         confirmMessageTextView.visibility = View.VISIBLE
         val lottieAnimationPath = "confirmMessage"
         val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, view.context)
@@ -104,12 +124,10 @@ internal class ViewAnimation(val view: View) {
                 confirmMessageLottieAnimationView,
                 { triggerTransitionOutAnimation(onCompleteCallback) },
                 widgetShowingDurationAfterConfirmMessage,
-                animator
-            )
+                ValueAnimator.ofFloat(0f, 1f),
+                {})
         }
     }
-
-    fun hideWidget() { view.visibility = View.INVISIBLE }
 
     @SuppressLint("ClickableViewAccessibility")
     fun addHorizontalSwipeListener(
@@ -121,7 +139,9 @@ internal class ViewAnimation(val view: View) {
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    animationHandler.cancelAnimation(animator)
+                    //animationHandler.cancelAnimation(timerAnimator)
+                    // TODO: remove this and add as param
+                    //animationHandler.cancelAnimation(resultAnimator)
                     layout.removeAllViewsInLayout()
                     onSwipeCallback?.invoke()
                 }
@@ -134,20 +154,23 @@ private class AnimationHandler {
     fun startAnimation(lottieAnimationView: LottieAnimationView,
                        onAnimationCompletedCallback: () -> Unit,
                        duration: Long,
-                       animator: ValueAnimator
+                       animator: ValueAnimator,
+                       progressUpdater: (Float) -> Unit
     ) {
         bindListenerToAnimationView(animator, onAnimationCompletedCallback)
         animator.duration = duration
         animator.addUpdateListener { animation ->
-            lottieAnimationView.progress = animation.animatedValue as Float
+            val progress = animation.animatedValue as Float
+            lottieAnimationView.progress = progress
+            progressUpdater.invoke(progress)
         }
 
         lottieAnimationView.playAnimation()
         animator.start()
     }
 
-    fun cancelAnimation(animator: ValueAnimator) {
-        animator.cancel()
+    fun cancelAnimation(animator: ValueAnimator?) {
+        animator?.cancel()
     }
 
     fun createAnimationEffectWith(ease: AnimationEaseInterpolator.Ease,
@@ -186,3 +209,8 @@ private class AnimationHandler {
         })
     }
 }
+
+internal class AnimationProperties(val animatorStartValue: Float = 0f,
+                                   val animatorEndValue: Float = 1f,
+                                   val timeout: Long = 0L,
+                                   val resultAnimationPath: String? = null)

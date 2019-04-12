@@ -20,8 +20,9 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
@@ -33,9 +34,12 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
 class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var pieTimerViewStub: ViewStub
-    private lateinit var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimationManager
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private lateinit var userTapped: () -> Unit
+    private lateinit var startingState: WidgetTransientState
+    private lateinit var progressedState: WidgetTransientState
+    private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
     private val imageButtonMap = HashMap<View, String?>()
     private val viewOptions = HashMap<String?, ViewOption>()
     private var layout = ConstraintLayout(context, null, 0)
@@ -44,12 +48,29 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private var selectedOption : String? = null
     private var correctOption: String? = null
     private var timeout = 0L
-    private var showResults = false
     var parentWidth = 0
     
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    internal fun initialize(dismiss : ()->Unit,
+                            startingState: WidgetTransientState,
+                            progressedState: WidgetTransientState,
+                            fetch: () -> Unit,
+                            parentWidth: Int,
+                            viewAnimation: ViewAnimationManager,
+                            progressedStateCallback: (WidgetTransientState) -> Unit) {
+        this.startingState = startingState
+        this.progressedState = progressedState
+        this.timeout = startingState.timeout
+        this.dismissWidget = dismiss
+        this.fetchResult = fetch
+        this.viewAnimation = viewAnimation
+        this.parentWidth = parentWidth
+        this.progressedStateCallback = progressedStateCallback
+        inflate(context)
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun inflate(context: Context) {
@@ -57,16 +78,23 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
             .inflate(R.layout.prediction_image_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_image_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
-        pieTimerViewStub.layoutResource = R.layout.pie_timer
-        val pieTimer = pieTimerViewStub.inflate()
-        // TODO: Maybe inject this object.
-        viewAnimation = ViewAnimation(this)
-        viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout) {
-                fetchResult?.invoke()
-                showResults = true
+        when {
+            isWidgetDisplayedFirstTime(startingState) -> viewAnimation.startWidgetTransitionInAnimation {
+                pieTimerViewStub.layoutResource = R.layout.pie_timer
+                val pieTimer = pieTimerViewStub.inflate()
+                startPieTimer(pieTimer, startingState)
+            }
+            isWidgetRestoredFromQuestionPhase(startingState) -> {
+                pieTimerViewStub.layoutResource = R.layout.pie_timer
+                val pieTimer = pieTimerViewStub.inflate()
+                startPieTimer(pieTimer, startingState)
+            }
+            else -> {
+                pieTimerViewStub.layoutResource = R.layout.cross_image
+                pieTimerViewStub.inflate()
             }
         }
+
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         image_optionList.layoutManager = linearLayoutManager
@@ -75,12 +103,19 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         prediction_question_textView.layoutParams.width = parentWidth
     }
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, fetch: () -> Unit, parentWidth: Int) {
-        this.timeout = timeout
-        dismissWidget = dismiss
-        fetchResult = fetch
-        this.parentWidth = parentWidth
-        inflate(context)
+    private fun isWidgetRestoredFromQuestionPhase(properties: WidgetTransientState) =
+        properties.timerAnimatorStartPhase > 0f && properties.resultAnimatorStartPhase == 0f
+
+    private fun isWidgetDisplayedFirstTime(properties: WidgetTransientState) =
+        properties.timerAnimatorStartPhase == 0f
+
+    private fun startPieTimer(pieTimer: View, properties: WidgetTransientState) {
+        viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
+            fetchResult?.invoke()
+        }, {
+            progressedState.timerAnimatorStartPhase = it
+            progressedStateCallback.invoke(progressedState)
+        })
     }
 
     override fun questionUpdated(questionText: String) {
@@ -97,13 +132,14 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
         image_optionList.adapter?.let {
-            if (showResults)
+            if (correctOptionWithUserSelection.first != null && correctOptionWithUserSelection.second != null)
                 updateVoteCount(voteOptions)
         } ?: run { image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         selectedOption = selectedOptionId
+        progressedState.userSelection = selectedOptionId
         imageButtonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, R.drawable.quiz_button_pressed)
@@ -121,8 +157,17 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
-
-        resultDisplayUtil.startResultAnimation(correctOption == selectedOption, prediction_result)
+        resultDisplayUtil.startResultAnimation(
+            correctOption == selectedOption, prediction_result,
+            {
+                progressedState.resultAnimatorStartPhase = it
+                progressedStateCallback.invoke(progressedState)
+            },
+            {
+                progressedState.resultAnimationPath = it
+                progressedStateCallback.invoke(progressedState)
+            }, startingState
+        )
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {
@@ -162,6 +207,11 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
                 )
                 .into(holder.optionButton)
             imageButtonMap[holder.button] = option.id
+            // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
+            // a way to update user selection.
+            if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
+                optionSelectedUpdated(progressedState.userSelection)
+
             holder.button.setOnClickListener {
                 selectedOption = imageButtonMap[holder.button].toString()
                 optionSelectedCallback(selectedOption)

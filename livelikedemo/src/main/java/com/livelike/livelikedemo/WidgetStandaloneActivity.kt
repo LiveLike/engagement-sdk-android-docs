@@ -17,6 +17,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.registerLogsHandler
 import com.livelike.livelikesdk.widget.WidgetType
@@ -288,7 +289,8 @@ class WidgetStandaloneActivity : AppCompatActivity() {
         private fun showWidget(widgetType: WidgetType, payload: JsonObject) {
             widget_view.displayWidget(
                 widgetType.value,
-                payload
+                payload,
+                WidgetTransientState()
             )
         }
 

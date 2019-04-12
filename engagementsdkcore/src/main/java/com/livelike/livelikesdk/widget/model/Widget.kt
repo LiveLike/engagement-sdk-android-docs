@@ -17,7 +17,7 @@ internal class Widget {
     var subscribeChannel: String = ""
     var selectedVoteChangeUrl: String = ""
 
-    private fun optionSelectedUpdated(id: String?) {
+    fun optionSelectedUpdated(id: String?) {
         if (id == null) {
             optionSelected = WidgetOptions("")
             return

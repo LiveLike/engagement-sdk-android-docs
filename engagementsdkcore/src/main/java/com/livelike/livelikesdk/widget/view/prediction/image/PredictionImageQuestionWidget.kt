@@ -19,10 +19,10 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
@@ -32,7 +32,10 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
-    private lateinit var viewAnimation: ViewAnimation
+    private lateinit var viewAnimation: ViewAnimationManager
+    private lateinit var startingState: WidgetTransientState
+    private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
+    private lateinit var progressedState: WidgetTransientState
     lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
     private val widgetOpacityFactor: Float = 0.2f
     private var optionSelected = false
@@ -46,9 +49,19 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit, timeout: Long, parentWidth: Int) {
+    fun initialize(dismiss: () -> Unit,
+                   timeout: Long,
+                   startingState: WidgetTransientState,
+                   progressedState: WidgetTransientState,
+                   parentWidth: Int,
+                   viewAnimation: ViewAnimationManager,
+                   state: (WidgetTransientState) -> Unit) {
         dismissWidget = dismiss
+        this.viewAnimation = viewAnimation
+        this.startingState = startingState
         this.parentWidth = parentWidth
+        this.progressedState = progressedState
+        this.progressedStateCallback = state
         inflate(context, timeout)
     }
 
@@ -60,22 +73,30 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        // TODO: Maybe inject this object.
-        viewAnimation = ViewAnimation(this)
-        viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, timeout) {
-                if (optionSelected) {
-                    viewAnimation.showConfirmMessage(
-                        prediction_confirm_message_textView,
-                        prediction_confirm_message_animation
-                    ) {}
-                    performPredictionWidgetFadeOutOperations()
-                }
-            }
+        if (startingState.timerAnimatorStartPhase != 0f) {
+            startPieTimer(pieTimer, timeout)
+        }
+        else viewAnimation.startWidgetTransitionInAnimation {
+            startPieTimer(pieTimer, timeout)
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
         prediction_question_textView.layoutParams.width = parentWidth
+    }
+
+    private fun startPieTimer(pieTimer: View, timeout: Long) {
+        viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
+            if (optionSelected) {
+                viewAnimation.showConfirmMessage(
+                    prediction_confirm_message_textView,
+                    prediction_confirm_message_animation
+                ) {}
+                performPredictionWidgetFadeOutOperations()
+            }
+        }, {
+            progressedState.timerAnimatorStartPhase = it
+            progressedStateCallback.invoke(progressedState)
+        })
     }
 
     private fun performPredictionWidgetFadeOutOperations() {
@@ -115,6 +136,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         optionSelected = true
+        progressedState.userSelection = selectedOptionId
         imageButtonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = AppCompatResources.getDrawable(context, R.drawable.prediction_button_pressed)
@@ -139,7 +161,6 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val option = optionList[position]
             holder.optionText.text = option.description
-            val imageWidth = AndroidResource.dpToPx(74)
 
             // TODO: Move this to adapter layer.
             Glide.with(context)
@@ -147,6 +168,11 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 .apply(RequestOptions().transform(MultiTransformation(FitCenter(), RoundedCorners(12))))
                 .into(holder.optionButton)
             imageButtonMap[holder.button] = option.id
+            // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
+            // a way to update user selection.
+            if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
+                optionSelectedUpdated(progressedState.userSelection)
+
             holder.button.setOnClickListener {
                 val selectedOption = imageButtonMap[holder.button]
                 optionSelectedCallback(selectedOption)

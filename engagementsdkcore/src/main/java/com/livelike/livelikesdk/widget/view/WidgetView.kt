@@ -11,9 +11,11 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
+import com.livelike.engagementsdkapi.WidgetStateProcessor
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.analytics.analyticService
-import com.livelike.livelikesdk.animation.ViewAnimation
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.parser.WidgetParser
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
@@ -21,6 +23,7 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
+import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
@@ -35,13 +38,15 @@ import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 import com.livelike.livelikesdk.widget.view.quiz.QuizTextWidget
 import kotlinx.android.synthetic.main.widget_view.view.*
 
-
 class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null
+    override var widgetStateProcessor: WidgetStateProcessor? = null
     private var currentWidget: Widget? = null
     private var viewRoot: View = LayoutInflater.from(context).inflate(R.layout.widget_view, this, true)
     private var containerView = widgetContainerView as FrameLayout
     private var marginSize = dpToPx(40)
+    private var timeout = 0L
+    private var widgetType = WidgetType.NONE.value
 
     companion object {
         private const val WIDGET_MINIMUM_SIZE_DP = 260
@@ -64,33 +69,54 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
     fun setSession(session: LiveLikeContentSession) {
         session.widgetRenderer = this
+        val currentWidgetId = widgetStateProcessor?.currentWidgetId ?: return
+        val widgetState = widgetStateProcessor?.getWidgetState(currentWidgetId)
+        // TODO: This logic is put into place in order to determine if config change happened due app getting backgrounded
+        // or device getting rotated. Somehow this logic needs to be refined.
+//        if (widgetState != null) {
+//            if (System.currentTimeMillis() - widgetState.timeStamp > 100) return
+//        }
+        widgetState?.payload?.let {
+            displayWidget(widgetState.type.toString(), it, widgetState)
+        }
     }
 
     override fun displayWidget(
         type: String,
-        payload: JsonObject
+        payload: JsonObject,
+        startingState: WidgetTransientState
     ) {
         logDebug { "NOW - Show Widget $type on screen: $payload" }
         val widget = Widget()
         val parser = WidgetParser()
         val widgetResource = gson.fromJson(payload, Resource::class.java)
         val parentWidth = this.width - marginSize
-
-        when (WidgetType.fromString(type)) {
+        widgetType = type
+        val progressedState = WidgetTransientState()
+        when (WidgetType.fromString(widgetType)) {
             WidgetType.TEXT_PREDICTION -> {
                 parser.parseTextOptionCommon(widget, widgetResource)
-                val predictionWidget =
-                    PredictionTextQuestionWidgetView(
-                        context,
-                        null,
-                        0
-                    ).apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
-
+                val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0)
                 widget.registerObserver(predictionWidget)
-                widget.notifyDataSetChange()
 
+                startingState.timeout = widget.timeout
+
+                predictionWidget.initialize(
+                    { dismissCurrentWidget() },
+                    startingState,
+                    progressedState,
+                    parentWidth,
+                    ViewAnimationManager(predictionWidget),
+                    { saveState(widget.id.toString(), payload, type, it) }
+                )
+
+                if (startingState.userSelection != null)
+                    widget.optionSelectedUpdated(startingState.userSelection)
+
+                widget.notifyDataSetChange()
                 predictionWidget.userTappedCallback { emitWidgetOptionSelected(widget.id, widgetResource.kind) }
                 containerView.addView(predictionWidget)
+
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
@@ -98,15 +124,27 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.TEXT_PREDICTION_RESULTS -> {
                 parser.parsePredictionFollowup(widget, widgetResource)
                 val predictionWidget = PredictionTextFollowUpWidgetView(context, null, 0)
-                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
-
                 widget.registerObserver(predictionWidget)
-                widget.notifyDataSetChange()
+
                 if (widget.optionSelected.id.isNullOrEmpty()) {
                     //user did not interact with previous widget, mark dismissed and don't show followup
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
+
+                timeout = widget.timeout
+                startingState.timeout = widget.timeout
+
+                predictionWidget.initialize({
+                    dismissCurrentWidget() },
+                    startingState,
+                    progressedState,
+                    parentWidth,
+                    ViewAnimationManager(predictionWidget),
+                    { saveState(widget.id.toString(), payload, type, it) }
+                )
+                widget.notifyDataSetChange()
+
                 containerView.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
@@ -115,12 +153,27 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_PREDICTION -> {
                 parser.parseTextOptionCommon(widget, widgetResource)
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
-                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
                 widget.registerObserver(predictionWidget)
+
+                startingState.timeout = widget.timeout
+
+                predictionWidget.initialize(
+                    { dismissCurrentWidget() },
+                    widget.timeout,
+                    startingState,
+                    progressedState,
+                    parentWidth,
+                    ViewAnimationManager(predictionWidget),
+                    { saveState(widget.id.toString(), payload, type, it) })
+
+                if (startingState.userSelection != null)
+                    widget.optionSelectedUpdated(startingState.userSelection)
+
                 widget.notifyDataSetChange()
                 predictionWidget.userTappedCallback {
                     emitWidgetOptionSelected(widget.id, widgetResource.kind)
                 }
+
                 containerView.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
@@ -129,47 +182,44 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_PREDICTION_RESULTS -> {
                 parser.parsePredictionFollowup(widget, widgetResource)
                 val predictionWidget = PredictionImageFollowupWidget(context, null, 0)
-                    .apply { initialize({ dismissCurrentWidget() }, widget.timeout, parentWidth) }
-
                 widget.registerObserver(predictionWidget)
-                widget.notifyDataSetChange()
+
                 if (widget.optionSelected.id.isNullOrEmpty()) {
                     //user did not interact with previous widget, mark dismissed and don't show followup
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
+
+                startingState.timeout = widget.timeout
+
+                predictionWidget.initialize({
+                    dismissCurrentWidget() },
+                    startingState,
+                    progressedState,
+                    parentWidth,
+                    ViewAnimationManager(predictionWidget),
+                    { saveState(widget.id.toString(), payload, type, it) }
+                )
+                widget.notifyDataSetChange()
+
                 containerView.addView(predictionWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
             }
 
             WidgetType.TEXT_QUIZ -> {
-                val quizTextWidget = QuizTextWidget(context,
-                    null,
-                    0)
-                    .apply {
-                        initialize(
-                            { dismissCurrentWidget() },
-                            widget.timeout,
-                            { optionSelectionEvents() },
-                            parentWidth
-                        )
-                    }
-
-                parser.parseQuiz(widget, widgetResource)
-
-                quizTextWidget.userTappedCallback {
-                    emitWidgetOptionSelected(widget.id, widgetResource.kind)
-                }
-
-                widget.registerObserver(quizTextWidget)
-                widget.notifyDataSetChange()
-                containerView.addView(quizTextWidget)
-                widgetShown(widgetResource)
-                currentWidget = widget
+                displayQuizWidget(parser, widget, widgetResource, startingState, parentWidth, progressedState, payload)
             }
 
             WidgetType.TEXT_QUIZ_RESULT -> {
+                progressedState.payload = startingState.payload
+                progressedState.type = startingState.type
+                progressedState.let { ns -> widgetStateProcessor?.updateWidgetState(currentWidget?.id.toString(), ns) }
+
+                if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+                    displayQuizWidget(parser, widget, widgetResource, startingState, parentWidth, progressedState, payload)
+                }
+
                 currentWidget?.let {
                     parser.parseQuizResult(it, widgetResource)
                     it.notifyDataSetChange()
@@ -177,31 +227,18 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             }
 
             WidgetType.IMAGE_QUIZ -> {
-                val quizWidget = QuizImageWidget(context,
-                    null,
-                    0)
-                    .apply {
-                        initialize(
-                            { dismissCurrentWidget() },
-                            widget.timeout,
-                            { optionSelectionEvents() },
-                            parentWidth
-                        )
-                    }
-
-                parser.parseQuiz(widget, widgetResource)
-                widget.registerObserver(quizWidget)
-                widget.notifyDataSetChange()
-                quizWidget.userTappedCallback {
-                    emitWidgetOptionSelected(widget.id, widgetResource.kind)
-                }
-
-                containerView.addView(quizWidget)
-                widgetShown(widgetResource)
-                currentWidget = widget
+                displayQuizImageWidget(parser, widget, widgetResource, startingState, parentWidth, progressedState, payload)
             }
 
             WidgetType.IMAGE_QUIZ_RESULT -> {
+                progressedState.payload = startingState.payload
+                progressedState.type = startingState.type
+                progressedState.let { ns -> widgetStateProcessor?.updateWidgetState(currentWidget?.id.toString(), ns) }
+
+                if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+                    displayQuizImageWidget(parser, widget, widgetResource, startingState, parentWidth, progressedState, payload)
+                }
+
                 currentWidget?.let {
                     parser.parseQuizResult(it, widgetResource)
                     it.notifyDataSetChange()
@@ -209,17 +246,18 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             }
 
             WidgetType.TEXT_POLL -> {
-                val pollTextWidget = PollTextWidget(context,
-                    null,
-                    0)
-                    .apply {
-                        initialize(
-                            { dismissCurrentWidget() },
-                            widget.timeout,
-                            { optionSelectionEvents() },
-                            parentWidth
-                        )
-                    }
+                val pollTextWidget = PollTextWidget(context, null, 0)
+
+                startingState.timeout = widget.timeout
+
+                pollTextWidget.initialize(
+                    { dismissCurrentWidget() },
+                    startingState,
+                    progressedState,
+                    { optionSelectionEvents() },
+                    parentWidth,
+                    ViewAnimationManager(pollTextWidget),
+                    { saveState(widget.id.toString(), payload, widgetType, it) })
 
                 parser.parsePoll(widget, widgetResource)
 
@@ -242,13 +280,21 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             }
 
             WidgetType.ALERT -> {
-                val alertWidget = AlertWidget(context, null).apply {
-                    val alertResource = gson.fromJson(payload, Alert::class.java)
-                    initialize({ dismissCurrentWidget() }, alertResource)
-                    currentWidget = Widget().apply { id = alertResource.id }
-                    emitWidgetShown(alertResource.id, alertResource.kind)
-                    widgetListener?.onWidgetDisplayed(alertResource.impression_url)
+                val alertWidget = AlertWidget(context, null)
+                val alertResource = gson.fromJson(payload, Alert::class.java)
+
+                currentWidget = Widget().apply { id = alertResource.id
+                    alertWidget.initialize({
+                        dismissCurrentWidget() },
+                        alertResource,
+                        progressedState,
+                        ViewAnimationManager(alertWidget), {
+                        saveState(id.toString(), payload, widgetType, it)
+                    })
                 }
+
+                emitWidgetShown(alertResource.id, alertResource.kind)
+                widgetListener?.onWidgetDisplayed(alertResource.impression_url)
                 containerView.addView(alertWidget)
             }
 
@@ -256,6 +302,105 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 logDebug { "Received Widget is not Implemented." }
             }
         }
+    }
+
+    private fun displayQuizWidget(
+        parser: WidgetParser,
+        widget: Widget,
+        widgetResource: Resource,
+        currentState: WidgetTransientState,
+        parentWidth: Int,
+        progressedState: WidgetTransientState,
+        payload: JsonObject
+    ) {
+        parser.parseQuiz(widget, widgetResource)
+        val quizTextWidget = QuizTextWidget(
+            context,
+            null,
+            0
+        )
+        widget.registerObserver(quizTextWidget)
+
+        currentState.timeout = widget.timeout
+
+        quizTextWidget.initialize(
+            { dismissCurrentWidget() },
+            currentState,
+            progressedState,
+            { optionSelectionEvents() },
+            parentWidth,
+            ViewAnimationManager(quizTextWidget),
+            { saveState(widget.id.toString(), payload, widgetType, it) })
+
+        if (currentState.userSelection != null) {
+            widget.optionSelectedUpdated(currentState.userSelection)
+        }
+
+        widget.notifyDataSetChange()
+
+        quizTextWidget.userTappedCallback {
+            emitWidgetOptionSelected(widget.id, widgetResource.kind)
+        }
+
+        containerView.addView(quizTextWidget)
+        widgetShown(widgetResource)
+        currentWidget = widget
+    }
+
+    private fun displayQuizImageWidget(
+        parser: WidgetParser,
+        widget: Widget,
+        widgetResource: Resource,
+        currentState: WidgetTransientState,
+        parentWidth: Int,
+        progressedState: WidgetTransientState,
+        payload: JsonObject
+    ) {
+        parser.parseQuiz(widget, widgetResource)
+        val quizTextWidget = QuizImageWidget(
+            context,
+            null,
+            0
+        )
+        widget.registerObserver(quizTextWidget)
+
+        currentState.timeout = widget.timeout
+
+        quizTextWidget.initialize(
+            { dismissCurrentWidget() },
+            currentState,
+            progressedState,
+            { optionSelectionEvents() },
+            parentWidth,
+            ViewAnimationManager(quizTextWidget),
+            { saveState(widget.id.toString(), payload, widgetType, it) })
+
+        if (currentState.userSelection != null) {
+            widget.optionSelectedUpdated(currentState.userSelection)
+        }
+
+        widget.notifyDataSetChange()
+
+        quizTextWidget.userTappedCallback {
+            emitWidgetOptionSelected(widget.id, widgetResource.kind)
+        }
+
+        containerView.addView(quizTextWidget)
+        widgetShown(widgetResource)
+        currentWidget = widget
+    }
+
+    private fun saveState(
+        id: String,
+        payload: JsonObject,
+        type: String,
+        progressesState: WidgetTransientState
+    ) {
+        widgetStateProcessor?.currentWidgetId = id
+        progressesState.payload = payload
+        progressesState.type = type
+        progressesState.timeStamp = System.currentTimeMillis()
+        progressesState.let { state -> widgetStateProcessor?.updateWidgetState(id, state) }
     }
 
     private fun widgetShown(widget: Resource) {
@@ -276,14 +421,21 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     override fun dismissCurrentWidget() {
-        ViewAnimation(containerView.parent as View).triggerTransitionOutAnimation {
+        ViewAnimationManager(containerView.parent as View).triggerTransitionOutAnimation {
             removeView()
+            resetState()
+
             (containerView.parent as View).translationY = 0f
             currentWidget?.apply {
                 emitWidgetDismissEvents(this)
                 optionSelectionEvents()
             }
         }
+    }
+
+    private fun resetState() {
+        timeout = 0L
+        widgetStateProcessor?.release(currentWidget?.id.toString())
     }
 
     private fun emitWidgetDismissEvents(widget: Widget) {

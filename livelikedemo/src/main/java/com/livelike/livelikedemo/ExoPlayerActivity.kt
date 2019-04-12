@@ -6,12 +6,12 @@ import android.os.Handler
 import android.support.constraint.Constraints
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
-import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeSDK
@@ -56,8 +56,11 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
-        player = ExoPlayerImpl(this, playerView)
+        player = (application as LiveLikeApplication).createPlayer(playerView)
         channelManager = (application as LiveLikeApplication).channelManager
+        channelManager.let {
+            Log.i("Main", "Abhishek activity ${it?.selectedChannel?.llProgram.toString()}")
+        }
         openLogs.setOnClickListener {
             fullLogs.visibility = if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
         }
@@ -84,6 +87,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         channelManager?.addChannelSelectListener {
             channelManager?.hide()
+            (application as LiveLikeApplication).session = null
             selectChannel(it)
         }
 
@@ -114,10 +118,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         })
 
         val sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
-        if(channel == ChannelManager.NONE_CHANNEL) {
+        if (channel == ChannelManager.NONE_CHANNEL) {
             session?.close()
         } else {
-            val session = player.createSession(channel.llProgram.toString(), sdk)
+            val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(), sdk)
 
             chat_view.setSession(session)
             widget_view.setSession(session)
