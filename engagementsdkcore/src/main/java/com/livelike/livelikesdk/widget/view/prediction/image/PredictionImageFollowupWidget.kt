@@ -2,7 +2,6 @@ package com.livelike.livelikesdk.widget.view.prediction.image
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -26,8 +25,6 @@ import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
-import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
-import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.wrongAnswerLottieFilePath
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.cross_image.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
@@ -84,7 +81,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
         updateCrossImage()
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
-        prediction_question_textView.layoutParams.width = parentWidth
+        questionTextView.layoutParams.width = parentWidth
     }
 
     private fun updateCrossImage() {
@@ -107,7 +104,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     }
 
     override fun questionUpdated(questionText: String) {
-        viewAnimation.addHorizontalSwipeListener(prediction_question_textView.apply {
+        viewAnimation.addHorizontalSwipeListener(questionTextView.apply {
             text = questionText
             isClickable = true
         }, layout, dismissWidget)

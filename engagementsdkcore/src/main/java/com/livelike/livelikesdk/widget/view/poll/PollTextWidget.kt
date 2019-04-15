@@ -29,7 +29,7 @@ internal class PollTextWidget : TextOptionWidgetBase {
 
         selectedButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_poll_answer_outline)
 
-        prediction_question_textView.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.poll_textview_rounded_corner)
+        questionTextView.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.poll_textview_rounded_corner)
         fetchResult = fetch
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()

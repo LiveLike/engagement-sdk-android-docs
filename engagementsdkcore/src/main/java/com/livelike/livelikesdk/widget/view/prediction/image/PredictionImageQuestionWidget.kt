@@ -81,7 +81,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
-        prediction_question_textView.layoutParams.width = parentWidth
+        questionTextView.layoutParams.width = parentWidth
     }
 
     private fun startPieTimer(pieTimer: View, timeout: Long) {
@@ -104,7 +104,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             disableButtons(button)
             button.setTranslucent()
         }
-        prediction_question_textView.setTranslucent()
+        questionTextView.setTranslucent()
         prediction_pie_updater_animation.setTranslucent()
     }
 
@@ -117,7 +117,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     }
 
     override fun questionUpdated(questionText: String) {
-        viewAnimation.addHorizontalSwipeListener(prediction_question_textView.apply {
+        viewAnimation.addHorizontalSwipeListener(questionTextView.apply {
             text = questionText
             isClickable = true
         }, layout, dismissWidget)

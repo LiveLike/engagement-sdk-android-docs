@@ -7,7 +7,7 @@
                                              android:layout_height="wrap_content"
                                              android:background="#99000000">
     <TextView
-            android:id="@+id/prediction_question_textView"
+            android:id="@+id/questionTextView"
             android:layout_height="wrap_content"
             android:layout_width="400dp"
             android:background="@drawable/top_rounded_corner"
@@ -29,7 +29,7 @@
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/prediction_question_textView"
+            app:layout_constraintTop_toBottomOf="@+id/questionTextView"
             app:layout_constraintBottom_toBottomOf="parent"
     />
 

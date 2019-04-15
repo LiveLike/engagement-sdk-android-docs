@@ -66,7 +66,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         this.progressedState = progressedState
         this.progressedStateCallback = progressedStateCallback
         inflate(context)
-        prediction_question_textView.layoutParams.width = parentWidth
+        questionTextView.layoutParams.width = parentWidth
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -75,7 +75,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
-        viewAnimation.addHorizontalSwipeListener(prediction_question_textView, layout, dismissWidget)
+        viewAnimation.addHorizontalSwipeListener(questionTextView, layout, dismissWidget)
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
@@ -85,7 +85,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun questionUpdated(questionText: String) {
-        prediction_question_textView.text = questionText
+        questionTextView.text = questionText
     }
 
     override fun confirmMessageUpdated(confirmMessage: String) {
