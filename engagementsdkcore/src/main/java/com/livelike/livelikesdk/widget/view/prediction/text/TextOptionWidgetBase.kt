@@ -45,6 +45,10 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected var dismissWidget :  (() -> Unit)? = null
     protected var showResults = false
     protected var buttonClickEnabled = true
+    protected var useNeutralValues = false
+
+    protected var selectedButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
+    protected var defaultButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -101,11 +105,12 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
+
         progressedState.userSelection = selectedOptionId
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
-                button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
-            else button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
+                button.background = selectedButtonDrawable
+            else button.background = defaultButtonDrawable
         }
     }
 
@@ -187,7 +192,8 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 viewHolder.optionButton,
                 votePercentage,
                 correctOptionWithUserSelection.first,
-                correctOptionWithUserSelection.second)
+                correctOptionWithUserSelection.second,
+                useNeutralValues)
         }
 
         override fun getItemCount(): Int {

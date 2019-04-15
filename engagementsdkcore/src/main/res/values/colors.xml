@@ -22,5 +22,7 @@
     <color name="quiz_question_end_color">#ffb400</color>
     <color name="prediction_button_pressed">#00b4c8</color>
     <color name="quiz_button_pressed">#ffc800</color>
-
+    <color name="poll_question_start_color">#3023ae</color>
+    <color name="poll_question_end_color">#c864c8</color>
+    <color name="poll_button_pressed">#c86dd7</color>
 </resources>
