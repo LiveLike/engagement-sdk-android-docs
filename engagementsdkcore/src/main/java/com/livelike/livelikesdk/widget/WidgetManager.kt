@@ -73,7 +73,8 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         val exemption = exemptionList.any { event.message[it.first].asString == it.second }
-        isProcessing = !exemption
+        //If this message type is in the exemption list it should never flip processing boolean
+        isProcessing = !exemption || isProcessing
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         Handler(Looper.getMainLooper()).post {
