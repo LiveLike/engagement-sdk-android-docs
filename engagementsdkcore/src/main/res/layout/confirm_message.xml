@@ -6,10 +6,10 @@
             android:id="@+id/prediction_pie"
             android:layout_width="18dp"
             android:layout_height="18dp"
-            app:layout_constraintStart_toStartOf="@+id/prediction_question_textView"
-            app:layout_constraintEnd_toEndOf="@+id/prediction_question_textView"
-            app:layout_constraintBottom_toBottomOf="@+id/prediction_question_textView"
-            app:layout_constraintTop_toTopOf="@id/prediction_question_textView"
+            app:layout_constraintStart_toStartOf="@+id/questionTextView"
+            app:layout_constraintEnd_toEndOf="@+id/questionTextView"
+            app:layout_constraintBottom_toBottomOf="@+id/questionTextView"
+            app:layout_constraintTop_toTopOf="@id/questionTextView"
             app:layout_constraintHorizontal_bias="0.973"
             app:layout_constraintVertical_bias="0.592"/>
 

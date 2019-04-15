@@ -100,7 +100,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         image_optionList.layoutManager = linearLayoutManager
 
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
-        prediction_question_textView.layoutParams.width = parentWidth
+        questionTextView.layoutParams.width = parentWidth
     }
 
     private fun isWidgetRestoredFromQuestionPhase(properties: WidgetTransientState) =
@@ -119,7 +119,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     override fun questionUpdated(questionText: String) {
-        viewAnimation.addHorizontalSwipeListener(prediction_question_textView.apply {
+        viewAnimation.addHorizontalSwipeListener(questionTextView.apply {
             text = questionText
             isClickable = true
             background = AppCompatResources.getDrawable(context, R.drawable.quiz_textview_rounded_corner)

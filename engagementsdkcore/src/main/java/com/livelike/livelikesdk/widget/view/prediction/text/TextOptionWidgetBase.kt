@@ -45,6 +45,10 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected var dismissWidget :  (() -> Unit)? = null
     protected var showResults = false
     protected var buttonClickEnabled = true
+    protected var useNeutralValues = false
+
+    protected var selectedButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
+    protected var defaultButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -62,7 +66,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         this.progressedState = progressedState
         this.progressedStateCallback = progressedStateCallback
         inflate(context)
-        prediction_question_textView.layoutParams.width = parentWidth
+        questionTextView.layoutParams.width = parentWidth
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -71,7 +75,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
-        viewAnimation.addHorizontalSwipeListener(prediction_question_textView, layout, dismissWidget)
+        viewAnimation.addHorizontalSwipeListener(questionTextView, layout, dismissWidget)
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
@@ -81,7 +85,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun questionUpdated(questionText: String) {
-        prediction_question_textView.text = questionText
+        questionTextView.text = questionText
     }
 
     override fun confirmMessageUpdated(confirmMessage: String) {
@@ -101,11 +105,12 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
+
         progressedState.userSelection = selectedOptionId
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
-                button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
-            else button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
+                button.background = selectedButtonDrawable
+            else button.background = defaultButtonDrawable
         }
     }
 
@@ -187,7 +192,8 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 viewHolder.optionButton,
                 votePercentage,
                 correctOptionWithUserSelection.first,
-                correctOptionWithUserSelection.second)
+                correctOptionWithUserSelection.second,
+                useNeutralValues)
         }
 
         override fun getItemCount(): Int {

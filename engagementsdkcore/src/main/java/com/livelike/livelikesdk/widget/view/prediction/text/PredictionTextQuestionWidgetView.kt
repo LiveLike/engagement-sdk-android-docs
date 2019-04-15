@@ -7,8 +7,6 @@ import android.view.View
 import android.widget.Button
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.animation.AnimationProperties
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.pie_timer.view.*
@@ -64,7 +62,7 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
             disableButtons(button)
             button.setTranslucent()
         }
-        prediction_question_textView.setTranslucent()
+        questionTextView.setTranslucent()
         prediction_pie_updater_animation.setTranslucent()
     }
 

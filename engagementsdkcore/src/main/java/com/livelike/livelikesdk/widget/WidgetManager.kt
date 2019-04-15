@@ -19,6 +19,11 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
     WidgetEventListener {
+    private val exemptionList = listOf(
+        Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
+        Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value),
+        Pair("event", WidgetType.TEXT_POLL_RESULT.value))
+
     override fun onWidgetDisplayed(impressionUrl: String) {
         dataClient.registerImpression(impressionUrl)
     }
@@ -34,11 +39,8 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     override var triggerListener: ExternalTriggerListener? = null
     set(listener) {
         field = listener
-        listener?.exemptionList = listOf(
-            Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
-            Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value),
-            Pair("event", WidgetType.TEXT_POLL_RESULT.value)
-        )
+        listener?.exemptionList = exemptionList
+
     }
 
     override fun onAnalyticsEvent(data: Any) {
@@ -70,7 +72,9 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        isProcessing = true
+        val exemption = exemptionList.any { event.message[it.first].asString == it.second }
+        //If this message type is in the exemption list it should never flip processing boolean
+        isProcessing = !exemption || isProcessing
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         Handler(Looper.getMainLooper()).post {
