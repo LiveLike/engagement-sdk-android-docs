@@ -72,6 +72,13 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         verifyViewMinWidth(viewRoot)
     }
 
+    /**
+     * Sets the Session on the widget view.
+     * The widget events coming from the LiveLike CMS will flow through the session
+     * and display widget where this view is being drawn.
+     *
+     * @param session The session used on the widget view.
+     */
     fun setSession(session: LiveLikeContentSession) {
         session.widgetRenderer = this
         val currentWidgetId = widgetStateProcessor?.currentWidgetId ?: return
