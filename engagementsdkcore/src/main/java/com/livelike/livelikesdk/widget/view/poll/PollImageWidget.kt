@@ -27,7 +27,6 @@ import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
@@ -166,7 +165,6 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {
-                logDebug { "SHANE updateVoteOption" }
                 viewOption.percentageTextView.visibility = View.VISIBLE
                 viewOption.percentageTextView.text = option.votePercentage.toString().plus("%")
                 resultDisplayUtil.updateViewDrawable(
@@ -193,7 +191,6 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     ) : RecyclerView.Adapter<ViewHolder>() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            logDebug { "SHANE onBindViewHolder" }
             val option = optionList[position]
             holder.optionText.text = option.description
             option.isCorrect.let { if(it) correctOption = option.id }
