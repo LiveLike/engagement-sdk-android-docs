@@ -14,6 +14,7 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
  * using [createContentSession]
  *
  * @param appId Application's id
+ * @param applicationContext The application context
  */
 open class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
 

@@ -23,7 +23,6 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
-import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
@@ -38,6 +37,12 @@ import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 import com.livelike.livelikesdk.widget.view.quiz.QuizTextWidget
 import kotlinx.android.synthetic.main.widget_view.view.*
 
+/**
+ * The WidgetView is the container where widgets are being displayed.
+ * Make sure to set the session to this view to get the data flowing from the LiveLike CMS.
+ *
+ * This view can be used in your directly in your layout.
+ */
 class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null
     override var widgetStateProcessor: WidgetStateProcessor? = null
@@ -289,8 +294,8 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                         alertResource,
                         progressedState,
                         ViewAnimationManager(alertWidget), {
-                        saveState(id.toString(), payload, widgetType, it)
-                    })
+                            saveState(id.toString(), payload, widgetType, it)
+                        })
                 }
 
                 emitWidgetShown(alertResource.id, alertResource.kind)
