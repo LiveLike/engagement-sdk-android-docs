@@ -58,9 +58,6 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         player = (application as LiveLikeApplication).createPlayer(playerView)
         channelManager = (application as LiveLikeApplication).channelManager
-        channelManager.let {
-            Log.i("Main", "Abhishek activity ${it?.selectedChannel?.llProgram.toString()}")
-        }
         openLogs.setOnClickListener {
             fullLogs.visibility = if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
         }

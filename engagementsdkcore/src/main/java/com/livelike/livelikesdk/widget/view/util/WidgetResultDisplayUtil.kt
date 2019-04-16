@@ -57,7 +57,12 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
         animationPath: (String?) -> Unit,
         resultProperties: WidgetTransientState
     ) {
-        viewAnimation.startResultAnimation(findResultAnimationPath(isCorrect), context, prediction_result, progressUpdater, animationPath, resultProperties)
+        viewAnimation.startResultAnimation(findResultAnimationPath(isCorrect),
+            context,
+            prediction_result,
+            progressUpdater,
+            animationPath,
+            resultProperties)
     }
 
     private fun findResultAnimationPath(isCorrect: Boolean): String {

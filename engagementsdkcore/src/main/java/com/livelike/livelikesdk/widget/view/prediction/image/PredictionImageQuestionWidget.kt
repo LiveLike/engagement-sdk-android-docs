@@ -73,8 +73,13 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        if (startingState.timerAnimatorStartPhase != 0f) {
+
+        if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
             startPieTimer(pieTimer, timeout)
+        }
+        else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+            showConfirmMessage()
+            performPredictionWidgetFadeOutOperations()
         }
         else viewAnimation.startWidgetTransitionInAnimation {
             startPieTimer(pieTimer, timeout)
@@ -89,14 +94,41 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             if (optionSelected) {
                 viewAnimation.showConfirmMessage(
                     prediction_confirm_message_textView,
-                    prediction_confirm_message_animation
-                ) {}
+                    prediction_confirm_message_animation,
+                    {},
+                    {
+                        progressedState.resultAnimatorStartPhase = it
+                        progressedStateCallback.invoke(progressedState)
+                    },
+                    {
+                        progressedState.resultAnimationPath = it
+                        progressedStateCallback.invoke(progressedState)
+                    },
+                    startingState
+                )
                 performPredictionWidgetFadeOutOperations()
             }
         }, {
             progressedState.timerAnimatorStartPhase = it
             progressedStateCallback.invoke(progressedState)
         })
+    }
+
+    private fun showConfirmMessage() {
+        viewAnimation.showConfirmMessage(
+            prediction_confirm_message_textView,
+            prediction_confirm_message_animation,
+            {},
+            {
+                progressedState.resultAnimatorStartPhase = it
+                progressedStateCallback.invoke(progressedState)
+            },
+            {
+                progressedState.resultAnimationPath = it
+                progressedStateCallback.invoke(progressedState)
+            },
+            startingState
+        )
     }
 
     private fun performPredictionWidgetFadeOutOperations() {
