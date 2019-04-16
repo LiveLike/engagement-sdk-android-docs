@@ -14,7 +14,7 @@
             app:layout_constraintVertical_bias="0.592"/>
 
     <TextView
-            android:id="@+id/prediction_confirm_message_textView"
+            android:id="@+id/confirmMessageTextView"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="26dp"
@@ -45,9 +45,9 @@
             android:layout_height="40dp"
             android:elevation="4dp"
             android:id="@+id/prediction_confirm_message_animation"
-            app:layout_constraintStart_toStartOf="@id/prediction_confirm_message_textView"
-            app:layout_constraintEnd_toEndOf="@id/prediction_confirm_message_textView"
-            app:layout_constraintBottom_toBottomOf="@id/prediction_confirm_message_textView"
+            app:layout_constraintStart_toStartOf="@id/confirmMessageTextView"
+            app:layout_constraintEnd_toEndOf="@id/confirmMessageTextView"
+            app:layout_constraintBottom_toBottomOf="@id/confirmMessageTextView"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             android:visibility="invisible"/>

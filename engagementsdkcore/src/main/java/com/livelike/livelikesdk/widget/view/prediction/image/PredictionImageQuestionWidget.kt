@@ -177,7 +177,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     }
 
     override fun confirmMessageUpdated(confirmMessage: String) {
-        prediction_confirm_message_textView.text = confirmMessage
+        confirmMessageTextView.text = confirmMessage
     }
 
     fun userTappedCallback(userTapped: () -> Unit) {

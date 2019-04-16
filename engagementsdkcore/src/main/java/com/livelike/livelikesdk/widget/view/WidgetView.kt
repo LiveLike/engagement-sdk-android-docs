@@ -29,6 +29,7 @@ import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.model.Widget
+import com.livelike.livelikesdk.widget.view.poll.PollImageWidget
 import com.livelike.livelikesdk.widget.view.poll.PollTextWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageFollowupWidget
 import com.livelike.livelikesdk.widget.view.prediction.image.PredictionImageQuestionWidget
@@ -269,6 +270,40 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             }
 
             WidgetType.TEXT_POLL_RESULT -> {
+                currentWidget?.let {
+                    parser.parsePollResult(it, widgetResource)
+                    it.notifyDataSetChange()
+                }
+            }
+
+            WidgetType.IMAGE_POLL -> {
+                val pollImageWidget = PollImageWidget(context, null, 0)
+
+                startingState.timeout = widget.timeout
+
+                pollImageWidget.initialize(
+                    { dismissCurrentWidget() },
+                    startingState,
+                    progressedState,
+                    { optionSelectionEvents() },
+                    parentWidth,
+                    ViewAnimationManager(pollImageWidget),
+                    { saveState(widget.id.toString(), payload, widgetType, it) })
+
+                parser.parsePoll(widget, widgetResource)
+
+                pollImageWidget.userTappedCallback {
+                    emitWidgetOptionSelected(widget.id, widgetResource.kind)
+                }
+
+                widget.registerObserver(pollImageWidget)
+                widget.notifyDataSetChange()
+                containerView.addView(pollImageWidget)
+                widgetShown(widgetResource)
+                currentWidget = widget
+            }
+
+            WidgetType.IMAGE_POLL_RESULT -> {
                 currentWidget?.let {
                     parser.parsePollResult(it, widgetResource)
                     it.notifyDataSetChange()

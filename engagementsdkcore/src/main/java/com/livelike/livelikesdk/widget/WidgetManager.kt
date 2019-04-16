@@ -22,7 +22,10 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     private val exemptionList = listOf(
         Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
         Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value),
-        Pair("event", WidgetType.TEXT_POLL_RESULT.value))
+        Pair("event", WidgetType.TEXT_POLL_RESULT.value),
+        Pair("event", WidgetType.IMAGE_POLL_RESULT.value))
+
+    private val widgetSubscribedChannels = mutableListOf<String>()
 
     override fun onWidgetDisplayed(impressionUrl: String) {
         dataClient.registerImpression(impressionUrl)
@@ -51,6 +54,8 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         when (event) {
             WidgetEvent.WIDGET_DISMISS -> {
                 isProcessing = false
+                upstream.unsubscribe(widgetSubscribedChannels)
+                widgetSubscribedChannels.clear()
                 triggerListener?.onTrigger("done")
             }
             else -> {}
@@ -59,7 +64,10 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
 
     override fun onOptionVote(voteUrl: String, channel: String, voteChangeCallback: ((String) -> Unit)?) {
         dataClient.vote(voteUrl, voteChangeCallback)
-        if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
+        if (channel.isNotEmpty()) {
+            widgetSubscribedChannels.add(channel)
+            upstream.subscribe(listOf(channel))
+        }
     }
 
     override fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String , channel: String, voteUpdateCallback: ((String)-> Unit)?) {
@@ -67,7 +75,6 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onFetchingQuizResult(answerUrl: String) {
-        if(answerUrl.isNotEmpty()) isProcessing = false
         dataClient.fetchQuizResult(answerUrl)
     }
 
@@ -103,6 +110,8 @@ enum class WidgetType (val value: String) {
     IMAGE_QUIZ_RESULT("image-quiz-results"),
     TEXT_POLL("text-poll-created"),
     TEXT_POLL_RESULT("text-poll-results"),
+    IMAGE_POLL("image-poll-created"),
+    IMAGE_POLL_RESULT("image-poll-results"),
     ALERT("alert-created"),
     NONE("none");
 

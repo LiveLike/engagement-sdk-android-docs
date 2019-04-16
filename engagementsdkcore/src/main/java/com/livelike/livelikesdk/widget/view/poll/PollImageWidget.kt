@@ -1,8 +1,9 @@
-package com.livelike.livelikesdk.widget.view.quiz
+package com.livelike.livelikesdk.widget.view.poll
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
@@ -26,13 +27,14 @@ import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.QuizVoteObserver
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
+import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
 import kotlinx.android.synthetic.main.prediction_image_widget.view.*
 
-class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
+class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimationManager
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
@@ -48,6 +50,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private var selectedOption : String? = null
     private var correctOption: String? = null
     private var timeout = 0L
+    private var prevOptionSelectedId = ""
     var parentWidth = 0
     
     constructor(context: Context?) : super(context)
@@ -110,8 +113,10 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         properties.timerAnimatorStartPhase == 0f
 
     private fun startPieTimer(pieTimer: View, properties: WidgetTransientState) {
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
         viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
             fetchResult?.invoke()
+            disableButtons()
         }, {
             progressedState.timerAnimatorStartPhase = it
             progressedStateCallback.invoke(progressedState)
@@ -122,7 +127,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         viewAnimation.addHorizontalSwipeListener(questionTextView.apply {
             text = questionText
             isClickable = true
-            background = AppCompatResources.getDrawable(context, R.drawable.quiz_textview_rounded_corner)
+            background = AppCompatResources.getDrawable(context, R.drawable.poll_textview_rounded_corner)
         }, layout, dismissWidget)
     }
 
@@ -132,17 +137,19 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
         image_optionList.adapter?.let {
-            if (correctOptionWithUserSelection.first != null && correctOptionWithUserSelection.second != null)
-                updateVoteCount(voteOptions)
+            Handler(Looper.getMainLooper()).post {updateVoteCount(voteOptions)}
         } ?: run { image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
+        if(prevOptionSelectedId != selectedOption)
+            fetchResult?.invoke()
+        prevOptionSelectedId = selectedOption ?: ""
         selectedOption = selectedOptionId
         progressedState.userSelection = selectedOptionId
         imageButtonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
-                button.background = AppCompatResources.getDrawable(context, R.drawable.quiz_button_pressed)
+                button.background = AppCompatResources.getDrawable(context, R.drawable.button_poll_answer_outline)
             else button.background = AppCompatResources.getDrawable(context, R.drawable.button_rounded_corners)
         }
     }
@@ -156,33 +163,27 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     override fun updateVoteCount(voteOptions: List<VoteOption>) {
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
-        resultDisplayUtil.startResultAnimation(
-            correctOption == selectedOption, prediction_result,
-            {
-                progressedState.resultAnimatorStartPhase = it
-                progressedStateCallback.invoke(progressedState)
-            },
-            {
-                progressedState.resultAnimationPath = it
-                progressedStateCallback.invoke(progressedState)
-            }, startingState
-        )
         voteOptions.forEach { option ->
             val viewOption = viewOptions[option.id]
             if (viewOption != null) {
-                viewOption.button.setOnClickListener(null)
-                viewOption.progressBar.progress = option.answerCount.toInt()
-                viewOption.percentageTextView.text = option.answerCount.toString().plus("%")
+                logDebug { "SHANE updateVoteOption" }
+                viewOption.percentageTextView.visibility = View.VISIBLE
+                viewOption.percentageTextView.text = option.votePercentage.toString().plus("%")
                 resultDisplayUtil.updateViewDrawable(
                     option.id,
                     viewOption.progressBar,
                     viewOption.button,
-                    option.answerCount.toInt(),
+                    option.votePercentage.toInt(),
                     correctOption,
-                    selectedOption
+                    selectedOption, true
                 )
             }
+        }
+    }
+
+    private fun disableButtons() {
+        viewOptions.forEach {option ->
+            option.value.button.setOnClickListener(null)
         }
     }
 
@@ -192,6 +193,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     ) : RecyclerView.Adapter<ViewHolder>() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            logDebug { "SHANE onBindViewHolder" }
             val option = optionList[position]
             holder.optionText.text = option.description
             option.isCorrect.let { if(it) correctOption = option.id }
