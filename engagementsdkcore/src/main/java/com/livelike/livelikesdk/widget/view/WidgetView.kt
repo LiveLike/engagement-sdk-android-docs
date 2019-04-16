@@ -69,15 +69,11 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
     fun setSession(session: LiveLikeContentSession) {
         session.widgetRenderer = this
+        post { requestLayout() }
         val currentWidgetId = widgetStateProcessor?.currentWidgetId ?: return
         val widgetState = widgetStateProcessor?.getWidgetState(currentWidgetId)
-        // TODO: This logic is put into place in order to determine if config change happened due app getting backgrounded
-        // or device getting rotated. Somehow this logic needs to be refined.
-//        if (widgetState != null) {
-//            if (System.currentTimeMillis() - widgetState.timeStamp > 100) return
-//        }
-        widgetState?.payload?.let {
-            displayWidget(widgetState.type.toString(), it, widgetState)
+        post { widgetState?.payload?.let {
+            displayWidget(widgetState.type.toString(), it, widgetState) }
         }
     }
 
