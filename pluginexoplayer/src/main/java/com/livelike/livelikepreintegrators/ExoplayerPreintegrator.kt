@@ -21,7 +21,7 @@ fun LiveLikeSDK.createExoplayerSession(
     }
 }
 
-fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): Long {
+private fun getExoplayerPdtTime(player: () -> SimpleExoPlayer?): Long {
     return player()?.let {
         it.currentTimeline?.run {
             if (!isEmpty) {
