@@ -93,7 +93,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
             if (optionSelected) {
                 viewAnimation.showConfirmMessage(
-                    prediction_confirm_message_textView,
+                    confirmMessageTextView,
                     prediction_confirm_message_animation,
                     {},
                     {
@@ -116,7 +116,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
 
     private fun showConfirmMessage() {
         viewAnimation.showConfirmMessage(
-            prediction_confirm_message_textView,
+            confirmMessageTextView,
             prediction_confirm_message_animation,
             {},
             {
