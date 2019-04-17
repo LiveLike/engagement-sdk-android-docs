@@ -48,8 +48,8 @@
 
 
     <TextView
-            android:id="@+id/result_percentage_text"
-            android:layout_width="wrap_content"
+            android:id="@+id/percentageText"
+            android:layout_width="60dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/determinateBar"

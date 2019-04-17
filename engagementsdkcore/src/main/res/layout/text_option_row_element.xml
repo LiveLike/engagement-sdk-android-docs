@@ -51,7 +51,7 @@
                 tools:progressDrawable="@drawable/progress_bar_user_correct"/>
 
         <TextView
-                android:id="@+id/result_percentage_text"
+                android:id="@+id/percentageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:elevation="8dp"

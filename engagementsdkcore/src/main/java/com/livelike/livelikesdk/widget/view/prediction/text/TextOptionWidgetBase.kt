@@ -89,7 +89,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     }
 
     override fun confirmMessageUpdated(confirmMessage: String) {
-        prediction_confirm_message_textView.text = confirmMessage
+        confirmMessageTextView.text = confirmMessage
     }
 
     override fun optionListUpdated(voteOptions: List<VoteOption>, optionSelectedCallback: (String?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
@@ -200,7 +200,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val optionButton: Button = view.text_button
-        val percentText: TextView = view.result_percentage_text
+        val percentText: TextView = view.percentageText
         val progressBar: ProgressBar = view.determinateBar
 
         var option: VoteOption? = null
