@@ -33,28 +33,46 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     }
 
     private fun startWidgetAnimation(pieTimer: View, timeout : Long) {
-        if (startingState.timerAnimatorStartPhase != 0f) {
+        if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
             startPieTimer(pieTimer, timeout)
+        }
+        else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+            showConfirmMessage()
+            performPredictionWidgetFadeOutOperations()
         }
         else viewAnimation.startWidgetTransitionInAnimation {
             startPieTimer(pieTimer, timeout)
         }
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
     }
 
     private fun startPieTimer(pieTimer: View, timeout: Long) {
         viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
             if (optionSelectedId.isNotEmpty()) {
-                viewAnimation.showConfirmMessage(
-                    prediction_confirm_message_textView,
-                    prediction_confirm_message_animation
-                ) {}
+                showConfirmMessage()
                 performPredictionWidgetFadeOutOperations()
             }
         }, {
             progressedState.timerAnimatorStartPhase = it
             progressedStateCallback.invoke(progressedState)
         })
+    }
+
+    private fun showConfirmMessage() {
+        viewAnimation.showConfirmMessage(
+            prediction_confirm_message_textView,
+            prediction_confirm_message_animation,
+            {},
+            {
+                progressedState.resultAnimatorStartPhase = it
+                progressedStateCallback.invoke(progressedState)
+            },
+            {
+                progressedState.resultAnimationPath = it
+                progressedStateCallback.invoke(progressedState)
+            },
+            startingState
+        )
     }
 
     private fun performPredictionWidgetFadeOutOperations() {

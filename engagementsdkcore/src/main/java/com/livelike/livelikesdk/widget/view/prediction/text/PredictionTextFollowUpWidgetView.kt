@@ -20,10 +20,6 @@ internal class PredictionTextFollowUpWidgetView :
         showResults = true
     }
 
-    companion object {
-        const val correctAnswerLottieFilePath = "correctAnswer"
-        const val wrongAnswerLottieFilePath = "wrongAnswer"
-    }
     private lateinit var viewAnimation: ViewAnimationManager
     private var timeout = 0L
     private var initialTimeout = 0L

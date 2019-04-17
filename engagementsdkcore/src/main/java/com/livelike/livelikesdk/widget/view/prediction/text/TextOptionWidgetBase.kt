@@ -31,6 +31,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     private lateinit var viewAnimation: ViewAnimationManager
     private lateinit var  resultDisplayUtil : WidgetResultDisplayUtil
     private var optionAdapter : TextOptionAdapter? = null
+    private var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub: ViewStub
     protected lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
     protected lateinit var startingState: WidgetTransientState
@@ -41,14 +42,13 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected var optionSelectedId = ""
     protected var prevOptionSelectedId = ""
     protected var layout = ConstraintLayout(context, null, 0)
-    protected var lottieAnimationPath = ""
     protected var dismissWidget :  (() -> Unit)? = null
     protected var showResults = false
     protected var buttonClickEnabled = true
     protected var useNeutralValues = false
 
+    private var defaultButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
     protected var selectedButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
-    protected var defaultButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -101,11 +101,9 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 optionAdapter?.updateOptionList(voteOptions, correctOptionWithUserSelection)
             }
         }
-
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
-
         progressedState.userSelection = selectedOptionId
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
@@ -154,7 +152,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
             // a way to update user selection.
             if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
-
 
             if (showResults) {
                 setResultsBackground(holder, option.id, option.votePercentage.toInt())
