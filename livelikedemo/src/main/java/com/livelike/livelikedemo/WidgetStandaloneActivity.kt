@@ -93,6 +93,10 @@ class WidgetStandaloneActivity : AppCompatActivity() {
             this.getString(R.string.quiz) -> {
                 commandList.add(showCommand)
             }
+            getString(R.string.poll) -> {
+                commandList.add(showCommand)
+                commandList.add(displayResults)
+            }
             else -> {
                 commandList.add(showCommand)
                 commandList.add(hideCommand)
@@ -152,6 +156,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                             when {
                                 predictionType -> showPredictionQuestionWidget()
                                 pollType -> {
+                                    showPollWidget()
                                 }
                                 quizType -> {
                                     commandList.remove(showCommand)
@@ -208,6 +213,9 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                             getPayload("quiz/image/quiz_result.json")
                                         )
                                     }
+                                }
+                                pollType -> {
+                                    showPollWidgetResults()
                                 }
                             }
                         }
@@ -276,6 +284,20 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                 payload.addProperty("testTag", testTag)
                 showWidget(WidgetType.IMAGE_PREDICTION_RESULTS, payload)
 
+            }
+        }
+
+        private fun showPollWidget() {
+            if (isVariance(getString(R.string.text))) {
+                payload = getPayload("poll/poll_text_widget.json")
+                showWidget(WidgetType.TEXT_POLL, payload )
+            }
+        }
+
+        private fun showPollWidgetResults() {
+            if (isVariance(getString(R.string.text))) {
+                payload = getPayload("poll/poll_text_widget_results.json")
+                showWidget(WidgetType.TEXT_POLL_RESULT, payload )
             }
         }
 
