@@ -120,14 +120,16 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         lottieAnimationPath = if (correctOptionWithUserSelection.first == correctOptionWithUserSelection.second)
             correctAnswerLottieFilePath
         else wrongAnswerLottieFilePath
-        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
-            progressedState.resultAnimatorStartPhase = it
-            progressedStateCallback.invoke(progressedState)
-        },
+        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result,
+            {
+                progressedState.resultAnimatorStartPhase = it
+                progressedStateCallback.invoke(progressedState)
+            },
             {
                 progressedState.resultAnimationPath = it
                 progressedStateCallback.invoke(progressedState)
-            }, startingState)
+            }, startingState
+        )
     }
 
     inner class TextOptionAdapter(
@@ -138,7 +140,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         fun updateOptionList(data: List<VoteOption>, correctOptionWithUserSelection: Pair<String?, String?>) {
             this.correctOptionWithUserSelection = correctOptionWithUserSelection
             optionList = data
-
             notifyDataSetChanged()
         }
 

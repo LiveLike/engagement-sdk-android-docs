@@ -15,7 +15,11 @@ class WidgetStateProcessorImpl(
     }
 
     override fun updateWidgetState(id: String, state: WidgetTransientState) {
-        widgetStateMap[id] = state
+        if (widgetStateMap.contains(id)) {
+            val currentState = widgetStateMap[id]
+            if (currentState?.resultPayload ==  null)
+                currentState?.resultPayload = state.resultPayload
+        } else widgetStateMap[id] = state
     }
 
     override fun release(id: String) {
