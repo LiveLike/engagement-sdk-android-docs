@@ -10,13 +10,13 @@ import com.livelike.livelikesdk.LiveLikeSDK
  * It retrieves the timecode from an HLS stream using the PDT tags.
  *
  * @param player A lambda returning the latest player instance when called.
- * @param contentId The Content Session is to connect the created session to the LiveLike CMS.
+ * @param programId The program to connect the session with. This Id can be created from the Engagement CMS.
  */
 fun LiveLikeSDK.createExoplayerSession(
     player: () -> SimpleExoPlayer?,
-    contentId: String
+    programId: String
 ): LiveLikeContentSession {
-    return this.createContentSession(contentId) {
+    return this.createContentSession(programId) {
         getExoplayerPdtTime(player)
     }
 }

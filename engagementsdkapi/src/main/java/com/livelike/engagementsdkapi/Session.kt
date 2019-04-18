@@ -4,7 +4,6 @@ package com.livelike.engagementsdkapi
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
  *  component.
- *  A session can be synchronized by passing the video player's current timestamp.
  */
 interface LiveLikeContentSession {
     val programUrl : String
@@ -28,3 +27,5 @@ interface LiveLikeContentSession {
 
     fun contentSessionId(): String
 }
+
+// TODO: The UserId shouldn't be bound to the User Session as a user can have multiple sessions

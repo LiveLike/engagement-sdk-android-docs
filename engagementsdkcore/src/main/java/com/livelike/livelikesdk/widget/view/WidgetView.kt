@@ -41,7 +41,7 @@ import kotlinx.android.synthetic.main.widget_view.view.*
  * The WidgetView is the container where widgets are being displayed.
  * Make sure to set the session to this view to get the data flowing from the LiveLike CMS.
  *
- * This view can be used in your directly in your layout.
+ * This view can be used directly in your layout.
  */
 class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null

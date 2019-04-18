@@ -4,8 +4,8 @@ import com.google.gson.JsonObject
 
 /**
  * The WidgetRenderer is in charged of:
- * - Listening for new widget messages coming from the widgetListener
- * - Restoring the widget state when the activity is destroyed
+ * - Listening for new widget messages coming from the [WidgetEventListener]
+ * - Restoring the widget state when the activity is destroyed and session remains the same
  * - Dismissing the current widget showing on screen
  * - Displaying a widget on screen
  *
@@ -22,13 +22,14 @@ interface WidgetRenderer {
 }
 
 /**
- * Interface used to propagate events from the widget view to the business layer.
- * - onAnalyticsEvent: Sends analytics event upstream
- * - onWidgetEvent: TODO
- * - onWidgetDisplayed: Register on the CMS that a widget has been displayed
- * - onOptionVote: Voting for an option
- * - onOptionVoteUpdate: Updating the vote for an option
- * - onFetchingQuizResult: Requesting the quiz results to be displayed
+ * Delegate interface for the session to receive widget updates.
+ *
+ * Each method is an event that is sent in response to a particular view action:
+ * - [onAnalyticsEvent] when view analytics are dispatched
+ * - [onWidgetDisplayed] when a widget has appeared on the screen
+ * - [onOptionVote] when a user votes on an option
+ * - [onOptionVoteUpdate] when a user updates a vote
+ * - [onFetchingQuizResult] when the quiz widget results are being fetched
  *
  */
 interface WidgetEventListener {
