@@ -264,6 +264,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
                 widget.registerObserver(pollTextWidget)
                 widget.notifyDataSetChange()
+                widgetListener?.subscribeForResults(widget.subscribeChannel)
                 containerView.addView(pollTextWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget
@@ -298,6 +299,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
                 widget.registerObserver(pollImageWidget)
                 widget.notifyDataSetChange()
+                widgetListener?.subscribeForResults(widget.subscribeChannel)
                 containerView.addView(pollImageWidget)
                 widgetShown(widgetResource)
                 currentWidget = widget

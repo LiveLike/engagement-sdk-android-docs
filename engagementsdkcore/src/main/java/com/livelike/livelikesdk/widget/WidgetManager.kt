@@ -46,10 +46,6 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
 
     }
 
-    override fun onAnalyticsEvent(data: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun onWidgetEvent(event: WidgetEvent) {
         when (event) {
             WidgetEvent.WIDGET_DISMISS -> {
@@ -62,12 +58,16 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         }
     }
 
-    override fun onOptionVote(voteUrl: String, channel: String, voteChangeCallback: ((String) -> Unit)?) {
-        dataClient.vote(voteUrl, voteChangeCallback)
-        if (channel.isNotEmpty()) {
+    override fun subscribeForResults(channel: String) {
+        if(channel.isNotEmpty() && !widgetSubscribedChannels.contains(channel)) {
             widgetSubscribedChannels.add(channel)
             upstream.subscribe(listOf(channel))
         }
+    }
+
+    override fun onOptionVote(voteUrl: String, channel: String, voteChangeCallback: ((String) -> Unit)?) {
+        dataClient.vote(voteUrl, voteChangeCallback)
+        subscribeForResults(channel)
     }
 
     override fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String , channel: String, voteUpdateCallback: ((String)-> Unit)?) {
