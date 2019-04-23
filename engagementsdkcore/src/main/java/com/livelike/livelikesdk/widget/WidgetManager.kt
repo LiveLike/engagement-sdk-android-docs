@@ -68,7 +68,13 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onOptionVote(voteUrl: String, channel: String, voteChangeCallback: ((String) -> Unit)?) {
-        dataClient.vote(voteUrl, voteChangeCallback)
+        if(processingVoteUpdate)
+            return
+        processingVoteUpdate = true
+        dataClient.vote(voteUrl) {
+            voteChangeCallback?.invoke(it)
+            processingVoteUpdate = false
+        }
         subscribeForResults(channel)
     }
 
