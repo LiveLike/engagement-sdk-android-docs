@@ -113,7 +113,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     }
 
     protected fun dismissWidget() {
-
         dismissWidget?.invoke()
     }
 
