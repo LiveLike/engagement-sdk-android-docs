@@ -18,6 +18,17 @@
             tools:text="Question Text goes here"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+    <View
+            android:id="@+id/closeButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/widget_ic_x"
+            tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="@id/questionTextView"
+            app:layout_constraintEnd_toEndOf="@id/questionTextView"/>
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/option_list"
