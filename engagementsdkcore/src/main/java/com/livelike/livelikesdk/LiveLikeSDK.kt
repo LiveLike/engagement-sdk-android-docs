@@ -13,9 +13,9 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
  * The SDK is expected to be initialized only once. Once the SDK has been initialized, user can create multiple sessions
  * using [createContentSession]
  *
- * @param appId Application's id
+ * @param clientId Client's id
  */
-open class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
+open class LiveLikeSDK(val clientId: String, private val applicationContext: Context) {
 
     companion object {
         const val CONFIG_URL = BuildConfig.CONFIG_URL
@@ -41,7 +41,7 @@ open class LiveLikeSDK(val appId: String, private val applicationContext: Contex
             object : Provider<SdkConfiguration> {
                 override fun subscribe(ready: (SdkConfiguration) -> Unit) {
                     if (configuration != null) ready(configuration!!)
-                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(appId)) {
+                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
                         configuration = it
                         ready(it)
                     }
@@ -62,7 +62,7 @@ open class LiveLikeSDK(val appId: String, private val applicationContext: Contex
             object : Provider<SdkConfiguration> {
             override fun subscribe(ready: (SdkConfiguration) -> Unit) {
                 if (configuration != null) ready(configuration!!)
-                else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(appId)) {
+                else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
                     configuration = it
                     ready(it)
                 }

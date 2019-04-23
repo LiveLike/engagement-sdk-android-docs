@@ -91,8 +91,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
             programData["widgets_enabled"]?.asBoolean ?: true,
             programData["chat_enabled"]?.asBoolean ?: true,
             programData.extractStringOrEmpty("subscribe_channel"),
-            programData.extractStringOrEmpty("sendbird_channel"),
-            programData.extractStringOrEmpty("stream_url")
+            programData.extractStringOrEmpty("sendbird_channel")
         )
     }
 
