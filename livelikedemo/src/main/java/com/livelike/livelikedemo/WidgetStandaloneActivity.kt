@@ -291,6 +291,9 @@ class WidgetStandaloneActivity : AppCompatActivity() {
             if (isVariance(getString(R.string.text))) {
                 payload = getPayload("poll/poll_text_widget.json")
                 showWidget(WidgetType.TEXT_POLL, payload )
+            } else if (isVariance(getString(R.string.image))) {
+                payload = getPayload("poll/poll_image_widget.json")
+                showWidget(WidgetType.IMAGE_POLL, payload )
             }
         }
 
@@ -298,6 +301,9 @@ class WidgetStandaloneActivity : AppCompatActivity() {
             if (isVariance(getString(R.string.text))) {
                 payload = getPayload("poll/poll_text_widget_results.json")
                 showWidget(WidgetType.TEXT_POLL_RESULT, payload )
+            } else if (isVariance(getString(R.string.image))) {
+                payload = getPayload("poll/poll_image_widget_results.json")
+                showWidget(WidgetType.IMAGE_POLL_RESULT, payload )
             }
         }
 

@@ -116,6 +116,8 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
             fetchResult?.invoke()
             disableButtons()
+            closeButton.visibility = View.VISIBLE
+            closeButton.setOnClickListener { dismissWidget?.invoke() }
         }, {
             progressedState.timerAnimatorStartPhase = it
             progressedStateCallback.invoke(progressedState)
