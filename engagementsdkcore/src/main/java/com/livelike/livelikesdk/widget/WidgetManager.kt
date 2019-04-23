@@ -26,6 +26,8 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         Pair("event", WidgetType.IMAGE_POLL_RESULT.value))
 
     private val widgetSubscribedChannels = mutableListOf<String>()
+    private var processingVoteUpdate = false
+    private var voteUpdateHandler: Handler = Handler()
 
     override fun onWidgetDisplayed(impressionUrl: String) {
         dataClient.registerImpression(impressionUrl)
@@ -70,8 +72,17 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         subscribeForResults(channel)
     }
 
-    override fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String , channel: String, voteUpdateCallback: ((String)-> Unit)?) {
-        dataClient.changeVote(oldVoteUrl, newVoteId, voteUpdateCallback)
+    override fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String, channel: String, voteUpdateCallback: ((String)-> Unit)?) {
+        if(processingVoteUpdate) {
+            voteUpdateHandler.removeCallbacksAndMessages(null)
+            voteUpdateHandler.postDelayed({ onOptionVoteUpdate(oldVoteUrl, newVoteId, channel, voteUpdateCallback) }, 200)
+            return
+        }
+        processingVoteUpdate = true
+        dataClient.changeVote(oldVoteUrl, newVoteId) {
+            voteUpdateCallback?.invoke(it)
+            processingVoteUpdate = false
+        }
     }
 
     override fun onFetchingQuizResult(answerUrl: String) {
