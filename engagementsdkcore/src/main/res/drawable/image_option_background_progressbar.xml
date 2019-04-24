@@ -4,10 +4,7 @@
     <item android:id="@android:id/background">
         <shape>
             <corners
-                    android:bottomLeftRadius="2dp"
-                    android:bottomRightRadius="2dp"
-                    android:topLeftRadius="2dp"
-                    android:topRightRadius="2dp"/>
+                    android:radius="@dimen/percent_bar_corner_radius_image"/>
 
         </shape>
     </item>
@@ -16,14 +13,11 @@
         <clip>
             <shape>
                 <corners
-                        android:bottomLeftRadius="2dp"
-                        android:bottomRightRadius="2dp"
-                        android:topLeftRadius="2dp"
-                        android:topRightRadius="2dp"/>
+                        android:radius="@dimen/percent_bar_corner_radius_image"/>
                 <gradient
-                        android:startColor="#e69650be"
+                        android:startColor="@color/percent_bar_poll_start"
                         android:centerY="1.0"
-                        android:endColor="#e6c864c8"
+                        android:endColor="@color/percent_bar_poll_end"
                         android:angle="0"
                 />
             </shape>

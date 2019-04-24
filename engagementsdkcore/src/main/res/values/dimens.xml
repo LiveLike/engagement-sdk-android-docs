@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="textView_text_size">14sp</dimen>
+    <dimen name="header_text_size">14sp</dimen>
+    <dimen name="option_text_size">14sp</dimen>
+    <dimen name="alert_body_text_size">14sp</dimen>
+    <dimen name="alert_link_text_size">14sp</dimen>
+    <dimen name="alert_label_text_size">12sp</dimen>
+
+    <dimen name="default_chat_cell_text_size">16sp</dimen>
+    <dimen name="default_chat_cell_name_size">16sp</dimen>
+
+    <dimen name="percent_label_text_size">18sp</dimen>
+    <dimen name="percent_bar_corner_radius">4dp</dimen>
+    <dimen name="percent_bar_corner_radius_image">2dp</dimen>
+    <dimen name="percent_bar_gradient_angle">270</dimen>
+
+    <dimen name="header_corner_radius">6dp</dimen>
+    <dimen name="header_gradient_angle">45</dimen>
+
+    <dimen name="button_corner_radius">6dp</dimen>
+    <dimen name="button_outline_stroke_width">2dp</dimen>
+    <dimen name="confirm_outline_stroke_width">1dp</dimen>
 </resources>
