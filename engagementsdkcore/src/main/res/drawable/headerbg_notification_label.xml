@@ -3,15 +3,12 @@
        android:shape="rectangle">
 
     <gradient
-            android:startColor="#9f041b"
-            android:endColor="#f5515f"
+            android:startColor="@color/header_background_notification_label_start"
+            android:endColor="@color/header_background_notification_label_end"
             android:type="linear"
-            android:angle="0"/>
+            android:angle="@integer/header_default_background_gradient_angle"/>
 
     <corners
-            android:bottomLeftRadius="3dp"
-            android:bottomRightRadius="3dp"
-            android:topLeftRadius="3dp"
-            android:topRightRadius="3dp"/>
+            android:radius="@dimen/header_background_notification_label_radius"/>
 
 </shape>

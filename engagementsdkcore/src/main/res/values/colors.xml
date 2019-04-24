@@ -19,6 +19,7 @@
 
     <color name="chat_background_start_color">#212121</color>
     <color name="chat_background_end_color">#424242</color>
+    <color name="chat_rounded_rect_color">#D3000000</color>
 
     <color name="header_text_color">#ffffff</color>
     <color name="option_text_color">#ffffff</color>
@@ -29,6 +30,11 @@
 
     <color name="openChatNicknameOther">#7b8391</color>
     <color name="openChatNicknameMe">#00BCD4</color>
+
+    <color name="header_default_background_start">#282828</color>
+    <color name="header_default_background_end">#121212</color>
+    <color name="header_background_notification_label_start">#9f041b</color>
+    <color name="header_background_notification_label_end">#9f041b</color>
 
     <color name="prediction_question_start_color">#003264</color>
     <color name="prediction_question_end_color">#0096c8</color>
@@ -57,4 +63,8 @@
     <color name="percent_bar_poll_end">#e6c864c8</color>
     <color name="percent_bar_user_correct_start">#e681ca00</color>
     <color name="percent_bar_user_correct_end">#e6429321</color>
+    <color name="percent_bar_selected_wrong_start">#e6dc0028</color>
+    <color name="percent_bar_selected_wrong_end">#e6d0021b</color>
+    <color name="percent_bar_wrong_start">#33ffffff</color>
+    <color name="percent_bar_wrong_end">#33ffffff</color>
 </resources>

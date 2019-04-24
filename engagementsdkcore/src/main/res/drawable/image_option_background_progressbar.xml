@@ -18,7 +18,7 @@
                         android:startColor="@color/percent_bar_poll_start"
                         android:centerY="1.0"
                         android:endColor="@color/percent_bar_poll_end"
-                        android:angle="0"
+                        android:angle="@integer/image_option_percent_bar_gradient_angle"
                 />
             </shape>
         </clip>

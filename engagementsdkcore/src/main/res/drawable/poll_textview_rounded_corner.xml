@@ -7,7 +7,7 @@
         <gradient
             android:startColor="@color/poll_question_start_color"
             android:endColor="@color/poll_question_end_color"
-            android:angle="45"/>
+            android:angle="@integer/header_gradient_angle"/>
         <padding
             android:left="16dp"
             android:right="34dp"
