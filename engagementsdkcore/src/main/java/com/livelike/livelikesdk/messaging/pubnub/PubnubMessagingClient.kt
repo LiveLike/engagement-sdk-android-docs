@@ -87,15 +87,14 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ")
 
             override fun message(pubnub: PubNub, message: PNMessageResult) {
-                val pdtString = message.message.asJsonObject.getAsJsonObject("payload")
-                    .extractStringOrEmpty("program_date_time")
+                logMessage(message)
+                val payload = message.message.asJsonObject.getAsJsonObject("payload")
+                val timeoutReceived = payload.extractStringOrEmpty("timeout")
+                val pdtString = payload.extractStringOrEmpty("program_date_time")
                 val epochTimeMs = if (pdtString.isEmpty()) 0 else ZonedDateTime.parse(
                     pdtString,
                     datePattern
                 ).toInstant().toEpochMilli()
-                logMessage(message)
-                val payload = message.message.asJsonObject.getAsJsonObject("payload")
-                val timeoutReceived = payload.extractStringOrEmpty("timeout")
                 val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
 
                 val clientMessage = ClientMessage(

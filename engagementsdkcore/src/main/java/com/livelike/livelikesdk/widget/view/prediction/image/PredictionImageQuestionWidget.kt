@@ -23,6 +23,8 @@ import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.AndroidResource
+import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
@@ -41,7 +43,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
-    private var parentWidth = 0
+    var parentWidth = 0
     val imageButtonMap = HashMap<View, String?>()
     lateinit var userTapped: () -> Unit
 
@@ -194,10 +196,13 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             val option = optionList[position]
             holder.optionText.text = option.description
 
-            // TODO: Move this to adapter layer.
             Glide.with(context)
                 .load(option.imageUrl)
-                .apply(RequestOptions().transform(MultiTransformation(FitCenter(), RoundedCorners(12))))
+                .apply(
+                    RequestOptions().override(AndroidResource.dpToPx(74), AndroidResource.dpToPx(74)).transform(
+                        MultiTransformation(FitCenter(), RoundedCorners(12))
+                    )
+                )
                 .into(holder.optionButton)
             imageButtonMap[holder.button] = option.id
             // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need

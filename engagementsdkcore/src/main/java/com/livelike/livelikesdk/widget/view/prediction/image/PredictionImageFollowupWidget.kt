@@ -44,10 +44,11 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private var layout = ConstraintLayout(context, null, 0)
     private var timeout = 0L
     private var initialTimeout = 0L
-    private var parentWidth = 0
-    // TODO: Duplicate of text follow up. Move out.
+    var parentWidth = 0
+
     private var executor = ScheduledThreadPoolExecutor(15)
     lateinit var future: ScheduledFuture<*>
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)

@@ -6,6 +6,7 @@ import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
+import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logVerbose
 
 internal class SynchronizedMessagingClient(
@@ -39,7 +40,10 @@ internal class SynchronizedMessagingClient(
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         when {
             shouldPublishEvent(event) -> publishEvent(event)
-            shouldDismissEvent(event) -> return
+            shouldDismissEvent(event) -> {
+                logDismissedEvent(event)
+                return
+            }
             else -> queue.enqueue(event)
         }
     }
@@ -57,7 +61,7 @@ internal class SynchronizedMessagingClient(
         when {
             shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
             shouldDismissEvent(event) -> {
-                logVerbose { "Dismissed Client Message -- the message was too old!" }
+                logDismissedEvent(event)
                 queue.dequeue()
             }
         }
@@ -72,10 +76,15 @@ internal class SynchronizedMessagingClient(
          event.timeStamp <= EpochTime(0) ||
                 (event.timeStamp <= timeSource() && event.timeStamp >= timeSource() - validEventBufferMs)
 
-
     fun shouldDismissEvent(event: ClientMessage) : Boolean =
          event.timeStamp > EpochTime(0) &&
                 (event.timeStamp < timeSource() - validEventBufferMs)
+
+    private fun logDismissedEvent(event: ClientMessage) =
+        logVerbose {
+            "Dismissed Client Message -- the message was too old! " +
+                    event.timeStamp.timeSinceEpochInMs +
+                    " : " + timeSource().timeSinceEpochInMs }
 
 }
 
