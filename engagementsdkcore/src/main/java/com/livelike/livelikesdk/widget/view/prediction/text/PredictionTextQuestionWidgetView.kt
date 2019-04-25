@@ -33,7 +33,7 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
         this.viewAnimation = viewAnimation
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        startWidgetAnimation(pieTimer, startingState.timeout)
+        startWidgetAnimation(pieTimer, startingState.interactionPhaseTimeout)
     }
 
     private fun startWidgetAnimation(pieTimer: View, timeout: Long) {

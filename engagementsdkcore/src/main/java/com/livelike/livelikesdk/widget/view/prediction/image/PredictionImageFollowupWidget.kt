@@ -52,7 +52,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         state: (WidgetTransientState) -> Unit
     ) {
         dismissWidget = dismiss
-        this.timeout = startingState.timeout
+        this.timeout = startingState.interactionPhaseTimeout
         this.parentWidth = parentWidth
         this.viewAnimation = viewAnimation
         this.progressedStateCallback = state
@@ -86,7 +86,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
 
     inner class Updater : Runnable {
         override fun run() {
-            progressedState.timeout = timeout - initialTimeout
+            progressedState.interactionPhaseTimeout = timeout - initialTimeout
             progressedStateCallback.invoke(progressedState)
             val updateRate = 1000
             initialTimeout += updateRate

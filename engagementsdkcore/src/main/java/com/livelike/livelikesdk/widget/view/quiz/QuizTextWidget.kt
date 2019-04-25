@@ -39,20 +39,21 @@ internal class QuizTextWidget : TextOptionWidgetBase {
                 pieTimerViewStub.layoutResource = R.layout.pie_timer
                 val pieTimer = pieTimerViewStub.inflate()
                 startPieTimer(pieTimer, properties)
+                Handler().postDelayed({ dismissWidget?.invoke() }, interactionPhaseTimeout + resultPhaseTimeout)
             }
             isWidgetRestoredFromQuestionPhase(properties) -> {
                 pieTimerViewStub.layoutResource = R.layout.pie_timer
                 val pieTimer = pieTimerViewStub.inflate()
                 startPieTimer(pieTimer, properties)
+                Handler().postDelayed({ dismissWidget?.invoke() }, interactionPhaseTimeout + resultPhaseTimeout)
             }
             else -> {
                 pieTimerViewStub.layoutResource = R.layout.cross_image
                 pieTimerViewStub.inflate()
                 showResults = true
+                Handler().postDelayed({ dismissWidget?.invoke() }, resultPhaseTimeout)
             }
         }
-
-        Handler().postDelayed({ dismissWidget?.invoke() }, properties.timeout * 2)
     }
 
     private fun isWidgetRestoredFromQuestionPhase(properties: WidgetTransientState) =
@@ -62,10 +63,10 @@ internal class QuizTextWidget : TextOptionWidgetBase {
         properties.timerAnimatorStartPhase == 0f
 
     private fun startPieTimer(pieTimer: View, properties: WidgetTransientState) {
-        viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
-            buttonClickEnabled = false
-            showResults = true
+        viewAnimation.startTimerAnimation(pieTimer, properties.interactionPhaseTimeout, properties, {
             fetchResult?.invoke()
+            showResults = true
+            buttonClickEnabled = false
         }, {
             progressedState.timerAnimatorStartPhase = it
             progressedStateCallback.invoke(progressedState)
