@@ -4,12 +4,17 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
+import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.logVerbose
 
 
@@ -68,7 +73,11 @@ internal class ImagePreloaderMessagingClient(
                         return true
                     }
                 })
-                .preload(80, 80)
+                .apply(
+                    RequestOptions().override(AndroidResource.dpToPx(74), AndroidResource.dpToPx(74)).transform(
+                        MultiTransformation(FitCenter(), RoundedCorners(12))
+                    )
+                ).preload()
         }
     }
 
