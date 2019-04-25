@@ -71,7 +71,8 @@ interface WidgetStateProcessor {
  *
  */
 class WidgetTransientState {
-    var timeout = 0L
+    var interactionPhaseTimeout = 0L
+    var resultPhaseTimeout = 0L
     var userSelection: String? = null
     var timerAnimatorStartPhase = 0f
     var type: String? = null

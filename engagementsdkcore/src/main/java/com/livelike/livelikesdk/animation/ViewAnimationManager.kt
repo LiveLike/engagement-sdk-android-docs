@@ -94,15 +94,12 @@ internal class ViewAnimationManager(val view: View) {
         )
     }
 
-    // TODO: Context can be injected at class level
-    fun startResultAnimation(
-        lottieAnimationPath: String,
-        context: Context,
-        prediction_result: LottieAnimationView,
-        progressUpdater: (Float) -> Unit,
-        animationPath: (String) -> Unit,
-        resultProperties: WidgetTransientState
-    ) {
+    fun startResultAnimation(lottieAnimationPath: String,
+                             context: Context,
+                             prediction_result: LottieAnimationView,
+                             progressUpdater: (Float) -> Unit,
+                             animationPath: (String) -> Unit,
+                             resultProperties: WidgetTransientState) {
         var resultAnimationPath = resultProperties.resultAnimationPath
         val resultAnimator = ValueAnimator.ofFloat(resultProperties.resultAnimatorStartPhase, 1f)
 
@@ -247,6 +244,7 @@ private class AnimationHandler {
             }
         })
     }
+<<<<<<< HEAD
 }
 
 internal class AnimationProperties(
@@ -255,3 +253,6 @@ internal class AnimationProperties(
     val timeout: Long = 0L,
     val resultAnimationPath: String? = null
 )
+=======
+}
+>>>>>>> 3ecee85... SDK-400: Add interaction and result phase timeout.

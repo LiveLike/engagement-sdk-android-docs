@@ -58,7 +58,7 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     ) {
         this.startingState = startingState
         this.progressedState = progressedState
-        this.timeout = startingState.timeout
+        this.timeout = startingState.interactionPhaseTimeout
         this.dismissWidget = dismiss
         this.fetchResult = fetch
         this.viewAnimation = viewAnimation
@@ -109,7 +109,7 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
     private fun startPieTimer(pieTimer: View, properties: WidgetTransientState) {
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
-        viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
+        viewAnimation.startTimerAnimation(pieTimer, properties.interactionPhaseTimeout, properties, {
             fetchResult?.invoke()
             disableButtons()
             closeButton.visibility = View.VISIBLE
