@@ -14,6 +14,7 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import kotlinx.android.synthetic.main.activity_chat_only.*
 import java.util.*
 
+
 class ChatOnlyActivity : AppCompatActivity() {
     private val chatMessageList = mutableListOf<ChatMessage>()
     override fun onCreate(savedInstanceState: Bundle?) {

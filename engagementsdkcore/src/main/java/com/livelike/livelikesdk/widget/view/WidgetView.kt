@@ -38,6 +38,12 @@ import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 import com.livelike.livelikesdk.widget.view.quiz.QuizTextWidget
 import kotlinx.android.synthetic.main.widget_view.view.*
 
+/**
+ * The WidgetView is the container where widgets are being displayed.
+ * Make sure to set the session to this view to get the data flowing from the LiveLike CMS.
+ *
+ * This view can be used directly in your layout.
+ */
 class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), WidgetRenderer {
     override var widgetListener: WidgetEventListener? = null
     override var widgetStateProcessor: WidgetStateProcessor? = null
@@ -67,6 +73,13 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         verifyViewMinWidth(viewRoot)
     }
 
+    /**
+     * Sets the Session on the widget view.
+     * The widget events coming from the LiveLike CMS will flow through the session
+     * and display widget where this view is being drawn.
+     *
+     * @param session The session used on the widget view.
+     */
     fun setSession(session: LiveLikeContentSession) {
         session.widgetRenderer = this
         post { requestLayout() }
@@ -327,8 +340,8 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                         alertResource,
                         progressedState,
                         ViewAnimationManager(alertWidget), {
-                        saveState(id.toString(), payload, widgetType, it)
-                    })
+                            saveState(id.toString(), payload, widgetType, it)
+                        })
                 }
 
                 emitWidgetShown(alertResource.id, alertResource.kind)

@@ -2,10 +2,8 @@ package com.livelike.engagementsdkapi
 
 
 /**
- *  Represents a playable session which LiveLike uses deliver widgets and associate user with the Chat
- *  component. SDK would keep a track of video player's current position as well. This would help the
- *  SDK to perform various synchronization operations.
- *  TODO: These can be serializable? Maybe not sure.
+ *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
+ *  component.
  */
 interface LiveLikeContentSession {
     val programUrl : String
@@ -29,3 +27,5 @@ interface LiveLikeContentSession {
 
     fun contentSessionId(): String
 }
+
+// TODO: The UserId shouldn't be bound to the User Session as a user can have multiple sessions

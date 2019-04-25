@@ -2,7 +2,6 @@ package com.livelike.engagementsdkapi
 
 import android.content.Context
 
-
 interface ChatEventListener {
     fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
 }

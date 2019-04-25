@@ -29,6 +29,12 @@ internal inline fun <reified T> T.logError(message: () -> Any?) = log(LogLevel.E
 
 private var handler: ((String) -> Unit)? = null
 
+/**
+ * Add a log handler to intercept the logs.
+ * This can be helpful for debugging.
+ *
+ * @param logHandler Method processing the log string received.
+ */
 fun registerLogsHandler(logHandler: (String) -> Unit) {
     handler = logHandler
 }
