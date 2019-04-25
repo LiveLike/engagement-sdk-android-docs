@@ -503,15 +503,10 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
     private fun optionSelectionEvents() {
         val optionSelected = currentWidget?.optionSelected
-        if (optionSelected?.id == "") {
-            removeView()
-            currentWidget?.let { emitWidgetDismissEvents(it) }
-            return
-        }
-
         currentWidget?.id?.let {
             optionSelected?.id?.let { optionId -> addWidgetPredictionVoted(it, optionId) }
         }
+
         currentWidget?.subscribeChannel?.let {
             if(currentWidget?.selectedVoteChangeUrl.isNullOrEmpty())
                 widgetListener?.onOptionVote(optionSelected?.voteUrl.toString(), it) {changeUrl -> currentWidget?.selectedVoteChangeUrl = changeUrl}
