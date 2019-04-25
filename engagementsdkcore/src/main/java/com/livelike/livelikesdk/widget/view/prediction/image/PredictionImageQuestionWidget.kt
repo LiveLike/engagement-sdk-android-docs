@@ -24,7 +24,6 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.*
