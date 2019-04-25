@@ -13,7 +13,7 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
  * The SDK is expected to be initialized only once. Once the SDK has been initialized, user can create multiple sessions
  * using [createContentSession]
  *
- * @param appId Application's id
+ * @param clientId Client's id
  * @param applicationContext The application context
  */
 open class LiveLikeSDK(val appId: String, private val applicationContext: Context) {
