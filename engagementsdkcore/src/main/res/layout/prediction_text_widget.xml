@@ -7,7 +7,7 @@
                                              android:layout_height="wrap_content"
                                              android:background="#99000000">
     <TextView
-            android:id="@+id/prediction_question_textView"
+            android:id="@+id/questionTextView"
             android:layout_height="wrap_content"
             android:layout_width="400dp"
             android:background="@drawable/top_rounded_corner"
@@ -18,6 +18,17 @@
             tools:text="Question Text goes here"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+    <View
+            android:id="@+id/closeButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/widget_ic_x"
+            tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="@id/questionTextView"
+            app:layout_constraintEnd_toEndOf="@id/questionTextView"/>
 
     <android.support.v7.widget.RecyclerView
             android:id="@+id/option_list"
@@ -29,7 +40,7 @@
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/prediction_question_textView"
+            app:layout_constraintTop_toBottomOf="@+id/questionTextView"
             app:layout_constraintBottom_toBottomOf="parent"
     />
 

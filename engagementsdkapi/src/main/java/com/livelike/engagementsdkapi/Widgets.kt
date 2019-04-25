@@ -17,7 +17,7 @@ interface WidgetRenderer {
     fun displayWidget(
         type: String,
         payload: JsonObject,
-        startingState: WidgetTransientState
+        initialState: WidgetTransientState
     )
 }
 
@@ -33,12 +33,12 @@ interface WidgetRenderer {
  *
  */
 interface WidgetEventListener {
-    fun onAnalyticsEvent(data: Any)
     fun onWidgetEvent(event: WidgetEvent)
     fun onWidgetDisplayed(impressionUrl: String)
     fun onOptionVote(voteUrl: String, channel : String, voteUpdateCallback: ((String)-> Unit)?)
     fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String, channel: String, voteUpdateCallback: ((String)-> Unit)?)
     fun onFetchingQuizResult(answerUrl: String)
+    fun subscribeForResults(channel:String)
 }
 
 /**
@@ -71,6 +71,7 @@ class WidgetTransientState {
     var timerAnimatorStartPhase = 0f
     var type: String? = null
     var payload: JsonObject? = null
+    var resultPayload: JsonObject? = null
     var resultAnimationPath: String? = null
     var resultAnimatorStartPhase = 0f
     var timeStamp = 0L

@@ -81,6 +81,6 @@ class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val button: View = view.button
     val optionButton: ImageView = view.image_button
     val optionText: TextView = view.item_text
-    val percentageText: TextView = view.result_percentage_text
+    val percentageText: TextView = view.percentageText
     val progressBar: ProgressBar = view.determinateBar
 }

@@ -111,22 +111,36 @@ internal class ViewAnimationManager(val view: View) {
     fun showConfirmMessage(
         confirmMessageTextView: View,
         confirmMessageLottieAnimationView: LottieAnimationView,
-        onCompleteCallback: (() -> Unit)?
+        onCompleteCallback: (() -> Unit)?,
+        progressUpdater: (Float) -> Unit,
+        animationPath: (String) -> Unit,
+        resultProperties: WidgetTransientState
     ) {
-        // TODO: apply callback
+
         confirmMessageTextView.visibility = View.VISIBLE
-        val lottieAnimationPath = "confirmMessage"
-        val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, view.context)
-        if (lottieAnimation != null) {
-            confirmMessageLottieAnimationView.setAnimation("$lottieAnimationPath/$lottieAnimation")
-            confirmMessageLottieAnimationView.visibility = View.VISIBLE
-            animationHandler.startAnimation(
-                confirmMessageLottieAnimationView,
-                { triggerTransitionOutAnimation(onCompleteCallback) },
-                widgetShowingDurationAfterConfirmMessage,
-                ValueAnimator.ofFloat(0f, 1f),
-                {})
-        }
+
+        var resultAnimationPath = resultProperties.resultAnimationPath
+        val resultAnimator = ValueAnimator.ofFloat(resultProperties.resultAnimatorStartPhase, 1f)
+
+        if (resultAnimationPath == null) {
+            val lottieAnimationPath = "confirmMessage"
+            val lottieAnimation = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, view.context)
+            if (lottieAnimation != null) {
+                resultAnimationPath = "$lottieAnimationPath/$lottieAnimation"
+                confirmMessageLottieAnimationView.setAnimation(resultAnimationPath)
+                confirmMessageLottieAnimationView.visibility = View.VISIBLE
+            }
+        } else confirmMessageLottieAnimationView.setAnimation(resultAnimationPath)
+
+        resultAnimationPath?.let { animationPath.invoke(it) }
+        confirmMessageLottieAnimationView.visibility = View.VISIBLE
+
+        animationHandler.startAnimation(
+            confirmMessageLottieAnimationView,
+            { triggerTransitionOutAnimation(onCompleteCallback) },
+            widgetShowingDurationAfterConfirmMessage,
+            resultAnimator,
+            { progressUpdater.invoke(it) })
     }
 
     @SuppressLint("ClickableViewAccessibility")

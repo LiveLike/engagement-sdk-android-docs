@@ -31,6 +31,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     private lateinit var viewAnimation: ViewAnimationManager
     private lateinit var  resultDisplayUtil : WidgetResultDisplayUtil
     private var optionAdapter : TextOptionAdapter? = null
+    private var lottieAnimationPath = ""
     protected lateinit var pieTimerViewStub: ViewStub
     protected lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
     protected lateinit var startingState: WidgetTransientState
@@ -41,10 +42,13 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected var optionSelectedId = ""
     protected var prevOptionSelectedId = ""
     protected var layout = ConstraintLayout(context, null, 0)
-    protected var lottieAnimationPath = ""
     protected var dismissWidget :  (() -> Unit)? = null
     protected var showResults = false
     protected var buttonClickEnabled = true
+    protected var useNeutralValues = false
+
+    private var defaultButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
+    protected var selectedButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -62,7 +66,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         this.progressedState = progressedState
         this.progressedStateCallback = progressedStateCallback
         inflate(context)
-        prediction_question_textView.layoutParams.width = parentWidth
+        questionTextView.layoutParams.width = parentWidth
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -71,7 +75,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 .inflate(R.layout.prediction_text_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_text_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
-        viewAnimation.addHorizontalSwipeListener(prediction_question_textView, layout, dismissWidget)
+        viewAnimation.addHorizontalSwipeListener(questionTextView, layout, dismissWidget)
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
     }
 
@@ -81,11 +85,11 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun questionUpdated(questionText: String) {
-        prediction_question_textView.text = questionText
+        questionTextView.text = questionText
     }
 
     override fun confirmMessageUpdated(confirmMessage: String) {
-        prediction_confirm_message_textView.text = confirmMessage
+        confirmMessageTextView.text = confirmMessage
     }
 
     override fun optionListUpdated(voteOptions: List<VoteOption>, optionSelectedCallback: (String?) -> Unit, correctOptionWithUserSelection: Pair<String?, String?>) {
@@ -97,15 +101,14 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 optionAdapter?.updateOptionList(voteOptions, correctOptionWithUserSelection)
             }
         }
-
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         progressedState.userSelection = selectedOptionId
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
-                button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
-            else button.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
+                button.background = selectedButtonDrawable
+            else button.background = defaultButtonDrawable
         }
     }
 
@@ -117,14 +120,16 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         lottieAnimationPath = if (correctOptionWithUserSelection.first == correctOptionWithUserSelection.second)
             correctAnswerLottieFilePath
         else wrongAnswerLottieFilePath
-        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
-            progressedState.resultAnimatorStartPhase = it
-            progressedStateCallback.invoke(progressedState)
-        },
+        viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result,
+            {
+                progressedState.resultAnimatorStartPhase = it
+                progressedStateCallback.invoke(progressedState)
+            },
             {
                 progressedState.resultAnimationPath = it
                 progressedStateCallback.invoke(progressedState)
-            }, startingState)
+            }, startingState
+        )
     }
 
     inner class TextOptionAdapter(
@@ -135,7 +140,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         fun updateOptionList(data: List<VoteOption>, correctOptionWithUserSelection: Pair<String?, String?>) {
             this.correctOptionWithUserSelection = correctOptionWithUserSelection
             optionList = data
-
             notifyDataSetChanged()
         }
 
@@ -149,7 +153,6 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
             // a way to update user selection.
             if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
-
 
             if (showResults) {
                 setResultsBackground(holder, option.id, option.votePercentage.toInt())
@@ -187,7 +190,8 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 viewHolder.optionButton,
                 votePercentage,
                 correctOptionWithUserSelection.first,
-                correctOptionWithUserSelection.second)
+                correctOptionWithUserSelection.second,
+                useNeutralValues)
         }
 
         override fun getItemCount(): Int {
@@ -197,7 +201,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val optionButton: Button = view.text_button
-        val percentText: TextView = view.result_percentage_text
+        val percentText: TextView = view.percentageText
         val progressBar: ProgressBar = view.determinateBar
 
         var option: VoteOption? = null

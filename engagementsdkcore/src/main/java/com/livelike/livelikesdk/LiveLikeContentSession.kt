@@ -17,6 +17,5 @@ internal data class Program(
     val widgetsEnabled: Boolean,
     val chatEnabled: Boolean,
     val subscribeChannel: String,
-    val chatChannel: String,
-    val streamUrl: String
+    val chatChannel: String
 )

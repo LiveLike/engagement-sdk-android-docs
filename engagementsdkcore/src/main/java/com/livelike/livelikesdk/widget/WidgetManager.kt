@@ -19,6 +19,14 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
         MessagingClientProxy(upstream),
         ExternalMessageTrigger,
     WidgetEventListener {
+    private val exemptionList = listOf(
+        Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
+        Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value),
+        Pair("event", WidgetType.TEXT_POLL_RESULT.value),
+        Pair("event", WidgetType.IMAGE_POLL_RESULT.value))
+
+    private val widgetSubscribedChannels = mutableListOf<String>()
+
     override fun onWidgetDisplayed(impressionUrl: String) {
         dataClient.registerImpression(impressionUrl)
     }
@@ -34,30 +42,32 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     override var triggerListener: ExternalTriggerListener? = null
     set(listener) {
         field = listener
-        listener?.exemptionList = listOf(
-            Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
-            Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value),
-            Pair("event", WidgetType.TEXT_POLL_RESULT.value)
-        )
-    }
+        listener?.exemptionList = exemptionList
 
-    override fun onAnalyticsEvent(data: Any) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onWidgetEvent(event: WidgetEvent) {
         when (event) {
             WidgetEvent.WIDGET_DISMISS -> {
                 isProcessing = false
+                upstream.unsubscribe(widgetSubscribedChannels)
+                widgetSubscribedChannels.clear()
                 triggerListener?.onTrigger("done")
             }
             else -> {}
         }
     }
 
+    override fun subscribeForResults(channel: String) {
+        if(channel.isNotEmpty() && !widgetSubscribedChannels.contains(channel)) {
+            widgetSubscribedChannels.add(channel)
+            upstream.subscribe(listOf(channel))
+        }
+    }
+
     override fun onOptionVote(voteUrl: String, channel: String, voteChangeCallback: ((String) -> Unit)?) {
         dataClient.vote(voteUrl, voteChangeCallback)
-        if (channel.isNotEmpty()) upstream.subscribe(listOf(channel))
+        subscribeForResults(channel)
     }
 
     override fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String , channel: String, voteUpdateCallback: ((String)-> Unit)?) {
@@ -65,12 +75,13 @@ internal class WidgetManager(upstream: MessagingClient, private val dataClient: 
     }
 
     override fun onFetchingQuizResult(answerUrl: String) {
-        if(answerUrl.isNotEmpty()) isProcessing = false
         dataClient.fetchQuizResult(answerUrl)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        isProcessing = true
+        val exemption = exemptionList.any { event.message[it.first].asString == it.second }
+        //If this message type is in the exemption list it should never flip processing boolean
+        isProcessing = !exemption || isProcessing
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         Handler(Looper.getMainLooper()).post {
@@ -99,6 +110,8 @@ enum class WidgetType (val value: String) {
     IMAGE_QUIZ_RESULT("image-quiz-results"),
     TEXT_POLL("text-poll-created"),
     TEXT_POLL_RESULT("text-poll-results"),
+    IMAGE_POLL("image-poll-created"),
+    IMAGE_POLL_RESULT("image-poll-results"),
     ALERT("alert-created"),
     NONE("none");
 

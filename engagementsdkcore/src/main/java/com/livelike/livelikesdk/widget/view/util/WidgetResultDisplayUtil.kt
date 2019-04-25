@@ -15,29 +15,35 @@ import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 
 internal class WidgetResultDisplayUtil(val context: Context, private val viewAnimation: ViewAnimationManager) {
-    private var lottieAnimationPath = ""
+
     companion object {
         const val correctAnswerLottieFilePath = "correctAnswer"
         const val wrongAnswerLottieFilePath = "wrongAnswer"
     }
+
     fun updateViewDrawable(optionId: String,
                            progressBar: ProgressBar,
                            optionButton: View,
                            percentage: Int,
                            correctOption: String?,
-                           selectedOption: String?) {
-        setViewOutline(optionButton,selectedOption == optionId, correctOption == optionId )
-        setProgressBarColor(progressBar, selectedOption == optionId, correctOption == optionId, percentage)
+                           selectedOption: String?,
+                           useNeutralValues: Boolean = false) {
+        setViewOutline(optionButton,selectedOption == optionId, correctOption == optionId, useNeutralValues )
+        setProgressBarColor(progressBar, selectedOption == optionId, correctOption == optionId, percentage, useNeutralValues)
     }
 
-    private fun setViewOutline(view: View, isUserSelected: Boolean, isCorrect: Boolean) {
-        if (isCorrect) updateViewBackground(view, R.drawable.button_correct_answer_outline)
-        else if (isUserSelected) updateViewBackground(view, R.drawable.button_wrong_answer_outline )
-
+    private fun setViewOutline(view: View, isUserSelected: Boolean, isCorrect: Boolean, isNeutral: Boolean) {
+       when {
+           isNeutral && isUserSelected -> updateViewBackground(view, R.drawable.button_poll_answer_outline)
+           isCorrect -> updateViewBackground(view, R.drawable.button_correct_answer_outline)
+           isUserSelected -> updateViewBackground(view, R.drawable.button_wrong_answer_outline)
+           else -> updateViewBackground(view, R.drawable.button_default)
+       }
     }
 
-    private fun setProgressBarColor(progressBar: ProgressBar, isUserSelected: Boolean, isCorrect: Boolean, percentage: Int) {
+    private fun setProgressBarColor(progressBar: ProgressBar, isUserSelected: Boolean, isCorrect: Boolean, percentage: Int, isNeutral: Boolean) {
         when {
+            isNeutral && isUserSelected -> updateProgressBar(progressBar, R.drawable.progress_bar_user_selection_poll, percentage)
             isCorrect -> updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
             isUserSelected -> updateProgressBar(progressBar, R.drawable.progress_bar_user_selection_wrong, percentage)
             else -> updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
@@ -51,7 +57,12 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
         animationPath: (String?) -> Unit,
         resultProperties: WidgetTransientState
     ) {
-        viewAnimation.startResultAnimation(findResultAnimationPath(isCorrect), context, prediction_result, progressUpdater, animationPath, resultProperties)
+        viewAnimation.startResultAnimation(findResultAnimationPath(isCorrect),
+            context,
+            prediction_result,
+            progressUpdater,
+            animationPath,
+            resultProperties)
     }
 
     private fun findResultAnimationPath(isCorrect: Boolean): String {

@@ -19,7 +19,7 @@
             app:layout_constraintHorizontal_bias="0.0"/>
 
     <TextView
-            android:id="@+id/prediction_question_textView"
+            android:id="@+id/questionTextView"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:background="@drawable/rounded_corner"
@@ -35,6 +35,18 @@
             android:paddingRight="16dp"
             android:paddingLeft="16dp"
     />
+
+    <View
+            android:id="@+id/closeButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/widget_ic_x"
+            tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="@id/questionTextView"
+            app:layout_constraintEnd_toEndOf="@id/questionTextView"/>
 
     <include layout="@layout/confirm_message"
              android:id="@+id/confirm_message"

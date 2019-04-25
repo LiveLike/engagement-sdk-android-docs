@@ -16,14 +16,8 @@ internal class PredictionTextFollowUpWidgetView :
     TextOptionWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        showResults = true
-    }
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    companion object {
-        const val correctAnswerLottieFilePath = "correctAnswer"
-        const val wrongAnswerLottieFilePath = "wrongAnswer"
-    }
     private lateinit var viewAnimation: ViewAnimationManager
     private var timeout = 0L
     private var initialTimeout = 0L

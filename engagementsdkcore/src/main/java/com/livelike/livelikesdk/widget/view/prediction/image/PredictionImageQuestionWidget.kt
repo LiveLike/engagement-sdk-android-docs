@@ -73,24 +73,39 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        if (startingState.timerAnimatorStartPhase != 0f) {
+
+        if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
             startPieTimer(pieTimer, timeout)
+        }
+        else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+            showConfirmMessage()
+            performPredictionWidgetFadeOutOperations()
         }
         else viewAnimation.startWidgetTransitionInAnimation {
             startPieTimer(pieTimer, timeout)
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
-        prediction_question_textView.layoutParams.width = parentWidth
+        questionTextView.layoutParams.width = parentWidth
     }
 
     private fun startPieTimer(pieTimer: View, timeout: Long) {
         viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
             if (optionSelected) {
                 viewAnimation.showConfirmMessage(
-                    prediction_confirm_message_textView,
-                    prediction_confirm_message_animation
-                ) {}
+                    confirmMessageTextView,
+                    prediction_confirm_message_animation,
+                    {},
+                    {
+                        progressedState.resultAnimatorStartPhase = it
+                        progressedStateCallback.invoke(progressedState)
+                    },
+                    {
+                        progressedState.resultAnimationPath = it
+                        progressedStateCallback.invoke(progressedState)
+                    },
+                    startingState
+                )
                 performPredictionWidgetFadeOutOperations()
             }
         }, {
@@ -99,12 +114,29 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         })
     }
 
+    private fun showConfirmMessage() {
+        viewAnimation.showConfirmMessage(
+            confirmMessageTextView,
+            prediction_confirm_message_animation,
+            {},
+            {
+                progressedState.resultAnimatorStartPhase = it
+                progressedStateCallback.invoke(progressedState)
+            },
+            {
+                progressedState.resultAnimationPath = it
+                progressedStateCallback.invoke(progressedState)
+            },
+            startingState
+        )
+    }
+
     private fun performPredictionWidgetFadeOutOperations() {
         imageButtonMap.forEach { (button) ->
             disableButtons(button)
             button.setTranslucent()
         }
-        prediction_question_textView.setTranslucent()
+        questionTextView.setTranslucent()
         prediction_pie_updater_animation.setTranslucent()
     }
 
@@ -117,7 +149,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     }
 
     override fun questionUpdated(questionText: String) {
-        viewAnimation.addHorizontalSwipeListener(prediction_question_textView.apply {
+        viewAnimation.addHorizontalSwipeListener(questionTextView.apply {
             text = questionText
             isClickable = true
         }, layout, dismissWidget)
@@ -145,7 +177,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     }
 
     override fun confirmMessageUpdated(confirmMessage: String) {
-        prediction_confirm_message_textView.text = confirmMessage
+        confirmMessageTextView.text = confirmMessage
     }
 
     fun userTappedCallback(userTapped: () -> Unit) {
