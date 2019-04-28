@@ -106,8 +106,11 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0)
                 widget.registerObserver(predictionWidget)
 
-                initialState.interactionPhaseTimeout = widget.timeout
-                initialState.resultPhaseTimeout = widget.timeout
+                if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
+                    initialState.interactionPhaseTimeout = widget.timeout
+                    initialState.resultPhaseTimeout = widget.timeout
+                }
+                savePayload(progressedState, payload, widget)
 
                 predictionWidget.initialize(
                     { dismissCurrentWidget() },
@@ -141,7 +144,12 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 }
 
                 timeout = widget.timeout
-                initialState.interactionPhaseTimeout = widget.timeout
+                if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
+                    initialState.interactionPhaseTimeout = widget.timeout
+                    initialState.resultPhaseTimeout = widget.timeout
+                }
+
+                savePayload(progressedState, payload, widget)
 
                 predictionWidget.initialize({
                     dismissCurrentWidget()
@@ -164,7 +172,12 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
                 widget.registerObserver(predictionWidget)
 
-                initialState.interactionPhaseTimeout = widget.timeout
+                if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
+                    initialState.interactionPhaseTimeout = widget.timeout
+                    initialState.resultPhaseTimeout = widget.timeout
+                }
+
+                savePayload(progressedState, payload, widget)
 
                 predictionWidget.initialize(
                     { dismissCurrentWidget() },
@@ -199,7 +212,12 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     return
                 }
 
-                initialState.interactionPhaseTimeout = widget.timeout
+                if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
+                    initialState.interactionPhaseTimeout = widget.timeout
+                    initialState.resultPhaseTimeout = widget.timeout
+                }
+
+                savePayload(progressedState, payload, widget)
 
                 predictionWidget.initialize({
                     dismissCurrentWidget()
@@ -388,6 +406,15 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 logDebug { "Received Widget is not Implemented." }
             }
         }
+    }
+
+    private fun savePayload(
+        progressedState: WidgetTransientState,
+        payload: JsonObject,
+        widget: Widget
+    ) {
+        progressedState.payload = payload
+        widgetStateProcessor?.updateWidgetState(widget.id.toString(), progressedState)
     }
 
     private fun displayQuizWidget(

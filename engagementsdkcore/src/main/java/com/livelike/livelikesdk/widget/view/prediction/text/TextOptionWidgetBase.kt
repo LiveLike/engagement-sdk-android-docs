@@ -129,6 +129,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         progressedState.userSelection = selectedOptionId
+        optionSelectedId = selectedOptionId.toString()
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = selectedButtonDrawable

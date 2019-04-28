@@ -39,13 +39,17 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     private fun startWidgetAnimation(pieTimer: View, timeout: Long) {
         if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
             startPieTimer(pieTimer, timeout)
-        } else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+            Handler().postDelayed({ dismissWidget?.invoke() }, interactionPhaseTimeout + resultPhaseTimeout)
+        }
+        else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
             showConfirmMessage()
             performPredictionWidgetFadeOutOperations()
-        } else viewAnimation.startWidgetTransitionInAnimation {
-            startPieTimer(pieTimer, timeout)
+            Handler().postDelayed({ dismissWidget?.invoke() }, resultPhaseTimeout)
         }
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
+        else viewAnimation.startWidgetTransitionInAnimation {
+            startPieTimer(pieTimer, timeout)
+            Handler().postDelayed({ dismissWidget?.invoke() }, interactionPhaseTimeout + resultPhaseTimeout)
+        }
     }
 
     private fun startPieTimer(pieTimer: View, timeout: Long) {

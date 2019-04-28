@@ -20,9 +20,6 @@ internal class PredictionTextFollowUpWidgetView :
 
     private lateinit var viewAnimation: ViewAnimationManager
     private var timeout = 0L
-    //private var initialTimeout = 0L
-//    private var executor = ScheduledThreadPoolExecutor(15)
-//    lateinit var future: ScheduledFuture<*>
 
     override fun initialize(
         dismiss: () -> Unit,
@@ -42,7 +39,6 @@ internal class PredictionTextFollowUpWidgetView :
         imageView.setImageResource(R.mipmap.widget_ic_x)
         imageView.setOnClickListener { dismissWidget() }
         this.timeout = startingState.interactionPhaseTimeout
-        future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
     }
 
     override fun optionListUpdated(
@@ -68,7 +64,7 @@ internal class PredictionTextFollowUpWidgetView :
         }
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
-
+    }
     inner class Updater : Runnable {
         override fun run() {
             progressedState.interactionPhaseTimeout = timeout - initialTimeout
@@ -80,4 +76,5 @@ internal class PredictionTextFollowUpWidgetView :
             }
         }
     }
+
 }
