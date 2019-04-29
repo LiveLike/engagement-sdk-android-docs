@@ -61,7 +61,7 @@ internal class ImagePreloaderMessagingClient(
                     )
                             : Boolean {
                         updateProcessingList(currentImageMessage)
-                        return true
+                        return false
                     }
 
                     override fun onResourceReady(
@@ -70,7 +70,7 @@ internal class ImagePreloaderMessagingClient(
                     )
                             : Boolean {
                         updateProcessingList(currentImageMessage)
-                        return true
+                        return false
                     }
                 })
                 .apply(
