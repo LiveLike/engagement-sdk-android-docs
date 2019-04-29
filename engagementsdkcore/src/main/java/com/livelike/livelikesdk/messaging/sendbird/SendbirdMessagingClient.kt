@@ -56,7 +56,7 @@ internal class SendbirdMessagingClient(
     }
 
     private fun fetchUserId() : String {
-        return liveLikeUser?.userId ?: "no-idea"
+        return liveLikeUser?.sessionId ?: "no-idea"
     }
 
     private fun fetchUsername() : String {
