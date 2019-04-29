@@ -234,7 +234,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         val timeData = session.getPlayheadTime()
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
-            session.currentUser?.sessionId ?: "no-id",
+            session.currentUser?.sessionId ?: "empty-id",
             session.currentUser?.userName ?: "John Doe",
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString()
