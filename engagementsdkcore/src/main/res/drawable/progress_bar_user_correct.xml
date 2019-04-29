@@ -3,11 +3,11 @@
     <item android:id="@android:id/progress">
         <scale android:scaleWidth="100%">
             <shape>
-                <corners android:radius="4dp" />
+                <corners android:radius="@dimen/percent_bar_corner_radius" />
                 <gradient
-                        android:angle="270"
-                        android:endColor="#e6429321"
-                        android:startColor="#e681ca00" />
+                        android:angle="@integer/percent_bar_gradient_angle"
+                        android:endColor="@color/percent_bar_user_correct_end"
+                        android:startColor="@color/percent_bar_user_correct_start" />
                 <padding android:bottom="15dp"
                          android:top="14dp"
                          android:right="48dp"

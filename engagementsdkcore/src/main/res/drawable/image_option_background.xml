@@ -3,12 +3,12 @@
     <item>
         <shape>
             <gradient
-                    android:startColor="#00000000"
-                    android:centerColor="#99000000"
-                    android:endColor="#000000"
-                    android:angle="-90"/>
-            <corners android:bottomRightRadius="6dp"
-                     android:bottomLeftRadius="6dp"/>
+                    android:startColor="@color/image_option_background_start"
+                    android:centerColor="@color/image_option_background_center"
+                    android:endColor="@color/image_option_background_end"
+                    android:angle="@integer/image_option_gradient_angle"/>
+            <corners android:bottomRightRadius="@dimen/button_corner_radius"
+                     android:bottomLeftRadius="@dimen/button_corner_radius"/>
         </shape>
     </item>
 </selector>

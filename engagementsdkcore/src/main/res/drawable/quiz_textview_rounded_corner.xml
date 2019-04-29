@@ -3,6 +3,6 @@
         <gradient
             android:startColor="@color/quiz_question_end_color"
             android:endColor="@color/quiz_question_start_color"
-            android:angle="45"/>
-    <corners android:radius="6dp"/>
+            android:angle="@integer/header_gradient_angle"/>
+    <corners android:radius="@dimen/header_corner_radius"/>
 </shape>

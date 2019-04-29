@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+
     <color name="colorPrimary">#32373c</color>
     <color name="colorPrimaryDark">#99000000</color>
     <color name="colorAccent">#FFFFFF</color>
@@ -9,20 +13,58 @@
     <color name="colorDisplayText">#ccffffff</color>
     <color name="colorDisplayTextHighlight">#3333ff</color>
 
-    <color name="text_color">#ffffff</color>
+    <color name="default_chat_cell_name_color">#66ffffff</color>
+    <color name="default_chat_cell_message_color">#dfdfdf</color>
+    <color name="default_button_background_color">#99000000</color>
+
+    <color name="chat_background_start_color">#212121</color>
+    <color name="chat_background_end_color">#424242</color>
+    <color name="chat_rounded_rect_color">#D3000000</color>
+
+    <color name="header_text_color">#ffffff</color>
+    <color name="option_text_color">#ffffff</color>
+    <color name="percent_label_text_color">#ffffff</color>
+    <color name="alert_body_text_color">#ffffff</color>
+    <color name="alert_link_text_color">#ffffff</color>
+    <color name="alert_label_text_color">#ffffff</color>
 
     <color name="openChatNicknameOther">#7b8391</color>
     <color name="openChatNicknameMe">#00BCD4</color>
-    <color name="white">#ffffff</color>
-    <color name="black">#000000</color>
-    <color name="transparent">#00000000</color>
+
+    <color name="header_default_background_start">#282828</color>
+    <color name="header_default_background_end">#121212</color>
+    <color name="header_background_notification_label_start">#9f041b</color>
+    <color name="header_background_notification_label_end">#9f041b</color>
+
     <color name="prediction_question_start_color">#003264</color>
     <color name="prediction_question_end_color">#0096c8</color>
+    <color name="prediction_button_pressed">#00b4c8</color>
+    <color name="prediction_image_button">#f21c1c1c</color>
+
     <color name="quiz_question_start_color">#f76b1c</color>
     <color name="quiz_question_end_color">#ffb400</color>
-    <color name="prediction_button_pressed">#00b4c8</color>
     <color name="quiz_button_pressed">#ffc800</color>
+
     <color name="poll_question_start_color">#3023ae</color>
     <color name="poll_question_end_color">#c864c8</color>
     <color name="poll_button_pressed">#c86dd7</color>
+
+    <color name="alert_label_background_shadow">#000000</color>
+
+    <color name="button_wrong_answer_background_color">#99000000</color>
+    <color name="button_wrong_answer_color">#c8000d</color>
+    <color name="button_correct_answer_color">#00c83c</color>
+
+    <color name="image_option_background_start">#00000000</color>
+    <color name="image_option_background_center">#99000000</color>
+    <color name="image_option_background_end">#000000</color>
+
+    <color name="percent_bar_poll_start">#e69650be</color>
+    <color name="percent_bar_poll_end">#e6c864c8</color>
+    <color name="percent_bar_user_correct_start">#e681ca00</color>
+    <color name="percent_bar_user_correct_end">#e6429321</color>
+    <color name="percent_bar_selected_wrong_start">#e6dc0028</color>
+    <color name="percent_bar_selected_wrong_end">#e6d0021b</color>
+    <color name="percent_bar_wrong_start">#33ffffff</color>
+    <color name="percent_bar_wrong_end">#33ffffff</color>
 </resources>
