@@ -99,7 +99,7 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
+        imageOptionList.layoutManager = linearLayoutManager
 
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         questionTextView.layoutParams.width = parentWidth
@@ -137,9 +137,9 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         optionSelectedCallback: (String?) -> Unit,
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
-        image_optionList.adapter?.let {
+        imageOptionList.adapter?.let {
             Handler(Looper.getMainLooper()).post {updateVoteCount(voteOptions)}
-        } ?: run { image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
+        } ?: run { imageOptionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {

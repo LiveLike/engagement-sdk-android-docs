@@ -70,7 +70,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
+        imageOptionList.layoutManager = linearLayoutManager
 
         this.visibility = View.INVISIBLE
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
@@ -128,21 +128,21 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         optionSelectedCallback: (String?) -> Unit,
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
-        image_optionList.adapter?.let {
+        imageOptionList.adapter?.let {
             if (correctOptionWithUserSelection.first != null && correctOptionWithUserSelection.second != null)
                 updateVoteCount(voteOptions)
         } ?: run {
             imageAdapter = ImageAdapter(voteOptions, object : (String?) ->Unit {
-                override fun invoke(p1: String?) {
+                override fun invoke(optionId: String?) {
                     userTapped.invoke()
-                    optionSelectedCallback.invoke(p1)
+                    optionSelectedCallback.invoke(optionId)
                 }
             }, parentWidth, context, resultDisplayUtil) {
                 if(progressedState.userSelection != null)
                     optionSelectedUpdated(progressedState.userSelection)
                 startWidgetAnimation()
             }
-            image_optionList.adapter = imageAdapter
+            imageOptionList.adapter = imageAdapter
         }
     }
 
@@ -179,7 +179,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
             }, startingState
         )
         voteOptions.forEach { option ->
-            val viewOption = imageAdapter?.viewOptions?.get(option.id)  //viewOptions[option.id]
+            val viewOption = imageAdapter?.viewOptions?.get(option.id)
             if (viewOption != null) {
                 viewOption.button.setOnClickListener(null)
                 viewOption.progressBar.progress = option.answerCount.toInt()
