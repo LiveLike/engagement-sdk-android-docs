@@ -133,8 +133,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private fun initAdapter(voteOptions: List<VoteOption>, correctOption: String?, userSelectedOption: String?) {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
-        image_optionList.adapter = ImageAdapter(voteOptions, correctOption, userSelectedOption)
+        imageOptionList.layoutManager = linearLayoutManager
+        imageOptionList.adapter = ImageAdapter(voteOptions, correctOption, userSelectedOption)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {}

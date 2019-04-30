@@ -163,8 +163,8 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     ) {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
-        image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
+        imageOptionList.layoutManager = linearLayoutManager
+        imageOptionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
