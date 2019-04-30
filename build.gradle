@@ -21,6 +21,7 @@ buildscript {
             ktlintVersion = '0.30.0'
         lottieVersion = '2.7.0'
         mavenPluginVersion = '2.1'
+        multidexVersion = '1.0.3'
         mixpanelVersion = '5.5.2'
         mockitoVersion = '2.18.3'
         okhttpVersion = '3.11.0'
