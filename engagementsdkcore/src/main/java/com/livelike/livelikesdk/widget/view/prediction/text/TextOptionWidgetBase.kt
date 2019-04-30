@@ -170,13 +170,15 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 showResults -> {
                     timeoutUpdater.updateResultPhaseTimeout(
                         interactionPhaseTimeout,
+                        resultPhaseTimeout - initialTimeout,
                         resultPhaseTimeout
                     ) { future.cancel(false) }
                 }
                 else -> {
-                    timeoutUpdater.updateInteractionPhaseTimeout(
-                        interactionPhaseTimeout,
-                        resultPhaseTimeout)
+                    timeoutUpdater.updateResultPhaseTimeout(
+                        interactionPhaseTimeout - initialTimeout,
+                        resultPhaseTimeout,
+                        interactionPhaseTimeout)
                     {
                         timeoutUpdater.initialTimeout = 0L
                         showResults = true

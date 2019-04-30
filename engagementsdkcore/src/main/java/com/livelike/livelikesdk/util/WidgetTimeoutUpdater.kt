@@ -9,24 +9,13 @@ internal class WidgetTimeoutUpdater(private val updateRate: Int,
     var initialTimeout = 0L
     fun updateResultPhaseTimeout(interactionPhaseTimeout: Long,
                                  resultPhaseTimeout: Long,
+                                 completeTimeoutValue: Long,
                                  timeoutCompleted: () -> Unit) {
-        progressedState.resultPhaseTimeout = resultPhaseTimeout - initialTimeout
+        progressedState.resultPhaseTimeout = resultPhaseTimeout
         progressedState.interactionPhaseTimeout = interactionPhaseTimeout
         progressedStateCallback.invoke(progressedState)
         initialTimeout += updateRate
-        if (resultPhaseTimeout == initialTimeout)
+        if (completeTimeoutValue == initialTimeout)
             timeoutCompleted.invoke()
-    }
-
-    fun updateInteractionPhaseTimeout(interactionPhaseTimeout: Long,
-                                      resultPhaseTimeout: Long,
-                                      timeoutCompleted: () -> Unit) {
-        progressedState.interactionPhaseTimeout = interactionPhaseTimeout - initialTimeout
-        progressedState.resultPhaseTimeout = resultPhaseTimeout
-        progressedStateCallback.invoke(progressedState)
-        initialTimeout += updateRate
-        if (interactionPhaseTimeout == initialTimeout) {
-            timeoutCompleted.invoke()
-        }
     }
 }
