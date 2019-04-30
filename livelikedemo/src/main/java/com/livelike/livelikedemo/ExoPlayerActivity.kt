@@ -6,7 +6,6 @@ import android.os.Handler
 import android.support.constraint.Constraints
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.livelike.engagementsdkapi.LiveLikeContentSession
@@ -16,9 +15,18 @@ import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.registerLogsHandler
-import kotlinx.android.synthetic.main.activity_exo_player.*
-import kotlinx.android.synthetic.main.widget_chat_stacked.*
-import java.util.*
+import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
+import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
+import kotlinx.android.synthetic.main.activity_exo_player.openLogs
+import kotlinx.android.synthetic.main.activity_exo_player.playerView
+import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
+import kotlinx.android.synthetic.main.activity_exo_player.startAd
+import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
+import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
+import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 
 class ExoPlayerActivity : AppCompatActivity() {

@@ -21,8 +21,11 @@ import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.registerLogsHandler
 import com.livelike.livelikesdk.widget.WidgetType
-import kotlinx.android.synthetic.main.activity_standalone_widget.*
-import kotlinx.android.synthetic.main.widget_command_row_element.view.*
+import kotlinx.android.synthetic.main.activity_standalone_widget.log_label
+import kotlinx.android.synthetic.main.activity_standalone_widget.toolbar
+import kotlinx.android.synthetic.main.activity_standalone_widget.widget_command
+import kotlinx.android.synthetic.main.activity_standalone_widget.widget_view
+import kotlinx.android.synthetic.main.widget_command_row_element.view.command
 import java.io.IOException
 import java.nio.charset.Charset
 

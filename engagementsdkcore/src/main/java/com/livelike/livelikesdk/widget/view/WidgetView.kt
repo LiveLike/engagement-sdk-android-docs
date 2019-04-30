@@ -36,7 +36,7 @@ import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextFollow
 import com.livelike.livelikesdk.widget.view.prediction.text.PredictionTextQuestionWidgetView
 import com.livelike.livelikesdk.widget.view.quiz.QuizImageWidget
 import com.livelike.livelikesdk.widget.view.quiz.QuizTextWidget
-import kotlinx.android.synthetic.main.widget_view.view.*
+import kotlinx.android.synthetic.main.widget_view.view.widgetContainerView
 
 /**
  * The WidgetView is the container where widgets are being displayed.

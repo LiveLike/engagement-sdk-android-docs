@@ -19,7 +19,7 @@ import com.sendbird.android.SendBirdException
 import com.sendbird.android.User
 import com.sendbird.android.UserMessage
 import org.threeten.bp.ZonedDateTime
-import java.util.*
+import java.util.Date
 
 internal class SendbirdMessagingClient(
     subscribeKey: String,

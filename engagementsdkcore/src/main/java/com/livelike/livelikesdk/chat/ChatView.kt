@@ -35,10 +35,15 @@ import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
-import kotlinx.android.synthetic.main.chat_input.view.*
-import kotlinx.android.synthetic.main.chat_view.view.*
-import kotlinx.android.synthetic.main.default_chat_cell.view.*
-import java.util.*
+import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
+import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
+import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
+import kotlinx.android.synthetic.main.chat_view.view.snap_live
+import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
+import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
+import java.util.Date
+import java.util.UUID
 
 
 /**

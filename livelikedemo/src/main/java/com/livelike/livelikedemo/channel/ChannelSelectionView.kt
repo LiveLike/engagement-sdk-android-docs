@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.LinearLayout
 import com.livelike.livelikedemo.R
-import kotlinx.android.synthetic.main.channel_select_bottom.view.*
+import kotlinx.android.synthetic.main.channel_select_bottom.view.channel_list
 
 class ChannelSelectionView : LinearLayout {
 

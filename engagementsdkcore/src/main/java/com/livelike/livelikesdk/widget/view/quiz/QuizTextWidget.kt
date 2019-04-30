@@ -6,8 +6,8 @@ import android.util.AttributeSet
 import android.view.View
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.animation.ViewAnimationManager
+import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetBase
 
 internal class QuizTextWidget : TextOptionWidgetBase {

@@ -16,7 +16,11 @@ import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.determinateBar
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
 
 // TODO: This adapter can be made generic and used in most result widgets. Right now this is just a placeholder.
 //

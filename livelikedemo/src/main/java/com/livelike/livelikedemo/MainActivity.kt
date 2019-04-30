@@ -6,7 +6,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.chat_only_button
+import kotlinx.android.synthetic.main.activity_main.events_button
+import kotlinx.android.synthetic.main.activity_main.events_label
+import kotlinx.android.synthetic.main.activity_main.layout_overlay
+import kotlinx.android.synthetic.main.activity_main.layout_side_panel
+import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 import kotlin.reflect.KClass
 
 

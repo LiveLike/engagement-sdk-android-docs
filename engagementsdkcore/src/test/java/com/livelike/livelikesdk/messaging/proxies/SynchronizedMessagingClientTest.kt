@@ -2,7 +2,6 @@ package com.livelike.livelikesdk.messaging.proxies
 
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
 import org.junit.Before

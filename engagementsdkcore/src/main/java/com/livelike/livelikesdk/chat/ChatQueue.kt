@@ -10,7 +10,7 @@ import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.sendbird.ChatClient
 import com.livelike.livelikesdk.util.extractStringOrEmpty
-import java.util.*
+import java.util.Date
 
 internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient) : MessagingClientProxy(upstream),
     ChatEventListener {

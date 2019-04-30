@@ -21,9 +21,13 @@ import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.wrongAnswerLottieFilePath
-import kotlinx.android.synthetic.main.confirm_message.view.*
-import kotlinx.android.synthetic.main.prediction_text_widget.view.*
-import kotlinx.android.synthetic.main.text_option_row_element.view.*
+import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
+import kotlinx.android.synthetic.main.confirm_message.view.prediction_result
+import kotlinx.android.synthetic.main.prediction_text_widget.view.option_list
+import kotlinx.android.synthetic.main.prediction_text_widget.view.questionTextView
+import kotlinx.android.synthetic.main.text_option_row_element.view.determinateBar
+import kotlinx.android.synthetic.main.text_option_row_element.view.percentageText
+import kotlinx.android.synthetic.main.text_option_row_element.view.text_button
 
 
 open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {

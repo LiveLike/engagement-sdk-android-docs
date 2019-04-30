@@ -6,7 +6,6 @@ import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logVerbose
 
 internal class SynchronizedMessagingClient(

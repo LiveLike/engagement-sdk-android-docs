@@ -8,9 +8,10 @@ import android.widget.Button
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
-import kotlinx.android.synthetic.main.confirm_message.view.*
-import kotlinx.android.synthetic.main.pie_timer.view.*
-import kotlinx.android.synthetic.main.prediction_text_widget.view.*
+import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
+import kotlinx.android.synthetic.main.confirm_message.view.prediction_confirm_message_animation
+import kotlinx.android.synthetic.main.pie_timer.view.prediction_pie_updater_animation
+import kotlinx.android.synthetic.main.prediction_text_widget.view.questionTextView
 
 internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
-import java.util.*
+import java.util.Random
 
 internal class AndroidResource {
     companion object {

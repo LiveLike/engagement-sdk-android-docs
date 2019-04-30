@@ -18,7 +18,15 @@ import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.parseDuration
 import com.livelike.livelikesdk.widget.model.Alert
-import kotlinx.android.synthetic.main.alert_widget.view.*
+import kotlinx.android.synthetic.main.alert_widget.view.bodyBackground
+import kotlinx.android.synthetic.main.alert_widget.view.bodyImage
+import kotlinx.android.synthetic.main.alert_widget.view.bodyText
+import kotlinx.android.synthetic.main.alert_widget.view.labelBackground
+import kotlinx.android.synthetic.main.alert_widget.view.labelText
+import kotlinx.android.synthetic.main.alert_widget.view.linkArrow
+import kotlinx.android.synthetic.main.alert_widget.view.linkBackground
+import kotlinx.android.synthetic.main.alert_widget.view.linkText
+import kotlinx.android.synthetic.main.alert_widget.view.widgetContainer
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit

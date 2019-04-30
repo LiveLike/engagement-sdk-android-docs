@@ -9,7 +9,6 @@ import com.facebook.testing.screenshot.Screenshot
 import com.facebook.testing.screenshot.ViewHelpers
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.view.AlertWidget
-import kotlinx.android.synthetic.main.widget_view.view.*
 import org.junit.Before
 import org.junit.Test
 
