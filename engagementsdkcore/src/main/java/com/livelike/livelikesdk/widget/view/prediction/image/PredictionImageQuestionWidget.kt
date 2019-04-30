@@ -30,7 +30,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private lateinit var startingState: WidgetTransientState
     private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
     private lateinit var progressedState: WidgetTransientState
-    lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
+    lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private val widgetOpacityFactor: Float = 0.2f
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
@@ -72,7 +72,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub.layoutResource = R.layout.pie_timer
 
 
-        widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+        resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
         questionTextView.layoutParams.width = parentWidth
     }
@@ -167,7 +167,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
                 userTapped.invoke()
                 optionSelectedCallback.invoke(optionId)
             }
-        }, parentWidth, context, WidgetResultDisplayUtil(context, viewAnimation)) {
+        }, parentWidth, context, resultDisplayUtil) {
             if(progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
             startWidgetAnimation()
