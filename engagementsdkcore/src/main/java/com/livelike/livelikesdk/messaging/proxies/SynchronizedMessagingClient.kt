@@ -6,7 +6,6 @@ import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.ConnectionStatus
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.Queue
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logVerbose
 
 internal class SynchronizedMessagingClient(
@@ -73,7 +72,8 @@ internal class SynchronizedMessagingClient(
     }
 
     fun shouldPublishEvent(event: ClientMessage) : Boolean =
-         event.timeStamp <= EpochTime(0) ||
+        timeSource() <= EpochTime(0) || // Timesource return 0 - sync disabled
+                event.timeStamp <= EpochTime(0) || // Event time is 0 - bypass sync
                 (event.timeStamp <= timeSource() && event.timeStamp >= timeSource() - validEventBufferMs)
 
     fun shouldDismissEvent(event: ClientMessage) : Boolean =
