@@ -234,7 +234,7 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         val timeData = session.getPlayheadTime()
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
-            session.currentUser?.userId ?: "no-id",
+            session.currentUser?.sessionId ?: "empty-id",
             session.currentUser?.userName ?: "John Doe",
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString()
@@ -394,7 +394,7 @@ internal class ChatAdapter() : BaseAdapter() {
     fun addMessage(chat : ChatMessage) {
         logDebug { "NOW - Show Message on screen: $chat" }
         val cell = cellFactory.getCell()
-        cell.setMessage(chat, session.currentUser?.userId == chat.senderId)
+        cell.setMessage(chat, session.currentUser?.sessionId == chat.senderId)
         chatMessages.add(cell)
         notifyDataSetChanged()
     }

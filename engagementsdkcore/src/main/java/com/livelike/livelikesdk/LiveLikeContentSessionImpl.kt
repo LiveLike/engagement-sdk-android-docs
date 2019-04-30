@@ -18,9 +18,9 @@ import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getNickename
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setNickname
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setUserId
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setSessionId
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.cache.WidgetStateProcessorImpl
@@ -46,19 +46,19 @@ internal class LiveLikeContentSessionImpl(
     }
 
     private fun getUser() {
-        val userId = getUserId()
+        val sessionId = getSessionId()
         val username = getNickename()
-        if (!userId.isEmpty() && !username.isEmpty()) {
-            currentUser = LiveLikeUser(userId, username)
-            analyticService.identifyUser(userId)
+        if (!sessionId.isEmpty() && !username.isEmpty()) {
+            currentUser = LiveLikeUser(sessionId, username)
+            analyticService.trackSession(sessionId)
             analyticService.trackUsername(username)
         } else {
             sdkConfiguration.subscribe { configuration ->
                 llDataClient.getLiveLikeUserData(configuration.sessionsUrl) {
                     currentUser = it
-                    setUserId(it.userId)
+                    setSessionId(it.sessionId)
                     setNickname(it.userName)
-                    analyticService.identifyUser(it.userId)
+                    analyticService.trackSession(it.sessionId)
                     analyticService.trackUsername(it.userName)
                 }
             }

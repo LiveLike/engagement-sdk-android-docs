@@ -11,7 +11,7 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.LiveLikeSdkDataClient
 import com.livelike.livelikesdk.Program
 import com.livelike.livelikesdk.util.extractStringOrEmpty
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetDataClient
@@ -34,7 +34,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         }
         val client = OkHttpClient()
         val formBody = FormBody.Builder()
-            .add("session_id", getUserId())
+            .add("session_id", getSessionId())
             .build()
         try {
             val request = Request.Builder()
