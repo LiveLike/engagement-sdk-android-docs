@@ -85,7 +85,6 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
         val sessionsUrl: String,
         val stickerPackUrl: String
     )
-
 }
 
 internal interface LiveLikeSdkDataClient {

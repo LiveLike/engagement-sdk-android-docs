@@ -138,7 +138,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 widget.registerObserver(predictionWidget)
 
                 if (widget.optionSelected.id.isNullOrEmpty()) {
-                    //user did not interact with previous widget, mark dismissed and don't show followup
+                    // user did not interact with previous widget, mark dismissed and don't show followup
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }
@@ -197,7 +197,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 widget.registerObserver(predictionWidget)
 
                 if (widget.optionSelected.id.isNullOrEmpty()) {
-                    //user did not interact with previous widget, mark dismissed and don't show followup
+                    // user did not interact with previous widget, mark dismissed and don't show followup
                     widgetListener?.onWidgetEvent(WidgetEvent.WIDGET_DISMISS)
                     return
                 }

@@ -31,7 +31,7 @@ internal class SendBirdUtils {
                     messageData?.program_date_time?.toInstant()?.toEpochMilli() ?: 0 // return the value, or 0 if null
                 }
             } catch (e: Exception) {
-                //This is here because on some channels historic messages may have Date/Time format is not correct, or Json is off
+                // This is here because on some channels historic messages may have Date/Time format is not correct, or Json is off
                 logError { e }
             }
             return 0

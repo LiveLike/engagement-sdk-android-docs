@@ -29,7 +29,6 @@ import kotlinx.android.synthetic.main.text_option_row_element.view.determinateBa
 import kotlinx.android.synthetic.main.text_option_row_element.view.percentageText
 import kotlinx.android.synthetic.main.text_option_row_element.view.text_button
 
-
 open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     private lateinit var userTapped: () -> Unit
     private lateinit var viewAnimation: ViewAnimationManager

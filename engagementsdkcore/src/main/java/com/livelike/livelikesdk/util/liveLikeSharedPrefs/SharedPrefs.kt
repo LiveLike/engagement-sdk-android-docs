@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.livelike.livelikesdk.util.gson
 
-
 private val PREFERENCE_KEY_SESSION_ID = "SessionId"
 private val PREFERENCE_KEY_NICKNAME = "Username"
 

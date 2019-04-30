@@ -35,7 +35,6 @@ internal class MixpanelAnalytics : AnalyticsService {
         const val KEY_ACTION_TAP = "Action_Tap"
     }
 
-
     override fun trackMessageSent(containEmoji: Boolean) {
         val properties = JSONObject()
         properties.put("containEmoji", containEmoji)
@@ -86,5 +85,4 @@ internal class MixpanelAnalytics : AnalyticsService {
     override fun trackUsername(username: String) {
         mixpanel.people.set("username", username)
     }
-
 }

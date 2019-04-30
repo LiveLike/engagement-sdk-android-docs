@@ -25,7 +25,6 @@ import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.cache.WidgetStateProcessorImpl
 
-
 internal class LiveLikeContentSessionImpl(
     override val programUrl: String,
     val currentPlayheadTime: () -> EpochTime,
@@ -96,7 +95,6 @@ internal class LiveLikeContentSessionImpl(
         return currentPlayheadTime()
     }
 
-
     override fun contentSessionId() = program?.clientId ?: ""
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
@@ -115,7 +113,7 @@ internal class LiveLikeContentSessionImpl(
     private fun initializeChatMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
-            //validEventBufferMs for chat is currently 24 hours
+            // validEventBufferMs for chat is currently 24 hours
             val chatClient = SendbirdChatClient()
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime, 86400000L).toChatQueue(chatClient)

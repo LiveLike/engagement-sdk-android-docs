@@ -85,7 +85,6 @@ internal class SynchronizedMessagingClient(
                     event.timeStamp.timeSinceEpochInMs +
                     " : " + timeSource().timeSinceEpochInMs
         }
-
 }
 
 internal class SyncTimer(val task: Runnable, val period: Long) {
@@ -114,7 +113,7 @@ internal class SyncTimer(val task: Runnable, val period: Long) {
     }
 }
 
-//Extension for MessagingClient to be synced
+// Extension for MessagingClient to be synced
 internal fun MessagingClient.syncTo(
     timeSource: () -> EpochTime,
     validEventBufferMs: Long = 10000L

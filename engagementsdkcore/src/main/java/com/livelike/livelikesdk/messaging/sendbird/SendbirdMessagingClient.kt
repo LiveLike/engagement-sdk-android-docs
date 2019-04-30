@@ -42,12 +42,12 @@ internal class SendbirdMessagingClient(
         SendBird.init(subscribeKey, context)
         SendBird.connect(userId, object : SendBird.ConnectHandler {
             override fun onConnected(user: User, e: SendBirdException?) {
-                if (e != null) {    // Error.
+                if (e != null) { // Error.
                     return
                 }
                 SendBird.updateCurrentUserInfo(fetchUsername(), null,
                     UserInfoUpdateHandler { exception ->
-                        if (exception != null) {    // Error.
+                        if (exception != null) { // Error.
                             return@UserInfoUpdateHandler
                         }
                     })
@@ -71,12 +71,12 @@ internal class SendbirdMessagingClient(
         channels.forEach {
             OpenChannel.getChannel(it,
                 OpenChannel.OpenChannelGetHandler { openChannel, e ->
-                    if (e != null) {    // Error.
+                    if (e != null) { // Error.
                         return@OpenChannelGetHandler
                     }
 
                     openChannel.enter(OpenChannel.OpenChannelEnterHandler { exception ->
-                        if (exception != null) {    // Error.
+                        if (exception != null) { // Error.
                             return@OpenChannelEnterHandler
                         }
                         connectedChannels.add(openChannel)
@@ -118,7 +118,6 @@ internal class SendbirdMessagingClient(
                         })
                 })
         }
-
     }
 
     override fun unsubscribe(channels: List<String>) {

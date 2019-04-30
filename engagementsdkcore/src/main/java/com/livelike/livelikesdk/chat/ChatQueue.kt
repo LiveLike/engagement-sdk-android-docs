@@ -41,13 +41,13 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
     }
 
     override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
-        //If chat is paused we can queue here
+        // If chat is paused we can queue here
 
         val messageJson = JsonObject()
         messageJson.addProperty("message", message.message)
         messageJson.addProperty("sender", message.senderDisplayName)
         messageJson.addProperty("sender_id", message.senderId)
-        //send on all connected channels for now, implement channel selection down the road
+        // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
             chatClient.sendMessage(ClientMessage(messageJson, it, timeData))
         }

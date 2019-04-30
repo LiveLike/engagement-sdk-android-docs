@@ -7,7 +7,6 @@ internal interface LiveLikeDataClient {
     fun getLiveLikeUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit)
 }
 
-
 internal data class Program(
     val programUrl: String,
     val timelineUrl: String,

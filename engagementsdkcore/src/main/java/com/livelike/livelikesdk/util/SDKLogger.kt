@@ -16,10 +16,8 @@ enum class LogLevel(
     None(Log.ASSERT + 1, { _, _ -> 0 }, { _, _, _ -> 0 })
 }
 
-
 /** The lowest (most granular) log level to log */
 var minimumLogLevel: LogLevel = LogLevel.Verbose
-
 
 internal inline fun <reified T> T.logVerbose(message: () -> Any?) = log(LogLevel.Verbose, message)
 internal inline fun <reified T> T.logDebug(message: () -> Any?) = log(LogLevel.Debug, message)
@@ -39,7 +37,6 @@ fun registerLogsHandler(logHandler: (String) -> Unit) {
     handler = logHandler
 }
 
-
 internal inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
     if (level >= minimumLogLevel) {
         message().let {
@@ -56,7 +53,6 @@ internal inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
         }
     }
 }
-
 
 @Suppress("unused")
 private class LoggerSample {

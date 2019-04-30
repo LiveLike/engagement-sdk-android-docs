@@ -12,7 +12,6 @@ import com.livelike.livelikesdk.widget.view.AlertWidget
 import org.junit.Before
 import org.junit.Test
 
-
 /* Need to diable the animations on the device.
 *
 * adb shell pm grant com.livelike.livelikesdk android.permission.SET_ANIMATION_SCALE

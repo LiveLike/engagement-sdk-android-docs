@@ -38,5 +38,4 @@ internal class AndroidResource {
             return timeout
         }
     }
-
 }

@@ -38,7 +38,6 @@ internal class Widget {
             answerTotal += it.answerCount
         }
 
-
         return when {
             voteTotal > 0 -> (option.voteCount * 100) / voteTotal
             answerTotal > 0 -> (option.answerCount * 100) / answerTotal
@@ -68,7 +67,6 @@ internal class Widget {
     }
 }
 
-
 internal data class WidgetOptions(
     val id: String,
     val voteUrl: URI? = null,
@@ -79,7 +77,6 @@ internal data class WidgetOptions(
     var answerUrl: String? = null,
     var isCorrect: Boolean = false
 )
-
 
 class VoteOption(
     val id: String,

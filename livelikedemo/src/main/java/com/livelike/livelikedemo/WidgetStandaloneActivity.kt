@@ -242,16 +242,21 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                 override fun subscribeForResults(channel: String) {}
 
                 override fun onOptionVoteUpdate(
-                    oldVoteUrl: String, newVoteId: String, channel: String, voteUpdateCallback: ((String) -> Unit)?) {}
+                    oldVoteUrl: String,
+                    newVoteId: String,
+                    channel: String,
+                    voteUpdateCallback: ((String) -> Unit)?
+                ) {
+                }
 
                 override fun onWidgetDisplayed(impressionUrl: String) {}
 
-                override fun onOptionVote(voteUrl: String, channel: String, voteUpdateCallback:((String) -> Unit)?) {}
+                override fun onOptionVote(voteUrl: String, channel: String, voteUpdateCallback: ((String) -> Unit)?) {}
 
                 override fun onFetchingQuizResult(answerUrl: String) {}
 
                 override fun onWidgetEvent(event: WidgetEvent) {
-                    if(event == WidgetEvent.WIDGET_DISMISS) {
+                    if (event == WidgetEvent.WIDGET_DISMISS) {
                         quizDisplayHandler.removeCallbacksAndMessages(null)
                         commandList.clear()
                         commandList.add(showCommand)
@@ -286,27 +291,26 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                 payload = getPayload("prediction/image/prediction_question_image_result.json")
                 payload.addProperty("testTag", testTag)
                 showWidget(WidgetType.IMAGE_PREDICTION_RESULTS, payload)
-
             }
         }
 
         private fun showPollWidget() {
             if (isVariance(getString(R.string.text))) {
                 payload = getPayload("poll/poll_text_widget.json")
-                showWidget(WidgetType.TEXT_POLL, payload )
+                showWidget(WidgetType.TEXT_POLL, payload)
             } else if (isVariance(getString(R.string.image))) {
                 payload = getPayload("poll/poll_image_widget.json")
-                showWidget(WidgetType.IMAGE_POLL, payload )
+                showWidget(WidgetType.IMAGE_POLL, payload)
             }
         }
 
         private fun showPollWidgetResults() {
             if (isVariance(getString(R.string.text))) {
                 payload = getPayload("poll/poll_text_widget_results.json")
-                showWidget(WidgetType.TEXT_POLL_RESULT, payload )
+                showWidget(WidgetType.TEXT_POLL_RESULT, payload)
             } else if (isVariance(getString(R.string.image))) {
                 payload = getPayload("poll/poll_image_widget_results.json")
-                showWidget(WidgetType.IMAGE_POLL_RESULT, payload )
+                showWidget(WidgetType.IMAGE_POLL_RESULT, payload)
             }
         }
 
@@ -324,7 +328,6 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                 WidgetTransientState()
             )
         }
-
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(

@@ -25,12 +25,12 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
 
     private val client: OkHttpClient = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
-    private val channelSelectListeners  = mutableListOf<(Channel) -> Unit>()
+    private val channelSelectListeners = mutableListOf<(Channel) -> Unit>()
     private val view: ChannelSelectionView = ChannelSelectionView(appContext)
-    private var channelBottomSheetDialog : BottomSheetDialog? = null
+    private var channelBottomSheetDialog: BottomSheetDialog? = null
     val channelList: MutableList<Channel> = mutableListOf()
     @NonNull
-    var selectedChannel : Channel = NONE_CHANNEL
+    var selectedChannel: Channel = NONE_CHANNEL
     set(channel) {
         field = channel
         persistChannel(channel.name)
@@ -60,7 +60,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                         for (i in 0..(results.length() - 1)) {
                             val channel = getChannelFor(results.getJSONObject(i))
                             channelList.add(channel)
-                            if(savedChannel == channel.name) {
+                            if (savedChannel == channel.name) {
                                 selectedChannel = channel
                             }
                         }
@@ -85,7 +85,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
         )
     }
 
-    private fun persistChannel(channelName : String) {
+    private fun persistChannel(channelName: String) {
         appContext.getSharedPreferences(PREFERENCE_APP_ID, Context.MODE_PRIVATE)
             .edit()
             .putString(PREFERENCE_CHANNEL_ID, channelName)
@@ -112,7 +112,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     }
 
     private fun removeViewParentIfExists() {
-        if(view.parent != null)
+        if (view.parent != null)
             (view.parent as ViewGroup).removeView(view)
     }
 }

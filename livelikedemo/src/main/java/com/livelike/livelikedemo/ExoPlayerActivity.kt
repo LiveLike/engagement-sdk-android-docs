@@ -28,7 +28,6 @@ import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
 
-
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
         const val AD_STATE = "adstate"
@@ -45,12 +44,11 @@ class ExoPlayerActivity : AppCompatActivity() {
     set(adsPlaying) {
         field = adsPlaying
 
-        if(adsPlaying){
+        if (adsPlaying) {
             startAd.text = "Stop Ads"
             player.stop()
             session?.pause()
-        }
-        else{
+        } else {
             startAd.text = "Start Ads"
             player.start()
             session?.resume()
@@ -85,7 +83,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }, 0, 100)
 
         setUpAdClickListeners()
-        
+
         channelManager?.let {
             selectChannel(it.selectedChannel)
         }
@@ -96,7 +94,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             selectChannel(it)
         }
 
-        selectChannelButton.setOnClickListener {  channelManager?.show(this) }
+        selectChannelButton.setOnClickListener { channelManager?.show(this) }
     }
 
     private fun setUpAdClickListeners() {
@@ -139,7 +137,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        if(!adsPlaying)
+        if (!adsPlaying)
             player.start()
     }
 

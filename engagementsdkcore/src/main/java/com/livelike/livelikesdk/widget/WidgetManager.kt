@@ -14,7 +14,7 @@ import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
 
-/// Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
+// / Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
@@ -50,7 +50,6 @@ internal class WidgetManager(
         set(listener) {
             field = listener
             listener?.exemptionList = exemptionList
-
         }
 
     override fun onWidgetEvent(event: WidgetEvent) {
@@ -111,7 +110,7 @@ internal class WidgetManager(
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         val exemption = exemptionList.any { event.message[it.first].asString == it.second }
-        //If this message type is in the exemption list it should never flip processing boolean
+        // If this message type is in the exemption list it should never flip processing boolean
         isProcessing = !exemption || isProcessing
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
@@ -151,7 +150,6 @@ enum class WidgetType(val value: String) {
         fun fromString(type: String) = map[type] ?: NONE
     }
 }
-
 
 internal interface WidgetDataClient {
     fun vote(voteUrl: String, voteUpdateCallback: ((String) -> Unit)?)

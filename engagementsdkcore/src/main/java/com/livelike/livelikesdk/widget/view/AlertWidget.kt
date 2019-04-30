@@ -64,14 +64,12 @@ internal class AlertWidget : ConstraintLayout {
         future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
     }
 
-
     private fun inflate(context: Context) {
         layout = LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
 
         bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
-
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
             linkBackground.setOnClickListener {
@@ -85,7 +83,6 @@ internal class AlertWidget : ConstraintLayout {
             linkBackground.visibility = View.GONE
             linkText.visibility = View.GONE
         }
-
 
         if (resourceAlert.image_url.isNullOrEmpty()) {
             bodyImage.visibility = View.GONE

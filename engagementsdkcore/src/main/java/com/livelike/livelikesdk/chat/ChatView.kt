@@ -45,7 +45,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import java.util.Date
 import java.util.UUID
 
-
 /**
  *  This view will load and display a chat component. To use chat view
  *  ```
@@ -79,7 +78,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private val animationEaseAdapter = AnimationEaseAdapter()
     private var viewRoot: View = LayoutInflater.from(context)
         .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
-
 
     init {
         (context as Activity).window.setSoftInputMode(
@@ -119,7 +117,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     override fun loadComplete() {
         hideLoadingSpinner()
-
     }
 
     // Hide keyboard when clicking outside of the EditText
@@ -218,7 +215,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 button_chat_send.setOnClickListener { v ->
                     sendMessageNow()
                 }
-
             } finally {
                 recycle()
             }
@@ -328,7 +324,6 @@ internal interface ChatCell {
 
     fun getView(): View
 }
-
 
 /**
  *

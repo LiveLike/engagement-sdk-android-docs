@@ -171,9 +171,9 @@ internal class ViewAnimationManager(val view: View) {
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    //animationHandler.cancelAnimation(timerAnimator)
+                    // animationHandler.cancelAnimation(timerAnimator)
                     // TODO: remove this and add as param
-                    //animationHandler.cancelAnimation(resultAnimator)
+                    // animationHandler.cancelAnimation(resultAnimator)
                     layout.removeAllViewsInLayout()
                     onSwipeCallback?.invoke()
                 }

@@ -17,7 +17,6 @@ import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.logVerbose
 
-
 internal class ImagePreloaderMessagingClient(
     upstream: MessagingClient,
     val context: Context
@@ -56,19 +55,22 @@ internal class ImagePreloaderMessagingClient(
                 .load(it)
                 .addListener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
-                        e: GlideException?, model: Any?, target: Target<Drawable>?,
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>?,
                         isFirstResource: Boolean
-                    )
-                            : Boolean {
+                    ): Boolean {
                         updateProcessingList(currentImageMessage)
                         return true
                     }
 
                     override fun onResourceReady(
-                        resource: Drawable?, model: Any?, target: Target<Drawable>?,
-                        dataSource: DataSource?, isFirstResource: Boolean
-                    )
-                            : Boolean {
+                        resource: Drawable?,
+                        model: Any?,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource?,
+                        isFirstResource: Boolean
+                    ): Boolean {
                         updateProcessingList(currentImageMessage)
                         return true
                     }
@@ -92,7 +94,6 @@ internal class ImagePreloaderMessagingClient(
         }
     }
 
-
     private fun getImagesFromJson(jsonObject: JsonObject, imagesList: MutableList<String>): MutableList<String> {
         val elements = jsonObject.entrySet()
         elements.forEach { element ->
@@ -114,7 +115,6 @@ internal class ImagePreloaderMessagingClient(
         return imagesList
     }
 }
-
 
 internal fun MessagingClient.withPreloader(
     context: Context
