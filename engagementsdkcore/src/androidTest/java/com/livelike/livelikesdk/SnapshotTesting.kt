@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import com.facebook.testing.screenshot.Screenshot
 import com.facebook.testing.screenshot.ViewHelpers
+import com.livelike.engagementsdkapi.WidgetTransientState
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.view.AlertWidget
+import kotlinx.android.synthetic.main.widget_view.view.widgetContainerView
 import org.junit.Before
 import org.junit.Test
 
@@ -63,7 +66,10 @@ class AlertWidgetImage {
                 imageUrl,
                 linkUrl,
                 linkText
-            )
+            ),
+            WidgetTransientState(),
+            ViewAnimationManager(alertWidget),
+            {}
         )
 
         ViewHelpers.setupView(alertWidget)
@@ -71,7 +77,7 @@ class AlertWidgetImage {
             .setExactHeightDp(200)
             .layout()
 
-        widgetView.containerView.addView(alertWidget)
+        widgetView.widgetContainerView.addView(alertWidget)
 
         ViewHelpers.setupView(widgetView)
             .setExactWidthDp(300)
