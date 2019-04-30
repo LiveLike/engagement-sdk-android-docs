@@ -51,22 +51,24 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     private var fetchResult: (() -> Unit)? = null
-    private var selectedOption : String? = null
+    private var selectedOption: String? = null
     private var correctOption: String? = null
     private var timeout = 0L
     var parentWidth = 0
-    
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    internal fun initialize(dismiss : ()->Unit,
-                            startingState: WidgetTransientState,
-                            progressedState: WidgetTransientState,
-                            fetch: () -> Unit,
-                            parentWidth: Int,
-                            viewAnimation: ViewAnimationManager,
-                            progressedStateCallback: (WidgetTransientState) -> Unit) {
+    internal fun initialize(
+        dismiss: () -> Unit,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        fetch: () -> Unit,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        progressedStateCallback: (WidgetTransientState) -> Unit
+    ) {
         this.startingState = startingState
         this.progressedState = progressedState
         this.timeout = startingState.timeout
@@ -200,7 +202,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val option = optionList[position]
             holder.optionText.text = option.description
-            option.isCorrect.let { if(it) correctOption = option.id }
+            option.isCorrect.let { if (it) correctOption = option.id }
 
             // TODO: Move this to adapter layer.
             Glide.with(context)
@@ -214,7 +216,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
             imageButtonMap[holder.button] = option.id
             // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
             // a way to update user selection.
-            if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
+            if (option == optionList[optionList.size - 1] && progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
 
             holder.button.setOnClickListener {

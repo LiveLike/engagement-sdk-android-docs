@@ -39,7 +39,12 @@ internal class LiveLikeContentSessionImpl(
     private var chatQueue: ChatQueue? = null
     private val widgetStateMap = HashMap<String, WidgetTransientState>()
     private val currentWidgetMap = HashMap<String, String>()
-    private val stateStorage: WidgetStateProcessor by lazy { WidgetStateProcessorImpl(widgetStateMap, currentWidgetMap) }
+    private val stateStorage: WidgetStateProcessor by lazy {
+        WidgetStateProcessorImpl(
+            widgetStateMap,
+            currentWidgetMap
+        )
+    }
 
     init {
         getUser()

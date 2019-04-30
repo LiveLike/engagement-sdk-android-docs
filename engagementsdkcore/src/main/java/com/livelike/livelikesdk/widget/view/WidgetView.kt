@@ -85,8 +85,10 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         post { requestLayout() }
         val currentWidgetId = widgetStateProcessor?.currentWidgetId ?: return
         val widgetState = widgetStateProcessor?.getWidgetState(currentWidgetId)
-        post { widgetState?.payload?.let {
-            displayWidget(widgetState.type.toString(), it, widgetState) }
+        post {
+            widgetState?.payload?.let {
+                displayWidget(widgetState.type.toString(), it, widgetState)
+            }
         }
     }
 
@@ -145,7 +147,8 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 initialState.timeout = widget.timeout
 
                 predictionWidget.initialize({
-                    dismissCurrentWidget() },
+                    dismissCurrentWidget()
+                },
                     initialState,
                     progressedState,
                     parentWidth,
@@ -202,7 +205,8 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 initialState.timeout = widget.timeout
 
                 predictionWidget.initialize({
-                    dismissCurrentWidget() },
+                    dismissCurrentWidget()
+                },
                     initialState,
                     progressedState,
                     parentWidth,
@@ -222,40 +226,72 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
             WidgetType.TEXT_QUIZ_RESULT -> {
                 if (initialState.timerAnimatorStartPhase != 0f && initialState.resultAnimatorStartPhase != 0f) {
-                    displayQuizWidget(parser, widget, widgetResource, initialState, parentWidth, progressedState, payload)
+                    displayQuizWidget(
+                        parser,
+                        widget,
+                        widgetResource,
+                        initialState,
+                        parentWidth,
+                        progressedState,
+                        payload
+                    )
                 } else {
                     progressedState.resultPayload = payload
                     progressedState.type = widgetType
-                    progressedState.let { ns -> widgetStateProcessor?.updateWidgetState(currentWidget?.id.toString(), ns) }
+                    progressedState.let { ns ->
+                        widgetStateProcessor?.updateWidgetState(
+                            currentWidget?.id.toString(),
+                            ns
+                        )
+                    }
                 }
 
                 currentWidget?.let {
                     if (initialState.resultPayload != null) {
                         parser.parseQuizResult(it, gson.fromJson(initialState.resultPayload, Resource::class.java))
-                    }
-                    else parser.parseQuizResult(it, widgetResource)
+                    } else parser.parseQuizResult(it, widgetResource)
                     it.notifyDataSetChange()
                 }
             }
 
             WidgetType.IMAGE_QUIZ -> {
-                displayQuizImageWidget(parser, widget, widgetResource, initialState, parentWidth, progressedState, payload)
+                displayQuizImageWidget(
+                    parser,
+                    widget,
+                    widgetResource,
+                    initialState,
+                    parentWidth,
+                    progressedState,
+                    payload
+                )
             }
 
             WidgetType.IMAGE_QUIZ_RESULT -> {
                 if (initialState.timerAnimatorStartPhase != 0f && initialState.resultAnimatorStartPhase != 0f) {
-                    displayQuizImageWidget(parser, widget, widgetResource, initialState, parentWidth, progressedState, payload)
+                    displayQuizImageWidget(
+                        parser,
+                        widget,
+                        widgetResource,
+                        initialState,
+                        parentWidth,
+                        progressedState,
+                        payload
+                    )
                 } else {
                     progressedState.resultPayload = payload
                     progressedState.type = widgetType
-                    progressedState.let { ps -> widgetStateProcessor?.updateWidgetState(currentWidget?.id.toString(), ps) }
+                    progressedState.let { ps ->
+                        widgetStateProcessor?.updateWidgetState(
+                            currentWidget?.id.toString(),
+                            ps
+                        )
+                    }
                 }
 
                 currentWidget?.let {
                     if (initialState.resultPayload != null) {
                         parser.parseQuizResult(it, gson.fromJson(initialState.resultPayload, Resource::class.java))
-                    }
-                    else parser.parseQuizResult(it, widgetResource)
+                    } else parser.parseQuizResult(it, widgetResource)
                     it.notifyDataSetChange()
                 }
             }
@@ -334,9 +370,11 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val alertWidget = AlertWidget(context, null)
                 val alertResource = gson.fromJson(payload, Alert::class.java)
 
-                currentWidget = Widget().apply { id = alertResource.id
+                currentWidget = Widget().apply {
+                    id = alertResource.id
                     alertWidget.initialize({
-                        dismissCurrentWidget() },
+                        dismissCurrentWidget()
+                    },
                         alertResource,
                         progressedState,
                         ViewAnimationManager(alertWidget), {
@@ -508,10 +546,17 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         }
 
         currentWidget?.subscribeChannel?.let {
-            if(currentWidget?.selectedVoteChangeUrl.isNullOrEmpty())
-                widgetListener?.onOptionVote(optionSelected?.voteUrl.toString(), it) {changeUrl -> currentWidget?.selectedVoteChangeUrl = changeUrl}
+            if (currentWidget?.selectedVoteChangeUrl.isNullOrEmpty())
+                widgetListener?.onOptionVote(
+                    optionSelected?.voteUrl.toString(),
+                    it
+                ) { changeUrl -> currentWidget?.selectedVoteChangeUrl = changeUrl }
             else
-                widgetListener?.onOptionVoteUpdate(currentWidget?.selectedVoteChangeUrl.orEmpty(), optionSelected?.id.orEmpty(), it) {changeUrl -> currentWidget?.selectedVoteChangeUrl = changeUrl}
+                widgetListener?.onOptionVoteUpdate(
+                    currentWidget?.selectedVoteChangeUrl.orEmpty(),
+                    optionSelected?.id.orEmpty(),
+                    it
+                ) { changeUrl -> currentWidget?.selectedVoteChangeUrl = changeUrl }
         }
         widgetListener?.onFetchingQuizResult(optionSelected?.answerUrl.toString())
     }

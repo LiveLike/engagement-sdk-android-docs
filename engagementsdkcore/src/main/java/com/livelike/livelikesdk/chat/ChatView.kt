@@ -60,7 +60,7 @@ import java.util.UUID
  *  using [setDataSource]. See [ChatAdapter] class on how to create a data source.
  */
 
-class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(context, attrs), ChatRenderer {
+class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatRenderer {
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
         const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
@@ -74,8 +74,8 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
     private lateinit var chatAdapter: ChatAdapter
-    private var snapToLiveAnimation : AnimatorSet? = null
-    private var showingSnapToLive : Boolean = false
+    private var snapToLiveAnimation: AnimatorSet? = null
+    private var showingSnapToLive: Boolean = false
     private val animationEaseAdapter = AnimationEaseAdapter()
     private var viewRoot: View = LayoutInflater.from(context)
         .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
@@ -149,14 +149,20 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     private fun setDataSource(chatAdapter: ChatAdapter) {
         this.chatAdapter = chatAdapter
         chatdisplay.adapter = this.chatAdapter
-        chatdisplay.setOnScrollListener(object :AbsListView.OnScrollListener {
-            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+        chatdisplay.setOnScrollListener(object : AbsListView.OnScrollListener {
+            override fun onScroll(
+                view: AbsListView?,
+                firstVisibleItem: Int,
+                visibleItemCount: Int,
+                totalItemCount: Int
+            ) {
                 val lastpos = view?.lastVisiblePosition ?: 0
-                if(lastpos >= totalItemCount - 3)
+                if (lastpos >= totalItemCount - 3)
                     hideSnapToLive()
                 else
                     showSnapToLive()
             }
+
             override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
         })
 
@@ -165,9 +171,10 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
         }
 
         context.theme.obtainStyledAttributes(
-                attrs,
+            attrs,
             com.livelike.livelikesdk.R.styleable.ChatView,
-                0, 0).apply {
+            0, 0
+        ).apply {
 
             try {
                 val inputTextColor = getColor(
@@ -255,14 +262,14 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     }
 
     private fun hideSnapToLive() {
-        if(!showingSnapToLive)
+        if (!showingSnapToLive)
             return
         showingSnapToLive = false
         animateSnapToLiveButton()
     }
 
     private fun showSnapToLive() {
-        if(showingSnapToLive)
+        if (showingSnapToLive)
             return
         showingSnapToLive = true
         animateSnapToLiveButton()
@@ -271,16 +278,28 @@ class ChatView (context: Context, attrs: AttributeSet?): ConstraintLayout(contex
     private fun animateSnapToLiveButton() {
         snapToLiveAnimation?.cancel()
 
-        val translateAnimation = ObjectAnimator.ofFloat(snap_live, "translationY", if(showingSnapToLive) 0f else dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION).toFloat())
+        val translateAnimation = ObjectAnimator.ofFloat(
+            snap_live,
+            "translationY",
+            if (showingSnapToLive) 0f else dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION).toFloat()
+        )
         translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
-        val finalTranslationAnimator = animationEaseAdapter.createAnimationEffectWith(AnimationEaseInterpolator.Ease.EaseOutCubic, SNAP_TO_LIVE_ANIMATION_DURATION, translateAnimation)
+        val finalTranslationAnimator = animationEaseAdapter.createAnimationEffectWith(
+            AnimationEaseInterpolator.Ease.EaseOutCubic,
+            SNAP_TO_LIVE_ANIMATION_DURATION,
+            translateAnimation
+        )
 
-        val alphaAnimation = ObjectAnimator.ofFloat(snap_live, "alpha", if(showingSnapToLive) 1f else 0f)
+        val alphaAnimation = ObjectAnimator.ofFloat(snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
         alphaAnimation.duration = (SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION).toLong()
-        val finalAlphaAnimator = animationEaseAdapter.createAnimationEffectWith(AnimationEaseInterpolator.Ease.EaseOutCubic, SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION, alphaAnimation)
+        val finalAlphaAnimator = animationEaseAdapter.createAnimationEffectWith(
+            AnimationEaseInterpolator.Ease.EaseOutCubic,
+            SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION,
+            alphaAnimation
+        )
         finalAlphaAnimator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationEnd(animation: Animator) {
-                snap_live.visibility = if(showingSnapToLive) View.VISIBLE else View.GONE
+                snap_live.visibility = if (showingSnapToLive) View.VISIBLE else View.GONE
             }
 
             override fun onAnimationStart(animation: Animator) {
@@ -306,7 +325,8 @@ internal interface ChatCell {
         message: ChatMessage?,
         isMe: Boolean?
     )
-    fun getView() : View
+
+    fun getView(): View
 }
 
 
@@ -314,11 +334,11 @@ internal interface ChatCell {
  *
  */
 internal interface ChatCellFactory {
-    fun getCell() : ChatCell
+    fun getCell(): ChatCell
 }
 
 internal class DefaultChatCellFactory(val context: Context, cellattrs: AttributeSet?) :
-        ChatCellFactory {
+    ChatCellFactory {
     private val attrs = cellattrs
 
     override fun getCell(): ChatCell {
@@ -362,6 +382,7 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
         return this
     }
 }
+
 /**
  * Chat adapter is the data set used for [ChatView]. Chat adapter is the binding layer between [LiveLikeContentSession]
  * Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter]. SDK would provide default [ChatTheme]
@@ -369,7 +390,7 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
  * @param session The [LiveLikeContentSession] which needs to be bounded with the Chat.
  */
 internal class ChatAdapter() : BaseAdapter() {
-    private lateinit var session : LiveLikeContentSession
+    private lateinit var session: LiveLikeContentSession
     private lateinit var theme: ChatTheme
     private lateinit var cellFactory: ChatCellFactory
 
@@ -396,7 +417,7 @@ internal class ChatAdapter() : BaseAdapter() {
 
     private val chatMessages = mutableListOf<ChatCell>()
 
-    fun addMessage(chat : ChatMessage) {
+    fun addMessage(chat: ChatMessage) {
         logDebug { "NOW - Show Message on screen: $chat" }
         val cell = cellFactory.getCell()
         cell.setMessage(chat, session.currentUser?.sessionId == chat.senderId)

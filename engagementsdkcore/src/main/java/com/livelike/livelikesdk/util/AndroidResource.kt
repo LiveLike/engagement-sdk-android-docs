@@ -28,7 +28,7 @@ internal class AndroidResource {
             } else return null
         }
 
-        fun parseDuration(durationString: String) : Long {
+        fun parseDuration(durationString: String): Long {
             var timeout = 7000L
             try {
                 timeout = Duration.parse(durationString).toMillis()

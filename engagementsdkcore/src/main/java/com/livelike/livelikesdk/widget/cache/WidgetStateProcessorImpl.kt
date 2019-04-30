@@ -6,18 +6,18 @@ import com.livelike.engagementsdkapi.WidgetTransientState
 class WidgetStateProcessorImpl(
     private val widgetStateMap: HashMap<String, WidgetTransientState>,
     private val currentWidgetMap: HashMap<String, String>
-):
+) :
     WidgetStateProcessor {
-    override var currentWidgetId: String ? = null
+    override var currentWidgetId: String? = null
 
     override fun getWidgetState(id: String): WidgetTransientState? {
-        return  widgetStateMap[id]
+        return widgetStateMap[id]
     }
 
     override fun updateWidgetState(id: String, state: WidgetTransientState) {
         if (widgetStateMap.contains(id)) {
             val currentState = widgetStateMap[id]
-            if (currentState?.resultPayload ==  null)
+            if (currentState?.resultPayload == null)
                 currentState?.resultPayload = state.resultPayload
         } else widgetStateMap[id] = state
     }

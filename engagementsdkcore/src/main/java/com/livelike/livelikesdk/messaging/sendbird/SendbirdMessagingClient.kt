@@ -32,9 +32,9 @@ internal class SendbirdMessagingClient(
         val CHAT_HISTORY_LIMIT = 50
     }
 
-    private var listener : MessagingEventListener? = null
+    private var listener: MessagingEventListener? = null
     private val TAG = javaClass.simpleName
-    private var connectedChannels : MutableList<OpenChannel> = mutableListOf()
+    private var connectedChannels: MutableList<OpenChannel> = mutableListOf()
 
     init {
         val userId = fetchUserId()
@@ -55,11 +55,11 @@ internal class SendbirdMessagingClient(
         })
     }
 
-    private fun fetchUserId() : String {
+    private fun fetchUserId(): String {
         return liveLikeUser?.sessionId ?: "empty-id"
     }
 
-    private fun fetchUsername() : String {
+    private fun fetchUsername(): String {
         return liveLikeUser?.userName ?: "John Doe"
     }
 
@@ -103,12 +103,18 @@ internal class SendbirdMessagingClient(
                                 return@MessageListQueryResult
                             }
                             for (message: BaseMessage in messages.reversed()) {
-                                listener?.onClientMessageEvent(this@SendbirdMessagingClient, SendBirdUtils.clientMessageFromBaseMessage(message as UserMessage, openChannel))
+                                listener?.onClientMessageEvent(
+                                    this@SendbirdMessagingClient,
+                                    SendBirdUtils.clientMessageFromBaseMessage(message as UserMessage, openChannel)
+                                )
                             }
 
                             val messageJson = JsonObject()
                             messageJson.addProperty("control", "load_complete")
-                            listener?.onClientMessageEvent(   this@SendbirdMessagingClient, ClientMessage(messageJson, openChannel.url, EpochTime(0)))
+                            listener?.onClientMessageEvent(
+                                this@SendbirdMessagingClient,
+                                ClientMessage(messageJson, openChannel.url, EpochTime(0))
+                            )
                         })
                 })
         }

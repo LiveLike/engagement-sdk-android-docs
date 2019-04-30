@@ -23,8 +23,8 @@ import org.threeten.bp.format.DateTimeFormatter
 
 internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
-    private var pubnub : PubNub
-    private var listener : MessagingEventListener? = null
+    private var pubnub: PubNub
+    private var listener: MessagingEventListener? = null
 
     init {
         pubnubConfiguration.subscribeKey = subscriberKey
@@ -119,7 +119,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
         })
     }
 
-    override fun subscribe(channels : List<String>) {
+    override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
     }
 

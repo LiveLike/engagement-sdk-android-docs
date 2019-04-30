@@ -48,7 +48,13 @@ internal class AlertWidget : ConstraintLayout {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismissWidget: () -> Unit, alertData: Alert, progressedState: WidgetTransientState, viewAnimation: ViewAnimationManager, progressedStateCallback: (WidgetTransientState) -> Unit) {
+    fun initialize(
+        dismissWidget: () -> Unit,
+        alertData: Alert,
+        progressedState: WidgetTransientState,
+        viewAnimation: ViewAnimationManager,
+        progressedStateCallback: (WidgetTransientState) -> Unit
+    ) {
         this.dismissWidget = dismissWidget
         this.resourceAlert = alertData
         this.viewAnimation = viewAnimation
@@ -126,7 +132,7 @@ internal class AlertWidget : ConstraintLayout {
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
-    inner class Updater: Runnable {
+    inner class Updater : Runnable {
         override fun run() {
             progressedState.timeout = timeout - initialTimeout
             progressedStateCallback.invoke(progressedState)

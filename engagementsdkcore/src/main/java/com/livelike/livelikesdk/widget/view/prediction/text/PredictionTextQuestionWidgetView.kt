@@ -18,14 +18,17 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
     private lateinit var viewAnimation: ViewAnimationManager
 
-    override fun initialize(dismiss: ()->Unit,
-                            startingState: WidgetTransientState,
-                            progressedState: WidgetTransientState,
-                            parentWidth: Int,
-                            viewAnimation: ViewAnimationManager,
-                            progressedStateCallback: (WidgetTransientState) -> Unit) {
+    override fun initialize(
+        dismiss: () -> Unit,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        progressedStateCallback: (WidgetTransientState) -> Unit
+    ) {
         super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, progressedStateCallback)
         this.viewAnimation = viewAnimation
         pieTimerViewStub.layoutResource = R.layout.pie_timer
@@ -33,15 +36,13 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
         startWidgetAnimation(pieTimer, startingState.timeout)
     }
 
-    private fun startWidgetAnimation(pieTimer: View, timeout : Long) {
+    private fun startWidgetAnimation(pieTimer: View, timeout: Long) {
         if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
             startPieTimer(pieTimer, timeout)
-        }
-        else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+        } else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
             showConfirmMessage()
             performPredictionWidgetFadeOutOperations()
-        }
-        else viewAnimation.startWidgetTransitionInAnimation {
+        } else viewAnimation.startWidgetTransitionInAnimation {
             startPieTimer(pieTimer, timeout)
         }
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)

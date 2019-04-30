@@ -54,13 +54,15 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit,
-                   timeout: Long,
-                   startingState: WidgetTransientState,
-                   progressedState: WidgetTransientState,
-                   parentWidth: Int,
-                   viewAnimation: ViewAnimationManager,
-                   state: (WidgetTransientState) -> Unit) {
+    fun initialize(
+        dismiss: () -> Unit,
+        timeout: Long,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        state: (WidgetTransientState) -> Unit
+    ) {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
         this.startingState = startingState
@@ -81,12 +83,10 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
 
         if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
             startPieTimer(pieTimer, timeout)
-        }
-        else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+        } else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
             showConfirmMessage()
             performPredictionWidgetFadeOutOperations()
-        }
-        else viewAnimation.startWidgetTransitionInAnimation {
+        } else viewAnimation.startWidgetTransitionInAnimation {
             startPieTimer(pieTimer, timeout)
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
@@ -210,7 +210,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             imageButtonMap[holder.button] = option.id
             // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
             // a way to update user selection.
-            if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
+            if (option == optionList[optionList.size - 1] && progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
 
             holder.button.setOnClickListener {

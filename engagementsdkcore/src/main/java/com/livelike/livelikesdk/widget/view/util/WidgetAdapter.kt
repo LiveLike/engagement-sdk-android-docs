@@ -29,7 +29,7 @@ class WidgetAdapter(
     private val optionSelectedCallback: (String?) -> Unit,
     private var correctOption: String?,
     private val context: Context,
-    private val viewOptions : MutableMap<String?, ViewOption>,
+    private val viewOptions: MutableMap<String?, ViewOption>,
     private val imageButtonMap: HashMap<View, String?>,
     var selectedOption: String? = null,
     var userTapped: () -> Unit
@@ -38,7 +38,7 @@ class WidgetAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val option = optionList[position]
         holder.optionText.text = option.description
-        option.isCorrect?.let { if(it) correctOption = option.id }
+        option.isCorrect?.let { if (it) correctOption = option.id }
 
         // TODO: Move this to adapter layer.
         Glide.with(context)
@@ -75,6 +75,7 @@ class WidgetAdapter(
         return optionList.size
     }
 }
+
 class ViewOption(
     val button: View,
     val progressBar: ProgressBar,

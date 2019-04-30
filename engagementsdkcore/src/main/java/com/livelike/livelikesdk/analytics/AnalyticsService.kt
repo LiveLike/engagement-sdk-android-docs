@@ -20,9 +20,9 @@ internal val analyticService = MixpanelAnalytics()
 
 internal class MixpanelAnalytics : AnalyticsService {
 
-    private lateinit var mixpanel : MixpanelAPI
+    private lateinit var mixpanel: MixpanelAPI
 
-    fun initialize(context : Context, token : String) {
+    fun initialize(context: Context, token: String) {
         mixpanel = MixpanelAPI.getInstance(context, token)
     }
 
