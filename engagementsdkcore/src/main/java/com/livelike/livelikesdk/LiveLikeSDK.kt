@@ -34,11 +34,11 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
 
     /**
      *  Creates a content session without sync.
-     *  @param contentId
+     *  @param programId
      */
-    fun createContentSession(contentId: String): LiveLikeContentSession {
+    fun createContentSession(programId: String): LiveLikeContentSession {
         return LiveLikeContentSessionImpl(
-            contentId,
+            programId,
             { EpochTime(0) },
             object : Provider<SdkConfiguration> {
                 override fun subscribe(ready: (SdkConfiguration) -> Unit) {
@@ -54,12 +54,12 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
 
     /**
      *  Creates a content session with sync.
-     *  @param contentId
+     *  @param programId
      *  @param currentPlayheadTime
      */
-    fun createContentSession(contentId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
+    fun createContentSession(programId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
         return LiveLikeContentSessionImpl(
-            contentId,
+            programId,
             { EpochTime(currentPlayheadTime()) },
             object : Provider<SdkConfiguration> {
                 override fun subscribe(ready: (SdkConfiguration) -> Unit) {
