@@ -25,6 +25,7 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
 
     var configuration: SdkConfiguration? = null
     private val dataClient = LiveLikeDataClientImpl()
+
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
@@ -61,14 +62,15 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
             contentId,
             { EpochTime(currentPlayheadTime()) },
             object : Provider<SdkConfiguration> {
-            override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-                if (configuration != null) ready(configuration!!)
-                else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
-                    configuration = it
-                    ready(it)
+                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
+                    if (configuration != null) ready(configuration!!)
+                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
+                        configuration = it
+                        ready(it)
+                    }
                 }
-            }
-        }, applicationContext)
+            }, applicationContext
+        )
     }
 
     data class SdkConfiguration(
@@ -83,11 +85,8 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
         val sessionsUrl: String,
         val stickerPackUrl: String
     )
-
 }
 
 internal interface LiveLikeSdkDataClient {
     fun getLiveLikeSdkConfig(url: String, responseCallback: (config: LiveLikeSDK.SdkConfiguration) -> Unit)
 }
-
-

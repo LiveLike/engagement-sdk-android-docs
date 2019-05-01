@@ -1,7 +1,6 @@
 package com.livelike.livelikedemo
 
 import android.app.Application
-import android.util.Log
 import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.ChannelManager

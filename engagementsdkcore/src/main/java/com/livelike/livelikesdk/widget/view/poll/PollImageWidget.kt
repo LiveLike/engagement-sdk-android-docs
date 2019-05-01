@@ -29,9 +29,15 @@ import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
-import kotlinx.android.synthetic.main.confirm_message.view.*
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
-import kotlinx.android.synthetic.main.prediction_image_widget.view.*
+import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.determinateBar
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
+import kotlinx.android.synthetic.main.prediction_image_widget.view.closeButton
+import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
+import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 
 class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var pieTimerViewStub: ViewStub
@@ -46,23 +52,25 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     private var fetchResult: (() -> Unit)? = null
-    private var selectedOption : String? = null
+    private var selectedOption: String? = null
     private var correctOption: String? = null
     private var timeout = 0L
     private var prevOptionSelectedId = ""
     var parentWidth = 0
-    
+
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    internal fun initialize(dismiss : ()->Unit,
-                            startingState: WidgetTransientState,
-                            progressedState: WidgetTransientState,
-                            fetch: () -> Unit,
-                            parentWidth: Int,
-                            viewAnimation: ViewAnimationManager,
-                            progressedStateCallback: (WidgetTransientState) -> Unit) {
+    internal fun initialize(
+        dismiss: () -> Unit,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        fetch: () -> Unit,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        progressedStateCallback: (WidgetTransientState) -> Unit
+    ) {
         this.startingState = startingState
         this.progressedState = progressedState
         this.timeout = startingState.timeout
@@ -138,12 +146,12 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
         imageOptionList.adapter?.let {
-            Handler(Looper.getMainLooper()).post {updateVoteCount(voteOptions)}
+            Handler(Looper.getMainLooper()).post { updateVoteCount(voteOptions) }
         } ?: run { imageOptionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
-        if(prevOptionSelectedId != selectedOption)
+        if (prevOptionSelectedId != selectedOption)
             fetchResult?.invoke()
         prevOptionSelectedId = selectedOption ?: ""
         selectedOption = selectedOptionId
@@ -182,7 +190,7 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     private fun disableButtons() {
-        viewOptions.forEach {option ->
+        viewOptions.forEach { option ->
             option.value.button.setOnClickListener(null)
         }
     }
@@ -195,7 +203,7 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val option = optionList[position]
             holder.optionText.text = option.description
-            option.isCorrect.let { if(it) correctOption = option.id }
+            option.isCorrect.let { if (it) correctOption = option.id }
 
             // TODO: Move this to adapter layer.
             Glide.with(context)
@@ -209,7 +217,7 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
             imageButtonMap[holder.button] = option.id
             // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
             // a way to update user selection.
-            if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
+            if (option == optionList[optionList.size - 1] && progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
 
             holder.button.setOnClickListener {

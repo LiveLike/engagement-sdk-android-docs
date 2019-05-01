@@ -1,12 +1,11 @@
 package com.livelike.engagementsdkapi
 
-
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
  *  component.
  */
 interface LiveLikeContentSession {
-    val programUrl : String
+    val programUrl: String
     var widgetRenderer: WidgetRenderer?
     var chatRenderer: ChatRenderer?
     val currentUser: LiveLikeUser?

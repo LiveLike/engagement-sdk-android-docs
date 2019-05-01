@@ -13,7 +13,6 @@ interface ChatRenderer {
     fun loadComplete()
 }
 
-
 /**
  *  Represents a chat message.
  *  @param message The message user wants to send.

@@ -35,16 +35,21 @@ interface WidgetRenderer {
 interface WidgetEventListener {
     fun onWidgetEvent(event: WidgetEvent)
     fun onWidgetDisplayed(impressionUrl: String)
-    fun onOptionVote(voteUrl: String, channel : String, voteUpdateCallback: ((String)-> Unit)?)
-    fun onOptionVoteUpdate(oldVoteUrl:String, newVoteId:String, channel: String, voteUpdateCallback: ((String)-> Unit)?)
+    fun onOptionVote(voteUrl: String, channel: String, voteUpdateCallback: ((String) -> Unit)?)
+    fun onOptionVoteUpdate(
+        oldVoteUrl: String,
+        newVoteId: String,
+        channel: String,
+        voteUpdateCallback: ((String) -> Unit)?
+    )
     fun onFetchingQuizResult(answerUrl: String)
-    fun subscribeForResults(channel:String)
+    fun subscribeForResults(channel: String)
 }
 
 /**
  * List of events the widget can handle.
  */
-enum class WidgetEvent{
+enum class WidgetEvent {
     WIDGET_DISMISS,
     WIDGET_SHOWN
 }

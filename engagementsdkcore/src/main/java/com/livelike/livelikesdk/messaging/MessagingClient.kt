@@ -3,7 +3,6 @@ package com.livelike.livelikesdk.messaging
 import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.EpochTime
 
-
 /**
  *  Represents a messaging client which LiveLike uses to communicate with a widget or chat backend source
  */
@@ -22,7 +21,6 @@ internal interface MessagingEventListener {
     fun onClientMessageError(client: MessagingClient, error: Error)
     fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus)
 }
-
 
 /**
  * Represents a client message that can be sent from a MessagingClient

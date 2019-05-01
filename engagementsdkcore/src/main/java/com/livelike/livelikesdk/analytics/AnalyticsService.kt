@@ -20,9 +20,9 @@ internal val analyticService = MixpanelAnalytics()
 
 internal class MixpanelAnalytics : AnalyticsService {
 
-    private lateinit var mixpanel : MixpanelAPI
+    private lateinit var mixpanel: MixpanelAPI
 
-    fun initialize(context : Context, token : String) {
+    fun initialize(context: Context, token: String) {
         mixpanel = MixpanelAPI.getInstance(context, token)
     }
 
@@ -34,7 +34,6 @@ internal class MixpanelAnalytics : AnalyticsService {
         const val KEY_ORIENTATION_CHANGED = "Orientation_Changed"
         const val KEY_ACTION_TAP = "Action_Tap"
     }
-
 
     override fun trackMessageSent(containEmoji: Boolean) {
         val properties = JSONObject()
@@ -86,5 +85,4 @@ internal class MixpanelAnalytics : AnalyticsService {
     override fun trackUsername(username: String) {
         mixpanel.people.set("username", username)
     }
-
 }

@@ -2,7 +2,6 @@ package com.livelike.livelikesdk.messaging.proxies
 
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.EpochTime
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
 import org.junit.Before
@@ -15,22 +14,23 @@ import org.mockito.MockitoAnnotations
 
 class SynchronizedMessagingClientTest {
 
-    @Mock lateinit var messaingClient: MessagingClient
+    @Mock
+    lateinit var messaingClient: MessagingClient
 
     private var timeSource: () -> EpochTime = { EpochTime(100L) }
-    private lateinit var  subject : SynchronizedMessagingClient
-    private lateinit var listener : MessagingEventListener
+    private lateinit var subject: SynchronizedMessagingClient
+    private lateinit var listener: MessagingEventListener
 
     @Before
-    fun setup(){
+    fun setup() {
         MockitoAnnotations.initMocks(this)
         listener = mock(MessagingEventListener::class.java)
         subject = SynchronizedMessagingClient(messaingClient, timeSource)
     }
 
     @Test
-    fun `should publish event if timestamp zero` (){
-        val clientMessage = ClientMessage( JsonObject(),"", EpochTime(0) )
+    fun `should publish event if timestamp zero`() {
+        val clientMessage = ClientMessage(JsonObject(), "", EpochTime(0))
         subject.onClientMessageEvent(messaingClient, clientMessage)
         subject.listener = listener
         subject.processQueueForScheduledEvent()
@@ -38,7 +38,7 @@ class SynchronizedMessagingClientTest {
     }
 
     @Test
-    fun `should publish event if timestamp gt time` (){
+    fun `should publish event if timestamp gt time`() {
         val clientMessage = ClientMessage(JsonObject(), "", EpochTime(timeSource.invoke().timeSinceEpochInMs + 50))
         subject.onClientMessageEvent(messaingClient, clientMessage)
         subject.listener = listener
@@ -47,7 +47,7 @@ class SynchronizedMessagingClientTest {
     }
 
     @Test
-    fun `should not publish event if timestamp lt time` (){
+    fun `should not publish event if timestamp lt time`() {
         val clientMessage = ClientMessage(JsonObject(), "", EpochTime(timeSource.invoke().timeSinceEpochInMs - 50))
         subject.onClientMessageEvent(messaingClient, clientMessage)
         subject.listener = listener

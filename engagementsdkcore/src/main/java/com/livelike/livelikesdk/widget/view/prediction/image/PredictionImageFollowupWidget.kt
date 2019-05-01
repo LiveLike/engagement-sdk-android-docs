@@ -25,10 +25,15 @@ import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
-import kotlinx.android.synthetic.main.confirm_message.view.*
-import kotlinx.android.synthetic.main.cross_image.view.*
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
-import kotlinx.android.synthetic.main.prediction_image_widget.view.*
+import kotlinx.android.synthetic.main.confirm_message.view.prediction_result
+import kotlinx.android.synthetic.main.cross_image.view.prediction_followup_image_cross
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.determinateBar
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
+import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
+import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -53,12 +58,14 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit,
-                   startingState: WidgetTransientState,
-                   progressedState: WidgetTransientState,
-                   parentWidth: Int,
-                   viewAnimation: ViewAnimationManager,
-                   state: (WidgetTransientState) -> Unit) {
+    fun initialize(
+        dismiss: () -> Unit,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        state: (WidgetTransientState) -> Unit
+    ) {
         dismissWidget = dismiss
         this.timeout = startingState.timeout
         this.parentWidth = parentWidth
@@ -92,7 +99,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         }
     }
 
-    inner class Updater: Runnable {
+    inner class Updater : Runnable {
         override fun run() {
             progressedState.timeout = timeout - initialTimeout
             progressedStateCallback.invoke(progressedState)
@@ -111,9 +118,11 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         }, layout, dismissWidget)
     }
 
-    override fun optionListUpdated(voteOptions: List<VoteOption>,
-                                   optionSelectedCallback: (String?) -> Unit,
-                                   correctOptionWithUserSelection: Pair<String?, String?>) {
+    override fun optionListUpdated(
+        voteOptions: List<VoteOption>,
+        optionSelectedCallback: (String?) -> Unit,
+        correctOptionWithUserSelection: Pair<String?, String?>
+    ) {
         val correctOption = correctOptionWithUserSelection.first
         val userSelectedOption = correctOptionWithUserSelection.second
         viewAnimation.startWidgetTransitionInAnimation {
@@ -125,7 +134,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
                 {
                     progressedState.resultAnimationPath = it
                     progressedStateCallback.invoke(progressedState)
-                }, startingState)
+                }, startingState
+            )
         }
         initAdapter(voteOptions, correctOption, userSelectedOption)
     }
@@ -154,12 +164,14 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
             holder.optionText.text = option.description
             widgetResultDisplayUtil.updatePercentageText(holder.percentageText, option)
             loadImage(option, dpToPx(74), optionButton)
-            widgetResultDisplayUtil.updateViewDrawable(option.id,
+            widgetResultDisplayUtil.updateViewDrawable(
+                option.id,
                 progressBar,
                 holder.button,
                 option.votePercentage.toInt(),
                 correctOption,
-                userSelectedOption)
+                userSelectedOption
+            )
             widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
         }
 

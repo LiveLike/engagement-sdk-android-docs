@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.test.runner.AndroidJUnitRunner
 import com.facebook.testing.screenshot.ScreenshotRunner
 
-
 class ScreenshotTestRunner : AndroidJUnitRunner() {
 
     override fun onCreate(args: Bundle) {

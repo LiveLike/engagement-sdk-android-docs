@@ -26,11 +26,13 @@ internal class ViewAnimationManager(val view: View) {
     fun startWidgetTransitionInAnimation(onAnimationCompletedCallback: () -> Unit) {
         val heightToReach = view.measuredHeight.toFloat()
         // TODO: remove hardcoded start position -400 to something meaningful.
-        val animator = ObjectAnimator.ofFloat(view,
+        val animator = ObjectAnimator.ofFloat(
+            view,
             "translationY",
             -400f,
             heightToReach,
-            heightToReach / 2, 0f)
+            heightToReach / 2, 0f
+        )
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutElastic, animator)
         animationHandler.bindListenerToAnimationView(animator) { onAnimationCompletedCallback.invoke() }
     }
@@ -40,14 +42,16 @@ internal class ViewAnimationManager(val view: View) {
     private fun startEasingAnimation(
         animationHandler: AnimationHandler,
         ease: AnimationEaseInterpolator.Ease,
-        animator: ObjectAnimator) {
+        animator: ObjectAnimator
+    ) {
         val animationDuration = 1000f
-        when(ease)  {
+        when (ease) {
             AnimationEaseInterpolator.Ease.EaseOutElastic -> {
                 animationHandler.createAnimationEffectWith(
                     ease,
                     animationDuration,
-                    animator)
+                    animator
+                )
             }
             AnimationEaseInterpolator.Ease.EaseOutQuad -> {
                 animationHandler.createAnimationEffectWith(
@@ -56,7 +60,8 @@ internal class ViewAnimationManager(val view: View) {
                     animator
                 )
             }
-            else -> {}
+            else -> {
+            }
         }
     }
 
@@ -73,7 +78,13 @@ internal class ViewAnimationManager(val view: View) {
         startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
     }
 
-    fun startTimerAnimation(pieTimer: View, duration: Long, timerProperties: WidgetTransientState, onAnimationCompletedCallback: () -> Unit, progressUpdater: (Float) -> Unit) {
+    fun startTimerAnimation(
+        pieTimer: View,
+        duration: Long,
+        timerProperties: WidgetTransientState,
+        onAnimationCompletedCallback: () -> Unit,
+        progressUpdater: (Float) -> Unit
+    ) {
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
@@ -84,12 +95,14 @@ internal class ViewAnimationManager(val view: View) {
     }
 
     // TODO: Context can be injected at class level
-    fun startResultAnimation(lottieAnimationPath: String,
-                             context: Context,
-                             prediction_result: LottieAnimationView,
-                             progressUpdater: (Float) -> Unit,
-                             animationPath: (String) -> Unit,
-                             resultProperties: WidgetTransientState) {
+    fun startResultAnimation(
+        lottieAnimationPath: String,
+        context: Context,
+        prediction_result: LottieAnimationView,
+        progressUpdater: (Float) -> Unit,
+        animationPath: (String) -> Unit,
+        resultProperties: WidgetTransientState
+    ) {
         var resultAnimationPath = resultProperties.resultAnimationPath
         val resultAnimator = ValueAnimator.ofFloat(resultProperties.resultAnimatorStartPhase, 1f)
 
@@ -103,9 +116,14 @@ internal class ViewAnimationManager(val view: View) {
 
         resultAnimationPath?.let { animationPath.invoke(it) }
         prediction_result.visibility = View.VISIBLE
-        animationHandler.startAnimation(prediction_result, {}, widgetShowingDurationAfterConfirmMessage, resultAnimator, {
-            progressUpdater.invoke(it)
-        })
+        animationHandler.startAnimation(
+            prediction_result,
+            {},
+            widgetShowingDurationAfterConfirmMessage,
+            resultAnimator,
+            {
+                progressUpdater.invoke(it)
+            })
     }
 
     fun showConfirmMessage(
@@ -153,9 +171,9 @@ internal class ViewAnimationManager(val view: View) {
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    //animationHandler.cancelAnimation(timerAnimator)
+                    // animationHandler.cancelAnimation(timerAnimator)
                     // TODO: remove this and add as param
-                    //animationHandler.cancelAnimation(resultAnimator)
+                    // animationHandler.cancelAnimation(resultAnimator)
                     layout.removeAllViewsInLayout()
                     onSwipeCallback?.invoke()
                 }
@@ -165,11 +183,12 @@ internal class ViewAnimationManager(val view: View) {
 }
 
 private class AnimationHandler {
-    fun startAnimation(lottieAnimationView: LottieAnimationView,
-                       onAnimationCompletedCallback: () -> Unit,
-                       duration: Long,
-                       animator: ValueAnimator,
-                       progressUpdater: (Float) -> Unit
+    fun startAnimation(
+        lottieAnimationView: LottieAnimationView,
+        onAnimationCompletedCallback: () -> Unit,
+        duration: Long,
+        animator: ValueAnimator,
+        progressUpdater: (Float) -> Unit
     ) {
         bindListenerToAnimationView(animator, onAnimationCompletedCallback)
         animator.duration = duration
@@ -187,9 +206,11 @@ private class AnimationHandler {
         animator?.cancel()
     }
 
-    fun createAnimationEffectWith(ease: AnimationEaseInterpolator.Ease,
-                                  forDuration: Float,
-                                  animator: ValueAnimator) {
+    fun createAnimationEffectWith(
+        ease: AnimationEaseInterpolator.Ease,
+        forDuration: Float,
+        animator: ValueAnimator
+    ) {
         val animatorSet = AnimatorSet()
         animatorSet.playTogether(
             AnimationEaseAdapter()
@@ -197,18 +218,22 @@ private class AnimationHandler {
                     ease,
                     forDuration,
                     animator
-                ))
+                )
+        )
 
         animatorSet.duration = forDuration.toLong()
         animatorSet.start()
     }
 
-    fun bindListenerToAnimationView(animator: Animator,
-                                    onAnimationCompletedCallback: () -> Unit) {
+    fun bindListenerToAnimationView(
+        animator: Animator,
+        onAnimationCompletedCallback: () -> Unit
+    ) {
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
                 logDebug { "Animation start" }
             }
+
             override fun onAnimationEnd(animation: Animator) {
                 onAnimationCompletedCallback.invoke()
             }
@@ -224,7 +249,9 @@ private class AnimationHandler {
     }
 }
 
-internal class AnimationProperties(val animatorStartValue: Float = 0f,
-                                   val animatorEndValue: Float = 1f,
-                                   val timeout: Long = 0L,
-                                   val resultAnimationPath: String? = null)
+internal class AnimationProperties(
+    val animatorStartValue: Float = 0f,
+    val animatorEndValue: Float = 1f,
+    val timeout: Long = 0L,
+    val resultAnimationPath: String? = null
+)

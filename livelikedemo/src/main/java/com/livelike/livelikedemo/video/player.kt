@@ -15,12 +15,13 @@ import com.livelike.livelikepreintegrators.createExoplayerSession
 import com.livelike.livelikepreintegrators.getExoplayerPdtTime
 import com.livelike.livelikesdk.LiveLikeSDK
 
-data class PlayerState(var window: Int = 0,
-                       var position: Long = 0,
-                       var whenReady: Boolean = true)
+data class PlayerState(
+    var window: Int = 0,
+    var position: Long = 0,
+    var whenReady: Boolean = true
+)
 
 class ExoPlayerImpl(private val context: Context, private val playerView: PlayerView) : VideoPlayer {
-
 
     private var player: SimpleExoPlayer? =
         ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
@@ -92,7 +93,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         playerState = PlayerState()
     }
 
-    override fun position() : Long {
+    override fun position(): Long {
         return player?.currentPosition ?: 0
     }
 
@@ -107,7 +108,7 @@ interface VideoPlayer {
     fun stop()
     fun seekTo(position: Long)
     fun release()
-    fun position() : Long
+    fun position(): Long
     fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession
     fun getPDT(): Long
 }

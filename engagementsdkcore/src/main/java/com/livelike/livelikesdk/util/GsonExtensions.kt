@@ -15,7 +15,6 @@ import org.threeten.bp.format.DateTimeParseException
 import java.lang.reflect.Type
 import java.text.ParseException
 
-
 internal fun JsonObject.extractStringOrEmpty(propertyName: String): String {
     return if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asString else ""
 }

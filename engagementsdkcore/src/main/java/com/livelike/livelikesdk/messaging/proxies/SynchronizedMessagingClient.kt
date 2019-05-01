@@ -26,7 +26,7 @@ internal class SynchronizedMessagingClient(
 
     override fun subscribe(channels: List<String>) {
         activeSub = true
-        if(!timer.running)
+        if (!timer.running)
             timer.start()
         super.subscribe(channels)
     }
@@ -71,21 +71,21 @@ internal class SynchronizedMessagingClient(
         listener?.onClientMessageEvent(this, event)
     }
 
-    fun shouldPublishEvent(event: ClientMessage) : Boolean =
+    fun shouldPublishEvent(event: ClientMessage): Boolean =
         timeSource() <= EpochTime(0) || // Timesource return 0 - sync disabled
                 event.timeStamp <= EpochTime(0) || // Event time is 0 - bypass sync
                 (event.timeStamp <= timeSource() && event.timeStamp >= timeSource() - validEventBufferMs)
 
-    fun shouldDismissEvent(event: ClientMessage) : Boolean =
-         event.timeStamp > EpochTime(0) &&
+    fun shouldDismissEvent(event: ClientMessage): Boolean =
+        event.timeStamp > EpochTime(0) &&
                 (event.timeStamp < timeSource() - validEventBufferMs)
 
     private fun logDismissedEvent(event: ClientMessage) =
         logVerbose {
             "Dismissed Client Message -- the message was too old! " +
                     event.timeStamp.timeSinceEpochInMs +
-                    " : " + timeSource().timeSinceEpochInMs }
-
+                    " : " + timeSource().timeSinceEpochInMs
+        }
 }
 
 internal class SyncTimer(val task: Runnable, val period: Long) {
@@ -114,7 +114,7 @@ internal class SyncTimer(val task: Runnable, val period: Long) {
     }
 }
 
-//Extension for MessagingClient to be synced
+// Extension for MessagingClient to be synced
 internal fun MessagingClient.syncTo(
     timeSource: () -> EpochTime,
     validEventBufferMs: Long = 10000L

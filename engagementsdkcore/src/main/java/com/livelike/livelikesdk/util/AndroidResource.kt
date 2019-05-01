@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
-import java.util.*
+import java.util.Random
 
 internal class AndroidResource {
     companion object {
@@ -28,7 +28,7 @@ internal class AndroidResource {
             } else return null
         }
 
-        fun parseDuration(durationString: String) : Long {
+        fun parseDuration(durationString: String): Long {
             var timeout = 7000L
             try {
                 timeout = Duration.parse(durationString).toMillis()
@@ -38,5 +38,4 @@ internal class AndroidResource {
             return timeout
         }
     }
-
 }

@@ -22,7 +22,11 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.determinateBar
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
 
 class ImageAdapter internal constructor(
     private val optionList: List<VoteOption>,
@@ -35,16 +39,16 @@ class ImageAdapter internal constructor(
 
     private var imageLoadedCount = 0
     val viewOptions = HashMap<String?, ViewOption>()
-    var correctOption : String? = ""
+    var correctOption: String? = ""
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val option = optionList[position]
         holder.optionText.text = option.description
-        option.isCorrect.let { if(it) correctOption = option.id }
+        option.isCorrect.let { if (it) correctOption = option.id }
 
         holder.loadImage(context, option.imageUrl) {
-            if(!it) adapterUpdateCompleteCallback.invoke(false)
-            if(++imageLoadedCount >= optionList.size)
+            if (!it) adapterUpdateCompleteCallback.invoke(false)
+            if (++imageLoadedCount >= optionList.size)
                 adapterUpdateCompleteCallback.invoke(true)
         }
 
@@ -87,16 +91,27 @@ class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     val percentageText: TextView = view.percentageText
     val progressBar: ProgressBar = view.determinateBar
 
-    fun loadImage(context: Context, imageUrl: String, imageLoadedCallback: (success: Boolean) -> Unit)  {
+    fun loadImage(context: Context, imageUrl: String, imageLoadedCallback: (success: Boolean) -> Unit) {
         Glide.with(context)
             .load(imageUrl)
             .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
                     imageLoadedCallback(false)
                     return false
                 }
 
-                override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
                     imageLoadedCallback(true)
                     return false
                 }

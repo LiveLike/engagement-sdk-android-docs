@@ -9,7 +9,6 @@ import android.widget.TextView
 import com.airbnb.lottie.LottieAnimationView
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.AnimationProperties
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
@@ -21,29 +20,47 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
         const val wrongAnswerLottieFilePath = "wrongAnswer"
     }
 
-    fun updateViewDrawable(optionId: String,
-                           progressBar: ProgressBar,
-                           optionButton: View,
-                           percentage: Int,
-                           correctOption: String?,
-                           selectedOption: String?,
-                           useNeutralValues: Boolean = false) {
-        setViewOutline(optionButton,selectedOption == optionId, correctOption == optionId, useNeutralValues )
-        setProgressBarColor(progressBar, selectedOption == optionId, correctOption == optionId, percentage, useNeutralValues)
+    fun updateViewDrawable(
+        optionId: String,
+        progressBar: ProgressBar,
+        optionButton: View,
+        percentage: Int,
+        correctOption: String?,
+        selectedOption: String?,
+        useNeutralValues: Boolean = false
+    ) {
+        setViewOutline(optionButton, selectedOption == optionId, correctOption == optionId, useNeutralValues)
+        setProgressBarColor(
+            progressBar,
+            selectedOption == optionId,
+            correctOption == optionId,
+            percentage,
+            useNeutralValues
+        )
     }
 
     private fun setViewOutline(view: View, isUserSelected: Boolean, isCorrect: Boolean, isNeutral: Boolean) {
-       when {
-           isNeutral && isUserSelected -> updateViewBackground(view, R.drawable.button_poll_answer_outline)
-           isCorrect -> updateViewBackground(view, R.drawable.button_correct_answer_outline)
-           isUserSelected -> updateViewBackground(view, R.drawable.button_wrong_answer_outline)
-           else -> updateViewBackground(view, R.drawable.button_default)
-       }
+        when {
+            isNeutral && isUserSelected -> updateViewBackground(view, R.drawable.button_poll_answer_outline)
+            isCorrect -> updateViewBackground(view, R.drawable.button_correct_answer_outline)
+            isUserSelected -> updateViewBackground(view, R.drawable.button_wrong_answer_outline)
+            else -> updateViewBackground(view, R.drawable.button_default)
+        }
     }
 
-    private fun setProgressBarColor(progressBar: ProgressBar, isUserSelected: Boolean, isCorrect: Boolean, percentage: Int, isNeutral: Boolean) {
+    private fun setProgressBarColor(
+        progressBar: ProgressBar,
+        isUserSelected: Boolean,
+        isCorrect: Boolean,
+        percentage: Int,
+        isNeutral: Boolean
+    ) {
         when {
-            isNeutral && isUserSelected -> updateProgressBar(progressBar, R.drawable.progress_bar_user_selection_poll, percentage)
+            isNeutral && isUserSelected -> updateProgressBar(
+                progressBar,
+                R.drawable.progress_bar_user_selection_poll,
+                percentage
+            )
             isCorrect -> updateProgressBar(progressBar, R.drawable.progress_bar_user_correct, percentage)
             isUserSelected -> updateProgressBar(progressBar, R.drawable.progress_bar_user_selection_wrong, percentage)
             else -> updateProgressBar(progressBar, R.drawable.progress_bar_wrong_option, percentage)
@@ -57,12 +74,14 @@ internal class WidgetResultDisplayUtil(val context: Context, private val viewAni
         animationPath: (String?) -> Unit,
         resultProperties: WidgetTransientState
     ) {
-        viewAnimation.startResultAnimation(findResultAnimationPath(isCorrect),
+        viewAnimation.startResultAnimation(
+            findResultAnimationPath(isCorrect),
             context,
             prediction_result,
             progressUpdater,
             animationPath,
-            resultProperties)
+            resultProperties
+        )
     }
 
     private fun findResultAnimationPath(isCorrect: Boolean): String {

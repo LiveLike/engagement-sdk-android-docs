@@ -9,12 +9,12 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.LinearLayout
 import com.livelike.livelikedemo.R
-import kotlinx.android.synthetic.main.channel_select_bottom.view.*
+import kotlinx.android.synthetic.main.channel_select_bottom.view.channel_list
 
 class ChannelSelectionView : LinearLayout {
 
     constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet): super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     init {
@@ -22,12 +22,12 @@ class ChannelSelectionView : LinearLayout {
         orientation = LinearLayout.VERTICAL
     }
 
-    var channelSelectListener : ((Channel) -> Unit)? = null
+    var channelSelectListener: ((Channel) -> Unit)? = null
 
-    var channelList : MutableList<Channel>? = null
-    set (channels) {
+    var channelList: MutableList<Channel>? = null
+        set(channels) {
         this.channel_list.removeAllViews()
-        for (channel : Channel in channels ?: return) {
+            for (channel: Channel in channels ?: return) {
             val channelOption = LayoutInflater.from(context).inflate(R.layout.test_app_button, null) as Button
             channelOption.text = channel.name
             channelOption.setOnClickListener {

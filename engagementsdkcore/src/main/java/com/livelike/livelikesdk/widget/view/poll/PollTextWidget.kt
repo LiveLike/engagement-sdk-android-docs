@@ -9,26 +9,32 @@ import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetBase
-import kotlinx.android.synthetic.main.prediction_text_widget.view.*
+import kotlinx.android.synthetic.main.prediction_text_widget.view.closeButton
+import kotlinx.android.synthetic.main.prediction_text_widget.view.questionTextView
 
 internal class PollTextWidget : TextOptionWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
     private lateinit var viewAnimation: ViewAnimationManager
     private var fetchResult: (() -> Unit)? = null
 
-    fun initialize(dismiss : () -> Unit,
-                   startingState: WidgetTransientState,
-                   progressedState: WidgetTransientState,
-                   fetch: () -> Unit,
-                   parentWidth: Int,
-                   viewAnimation: ViewAnimationManager,
-                   state: (WidgetTransientState) -> Unit) {
+    fun initialize(
+        dismiss: () -> Unit,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        fetch: () -> Unit,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        state: (WidgetTransientState) -> Unit
+    ) {
         super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, state)
 
-        selectedButtonDrawable = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_poll_answer_outline)
-        questionTextView.background = AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.poll_textview_rounded_corner)
+        selectedButtonDrawable =
+            AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_poll_answer_outline)
+        questionTextView.background =
+            AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.poll_textview_rounded_corner)
         fetchResult = fetch
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
@@ -55,7 +61,7 @@ internal class PollTextWidget : TextOptionWidgetBase {
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         super.optionSelectedUpdated(selectedOptionId)
-        if(prevOptionSelectedId != optionSelectedId)
+        if (prevOptionSelectedId != optionSelectedId)
             fetchResult?.invoke()
     }
 }

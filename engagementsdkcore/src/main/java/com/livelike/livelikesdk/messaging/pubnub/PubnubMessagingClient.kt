@@ -23,15 +23,15 @@ import org.threeten.bp.format.DateTimeFormatter
 
 internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
-    private var pubnub : PubNub
-    private var listener : MessagingEventListener? = null
+    private var pubnub: PubNub
+    private var listener: MessagingEventListener? = null
 
     init {
         pubnubConfiguration.subscribeKey = subscriberKey
         pubnub = PubNub(pubnubConfiguration)
         val client = this
 
-        //Extract SubscribeCallback?
+        // Extract SubscribeCallback?
         pubnub.addListener(object : SubscribeCallback() {
             override fun status(pubnub: PubNub, status: PNStatus) {
                 when (status.operation) {
@@ -70,15 +70,15 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                             }
 
                             else -> {
-                                //TODO: Handle other relevant categories here
-                                //Some other category we have yet to handle
+                                // TODO: Handle other relevant categories here
+                                // Some other category we have yet to handle
                             }
                         }
                     }
 
                     else -> {
-                        //TODO: handle other Operation Types, or default here
-                        //some other Operation Type we are not handling yet.
+                        // TODO: handle other Operation Types, or default here
+                        // some other Operation Type we are not handling yet.
                     }
                 }
             }
@@ -119,7 +119,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
         })
     }
 
-    override fun subscribe(channels : List<String>) {
+    override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
     }
 
@@ -132,7 +132,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     }
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {
-        //More than one triggerListener?
+        // More than one triggerListener?
         this.listener = listener
     }
 }

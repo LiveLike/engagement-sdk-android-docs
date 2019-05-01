@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/progress">
         <scale android:scaleWidth="100%">
             <shape>
-                <corners android:radius="@dimen/percent_bar_corner_radius" />
+                <corners android:radius="@dimen/percent_bar_corner_radius"/>
 
                 <gradient
                         android:angle="@integer/percent_bar_gradient_angle"
                         android:endColor="@color/percent_bar_wrong_end"
-                        android:startColor="@color/percent_bar_wrong_start" />
+                        android:startColor="@color/percent_bar_wrong_start"/>
                 <padding android:left="8dp"
                          android:right="8dp"
                          android:top="8dp"
