@@ -39,40 +39,40 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintLayoutVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.kotlinVersion"
-    implementation "com.android.support:design:$rootProject.supportLibraryVersion"
-    implementation "com.daimajia.easing:library:$rootProject.easingVersion@aar"
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation "com.android.support:design:$supportLibraryVersion"
+    implementation "com.daimajia.easing:library:$easingVersion@aar"
 
     // Pubnub SDK for real-time communication
-    implementation group: 'com.pubnub', name: 'pubnub-gson', version: "$rootProject.pubnubVersion"
-    implementation "com.airbnb.android:lottie:$rootProject.lottieVersion"
+    implementation group: 'com.pubnub', name: 'pubnub-gson', version: "$pubnubVersion"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 
     // Sendbird SDK for Chat messaging
-    implementation "com.sendbird.sdk:sendbird-android-sdk:$rootProject.sendbirdVersion"
+    implementation "com.sendbird.sdk:sendbird-android-sdk:$sendbirdVersion"
 
     // Tests frameworks
-    testImplementation "junit:junit:$rootProject.junitVersion"
-    androidTestImplementation "com.android.support.test:runner:$rootProject.supportTestVersion"
-    androidTestImplementation "com.android.support.test:rules:$rootProject.supportTestVersion"
-    androidTestImplementation ("com.android.support.test.espresso:espresso-core:$rootProject.expressoVersion",
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$supportTestVersion"
+    androidTestImplementation "com.android.support.test:rules:$supportTestVersion"
+    androidTestImplementation ("com.android.support.test.espresso:espresso-core:$expressoVersion",
     {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
     // glide
-    implementation "com.github.bumptech.glide:glide:$rootProject.glideVersion"
-    annotationProcessor "com.github.bumptech.glide:compiler:$rootProject.glideVersion"
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
 
     // Mock library
-    testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
     // Time lib
-    implementation "com.jakewharton.threetenabp:threetenabp:$rootProject.threetenabpVersion"
+    implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
 
     // Analytics
-    implementation "com.mixpanel.android:mixpanel-android:$rootProject.mixpanelVersion"
+    implementation "com.mixpanel.android:mixpanel-android:$mixpanelVersion"
 
     // Engagement SDK API
     api project(path: ':engagementsdkapi')

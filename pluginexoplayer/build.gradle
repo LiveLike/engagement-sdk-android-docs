@@ -26,14 +26,14 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    testImplementation "junit:junit:$rootProject.junitVersion"
-    androidTestImplementation "com.android.support.test:runner:$rootProject.supportTestVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$rootProject.expressoVersion"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.kotlinVersion"
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$supportTestVersion"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:$expressoVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 
     // players
-    compileOnly "com.google.android.exoplayer:exoplayer:$rootProject.exoplayerVersion"
+    compileOnly "com.google.android.exoplayer:exoplayer:$exoplayerVersion"
 
     // livelike SDKs
     compileOnly project(path: ':engagementsdkcore')
