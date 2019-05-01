@@ -32,7 +32,6 @@ import kotlinx.android.synthetic.main.prediction_image_row_element.view.determin
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
-import kotlinx.android.synthetic.main.prediction_image_widget.view.image_optionList
 import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
@@ -143,8 +142,8 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private fun initAdapter(voteOptions: List<VoteOption>, correctOption: String?, userSelectedOption: String?) {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
-        image_optionList.adapter = ImageAdapter(voteOptions, correctOption, userSelectedOption)
+        imageOptionList.layoutManager = linearLayoutManager
+        imageOptionList.adapter = ImageAdapter(voteOptions, correctOption, userSelectedOption)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {}

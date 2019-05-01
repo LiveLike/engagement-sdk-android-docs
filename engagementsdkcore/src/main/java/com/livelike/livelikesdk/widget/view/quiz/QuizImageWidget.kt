@@ -35,7 +35,7 @@ import kotlinx.android.synthetic.main.prediction_image_row_element.view.determin
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
-import kotlinx.android.synthetic.main.prediction_image_widget.view.image_optionList
+import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
 import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 
 class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
@@ -105,7 +105,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
+        imageOptionList.layoutManager = linearLayoutManager
 
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         questionTextView.layoutParams.width = parentWidth
@@ -139,10 +139,10 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         optionSelectedCallback: (String?) -> Unit,
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
-        image_optionList.adapter?.let {
+        imageOptionList.adapter?.let {
             if (correctOptionWithUserSelection.first != null && correctOptionWithUserSelection.second != null)
                 updateVoteCount(voteOptions)
-        } ?: run { image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
+        } ?: run { imageOptionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback) }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
