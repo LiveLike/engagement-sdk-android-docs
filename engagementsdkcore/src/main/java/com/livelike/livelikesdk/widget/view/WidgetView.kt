@@ -68,11 +68,6 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         }
     }
 
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-        verifyViewMinWidth(viewRoot)
-    }
-
     /**
      * Sets the Session on the widget view.
      * The widget events coming from the LiveLike CMS will flow through the session
