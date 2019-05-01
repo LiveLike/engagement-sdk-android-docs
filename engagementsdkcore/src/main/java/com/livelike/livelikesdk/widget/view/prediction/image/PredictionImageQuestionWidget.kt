@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.pie_timer.view.prediction_pie_updater_anim
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
+import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
 import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {

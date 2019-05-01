@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.prediction_image_row_element.view.determin
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
+import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
 import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
