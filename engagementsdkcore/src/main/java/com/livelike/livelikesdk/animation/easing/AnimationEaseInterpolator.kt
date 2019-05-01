@@ -12,5 +12,5 @@ interface AnimationEaseInterpolator {
         EaseOutCubic
     }
 
-    fun createAnimationEffectWith(ease: Ease, forDuration: Float, animator: ValueAnimator) : ValueAnimator
+    fun createAnimationEffectWith(ease: Ease, forDuration: Float, animator: ValueAnimator): ValueAnimator
 }

@@ -11,7 +11,7 @@ import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.LiveLikeSdkDataClient
 import com.livelike.livelikesdk.Program
 import com.livelike.livelikesdk.util.extractStringOrEmpty
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetDataClient
@@ -34,7 +34,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         }
         val client = OkHttpClient()
         val formBody = FormBody.Builder()
-            .add("session_id", getUserId())
+            .add("session_id", getSessionId())
             .build()
         try {
             val request = Request.Builder()
@@ -69,7 +69,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                 val responseData = response.body()?.string()
                 try {
                     mainHandler.post { responseCallback.invoke(parseProgramData(JsonParser().parse(responseData).asJsonObject)) }
-                } catch (e : MalformedJsonException) {
+                } catch (e: MalformedJsonException) {
                     logError { e }
                 }
             }
@@ -106,7 +106,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                 val responseData = response.body()?.string()
                 try {
                     mainHandler.post { responseCallback.invoke(pareseSdkConfiguration(JsonParser().parse(responseData).asJsonObject)) }
-                } catch ( e: MalformedJsonException) {
+                } catch (e: MalformedJsonException) {
                     logError { e }
                 }
             }
@@ -176,10 +176,11 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
             logError { "Vote Change failed as voteUrl is empty" }
             return
         }
-        put(voteUrl, FormBody.Builder()
-            .add("option_id", newVoteId)
-            .build()) {
-                responseJson ->
+        put(
+            voteUrl, FormBody.Builder()
+                .add("option_id", newVoteId)
+                .build()
+        ) { responseJson ->
             voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
         }
     }
@@ -205,7 +206,10 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                     responseCallback?.invoke(JsonParser().parse(response.body()?.string()).asJsonObject)
                 }
             }
-            override fun onFailure(call: Call?, e: IOException?) { logError { e } }
+
+            override fun onFailure(call: Call?, e: IOException?) {
+                logError { e }
+            }
         })
     }
 
@@ -221,8 +225,10 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                     responseCallback?.invoke(JsonParser().parse(response.body()?.string()).asJsonObject)
                 }
             }
-            override fun onFailure(call: Call?, e: IOException?) { logError { e } }
+
+            override fun onFailure(call: Call?, e: IOException?) {
+                logError { e }
+            }
         })
     }
 }
-

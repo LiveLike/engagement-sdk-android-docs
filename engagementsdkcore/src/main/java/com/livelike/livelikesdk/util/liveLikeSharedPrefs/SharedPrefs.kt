@@ -4,8 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.livelike.livelikesdk.util.gson
 
-
-private val PREFERENCE_KEY_USER_ID = "UserId"
+private val PREFERENCE_KEY_SESSION_ID = "SessionId"
 private val PREFERENCE_KEY_NICKNAME = "Username"
 
 private val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
@@ -20,13 +19,13 @@ private fun getSharedPreferences(): SharedPreferences {
     return mAppContext!!.getSharedPreferences("livelike-sdk", Context.MODE_PRIVATE)
 }
 
-internal fun setUserId(userId: String) {
+internal fun setSessionId(sessionId: String) {
     val editor = getSharedPreferences().edit()
-    editor.putString(PREFERENCE_KEY_USER_ID, userId).apply()
+    editor.putString(PREFERENCE_KEY_SESSION_ID, sessionId).apply()
 }
 
-internal fun getUserId(): String {
-    return getSharedPreferences().getString(PREFERENCE_KEY_USER_ID, "") ?: ""
+internal fun getSessionId(): String {
+    return getSharedPreferences().getString(PREFERENCE_KEY_SESSION_ID, "") ?: ""
 }
 
 internal fun setNickname(nickname: String) {

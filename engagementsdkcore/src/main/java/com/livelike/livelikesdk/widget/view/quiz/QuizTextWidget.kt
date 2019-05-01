@@ -6,24 +6,27 @@ import android.util.AttributeSet
 import android.view.View
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.animation.ViewAnimationManager
+import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetBase
 
 internal class QuizTextWidget : TextOptionWidgetBase {
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
     private lateinit var viewAnimation: ViewAnimationManager
     private var fetchResult: (() -> Unit)? = null
 
-    fun initialize(dismiss : ()->Unit,
-                   startingState: WidgetTransientState,
-                   progressedState: WidgetTransientState,
-                   fetch: () -> Unit,
-                   parentWidth: Int,
-                   viewAnimation: ViewAnimationManager,
-                   state: (WidgetTransientState) -> Unit) {
+    fun initialize(
+        dismiss: () -> Unit,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        fetch: () -> Unit,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        state: (WidgetTransientState) -> Unit
+    ) {
         super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, state)
         fetchResult = fetch
         this.viewAnimation = viewAnimation
@@ -74,7 +77,7 @@ internal class QuizTextWidget : TextOptionWidgetBase {
         correctOptionWithUserSelection: Pair<String?, String?>
     ) {
         super.optionListUpdated(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
-        if(showResults) {
+        if (showResults) {
             super.showResultsAnimation(correctOptionWithUserSelection)
         }
     }

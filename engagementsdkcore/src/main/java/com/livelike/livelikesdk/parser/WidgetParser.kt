@@ -78,12 +78,12 @@ internal class WidgetParser {
             resource.choices.forEach { choice ->
                 if (option.id == choice.id)
                     option.answerCount = choice.answer_count.toLong()
-                if(option.isCorrect)
+                if (option.isCorrect)
                     widget.correctOptionId = option.id
             }
         }
         widget.optionSelected =
-            WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widget.id?:""))
+            WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widget.id ?: ""))
     }
 
     fun parsePoll(widget: Widget, resource: Resource) {
@@ -99,6 +99,6 @@ internal class WidgetParser {
             }
         }
         widget.optionSelected =
-                WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widget.id?:""))
+            WidgetOptions(getWidgetPredictionVotedAnswerIdOrEmpty(widget.id ?: ""))
     }
 }

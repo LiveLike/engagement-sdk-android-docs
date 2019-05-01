@@ -18,13 +18,12 @@ import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
 import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getNickename
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getUserId
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setNickname
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setUserId
+import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setSessionId
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.cache.WidgetStateProcessorImpl
-
 
 internal class LiveLikeContentSessionImpl(
     override val programUrl: String,
@@ -39,26 +38,31 @@ internal class LiveLikeContentSessionImpl(
     private var chatQueue: ChatQueue? = null
     private val widgetStateMap = HashMap<String, WidgetTransientState>()
     private val currentWidgetMap = HashMap<String, String>()
-    private val stateStorage: WidgetStateProcessor by lazy { WidgetStateProcessorImpl(widgetStateMap, currentWidgetMap) }
+    private val stateStorage: WidgetStateProcessor by lazy {
+        WidgetStateProcessorImpl(
+            widgetStateMap,
+            currentWidgetMap
+        )
+    }
 
     init {
         getUser()
     }
 
     private fun getUser() {
-        val userId = getUserId()
+        val sessionId = getSessionId()
         val username = getNickename()
-        if (!userId.isEmpty() && !username.isEmpty()) {
-            currentUser = LiveLikeUser(userId, username)
-            analyticService.identifyUser(userId)
+        if (!sessionId.isEmpty() && !username.isEmpty()) {
+            currentUser = LiveLikeUser(sessionId, username)
+            analyticService.trackSession(sessionId)
             analyticService.trackUsername(username)
         } else {
             sdkConfiguration.subscribe { configuration ->
                 llDataClient.getLiveLikeUserData(configuration.sessionsUrl) {
                     currentUser = it
-                    setUserId(it.userId)
+                    setSessionId(it.sessionId)
                     setNickname(it.userName)
-                    analyticService.identifyUser(it.userId)
+                    analyticService.trackSession(it.sessionId)
                     analyticService.trackUsername(it.userName)
                 }
             }
@@ -91,7 +95,6 @@ internal class LiveLikeContentSessionImpl(
         return currentPlayheadTime()
     }
 
-
     override fun contentSessionId() = program?.clientId ?: ""
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
@@ -110,7 +113,7 @@ internal class LiveLikeContentSessionImpl(
     private fun initializeChatMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
-            //validEventBufferMs for chat is currently 24 hours
+            // validEventBufferMs for chat is currently 24 hours
             val chatClient = SendbirdChatClient()
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime, 86400000L).toChatQueue(chatClient)

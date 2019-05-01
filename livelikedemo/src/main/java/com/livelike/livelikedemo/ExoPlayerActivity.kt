@@ -6,7 +6,6 @@ import android.os.Handler
 import android.support.constraint.Constraints
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.livelike.engagementsdkapi.LiveLikeContentSession
@@ -16,10 +15,18 @@ import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.registerLogsHandler
-import kotlinx.android.synthetic.main.activity_exo_player.*
-import kotlinx.android.synthetic.main.widget_chat_stacked.*
-import java.util.*
-
+import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
+import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
+import kotlinx.android.synthetic.main.activity_exo_player.openLogs
+import kotlinx.android.synthetic.main.activity_exo_player.playerView
+import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
+import kotlinx.android.synthetic.main.activity_exo_player.startAd
+import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
+import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
+import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -37,12 +44,11 @@ class ExoPlayerActivity : AppCompatActivity() {
     set(adsPlaying) {
         field = adsPlaying
 
-        if(adsPlaying){
+        if (adsPlaying) {
             startAd.text = "Stop Ads"
             player.stop()
             session?.pause()
-        }
-        else{
+        } else {
             startAd.text = "Start Ads"
             player.start()
             session?.resume()
@@ -77,7 +83,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }, 0, 100)
 
         setUpAdClickListeners()
-        
+
         channelManager?.let {
             selectChannel(it.selectedChannel)
         }
@@ -88,7 +94,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             selectChannel(it)
         }
 
-        selectChannelButton.setOnClickListener {  channelManager?.show(this) }
+        selectChannelButton.setOnClickListener { channelManager?.show(this) }
     }
 
     private fun setUpAdClickListeners() {
@@ -131,7 +137,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        if(!adsPlaying)
+        if (!adsPlaying)
             player.start()
     }
 

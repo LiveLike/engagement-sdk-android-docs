@@ -16,7 +16,11 @@ import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.determinateBar
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
 
 // TODO: This adapter can be made generic and used in most result widgets. Right now this is just a placeholder.
 //
@@ -25,7 +29,7 @@ class WidgetAdapter(
     private val optionSelectedCallback: (String?) -> Unit,
     private var correctOption: String?,
     private val context: Context,
-    private val viewOptions : MutableMap<String?, ViewOption>,
+    private val viewOptions: MutableMap<String?, ViewOption>,
     private val imageButtonMap: HashMap<View, String?>,
     var selectedOption: String? = null,
     var userTapped: () -> Unit
@@ -34,7 +38,7 @@ class WidgetAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val option = optionList[position]
         holder.optionText.text = option.description
-        option.isCorrect?.let { if(it) correctOption = option.id }
+        option.isCorrect?.let { if (it) correctOption = option.id }
 
         // TODO: Move this to adapter layer.
         Glide.with(context)
@@ -71,6 +75,7 @@ class WidgetAdapter(
         return optionList.size
     }
 }
+
 class ViewOption(
     val button: View,
     val progressBar: ProgressBar,

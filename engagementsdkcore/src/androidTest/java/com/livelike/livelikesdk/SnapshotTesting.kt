@@ -7,12 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import com.facebook.testing.screenshot.Screenshot
 import com.facebook.testing.screenshot.ViewHelpers
+import com.livelike.engagementsdkapi.WidgetTransientState
+import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.view.AlertWidget
-import kotlinx.android.synthetic.main.widget_view.view.*
+import kotlinx.android.synthetic.main.widget_view.view.widgetContainerView
 import org.junit.Before
 import org.junit.Test
-
 
 /* Need to diable the animations on the device.
 *
@@ -32,13 +33,20 @@ class AlertWidgetImage {
     private lateinit var textAndLabel: View
     private lateinit var textAndLabelAndLink: View
 
-    val bodyText = "This is the body This is the body This is the body This is the body This is the body This is the body This is the body"
+    val bodyText =
+        "This is the body This is the body This is the body This is the body This is the body This is the body This is the body"
     val labelTitle = "DEAL"
     val imageUrl = "https://cf-blast-storage.livelikecdn.com/assets/8569d8c0-3fe5-47e9-b852-751ee18383ff.png"
     val linkText = "Click on me, I'm a link"
     val linkUrl = "https://www.google.com/"
 
-    private fun setupView(title : String = "", bodyText : String = "", imageUrl : String = "", linkUrl : String = "", linkText : String = ""): View {
+    private fun setupView(
+        title: String = "",
+        bodyText: String = "",
+        imageUrl: String = "",
+        linkUrl: String = "",
+        linkText: String = ""
+    ): View {
         context = InstrumentationRegistry.getInstrumentation().context
         val inflater = LayoutInflater.from(context)
         val widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
@@ -58,7 +66,10 @@ class AlertWidgetImage {
                 imageUrl,
                 linkUrl,
                 linkText
-            )
+            ),
+            WidgetTransientState(),
+            ViewAnimationManager(alertWidget),
+            {}
         )
 
         ViewHelpers.setupView(alertWidget)
@@ -66,7 +77,7 @@ class AlertWidgetImage {
             .setExactHeightDp(200)
             .layout()
 
-        widgetView.containerView.addView(alertWidget)
+        widgetView.widgetContainerView.addView(alertWidget)
 
         ViewHelpers.setupView(widgetView)
             .setExactWidthDp(300)
@@ -76,7 +87,7 @@ class AlertWidgetImage {
         return widgetView ?: View(context)
     }
 
-    private fun takeScreenshot(view: View, name: String){
+    private fun takeScreenshot(view: View, name: String) {
         Screenshot
             .snap(view)
             .setName(name)
@@ -85,13 +96,13 @@ class AlertWidgetImage {
 
     @Before
     @UiThreadTest
-    fun setup(){
+    fun setup() {
         imageOnly = setupView(imageUrl = imageUrl)
         imageAndLabel = setupView(labelTitle, imageUrl = imageUrl)
         imageAndLabelAndLink = setupView(labelTitle, "", imageUrl, linkUrl, linkText)
         textOnly = setupView(bodyText = bodyText)
         textAndLabel = setupView(labelTitle, bodyText = bodyText)
-        textAndLabelAndLink = setupView(labelTitle, bodyText,"", linkUrl, linkText)
+        textAndLabelAndLink = setupView(labelTitle, bodyText, "", linkUrl, linkText)
     }
 
     @Test

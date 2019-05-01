@@ -26,10 +26,14 @@ import com.livelike.livelikesdk.binding.WidgetObserver
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
-import kotlinx.android.synthetic.main.confirm_message.view.*
-import kotlinx.android.synthetic.main.pie_timer.view.*
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.*
-import kotlinx.android.synthetic.main.prediction_image_widget.view.*
+import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
+import kotlinx.android.synthetic.main.confirm_message.view.prediction_confirm_message_animation
+import kotlinx.android.synthetic.main.pie_timer.view.prediction_pie_updater_animation
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
+import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
+import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
+import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
@@ -50,13 +54,15 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismiss: () -> Unit,
-                   timeout: Long,
-                   startingState: WidgetTransientState,
-                   progressedState: WidgetTransientState,
-                   parentWidth: Int,
-                   viewAnimation: ViewAnimationManager,
-                   state: (WidgetTransientState) -> Unit) {
+    fun initialize(
+        dismiss: () -> Unit,
+        timeout: Long,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        state: (WidgetTransientState) -> Unit
+    ) {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
         this.startingState = startingState
@@ -77,12 +83,10 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
 
         if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
             startPieTimer(pieTimer, timeout)
-        }
-        else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+        } else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
             showConfirmMessage()
             performPredictionWidgetFadeOutOperations()
-        }
-        else viewAnimation.startWidgetTransitionInAnimation {
+        } else viewAnimation.startWidgetTransitionInAnimation {
             startPieTimer(pieTimer, timeout)
         }
         widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
@@ -163,8 +167,8 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     ) {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        image_optionList.layoutManager = linearLayoutManager
-        image_optionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
+        imageOptionList.layoutManager = linearLayoutManager
+        imageOptionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
@@ -206,7 +210,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
             imageButtonMap[holder.button] = option.id
             // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
             // a way to update user selection.
-            if (option == optionList[optionList.size -1]  && progressedState.userSelection != null)
+            if (option == optionList[optionList.size - 1] && progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
 
             holder.button.setOnClickListener {

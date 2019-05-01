@@ -11,8 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.*
-import kotlinx.android.synthetic.main.widget_type_with_variance_row_element.view.*
+import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.toolbar
+import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.widget_only
+import kotlinx.android.synthetic.main.widget_type_with_variance_row_element.view.standalone_divider
+import kotlinx.android.synthetic.main.widget_type_with_variance_row_element.view.standalone_divider_2
+import kotlinx.android.synthetic.main.widget_type_with_variance_row_element.view.widget_type_label
+import kotlinx.android.synthetic.main.widget_type_with_variance_row_element.view.widgets_variance_1
+import kotlinx.android.synthetic.main.widget_type_with_variance_row_element.view.widgets_variance_2
+import kotlinx.android.synthetic.main.widget_type_with_variance_row_element.view.widgets_variance_3
 
 class WidgetOnlyActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -18,7 +18,15 @@ import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.AndroidResource.Companion.parseDuration
 import com.livelike.livelikesdk.widget.model.Alert
-import kotlinx.android.synthetic.main.alert_widget.view.*
+import kotlinx.android.synthetic.main.alert_widget.view.bodyBackground
+import kotlinx.android.synthetic.main.alert_widget.view.bodyImage
+import kotlinx.android.synthetic.main.alert_widget.view.bodyText
+import kotlinx.android.synthetic.main.alert_widget.view.labelBackground
+import kotlinx.android.synthetic.main.alert_widget.view.labelText
+import kotlinx.android.synthetic.main.alert_widget.view.linkArrow
+import kotlinx.android.synthetic.main.alert_widget.view.linkBackground
+import kotlinx.android.synthetic.main.alert_widget.view.linkText
+import kotlinx.android.synthetic.main.alert_widget.view.widgetContainer
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -40,7 +48,13 @@ internal class AlertWidget : ConstraintLayout {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun initialize(dismissWidget: () -> Unit, alertData: Alert, progressedState: WidgetTransientState, viewAnimation: ViewAnimationManager, progressedStateCallback: (WidgetTransientState) -> Unit) {
+    fun initialize(
+        dismissWidget: () -> Unit,
+        alertData: Alert,
+        progressedState: WidgetTransientState,
+        viewAnimation: ViewAnimationManager,
+        progressedStateCallback: (WidgetTransientState) -> Unit
+    ) {
         this.dismissWidget = dismissWidget
         this.resourceAlert = alertData
         this.viewAnimation = viewAnimation
@@ -50,14 +64,12 @@ internal class AlertWidget : ConstraintLayout {
         future = executor.scheduleAtFixedRate(Updater(), 0, 1, TimeUnit.SECONDS)
     }
 
-
     private fun inflate(context: Context) {
         layout = LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
 
         bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title
         linkText.text = resourceAlert.link_label
-
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
             linkBackground.setOnClickListener {
@@ -71,7 +83,6 @@ internal class AlertWidget : ConstraintLayout {
             linkBackground.visibility = View.GONE
             linkText.visibility = View.GONE
         }
-
 
         if (resourceAlert.image_url.isNullOrEmpty()) {
             bodyImage.visibility = View.GONE
@@ -118,7 +129,7 @@ internal class AlertWidget : ConstraintLayout {
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
-    inner class Updater: Runnable {
+    inner class Updater : Runnable {
         override fun run() {
             progressedState.timeout = timeout - initialTimeout
             progressedStateCallback.invoke(progressedState)

@@ -30,7 +30,7 @@ internal class Widget {
         observers.add(widgetObserver)
     }
 
-    private fun calculateVotePercentageForOption(option: WidgetOptions) : Long {
+    private fun calculateVotePercentageForOption(option: WidgetOptions): Long {
         var voteTotal = 0L
         var answerTotal = 0L
         optionList.forEach {
@@ -38,10 +38,9 @@ internal class Widget {
             answerTotal += it.answerCount
         }
 
-
         return when {
             voteTotal > 0 -> (option.voteCount * 100) / voteTotal
-            answerTotal > 0-> (option.answerCount * 100) / answerTotal
+            answerTotal > 0 -> (option.answerCount * 100) / answerTotal
             else -> 0
         }
     }
@@ -51,8 +50,15 @@ internal class Widget {
             it.questionUpdated(question)
             it.confirmMessageUpdated(confirmMessage)
             it.optionListUpdated(
-                optionList.map{ data ->
-                    VoteOption(data.id, data.description ?: "", calculateVotePercentageForOption(data), data.imageUrl ?: "", calculateVotePercentageForOption(data), data.isCorrect)
+                optionList.map { data ->
+                    VoteOption(
+                        data.id,
+                        data.description ?: "",
+                        calculateVotePercentageForOption(data),
+                        data.imageUrl ?: "",
+                        calculateVotePercentageForOption(data),
+                        data.isCorrect
+                    )
                 },
                 { optionSelectedUpdated(it) },
                 Pair(correctOptionId, optionSelected.id)
@@ -60,7 +66,6 @@ internal class Widget {
         }
     }
 }
-
 
 internal data class WidgetOptions(
     val id: String,
@@ -73,10 +78,11 @@ internal data class WidgetOptions(
     var isCorrect: Boolean = false
 )
 
-
-class VoteOption(val id: String,
-                 val description: String = "",
-                 val votePercentage: Long = 0,
-                 val imageUrl: String = "",
-                 val answerCount: Long = 0,
-                 val isCorrect: Boolean = false)
+class VoteOption(
+    val id: String,
+    val description: String = "",
+    val votePercentage: Long = 0,
+    val imageUrl: String = "",
+    val answerCount: Long = 0,
+    val isCorrect: Boolean = false
+)

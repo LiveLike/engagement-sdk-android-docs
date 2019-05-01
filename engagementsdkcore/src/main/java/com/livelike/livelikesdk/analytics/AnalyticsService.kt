@@ -11,7 +11,7 @@ internal interface AnalyticsService {
     fun trackWidgetDismiss(kind: String, id: String)
     fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int = 1)
     fun trackOrientationChange(isPortrait: Boolean)
-    fun identifyUser(userId: String)
+    fun trackSession(sessionId: String)
     fun trackButtonTap(buttonName: String, extra: JsonObject)
     fun trackUsername(username: String)
 }
@@ -20,9 +20,9 @@ internal val analyticService = MixpanelAnalytics()
 
 internal class MixpanelAnalytics : AnalyticsService {
 
-    private lateinit var mixpanel : MixpanelAPI
+    private lateinit var mixpanel: MixpanelAPI
 
-    fun initialize(context : Context, token : String) {
+    fun initialize(context: Context, token: String) {
         mixpanel = MixpanelAPI.getInstance(context, token)
     }
 
@@ -34,7 +34,6 @@ internal class MixpanelAnalytics : AnalyticsService {
         const val KEY_ORIENTATION_CHANGED = "Orientation_Changed"
         const val KEY_ACTION_TAP = "Action_Tap"
     }
-
 
     override fun trackMessageSent(containEmoji: Boolean) {
         val properties = JSONObject()
@@ -78,13 +77,12 @@ internal class MixpanelAnalytics : AnalyticsService {
         mixpanel.track(KEY_ACTION_TAP, properties)
     }
 
-    override fun identifyUser(userId: String) {
-        mixpanel.identify(userId)
-        mixpanel.people.identify(userId)
+    override fun trackSession(sessionId: String) {
+        mixpanel.identify(sessionId)
+        mixpanel.people.identify(sessionId)
     }
 
     override fun trackUsername(username: String) {
         mixpanel.people.set("username", username)
     }
-
 }

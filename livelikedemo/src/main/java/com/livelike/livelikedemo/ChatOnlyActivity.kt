@@ -11,9 +11,10 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.livelikesdk.LiveLikeSDK
-import kotlinx.android.synthetic.main.activity_chat_only.*
-import java.util.*
-
+import kotlinx.android.synthetic.main.activity_chat_only.chat_toolbar
+import kotlinx.android.synthetic.main.activity_chat_only.chat_view
+import java.util.Timer
+import java.util.TimerTask
 
 class ChatOnlyActivity : AppCompatActivity() {
     private val chatMessageList = mutableListOf<ChatMessage>()
@@ -102,7 +103,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         override fun contentSessionId(): String { return "TestSession" }
     }
 
-    fun getEmojiByUnicode(unicode: Int) : String {
+    fun getEmojiByUnicode(unicode: Int): String {
         return String(Character.toChars(unicode))
     }
 }

@@ -24,7 +24,14 @@ internal class PredictionTextFollowUpWidgetView :
     private var executor = ScheduledThreadPoolExecutor(15)
     lateinit var future: ScheduledFuture<*>
 
-    override fun initialize(dismiss: ()->Unit, startingState: WidgetTransientState, progressedState: WidgetTransientState, parentWidth: Int, viewAnimation: ViewAnimationManager, progressedStateCallback: (WidgetTransientState) -> Unit) {
+    override fun initialize(
+        dismiss: () -> Unit,
+        startingState: WidgetTransientState,
+        progressedState: WidgetTransientState,
+        parentWidth: Int,
+        viewAnimation: ViewAnimationManager,
+        progressedStateCallback: (WidgetTransientState) -> Unit
+    ) {
         super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, progressedStateCallback)
         showResults = true
         buttonClickEnabled = false
@@ -41,15 +48,16 @@ internal class PredictionTextFollowUpWidgetView :
     override fun optionListUpdated(
         voteOptions: List<VoteOption>,
         optionSelectedCallback: (String?) -> Unit,
-        correctOptionWithUserSelection: Pair<String?, String?>) {
+        correctOptionWithUserSelection: Pair<String?, String?>
+    ) {
         super.optionListUpdated(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
         super.showResultsAnimation(correctOptionWithUserSelection)
         transitionAnimation()
     }
 
     private fun transitionAnimation() {
-        viewAnimation.startWidgetTransitionInAnimation{
-//            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
+        viewAnimation.startWidgetTransitionInAnimation {
+            //            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
 //                transientState.pieTimerProgress = it
 //                state.invoke(transientState)
 //            }, {
@@ -60,7 +68,7 @@ internal class PredictionTextFollowUpWidgetView :
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
     }
 
-    inner class Updater: Runnable {
+    inner class Updater : Runnable {
         override fun run() {
             progressedState.timeout = timeout - initialTimeout
             progressedStateCallback.invoke(progressedState)
