@@ -63,6 +63,7 @@ internal class QuizTextWidget : TextOptionWidgetBase {
 
     private fun startPieTimer(pieTimer: View, properties: WidgetTransientState) {
         viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
+            buttonClickEnabled = false
             showResults = true
             fetchResult?.invoke()
         }, {
