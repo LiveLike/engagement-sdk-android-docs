@@ -8,9 +8,6 @@ import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.VoteOption
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 
 internal class PredictionTextFollowUpWidgetView :
     TextOptionWidgetBase {
@@ -38,7 +35,7 @@ internal class PredictionTextFollowUpWidgetView :
         val imageView = findViewById<ImageView>(R.id.prediction_followup_image_cross)
         imageView.setImageResource(R.mipmap.widget_ic_x)
         imageView.setOnClickListener { dismissWidget() }
-        this.timeout = startingState.interactionPhaseTimeout
+        this.timeout = startingState.widgetTimeout
     }
 
     override fun optionListUpdated(
@@ -60,21 +57,9 @@ internal class PredictionTextFollowUpWidgetView :
 //                transientState.resultPath = it
 //                state.invoke(transientState)
 //            })
-        viewAnimation.startWidgetTransitionInAnimation{
-        }
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
-    }
-    }
-    inner class Updater : Runnable {
-        override fun run() {
-            progressedState.interactionPhaseTimeout = timeout - initialTimeout
-            progressedStateCallback.invoke(progressedState)
-            val updateRate = 1000
-            initialTimeout += updateRate
-            if (timeout == initialTimeout) {
-                future.cancel(false)
+            viewAnimation.startWidgetTransitionInAnimation {
             }
+            Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
         }
     }
-
 }

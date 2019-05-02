@@ -94,12 +94,14 @@ internal class ViewAnimationManager(val view: View) {
         )
     }
 
-    fun startResultAnimation(lottieAnimationPath: String,
-                             context: Context,
-                             prediction_result: LottieAnimationView,
-                             progressUpdater: (Float) -> Unit,
-                             animationPath: (String) -> Unit,
-                             resultProperties: WidgetTransientState) {
+    fun startResultAnimation(
+        lottieAnimationPath: String,
+        context: Context,
+        prediction_result: LottieAnimationView,
+        progressUpdater: (Float) -> Unit,
+        animationPath: (String) -> Unit,
+        resultProperties: WidgetTransientState
+    ) {
         var resultAnimationPath = resultProperties.resultAnimationPath
         val resultAnimator = ValueAnimator.ofFloat(resultProperties.resultAnimatorStartPhase, 1f)
 
@@ -152,7 +154,7 @@ internal class ViewAnimationManager(val view: View) {
 
         animationHandler.startAnimation(
             confirmMessageLottieAnimationView,
-            { triggerTransitionOutAnimation(onCompleteCallback) },
+            { },
             widgetShowingDurationAfterConfirmMessage,
             resultAnimator,
             { progressUpdater.invoke(it) })
@@ -244,15 +246,4 @@ private class AnimationHandler {
             }
         })
     }
-<<<<<<< HEAD
 }
-
-internal class AnimationProperties(
-    val animatorStartValue: Float = 0f,
-    val animatorEndValue: Float = 1f,
-    val timeout: Long = 0L,
-    val resultAnimationPath: String? = null
-)
-=======
-}
->>>>>>> 3ecee85... SDK-400: Add interaction and result phase timeout.

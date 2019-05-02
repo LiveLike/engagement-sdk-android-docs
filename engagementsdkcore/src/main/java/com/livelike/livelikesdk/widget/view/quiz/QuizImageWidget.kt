@@ -71,7 +71,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     ) {
         this.startingState = startingState
         this.progressedState = progressedState
-        this.timeout = startingState.interactionPhaseTimeout
+        this.timeout = startingState.widgetTimeout
         this.dismissWidget = dismiss
         this.fetchResult = fetch
         this.viewAnimation = viewAnimation
@@ -118,7 +118,7 @@ class QuizImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
         properties.timerAnimatorStartPhase == 0f
 
     private fun startPieTimer(pieTimer: View, properties: WidgetTransientState) {
-        viewAnimation.startTimerAnimation(pieTimer, properties.interactionPhaseTimeout, properties, {
+        viewAnimation.startTimerAnimation(pieTimer, properties.widgetTimeout, properties, {
             fetchResult?.invoke()
         }, {
             progressedState.timerAnimatorStartPhase = it

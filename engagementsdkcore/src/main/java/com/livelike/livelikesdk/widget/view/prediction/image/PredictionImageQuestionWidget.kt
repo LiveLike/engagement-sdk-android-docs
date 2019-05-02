@@ -23,7 +23,6 @@ import kotlinx.android.synthetic.main.pie_timer.view.prediction_pie_updater_anim
 import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
 import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 
-
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimationManager
@@ -36,7 +35,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     var parentWidth = 0
-    private var imageAdapter : ImageAdapter? = null
+    private var imageAdapter: ImageAdapter? = null
     lateinit var userTapped: () -> Unit
     private var timeout = 0L
     constructor(context: Context?) : super(context)
@@ -70,7 +69,6 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         layout = findViewById(R.id.prediction_image_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
-
 
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
@@ -162,13 +160,13 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         imageOptionList.layoutManager = linearLayoutManager
-        imageAdapter = ImageAdapter(voteOptions, object : (String?) ->Unit {
+        imageAdapter = ImageAdapter(voteOptions, object : (String?) -> Unit {
             override fun invoke(optionId: String?) {
                 userTapped.invoke()
                 optionSelectedCallback.invoke(optionId)
             }
         }, parentWidth, context, resultDisplayUtil) {
-            if(progressedState.userSelection != null)
+            if (progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
             startWidgetAnimation()
         }

@@ -25,7 +25,6 @@ interface WidgetRenderer {
  * Delegate interface for the session to receive widget updates.
  *
  * Each method is an event that is sent in response to a particular view action:
- * - [onAnalyticsEvent] when view analytics are dispatched
  * - [onWidgetDisplayed] when a widget has appeared on the screen
  * - [onOptionVote] when a user votes on an option
  * - [onOptionVoteUpdate] when a user updates a vote
@@ -67,12 +66,13 @@ interface WidgetStateProcessor {
 
 /**
  * A saved instance of a widget.
- * This data is used by the WidgetStateProcessor to restore the widget in his previous state.
+ * This data is used by the WidgetStateProcessor to restore the widget in it's previous state.
  *
  */
 class WidgetTransientState {
-    var interactionPhaseTimeout = 0L
-    var resultPhaseTimeout = 0L
+    var widgetTimeout = 0L
+    var phaseTimeouts = HashMap<Phase, Long>()
+    var currentPhase = Phase.INTERACTION
     var userSelection: String? = null
     var timerAnimatorStartPhase = 0f
     var type: String? = null
@@ -81,4 +81,9 @@ class WidgetTransientState {
     var resultAnimationPath: String? = null
     var resultAnimatorStartPhase = 0f
     var timeStamp = 0L
+    enum class Phase {
+        INTERACTION,
+        RESULT,
+        CONFIRM_MESSAGE
+    }
 }

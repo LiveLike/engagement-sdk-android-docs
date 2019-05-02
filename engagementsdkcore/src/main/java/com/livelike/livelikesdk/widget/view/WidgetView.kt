@@ -23,7 +23,6 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
-import com.livelike.livelikesdk.util.logInfo
 import com.livelike.livelikesdk.util.logVerbose
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
@@ -106,9 +105,13 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0)
                 widget.registerObserver(predictionWidget)
 
-                if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
-                    initialState.interactionPhaseTimeout = widget.timeout
-                    initialState.resultPhaseTimeout = widget.timeout
+                if (initialState.timerAnimatorStartPhase == 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
+                    initialState.phaseTimeouts[WidgetTransientState.Phase.INTERACTION] = widget.timeout
+                    initialState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE] = widget.timeout
+
+                    progressedState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE] = widget.timeout
+                } else if (initialState.timerAnimatorStartPhase != 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
+                    progressedState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE] = widget.timeout
                 }
                 savePayload(progressedState, payload, widget)
 
@@ -144,9 +147,8 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 }
 
                 timeout = widget.timeout
-                if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
-                    initialState.interactionPhaseTimeout = widget.timeout
-                    initialState.resultPhaseTimeout = widget.timeout
+                if (initialState.widgetTimeout == 0L) {
+                    initialState.widgetTimeout = widget.timeout
                 }
 
                 savePayload(progressedState, payload, widget)
@@ -172,9 +174,8 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
                 widget.registerObserver(predictionWidget)
 
-                if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
-                    initialState.interactionPhaseTimeout = widget.timeout
-                    initialState.resultPhaseTimeout = widget.timeout
+                if (initialState.widgetTimeout == 0L) {
+                    initialState.widgetTimeout = widget.timeout
                 }
 
                 savePayload(progressedState, payload, widget)
@@ -212,9 +213,8 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     return
                 }
 
-                if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
-                    initialState.interactionPhaseTimeout = widget.timeout
-                    initialState.resultPhaseTimeout = widget.timeout
+                if (initialState.widgetTimeout == 0L) {
+                    initialState.widgetTimeout = widget.timeout
                 }
 
                 savePayload(progressedState, payload, widget)
@@ -314,7 +314,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.TEXT_POLL -> {
                 val pollTextWidget = PollTextWidget(context, null, 0)
 
-                initialState.interactionPhaseTimeout = widget.timeout
+                initialState.widgetTimeout = widget.timeout
 
                 pollTextWidget.initialize(
                     { dismissCurrentWidget() },
@@ -349,7 +349,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_POLL -> {
                 val pollImageWidget = PollImageWidget(context, null, 0)
 
-                initialState.interactionPhaseTimeout = widget.timeout
+                initialState.widgetTimeout = widget.timeout
 
                 pollImageWidget.initialize(
                     { dismissCurrentWidget() },
@@ -435,11 +435,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         widget.registerObserver(quizTextWidget)
         progressedState.payload = payload
         progressedState.let { state -> widgetStateProcessor?.updateWidgetState(widget.id.toString(), state) }
-        if (initialState.interactionPhaseTimeout == 0L && initialState.resultPhaseTimeout == 0L) {
-            initialState.interactionPhaseTimeout = widget.timeout
-            initialState.resultPhaseTimeout = widget.timeout
+        if (initialState.timerAnimatorStartPhase == 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
+            initialState.phaseTimeouts[WidgetTransientState.Phase.INTERACTION] = widget.timeout
+            initialState.phaseTimeouts[WidgetTransientState.Phase.RESULT] = widget.timeout
+
+            progressedState.phaseTimeouts[WidgetTransientState.Phase.RESULT] = widget.timeout
+        } else if (initialState.timerAnimatorStartPhase != 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
+            progressedState.phaseTimeouts[WidgetTransientState.Phase.RESULT] = widget.timeout
         }
-        logInfo { "Abhishek widget interactionPhaseTimeout ${initialState.interactionPhaseTimeout} resultPhaseTimeout ${initialState.resultPhaseTimeout}" }
         quizTextWidget.initialize(
             { dismissCurrentWidget() },
             initialState,
@@ -482,7 +485,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         widget.registerObserver(quizTextWidget)
         progressedState.payload = payload
         progressedState.let { state -> widgetStateProcessor?.updateWidgetState(widget.id.toString(), state) }
-        initialState.interactionPhaseTimeout = widget.timeout
+        initialState.widgetTimeout = widget.timeout
 
         quizTextWidget.initialize(
             { dismissCurrentWidget() },

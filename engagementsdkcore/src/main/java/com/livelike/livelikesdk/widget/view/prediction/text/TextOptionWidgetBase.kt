@@ -39,10 +39,12 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private var optionAdapter: TextOptionAdapter? = null
     private var lottieAnimationPath = ""
+
     protected lateinit var pieTimerViewStub: ViewStub
     protected lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
     protected lateinit var startingState: WidgetTransientState
     protected lateinit var progressedState: WidgetTransientState
+    protected var currentPhase = WidgetTransientState.Phase.INTERACTION
     protected val widgetOpacityFactor: Float = 0.2f
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val buttonMap = mutableMapOf<Button, String?>()
@@ -58,11 +60,11 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
     protected var selectedButtonDrawable =
         AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
-    var interactionPhaseTimeout = 0L
-    var resultPhaseTimeout = 0L
+
+    private var phaseTimeout = 0L
     var initialTimeout = 0L
     val updateRate = 1000
-    var executor = ScheduledThreadPoolExecutor(15)
+    private var executor = ScheduledThreadPoolExecutor(1)
     lateinit var future: ScheduledFuture<*>
 
     constructor(context: Context?) : super(context)
@@ -82,8 +84,8 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         this.startingState = startingState
         this.progressedState = progressedState
         this.progressedStateCallback = progressedStateCallback
-        this.interactionPhaseTimeout = startingState.interactionPhaseTimeout
-        this.resultPhaseTimeout = startingState.resultPhaseTimeout
+        this.phaseTimeout = startingState.widgetTimeout
+        currentPhase = startingState.currentPhase
         inflate(context)
         questionTextView.layoutParams.width = parentWidth
     }
@@ -158,30 +160,30 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         )
     }
 
-    inner class Updater: Runnable {
-        private var timeoutUpdater : WidgetTimeoutUpdater = WidgetTimeoutUpdater(updateRate, progressedState, progressedStateCallback)
-
+    inner class Updater : Runnable {
+        private var timeoutUpdater = WidgetTimeoutUpdater(updateRate, progressedState, progressedStateCallback)
         init {
             timeoutUpdater.initialTimeout = initialTimeout
         }
 
         override fun run() {
-            when {
-                showResults -> {
-                    timeoutUpdater.updateResultPhaseTimeout(
-                        interactionPhaseTimeout,
-                        resultPhaseTimeout - initialTimeout,
-                        resultPhaseTimeout
-                    ) { future.cancel(false) }
-                }
-                else -> {
-                    timeoutUpdater.updateResultPhaseTimeout(
-                        interactionPhaseTimeout - initialTimeout,
-                        resultPhaseTimeout,
-                        interactionPhaseTimeout)
-                    {
+            when (currentPhase) {
+                WidgetTransientState.Phase.INTERACTION -> startingState.phaseTimeouts[WidgetTransientState.Phase.INTERACTION]?.let {
+                    timeoutUpdater.updatePhaseTimeout(
+                        it, WidgetTransientState.Phase.INTERACTION) {
                         timeoutUpdater.initialTimeout = 0L
-                        showResults = true
+                    }
+                }
+                WidgetTransientState.Phase.RESULT -> startingState.phaseTimeouts[WidgetTransientState.Phase.RESULT]?.let {
+                    timeoutUpdater.updatePhaseTimeout(
+                        it, WidgetTransientState.Phase.RESULT) {
+                        future.cancel(false)
+                    }
+                }
+                WidgetTransientState.Phase.CONFIRM_MESSAGE -> startingState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE]?.let {
+                    timeoutUpdater.updatePhaseTimeout(
+                        it, WidgetTransientState.Phase.CONFIRM_MESSAGE) {
+                        future.cancel(false)
                     }
                 }
             }

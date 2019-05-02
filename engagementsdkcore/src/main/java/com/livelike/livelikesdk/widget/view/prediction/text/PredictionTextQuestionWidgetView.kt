@@ -33,22 +33,29 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
         this.viewAnimation = viewAnimation
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
-        startWidgetAnimation(pieTimer, startingState.interactionPhaseTimeout)
+        startWidgetAnimation(pieTimer)
     }
 
-    private fun startWidgetAnimation(pieTimer: View, timeout: Long) {
-        if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
-            startPieTimer(pieTimer, timeout)
-            Handler().postDelayed({ dismissWidget?.invoke() }, interactionPhaseTimeout + resultPhaseTimeout)
-        }
-        else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
+    private fun startWidgetAnimation(pieTimer: View) {
+        if (currentPhase == WidgetTransientState.Phase.INTERACTION) {
+            progressedState.currentPhase = currentPhase
+            progressedStateCallback.invoke(progressedState)
+            startingState.phaseTimeouts[WidgetTransientState.Phase.INTERACTION]?.let {
+                startPieTimer(pieTimer, it)
+                startingState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE]?.let { it2 ->
+                    Handler().postDelayed({
+                        future.cancel(false)
+                        dismissWidget?.invoke() }, it + it2)
+                }
+            }
+        } else {
             showConfirmMessage()
             performPredictionWidgetFadeOutOperations()
-            Handler().postDelayed({ dismissWidget?.invoke() }, resultPhaseTimeout)
-        }
-        else viewAnimation.startWidgetTransitionInAnimation {
-            startPieTimer(pieTimer, timeout)
-            Handler().postDelayed({ dismissWidget?.invoke() }, interactionPhaseTimeout + resultPhaseTimeout)
+            startingState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE]?.let {
+                Handler().postDelayed({
+                    future.cancel(false)
+                    dismissWidget?.invoke() }, it)
+            }
         }
     }
 
@@ -57,6 +64,10 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
             if (optionSelectedId.isNotEmpty()) {
                 showConfirmMessage()
                 performPredictionWidgetFadeOutOperations()
+            } else {
+                Handler().postDelayed({
+                    future.cancel(false)
+                    dismissWidget?.invoke() }, timeout)
             }
         }, {
             progressedState.timerAnimatorStartPhase = it
@@ -65,6 +76,9 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     }
 
     private fun showConfirmMessage() {
+        currentPhase = WidgetTransientState.Phase.CONFIRM_MESSAGE
+        progressedState.currentPhase = currentPhase
+        progressedStateCallback.invoke(progressedState)
         viewAnimation.showConfirmMessage(
             confirmMessageTextView,
             prediction_confirm_message_animation,

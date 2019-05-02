@@ -30,42 +30,36 @@ internal class QuizTextWidget : TextOptionWidgetBase {
         super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, state)
         fetchResult = fetch
         this.viewAnimation = viewAnimation
-        startWidgetAnimation(startingState)
+        startWidgetAnimation()
     }
 
-    private fun startWidgetAnimation(properties: WidgetTransientState) {
-        when {
-            isWidgetDisplayedFirstTime(properties) -> viewAnimation.startWidgetTransitionInAnimation {
-                pieTimerViewStub.layoutResource = R.layout.pie_timer
-                val pieTimer = pieTimerViewStub.inflate()
-                startPieTimer(pieTimer, properties)
-                Handler().postDelayed({ dismissWidget?.invoke() }, interactionPhaseTimeout + resultPhaseTimeout)
+    private fun startWidgetAnimation() {
+        if (currentPhase == WidgetTransientState.Phase.INTERACTION) {
+            pieTimerViewStub.layoutResource = R.layout.pie_timer
+            val pieTimer = pieTimerViewStub.inflate()
+            startingState.phaseTimeouts[WidgetTransientState.Phase.INTERACTION]?.let {
+                startPieTimer(pieTimer, it)
+                startingState.phaseTimeouts[WidgetTransientState.Phase.RESULT]?.let { it2 ->
+                    Handler().postDelayed({
+                        future.cancel(false)
+                        dismissWidget?.invoke() }, it + it2)
+                }
             }
-            isWidgetRestoredFromQuestionPhase(properties) -> {
-                pieTimerViewStub.layoutResource = R.layout.pie_timer
-                val pieTimer = pieTimerViewStub.inflate()
-                startPieTimer(pieTimer, properties)
-                Handler().postDelayed({ dismissWidget?.invoke() }, interactionPhaseTimeout + resultPhaseTimeout)
-            }
-            else -> {
-                pieTimerViewStub.layoutResource = R.layout.cross_image
-                pieTimerViewStub.inflate()
-                showResults = true
-                Handler().postDelayed({ dismissWidget?.invoke() }, resultPhaseTimeout)
-            }
+        } else {
+            pieTimerViewStub.layoutResource = R.layout.cross_image
+            pieTimerViewStub.inflate()
+            showResults = true
         }
     }
 
-    private fun isWidgetRestoredFromQuestionPhase(properties: WidgetTransientState) =
-        properties.timerAnimatorStartPhase > 0f && properties.resultAnimatorStartPhase == 0f
-
-    private fun isWidgetDisplayedFirstTime(properties: WidgetTransientState) =
-        properties.timerAnimatorStartPhase == 0f
-
-    private fun startPieTimer(pieTimer: View, properties: WidgetTransientState) {
-        viewAnimation.startTimerAnimation(pieTimer, properties.interactionPhaseTimeout, properties, {
+    private fun startPieTimer(pieTimer: View, timeout: Long) {
+        viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
             fetchResult?.invoke()
             showResults = true
+            currentPhase = WidgetTransientState.Phase.RESULT
+            progressedState.currentPhase = currentPhase
+            progressedStateCallback.invoke(progressedState)
+
             buttonClickEnabled = false
         }, {
             progressedState.timerAnimatorStartPhase = it
@@ -81,6 +75,11 @@ internal class QuizTextWidget : TextOptionWidgetBase {
         super.optionListUpdated(voteOptions, optionSelectedCallback, correctOptionWithUserSelection)
         if (showResults) {
             super.showResultsAnimation(correctOptionWithUserSelection)
+            startingState.phaseTimeouts[WidgetTransientState.Phase.RESULT]?.let {
+                Handler().postDelayed({
+                    future.cancel(false)
+                    dismissWidget?.invoke() }, it)
+            }
         }
     }
 }
