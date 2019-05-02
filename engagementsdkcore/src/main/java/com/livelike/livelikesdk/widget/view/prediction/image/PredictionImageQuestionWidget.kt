@@ -6,34 +6,23 @@ import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewStub
-import android.widget.ImageView
-import android.widget.TextView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.resource.bitmap.FitCenter
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
+import com.livelike.livelikesdk.widget.view.adapters.ImageAdapter
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
 import kotlinx.android.synthetic.main.confirm_message.view.prediction_confirm_message_animation
 import kotlinx.android.synthetic.main.pie_timer.view.prediction_pie_updater_animation
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
 import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
 import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
+
 
 internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver {
     private lateinit var pieTimerViewStub: ViewStub
@@ -41,15 +30,15 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private lateinit var startingState: WidgetTransientState
     private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
     private lateinit var progressedState: WidgetTransientState
-    lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
+    lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private val widgetOpacityFactor: Float = 0.2f
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     var parentWidth = 0
-    val imageButtonMap = HashMap<View, String?>()
+    private var imageAdapter : ImageAdapter? = null
     lateinit var userTapped: () -> Unit
-
+    private var timeout = 0L
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -69,18 +58,27 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         this.parentWidth = parentWidth
         this.progressedState = progressedState
         this.progressedStateCallback = state
+
         inflate(context, timeout)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun inflate(context: Context, timeout: Long) {
+        this.timeout = timeout
         LayoutInflater.from(context)
             .inflate(R.layout.prediction_image_widget, this, true) as ConstraintLayout
         layout = findViewById(R.id.prediction_image_widget)
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         pieTimerViewStub.layoutResource = R.layout.pie_timer
-        val pieTimer = pieTimerViewStub.inflate()
 
+
+        resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
+        questionTextView.layoutParams.width = parentWidth
+    }
+
+    private fun startWidgetAnimation() {
+        val pieTimer = pieTimerViewStub.inflate()
         if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase == 0f) {
             startPieTimer(pieTimer, timeout)
         } else if (startingState.timerAnimatorStartPhase != 0f && startingState.resultAnimatorStartPhase != 0f) {
@@ -89,11 +87,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         } else viewAnimation.startWidgetTransitionInAnimation {
             startPieTimer(pieTimer, timeout)
         }
-        widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
-        Handler().postDelayed({ dismissWidget?.invoke() }, timeout * 2)
-        questionTextView.layoutParams.width = parentWidth
     }
-
     private fun startPieTimer(pieTimer: View, timeout: Long) {
         viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
             if (optionSelected) {
@@ -137,9 +131,9 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     }
 
     private fun performPredictionWidgetFadeOutOperations() {
-        imageButtonMap.forEach { (button) ->
-            disableButtons(button)
-            button.setTranslucent()
+        imageAdapter?.viewOptions?.forEach { (id, viewOption) ->
+            disableButtons(viewOption.button)
+            viewOption.button.setTranslucent()
         }
         questionTextView.setTranslucent()
         prediction_pie_updater_animation.setTranslucent()
@@ -168,16 +162,26 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         imageOptionList.layoutManager = linearLayoutManager
-        imageOptionList.adapter = ImageAdapter(voteOptions, optionSelectedCallback)
+        imageAdapter = ImageAdapter(voteOptions, object : (String?) ->Unit {
+            override fun invoke(optionId: String?) {
+                userTapped.invoke()
+                optionSelectedCallback.invoke(optionId)
+            }
+        }, parentWidth, context, resultDisplayUtil) {
+            if(progressedState.userSelection != null)
+                optionSelectedUpdated(progressedState.userSelection)
+            startWidgetAnimation()
+        }
+        imageOptionList.adapter = imageAdapter
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         optionSelected = true
         progressedState.userSelection = selectedOptionId
-        imageButtonMap.forEach { (button, id) ->
+        imageAdapter?.viewOptions?.forEach { (id, viewOption) ->
             if (selectedOptionId == id)
-                button.background = AppCompatResources.getDrawable(context, R.drawable.prediction_button_pressed)
-            else button.background = AppCompatResources.getDrawable(context, R.drawable.button_rounded_corners)
+                viewOption.button.background = AppCompatResources.getDrawable(context, R.drawable.prediction_button_pressed)
+            else viewOption.button.background = AppCompatResources.getDrawable(context, R.drawable.button_rounded_corners)
         }
     }
 
@@ -187,61 +191,5 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
 
     fun userTappedCallback(userTapped: () -> Unit) {
         this.userTapped = userTapped
-    }
-
-    inner class ImageAdapter(
-        private val optionList: List<VoteOption>,
-        private val optionSelectedCallback: (String?) -> Unit
-
-    ) : RecyclerView.Adapter<ViewHolder>() {
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val option = optionList[position]
-            holder.optionText.text = option.description
-
-            Glide.with(context)
-                .load(option.imageUrl)
-                .apply(
-                    RequestOptions().override(AndroidResource.dpToPx(74), AndroidResource.dpToPx(74)).transform(
-                        MultiTransformation(FitCenter(), RoundedCorners(12))
-                    )
-                )
-                .into(holder.optionButton)
-            imageButtonMap[holder.button] = option.id
-            // This is needed here as notifyDataSetChanged() is behaving asynchronously. So after device config change need
-            // a way to update user selection.
-            if (option == optionList[optionList.size - 1] && progressedState.userSelection != null)
-                optionSelectedUpdated(progressedState.userSelection)
-
-            holder.button.setOnClickListener {
-                val selectedOption = imageButtonMap[holder.button]
-                optionSelectedCallback(selectedOption)
-                userTapped.invoke()
-            }
-            widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(context).inflate(
-                R.layout.prediction_image_row_element,
-                parent,
-                false
-            )
-            widgetResultDisplayUtil.setImageItemWidth(optionList, view, parentWidth)
-
-            return ViewHolder(
-                view
-            )
-        }
-
-        override fun getItemCount(): Int {
-            return optionList.size
-        }
-    }
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val button: View = view.button
-        val optionButton: ImageView = view.image_button
-        val optionText: TextView = view.item_text
     }
 }
