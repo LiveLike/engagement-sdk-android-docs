@@ -34,7 +34,7 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
 
     /**
      *  Creates a content session without sync.
-     *  @param programId
+     *  @param programId Backend generated unique identifier for current program
      */
     fun createContentSession(programId: String): LiveLikeContentSession {
         return LiveLikeContentSessionImpl(
@@ -54,7 +54,7 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
 
     /**
      *  Creates a content session with sync.
-     *  @param programId
+     *  @param programId Backend generated identifier for current program
      *  @param currentPlayheadTime
      */
     fun createContentSession(programId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
