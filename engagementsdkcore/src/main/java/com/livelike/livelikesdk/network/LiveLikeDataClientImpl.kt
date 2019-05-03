@@ -28,6 +28,8 @@ import java.io.IOException
 
 internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
 
+    private val MAX_PROGRAM_DATA_REQUESTS = 13
+
     override fun registerImpression(impressionUrl: String) {
         if (impressionUrl.isNullOrEmpty()) {
             return
@@ -64,8 +66,28 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
             .build()
 
         val call = client.newCall(request)
-        call.enqueue(object : Callback {
+        var requestCount = 0;
+        var callback = object : Callback {
             override fun onResponse(call: Call?, response: Response) {
+                val responseCode = response.code()
+                if(responseCode in 400..499) {
+                    logError { "Program Id is invalid "}
+                    return
+                }
+
+                if(responseCode >= 500) {
+                    call?.clone()?.enqueue(this)
+                    if(requestCount < MAX_PROGRAM_DATA_REQUESTS) {
+                        call?.clone()?.enqueue(this)
+                        requestCount += 1
+                        logError { "Failed to fetch program data, trying again."}
+                    }
+                    else {
+                        logError { "Unable to fetch program data, exceeded max retries."}
+                    }
+                    return
+                }
+
                 val responseData = response.body()?.string()
                 try {
                     mainHandler.post { responseCallback.invoke(parseProgramData(JsonParser().parse(responseData).asJsonObject)) }
@@ -76,9 +98,9 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
 
             override fun onFailure(call: Call?, e: IOException?) {
                 logError { e }
-                mainHandler.post { responseCallback(parseProgramData(JsonObject())) }
             }
-        })
+        }
+        call.enqueue(callback);
     }
 
     private fun parseProgramData(programData: JsonObject): Program {
