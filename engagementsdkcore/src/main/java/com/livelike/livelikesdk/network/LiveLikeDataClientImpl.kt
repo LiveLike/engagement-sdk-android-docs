@@ -76,7 +76,6 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                 }
 
                 if(responseCode >= 500) {
-                    call?.clone()?.enqueue(this)
                     if(requestCount < MAX_PROGRAM_DATA_REQUESTS) {
                         call?.clone()?.enqueue(this)
                         requestCount += 1
