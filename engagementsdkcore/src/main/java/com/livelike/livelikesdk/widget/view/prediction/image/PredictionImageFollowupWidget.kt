@@ -4,34 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.ViewStub
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.resource.bitmap.FitCenter
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.model.VoteOption
+import com.livelike.livelikesdk.widget.view.adapters.ImageAdapter
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.prediction_result
 import kotlinx.android.synthetic.main.cross_image.view.prediction_followup_image_cross
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.button
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.determinateBar
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.image_button
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.item_text
-import kotlinx.android.synthetic.main.prediction_image_row_element.view.percentageText
 import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
 import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 import java.util.concurrent.ScheduledFuture
@@ -44,12 +28,13 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private lateinit var viewAnimation: ViewAnimationManager
     private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
     private lateinit var progressedState: WidgetTransientState
-    private lateinit var widgetResultDisplayUtil: WidgetResultDisplayUtil
+    private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private lateinit var startingState: WidgetTransientState
     private var layout = ConstraintLayout(context, null, 0)
     private var timeout = 0L
     private var initialTimeout = 0L
     var parentWidth = 0
+    private var imageAdapter : ImageAdapter? = null
 
     private var executor = ScheduledThreadPoolExecutor(15)
     lateinit var future: ScheduledFuture<*>
@@ -88,7 +73,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         pieTimerViewStub.inflate()
 
         updateCrossImage()
-        widgetResultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+        resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
         questionTextView.layoutParams.width = parentWidth
     }
 
@@ -125,18 +110,6 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     ) {
         val correctOption = correctOptionWithUserSelection.first
         val userSelectedOption = correctOptionWithUserSelection.second
-        viewAnimation.startWidgetTransitionInAnimation {
-            widgetResultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result,
-                {
-                    progressedState.resultAnimatorStartPhase = it
-                    progressedStateCallback.invoke(progressedState)
-                },
-                {
-                    progressedState.resultAnimationPath = it
-                    progressedStateCallback.invoke(progressedState)
-                }, startingState
-            )
-        }
         initAdapter(voteOptions, correctOption, userSelectedOption)
     }
 
@@ -144,70 +117,47 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         imageOptionList.layoutManager = linearLayoutManager
-        imageOptionList.adapter = ImageAdapter(voteOptions, correctOption, userSelectedOption)
+        imageAdapter  = ImageAdapter(voteOptions, object : (String?) ->Unit {
+            override fun invoke(optionId: String?) {}
+        }, parentWidth, context, resultDisplayUtil) {
+            if(progressedState.userSelection != null)
+                optionSelectedUpdated(progressedState.userSelection)
+            updateVoteCount(voteOptions, correctOption, userSelectedOption)
+        }
+        imageOptionList.adapter = imageAdapter
+    }
+
+
+    private fun updateVoteCount(voteOptions: List<VoteOption>, correctOption: String?, userSelectedOption: String?) {
+        viewAnimation.startWidgetTransitionInAnimation {
+            resultDisplayUtil.startResultAnimation(correctOption == userSelectedOption, prediction_result,
+                {
+                    progressedState.resultAnimatorStartPhase = it
+                    progressedStateCallback.invoke(progressedState)
+                },
+                {
+                    progressedState.resultAnimationPath = it
+                    progressedStateCallback.invoke(progressedState)
+                }, startingState)
+        }
+        voteOptions.forEach { option ->
+            val viewOption = imageAdapter?.viewOptions?.get(option.id)
+            if (viewOption != null) {
+                viewOption.button.setOnClickListener(null)
+                viewOption.progressBar.progress = option.answerCount.toInt()
+                viewOption.percentageTextView.text = option.answerCount.toString().plus("%")
+                resultDisplayUtil.updateViewDrawable(
+                    option.id,
+                    viewOption.progressBar,
+                    viewOption.button,
+                    option.answerCount.toInt(),
+                    correctOption,
+                    userSelectedOption
+                )
+            }
+        }
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {}
     override fun confirmMessageUpdated(confirmMessage: String) {}
-
-    inner class ImageAdapter(
-        private val optionList: List<VoteOption>,
-        private val correctOption: String?,
-        private val userSelectedOption: String?
-    ) : RecyclerView.Adapter<ViewHolder>() {
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val option = optionList[position]
-            val progressBar = holder.progressBar
-            val optionButton = holder.optionButton
-
-            holder.optionText.text = option.description
-            widgetResultDisplayUtil.updatePercentageText(holder.percentageText, option)
-            loadImage(option, dpToPx(74), optionButton)
-            widgetResultDisplayUtil.updateViewDrawable(
-                option.id,
-                progressBar,
-                holder.button,
-                option.votePercentage.toInt(),
-                correctOption,
-                userSelectedOption
-            )
-            widgetResultDisplayUtil.setImageViewMargin(option, optionList, holder.itemView)
-        }
-
-        private fun loadImage(option: VoteOption, imageWidth: Int, optionButton: ImageView) {
-            Glide.with(context)
-                .load(option.imageUrl)
-                .apply(
-                    RequestOptions()
-                        .override(imageWidth, imageWidth)
-                        .transform(MultiTransformation(FitCenter(), RoundedCorners(12)))
-                )
-                .into(optionButton)
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(context).inflate(
-                R.layout.prediction_image_row_element,
-                parent,
-                false
-            )
-            widgetResultDisplayUtil.setImageItemWidth(optionList, view, parentWidth)
-            return ViewHolder(
-                view
-            )
-        }
-
-        override fun getItemCount(): Int {
-            return optionList.size
-        }
-    }
-
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val button: View = view.button
-        val optionButton: ImageView = view.image_button
-        val optionText: TextView = view.item_text
-        val percentageText: TextView = view.percentageText
-        val progressBar: ProgressBar = view.determinateBar
-    }
 }
