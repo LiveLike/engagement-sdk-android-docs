@@ -57,10 +57,36 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
      *  @param contentId
      *  @param currentPlayheadTime
      */
+    @JvmSynthetic
     fun createContentSession(contentId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
         return LiveLikeContentSessionImpl(
             contentId,
             { EpochTime(currentPlayheadTime()) },
+            object : Provider<SdkConfiguration> {
+                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
+                    if (configuration != null) ready(configuration!!)
+                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
+                        configuration = it
+                        ready(it)
+                    }
+                }
+            }, applicationContext
+        )
+    }
+
+    interface TimecodeGetter {
+        fun getTimecode(): Long
+    }
+
+    /**
+     *  Creates a content session with sync.
+     *  @param contentId
+     *  @param timecodeGetter returns the video timecode
+     */
+    fun createContentSession(contentId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
+        return LiveLikeContentSessionImpl(
+            contentId,
+            { EpochTime(timecodeGetter.getTimecode()) },
             object : Provider<SdkConfiguration> {
                 override fun subscribe(ready: (SdkConfiguration) -> Unit) {
                     if (configuration != null) ready(configuration!!)
