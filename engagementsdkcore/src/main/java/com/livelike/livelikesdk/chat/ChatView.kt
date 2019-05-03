@@ -4,12 +4,14 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -79,11 +81,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private var viewRoot: View = LayoutInflater.from(context)
         .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
 
+    private var model: ChatViewModel
+
     init {
         (context as Activity).window.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
+        model = ViewModelProviders.of(context as AppCompatActivity).get(ChatViewModel::class.java)
     }
 
     private fun verifyViewMinWidth(view: View) {
@@ -97,10 +102,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     fun setSession(session: LiveLikeContentSession) {
-        showLoadingSpinner()
         this.session = session
         session.chatRenderer = this
-        setDataSource(ChatAdapter(session, ChatTheme(), DefaultChatCellFactory(context, null)))
+        if (model.chatAdapter == null) {
+            model.chatAdapter = ChatAdapter(session, ChatTheme(), DefaultChatCellFactory(context, null))
+            showLoadingSpinner()
+        }
+        setDataSource(model.chatAdapter!!)
     }
 
     override fun displayChatMessage(message: ChatMessage) {
