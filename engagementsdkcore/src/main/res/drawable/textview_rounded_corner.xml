@@ -5,8 +5,8 @@
             android:color="@color/colorPrimaryDark"/>
 
     <gradient
-            android:startColor="@color/prediction_question_start_color"
-            android:endColor="@color/prediction_question_end_color"
+            android:startColor="@color/prediction_title_gradient_left"
+            android:endColor="@color/prediction_title_gradient_right"
             android:angle="@integer/header_gradient_angle"/>
     <padding
             android:left="16dp"

@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.view.quiz
 
 import android.content.Context
 import android.os.Handler
+import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
 import android.view.View
 import com.livelike.engagementsdkapi.WidgetTransientState
@@ -9,6 +10,7 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetBase
+import kotlinx.android.synthetic.main.prediction_text_widget.view.questionTextView
 
 internal class QuizTextWidget : TextOptionWidgetBase {
     constructor(context: Context?) : super(context)
@@ -28,6 +30,12 @@ internal class QuizTextWidget : TextOptionWidgetBase {
         state: (WidgetTransientState) -> Unit
     ) {
         super.initialize(dismiss, startingState, progressedState, fetch, parentWidth, viewAnimation, state)
+
+        selectedButtonDrawable =
+                AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_quiz_answer_outline)
+        questionTextView.background =
+                AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.quiz_textview_rounded_corner)
+        
         fetchResult = fetch
         this.viewAnimation = viewAnimation
         startWidgetAnimation()
