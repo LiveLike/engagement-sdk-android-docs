@@ -25,11 +25,12 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
         dismiss: () -> Unit,
         startingState: WidgetTransientState,
         progressedState: WidgetTransientState,
+        fetch: () -> Unit,
         parentWidth: Int,
         viewAnimation: ViewAnimationManager,
         progressedStateCallback: (WidgetTransientState) -> Unit
     ) {
-        super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, progressedStateCallback)
+        super.initialize(dismiss, startingState, progressedState, fetch, parentWidth, viewAnimation, progressedStateCallback)
         this.viewAnimation = viewAnimation
         pieTimerViewStub.layoutResource = R.layout.pie_timer
         val pieTimer = pieTimerViewStub.inflate()
@@ -51,6 +52,7 @@ internal class PredictionTextQuestionWidgetView : TextOptionWidgetBase {
     private fun startPieTimer(pieTimer: View, timeout: Long) {
         viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
             if (optionSelectedId.isNotEmpty()) {
+                fetch?.invoke()
                 showConfirmMessage()
                 performPredictionWidgetFadeOutOperations()
             }

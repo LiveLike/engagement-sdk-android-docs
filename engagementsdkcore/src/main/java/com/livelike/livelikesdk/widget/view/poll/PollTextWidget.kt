@@ -20,7 +20,7 @@ internal class PollTextWidget : TextOptionWidgetBase {
     private lateinit var viewAnimation: ViewAnimationManager
     private var fetchResult: (() -> Unit)? = null
 
-    fun initialize(
+    override fun initialize(
         dismiss: () -> Unit,
         startingState: WidgetTransientState,
         progressedState: WidgetTransientState,
@@ -29,7 +29,7 @@ internal class PollTextWidget : TextOptionWidgetBase {
         viewAnimation: ViewAnimationManager,
         state: (WidgetTransientState) -> Unit
     ) {
-        super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, state)
+        super.initialize(dismiss, startingState, progressedState, fetch, parentWidth, viewAnimation, state)
 
         selectedButtonDrawable =
             AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_poll_answer_outline)

@@ -49,6 +49,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     protected var showResults = false
     protected var buttonClickEnabled = true
     protected var useNeutralValues = false
+    protected var fetch: (() -> Unit)? = null
 
     private var defaultButtonDrawable =
         AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
@@ -63,6 +64,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         dismiss: () -> Unit,
         startingState: WidgetTransientState,
         progressedState: WidgetTransientState,
+        fetch: () -> Unit,
         parentWidth: Int,
         viewAnimation: ViewAnimationManager,
         progressedStateCallback: (WidgetTransientState) -> Unit
@@ -70,6 +72,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         dismissWidget = dismiss
         this.viewAnimation = viewAnimation
         this.startingState = startingState
+        this.fetch = fetch
         this.progressedState = progressedState
         this.progressedStateCallback = progressedStateCallback
         inflate(context)

@@ -24,7 +24,6 @@ import kotlinx.android.synthetic.main.prediction_image_widget.view.closeButton
 import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList
 import kotlinx.android.synthetic.main.prediction_image_widget.view.questionTextView
 
-
 class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var pieTimerViewStub: ViewStub
     private lateinit var viewAnimation: ViewAnimationManager
@@ -33,7 +32,7 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     private lateinit var startingState: WidgetTransientState
     private lateinit var progressedState: WidgetTransientState
     private lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
-    private var imageAdapter : ImageAdapter? = null
+    private var imageAdapter: ImageAdapter? = null
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
     private var fetchResult: (() -> Unit)? = null
@@ -135,15 +134,15 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     ) {
         imageOptionList.adapter?.let {
 
-            Handler(Looper.getMainLooper()).post {updateVoteCount(voteOptions)}
+            Handler(Looper.getMainLooper()).post { updateVoteCount(voteOptions) }
         } ?: run {
-            imageAdapter = ImageAdapter(voteOptions, object : (String?) ->Unit {
+            imageAdapter = ImageAdapter(voteOptions, object : (String?) -> Unit {
                 override fun invoke(optionId: String?) {
                     userTapped.invoke()
                     optionSelectedCallback.invoke(optionId)
                 }
             }, parentWidth, context, resultDisplayUtil) {
-                if(progressedState.userSelection != null)
+                if (progressedState.userSelection != null)
                     optionSelectedUpdated(progressedState.userSelection)
                 startWidgetAnimation()
             }
@@ -191,7 +190,7 @@ class PollImageWidget : ConstraintLayout, WidgetObserver, QuizVoteObserver {
     }
 
     private fun disableButtons() {
-        imageAdapter?.viewOptions?.forEach {option ->
+        imageAdapter?.viewOptions?.forEach { option ->
             option.value.button.setOnClickListener(null)
         }
     }

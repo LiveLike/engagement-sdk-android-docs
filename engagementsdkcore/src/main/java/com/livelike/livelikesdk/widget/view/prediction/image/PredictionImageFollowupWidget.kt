@@ -34,7 +34,7 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
     private var timeout = 0L
     private var initialTimeout = 0L
     var parentWidth = 0
-    private var imageAdapter : ImageAdapter? = null
+    private var imageAdapter: ImageAdapter? = null
 
     private var executor = ScheduledThreadPoolExecutor(15)
     lateinit var future: ScheduledFuture<*>
@@ -117,16 +117,15 @@ internal class PredictionImageFollowupWidget : ConstraintLayout, WidgetObserver 
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         imageOptionList.layoutManager = linearLayoutManager
-        imageAdapter  = ImageAdapter(voteOptions, object : (String?) ->Unit {
+        imageAdapter = ImageAdapter(voteOptions, object : (String?) -> Unit {
             override fun invoke(optionId: String?) {}
         }, parentWidth, context, resultDisplayUtil) {
-            if(progressedState.userSelection != null)
+            if (progressedState.userSelection != null)
                 optionSelectedUpdated(progressedState.userSelection)
             updateVoteCount(voteOptions, correctOption, userSelectedOption)
         }
         imageOptionList.adapter = imageAdapter
     }
-
 
     private fun updateVoteCount(voteOptions: List<VoteOption>, correctOption: String?, userSelectedOption: String?) {
         viewAnimation.startWidgetTransitionInAnimation {
