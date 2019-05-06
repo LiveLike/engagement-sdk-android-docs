@@ -17,6 +17,7 @@ import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.util.WidgetTimeoutUpdater
 import com.livelike.livelikesdk.widget.model.VoteOption
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
 import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
@@ -28,6 +29,9 @@ import kotlinx.android.synthetic.main.prediction_text_widget.view.questionTextVi
 import kotlinx.android.synthetic.main.text_option_row_element.view.determinateBar
 import kotlinx.android.synthetic.main.text_option_row_element.view.percentageText
 import kotlinx.android.synthetic.main.text_option_row_element.view.text_button
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     private lateinit var userTapped: () -> Unit
@@ -35,10 +39,12 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
     private lateinit var resultDisplayUtil: WidgetResultDisplayUtil
     private var optionAdapter: TextOptionAdapter? = null
     private var lottieAnimationPath = ""
+
     protected lateinit var pieTimerViewStub: ViewStub
     protected lateinit var progressedStateCallback: (WidgetTransientState) -> Unit
     protected lateinit var startingState: WidgetTransientState
     protected lateinit var progressedState: WidgetTransientState
+    protected var currentPhase = WidgetTransientState.Phase.INTERACTION
     protected val widgetOpacityFactor: Float = 0.2f
     protected val buttonList: ArrayList<Button> = ArrayList()
     protected val buttonMap = mutableMapOf<Button, String?>()
@@ -54,6 +60,12 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_default)
     protected var selectedButtonDrawable =
         AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.prediction_button_pressed)
+
+    private var phaseTimeout = 0L
+    var initialTimeout = 0L
+    val updateRate = 1000
+    private var executor = ScheduledThreadPoolExecutor(1)
+    lateinit var future: ScheduledFuture<*>
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -72,6 +84,8 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         this.startingState = startingState
         this.progressedState = progressedState
         this.progressedStateCallback = progressedStateCallback
+        this.phaseTimeout = startingState.widgetTimeout
+        currentPhase = startingState.currentPhase
         inflate(context)
         questionTextView.layoutParams.width = parentWidth
     }
@@ -84,6 +98,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
         pieTimerViewStub = findViewById(R.id.prediction_pie)
         viewAnimation.addHorizontalSwipeListener(questionTextView, layout, dismissWidget)
         resultDisplayUtil = WidgetResultDisplayUtil(context, viewAnimation)
+        future = executor.scheduleAtFixedRate(Updater(), 0, 1000, TimeUnit.MILLISECONDS)
     }
 
     fun userTappedCallback(userTapped: () -> Unit) {
@@ -116,6 +131,7 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
         progressedState.userSelection = selectedOptionId
+        optionSelectedId = selectedOptionId.toString()
         buttonMap.forEach { (button, id) ->
             if (selectedOptionId == id)
                 button.background = selectedButtonDrawable
@@ -142,6 +158,36 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 progressedStateCallback.invoke(progressedState)
             }, startingState
         )
+    }
+
+    inner class Updater : Runnable {
+        private var timeoutUpdater = WidgetTimeoutUpdater(updateRate, progressedState, progressedStateCallback)
+        init {
+            timeoutUpdater.initialTimeout = initialTimeout
+        }
+
+        override fun run() {
+            when (currentPhase) {
+                WidgetTransientState.Phase.INTERACTION -> startingState.phaseTimeouts[WidgetTransientState.Phase.INTERACTION]?.let {
+                    timeoutUpdater.updatePhaseTimeout(
+                        it, WidgetTransientState.Phase.INTERACTION) {
+                        timeoutUpdater.initialTimeout = 0L
+                    }
+                }
+                WidgetTransientState.Phase.RESULT -> startingState.phaseTimeouts[WidgetTransientState.Phase.RESULT]?.let {
+                    timeoutUpdater.updatePhaseTimeout(
+                        it, WidgetTransientState.Phase.RESULT) {
+                        future.cancel(false)
+                    }
+                }
+                WidgetTransientState.Phase.CONFIRM_MESSAGE -> startingState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE]?.let {
+                    timeoutUpdater.updatePhaseTimeout(
+                        it, WidgetTransientState.Phase.CONFIRM_MESSAGE) {
+                        future.cancel(false)
+                    }
+                }
+            }
+        }
     }
 
     inner class TextOptionAdapter(
@@ -227,5 +273,10 @@ open class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
                 field = voteOption
                 optionButton.text = voteOption?.description
             }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        future.cancel(false)
     }
 }

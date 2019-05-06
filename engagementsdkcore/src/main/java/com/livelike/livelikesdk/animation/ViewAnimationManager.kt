@@ -94,7 +94,6 @@ internal class ViewAnimationManager(val view: View) {
         )
     }
 
-    // TODO: Context can be injected at class level
     fun startResultAnimation(
         lottieAnimationPath: String,
         context: Context,
@@ -155,7 +154,7 @@ internal class ViewAnimationManager(val view: View) {
 
         animationHandler.startAnimation(
             confirmMessageLottieAnimationView,
-            { triggerTransitionOutAnimation(onCompleteCallback) },
+            { },
             widgetShowingDurationAfterConfirmMessage,
             resultAnimator,
             { progressUpdater.invoke(it) })
@@ -248,10 +247,3 @@ private class AnimationHandler {
         })
     }
 }
-
-internal class AnimationProperties(
-    val animatorStartValue: Float = 0f,
-    val animatorEndValue: Float = 1f,
-    val timeout: Long = 0L,
-    val resultAnimationPath: String? = null
-)

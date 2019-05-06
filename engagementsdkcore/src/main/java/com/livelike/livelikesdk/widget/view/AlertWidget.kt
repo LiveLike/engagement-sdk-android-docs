@@ -123,7 +123,7 @@ internal class AlertWidget : ConstraintLayout {
 
         viewAnimation.startWidgetTransitionInAnimation {}
 
-        // Start dismiss timeout
+        // Start dismiss widgetTimeout
         var timeout = parseDuration(resourceAlert.timeout)
 
         Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
@@ -131,7 +131,7 @@ internal class AlertWidget : ConstraintLayout {
 
     inner class Updater : Runnable {
         override fun run() {
-            progressedState.timeout = timeout - initialTimeout
+            progressedState.widgetTimeout = timeout - initialTimeout
             progressedStateCallback.invoke(progressedState)
             val updateRate = 1000
             initialTimeout += updateRate

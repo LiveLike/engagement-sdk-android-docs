@@ -105,7 +105,15 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val predictionWidget = PredictionTextQuestionWidgetView(context, null, 0)
                 widget.registerObserver(predictionWidget)
 
-                initialState.timeout = widget.timeout
+                if (initialState.timerAnimatorStartPhase == 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
+                    initialState.phaseTimeouts[WidgetTransientState.Phase.INTERACTION] = widget.timeout
+                    initialState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE] = widget.timeout
+
+                    progressedState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE] = widget.timeout
+                } else if (initialState.timerAnimatorStartPhase != 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
+                    progressedState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE] = widget.timeout
+                }
+                savePayload(progressedState, payload, widget)
 
                 predictionWidget.initialize(
                     { dismissCurrentWidget() },
@@ -139,7 +147,11 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 }
 
                 timeout = widget.timeout
-                initialState.timeout = widget.timeout
+                if (initialState.widgetTimeout == 0L) {
+                    initialState.widgetTimeout = widget.timeout
+                }
+
+                savePayload(progressedState, payload, widget)
 
                 predictionWidget.initialize({
                     dismissCurrentWidget()
@@ -162,7 +174,11 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 val predictionWidget = PredictionImageQuestionWidget(context, null, 0)
                 widget.registerObserver(predictionWidget)
 
-                initialState.timeout = widget.timeout
+                if (initialState.widgetTimeout == 0L) {
+                    initialState.widgetTimeout = widget.timeout
+                }
+
+                savePayload(progressedState, payload, widget)
 
                 predictionWidget.initialize(
                     { dismissCurrentWidget() },
@@ -197,7 +213,11 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     return
                 }
 
-                initialState.timeout = widget.timeout
+                if (initialState.widgetTimeout == 0L) {
+                    initialState.widgetTimeout = widget.timeout
+                }
+
+                savePayload(progressedState, payload, widget)
 
                 predictionWidget.initialize({
                     dismissCurrentWidget()
@@ -294,7 +314,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.TEXT_POLL -> {
                 val pollTextWidget = PollTextWidget(context, null, 0)
 
-                initialState.timeout = widget.timeout
+                initialState.widgetTimeout = widget.timeout
 
                 pollTextWidget.initialize(
                     { dismissCurrentWidget() },
@@ -329,7 +349,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.IMAGE_POLL -> {
                 val pollImageWidget = PollImageWidget(context, null, 0)
 
-                initialState.timeout = widget.timeout
+                initialState.widgetTimeout = widget.timeout
 
                 pollImageWidget.initialize(
                     { dismissCurrentWidget() },
@@ -388,6 +408,15 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         }
     }
 
+    private fun savePayload(
+        progressedState: WidgetTransientState,
+        payload: JsonObject,
+        widget: Widget
+    ) {
+        progressedState.payload = payload
+        widgetStateProcessor?.updateWidgetState(widget.id.toString(), progressedState)
+    }
+
     private fun displayQuizWidget(
         parser: WidgetParser,
         widget: Widget,
@@ -406,8 +435,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         widget.registerObserver(quizTextWidget)
         progressedState.payload = payload
         progressedState.let { state -> widgetStateProcessor?.updateWidgetState(widget.id.toString(), state) }
-        initialState.timeout = widget.timeout
+        if (initialState.timerAnimatorStartPhase == 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
+            initialState.phaseTimeouts[WidgetTransientState.Phase.INTERACTION] = widget.timeout
+            initialState.phaseTimeouts[WidgetTransientState.Phase.RESULT] = widget.timeout
 
+            progressedState.phaseTimeouts[WidgetTransientState.Phase.RESULT] = widget.timeout
+        } else if (initialState.timerAnimatorStartPhase != 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
+            progressedState.phaseTimeouts[WidgetTransientState.Phase.RESULT] = widget.timeout
+        }
         quizTextWidget.initialize(
             { dismissCurrentWidget() },
             initialState,
@@ -450,7 +485,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         widget.registerObserver(quizTextWidget)
         progressedState.payload = payload
         progressedState.let { state -> widgetStateProcessor?.updateWidgetState(widget.id.toString(), state) }
-        initialState.timeout = widget.timeout
+        initialState.widgetTimeout = widget.timeout
 
         quizTextWidget.initialize(
             { dismissCurrentWidget() },

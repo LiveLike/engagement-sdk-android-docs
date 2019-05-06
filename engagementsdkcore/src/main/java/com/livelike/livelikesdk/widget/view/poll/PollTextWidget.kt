@@ -46,7 +46,7 @@ internal class PollTextWidget : TextOptionWidgetBase {
 
     private fun startWidgetAnimation(pieTimer: View, properties: WidgetTransientState) {
         viewAnimation.startWidgetTransitionInAnimation {
-            viewAnimation.startTimerAnimation(pieTimer, properties.timeout, properties, {
+            viewAnimation.startTimerAnimation(pieTimer, properties.widgetTimeout, properties, {
                 buttonClickEnabled = false
                 fetchResult?.invoke()
                 closeButton.visibility = View.VISIBLE
@@ -56,7 +56,7 @@ internal class PollTextWidget : TextOptionWidgetBase {
                 progressedStateCallback.invoke(progressedState)
             })
         }
-        Handler().postDelayed({ dismissWidget?.invoke() }, properties.timeout * 2)
+        Handler().postDelayed({ dismissWidget?.invoke() }, properties.widgetTimeout * 2)
     }
 
     override fun optionSelectedUpdated(selectedOptionId: String?) {
