@@ -34,6 +34,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private var optionSelected = false
     private var layout = ConstraintLayout(context, null, 0)
     private var dismissWidget: (() -> Unit)? = null
+    private var fetch: (() -> Unit)? = null
     var parentWidth = 0
     private var imageAdapter: ImageAdapter? = null
     lateinit var userTapped: () -> Unit
@@ -47,11 +48,13 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
         timeout: Long,
         startingState: WidgetTransientState,
         progressedState: WidgetTransientState,
+        fetch: () -> Unit,
         parentWidth: Int,
         viewAnimation: ViewAnimationManager,
         state: (WidgetTransientState) -> Unit
     ) {
         dismissWidget = dismiss
+        this.fetch = fetch
         this.viewAnimation = viewAnimation
         this.startingState = startingState
         this.parentWidth = parentWidth
@@ -89,6 +92,7 @@ internal class PredictionImageQuestionWidget : ConstraintLayout, WidgetObserver 
     private fun startPieTimer(pieTimer: View, timeout: Long) {
         viewAnimation.startTimerAnimation(pieTimer, timeout, startingState, {
             if (optionSelected) {
+                fetch?.invoke()
                 viewAnimation.showConfirmMessage(
                     confirmMessageTextView,
                     prediction_confirm_message_animation,

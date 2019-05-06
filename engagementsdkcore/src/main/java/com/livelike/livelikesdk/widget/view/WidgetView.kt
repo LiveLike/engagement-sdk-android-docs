@@ -119,6 +119,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     { dismissCurrentWidget() },
                     initialState,
                     progressedState,
+                    { optionSelectionEvents() },
                     parentWidth,
                     ViewAnimationManager(predictionWidget),
                     { saveState(widget.id.toString(), payload, type, it) }
@@ -153,11 +154,11 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
                 savePayload(progressedState, payload, widget)
 
-                predictionWidget.initialize({
-                    dismissCurrentWidget()
-                },
+                predictionWidget.initialize(
+                    { dismissCurrentWidget() },
                     initialState,
                     progressedState,
+                    {},
                     parentWidth,
                     ViewAnimationManager(predictionWidget),
                     { saveState(widget.id.toString(), payload, type, it) }
@@ -185,6 +186,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     widget.timeout,
                     initialState,
                     progressedState,
+                    { optionSelectionEvents() },
                     parentWidth,
                     ViewAnimationManager(predictionWidget),
                     { saveState(widget.id.toString(), payload, type, it) })

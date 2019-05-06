@@ -22,11 +22,12 @@ internal class PredictionTextFollowUpWidgetView :
         dismiss: () -> Unit,
         startingState: WidgetTransientState,
         progressedState: WidgetTransientState,
+        fetch: () -> Unit,
         parentWidth: Int,
         viewAnimation: ViewAnimationManager,
         progressedStateCallback: (WidgetTransientState) -> Unit
     ) {
-        super.initialize(dismiss, startingState, progressedState, parentWidth, viewAnimation, progressedStateCallback)
+        super.initialize(dismiss, startingState, progressedState, fetch, parentWidth, viewAnimation, progressedStateCallback)
         showResults = true
         buttonClickEnabled = false
         this.viewAnimation = viewAnimation
