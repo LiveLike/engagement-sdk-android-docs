@@ -39,6 +39,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var session: LiveLikeContentSession? = null
     private var startingState: PlayerState? = null
     private var channelManager: ChannelManager? = null
+    val sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
 
     private var adsPlaying = false
     set(adsPlaying) {
@@ -120,10 +121,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         })
 
-        val sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
-        if (channel == ChannelManager.NONE_CHANNEL) {
-            session?.close()
-        } else {
+        session?.close()
+        if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(), sdk)
 
             chat_view.setSession(session)
