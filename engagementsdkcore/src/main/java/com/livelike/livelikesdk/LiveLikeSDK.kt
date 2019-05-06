@@ -34,11 +34,11 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
 
     /**
      *  Creates a content session without sync.
-     *  @param contentId
+     *  @param programId Backend generated unique identifier for current program
      */
-    fun createContentSession(contentId: String): LiveLikeContentSession {
+    fun createContentSession(programId: String): LiveLikeContentSession {
         return LiveLikeContentSessionImpl(
-            contentId,
+            programId,
             { EpochTime(0) },
             object : Provider<SdkConfiguration> {
                 override fun subscribe(ready: (SdkConfiguration) -> Unit) {
@@ -54,13 +54,39 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
 
     /**
      *  Creates a content session with sync.
-     *  @param contentId
+     *  @param programId Backend generated identifier for current program
      *  @param currentPlayheadTime
      */
-    fun createContentSession(contentId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
+    @JvmSynthetic
+    fun createContentSession(programId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
         return LiveLikeContentSessionImpl(
-            contentId,
+            programId,
             { EpochTime(currentPlayheadTime()) },
+            object : Provider<SdkConfiguration> {
+                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
+                    if (configuration != null) ready(configuration!!)
+                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
+                        configuration = it
+                        ready(it)
+                    }
+                }
+            }, applicationContext
+        )
+    }
+
+    interface TimecodeGetter {
+        fun getTimecode(): Long
+    }
+
+    /**
+     *  Creates a content session with sync.
+     *  @param programId Backend generated identifier for current program
+     *  @param timecodeGetter returns the video timecode
+     */
+    fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
+        return LiveLikeContentSessionImpl(
+            programId,
+            { EpochTime(timecodeGetter.getTimecode()) },
             object : Provider<SdkConfiguration> {
                 override fun subscribe(ready: (SdkConfiguration) -> Unit) {
                     if (configuration != null) ready(configuration!!)
