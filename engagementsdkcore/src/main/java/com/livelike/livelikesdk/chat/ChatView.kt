@@ -4,14 +4,12 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -19,23 +17,24 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AbsListView
-import android.widget.BaseAdapter
 import android.widget.EditText
+import com.livelike.engagementsdkapi.ChatAdapter
+import com.livelike.engagementsdkapi.ChatCell
+import com.livelike.engagementsdkapi.ChatCellFactory
 import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.ChatTheme
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
@@ -81,14 +80,11 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private var viewRoot: View = LayoutInflater.from(context)
         .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
 
-    private var model: ChatViewModel
-
     init {
         (context as Activity).window.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
-        model = ViewModelProviders.of(context as AppCompatActivity).get(ChatViewModel::class.java)
     }
 
     private fun verifyViewMinWidth(view: View) {
@@ -104,11 +100,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
         session.chatRenderer = this
-        if (model.chatAdapter == null) {
-            model.chatAdapter = ChatAdapter(session, ChatTheme(), DefaultChatCellFactory(context, null))
+        if (session.chatState.chatAdapter == null) {
+            session.chatState.chatAdapter = ChatAdapter(
+                session,
+                ChatTheme(), DefaultChatCellFactory(context, null)
+            )
             showLoadingSpinner()
         }
-        setDataSource(model.chatAdapter!!)
+        setDataSource(session.chatState.chatAdapter!!)
     }
 
     override fun displayChatMessage(message: ChatMessage) {
@@ -319,21 +318,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 }
 
-internal interface ChatCell {
-    fun setMessage(
-        message: ChatMessage?,
-        isMe: Boolean?
-    )
-
-    fun getView(): View
-}
-
-/**
- *
- */
-internal interface ChatCellFactory {
-    fun getCell(): ChatCell
-}
 
 internal class DefaultChatCellFactory(val context: Context, cellattrs: AttributeSet?) :
     ChatCellFactory {
@@ -378,64 +362,5 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
 
     override fun getView(): View {
         return this
-    }
-}
-
-/**
- * Chat adapter is the data set used for [ChatView]. Chat adapter is the binding layer between [LiveLikeContentSession]
- * Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter]. SDK would provide default [ChatTheme]
- * and [ChatCellFactory] in this case. See the overloaded constructor for providing custom [ChatTheme] and [ChatCellFactory]
- * @param session The [LiveLikeContentSession] which needs to be bounded with the Chat.
- */
-internal class ChatAdapter() : BaseAdapter() {
-    private lateinit var session: LiveLikeContentSession
-    private lateinit var theme: ChatTheme
-    private lateinit var cellFactory: ChatCellFactory
-
-    /**
-     *  Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter] and provide custom [ChatTheme].
-     *  @param chatTheme The theme which would be applied to the Chat session.
-     */
-    constructor(chatTheme: ChatTheme) : this() {
-        this.theme = chatTheme
-    }
-
-    /**
-     *  Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter] and provide custom [ChatTheme] and their
-     *  own [ChatCellFactory].
-     *  @param session The [LiveLikeContentSession] which needs to be bounded with the Chat.
-     *  @param theme The theme which would be applied to the Chat session.
-     *  @param cellFactory The [ChatCell] which needs to be inflated when the chat session is created.
-     */
-    constructor(session: LiveLikeContentSession, theme: ChatTheme, cellFactory: ChatCellFactory) : this(theme) {
-        this.session = session
-        this.theme = theme
-        this.cellFactory = cellFactory
-    }
-
-    private val chatMessages = mutableListOf<ChatCell>()
-
-    fun addMessage(chat: ChatMessage) {
-        logDebug { "NOW - Show Message on screen: $chat" }
-        val cell = cellFactory.getCell()
-        cell.setMessage(chat, session.currentUser?.sessionId == chat.senderId)
-        chatMessages.add(cell)
-        notifyDataSetChanged()
-    }
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return chatMessages[position].getView()
-    }
-
-    override fun getItem(index: Int): Any {
-        return chatMessages[index]
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getCount(): Int {
-        return chatMessages.size
     }
 }

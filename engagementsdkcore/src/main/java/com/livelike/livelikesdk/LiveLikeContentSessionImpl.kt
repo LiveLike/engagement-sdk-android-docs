@@ -2,6 +2,7 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
@@ -44,6 +45,7 @@ internal class LiveLikeContentSessionImpl(
             currentWidgetMap
         )
     }
+    override var chatState = ChatState()
 
     init {
         getUser()
@@ -116,7 +118,10 @@ internal class LiveLikeContentSessionImpl(
             // validEventBufferMs for chat is currently 24 hours
             val chatClient = SendbirdChatClient()
             chatClient.messageHandler = sendBirdMessagingClient
-            val chatQueue = sendBirdMessagingClient.syncTo(currentPlayheadTime, 86400000L).toChatQueue(chatClient)
+            val chatQueue =
+                sendBirdMessagingClient
+                    .syncTo(currentPlayheadTime, 86400000L)
+                    .toChatQueue(chatClient)
             chatQueue.unsubscribeAll()
             chatQueue.subscribe(listOf(program.chatChannel))
             chatQueue.renderer = chatRenderer
