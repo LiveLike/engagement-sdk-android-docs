@@ -45,7 +45,6 @@ interface ChatCell {
     fun getView(): View
 }
 
-
 interface ChatCellFactory {
     fun getCell(): ChatCell
 }

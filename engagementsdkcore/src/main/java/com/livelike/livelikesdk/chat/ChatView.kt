@@ -318,7 +318,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 }
 
-
 internal class DefaultChatCellFactory(val context: Context, cellattrs: AttributeSet?) :
     ChatCellFactory {
     private val attrs = cellattrs
