@@ -29,6 +29,7 @@
             android:layout_marginEnd="8dp"
             android:clickable="true"
             android:gravity="center"
+            android:background="@null"
             android:padding="5dp"
             android:scaleType="fitXY"
             android:src="@drawable/chat_send"
@@ -38,7 +39,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/chat_input_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/chat_input_border"
-            android:focusable="true"/>
+            android:focusable="true"
+            android:layout_marginRight="8dp"/>
 
     <EditText
             android:id="@+id/edittext_chat_message"
@@ -68,6 +70,7 @@
             android:layout_gravity="bottom"
             android:layout_marginEnd="8dp"
             android:padding="9dp"
+            android:background="@null"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="@+id/chat_input_border"
             app:layout_constraintEnd_toEndOf="@+id/chat_input_border"
@@ -75,6 +78,7 @@
             app:layout_constraintStart_toStartOf="@+id/chat_input_border"
             app:layout_constraintTop_toTopOf="@+id/chat_input_border"
             app:srcCompat="@drawable/emoji_ios_category_smileysandpeople"
-            tools:ignore="ContentDescription"/>
+            tools:ignore="ContentDescription"
+            android:layout_marginRight="8dp"/>
 
 </android.support.constraint.ConstraintLayout>
