@@ -13,6 +13,7 @@
             app:layout_constraintHorizontal_bias="0.973"
             app:layout_constraintVertical_bias="0.592"/>
 
+    <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/confirmMessageTextView"
             android:layout_width="200dp"
@@ -29,7 +30,7 @@
             android:paddingRight="16dp"
             android:paddingTop="30dp"
             android:paddingBottom="16dp"
-            app:fontFamily="@font/titillium_semibold"
+            app:fontFamily="@font/option_font"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

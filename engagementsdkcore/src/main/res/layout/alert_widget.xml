@@ -45,6 +45,7 @@
                 tools:src="@tools:sample/backgrounds/scenic"
         />
 
+        <!--suppress AndroidDomInspection -->
         <TextView
                 android:id="@+id/bodyText"
                 android:layout_width="0dp"
@@ -56,6 +57,7 @@
                 android:textColor="@color/alert_body_text_color"
                 android:textSize="@dimen/alert_body_text_size"
                 android:visibility="visible"
+                android:fontFamily="@font/alert_body_font"
                 app:layout_constraintBottom_toTopOf="@+id/linkBackground"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -89,6 +91,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/linkBackground"
                 app:layout_constraintTop_toTopOf="@+id/linkBackground"/>
 
+        <!--suppress AndroidDomInspection -->
         <TextView
                 android:id="@+id/linkText"
                 android:layout_width="wrap_content"
@@ -97,6 +100,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:textColor="@color/alert_link_text_color"
+                android:fontFamily="@font/alert_link_font"
                 android:textSize="@dimen/alert_link_text_size"
                 android:textStyle="bold"
                 android:visibility="visible"
@@ -140,6 +144,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"/>
 
+    <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/labelText"
             android:layout_width="wrap_content"
@@ -149,6 +154,7 @@
             android:textAllCaps="true"
             android:maxLength="30"
             android:textColor="@color/alert_label_text_color"
+            android:fontFamily="@font/alert_label_font"
             android:textSize="@dimen/alert_label_text_size"
             android:textStyle="bold"
             android:visibility="visible"

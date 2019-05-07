@@ -47,4 +47,8 @@
         <item name="android:textAlignment">viewStart</item>
         <item name="android:lineSpacingExtra">8sp</item>
     </style>
+
+    <!--livelike font customization-->
+    <item name="header_font" type="font" >@font/antenna_bold</item>
+    <item name="option_font" type="font" >@font/antenna_light</item>
 </resources>
