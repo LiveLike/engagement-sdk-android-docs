@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.messaging.proxies
 
 import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.MessagingEventListener
@@ -15,7 +16,7 @@ import org.mockito.MockitoAnnotations
 class SynchronizedMessagingClientTest {
 
     @Mock
-    lateinit var messaingClient: MessagingClient
+    private lateinit var messaingClient: MessagingClient
 
     private var timeSource: () -> EpochTime = { EpochTime(100L) }
     private lateinit var subject: SynchronizedMessagingClient
@@ -25,7 +26,7 @@ class SynchronizedMessagingClientTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
         listener = mock(MessagingEventListener::class.java)
-        subject = SynchronizedMessagingClient(messaingClient, timeSource)
+        subject = SynchronizedMessagingClient(messaingClient, timeSource, 86000L)
     }
 
     @Test

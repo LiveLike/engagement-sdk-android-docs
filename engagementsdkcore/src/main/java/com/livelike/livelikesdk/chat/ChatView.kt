@@ -17,23 +17,24 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AbsListView
-import android.widget.BaseAdapter
 import android.widget.EditText
+import com.livelike.engagementsdkapi.ChatAdapter
+import com.livelike.engagementsdkapi.ChatCell
+import com.livelike.engagementsdkapi.ChatCellFactory
 import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.ChatTheme
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
 import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
-import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.util.logError
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
@@ -72,7 +73,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
-    private lateinit var chatAdapter: ChatAdapter
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
     private val animationEaseAdapter = AnimationEaseAdapter()
@@ -97,16 +97,22 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     fun setSession(session: LiveLikeContentSession) {
-        showLoadingSpinner()
         this.session = session
         session.chatRenderer = this
-        setDataSource(ChatAdapter(session, ChatTheme(), DefaultChatCellFactory(context, null)))
+        if (session.chatState.chatAdapter == null) {
+            session.chatState.chatAdapter = ChatAdapter(
+                session,
+                ChatTheme(), DefaultChatCellFactory(context, null)
+            )
+            showLoadingSpinner()
+        }
+        setDataSource(session.chatState.chatAdapter!!)
     }
 
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
         Handler(Looper.getMainLooper()).post {
-            this@ChatView.chatAdapter.addMessage(message)
+            session.chatState.chatAdapter?.addMessage(message)
         }
     }
 
@@ -139,8 +145,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
      *  @param chatAdapter ChatAdapter used for creating this view.
      */
     private fun setDataSource(chatAdapter: ChatAdapter) {
-        this.chatAdapter = chatAdapter
-        chatdisplay.adapter = this.chatAdapter
+        chatdisplay.adapter = chatAdapter
         chatdisplay.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScroll(
                 view: AbsListView?,
@@ -242,14 +247,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString()
         )
+        session.chatState.chatAdapter?.addMessage(newMessage)
 
-        chatListener?.onChatMessageSend(newMessage, timeData)
         hideLoadingSpinner()
-        this@ChatView.chatAdapter.addMessage(newMessage)
-
         snapToLive()
         edittext_chat_message.setText("")
         analyticService.trackMessageSent(false)
+        chatListener?.onChatMessageSend(newMessage, timeData)
     }
 
     private fun hideSnapToLive() {
@@ -307,24 +311,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun snapToLive() {
-        chatdisplay.smoothScrollToPositionFromTop(chatAdapter.count - 1, 0, 500)
+        chatdisplay.smoothScrollToPositionFromTop(session.chatState.chatAdapter?.count?.minus(1) ?: 0, 0, 500)
     }
-}
-
-internal interface ChatCell {
-    fun setMessage(
-        message: ChatMessage?,
-        isMe: Boolean?
-    )
-
-    fun getView(): View
-}
-
-/**
- *
- */
-internal interface ChatCellFactory {
-    fun getCell(): ChatCell
 }
 
 internal class DefaultChatCellFactory(val context: Context, cellattrs: AttributeSet?) :
@@ -370,64 +358,5 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
 
     override fun getView(): View {
         return this
-    }
-}
-
-/**
- * Chat adapter is the data set used for [ChatView]. Chat adapter is the binding layer between [LiveLikeContentSession]
- * Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter]. SDK would provide default [ChatTheme]
- * and [ChatCellFactory] in this case. See the overloaded constructor for providing custom [ChatTheme] and [ChatCellFactory]
- * @param session The [LiveLikeContentSession] which needs to be bounded with the Chat.
- */
-internal class ChatAdapter() : BaseAdapter() {
-    private lateinit var session: LiveLikeContentSession
-    private lateinit var theme: ChatTheme
-    private lateinit var cellFactory: ChatCellFactory
-
-    /**
-     *  Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter] and provide custom [ChatTheme].
-     *  @param chatTheme The theme which would be applied to the Chat session.
-     */
-    constructor(chatTheme: ChatTheme) : this() {
-        this.theme = chatTheme
-    }
-
-    /**
-     *  Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter] and provide custom [ChatTheme] and their
-     *  own [ChatCellFactory].
-     *  @param session The [LiveLikeContentSession] which needs to be bounded with the Chat.
-     *  @param theme The theme which would be applied to the Chat session.
-     *  @param cellFactory The [ChatCell] which needs to be inflated when the chat session is created.
-     */
-    constructor(session: LiveLikeContentSession, theme: ChatTheme, cellFactory: ChatCellFactory) : this(theme) {
-        this.session = session
-        this.theme = theme
-        this.cellFactory = cellFactory
-    }
-
-    private val chatMessages = mutableListOf<ChatCell>()
-
-    fun addMessage(chat: ChatMessage) {
-        logDebug { "NOW - Show Message on screen: $chat" }
-        val cell = cellFactory.getCell()
-        cell.setMessage(chat, session.currentUser?.sessionId == chat.senderId)
-        chatMessages.add(cell)
-        notifyDataSetChanged()
-    }
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return chatMessages[position].getView()
-    }
-
-    override fun getItem(index: Int): Any {
-        return chatMessages[index]
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getCount(): Int {
-        return chatMessages.size
     }
 }

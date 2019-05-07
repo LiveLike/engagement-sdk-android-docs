@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.chat
+package com.livelike.engagementsdkapi
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -8,7 +8,7 @@ import android.graphics.Typeface
  *
  *  TODO: this class can be shortened using kotlin Builder DSL.
  */
-internal class ChatTheme(
+class ChatTheme(
     var font: Typeface? = Typeface.MONOSPACE,
     var backgroundColor: Int = Color.BLUE,
     var foregroundColor: Int = Color.RED,
