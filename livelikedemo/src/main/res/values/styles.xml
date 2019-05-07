@@ -14,7 +14,7 @@
         <item name="android:windowFullscreen">false</item>
     </style>
 
-    <style name="TestAppLabel" parent="TextAppearance.AppCompat">,
+    <style name="TestAppLabel" parent="TextAppearance.AppCompat">
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textStyle">normal</item>
