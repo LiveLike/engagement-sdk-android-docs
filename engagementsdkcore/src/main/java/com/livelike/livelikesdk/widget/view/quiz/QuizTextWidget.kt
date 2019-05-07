@@ -30,12 +30,14 @@ internal class QuizTextWidget : TextOptionWidgetBase {
         state: (WidgetTransientState) -> Unit
     ) {
         super.initialize(dismiss, startingState, progressedState, fetch, parentWidth, viewAnimation, state)
-
         selectedButtonDrawable =
                 AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.button_quiz_answer_outline)
         questionTextView.background =
-                AppCompatResources.getDrawable(context, com.livelike.livelikesdk.R.drawable.quiz_textview_rounded_corner)
-        
+                AppCompatResources.getDrawable(
+                    context,
+                    com.livelike.livelikesdk.R.drawable.quiz_textview_rounded_corner
+                )
+
         fetchResult = fetch
         this.viewAnimation = viewAnimation
         startWidgetAnimation()
