@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient
-            android:startColor="@color/quiz_question_end_color"
-            android:endColor="@color/quiz_question_start_color"
-            android:angle="@integer/header_gradient_angle"/>
-    <corners android:radius="@dimen/header_corner_radius"/>
+<gradient
+        android:startColor="@color/quiz_title_gradient_left"
+        android:endColor="@color/quiz_title_gradient_right"
+        android:angle="@integer/header_gradient_angle"/>
+<corners android:radius="@dimen/header_corner_radius"/>
 </shape>
