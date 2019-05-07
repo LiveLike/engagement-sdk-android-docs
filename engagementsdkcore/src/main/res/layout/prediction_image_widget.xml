@@ -18,6 +18,7 @@
             tools:listitem="@layout/prediction_image_row_element"
             app:layout_constraintHorizontal_bias="0.0"/>
 
+    <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/questionTextView"
             android:layout_height="wrap_content"
@@ -25,7 +26,7 @@
             android:background="@drawable/prediciton_rounded_corner"
             android:textColor="@color/header_text_color"
             android:textSize="@dimen/header_text_size"
-            app:fontFamily="@font/titillium_bold"
+            app:fontFamily="@font/header_font"
             app:layout_constraintTop_toBottomOf="@+id/imageOptionList"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

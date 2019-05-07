@@ -14,12 +14,13 @@
                                                  android:layout_height="wrap_content"
                                                  android:background="#99000000">
 
+        <!--suppress AndroidDomInspection -->
         <Button
                 android:id="@+id/text_button"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:background="@drawable/button_default"
-                android:fontFamily="@font/titillium_semibold"
+                android:fontFamily="@font/option_font"
                 android:textSize="@dimen/option_text_size"
                 android:textColor="@color/option_text_color"
                 app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +60,7 @@
                 android:textSize="@dimen/percent_label_text_size"
                 android:gravity="end"
 
-                app:fontFamily="@font/titillium_bold"
+                app:fontFamily="@font/header_font"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/determinateBar"
                 app:layout_constraintStart_toStartOf="@+id/determinateBar"

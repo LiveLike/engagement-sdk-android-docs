@@ -6,6 +6,7 @@
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content"
                                              android:background="#99000000">
+    <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/questionTextView"
             android:layout_height="wrap_content"
@@ -13,7 +14,7 @@
             android:background="@drawable/top_rounded_corner"
             android:textColor="@color/header_text_color"
             android:textSize="@dimen/header_text_size"
-            app:fontFamily="@font/titillium_bold"
+            app:fontFamily="@font/header_font"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Question Text goes here"
             app:layout_constraintStart_toStartOf="parent"

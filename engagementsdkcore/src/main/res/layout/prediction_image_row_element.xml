@@ -13,15 +13,15 @@
             android:progressDrawable="@drawable/image_option_background_progressbar"
             android:layout_width="0dp"
             android:layout_height="22dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:visibility="invisible"
-            tools:visibility="visible"
-            tools:progress="50"
             android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            tools:visibility="visible"
+            tools:progress="50"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
             android:layout_width="70dp"
@@ -29,12 +29,13 @@
             android:id="@+id/image_button"
             android:scaleType="centerCrop"
             android:background="@drawable/button_rounded_corners"
+            android:layout_marginTop="16dp"
+            android:contentDescription="TODO"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:contentDescription="TODO"
             tools:src="@tools:sample/avatars"
-            android:layout_marginTop="16dp"/>
+            />
 
     <View
             android:layout_width="0dp"
@@ -43,44 +44,46 @@
             android:background="@drawable/image_option_background"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:src="@tools:sample/avatars"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:src="@tools:sample/avatars"/>
 
-
+    <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/percentageText"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/determinateBar"
-            app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
             android:elevation="8dp"
             android:textColor="@color/percent_label_text_color"
             android:textSize="@dimen/percent_label_text_size"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            tools:text="50%"
             android:gravity="end"
-            app:fontFamily="@font/titillium_bold"
+            android:fontFamily="@font/header_font"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/determinateBar"
+            app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
+            tools:text="50%"
             android:layout_marginEnd="10dp"/>
 
+    <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/item_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/text_background"
-            app:layout_constraintEnd_toEndOf="@+id/text_background"
-            app:layout_constraintTop_toTopOf="@+id/text_background"
-            app:layout_constraintStart_toStartOf="@+id/text_background"
             android:elevation="4dp"
+            android:fontFamily="@font/option_font"
             android:textColor="@color/option_text_color"
             android:textSize="@dimen/option_text_size"
-            tools:text="blah blah blah blah blah blah blah blah "
             android:layout_marginStart="8dp"
             android:textAlignment="textEnd"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/text_background"
+            app:layout_constraintEnd_toEndOf="@+id/text_background"
+            app:layout_constraintTop_toTopOf="@+id/text_background"
+            app:layout_constraintStart_toStartOf="@+id/text_background"
+            tools:text="blah blah blah blah blah blah blah blah "/>
 
     <View android:layout_width="0dp"
           android:layout_height="0dp"

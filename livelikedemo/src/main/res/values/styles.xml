@@ -14,7 +14,7 @@
         <item name="android:windowFullscreen">false</item>
     </style>
 
-    <style name="TestAppLabel" parent="TextAppearance.AppCompat">
+    <style name="TestAppLabel" parent="TextAppearance.AppCompat">,
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textStyle">normal</item>
@@ -47,4 +47,8 @@
         <item name="android:textAlignment">viewStart</item>
         <item name="android:lineSpacingExtra">8sp</item>
     </style>
+
+    <!--livelike font customization-->
+    <item name="header_font" type="font" >@font/antenna_bold</item>
+    <item name="option_font" type="font" >@font/antenna_light</item>
 </resources>
