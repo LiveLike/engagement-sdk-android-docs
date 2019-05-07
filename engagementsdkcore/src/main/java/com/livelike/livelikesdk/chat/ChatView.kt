@@ -73,7 +73,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
-    private lateinit var chatAdapter: ChatAdapter
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
     private val animationEaseAdapter = AnimationEaseAdapter()
@@ -113,7 +112,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
         Handler(Looper.getMainLooper()).post {
-            this@ChatView.chatAdapter.addMessage(message)
+            session.chatState.chatAdapter?.addMessage(message)
         }
     }
 
@@ -146,8 +145,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
      *  @param chatAdapter ChatAdapter used for creating this view.
      */
     private fun setDataSource(chatAdapter: ChatAdapter) {
-        this.chatAdapter = chatAdapter
-        chatdisplay.adapter = this.chatAdapter
+        chatdisplay.adapter = chatAdapter
         chatdisplay.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScroll(
                 view: AbsListView?,
@@ -249,14 +247,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString()
         )
+        session.chatState.chatAdapter?.addMessage(newMessage)
 
-        chatListener?.onChatMessageSend(newMessage, timeData)
         hideLoadingSpinner()
-        this@ChatView.chatAdapter.addMessage(newMessage)
-
         snapToLive()
         edittext_chat_message.setText("")
         analyticService.trackMessageSent(false)
+        chatListener?.onChatMessageSend(newMessage, timeData)
     }
 
     private fun hideSnapToLive() {
@@ -314,7 +311,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun snapToLive() {
-        chatdisplay.smoothScrollToPositionFromTop(chatAdapter.count - 1, 0, 500)
+        chatdisplay.smoothScrollToPositionFromTop(session.chatState.chatAdapter?.count?.minus(1) ?: 0, 0, 500)
     }
 }
 
