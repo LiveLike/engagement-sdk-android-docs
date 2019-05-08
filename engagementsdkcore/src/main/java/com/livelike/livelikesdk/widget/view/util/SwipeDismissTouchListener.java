@@ -80,6 +80,7 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        view.getParent().requestDisallowInterceptTouchEvent(true);
         // offset because the view is translated during swipe
         motionEvent.offsetLocation(mTranslationX, 0);
 
