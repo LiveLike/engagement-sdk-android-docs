@@ -22,6 +22,8 @@ internal class ViewAnimationManager(val view: View) {
 
     private val animationHandler = AnimationHandler()
     private val widgetShowingDurationAfterConfirmMessage: Long = 3000
+    private var hasViewSwipedOut = false
+    private var currentAnimator = ValueAnimator.ofFloat(0f, 1f)
 
     fun startWidgetTransitionInAnimation(onAnimationCompletedCallback: () -> Unit) {
         val heightToReach = view.measuredHeight.toFloat()
@@ -66,16 +68,20 @@ internal class ViewAnimationManager(val view: View) {
     }
 
     fun triggerTransitionOutAnimation(onCompleteCallback: (() -> Unit)?) {
-        val animator = ObjectAnimator.ofFloat(
-            view,
-            "translationY",
-            0f, -dpToPx(250).toFloat()
-        )
-        animationHandler.bindListenerToAnimationView(animator) {
+        if (hasViewSwipedOut) {
             onCompleteCallback?.invoke()
+        } else {
+            val animator = ObjectAnimator.ofFloat(
+                view,
+                "translationY",
+                0f, -dpToPx(250).toFloat()
+            )
+            animationHandler.bindListenerToAnimationView(animator) {
+                onCompleteCallback?.invoke()
+            }
+            // TODO: Get rid of hardcoded value once we have minimun viewable area defined.
+            startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
         }
-        // TODO: Get rid of hardcoded value once we have minimun viewable area defined.
-        startEasingAnimation(animationHandler, AnimationEaseInterpolator.Ease.EaseOutQuad, animator)
     }
 
     fun startTimerAnimation(
@@ -85,11 +91,13 @@ internal class ViewAnimationManager(val view: View) {
         onAnimationCompletedCallback: () -> Unit,
         progressUpdater: (Float) -> Unit
     ) {
+        val animator = ValueAnimator.ofFloat(timerProperties.timerAnimatorStartPhase, 1f)
+        currentAnimator = animator
         animationHandler.startAnimation(
             pieTimer.findViewById(R.id.prediction_pie_updater_animation),
             onAnimationCompletedCallback,
             duration,
-            ValueAnimator.ofFloat(timerProperties.timerAnimatorStartPhase, 1f),
+            animator,
             progressUpdater
         )
     }
@@ -104,7 +112,7 @@ internal class ViewAnimationManager(val view: View) {
     ) {
         var resultAnimationPath = resultProperties.resultAnimationPath
         val resultAnimator = ValueAnimator.ofFloat(resultProperties.resultAnimatorStartPhase, 1f)
-
+        currentAnimator = resultAnimator
         if (resultAnimationPath == null) {
             val relativePath = AndroidResource.selectRandomLottieAnimation(lottieAnimationPath, context)
             if (relativePath != null) {
@@ -170,9 +178,8 @@ internal class ViewAnimationManager(val view: View) {
             null, object : DismissCallbacks {
                 override fun canDismiss(token: Any?) = true
                 override fun onDismiss(view: View?, token: Any?) {
-                    // animationHandler.cancelAnimation(timerAnimator)
-                    // TODO: remove this and add as param
-                    // animationHandler.cancelAnimation(resultAnimator)
+                    animationHandler.cancelAnimation(currentAnimator)
+                    hasViewSwipedOut = true
                     layout.removeAllViewsInLayout()
                     onSwipeCallback?.invoke()
                 }

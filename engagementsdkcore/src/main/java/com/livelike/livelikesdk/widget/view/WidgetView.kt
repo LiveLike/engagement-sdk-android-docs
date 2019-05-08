@@ -53,6 +53,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     private var marginSize = dpToPx(40)
     private var timeout = 0L
     private var widgetType = WidgetType.NONE.value
+    private lateinit var viewAnimationManager: ViewAnimationManager
 
     companion object {
         private const val WIDGET_MINIMUM_SIZE_DP = 260
@@ -114,14 +115,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     progressedState.phaseTimeouts[WidgetTransientState.Phase.CONFIRM_MESSAGE] = widget.timeout
                 }
                 savePayload(progressedState, payload, widget)
-
+                viewAnimationManager = ViewAnimationManager(predictionWidget)
                 predictionWidget.initialize(
                     { dismissCurrentWidget() },
                     initialState,
                     progressedState,
                     { optionSelectionEvents() },
                     parentWidth,
-                    ViewAnimationManager(predictionWidget),
+                    viewAnimationManager,
                     { saveState(widget.id.toString(), payload, type, it) }
                 )
 
@@ -153,14 +154,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 }
 
                 savePayload(progressedState, payload, widget)
-
+                viewAnimationManager = ViewAnimationManager(predictionWidget)
                 predictionWidget.initialize(
                     { dismissCurrentWidget() },
                     initialState,
                     progressedState,
                     {},
                     parentWidth,
-                    ViewAnimationManager(predictionWidget),
+                    viewAnimationManager,
                     { saveState(widget.id.toString(), payload, type, it) }
                 )
                 widget.notifyDataSetChange()
@@ -180,7 +181,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 }
 
                 savePayload(progressedState, payload, widget)
-
+                viewAnimationManager = ViewAnimationManager(predictionWidget)
                 predictionWidget.initialize(
                     { dismissCurrentWidget() },
                     widget.timeout,
@@ -188,7 +189,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     progressedState,
                     { optionSelectionEvents() },
                     parentWidth,
-                    ViewAnimationManager(predictionWidget),
+                    viewAnimationManager,
                     { saveState(widget.id.toString(), payload, type, it) })
 
                 if (initialState.userSelection != null)
@@ -220,14 +221,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                 }
 
                 savePayload(progressedState, payload, widget)
-
+                viewAnimationManager = ViewAnimationManager(predictionWidget)
                 predictionWidget.initialize({
                     dismissCurrentWidget()
                 },
                     initialState,
                     progressedState,
                     parentWidth,
-                    ViewAnimationManager(predictionWidget),
+                    viewAnimationManager,
                     { saveState(widget.id.toString(), payload, type, it) }
                 )
                 widget.notifyDataSetChange()
@@ -318,13 +319,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
                 initialState.widgetTimeout = widget.timeout
 
+                viewAnimationManager = ViewAnimationManager(pollTextWidget)
                 pollTextWidget.initialize(
                     { dismissCurrentWidget() },
                     initialState,
                     progressedState,
                     { optionSelectionEvents() },
                     parentWidth,
-                    ViewAnimationManager(pollTextWidget),
+                    viewAnimationManager,
                     { saveState(widget.id.toString(), payload, widgetType, it) })
 
                 parser.parsePoll(widget, widgetResource)
@@ -353,13 +355,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
 
                 initialState.widgetTimeout = widget.timeout
 
+                viewAnimationManager = ViewAnimationManager(pollImageWidget)
                 pollImageWidget.initialize(
                     { dismissCurrentWidget() },
                     initialState,
                     progressedState,
                     { optionSelectionEvents() },
                     parentWidth,
-                    ViewAnimationManager(pollImageWidget),
+                    viewAnimationManager,
                     { saveState(widget.id.toString(), payload, widgetType, it) })
 
                 parser.parsePoll(widget, widgetResource)
@@ -386,7 +389,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
             WidgetType.ALERT -> {
                 val alertWidget = AlertWidget(context, null)
                 val alertResource = gson.fromJson(payload, Alert::class.java)
-
+                viewAnimationManager = ViewAnimationManager(alertWidget)
                 currentWidget = Widget().apply {
                     id = alertResource.id
                     alertWidget.initialize({
@@ -394,7 +397,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
                     },
                         alertResource,
                         progressedState,
-                        ViewAnimationManager(alertWidget), {
+                        viewAnimationManager, {
                             saveState(id.toString(), payload, widgetType, it)
                         })
                 }
@@ -445,13 +448,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         } else if (initialState.timerAnimatorStartPhase != 0F && initialState.currentPhase == WidgetTransientState.Phase.INTERACTION) {
             progressedState.phaseTimeouts[WidgetTransientState.Phase.RESULT] = widget.timeout
         }
+        viewAnimationManager = ViewAnimationManager(quizTextWidget)
         quizTextWidget.initialize(
             { dismissCurrentWidget() },
             initialState,
             progressedState,
             { optionSelectionEvents() },
             parentWidth,
-            ViewAnimationManager(quizTextWidget),
+            viewAnimationManager,
             { saveState(widget.id.toString(), payload, widgetType, it) })
 
         if (initialState.userSelection != null) {
@@ -489,13 +493,14 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
         progressedState.let { state -> widgetStateProcessor?.updateWidgetState(widget.id.toString(), state) }
         initialState.widgetTimeout = widget.timeout
 
+        viewAnimationManager = ViewAnimationManager(quizTextWidget)
         quizTextWidget.initialize(
             { dismissCurrentWidget() },
             initialState,
             progressedState,
             { optionSelectionEvents() },
             parentWidth,
-            ViewAnimationManager(quizTextWidget),
+            viewAnimationManager,
             { saveState(widget.id.toString(), payload, widgetType, it) })
 
         if (initialState.userSelection != null) {
@@ -544,7 +549,7 @@ class WidgetView(context: Context, attrs: AttributeSet?) : ConstraintLayout(cont
     }
 
     override fun dismissCurrentWidget() {
-        ViewAnimationManager(containerView.parent as View).triggerTransitionOutAnimation {
+        viewAnimationManager.triggerTransitionOutAnimation {
             removeView()
             resetState()
 
