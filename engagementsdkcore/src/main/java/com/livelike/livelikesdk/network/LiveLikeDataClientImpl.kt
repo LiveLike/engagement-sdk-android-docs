@@ -3,15 +3,10 @@ package com.livelike.livelikesdk.network
 import android.os.Handler
 import android.os.Looper
 import android.webkit.URLUtil
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
-import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSyntaxException
-import com.google.gson.stream.JsonReader
 import com.google.gson.stream.MalformedJsonException
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.LiveLikeDataClient
@@ -33,7 +28,6 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
 import java.io.IOException
-import java.io.StringReader
 
 internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
 
@@ -70,8 +64,8 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
     private val mainHandler = Handler(Looper.getMainLooper())
 
     override fun getLiveLikeProgramData(url: String, responseCallback: (program: Program) -> Unit) {
-        if(!URLUtil.isValidUrl(url)) {
-            logError { "Program Url is invalid."}
+        if (!URLUtil.isValidUrl(url)) {
+            logError { "Program Url is invalid." }
             return
         }
         val request = Request.Builder()
@@ -79,23 +73,22 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
             .build()
 
         val call = client.newCall(request)
-        var requestCount = 0;
+        var requestCount = 0
         var callback = object : Callback {
             override fun onResponse(call: Call?, response: Response) {
                 val responseCode = response.code()
-                if(responseCode in 400..499) {
-                    logError { "Program Id is invalid "}
+                if (responseCode in 400..499) {
+                    logError { "Program Id is invalid " }
                     return
                 }
 
-                if(responseCode >= 500) {
-                    if(requestCount < MAX_PROGRAM_DATA_REQUESTS) {
+                if (responseCode >= 500) {
+                    if (requestCount < MAX_PROGRAM_DATA_REQUESTS) {
                         call?.clone()?.enqueue(this)
                         requestCount += 1
-                        logError { "Failed to fetch program data, trying again."}
-                    }
-                    else {
-                        logError { "Unable to fetch program data, exceeded max retries."}
+                        logError { "Failed to fetch program data, trying again." }
+                    } else {
+                        logError { "Unable to fetch program data, exceeded max retries." }
                     }
                     return
                 }
@@ -104,11 +97,11 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                 try {
                     var gson = GsonBuilder().create()
                     var jsonObject = gson.fromJson(responseData, JsonObject::class.java)
-                    if(jsonObject == null) {
+                    if (jsonObject == null) {
                         throw JsonSyntaxException("Program data was null")
                     }
                     mainHandler.post { responseCallback.invoke(parseProgramData(jsonObject)) }
-                } catch (e : Exception) {
+                } catch (e: Exception) {
                     logError { e.message }
                 }
             }
@@ -117,7 +110,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                 logError { e }
             }
         }
-        call.enqueue(callback);
+        call.enqueue(callback)
     }
 
     private fun parseProgramData(programData: JsonObject): Program {
