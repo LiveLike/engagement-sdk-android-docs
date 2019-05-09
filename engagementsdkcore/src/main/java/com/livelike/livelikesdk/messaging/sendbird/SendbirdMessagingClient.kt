@@ -38,11 +38,10 @@ internal class SendbirdMessagingClient(
 
     init {
         val userId = fetchUserId()
-
         SendBird.init(subscribeKey, context)
         SendBird.connect(userId, object : SendBird.ConnectHandler {
-            override fun onConnected(user: User, e: SendBirdException?) {
-                if (e != null) { // Error.
+            override fun onConnected(user: User?, e: SendBirdException?) {
+                if (e != null || user == null) { // Error.
                     return
                 }
                 SendBird.updateCurrentUserInfo(fetchUsername(), null,
