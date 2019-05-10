@@ -6,7 +6,6 @@ import android.webkit.URLUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.MalformedJsonException
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.LiveLikeDataClient
@@ -17,6 +16,7 @@ import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
+import com.livelike.livelikesdk.util.logWarn
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import okhttp3.Call
 import okhttp3.Callback
@@ -62,55 +62,54 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
 
     private val client = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val gson = GsonBuilder().create()
 
-    override fun getLiveLikeProgramData(url: String, responseCallback: (program: Program) -> Unit) {
-        if (!URLUtil.isValidUrl(url)) {
-            logError { "Program Url is invalid." }
-            return
+    private fun newRequest(url: String) = Request.Builder().url(url)
+
+    @Suppress("unused")
+    private fun Any?.unit() = Unit
+
+    override fun getLiveLikeProgramData(url: String, responseCallback: (program: Program?) -> Unit) {
+
+        fun respondWith(value: Program?) = mainHandler.post { responseCallback(value) }.unit()
+
+        fun respondOnException(op: () -> Unit) = try {
+            op()
+        } catch (e: Exception) {
+            logError { e }.also { respondWith(null) }
         }
-        val request = Request.Builder()
-            .url(url)
-            .build()
 
-        val call = client.newCall(request)
-        var requestCount = 0
-        var callback = object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
-                val responseCode = response.code()
-                if (responseCode in 400..499) {
-                    logError { "Program Id is invalid " }
-                    return
-                }
+        respondOnException {
+            if (!URLUtil.isValidUrl(url)) error("Program Url is invalid.")
 
-                if (responseCode >= 500) {
-                    if (requestCount < MAX_PROGRAM_DATA_REQUESTS) {
-                        call?.clone()?.enqueue(this)
-                        requestCount += 1
-                        logError { "Failed to fetch program data, trying again." }
-                    } else {
-                        logError { "Unable to fetch program data, exceeded max retries." }
+            val call = client.newCall(newRequest(url).build())
+
+            var requestCount = 0
+
+            call.enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) = respondOnException {
+                    when (response.code()) {
+                        in 400..499 -> error("Program Id is invalid ")
+
+                        in 500..599 -> if (requestCount++ < MAX_PROGRAM_DATA_REQUESTS) {
+                            call.clone().enqueue(this)
+                            logWarn { "Failed to fetch program data, trying again." }
+                        } else {
+                            error("Unable to fetch program data, exceeded max retries.")
+                        }
+
+                        else -> {
+                            val jsonObject = gson.fromJson(response.body()?.string(), JsonObject::class.java)
+                                ?: error("Program data was null")
+
+                            respondWith(parseProgramData(jsonObject))
+                        }
                     }
-                    return
                 }
 
-                val responseData = response.body()?.string()
-                try {
-                    var gson = GsonBuilder().create()
-                    var jsonObject = gson.fromJson(responseData, JsonObject::class.java)
-                    if (jsonObject == null) {
-                        throw JsonSyntaxException("Program data was null")
-                    }
-                    mainHandler.post { responseCallback.invoke(parseProgramData(jsonObject)) }
-                } catch (e: Exception) {
-                    logError { e.message }
-                }
-            }
-
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
+                override fun onFailure(call: Call, e: IOException) = respondOnException { throw e }
+            })
         }
-        call.enqueue(callback)
     }
 
     private fun parseProgramData(programData: JsonObject): Program {

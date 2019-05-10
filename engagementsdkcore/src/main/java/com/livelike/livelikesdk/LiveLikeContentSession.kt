@@ -3,7 +3,7 @@ package com.livelike.livelikesdk
 import com.livelike.engagementsdkapi.LiveLikeUser
 
 internal interface LiveLikeDataClient {
-    fun getLiveLikeProgramData(url: String, responseCallback: (program: Program) -> Unit)
+    fun getLiveLikeProgramData(url: String, responseCallback: (program: Program?) -> Unit)
     fun getLiveLikeUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit)
 }
 

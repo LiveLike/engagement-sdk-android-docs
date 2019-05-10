@@ -85,9 +85,11 @@ internal class LiveLikeContentSessionImpl(
 
     init {
         llDataClient.getLiveLikeProgramData(programUrl) {
-            program = it
-            initializeWidgetMessaging(it)
-            initializeChatMessaging(it)
+            if (it !== null) {
+                program = it
+                initializeWidgetMessaging(it)
+                initializeChatMessaging(it)
+            }
         }
     }
 
