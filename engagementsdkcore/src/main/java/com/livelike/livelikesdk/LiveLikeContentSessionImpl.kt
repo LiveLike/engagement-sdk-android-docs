@@ -30,9 +30,9 @@ internal class LiveLikeContentSessionImpl(
     override val programUrl: String,
     val currentPlayheadTime: () -> EpochTime,
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
-    override val applicationContext: Context
+    private val applicationContext: Context
 ) : LiveLikeContentSession {
-
+    override var widgetContext: Context? = null
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
     private var widgetQueue: WidgetManager? = null

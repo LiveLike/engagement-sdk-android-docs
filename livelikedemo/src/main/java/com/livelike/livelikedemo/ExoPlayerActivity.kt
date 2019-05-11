@@ -60,7 +60,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_exo_player)
-        sdk = LiveLikeSDK(getString(R.string.app_id), this)
+        sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
 
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 

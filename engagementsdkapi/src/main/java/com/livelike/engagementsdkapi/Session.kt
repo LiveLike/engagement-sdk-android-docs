@@ -14,7 +14,7 @@ interface LiveLikeContentSession {
     val chatState: ChatState
     var widgetState: WidgetTransientState
     val widgetStream: WidgetStream
-    val applicationContext: Context
+    var widgetContext: Context?
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()

@@ -16,7 +16,7 @@ internal class WidgetViewModelInitializer {
     fun get(widgetType: WidgetType, payload: JsonObject, session: LiveLikeContentSession) {
         when (widgetType) {
             WidgetType.ALERT -> {
-                ViewModelProviders.of(session.applicationContext as AppCompatActivity) // TODO this session.applicationContext is not reliably casted to AppCompatActivity
+                ViewModelProviders.of(session.widgetContext as AppCompatActivity)
                     .get(AlertWidgetViewModel::class.java)
                     .apply {
                         this.payload = payload

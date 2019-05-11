@@ -13,6 +13,7 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
         ViewModelProviders.of(widgetContainer.context as AppCompatActivity).get(WidgetViewModel::class.java)
 
     init {
+        session.widgetContext = widgetContainer.context
         session.widgetStream.subscribe(WidgetPresenter::class.java) { widgetObserver(it) }
         widgetObserver(widgetViewModel.currentWidget)
     }

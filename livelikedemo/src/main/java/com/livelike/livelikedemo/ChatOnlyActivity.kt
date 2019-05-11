@@ -28,7 +28,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat_only)
         LiveLikeSDK("1234", baseContext)
         updateToolbar()
-        val session = TestSession(TestWidgetStream(), applicationContext)
+        val session = TestSession(TestWidgetStream(), this)
         chat_view.setSession(session)
 
         prePopulateChatWithMessages()
@@ -90,7 +90,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         chatMessageList.add(ChatMessage(emojiMessage, "8", "Emojicon", "8", "3:00:00"))
     }
 
-    inner class TestSession(override val widgetStream: WidgetStream, override val applicationContext: Context) :
+    inner class TestSession(override val widgetStream: WidgetStream, override var widgetContext: Context?) :
         LiveLikeContentSession {
         override val programUrl: String get() = ""
         override val chatState = ChatState()
