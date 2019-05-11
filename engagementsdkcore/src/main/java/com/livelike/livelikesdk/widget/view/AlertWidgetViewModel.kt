@@ -33,8 +33,6 @@ internal class AlertWidgetViewModel(application: Application) : AndroidViewModel
     }
 
     fun dismiss() {
-        // The session should be global to allow the widget to dismiss itself
-        // USE DI !!!!!!
         session?.widgetStream?.onNext(null)
     }
 }
