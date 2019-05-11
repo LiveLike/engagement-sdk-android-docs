@@ -1,17 +1,19 @@
 package com.livelike.livelikesdk.widget.view
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.widget.WidgetType
 
 // Use DI
-internal class WidgetViewBuilderProvider {
-    fun get(widgetType: WidgetType, payload: JsonObject, session: LiveLikeContentSession): WidgetViewBuilder {
-        return when (widgetType) {
+internal class WidgetViewModelInitializer {
+    fun get(widgetType: WidgetType, payload: JsonObject, session: LiveLikeContentSession, context: Context) {
+        when (widgetType) {
             WidgetType.ALERT -> {
-                ViewModelProviders.of(session.applicationContext as AppCompatActivity)
+                ViewModelProviders.of(context as AppCompatActivity)
                     .get(AlertWidgetViewModel::class.java)
                     .apply {
                         this.payload = payload
@@ -37,5 +39,16 @@ internal class WidgetViewBuilderProvider {
 //                    logDebug { "Received Widget is not Implemented." }
 //                }
 //            }
+    }
+}
+
+internal class WidgetViewProvider {
+    fun get(widgetType: WidgetType, context: Context): View {
+        return when (widgetType) {
+            WidgetType.ALERT -> {
+                AlertWidgetView(context)
+            }
+            else -> error("Unknown widget type: " + widgetType.value)
+        }
     }
 }

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatState
@@ -118,15 +117,15 @@ class ChatOnlyActivity : AppCompatActivity() {
 }
 
 internal class TestWidgetStream : WidgetStream {
-    private val widgetMap = ConcurrentHashMap<Any, (View?) -> Unit>()
+    private val widgetMap = ConcurrentHashMap<Any, (String?) -> Unit>()
 
-    override fun onNext(view: View?) {
+    override fun onNext(view: String?) {
         widgetMap.forEach {
             it.value.invoke(view)
         }
     }
 
-    override fun subscribe(key: Any, observer: (View?) -> Unit) {
+    override fun subscribe(key: Any, observer: (String?) -> Unit) {
         widgetMap[key] = observer
     }
 

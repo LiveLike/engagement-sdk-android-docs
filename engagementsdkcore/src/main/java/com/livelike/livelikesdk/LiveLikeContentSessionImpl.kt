@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
-import android.view.View
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
@@ -153,15 +152,15 @@ internal interface Provider<T> {
 }
 
 internal class SubscriptionManager : WidgetStream {
-    private val widgetMap = ConcurrentHashMap<Any, (View?) -> Unit>()
+    private val widgetMap = ConcurrentHashMap<Any, (String?) -> Unit>()
 
-    override fun onNext(view: View?) {
+    override fun onNext(view: String?) {
         widgetMap.forEach {
             it.value.invoke(view)
         }
     }
 
-    override fun subscribe(key: Any, observer: (View?) -> Unit) {
+    override fun subscribe(key: Any, observer: (String?) -> Unit) {
         widgetMap[key] = observer
     }
 

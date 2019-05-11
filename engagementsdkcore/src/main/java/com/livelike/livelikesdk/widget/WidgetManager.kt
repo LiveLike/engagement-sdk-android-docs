@@ -13,8 +13,7 @@ import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
-import com.livelike.livelikesdk.widget.view.WidgetViewBuilder
-import com.livelike.livelikesdk.widget.view.WidgetViewBuilderProvider
+import com.livelike.livelikesdk.widget.view.WidgetViewModelInitializer
 
 // / Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(
@@ -38,7 +37,7 @@ internal class WidgetManager(
     private val widgetSubscribedChannels = mutableListOf<String>()
     private var processingVoteUpdate = false
     private var voteUpdateHandler: Handler = Handler()
-    private val widgetViewBuilderProvider: WidgetViewBuilderProvider = WidgetViewBuilderProvider()
+    private val widgetViewModelInitializer: WidgetViewModelInitializer = WidgetViewModelInitializer()
 
     override fun onWidgetDisplayed(impressionUrl: String) {
         dataClient.registerImpression(impressionUrl)
@@ -114,18 +113,17 @@ internal class WidgetManager(
 
         // If this message type is in the exemption list it should never flip processing boolean
 //        isProcessing = !exemption || isProcessing
-        val widgetType = event.message.get("event").asString ?: ""
+        val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         val payload = event.message["payload"].asJsonObject
+
         Handler(Looper.getMainLooper()).post {
-            currentViewBuilder =
-                widgetViewBuilderProvider.get(WidgetType.fromString(widgetType), payload, session).apply {
-                    widgetStream.onNext(createView())
-                }
+            widgetViewModelInitializer.get(widgetType, payload, session).apply {
+                widgetStream.onNext(widgetType.value)
+            }
         }
         super.onClientMessageEvent(client, event)
     }
 
-    private var currentViewBuilder: WidgetViewBuilder? = null
 
     fun toggleEmission(pause: Boolean) {
         triggerListener?.toggleEmission(pause)

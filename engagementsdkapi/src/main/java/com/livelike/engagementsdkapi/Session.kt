@@ -1,7 +1,6 @@
 package com.livelike.engagementsdkapi
 
 import android.content.Context
-import android.view.View
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -35,8 +34,8 @@ interface LiveLikeContentSession {
 }
 
 interface WidgetStream {
-    fun onNext(view: View?)
-    fun subscribe(key: Any, observer: (View?) -> Unit)
+    fun onNext(widget: String?)
+    fun subscribe(key: Any, observer: (String?) -> Unit)
     fun unsubscribe(key: Any)
     fun clear()
 }
