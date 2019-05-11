@@ -154,9 +154,9 @@ internal interface Provider<T> {
 internal class SubscriptionManager : WidgetStream {
     private val widgetMap = ConcurrentHashMap<Any, (String?) -> Unit>()
 
-    override fun onNext(view: String?) {
+    override fun onNext(widgetType: String?) {
         widgetMap.forEach {
-            it.value.invoke(view)
+            it.value.invoke(widgetType)
         }
     }
 

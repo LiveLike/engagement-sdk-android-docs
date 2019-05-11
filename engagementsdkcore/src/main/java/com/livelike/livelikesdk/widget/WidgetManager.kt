@@ -124,7 +124,6 @@ internal class WidgetManager(
         super.onClientMessageEvent(client, event)
     }
 
-
     fun toggleEmission(pause: Boolean) {
         triggerListener?.toggleEmission(pause)
 //        if (pause) {

@@ -8,12 +8,15 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.widget.WidgetType
 
-// Use DI
+/**
+ * Provides the WidgetViewModel with initialized data.
+ *
+ */
 internal class WidgetViewModelInitializer {
-    fun get(widgetType: WidgetType, payload: JsonObject, session: LiveLikeContentSession, context: Context) {
+    fun get(widgetType: WidgetType, payload: JsonObject, session: LiveLikeContentSession) {
         when (widgetType) {
             WidgetType.ALERT -> {
-                ViewModelProviders.of(context as AppCompatActivity)
+                ViewModelProviders.of(session.applicationContext as AppCompatActivity) // TODO this session.applicationContext is not reliably casted to AppCompatActivity
                     .get(AlertWidgetViewModel::class.java)
                     .apply {
                         this.payload = payload
@@ -42,6 +45,10 @@ internal class WidgetViewModelInitializer {
     }
 }
 
+/**
+ * Provides a new Widget View based on the widget Type.
+ *
+ */
 internal class WidgetViewProvider {
     fun get(widgetType: WidgetType, context: Context): View {
         return when (widgetType) {

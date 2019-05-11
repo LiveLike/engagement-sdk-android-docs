@@ -34,7 +34,7 @@ interface LiveLikeContentSession {
 }
 
 interface WidgetStream {
-    fun onNext(widget: String?)
+    fun onNext(widgetType: String?)
     fun subscribe(key: Any, observer: (String?) -> Unit)
     fun unsubscribe(key: Any)
     fun clear()

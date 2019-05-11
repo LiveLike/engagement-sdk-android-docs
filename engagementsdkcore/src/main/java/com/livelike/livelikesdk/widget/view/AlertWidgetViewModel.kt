@@ -10,7 +10,7 @@ import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.Resource
 
-internal class AlertWidgetViewModel() : ViewModel() {
+internal class AlertWidgetViewModel : ViewModel() {
     var payload: JsonObject = JsonObject()
         set(value) {
             field = value
@@ -36,4 +36,3 @@ internal class AlertWidgetViewModel() : ViewModel() {
         session = null
     }
 }
-
