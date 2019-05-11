@@ -2,27 +2,32 @@ package com.livelike.livelikesdk.widget
 
 import android.os.Handler
 import android.os.Looper
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.engagementsdkapi.WidgetStateProcessor
-import com.livelike.engagementsdkapi.WidgetTransientState
+import com.livelike.engagementsdkapi.WidgetStream
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
+import com.livelike.livelikesdk.widget.view.WidgetViewBuilder
+import com.livelike.livelikesdk.widget.view.WidgetViewBuilderProvider
 
 // / Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
-    private val stateProcessor: WidgetStateProcessor
+    private val widgetStream: WidgetStream,
+    private val session: LiveLikeContentSession
 ) :
     MessagingClientProxy(upstream),
     ExternalMessageTrigger,
-    WidgetEventListener {
+    WidgetEventListener,
+    WidgetStream by widgetStream {
+
     private val exemptionList = listOf(
         Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
         Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value),
@@ -33,17 +38,13 @@ internal class WidgetManager(
     private val widgetSubscribedChannels = mutableListOf<String>()
     private var processingVoteUpdate = false
     private var voteUpdateHandler: Handler = Handler()
+    private val widgetViewBuilderProvider: WidgetViewBuilderProvider = WidgetViewBuilderProvider()
 
     override fun onWidgetDisplayed(impressionUrl: String) {
         dataClient.registerImpression(impressionUrl)
     }
 
     var renderer: WidgetRenderer? = null
-        set(value) {
-            field = value
-            value?.widgetListener = this
-            value?.widgetStateProcessor = stateProcessor
-        }
 
     override var isProcessing: Boolean = false
     override var triggerListener: ExternalTriggerListener? = null
@@ -109,22 +110,28 @@ internal class WidgetManager(
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        val exemption = exemptionList.any { event.message[it.first].asString == it.second }
+//        val exemption = exemptionList.any { event.message[it.first].asString == it.second }
+
         // If this message type is in the exemption list it should never flip processing boolean
-        isProcessing = !exemption || isProcessing
+//        isProcessing = !exemption || isProcessing
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         Handler(Looper.getMainLooper()).post {
-            renderer?.displayWidget(widgetType, payload, WidgetTransientState())
+            currentViewBuilder =
+                widgetViewBuilderProvider.get(WidgetType.fromString(widgetType), payload, session).apply {
+                    widgetStream.onNext(createView())
+                }
         }
         super.onClientMessageEvent(client, event)
     }
 
+    private var currentViewBuilder: WidgetViewBuilder? = null
+
     fun toggleEmission(pause: Boolean) {
         triggerListener?.toggleEmission(pause)
-        if (pause) {
-            renderer?.dismissCurrentWidget()
-        }
+//        if (pause) {
+//            renderer?.dismissCurrentWidget()
+//        }
     }
 }
 
@@ -160,10 +167,11 @@ internal interface WidgetDataClient {
 
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
-    stateProcessor: WidgetStateProcessor
+    subscriptionManager: WidgetStream,
+    session: LiveLikeContentSession
 ): WidgetManager {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
-    val widgetQueue = WidgetManager(triggeredMessagingClient, dataClient, stateProcessor)
+    val widgetQueue = WidgetManager(triggeredMessagingClient, dataClient, subscriptionManager, session)
     triggeredMessagingClient.externalTrigger = widgetQueue
     return widgetQueue
 }

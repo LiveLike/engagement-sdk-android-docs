@@ -20,6 +20,10 @@ internal class PollTextWidget : TextOptionWidgetBase {
     private lateinit var viewAnimation: ViewAnimationManager
     private var fetchResult: (() -> Unit)? = null
 
+    fun bind(data: PollTextWidgetData) {
+
+    }
+
     override fun initialize(
         dismiss: () -> Unit,
         startingState: WidgetTransientState,

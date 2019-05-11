@@ -1,9 +1,11 @@
 package com.livelike.livelikedemo
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatState
@@ -11,11 +13,14 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.WidgetRenderer
+import com.livelike.engagementsdkapi.WidgetStream
+import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.LiveLikeSDK
 import kotlinx.android.synthetic.main.activity_chat_only.chat_toolbar
 import kotlinx.android.synthetic.main.activity_chat_only.chat_view
 import java.util.Timer
 import java.util.TimerTask
+import java.util.concurrent.ConcurrentHashMap
 
 class ChatOnlyActivity : AppCompatActivity() {
     private val chatMessageList = mutableListOf<ChatMessage>()
@@ -24,7 +29,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat_only)
         LiveLikeSDK("1234", baseContext)
         updateToolbar()
-        val session = TestSession()
+        val session = TestSession(TestWidgetStream(), applicationContext)
         chat_view.setSession(session)
 
         prePopulateChatWithMessages()
@@ -86,9 +91,11 @@ class ChatOnlyActivity : AppCompatActivity() {
         chatMessageList.add(ChatMessage(emojiMessage, "8", "Emojicon", "8", "3:00:00"))
     }
 
-    inner class TestSession : LiveLikeContentSession {
+    inner class TestSession(override val widgetStream: WidgetStream, override val applicationContext: Context) :
+        LiveLikeContentSession {
         override val programUrl: String get() = ""
         override val chatState = ChatState()
+        override var widgetState = WidgetTransientState()
         override var widgetRenderer: WidgetRenderer? = null
             get() = null
         override var chatRenderer: ChatRenderer? = null
@@ -107,5 +114,27 @@ class ChatOnlyActivity : AppCompatActivity() {
 
     fun getEmojiByUnicode(unicode: Int): String {
         return String(Character.toChars(unicode))
+    }
+}
+
+internal class TestWidgetStream : WidgetStream {
+    private val widgetMap = ConcurrentHashMap<Any, (View?) -> Unit>()
+
+    override fun onNext(view: View?) {
+        widgetMap.forEach {
+            it.value.invoke(view)
+        }
+    }
+
+    override fun subscribe(key: Any, observer: (View?) -> Unit) {
+        widgetMap[key] = observer
+    }
+
+    override fun unsubscribe(key: Any) {
+        widgetMap.remove(key)
+    }
+
+    override fun clear() {
+        widgetMap.clear()
     }
 }

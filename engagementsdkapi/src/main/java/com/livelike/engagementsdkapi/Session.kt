@@ -1,5 +1,8 @@
 package com.livelike.engagementsdkapi
 
+import android.content.Context
+import android.view.View
+
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
  *  component.
@@ -10,6 +13,9 @@ interface LiveLikeContentSession {
     var chatRenderer: ChatRenderer?
     val currentUser: LiveLikeUser?
     val chatState: ChatState
+    var widgetState: WidgetTransientState
+    val widgetStream: WidgetStream
+    val applicationContext: Context
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -28,4 +34,9 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
 }
 
-// TODO: The UserId shouldn't be bound to the User Session as a user can have multiple sessions
+interface WidgetStream {
+    fun onNext(view: View?)
+    fun subscribe(key: Any, observer: (View?) -> Unit)
+    fun unsubscribe(key: Any)
+    fun clear()
+}

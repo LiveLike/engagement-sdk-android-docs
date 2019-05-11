@@ -11,13 +11,10 @@ import com.google.gson.JsonObject
  *
  */
 interface WidgetRenderer {
-    var widgetListener: WidgetEventListener?
-    var widgetStateProcessor: WidgetStateProcessor?
-    fun dismissCurrentWidget()
+    fun dismissWidget()
     fun displayWidget(
         type: String,
-        payload: JsonObject,
-        initialState: WidgetTransientState
+        payload: JsonObject
     )
 }
 
@@ -70,13 +67,14 @@ interface WidgetStateProcessor {
  *
  */
 class WidgetTransientState {
+    var widgetId = ""
     var widgetTimeout = 0L
     var phaseTimeouts = HashMap<Phase, Long>()
     var currentPhase = Phase.INTERACTION
     var userSelection: String? = null
     var timerAnimatorStartPhase = 0f
-    var type: String? = null
-    var payload: JsonObject? = null
+    var type: String = ""
+    var payload: JsonObject = JsonObject()
     var resultPayload: JsonObject? = null
     var resultAnimationPath: String? = null
     var resultAnimatorStartPhase = 0f
@@ -87,3 +85,4 @@ class WidgetTransientState {
         CONFIRM_MESSAGE
     }
 }
+

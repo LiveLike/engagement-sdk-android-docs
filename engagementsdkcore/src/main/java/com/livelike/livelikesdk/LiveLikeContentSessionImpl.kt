@@ -1,13 +1,14 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
+import android.view.View
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.engagementsdkapi.WidgetStateProcessor
+import com.livelike.engagementsdkapi.WidgetStream
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.chat.ChatQueue
@@ -24,28 +25,23 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setSessionId
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
-import com.livelike.livelikesdk.widget.cache.WidgetStateProcessorImpl
+import java.util.concurrent.ConcurrentHashMap
 
 internal class LiveLikeContentSessionImpl(
     override val programUrl: String,
     val currentPlayheadTime: () -> EpochTime,
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
-    private val applicationContext: Context
+    override val applicationContext: Context
 ) : LiveLikeContentSession {
 
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
     private var widgetQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
-    private val widgetStateMap = HashMap<String, WidgetTransientState>()
-    private val currentWidgetMap = HashMap<String, String>()
-    private val stateStorage: WidgetStateProcessor by lazy {
-        WidgetStateProcessorImpl(
-            widgetStateMap,
-            currentWidgetMap
-        )
-    }
+
     override var chatState = ChatState()
+    override var widgetState = WidgetTransientState()
+    override val widgetStream = SubscriptionManager()
 
     init {
         getUser()
@@ -103,8 +99,8 @@ internal class LiveLikeContentSessionImpl(
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
-                    .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, stateStorage)
+//                    .syncTo(currentPlayheadTime)
+                    .asWidgetManager(llDataClient, widgetStream, this)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer
@@ -154,4 +150,27 @@ internal class LiveLikeContentSessionImpl(
 
 internal interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
+}
+
+
+internal class SubscriptionManager : WidgetStream {
+    private val widgetMap = ConcurrentHashMap<Any, (View?) -> Unit>()
+
+    override fun onNext(view: View?) {
+        widgetMap.forEach {
+            it.value.invoke(view)
+        }
+    }
+
+    override fun subscribe(key: Any, observer: (View?) -> Unit) {
+        widgetMap[key] = observer
+    }
+
+    override fun unsubscribe(key: Any) {
+        widgetMap.remove(key)
+    }
+
+    override fun clear() {
+        widgetMap.clear()
+    }
 }

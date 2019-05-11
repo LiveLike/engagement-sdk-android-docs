@@ -67,7 +67,6 @@ internal class SynchronizedMessagingClient(
     }
 
     fun publishEvent(event: ClientMessage) {
-        logVerbose { "Publish ClientMessage" }
         listener?.onClientMessageEvent(this, event)
     }
 

@@ -15,6 +15,7 @@ import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.util.registerLogsHandler
+import com.livelike.livelikesdk.widget.view.WidgetPresenter
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
 import kotlinx.android.synthetic.main.activity_exo_player.openLogs
@@ -22,7 +23,6 @@ import kotlinx.android.synthetic.main.activity_exo_player.playerView
 import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
 import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
-import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 import java.util.Date
 import java.util.Timer
@@ -60,7 +60,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_exo_player)
-        sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
+        sdk = LiveLikeSDK(getString(R.string.app_id), this)
 
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
@@ -126,8 +126,8 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(), sdk)
 
-            chat_view.setSession(session)
-            widget_view.setSession(session)
+//            chat_view.setSession(session)
+            WidgetPresenter(widget_view, session)
 
             this.session = session
 

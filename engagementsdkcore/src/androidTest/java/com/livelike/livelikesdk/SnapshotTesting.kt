@@ -10,7 +10,7 @@ import com.facebook.testing.screenshot.ViewHelpers
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.Alert
-import com.livelike.livelikesdk.widget.view.AlertWidget
+import com.livelike.livelikesdk.widget.view.AlertWidgetViewModel
 import kotlinx.android.synthetic.main.widget_view.view.widgetContainerView
 import org.junit.Before
 import org.junit.Test
@@ -50,7 +50,7 @@ class AlertWidgetImage {
         context = InstrumentationRegistry.getInstrumentation().context
         val inflater = LayoutInflater.from(context)
         val widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
-        val alertWidget = AlertWidget(context)
+        val alertWidget = AlertWidgetViewModel(context)
         alertWidget.initialize(
             {}, Alert(
                 "an-id",
