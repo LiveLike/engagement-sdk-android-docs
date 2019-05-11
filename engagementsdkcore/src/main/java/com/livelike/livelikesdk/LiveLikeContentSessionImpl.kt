@@ -152,7 +152,6 @@ internal interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
 }
 
-
 internal class SubscriptionManager : WidgetStream {
     private val widgetMap = ConcurrentHashMap<Any, (View?) -> Unit>()
 

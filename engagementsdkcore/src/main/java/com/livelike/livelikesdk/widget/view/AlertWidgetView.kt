@@ -73,13 +73,11 @@ internal class AlertWidgetView : ConstraintLayout {
                 }
             }
 
-
         // User clicks here
         alertWidgetViewModel.voteForOption("optionID")
 
         // View wants to dismiss itself
 //        alertWidgetViewModel.dismiss()
-
 
         if (resourceAlert.title.isNullOrEmpty()) {
             labelBackground.visibility = View.GONE

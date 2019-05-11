@@ -12,7 +12,6 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.Resource
 
-
 internal class AlertWidgetViewModel(application: Application) : AndroidViewModel(application), WidgetViewBuilder {
     var payload: JsonObject = JsonObject()
         set(value) {
@@ -22,7 +21,6 @@ internal class AlertWidgetViewModel(application: Application) : AndroidViewModel
         }
     var session: LiveLikeContentSession? = null
     var data = Alert()
-
 
     override fun createView(): View {
         val timeout = AndroidResource.parseDuration(gson.fromJson(payload, Resource::class.java).timeout)
@@ -44,4 +42,3 @@ internal class AlertWidgetViewModel(application: Application) : AndroidViewModel
 internal interface WidgetViewBuilder {
     fun createView(): View
 }
-

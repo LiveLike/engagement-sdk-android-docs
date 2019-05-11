@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
 
     data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val channelManager = (application as LiveLikeApplication).channelManager

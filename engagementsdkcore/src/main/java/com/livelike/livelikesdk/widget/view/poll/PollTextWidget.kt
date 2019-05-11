@@ -21,7 +21,6 @@ internal class PollTextWidget : TextOptionWidgetBase {
     private var fetchResult: (() -> Unit)? = null
 
     fun bind(data: PollTextWidgetData) {
-
     }
 
     override fun initialize(

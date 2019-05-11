@@ -6,7 +6,6 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.widget.WidgetType
 
-
 // Use DI
 internal class WidgetViewBuilderProvider {
     fun get(widgetType: WidgetType, payload: JsonObject, session: LiveLikeContentSession): WidgetViewBuilder {
