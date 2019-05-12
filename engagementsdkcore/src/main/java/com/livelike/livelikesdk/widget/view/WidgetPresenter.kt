@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk.widget.view
 
+import android.animation.LayoutTransition
 import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -18,6 +19,8 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
         session.widgetContext = widgetContainer.context
         session.widgetStream.subscribe(WidgetPresenter::class.java) { widgetObserver(it) }
         widgetObserver(widgetViewModel.currentWidget)
+
+        // Swipe to dismiss
         widgetContainer.setOnTouchListener(
             SwipeDismissTouchListener(
                 widgetContainer,
@@ -32,6 +35,9 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
                     }
                 })
         )
+
+        // Show / Hide animation
+        widgetContainer.layoutTransition = LayoutTransition()
     }
 
     private fun widgetObserver(widgetView: String?) {
