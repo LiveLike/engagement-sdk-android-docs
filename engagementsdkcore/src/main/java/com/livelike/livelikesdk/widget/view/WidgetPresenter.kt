@@ -2,13 +2,15 @@ package com.livelike.livelikesdk.widget.view
 
 import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.FrameLayout
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetType
+import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
 class WidgetPresenter(private val widgetContainer: FrameLayout, val session: LiveLikeContentSession) {
-    // This is the only way I would to save data between the session being dismissed
+    // This is the only way I found to save data between the session being dismissed
     private val widgetViewModel: WidgetViewModel =
         ViewModelProviders.of(widgetContainer.context as AppCompatActivity).get(WidgetViewModel::class.java)
 
@@ -16,6 +18,20 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
         session.widgetContext = widgetContainer.context
         session.widgetStream.subscribe(WidgetPresenter::class.java) { widgetObserver(it) }
         widgetObserver(widgetViewModel.currentWidget)
+        widgetContainer.setOnTouchListener(
+            SwipeDismissTouchListener(
+                widgetContainer,
+                null,
+                object : SwipeDismissTouchListener.DismissCallbacks {
+                    override fun canDismiss(token: Any?): Boolean {
+                        return true
+                    }
+
+                    override fun onDismiss(view: View?, token: Any?) {
+                        session.widgetStream.onNext(null)
+                    }
+                })
+        )
     }
 
     private fun widgetObserver(widgetView: String?) {

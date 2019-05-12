@@ -96,6 +96,7 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
                 if (mCallbacks.canDismiss(mToken)) {
                     mVelocityTracker = VelocityTracker.obtain();
                     mVelocityTracker.addMovement(motionEvent);
+                    return true;
                 }
                 return false;
             }
@@ -182,14 +183,14 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
                 if (Math.abs(deltaX) > mSlop && Math.abs(deltaY) < Math.abs(deltaX) / 2) {
                     mSwiping = true;
                     mSwipingSlop = (deltaX > 0 ? mSlop : -mSlop);
-                    mView.getParent().requestDisallowInterceptTouchEvent(true);
+                    view.getParent().requestDisallowInterceptTouchEvent(true);
 
                     // Cancel listview's touch
                     MotionEvent cancelEvent = MotionEvent.obtain(motionEvent);
                     cancelEvent.setAction(MotionEvent.ACTION_CANCEL |
                             (motionEvent.getActionIndex() <<
                                     MotionEvent.ACTION_POINTER_INDEX_SHIFT));
-                    mView.onTouchEvent(cancelEvent);
+                    view.onTouchEvent(cancelEvent);
                     cancelEvent.recycle();
                 }
 
@@ -214,6 +215,7 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
 
         final ViewGroup.LayoutParams lp = mView.getLayoutParams();
         final int originalHeight = mView.getHeight();
+        final int lpHeight = lp.height;
 
         ValueAnimator animator = ValueAnimator.ofInt(originalHeight, 1).setDuration(mAnimationTime);
 
@@ -224,7 +226,7 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
                 // Reset view presentation
                 mView.setAlpha(1f);
                 mView.setTranslationX(0);
-                lp.height = originalHeight;
+                lp.height = lpHeight;
                 mView.setLayoutParams(lp);
             }
         });
