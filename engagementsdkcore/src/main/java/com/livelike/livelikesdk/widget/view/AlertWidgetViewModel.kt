@@ -10,8 +10,8 @@ import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.model.Resource
 
-internal class AlertWidgetViewModel : ViewModel() {
-    var payload: JsonObject = JsonObject()
+internal class AlertWidgetViewModel : ViewModel(), LiveLikeViewModel {
+    override var payload: JsonObject = JsonObject()
         set(value) {
             field = value
             data = gson.fromJson(payload.toString(), Alert::class.java)
@@ -19,7 +19,7 @@ internal class AlertWidgetViewModel : ViewModel() {
             val timeout = AndroidResource.parseDuration(gson.fromJson(payload, Resource::class.java).timeout)
             Handler().postDelayed({ dismiss() }, timeout)
         }
-    var session: LiveLikeContentSession? = null
+    override var session: LiveLikeContentSession? = null
     var data = Alert()
 
     fun voteForOption(optionId: String) {
@@ -35,4 +35,9 @@ internal class AlertWidgetViewModel : ViewModel() {
         payload = JsonObject()
         session = null
     }
+}
+
+internal interface LiveLikeViewModel {
+    var payload: JsonObject
+    var session: LiveLikeContentSession?
 }

@@ -7,6 +7,8 @@ import android.view.View
 import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.widget.WidgetType
+import com.livelike.livelikesdk.widget.view.organism.PredictionTextView
+import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetViewModel
 
 /**
  * Provides the WidgetViewModel with initialized data.
@@ -14,34 +16,19 @@ import com.livelike.livelikesdk.widget.WidgetType
  */
 internal class WidgetViewModelInitializer {
     fun get(widgetType: WidgetType, payload: JsonObject, session: LiveLikeContentSession) {
-        when (widgetType) {
-            WidgetType.ALERT -> {
-                ViewModelProviders.of(session.widgetContext as AppCompatActivity)
-                    .get(AlertWidgetViewModel::class.java)
-                    .apply {
-                        this.payload = payload
-                        this.session = session
-                    }
-            }
-            else -> error("Unknown widget type: " + widgetType.value)
+        (
+                when (widgetType) {
+                    WidgetType.ALERT -> ViewModelProviders.of(session.widgetContext as AppCompatActivity).get(
+                        AlertWidgetViewModel::class.java
+                    ) as LiveLikeViewModel
+                    WidgetType.TEXT_PREDICTION, WidgetType.TEXT_PREDICTION_RESULTS -> ViewModelProviders.of(session.widgetContext as AppCompatActivity).get(
+                        TextOptionWidgetViewModel::class.java
+                    ) as LiveLikeViewModel
+                    else -> error("Unknown widget type: " + widgetType.value)
+                }).apply {
+            this.payload = payload
+            this.session = session
         }
-
-//                WidgetType.TEXT_POLL -> PollTextWidget(context)
-//                WidgetType.TEXT_PREDICTION -> View(context)
-//                WidgetType.TEXT_PREDICTION_RESULTS -> PredictionTextFollowUpWidgetView(context)
-//                WidgetType.IMAGE_PREDICTION -> PredictionImageQuestionWidget(context)
-//                WidgetType.IMAGE_PREDICTION_RESULTS -> PredictionImageFollowupWidget(context)
-//                WidgetType.TEXT_QUIZ -> View(context)
-//                WidgetType.TEXT_QUIZ_RESULT -> View(context)
-//                WidgetType.IMAGE_QUIZ -> View(context)
-//                WidgetType.IMAGE_QUIZ_RESULT -> View(context)
-//                WidgetType.TEXT_POLL_RESULT -> View(context)
-//                WidgetType.IMAGE_POLL -> PollImageWidget(context)
-//                WidgetType.IMAGE_POLL_RESULT -> View(context)
-//                else -> {
-//                    logDebug { "Received Widget is not Implemented." }
-//                }
-//            }
     }
 }
 
@@ -52,9 +39,8 @@ internal class WidgetViewModelInitializer {
 internal class WidgetViewProvider {
     fun get(widgetType: WidgetType, context: Context): View {
         return when (widgetType) {
-            WidgetType.ALERT -> {
-                AlertWidgetView(context)
-            }
+            WidgetType.ALERT -> AlertWidgetView(context)
+            WidgetType.TEXT_PREDICTION, WidgetType.TEXT_PREDICTION_RESULTS -> PredictionTextView(context)
             else -> error("Unknown widget type: " + widgetType.value)
         }
     }
