@@ -1,29 +1,33 @@
 package com.livelike.livelikesdk.widget.view.prediction.text
 
 import android.arch.lifecycle.ViewModel
-import android.os.Handler
 import com.google.gson.JsonObject
-import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.util.AndroidResource
+import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.util.gson
+import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.model.Resource
-import com.livelike.livelikesdk.widget.view.LiveLikeViewModel
+import com.livelike.livelikesdk.widget.view.AlertWidgetView
 
-internal class TextOptionWidgetViewModel() : ViewModel(), LiveLikeViewModel {
+internal class TextOptionWidgetViewModel : ViewModel() {
     var optionAdapter: TextOptionWidgetBase.TextOptionAdapter? = null
     var userSelection: String? = ""
-    override var payload: JsonObject = JsonObject()
-        set(value) {
-            field = value
-            data = gson.fromJson(payload.toString(), Resource::class.java) ?: error("hello from json")
-            val timeout = AndroidResource.parseDuration(gson.fromJson(payload, Resource::class.java).timeout)
-            Handler().postDelayed({ dismiss() }, timeout)
-        }
-    override var session: LiveLikeContentSession? = null
+
+    init {
+        currentSession.widgetPayloadStream.subscribe(AlertWidgetView::class.java) { observePayload(it) }
+    }
+
+    private fun observePayload(payload: JsonObject?) {
+        data = gson.fromJson(payload.toString(), Resource::class.java) ?: error("hello from json")
+    }
     var data = Resource()
 
-
     fun dismiss() {
-        session?.widgetStream?.onNext(null)
+        currentSession.widgetTypeStream.onNext(null)
+    }
+
+    override fun onCleared() {
+        // NEED  TO CLEAR THE viewModel when timer expires
+        logDebug { "ViewModel is cleared" }
+        currentSession.widgetPayloadStream.unsubscribe(AlertWidgetView::class.java)
     }
 }

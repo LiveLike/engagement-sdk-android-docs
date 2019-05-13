@@ -1,31 +1,30 @@
 package com.livelike.livelikesdk.widget
 
 import android.os.Handler
-import android.os.Looper
+import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.engagementsdkapi.WidgetStream
 import com.livelike.livelikesdk.messaging.ClientMessage
 import com.livelike.livelikesdk.messaging.MessagingClient
 import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
 import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
-import com.livelike.livelikesdk.widget.view.WidgetViewModelInitializer
 
 // / Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
-    private val widgetStream: WidgetStream,
+    private val widgetTypeStream: Stream<String?>,
+    private val widgetPayloadStream: Stream<JsonObject?>,
     private val session: LiveLikeContentSession
 ) :
     MessagingClientProxy(upstream),
     ExternalMessageTrigger,
-    WidgetEventListener,
-    WidgetStream by widgetStream {
+    WidgetEventListener {
 
     private val exemptionList = listOf(
         Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
@@ -37,7 +36,6 @@ internal class WidgetManager(
     private val widgetSubscribedChannels = mutableListOf<String>()
     private var processingVoteUpdate = false
     private var voteUpdateHandler: Handler = Handler()
-    private val widgetViewModelInitializer: WidgetViewModelInitializer = WidgetViewModelInitializer()
 
     override fun onWidgetDisplayed(impressionUrl: String) {
         dataClient.registerImpression(impressionUrl)
@@ -115,12 +113,8 @@ internal class WidgetManager(
 //        isProcessing = !exemption || isProcessing
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         val payload = event.message["payload"].asJsonObject
-
-        Handler(Looper.getMainLooper()).post {
-            widgetViewModelInitializer.get(widgetType, payload, session).apply {
-                widgetStream.onNext(widgetType.value)
-            }
-        }
+        widgetPayloadStream.onNext(payload)
+        widgetTypeStream.onNext(widgetType.value)
         super.onClientMessageEvent(client, event)
     }
 
@@ -164,11 +158,13 @@ internal interface WidgetDataClient {
 
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
-    subscriptionManager: WidgetStream,
+    widgetTypeStream: Stream<String?>,
+    widgetPayloadStream: Stream<JsonObject?>,
     session: LiveLikeContentSession
 ): WidgetManager {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
-    val widgetQueue = WidgetManager(triggeredMessagingClient, dataClient, subscriptionManager, session)
+    val widgetQueue =
+        WidgetManager(triggeredMessagingClient, dataClient, widgetTypeStream, widgetPayloadStream, session)
     triggeredMessagingClient.externalTrigger = widgetQueue
     return widgetQueue
 }

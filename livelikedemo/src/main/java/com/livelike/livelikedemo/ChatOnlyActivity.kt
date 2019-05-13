@@ -5,14 +5,15 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.engagementsdkapi.WidgetStream
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.LiveLikeSDK
 import kotlinx.android.synthetic.main.activity_chat_only.chat_toolbar
@@ -28,7 +29,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat_only)
         LiveLikeSDK("1234", baseContext)
         updateToolbar()
-        val session = TestSession(TestWidgetStream(), this)
+        val session = TestSession(applicationContext, { EpochTime(0) }, TestStream(), TestStream(), "")
         chat_view.setSession(session)
 
         prePopulateChatWithMessages()
@@ -90,9 +91,13 @@ class ChatOnlyActivity : AppCompatActivity() {
         chatMessageList.add(ChatMessage(emojiMessage, "8", "Emojicon", "8", "3:00:00"))
     }
 
-    inner class TestSession(override val widgetStream: WidgetStream, override var widgetContext: Context?) :
+    inner class TestSession(
+        override var widgetContext: Context?,
+        override var currentPlayheadTime: () -> EpochTime,
+        override val widgetTypeStream: Stream<String?>,
+        override val widgetPayloadStream: Stream<JsonObject?>, override var programUrl: String
+    ) :
         LiveLikeContentSession {
-        override val programUrl: String get() = ""
         override val chatState = ChatState()
         override var widgetState = WidgetTransientState()
         override var widgetRenderer: WidgetRenderer? = null
@@ -116,16 +121,16 @@ class ChatOnlyActivity : AppCompatActivity() {
     }
 }
 
-internal class TestWidgetStream : WidgetStream {
-    private val widgetMap = ConcurrentHashMap<Any, (String?) -> Unit>()
+internal class TestStream<T> : Stream<T> {
+    private val widgetMap = ConcurrentHashMap<Any, (T?) -> Unit>()
 
-    override fun onNext(view: String?) {
+    override fun onNext(view: T?) {
         widgetMap.forEach {
             it.value.invoke(view)
         }
     }
 
-    override fun subscribe(key: Any, observer: (String?) -> Unit) {
+    override fun subscribe(key: Any, observer: (T?) -> Unit) {
         widgetMap[key] = observer
     }
 

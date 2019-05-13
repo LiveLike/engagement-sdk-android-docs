@@ -2,6 +2,8 @@ package com.livelike.livelikesdk.widget.view
 
 import android.animation.LayoutTransition
 import android.arch.lifecycle.ViewModelProviders
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.FrameLayout
@@ -17,7 +19,7 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
 
     init {
         session.widgetContext = widgetContainer.context
-        session.widgetStream.subscribe(WidgetPresenter::class.java) { widgetObserver(it) }
+        session.widgetTypeStream.subscribe(WidgetPresenter::class.java) { widgetObserver(it) }
         widgetObserver(widgetViewModel.currentWidget)
 
         // Swipe to dismiss
@@ -31,7 +33,7 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
                     }
 
                     override fun onDismiss(view: View?, token: Any?) {
-                        session.widgetStream.onNext(null)
+                        session.widgetTypeStream.onNext(null)
                     }
                 })
         )
@@ -40,18 +42,25 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
         widgetContainer.layoutTransition = LayoutTransition()
     }
 
-    private fun widgetObserver(widgetView: String?) {
-        if (widgetView == null) {
+    private fun widgetObserver(widgetType: String?) {
+        if (widgetType == null) {
             dismissWidget()
         } else {
-            displayWidget(widgetView)
+            displayWidget(widgetType)
         }
-        widgetViewModel.currentWidget = widgetView
+        widgetViewModel.currentWidget = widgetType
     }
 
     private fun displayWidget(widgetView: String) {
         logDebug { "NOW - Show Widget" }
-        widgetContainer.addView(WidgetViewProvider().get(WidgetType.fromString(widgetView), widgetContainer.context))
+        Handler(Looper.getMainLooper()).post {
+            widgetContainer.addView(
+                WidgetViewProvider().get(
+                    WidgetType.fromString(widgetView),
+                    widgetContainer.context
+                )
+            )
+        }
     }
 
     private fun dismissWidget() {
@@ -60,7 +69,7 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
     }
 
     fun close() {
-        session.widgetStream.unsubscribe(WidgetPresenter::class.java)
+        session.widgetTypeStream.unsubscribe(WidgetPresenter::class.java)
         widgetViewModel.currentWidget = null
     }
 }

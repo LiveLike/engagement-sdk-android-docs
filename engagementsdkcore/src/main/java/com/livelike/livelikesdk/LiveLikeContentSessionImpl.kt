@@ -1,13 +1,14 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
+import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.engagementsdkapi.WidgetStream
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.chat.ChatQueue
@@ -27,11 +28,20 @@ import com.livelike.livelikesdk.widget.asWidgetManager
 import java.util.concurrent.ConcurrentHashMap
 
 internal class LiveLikeContentSessionImpl(
-    override val programUrl: String,
-    val currentPlayheadTime: () -> EpochTime,
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
     private val applicationContext: Context
 ) : LiveLikeContentSession {
+    override var programUrl: String = ""
+        set(value) {
+            llDataClient.getLiveLikeProgramData(value) {
+                program = it
+                initializeWidgetMessaging(it)
+                initializeChatMessaging(it)
+            }
+            field = value
+        }  // can be stream
+    override var currentPlayheadTime: () -> EpochTime = { EpochTime(0) }
+
     override var widgetContext: Context? = null
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
@@ -40,10 +50,12 @@ internal class LiveLikeContentSessionImpl(
 
     override var chatState = ChatState()
     override var widgetState = WidgetTransientState()
-    override val widgetStream = SubscriptionManager()
+    override val widgetTypeStream = SubscriptionManager<String?>()
+    override val widgetPayloadStream = SubscriptionManager<JsonObject?>()
 
     init {
         getUser()
+        //
     }
 
     private fun getUser() {
@@ -80,14 +92,6 @@ internal class LiveLikeContentSessionImpl(
             chatQueue?.renderer = chatRenderer
         }
 
-    init {
-        llDataClient.getLiveLikeProgramData(programUrl) {
-            program = it
-            initializeWidgetMessaging(it)
-            initializeChatMessaging(it)
-        }
-    }
-
     override fun getPlayheadTime(): EpochTime {
         return currentPlayheadTime()
     }
@@ -99,7 +103,7 @@ internal class LiveLikeContentSessionImpl(
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
 //                    .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, widgetStream, this)
+                    .asWidgetManager(llDataClient, widgetTypeStream, widgetPayloadStream, this)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(listOf(program.subscribeChannel))
             widgetQueue.renderer = widgetRenderer
@@ -151,24 +155,28 @@ internal interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
 }
 
-internal class SubscriptionManager : WidgetStream {
-    private val widgetMap = ConcurrentHashMap<Any, (String?) -> Unit>()
+internal class SubscriptionManager<T> : Stream<T> {
+    private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
+    private var currentData: T? = null
 
-    override fun onNext(widgetType: String?) {
-        widgetMap.forEach {
-            it.value.invoke(widgetType)
+    override fun onNext(data: T?) {
+        observerMap.forEach {
+            it.value.invoke(data)
         }
+        currentData = data
     }
 
-    override fun subscribe(key: Any, observer: (String?) -> Unit) {
-        widgetMap[key] = observer
+    override fun subscribe(key: Any, observer: (T?) -> Unit) {
+        observerMap[key] = observer
+        observer.invoke(currentData)
     }
 
     override fun unsubscribe(key: Any) {
-        widgetMap.remove(key)
+        observerMap.remove(key)
     }
 
     override fun clear() {
-        widgetMap.clear()
+        observerMap.clear()
+        currentData = null
     }
 }

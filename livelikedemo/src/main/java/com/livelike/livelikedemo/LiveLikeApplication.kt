@@ -30,9 +30,9 @@ class LiveLikeApplication : Application() {
     }
 
     fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
-        if (session == null) {
+//        if (session == null) {
             session = player.createSession(sessionId, sdk)
-        }
+//        }
         return session as LiveLikeContentSession
     }
 }
