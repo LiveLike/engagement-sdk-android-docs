@@ -49,17 +49,15 @@ internal class PredictionTextViewModel(application: Application) : AndroidViewMo
         data.value?.let {
             adapter?.apply {
                 if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
-                    val selectedOption = it.options[selectedPosition]
+                    val selectedOption = it.getMergedOptions()?.get(selectedPosition)
 
                     // Prediction widget votes on dismiss
-                    dataClient.vote(selectedOption.vote_url)
+                    selectedOption?.getMergedVoteUrl()?.let { it1 -> dataClient.vote(it1) }
 
                     // Save widget id and voted option for followup widget
-                    addWidgetPredictionVoted(it.id, selectedOption.id)
+                    addWidgetPredictionVoted(it.id, selectedOption?.id ?: "")
                 }
             }
-            // Register the impression on the backend
-            dataClient.registerImpression(it.impression_url)
         }
 
         currentSession.widgetTypeStream.onNext(null)

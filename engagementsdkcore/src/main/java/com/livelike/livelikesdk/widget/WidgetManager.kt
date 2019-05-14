@@ -111,6 +111,9 @@ internal class WidgetManager(
 //        isProcessing = !exemption || isProcessing
         val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
         val payload = event.message["payload"].asJsonObject
+        payload.get("subscribe_channel")?.asString?.let {
+            subscribeForResults(it)
+        }
         widgetPayloadStream.onNext(payload)
         widgetTypeStream.onNext(widgetType.value)
         // TODO: Register impression here too

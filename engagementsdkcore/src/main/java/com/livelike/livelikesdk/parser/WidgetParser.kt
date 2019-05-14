@@ -12,17 +12,17 @@ internal class WidgetParser {
     fun parseTextOptionCommon(widget: Widget, resource: Resource) {
         mapResourceToWidget(widget, resource)
 
-        widget.optionList = resource.options.map {
+        widget.optionList = resource.options?.map {
             WidgetOptions(
                 it.id,
                 URI.create(it.vote_url),
                 it.description,
-                it.vote_count.toLong(),
+                it.vote_count?.toLong() ?: 0,
                 it.image_url,
-                it.answer_count.toLong(),
+                it.answer_count?.toLong() ?: 0,
                 it.answer_url
             )
-        }
+        } ?: listOf()
         widget.timeout = parseDuration(resource.timeout)
     }
 
@@ -59,14 +59,14 @@ internal class WidgetParser {
         mapResourceToWidget(widget, resource)
         widget.subscribeChannel = resource.subscribe_channel
 
-        widget.optionList = resource.choices.map {
+        widget.optionList = resource.choices!!.map {
             WidgetOptions(
                 it.id,
                 null,
                 it.description,
-                it.vote_count.toLong(),
+                it.vote_count!!.toLong(),
                 it.image_url,
-                it.answer_count.toLong(),
+                it.answer_count!!.toLong(),
                 it.answer_url,
                 it.is_correct
             )
@@ -75,9 +75,9 @@ internal class WidgetParser {
 
     fun parseQuizResult(widget: Widget, resource: Resource) {
         widget.optionList.forEach { option ->
-            resource.choices.forEach { choice ->
+            resource.choices!!.forEach { choice ->
                 if (option.id == choice.id)
-                    option.answerCount = choice.answer_count.toLong()
+                    option.answerCount = choice.answer_count!!.toLong()
                 if (option.isCorrect)
                     widget.correctOptionId = option.id
             }
@@ -93,9 +93,9 @@ internal class WidgetParser {
 
     fun parsePollResult(widget: Widget, resource: Resource) {
         widget.optionList.forEach { option ->
-            resource.options.forEach { choice ->
+            resource.options!!.forEach { choice ->
                 if (option.id == choice.id)
-                    option.voteCount = choice.vote_count.toLong()
+                    option.voteCount = choice.vote_count!!.toLong()
             }
         }
         widget.optionSelected =

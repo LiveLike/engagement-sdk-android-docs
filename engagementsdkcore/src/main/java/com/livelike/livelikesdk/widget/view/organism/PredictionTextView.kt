@@ -39,9 +39,8 @@ class PredictionTextView(context: Context, attr: AttributeSet? = null) : Constra
                 inflated = true
                 inflate(context, R.layout.organism_text_prediction, this@PredictionTextView)
             }
-
-            if (resource.options.isNotEmpty()
-                && !resource.options[0].image_url.isNullOrEmpty()
+            val optionList = resource.getMergedOptions() ?: return@apply
+            if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
             ) {
                 viewManager =
                     LinearLayoutManager(context).apply { orientation = LinearLayout.HORIZONTAL }
@@ -49,7 +48,7 @@ class PredictionTextView(context: Context, attr: AttributeSet? = null) : Constra
 
             titleView.title = resource.question
 
-            viewModel.adapter = viewModel.adapter ?: TextViewAdapter(resource.options)
+            viewModel.adapter = viewModel.adapter ?: TextViewAdapter(optionList)
 
             textRecyclerView.apply {
                 this.layoutManager = viewManager
