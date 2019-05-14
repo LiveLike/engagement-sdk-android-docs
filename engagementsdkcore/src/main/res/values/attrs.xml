@@ -18,23 +18,4 @@
     <item name="alert_body_font" type="font" >@font/titillium_semibold</item>
     <item name="alert_link_font" type="font" >@font/titillium_semibold</item>
     <item name="alert_label_font" type="font" >@font/titillium_semibold</item>
-
-    <declare-styleable name="TitleView">
-        <attr name="titleText"
-              format="string"/>
-        <attr name="backgroundColor"
-              format="color"/>
-    </declare-styleable>
-
-    <declare-styleable name="TextItemView">
-        <attr name="text"
-              format="string"/>
-        <attr name="progress"
-              format="integer"/>
-        <attr name="bottomRoundedCorner"
-              format="boolean"/>
-        <attr name="selectionOutineColor"
-              format="color"/>
-        <attr name="backgroundColor"/>
-    </declare-styleable>
 </resources>

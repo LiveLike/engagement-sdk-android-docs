@@ -1,10 +1,8 @@
 package com.livelike.livelikesdk.widget.view
 
 import android.animation.LayoutTransition
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Handler
 import android.os.Looper
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.FrameLayout
 import com.livelike.engagementsdkapi.LiveLikeContentSession
@@ -12,15 +10,10 @@ import com.livelike.livelikesdk.util.logDebug
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
-class WidgetPresenter(private val widgetContainer: FrameLayout, val session: LiveLikeContentSession) {
-    // This is the only way I found to save data between the session being dismissed
-    private val widgetViewModel: WidgetViewModel =
-        ViewModelProviders.of(widgetContainer.context as AppCompatActivity).get(WidgetViewModel::class.java)
+class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val session: LiveLikeContentSession) {
 
     init {
-        session.widgetContext = widgetContainer.context
-        session.widgetTypeStream.subscribe(WidgetPresenter::class.java) { widgetObserver(it) }
-        widgetObserver(widgetViewModel.currentWidget)
+        session.widgetTypeStream.subscribe(WidgetContainerViewModel::class.java) { widgetObserver(it) }
 
         // Swipe to dismiss
         widgetContainer.setOnTouchListener(
@@ -48,7 +41,6 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
         } else {
             displayWidget(widgetType)
         }
-        widgetViewModel.currentWidget = widgetType
     }
 
     private fun displayWidget(widgetView: String) {
@@ -69,7 +61,6 @@ class WidgetPresenter(private val widgetContainer: FrameLayout, val session: Liv
     }
 
     fun close() {
-        session.widgetTypeStream.unsubscribe(WidgetPresenter::class.java)
-        widgetViewModel.currentWidget = null
+        session.widgetTypeStream.unsubscribe(WidgetContainerViewModel::class.java)
     }
 }

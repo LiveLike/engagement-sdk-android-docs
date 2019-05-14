@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk.widget.view
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
@@ -26,21 +27,23 @@ import kotlinx.android.synthetic.main.alert_widget.view.linkText
 import kotlinx.android.synthetic.main.alert_widget.view.widgetContainer
 
 internal class AlertWidgetView : ConstraintLayout {
-    private var resourceAlert: Alert
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
-
-    private var alertWidgetViewModel: AlertWidgetViewModel =
+    private val viewModel: AlertWidgetViewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(AlertWidgetViewModel::class.java)
 
     init {
-        this.resourceAlert = alertWidgetViewModel.data
-        inflate(context)
+        viewModel.data.observe(context as AppCompatActivity, Observer {
+            it?.apply {
+                inflate(context, it)
+                viewModel.startDismissTimout(it.timeout)
+            }
+        })
     }
 
-    private fun inflate(context: Context) {
+    private fun inflate(context: Context, resourceAlert: Alert) {
         LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
 
         bodyText.text = resourceAlert.text
@@ -49,10 +52,10 @@ internal class AlertWidgetView : ConstraintLayout {
 
         if (!resourceAlert.link_url.isNullOrEmpty()) {
             linkBackground.setOnClickListener {
-                openBrowser(context)
+                openBrowser(context, resourceAlert.link_url)
             }
             bodyBackground.setOnClickListener {
-                openBrowser(context)
+                openBrowser(context, resourceAlert.link_url)
             }
         } else {
             linkArrow.visibility = View.GONE
@@ -74,7 +77,7 @@ internal class AlertWidgetView : ConstraintLayout {
             }
 
         // User clicks here
-        alertWidgetViewModel.voteForOption("optionID")
+        viewModel.voteForOption("optionID")
 
         // View wants to dismiss itself
 //        alertWidgetViewModel.dismiss()
@@ -102,8 +105,8 @@ internal class AlertWidgetView : ConstraintLayout {
         }
     }
 
-    private fun openBrowser(context: Context) {
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(resourceAlert.link_url))
+    private fun openBrowser(context: Context, linkUrl: String) {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl))
         startActivity(context, browserIntent, Bundle.EMPTY)
     }
 }

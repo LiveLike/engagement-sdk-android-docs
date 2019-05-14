@@ -1,6 +1,5 @@
 package com.livelike.livelikedemo
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -29,7 +28,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat_only)
         LiveLikeSDK("1234", baseContext)
         updateToolbar()
-        val session = TestSession(applicationContext, { EpochTime(0) }, TestStream(), TestStream(), "")
+        val session = TestSession({ EpochTime(0) }, TestStream(), TestStream(), "")
         chat_view.setSession(session)
 
         prePopulateChatWithMessages()
@@ -92,7 +91,6 @@ class ChatOnlyActivity : AppCompatActivity() {
     }
 
     inner class TestSession(
-        override var widgetContext: Context?,
         override var currentPlayheadTime: () -> EpochTime,
         override val widgetTypeStream: Stream<String?>,
         override val widgetPayloadStream: Stream<JsonObject?>, override var programUrl: String

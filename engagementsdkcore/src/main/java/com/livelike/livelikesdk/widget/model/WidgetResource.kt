@@ -21,6 +21,7 @@ internal data class Resource(
     val options: List<Option> = listOf(),
     val impression_url: String = ""
 ) {
+    var state: String = ""
     val totalVotes: Int by lazy {
         options.map { it.vote_count }.sum()
     }

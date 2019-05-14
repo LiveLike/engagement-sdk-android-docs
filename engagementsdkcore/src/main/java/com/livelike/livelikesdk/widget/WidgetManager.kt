@@ -2,7 +2,6 @@ package com.livelike.livelikesdk.widget
 
 import android.os.Handler
 import com.google.gson.JsonObject
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
@@ -19,8 +18,7 @@ internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
     private val widgetTypeStream: Stream<String?>,
-    private val widgetPayloadStream: Stream<JsonObject?>,
-    private val session: LiveLikeContentSession
+    private val widgetPayloadStream: Stream<JsonObject?>
 ) :
     MessagingClientProxy(upstream),
     ExternalMessageTrigger,
@@ -150,6 +148,7 @@ enum class WidgetType(val value: String) {
 }
 
 internal interface WidgetDataClient {
+    fun vote(voteUrl: String)
     fun vote(voteUrl: String, voteUpdateCallback: ((String) -> Unit)?)
     fun changeVote(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?)
     fun registerImpression(impressionUrl: String)
@@ -159,12 +158,11 @@ internal interface WidgetDataClient {
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
     widgetTypeStream: Stream<String?>,
-    widgetPayloadStream: Stream<JsonObject?>,
-    session: LiveLikeContentSession
+    widgetPayloadStream: Stream<JsonObject?>
 ): WidgetManager {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
     val widgetQueue =
-        WidgetManager(triggeredMessagingClient, dataClient, widgetTypeStream, widgetPayloadStream, session)
+        WidgetManager(triggeredMessagingClient, dataClient, widgetTypeStream, widgetPayloadStream)
     triggeredMessagingClient.externalTrigger = widgetQueue
     return widgetQueue
 }

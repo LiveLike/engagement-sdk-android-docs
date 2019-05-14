@@ -18,13 +18,13 @@ import kotlinx.android.synthetic.main.organism_text_prediction.view.followupAnim
 import kotlinx.android.synthetic.main.organism_text_prediction.view.textRecyclerView
 import kotlinx.android.synthetic.main.organism_text_prediction.view.titleView
 
-class PredictionTextView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
+class PredictionImageView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
 
     private var viewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(PredictionTextViewModel::class.java)
 
     private var viewManager: LinearLayoutManager =
-        LinearLayoutManager(context).apply { orientation = LinearLayout.VERTICAL }
+        LinearLayoutManager(context).apply { orientation = LinearLayout.HORIZONTAL }
     private var inflated = false
 
     init {
@@ -37,7 +37,7 @@ class PredictionTextView(context: Context, attr: AttributeSet? = null) : Constra
         resource?.apply {
             if (!inflated) {
                 inflated = true
-                inflate(context, R.layout.organism_text_prediction, this@PredictionTextView)
+                inflate(context, R.layout.organism_text_prediction, this@PredictionImageView)
             }
 
             titleView.title = resource.question

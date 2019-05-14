@@ -22,7 +22,7 @@ internal class AndroidResource {
             val asset = context.assets
             val assetList = asset?.list(path)
             val random = Random()
-            return if (assetList!!.isNotEmpty()) {
+            return "$path/" + if (assetList!!.isNotEmpty()) {
                 val emojiIndex = random.nextInt(assetList.size)
                 assetList[emojiIndex]
             } else return null

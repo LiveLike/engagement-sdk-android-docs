@@ -33,16 +33,17 @@ internal class LiveLikeContentSessionImpl(
 ) : LiveLikeContentSession {
     override var programUrl: String = ""
         set(value) {
-            llDataClient.getLiveLikeProgramData(value) {
-                program = it
-                initializeWidgetMessaging(it)
-                initializeChatMessaging(it)
+            if (field != value) {
+                llDataClient.getLiveLikeProgramData(value) {
+                    program = it
+                    initializeWidgetMessaging(it)
+                    initializeChatMessaging(it)
+                }
+                field = value
             }
-            field = value
-        }  // can be stream
+        }
     override var currentPlayheadTime: () -> EpochTime = { EpochTime(0) }
 
-    override var widgetContext: Context? = null
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
     private var widgetQueue: WidgetManager? = null
@@ -103,9 +104,9 @@ internal class LiveLikeContentSessionImpl(
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
 //                    .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, widgetTypeStream, widgetPayloadStream, this)
+                    .asWidgetManager(llDataClient, widgetTypeStream, widgetPayloadStream)
             widgetQueue.unsubscribeAll()
-            widgetQueue.subscribe(listOf(program.subscribeChannel))
+            widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             widgetQueue.renderer = widgetRenderer
             this.widgetQueue = widgetQueue
         }

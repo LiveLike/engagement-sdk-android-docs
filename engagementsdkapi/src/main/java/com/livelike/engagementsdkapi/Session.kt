@@ -1,6 +1,5 @@
 package com.livelike.engagementsdkapi
 
-import android.content.Context
 import com.google.gson.JsonObject
 
 /**
@@ -17,7 +16,6 @@ interface LiveLikeContentSession {
     var widgetState: WidgetTransientState
     val widgetTypeStream: Stream<String?>
     val widgetPayloadStream: Stream<JsonObject?>
-    var widgetContext: Context?
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()

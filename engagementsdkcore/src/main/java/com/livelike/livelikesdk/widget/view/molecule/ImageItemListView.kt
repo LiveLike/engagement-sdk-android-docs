@@ -8,8 +8,8 @@ import com.livelike.livelikesdk.widget.model.Option
 import com.livelike.livelikesdk.widget.view.atom.TextItemView
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
 
-internal class TextViewAdapter(private val myDataset: List<Option>) :
-    RecyclerView.Adapter<TextViewAdapter.TextOptionViewHolder>() {
+internal class ImageViewAdapter(private val myDataset: List<Option>) :
+    RecyclerView.Adapter<ImageViewAdapter.TextOptionViewHolder>() {
 
     var selectedPosition = RecyclerView.NO_POSITION
     var selectionLocked = false

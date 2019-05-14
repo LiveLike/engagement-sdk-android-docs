@@ -28,6 +28,7 @@ import java.io.IOException
 
 internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
 
+    // TODO: This should POST first then only update the impression (or just be called on widget dismissed..)
     override fun registerImpression(impressionUrl: String) {
         if (impressionUrl.isNullOrEmpty()) {
             return
@@ -158,6 +159,10 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                 logError { e }
             }
         })
+    }
+
+    override fun vote(voteUrl: String) {
+        vote(voteUrl, null)
     }
 
     override fun vote(voteUrl: String, voteUpdateCallback: ((String) -> Unit)?) {

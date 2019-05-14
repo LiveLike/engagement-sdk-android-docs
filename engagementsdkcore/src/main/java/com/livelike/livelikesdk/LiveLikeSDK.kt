@@ -8,6 +8,8 @@ import com.livelike.livelikesdk.analytics.analyticService
 import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 
+private var sdkInstance: LiveLikeSDK? = null
+
 /**
  * Use this class to initialize the LiveLike SDK. This is the entry point for SDK usage. This creates a singleton instance of LiveLike SDK.
  * The SDK is expected to be initialized only once. Once the SDK has been initialized, user can create multiple sessions
@@ -19,9 +21,8 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 class LiveLikeSDK(val clientId: String, private val applicationContext: Context) {
 
     companion object {
-        const val CONFIG_URL = BuildConfig.CONFIG_URL
+        private const val CONFIG_URL = BuildConfig.CONFIG_URL
         val MIXPANEL_TOKEN = "5c82369365be76b28b3716f260fbd2f5" // TODO: This should come from CMS
-        var sdkInstance: LiveLikeSDK? = null
         lateinit var currentSession: LiveLikeContentSession // TODO: We don't like the singleton pattern, let's find something better here
     }
 
