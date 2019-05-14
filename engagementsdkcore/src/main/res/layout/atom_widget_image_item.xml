@@ -4,11 +4,10 @@
                                              xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="wrap_content"
                                              android:layout_height="wrap_content"
-                                             tools:showIn="@layout/organism_text_prediction"
                                              android:background="@drawable/image_prediction_rounded_corner"
                                              android:minWidth="125dp">
     <ProgressBar
-            android:id="@+id/determinateBar"
+            android:id="@+id/imageBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:progressDrawable="@drawable/image_option_background_progressbar"
             android:layout_width="0dp"
@@ -24,9 +23,9 @@
             app:layout_constraintEnd_toEndOf="parent"/>
 
     <ImageView
+            android:id="@+id/imageButton"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:id="@+id/image_button"
             android:scaleType="centerCrop"
             android:background="@drawable/button_rounded_corners"
             android:layout_marginTop="16dp"
@@ -38,9 +37,9 @@
     />
 
     <View
+            android:id="@+id/imageBackground"
             android:layout_width="0dp"
             android:layout_height="45dp"
-            android:id="@+id/text_background"
             android:background="@drawable/image_option_background"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -49,10 +48,9 @@
 
     <!--suppress AndroidDomInspection -->
     <TextView
-            android:id="@+id/percentageText"
+            android:id="@+id/imagePercentage"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:elevation="8dp"
             android:textColor="@color/percent_label_text_color"
             android:textSize="@dimen/percent_label_text_size"
             android:paddingLeft="8dp"
@@ -68,10 +66,9 @@
 
     <!--suppress AndroidDomInspection -->
     <TextView
-            android:id="@+id/item_text"
+            android:id="@+id/imageText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:elevation="4dp"
             android:fontFamily="@font/option_font"
             android:textColor="@color/option_text_color"
             android:textSize="@dimen/option_text_size"
@@ -89,7 +86,7 @@
 
     <View android:layout_width="0dp"
           android:layout_height="0dp"
-          android:id="@+id/button"
+          android:id="@+id/imageButtonBackground"
           android:background="@color/transparent"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent"

@@ -15,7 +15,6 @@
     <android.support.v7.widget.RecyclerView android:id="@+id/textRecyclerView"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            android:scrollbars="vertical"
                                             tools:listitem="@layout/atom_widget_text_item"
                                             tools:itemCount="4"
                                             app:layout_constraintTop_toBottomOf="@+id/titleView"

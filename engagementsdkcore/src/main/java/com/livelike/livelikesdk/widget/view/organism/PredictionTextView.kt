@@ -40,6 +40,13 @@ class PredictionTextView(context: Context, attr: AttributeSet? = null) : Constra
                 inflate(context, R.layout.organism_text_prediction, this@PredictionTextView)
             }
 
+            if (resource.options.isNotEmpty()
+                && !resource.options[0].image_url.isNullOrEmpty()
+            ) {
+                viewManager =
+                    LinearLayoutManager(context).apply { orientation = LinearLayout.HORIZONTAL }
+            }
+
             titleView.title = resource.question
 
             viewModel.adapter = viewModel.adapter ?: TextViewAdapter(resource.options)

@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.widget.model.Option
 import com.livelike.livelikesdk.widget.view.atom.TextItemView
-import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
 
 internal class TextViewAdapter(private val myDataset: List<Option>) :
     RecyclerView.Adapter<TextViewAdapter.TextOptionViewHolder>() {
@@ -19,7 +18,7 @@ internal class TextViewAdapter(private val myDataset: List<Option>) :
     inner class TextOptionViewHolder(val textItemView: TextItemView) : RecyclerView.ViewHolder(textItemView),
         View.OnClickListener {
         init {
-            textItemView.text_button.setOnClickListener(this)
+            textItemView.clickListener = this
         }
 
         override fun onClick(v: View?) {
@@ -37,10 +36,6 @@ internal class TextViewAdapter(private val myDataset: List<Option>) :
         viewType: Int
     ): TextOptionViewHolder {
         val textView = TextItemView(parent.context)
-        textView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
         return TextOptionViewHolder(textView)
     }
 

@@ -113,6 +113,11 @@ internal class WidgetManager(
         val payload = event.message["payload"].asJsonObject
         widgetPayloadStream.onNext(payload)
         widgetTypeStream.onNext(widgetType.value)
+        // TODO: Register impression here too
+        // Register the impression on the backend
+        payload.get("impression_url")?.asString?.let {
+            dataClient.registerImpression(it)
+        }
         super.onClientMessageEvent(client, event)
     }
 

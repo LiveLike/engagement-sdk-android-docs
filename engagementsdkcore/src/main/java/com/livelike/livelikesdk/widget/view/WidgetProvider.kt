@@ -14,7 +14,9 @@ internal class WidgetViewProvider {
     fun get(widgetType: WidgetType, context: Context): View {
         return when (widgetType) {
             WidgetType.ALERT -> AlertWidgetView(context)
-            WidgetType.TEXT_PREDICTION, WidgetType.TEXT_PREDICTION_RESULTS -> PredictionTextView(context)
+            WidgetType.TEXT_PREDICTION, WidgetType.TEXT_PREDICTION_RESULTS, WidgetType.IMAGE_PREDICTION, WidgetType.IMAGE_PREDICTION_RESULTS -> PredictionTextView(
+                context
+            )
             else -> logWarn { "Unknown widget type: " + widgetType.value }.let { View(context) }
         }
     }
