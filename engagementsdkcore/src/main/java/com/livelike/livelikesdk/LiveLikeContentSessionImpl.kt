@@ -57,7 +57,6 @@ internal class LiveLikeContentSessionImpl(
 
     init {
         getUser()
-        //
     }
 
     private fun getUser() {
@@ -104,7 +103,7 @@ internal class LiveLikeContentSessionImpl(
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
-//                    .syncTo(currentPlayheadTime)
+                    .syncTo(currentPlayheadTime)
                     .asWidgetManager(llDataClient, widgetStream)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
