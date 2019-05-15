@@ -99,7 +99,7 @@ internal class LiveLikeContentSessionImpl(
         return currentPlayheadTime()
     }
 
-    override fun contentSessionId() = program?.clientId ?: ""
+    override fun contentSessionId() = program?.contentId ?: ""
     private fun initializeWidgetMessaging(program: Program) {
         sdkConfiguration.subscribe {
             val widgetQueue =
