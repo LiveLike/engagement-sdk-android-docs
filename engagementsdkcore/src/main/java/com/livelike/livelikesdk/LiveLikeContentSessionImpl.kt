@@ -34,10 +34,12 @@ internal class LiveLikeContentSessionImpl(
     override var programUrl: String = ""
         set(value) {
             if (field != value) {
-                llDataClient.getLiveLikeProgramData(value) {
-                    program = it
-                    initializeWidgetMessaging(it)
-                    initializeChatMessaging(it)
+                llDataClient.getLiveLikeProgramData(programUrl) {
+                    if (it !== null) {
+                        program = it
+                        initializeWidgetMessaging(it)
+                        initializeChatMessaging(it)
+                    }
                 }
                 field = value
             }

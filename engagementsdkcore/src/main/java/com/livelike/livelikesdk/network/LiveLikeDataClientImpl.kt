@@ -2,6 +2,8 @@ package com.livelike.livelikesdk.network
 
 import android.os.Handler
 import android.os.Looper
+import android.webkit.URLUtil
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.MalformedJsonException
@@ -14,6 +16,7 @@ import com.livelike.livelikesdk.util.extractStringOrEmpty
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.util.logVerbose
+import com.livelike.livelikesdk.util.logWarn
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import okhttp3.Call
 import okhttp3.Callback
@@ -27,6 +30,8 @@ import okio.ByteString
 import java.io.IOException
 
 internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
+
+    private val MAX_PROGRAM_DATA_REQUESTS = 13
 
     // TODO: This should POST first then only update the impression (or just be called on widget dismissed..)
     override fun registerImpression(impressionUrl: String) {
@@ -58,28 +63,54 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
 
     private val client = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
+    private val gson = GsonBuilder().create()
 
-    override fun getLiveLikeProgramData(url: String, responseCallback: (program: Program) -> Unit) {
-        val request = Request.Builder()
-            .url(url)
-            .build()
+    private fun newRequest(url: String) = Request.Builder().url(url)
 
-        val call = client.newCall(request)
-        call.enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
-                val responseData = response.body()?.string()
-                try {
-                    mainHandler.post { responseCallback.invoke(parseProgramData(JsonParser().parse(responseData).asJsonObject)) }
-                } catch (e: MalformedJsonException) {
-                    logError { e }
+    @Suppress("unused")
+    private fun Any?.unit() = Unit
+
+    override fun getLiveLikeProgramData(url: String, responseCallback: (program: Program?) -> Unit) {
+
+        fun respondWith(value: Program?) = mainHandler.post { responseCallback(value) }.unit()
+
+        fun respondOnException(op: () -> Unit) = try {
+            op()
+        } catch (e: Exception) {
+            logError { e }.also { respondWith(null) }
+        }
+
+        respondOnException {
+            if (!URLUtil.isValidUrl(url)) error("Program Url is invalid.")
+
+            val call = client.newCall(newRequest(url).build())
+
+            var requestCount = 0
+
+            call.enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) = respondOnException {
+                    when (response.code()) {
+                        in 400..499 -> error("Program Id is invalid ")
+
+                        in 500..599 -> if (requestCount++ < MAX_PROGRAM_DATA_REQUESTS) {
+                            call.clone().enqueue(this)
+                            logWarn { "Failed to fetch program data, trying again." }
+                        } else {
+                            error("Unable to fetch program data, exceeded max retries.")
+                        }
+
+                        else -> {
+                            val jsonObject = gson.fromJson(response.body()?.string(), JsonObject::class.java)
+                                ?: error("Program data was null")
+
+                            respondWith(parseProgramData(jsonObject))
+                        }
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-                mainHandler.post { responseCallback(parseProgramData(JsonObject())) }
-            }
-        })
+                override fun onFailure(call: Call, e: IOException) = respondOnException { throw e }
+            })
+        }
     }
 
     private fun parseProgramData(programData: JsonObject): Program {
