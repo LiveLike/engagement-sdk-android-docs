@@ -99,10 +99,14 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
                         }
 
                         else -> {
-                            val jsonObject = gson.fromJson(response.body()?.string(), JsonObject::class.java)
+                            val parsedObject = gson.fromJson(response.body()?.string(), Program::class.java)
                                 ?: error("Program data was null")
 
-                            respondWith(parseProgramData(jsonObject))
+                            if (parsedObject.programUrl == null) {
+                                // Program Url is the only required field
+                                error("Program Url not present in response.")
+                            }
+                            respondWith(parsedObject)
                         }
                     }
                 }
