@@ -14,10 +14,10 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.addWidgetPredictionVot
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
-import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.adapters.TextViewAdapter
+import com.livelike.livelikesdk.widget.model.Resource
 
-internal class PredictionTextViewModel(application: Application) : AndroidViewModel(application) {
+internal class PredictionViewModel(application: Application) : AndroidViewModel(application) {
     val data: MutableLiveData<Resource> = MutableLiveData()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
     var state: MutableLiveData<String> = MutableLiveData() // confirmation, followup

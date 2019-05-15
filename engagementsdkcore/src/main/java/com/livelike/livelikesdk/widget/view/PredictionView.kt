@@ -9,20 +9,20 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
-import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.adapters.TextViewAdapter
+import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
-import com.livelike.livelikesdk.widget.viewModel.PredictionTextViewModel
+import com.livelike.livelikesdk.widget.viewModel.PredictionViewModel
 import kotlinx.android.synthetic.main.atom_widget_confirmation_message.view.confirmMessageAnimation
 import kotlinx.android.synthetic.main.organism_text_prediction.view.confirmationMessage
 import kotlinx.android.synthetic.main.organism_text_prediction.view.followupAnimation
 import kotlinx.android.synthetic.main.organism_text_prediction.view.textRecyclerView
 import kotlinx.android.synthetic.main.organism_text_prediction.view.titleView
 
-class PredictionTextView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
+class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
 
     private var viewModel =
-        ViewModelProviders.of(context as AppCompatActivity).get(PredictionTextViewModel::class.java)
+        ViewModelProviders.of(context as AppCompatActivity).get(PredictionViewModel::class.java)
 
     private var viewManager: LinearLayoutManager =
         LinearLayoutManager(context).apply { orientation = LinearLayout.VERTICAL }
@@ -39,7 +39,7 @@ class PredictionTextView(context: Context, attr: AttributeSet? = null) : Constra
             val optionList = resource.getMergedOptions() ?: return@Observer
             if (!inflated) {
                 inflated = true
-                inflate(context, com.livelike.livelikesdk.R.layout.organism_text_prediction, this@PredictionTextView)
+                inflate(context, com.livelike.livelikesdk.R.layout.organism_text_prediction, this@PredictionView)
             }
             if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
             ) {
