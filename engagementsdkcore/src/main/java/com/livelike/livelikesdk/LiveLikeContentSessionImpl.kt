@@ -51,8 +51,7 @@ internal class LiveLikeContentSessionImpl(
 
     override var chatState = ChatState()
     override var widgetState = WidgetTransientState()
-    override val widgetTypeStream = SubscriptionManager<String?>()
-    override val widgetPayloadStream = SubscriptionManager<JsonObject?>()
+    override val widgetStream = SubscriptionManager<String?, JsonObject?>()
 
     init {
         getUser()
@@ -104,7 +103,7 @@ internal class LiveLikeContentSessionImpl(
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
 //                    .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, widgetTypeStream, widgetPayloadStream)
+                    .asWidgetManager(llDataClient, widgetStream)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             widgetQueue.renderer = widgetRenderer
@@ -156,20 +155,22 @@ internal interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
 }
 
-internal class SubscriptionManager<T> : Stream<T> {
-    private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
+internal class SubscriptionManager<T, T2> : Stream<T, T2> {
+    private val observerMap = ConcurrentHashMap<Any, (T?, T2?) -> Unit>()
     private var currentData: T? = null
+    private var currentData2: T2? = null
 
-    override fun onNext(data: T?) {
+    override fun onNext(data1: T?, data2: T2?) {
         observerMap.forEach {
-            it.value.invoke(data)
+            it.value.invoke(data1, data2)
         }
-        currentData = data
+        currentData = data1
+        currentData2 = data2
     }
 
-    override fun subscribe(key: Any, observer: (T?) -> Unit) {
+    override fun subscribe(key: Any, observer: (T?, T2?) -> Unit) {
         observerMap[key] = observer
-        observer.invoke(currentData)
+        observer.invoke(currentData, currentData2)
     }
 
     override fun unsubscribe(key: Any) {
@@ -179,5 +180,6 @@ internal class SubscriptionManager<T> : Stream<T> {
     override fun clear() {
         observerMap.clear()
         currentData = null
+        currentData2 = null
     }
 }

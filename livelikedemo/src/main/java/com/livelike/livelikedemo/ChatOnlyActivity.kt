@@ -28,7 +28,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat_only)
         LiveLikeSDK("1234", baseContext)
         updateToolbar()
-        val session = TestSession({ EpochTime(0) }, TestStream(), TestStream(), "")
+        val session = TestSession({ EpochTime(0) }, TestStream(), "")
         chat_view.setSession(session)
 
         prePopulateChatWithMessages()
@@ -92,8 +92,8 @@ class ChatOnlyActivity : AppCompatActivity() {
 
     inner class TestSession(
         override var currentPlayheadTime: () -> EpochTime,
-        override val widgetTypeStream: Stream<String?>,
-        override val widgetPayloadStream: Stream<JsonObject?>, override var programUrl: String
+        override val widgetStream: Stream<String?, JsonObject?>,
+        override var programUrl: String
     ) :
         LiveLikeContentSession {
         override val chatState = ChatState()
@@ -119,16 +119,16 @@ class ChatOnlyActivity : AppCompatActivity() {
     }
 }
 
-internal class TestStream<T> : Stream<T> {
-    private val widgetMap = ConcurrentHashMap<Any, (T?) -> Unit>()
+internal class TestStream<T, T2> : Stream<T, T2> {
+    private val widgetMap = ConcurrentHashMap<Any, (T?, T2?) -> Unit>()
 
-    override fun onNext(view: T?) {
+    override fun onNext(view: T?, to: T2?) {
         widgetMap.forEach {
-            it.value.invoke(view)
+            it.value.invoke(view, to)
         }
     }
 
-    override fun subscribe(key: Any, observer: (T?) -> Unit) {
+    override fun subscribe(key: Any, observer: (T?, T2?) -> Unit) {
         widgetMap[key] = observer
     }
 

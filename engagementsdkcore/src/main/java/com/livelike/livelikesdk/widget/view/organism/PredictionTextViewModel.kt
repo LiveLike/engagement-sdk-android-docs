@@ -13,6 +13,7 @@ import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.livelikesdk.widget.WidgetDataClient
+import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.view.molecule.TextViewAdapter
 
@@ -27,7 +28,25 @@ internal class PredictionTextViewModel(application: Application) : AndroidViewMo
     var animationPath = ""
 
     init {
-        currentSession.widgetPayloadStream.subscribe(this::class.java) { observePayload(it) }
+        currentSession.widgetStream.subscribe(this::class.java) { s: String?, j: JsonObject? ->
+            widgetObserver(
+                WidgetType.fromString(s ?: ""),
+                j
+            )
+        }
+    }
+
+    private fun widgetObserver(type: WidgetType, payload: JsonObject?) {
+        if (payload != null
+            && (type == WidgetType.IMAGE_PREDICTION
+                    || type == WidgetType.IMAGE_PREDICTION_RESULTS
+                    || type == WidgetType.TEXT_PREDICTION
+                    || type == WidgetType.TEXT_PREDICTION_RESULTS)
+        ) {
+            data.postValue(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
+        } else {
+            cleanUp()
+        }
     }
 
     fun startDismissTimout(timeout: String, isFollowup: Boolean) {
@@ -60,16 +79,7 @@ internal class PredictionTextViewModel(application: Application) : AndroidViewMo
             }
         }
 
-        currentSession.widgetTypeStream.onNext(null)
-        currentSession.widgetPayloadStream.onNext(null)
-    }
-
-    private fun observePayload(payload: JsonObject?) {
-        if (payload != null) {
-            data.postValue(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
-        } else {
-            cleanUp()
-        }
+        currentSession.widgetStream.onNext(null, null)
     }
 
     private fun followupState(textPredictionId: String, correctOptionId: String) {
@@ -108,6 +118,6 @@ internal class PredictionTextViewModel(application: Application) : AndroidViewMo
     }
 
     override fun onCleared() {
-        currentSession.widgetPayloadStream.unsubscribe(this::class.java)
+        currentSession.widgetStream.unsubscribe(this::class.java)
     }
 }

@@ -15,7 +15,6 @@ import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.widget.model.Option
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
-import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButtonBackground
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imagePercentage
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.determinateBar
@@ -36,7 +35,10 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
 
     // TODO: Split this in 2 classes, 2 adapters
     private fun setupTextItem(option: Option) {
-        if (!inflated) inflate(context, R.layout.atom_widget_text_item, this)
+        if (!inflated) {
+            inflated = true
+            inflate(context, R.layout.atom_widget_text_item, this)
+        }
         text_button.text = option.description
         val progress = option.getPercent(option.getMergedVoteCount()) // TODO: need to get total votes from the resource
         determinateBar.progress = progress
@@ -51,7 +53,10 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
     }
 
     private fun setupImageItem(option: Option) {
-        if (!inflated) inflate(context, R.layout.atom_widget_image_item, this)
+        if (!inflated) {
+            inflated = true
+            inflate(context, R.layout.atom_widget_image_item, this)
+        }
         imageText.text = option.description
         val progress = option.getPercent(option.getMergedVoteCount()) // TODO: need to get total votes from the resource
         imageBar.progress = progress
@@ -74,6 +79,6 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
 
     fun updateViewBackground(drawable: Int) {
         text_button?.background = AppCompatResources.getDrawable(context, drawable)
-        imageButtonBackground?.background = AppCompatResources.getDrawable(context, drawable)
+//        imageButtonBackground?.background = AppCompatResources.getDrawable(context, drawable)
     }
 }

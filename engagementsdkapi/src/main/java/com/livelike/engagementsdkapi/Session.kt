@@ -14,8 +14,7 @@ interface LiveLikeContentSession {
     val currentUser: LiveLikeUser?
     val chatState: ChatState
     var widgetState: WidgetTransientState
-    val widgetTypeStream: Stream<String?>
-    val widgetPayloadStream: Stream<JsonObject?>
+    val widgetStream: Stream<String?, JsonObject?>
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -34,9 +33,9 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
 }
 
-interface Stream<T> {
-    fun onNext(data: T?)
-    fun subscribe(key: Any, observer: (T?) -> Unit)
+interface Stream<T, T2> {
+    fun onNext(data1: T?, data2: T2?)
+    fun subscribe(key: Any, observer: (T?, T2?) -> Unit)
     fun unsubscribe(key: Any)
     fun clear()
 }

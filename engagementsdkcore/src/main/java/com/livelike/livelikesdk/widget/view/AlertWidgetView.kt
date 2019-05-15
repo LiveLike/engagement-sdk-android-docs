@@ -31,6 +31,8 @@ internal class AlertWidgetView : ConstraintLayout {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
+    private var inflated = false
+
     private val viewModel: AlertWidgetViewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(AlertWidgetViewModel::class.java)
 
@@ -44,7 +46,10 @@ internal class AlertWidgetView : ConstraintLayout {
     }
 
     private fun inflate(context: Context, resourceAlert: Alert) {
-        LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
+        if (!inflated) {
+            inflated = true
+            LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
+        }
 
         bodyText.text = resourceAlert.text
         labelText.text = resourceAlert.title
@@ -75,12 +80,6 @@ internal class AlertWidgetView : ConstraintLayout {
                     .into(bodyImage)
                 }
             }
-
-        // User clicks here
-        viewModel.voteForOption("optionID")
-
-        // View wants to dismiss itself
-//        alertWidgetViewModel.dismiss()
 
         if (resourceAlert.title.isNullOrEmpty()) {
             labelBackground.visibility = View.GONE

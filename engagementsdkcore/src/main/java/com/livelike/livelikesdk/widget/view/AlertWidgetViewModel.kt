@@ -8,6 +8,7 @@ import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.util.AndroidResource
 import com.livelike.livelikesdk.util.gson
 import com.livelike.livelikesdk.util.logDebug
+import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 
 internal class AlertWidgetViewModel : ViewModel() {
@@ -15,12 +16,18 @@ internal class AlertWidgetViewModel : ViewModel() {
     var data: MutableLiveData<Alert?> = MutableLiveData()
 
     init {
-        currentSession.widgetPayloadStream.subscribe(this::class.java) { observePayload(it) }
+        currentSession.widgetStream.subscribe(this::class.java) { s: String?, j: JsonObject? ->
+            widgetObserver(
+                s ?: "",
+                j
+            )
+        }
     }
 
-    // should also be able to filter by widget type
-    private fun observePayload(payload: JsonObject?) {
-        if (payload != null) data.postValue(gson.fromJson(payload.toString(), Alert::class.java) ?: null)
+    private fun widgetObserver(type: String, payload: JsonObject?) {
+        if (payload != null && WidgetType.fromString(type) == WidgetType.ALERT) {
+            data.postValue(gson.fromJson(payload.toString(), Alert::class.java) ?: null)
+        }
     }
 
     fun startDismissTimout(timeout: String) {
@@ -33,13 +40,8 @@ internal class AlertWidgetViewModel : ViewModel() {
         }
     }
 
-    fun voteForOption(optionId: String) {
-        //
-    }
-
     fun dismiss() {
-        currentSession.widgetTypeStream.onNext(null)
-        currentSession.widgetPayloadStream.onNext(null)
+        currentSession.widgetStream.onNext(null, null)
         timeoutStarted = false
     }
 
@@ -47,6 +49,6 @@ internal class AlertWidgetViewModel : ViewModel() {
         // NEED  TO CLEAR THE viewModel when timer expires
         logDebug { "ViewModel is cleared" }
         // need to clear
-        currentSession.widgetPayloadStream.unsubscribe(this::class.java)
+        currentSession.widgetStream.unsubscribe(this::class.java)
     }
 }

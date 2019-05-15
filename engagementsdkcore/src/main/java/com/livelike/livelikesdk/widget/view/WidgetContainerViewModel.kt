@@ -5,15 +5,22 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.FrameLayout
+import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.util.logDebug
+import com.livelike.livelikesdk.util.logError
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.view.util.SwipeDismissTouchListener
 
 class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val session: LiveLikeContentSession) {
 
     init {
-        session.widgetTypeStream.subscribe(WidgetContainerViewModel::class.java) { widgetObserver(it) }
+        session.widgetStream.subscribe(WidgetContainerViewModel::class.java) { s: String?, j: JsonObject? ->
+            widgetObserver(
+                s,
+                j
+            )
+        }
 
         // Swipe to dismiss
         widgetContainer.setOnTouchListener(
@@ -26,7 +33,7 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
                     }
 
                     override fun onDismiss(view: View?, token: Any?) {
-                        session.widgetTypeStream.onNext(null)
+                        session.widgetStream.onNext(null, null)
                     }
                 })
         )
@@ -35,23 +42,27 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
         widgetContainer.layoutTransition = LayoutTransition()
     }
 
-    private fun widgetObserver(widgetType: String?) {
-        if (widgetType == null) {
+    private fun widgetObserver(type: String?, payload: JsonObject?) {
+        if (type.isNullOrEmpty()) {
             dismissWidget()
         } else {
-            displayWidget(widgetType)
+            displayWidget(type)
         }
     }
 
     private fun displayWidget(widgetView: String) {
-        logDebug { "NOW - Show Widget" }
+
         Handler(Looper.getMainLooper()).post {
-            widgetContainer.addView(
-                WidgetViewProvider().get(
-                    WidgetType.fromString(widgetView),
-                    widgetContainer.context
-                )
+            val view = WidgetViewProvider().get(
+                WidgetType.fromString(widgetView),
+                widgetContainer.context
             )
+            if (view != null) {
+                widgetContainer.addView(view)
+                logDebug { "NOW - Show Widget" }
+            } else {
+                logError { "Can't display view of type: $widgetView" }
+            }
         }
     }
 
@@ -61,6 +72,6 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
     }
 
     fun close() {
-        session.widgetTypeStream.unsubscribe(WidgetContainerViewModel::class.java)
+        session.widgetStream.unsubscribe(WidgetContainerViewModel::class.java)
     }
 }

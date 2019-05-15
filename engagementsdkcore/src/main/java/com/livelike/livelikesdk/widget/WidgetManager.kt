@@ -17,8 +17,7 @@ import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
-    private val widgetTypeStream: Stream<String?>,
-    private val widgetPayloadStream: Stream<JsonObject?>
+    private val widgetStream: Stream<String?, JsonObject?>
 ) :
     MessagingClientProxy(upstream),
     ExternalMessageTrigger,
@@ -109,26 +108,24 @@ internal class WidgetManager(
 
         // If this message type is in the exemption list it should never flip processing boolean
 //        isProcessing = !exemption || isProcessing
-        val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
+        val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         payload.get("subscribe_channel")?.asString?.let {
             subscribeForResults(it)
         }
-        widgetPayloadStream.onNext(payload)
-        widgetTypeStream.onNext(widgetType.value)
-        // TODO: Register impression here too
+
+        widgetStream.onNext(widgetType, payload)
+
         // Register the impression on the backend
         payload.get("impression_url")?.asString?.let {
             dataClient.registerImpression(it)
         }
+
         super.onClientMessageEvent(client, event)
     }
 
     fun toggleEmission(pause: Boolean) {
         triggerListener?.toggleEmission(pause)
-//        if (pause) {
-//            renderer?.dismissCurrentWidget()
-//        }
     }
 }
 
@@ -150,7 +147,7 @@ enum class WidgetType(val value: String) {
     NONE("none");
 
     companion object {
-        private val map = WidgetType.values().associateBy(WidgetType::value)
+        private val map = values().associateBy(WidgetType::value)
         fun fromString(type: String) = map[type] ?: NONE
     }
 }
@@ -165,12 +162,11 @@ internal interface WidgetDataClient {
 
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
-    widgetTypeStream: Stream<String?>,
-    widgetPayloadStream: Stream<JsonObject?>
+    widgetStream: Stream<String?, JsonObject?>
 ): WidgetManager {
     val triggeredMessagingClient = TriggeredMessagingClient(this)
     val widgetQueue =
-        WidgetManager(triggeredMessagingClient, dataClient, widgetTypeStream, widgetPayloadStream)
+        WidgetManager(triggeredMessagingClient, dataClient, widgetStream)
     triggeredMessagingClient.externalTrigger = widgetQueue
     return widgetQueue
 }

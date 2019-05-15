@@ -60,5 +60,5 @@ internal class TextViewAdapter(private val myDataset: List<Option>) :
     }
 
     // Return the size of your dataset (invoked by the layout manager)
-    override fun getItemCount() = myDataset.size ?: 0
+    override fun getItemCount() = myDataset.size
 }
