@@ -42,9 +42,8 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
             inflate(context, R.layout.atom_widget_text_item, this)
         }
         text_button.text = option.description
-        val progress = option.getPercent(option.getMergedVoteCount()) // TODO: need to get total votes from the resource
-        determinateBar.progress = progress
-        percentageText.text = "$progress%"
+        determinateBar.progress = option.percentage
+        percentageText.text = "${option.percentage}%"
         clickListener?.apply {
             text_button.setOnClickListener(clickListener)
         }
@@ -60,9 +59,8 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
             inflate(context, R.layout.atom_widget_image_item, this)
         }
         imageText.text = option.description
-        val progress = option.getPercent(option.getMergedVoteCount()) // TODO: need to get total votes from the resource
-        imageBar.progress = progress
-        imagePercentage.text = "$progress%"
+        imageBar.progress = option.percentage
+        imagePercentage.text = "${option.percentage}%"
         Glide.with(context)
             .load(option.image_url)
             .apply(

@@ -27,6 +27,8 @@ internal class AlertWidgetViewModel : ViewModel() {
     private fun widgetObserver(type: String, payload: JsonObject?) {
         if (payload != null && WidgetType.fromString(type) == WidgetType.ALERT) {
             data.postValue(gson.fromJson(payload.toString(), Alert::class.java) ?: null)
+        } else {
+            data.postValue(null)
         }
     }
 

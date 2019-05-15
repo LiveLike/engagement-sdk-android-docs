@@ -35,7 +35,6 @@ internal data class Resource(
         }
     }
 
-
     fun getMergedTotal(): Int {
         return if (totalAnswers == 0) {
             totalVotes
@@ -44,7 +43,11 @@ internal data class Resource(
         }
     }
 
-
+    init {
+        getMergedOptions()?.forEach {
+            it.percentage = it.getPercent(getMergedTotal().toFloat())
+        }
+    }
 }
 
 internal data class Alert(
@@ -99,7 +102,7 @@ internal data class Option(
         }
     }
 
-
+    var percentage = 0
 }
 
 internal data class Vote(

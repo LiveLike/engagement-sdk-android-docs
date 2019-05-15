@@ -115,6 +115,7 @@ internal class PredictionTextViewModel(application: Application) : AndroidViewMo
         animationProgress = 0f
         animationPath = ""
         state.postValue("")
+        data.postValue(null)
     }
 
     override fun onCleared() {
