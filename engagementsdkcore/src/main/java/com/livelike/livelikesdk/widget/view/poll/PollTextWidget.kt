@@ -7,7 +7,7 @@
 // import android.view.View
 // import com.livelike.engagementsdkapi.WidgetTransientState
 // import com.livelike.livelikesdk.R
-// import com.livelike.livelikesdk.animation.ViewAnimationManager
+// import com.livelike.livelikesdk.widget.animation.ViewAnimationManager
 // import com.livelike.livelikesdk.widget.view.prediction.text.TextOptionWidgetBase
 // import kotlinx.android.synthetic.main.prediction_text_widget.view.closeButton
 // import kotlinx.android.synthetic.main.prediction_text_widget.view.questionTextView

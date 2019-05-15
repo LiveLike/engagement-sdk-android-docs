@@ -6,12 +6,12 @@ import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.MessagingClient
-import com.livelike.livelikesdk.messaging.proxies.ExternalMessageTrigger
-import com.livelike.livelikesdk.messaging.proxies.ExternalTriggerListener
-import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
-import com.livelike.livelikesdk.messaging.proxies.TriggeredMessagingClient
+import com.livelike.livelikesdk.services.messaging.ClientMessage
+import com.livelike.livelikesdk.services.messaging.MessagingClient
+import com.livelike.livelikesdk.services.messaging.proxies.ExternalMessageTrigger
+import com.livelike.livelikesdk.services.messaging.proxies.ExternalTriggerListener
+import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
+import com.livelike.livelikesdk.services.messaging.proxies.TriggeredMessagingClient
 
 // / Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(

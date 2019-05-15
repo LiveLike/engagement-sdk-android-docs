@@ -5,12 +5,12 @@
                                              xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_height="match_parent">
 
-    <com.livelike.livelikesdk.widget.view.atom.TitleView android:layout_width="match_parent"
-                                                         android:layout_height="wrap_content"
-                                                         app:layout_constraintTop_toTopOf="parent"
-                                                         app:layout_constraintStart_toStartOf="parent"
-                                                         app:layout_constraintEnd_toEndOf="parent"
-                                                         android:id="@+id/titleView"/>
+    <com.livelike.livelikesdk.widget.view.components.TitleView android:layout_width="match_parent"
+                                                               android:layout_height="wrap_content"
+                                                               app:layout_constraintTop_toTopOf="parent"
+                                                               app:layout_constraintStart_toStartOf="parent"
+                                                               app:layout_constraintEnd_toEndOf="parent"
+                                                               android:id="@+id/titleView"/>
 
     <android.support.v7.widget.RecyclerView android:id="@+id/textRecyclerView"
                                             android:layout_width="match_parent"
@@ -21,7 +21,7 @@
                                             app:layout_constraintStart_toStartOf="parent"
                                             app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.livelike.livelikesdk.widget.view.atom.ConfirmMessageView
+    <com.livelike.livelikesdk.widget.view.components.ConfirmMessageView
             android:id="@+id/confirmationMessage"
             android:layout_width="0dp"
             android:layout_height="0dp"

@@ -5,11 +5,11 @@ import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.livelikesdk.messaging.ClientMessage
-import com.livelike.livelikesdk.messaging.MessagingClient
-import com.livelike.livelikesdk.messaging.proxies.MessagingClientProxy
-import com.livelike.livelikesdk.messaging.sendbird.ChatClient
-import com.livelike.livelikesdk.util.extractStringOrEmpty
+import com.livelike.livelikesdk.services.messaging.ClientMessage
+import com.livelike.livelikesdk.services.messaging.MessagingClient
+import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
+import com.livelike.livelikesdk.services.messaging.sendbird.ChatClient
+import com.livelike.livelikesdk.utils.extractStringOrEmpty
 import java.util.Date
 
 internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient) :

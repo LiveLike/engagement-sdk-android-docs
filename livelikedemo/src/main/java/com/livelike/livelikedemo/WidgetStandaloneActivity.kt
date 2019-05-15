@@ -17,7 +17,7 @@ import android.widget.Button
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.util.registerLogsHandler
+import com.livelike.livelikesdk.utils.registerLogsHandler
 import com.livelike.livelikesdk.widget.WidgetType
 import kotlinx.android.synthetic.main.activity_standalone_widget.log_label
 import kotlinx.android.synthetic.main.activity_standalone_widget.toolbar

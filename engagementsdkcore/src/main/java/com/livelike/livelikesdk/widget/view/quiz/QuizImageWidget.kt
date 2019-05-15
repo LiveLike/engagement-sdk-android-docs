@@ -22,12 +22,12 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimationManager
-import com.livelike.livelikesdk.binding.QuizVoteObserver
-import com.livelike.livelikesdk.binding.WidgetObserver
-import com.livelike.livelikesdk.util.AndroidResource
+import com.livelike.livelikesdk.widget.animation.ViewAnimationManager
+import com.livelike.livelikesdk.widget.binding.QuizVoteObserver
+import com.livelike.livelikesdk.widget.binding.WidgetObserver
+import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
+import com.livelike.livelikesdk.widget.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
 import kotlinx.android.synthetic.main.confirm_message.view.prediction_result
 import kotlinx.android.synthetic.main.prediction_image_row_element.view.button

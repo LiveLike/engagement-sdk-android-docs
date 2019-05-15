@@ -1,6 +1,6 @@
 package com.livelike.livelikesdk.widget.model
 
-import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.widget.binding.WidgetObserver
 import java.net.URI
 
 internal class Widget {

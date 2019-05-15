@@ -14,8 +14,9 @@ import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.util.AndroidResource
+import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.model.Alert
+import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
 import kotlinx.android.synthetic.main.alert_widget.view.bodyBackground
 import kotlinx.android.synthetic.main.alert_widget.view.bodyImage
 import kotlinx.android.synthetic.main.alert_widget.view.bodyText

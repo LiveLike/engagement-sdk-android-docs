@@ -4,9 +4,9 @@ import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.analytics.analyticService
-import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
+import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 
 private var sdkInstance: LiveLikeSDK? = null
 

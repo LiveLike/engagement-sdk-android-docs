@@ -13,12 +13,12 @@ import android.view.View
 import android.view.ViewStub
 import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.animation.ViewAnimationManager
-import com.livelike.livelikesdk.binding.QuizVoteObserver
-import com.livelike.livelikesdk.binding.WidgetObserver
+import com.livelike.livelikesdk.widget.animation.ViewAnimationManager
+import com.livelike.livelikesdk.widget.binding.QuizVoteObserver
+import com.livelike.livelikesdk.widget.binding.WidgetObserver
 import com.livelike.livelikesdk.widget.model.VoteOption
-import com.livelike.livelikesdk.widget.view.adapters.ImageAdapter
-import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
+import com.livelike.livelikesdk.widget.adapters.ImageAdapter
+import com.livelike.livelikesdk.widget.util.WidgetResultDisplayUtil
 import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
 import kotlinx.android.synthetic.main.prediction_image_widget.view.closeButton
 import kotlinx.android.synthetic.main.prediction_image_widget.view.imageOptionList

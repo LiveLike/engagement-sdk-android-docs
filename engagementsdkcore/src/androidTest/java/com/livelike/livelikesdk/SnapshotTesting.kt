@@ -8,9 +8,9 @@ import android.view.View
 import com.facebook.testing.screenshot.Screenshot
 import com.facebook.testing.screenshot.ViewHelpers
 import com.livelike.engagementsdkapi.WidgetTransientState
-import com.livelike.livelikesdk.animation.ViewAnimationManager
+import com.livelike.livelikesdk.widget.animation.ViewAnimationManager
 import com.livelike.livelikesdk.widget.model.Alert
-import com.livelike.livelikesdk.widget.view.AlertWidgetViewModel
+import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
 import kotlinx.android.synthetic.main.widget_view.view.widgetContainerView
 import org.junit.Before
 import org.junit.Test
