@@ -1,15 +1,15 @@
-//package com.livelike.livelikesdk.widget.view.prediction.text
+// package com.livelike.livelikesdk.widget.view.prediction.text
 //
-//import android.content.Context
-//import android.os.Handler
-//import android.util.AttributeSet
-//import android.widget.ImageView
-//import com.livelike.engagementsdkapi.WidgetTransientState
-//import com.livelike.livelikesdk.R
-//import com.livelike.livelikesdk.animation.ViewAnimationManager
-//import com.livelike.livelikesdk.widget.model.VoteOption
+// import android.content.Context
+// import android.os.Handler
+// import android.util.AttributeSet
+// import android.widget.ImageView
+// import com.livelike.engagementsdkapi.WidgetTransientState
+// import com.livelike.livelikesdk.R
+// import com.livelike.livelikesdk.animation.ViewAnimationManager
+// import com.livelike.livelikesdk.widget.model.VoteOption
 //
-//internal class PredictionTextFollowUpWidgetView :
+// internal class PredictionTextFollowUpWidgetView :
 //    TextOptionWidgetBase {
 //    constructor(context: Context?) : super(context)
 //    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -51,15 +51,15 @@
 //    private fun transitionAnimation() {
 //        viewAnimation.startWidgetTransitionInAnimation {
 //            //            viewAnimation.startResultAnimation(lottieAnimationPath, context, prediction_result, {
-////                transientState.pieTimerProgress = it
-////                state.invoke(transientState)
-////            }, {
-////                transientState.resultPath = it
-////                state.invoke(transientState)
-////            })
+// //                transientState.pieTimerProgress = it
+// //                state.invoke(transientState)
+// //            }, {
+// //                transientState.resultPath = it
+// //                state.invoke(transientState)
+// //            })
 //            viewAnimation.startWidgetTransitionInAnimation {
 //            }
 //            Handler().postDelayed({ dismissWidget?.invoke() }, timeout)
 //        }
 //    }
-//}
+// }

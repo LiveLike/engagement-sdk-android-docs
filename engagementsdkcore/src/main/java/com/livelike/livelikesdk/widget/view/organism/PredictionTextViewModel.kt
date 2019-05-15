@@ -37,11 +37,11 @@ internal class PredictionTextViewModel(application: Application) : AndroidViewMo
     }
 
     private fun widgetObserver(type: WidgetType, payload: JsonObject?) {
-        if (payload != null
-            && (type == WidgetType.IMAGE_PREDICTION
-                    || type == WidgetType.IMAGE_PREDICTION_RESULTS
-                    || type == WidgetType.TEXT_PREDICTION
-                    || type == WidgetType.TEXT_PREDICTION_RESULTS)
+        if (payload != null &&
+            (type == WidgetType.IMAGE_PREDICTION ||
+                    type == WidgetType.IMAGE_PREDICTION_RESULTS ||
+                    type == WidgetType.TEXT_PREDICTION ||
+                    type == WidgetType.TEXT_PREDICTION_RESULTS)
         ) {
             data.postValue(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
         } else {

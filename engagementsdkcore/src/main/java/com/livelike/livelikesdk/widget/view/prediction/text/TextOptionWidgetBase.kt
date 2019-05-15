@@ -1,38 +1,38 @@
-//package com.livelike.livelikesdk.widget.view.prediction.text
+// package com.livelike.livelikesdk.widget.view.prediction.text
 //
-//import android.annotation.SuppressLint
-//import android.arch.lifecycle.Observer
-//import android.arch.lifecycle.ViewModelProviders
-//import android.content.Context
-//import android.support.constraint.ConstraintLayout
-//import android.support.v7.app.AppCompatActivity
-//import android.support.v7.content.res.AppCompatResources
-//import android.support.v7.widget.RecyclerView
-//import android.util.AttributeSet
-//import android.view.LayoutInflater
-//import android.view.View
-//import android.view.ViewGroup
-//import android.view.ViewStub
-//import android.widget.Button
-//import android.widget.ProgressBar
-//import android.widget.TextView
-//import com.livelike.livelikesdk.R
-//import com.livelike.livelikesdk.animation.ViewAnimationManager
-//import com.livelike.livelikesdk.binding.WidgetObserver
-//import com.livelike.livelikesdk.widget.model.Option
-//import com.livelike.livelikesdk.widget.model.Resource
-//import com.livelike.livelikesdk.widget.model.VoteOption
-//import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
-//import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
-//import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.wrongAnswerLottieFilePath
-//import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
-//import kotlinx.android.synthetic.main.prediction_text_widget.view.option_list
-//import kotlinx.android.synthetic.main.prediction_text_widget.view.questionTextView
-//import kotlinx.android.synthetic.main.text_option_row_element.view.determinateBar
-//import kotlinx.android.synthetic.main.text_option_row_element.view.percentageText
-//import kotlinx.android.synthetic.main.text_option_row_element.view.text_button
+// import android.annotation.SuppressLint
+// import android.arch.lifecycle.Observer
+// import android.arch.lifecycle.ViewModelProviders
+// import android.content.Context
+// import android.support.constraint.ConstraintLayout
+// import android.support.v7.app.AppCompatActivity
+// import android.support.v7.content.res.AppCompatResources
+// import android.support.v7.widget.RecyclerView
+// import android.util.AttributeSet
+// import android.view.LayoutInflater
+// import android.view.View
+// import android.view.ViewGroup
+// import android.view.ViewStub
+// import android.widget.Button
+// import android.widget.ProgressBar
+// import android.widget.TextView
+// import com.livelike.livelikesdk.R
+// import com.livelike.livelikesdk.animation.ViewAnimationManager
+// import com.livelike.livelikesdk.binding.WidgetObserver
+// import com.livelike.livelikesdk.widget.model.Option
+// import com.livelike.livelikesdk.widget.model.Resource
+// import com.livelike.livelikesdk.widget.model.VoteOption
+// import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil
+// import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.correctAnswerLottieFilePath
+// import com.livelike.livelikesdk.widget.view.util.WidgetResultDisplayUtil.Companion.wrongAnswerLottieFilePath
+// import kotlinx.android.synthetic.main.confirm_message.view.confirmMessageTextView
+// import kotlinx.android.synthetic.main.prediction_text_widget.view.option_list
+// import kotlinx.android.synthetic.main.prediction_text_widget.view.questionTextView
+// import kotlinx.android.synthetic.main.text_option_row_element.view.determinateBar
+// import kotlinx.android.synthetic.main.text_option_row_element.view.percentageText
+// import kotlinx.android.synthetic.main.text_option_row_element.view.text_button
 //
-//internal class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
+// internal class TextOptionWidgetBase : ConstraintLayout, WidgetObserver {
 //    override fun questionUpdated(questionText: String) {
 //    }
 //
@@ -138,9 +138,9 @@
 //        lottieAnimationPath = if (correctOptionWithUserSelection.first == correctOptionWithUserSelection.second)
 //            correctAnswerLottieFilePath
 //        else wrongAnswerLottieFilePath
-////        viewAnimation.startResultAnimation(
-////            lottieAnimationPath, context, prediction_result
-////        )
+// //        viewAnimation.startResultAnimation(
+// //            lottieAnimationPath, context, prediction_result
+// //        )
 //    }
 //
 //    inner class TextOptionAdapter(
@@ -227,4 +227,4 @@
 //    override fun onDetachedFromWindow() {
 //        super.onDetachedFromWindow()
 //    }
-//}
+// }

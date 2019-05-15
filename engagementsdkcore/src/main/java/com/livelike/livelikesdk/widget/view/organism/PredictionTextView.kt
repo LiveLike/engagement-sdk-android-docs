@@ -18,7 +18,6 @@ import kotlinx.android.synthetic.main.organism_text_prediction.view.followupAnim
 import kotlinx.android.synthetic.main.organism_text_prediction.view.textRecyclerView
 import kotlinx.android.synthetic.main.organism_text_prediction.view.titleView
 
-
 class PredictionTextView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
 
     private var viewModel =
@@ -95,4 +94,3 @@ class PredictionTextView(context: Context, attr: AttributeSet? = null) : Constra
         }
     }
 }
-
