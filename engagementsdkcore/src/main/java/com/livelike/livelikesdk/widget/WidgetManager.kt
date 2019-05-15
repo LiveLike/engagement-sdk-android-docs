@@ -23,6 +23,15 @@ internal class WidgetManager(
     ExternalMessageTrigger,
     WidgetEventListener {
 
+    init {
+        widgetStream.subscribe(this::class.java) { s: String?, j: JsonObject? ->
+            isProcessing = (s != null)
+            if (!isProcessing) {
+                triggerListener?.onTrigger("done")
+            }
+        }
+    }
+
     private val exemptionList = listOf(
         Pair("event", WidgetType.TEXT_QUIZ_RESULT.value),
         Pair("event", WidgetType.IMAGE_QUIZ_RESULT.value),
@@ -104,10 +113,6 @@ internal class WidgetManager(
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-//        val exemption = exemptionList.any { event.message[it.first].asString == it.second }
-
-        // If this message type is in the exemption list it should never flip processing boolean
-//        isProcessing = !exemption || isProcessing
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         payload.get("subscribe_channel")?.asString?.let {
@@ -122,10 +127,6 @@ internal class WidgetManager(
         }
 
         super.onClientMessageEvent(client, event)
-    }
-
-    fun toggleEmission(pause: Boolean) {
-        triggerListener?.toggleEmission(pause)
     }
 }
 

@@ -34,8 +34,8 @@ class PredictionTextView(context: Context, attr: AttributeSet? = null) : Constra
     }
 
     private fun resourceObserver() = Observer<Resource> { resource ->
-        resource?.apply {
-            val optionList = resource.getMergedOptions() ?: return@apply
+        if (resource != null) {
+            val optionList = resource.getMergedOptions() ?: return@Observer
             if (!inflated) {
                 inflated = true
                 inflate(context, com.livelike.livelikesdk.R.layout.organism_text_prediction, this@PredictionTextView)
@@ -63,6 +63,8 @@ class PredictionTextView(context: Context, attr: AttributeSet? = null) : Constra
             }
 
             viewModel.startDismissTimout(resource.timeout, resource.correct_option_id.isNotEmpty())
+        } else {
+            inflated = false
         }
     }
 

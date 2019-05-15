@@ -34,14 +34,14 @@ internal class LiveLikeContentSessionImpl(
     override var programUrl: String = ""
         set(value) {
             if (field != value) {
-                llDataClient.getLiveLikeProgramData(programUrl) {
+                field = value
+                llDataClient.getLiveLikeProgramData(value) {
                     if (it !== null) {
                         program = it
                         initializeWidgetMessaging(it)
                         initializeChatMessaging(it)
                     }
                 }
-                field = value
             }
         }
     override var currentPlayheadTime: () -> EpochTime = { EpochTime(0) }
@@ -130,12 +130,10 @@ internal class LiveLikeContentSessionImpl(
     }
 
     override fun pause() {
-        widgetQueue?.toggleEmission(true)
         chatQueue?.toggleEmission(true)
     }
 
     override fun resume() {
-        widgetQueue?.toggleEmission(false)
         chatQueue?.toggleEmission(false)
     }
 

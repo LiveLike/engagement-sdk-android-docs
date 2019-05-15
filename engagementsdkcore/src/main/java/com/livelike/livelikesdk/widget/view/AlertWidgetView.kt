@@ -38,9 +38,11 @@ internal class AlertWidgetView : ConstraintLayout {
 
     init {
         viewModel.data.observe(context as AppCompatActivity, Observer {
-            it?.apply {
+            if (it != null) {
                 inflate(context, it)
                 viewModel.startDismissTimout(it.timeout)
+            } else {
+                inflated = false
             }
         })
     }
