@@ -57,6 +57,7 @@ internal class TextViewAdapter(private val myDataset: List<Option>) :
                 holder.textItemView.updateViewBackground(R.drawable.button_correct_answer_outline)
             }
         }
+        holder.textItemView.setProgressVisibility(predictionCorrect.isNotEmpty())
     }
 
     // Return the size of your dataset (invoked by the layout manager)
