@@ -25,9 +25,14 @@ internal class WidgetManager(
 
     init {
         widgetStream.subscribe(this::class.java) { s: String?, j: JsonObject? ->
-            isProcessing = (s != null)
-            if (!isProcessing) {
-                triggerListener?.onTrigger("done")
+            // TODO: Find a better way to debounce the widgets
+//            isProcessing = (s != null)
+//            if (!isProcessing) {
+//                triggerListener?.onTrigger("done")
+//            }
+            if (s == null && !widgetSubscribedChannels.isNullOrEmpty()) {
+                upstream.unsubscribe(widgetSubscribedChannels)
+                widgetSubscribedChannels.clear()
             }
         }
     }
@@ -115,8 +120,13 @@ internal class WidgetManager(
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
-        payload.get("subscribe_channel")?.asString?.let {
-            subscribeForResults(it)
+
+        if (WidgetType.fromString(widgetType) == WidgetType.TEXT_POLL
+            || WidgetType.fromString(widgetType) == WidgetType.IMAGE_POLL
+        ) {
+            payload.get("subscribe_channel")?.asString?.let {
+                subscribeForResults(it)
+            }
         }
 
         widgetStream.onNext(widgetType, payload)

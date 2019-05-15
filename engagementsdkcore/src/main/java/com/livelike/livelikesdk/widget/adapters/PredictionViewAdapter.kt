@@ -7,8 +7,8 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.widget.model.Option
 import com.livelike.livelikesdk.widget.view.components.TextItemView
 
-internal class TextViewAdapter(private val myDataset: List<Option>) :
-    RecyclerView.Adapter<TextViewAdapter.TextOptionViewHolder>() {
+internal class PredictionViewAdapter(private val myDataset: List<Option>) :
+    RecyclerView.Adapter<PredictionViewAdapter.TextOptionViewHolder>() {
 
     var selectedPosition = RecyclerView.NO_POSITION
     var selectionLocked = false

@@ -75,8 +75,8 @@ internal data class Option(
     val answer_url: String? = "",
     val vote_url: String? = "",
     val image_url: String? = "",
-    val answer_count: Int? = 0,
-    val vote_count: Int? = 0
+    var answer_count: Int? = 0,
+    var vote_count: Int? = 0
 ) {
     @Deprecated("Use getPercent instead")
     fun getPercentVote(total: Float): Int {
@@ -103,6 +103,11 @@ internal data class Option(
     }
 
     var percentage = 0
+
+    fun updateCount(option: Option) {
+        answer_count = option.answer_count
+        vote_count = option.vote_count
+    }
 }
 
 internal data class Vote(

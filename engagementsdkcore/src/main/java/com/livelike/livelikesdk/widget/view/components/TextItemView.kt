@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk.widget.view.components
 
+import android.animation.LayoutTransition
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
@@ -40,6 +41,7 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
         if (!inflated) {
             inflated = true
             inflate(context, R.layout.atom_widget_text_item, this)
+            layoutTransition = LayoutTransition()
         }
         text_button.text = option.description
         determinateBar.progress = option.percentage
@@ -57,6 +59,7 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
         if (!inflated) {
             inflated = true
             inflate(context, R.layout.atom_widget_image_item, this)
+            layoutTransition = LayoutTransition()
         }
         imageText.text = option.description
         imageBar.progress = option.percentage
