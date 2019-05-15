@@ -1,8 +1,7 @@
 package com.livelike.livelikesdk
 
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.google.gson.annotations.SerializedName;
-
+import com.google.gson.annotations.SerializedName
 
 internal interface LiveLikeDataClient {
     fun getLiveLikeProgramData(url: String, responseCallback: (program: Program?) -> Unit)
