@@ -7,10 +7,8 @@ import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
-import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
-import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.PollViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
@@ -18,7 +16,6 @@ import com.livelike.livelikesdk.widget.model.Resource
 internal class PollViewModel(application: Application) : AndroidViewModel(application) {
     val data: MutableLiveData<Resource> = MutableLiveData()
     val results: MutableLiveData<Resource> = MutableLiveData()
-    private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
 
     var state: MutableLiveData<String> = MutableLiveData() // confirmation, followup
 
@@ -27,12 +24,11 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     var animationProgress = 0f
     var animationPath = ""
 
-
     init {
-        currentSession.widgetStream.subscribe(this::class.java) { s: String?, j: JsonObject? ->
+        currentSession.widgetStream.subscribe(this::class.java) { s: String?, jsonObject: JsonObject? ->
             widgetObserver(
                 WidgetType.fromString(s ?: ""),
-                j
+                jsonObject
             )
         }
     }
@@ -57,17 +53,6 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun dismiss() {
-        data.value?.let {
-            adapter?.apply {
-                if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
-                    val selectedOption = it.getMergedOptions()?.get(selectedPosition)
-
-                    // Prediction widget votes on dismiss
-                    selectedOption?.getMergedVoteUrl()?.let { it1 -> dataClient.vote(it1) }
-                }
-            }
-        }
-
         currentSession.widgetStream.onNext(null, null)
     }
 

@@ -9,13 +9,12 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.model.Option
 import com.livelike.livelikesdk.widget.view.components.TextItemView
 
-internal class PollViewAdapter(private val myDataset: List<Option>) :
+internal class PollViewAdapter(var myDataset: List<Option>) :
     RecyclerView.Adapter<PollViewAdapter.TextOptionViewHolder>() {
 
     var selectedPosition = RecyclerView.NO_POSITION
     var selectionLocked = false
-    var predictionSelected = ""
-    var predictionCorrect = ""
+    var voteUrl: String? = null
 
     inner class TextOptionViewHolder(val textItemView: TextItemView) : RecyclerView.ViewHolder(textItemView),
         View.OnClickListener {
@@ -28,8 +27,21 @@ internal class PollViewAdapter(private val myDataset: List<Option>) :
             notifyItemChanged(selectedPosition)
             selectedPosition = adapterPosition
             notifyItemChanged(selectedPosition)
-            myDataset[selectedPosition].getMergedVoteUrl()
-                ?.let { dataClient.vote(it) } // TODO: this needs to be debounced
+
+            vote()
+        }
+
+        private fun vote() {
+            // TODO: this needs to be debounced
+            if (voteUrl == null) {
+                myDataset[selectedPosition].getMergedVoteUrl()
+                    ?.let { url -> dataClient.vote(url) { voteUrl = it } }
+            } else {
+                voteUrl?.apply {
+                    myDataset[selectedPosition].getMergedVoteUrl()
+                        ?.let { dataClient.changeVote(this, myDataset[selectedPosition].id, {}) }
+                }
+            }
         }
     }
 
@@ -54,14 +66,14 @@ internal class PollViewAdapter(private val myDataset: List<Option>) :
         }
 
         // for poll this would be when time expires
-        if (predictionCorrect.isNotEmpty()) {
-            if (predictionSelected == item.id) {
-                holder.textItemView.updateViewBackground(R.drawable.button_wrong_answer_outline)
-            }
-            if (predictionCorrect == item.id) {
-                holder.textItemView.updateViewBackground(R.drawable.button_correct_answer_outline)
-            }
-        }
+//        if (selectionLocked) {
+//            if (predictionSelected == item.id) {
+//                holder.textItemView.updateViewBackground(R.drawable.button_wrong_answer_outline)
+//            }
+//            if (predictionCorrect == item.id) {
+//                holder.textItemView.updateViewBackground(R.drawable.button_correct_answer_outline)
+//            }
+//        }
 
         // for poll this is set to visible on click
         holder.textItemView.setProgressVisibility(selectedPosition != RecyclerView.NO_POSITION)

@@ -6,7 +6,6 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.livelike.livelikesdk.widget.adapters.PollViewAdapter
@@ -88,10 +87,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
                     opt.percentage = opt.getPercent(totalVotes.toFloat())
                 }
             }
-            val newAdapter = PollViewAdapter(options)
-            newAdapter.selectedPosition = viewModel.adapter?.selectedPosition ?: RecyclerView.NO_POSITION
-            newAdapter.selectionLocked = viewModel.adapter?.selectionLocked ?: false
-            viewModel.adapter = newAdapter
+            viewModel.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel.adapter, false)
         }
     }

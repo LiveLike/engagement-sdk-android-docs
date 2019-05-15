@@ -1,12 +1,14 @@
 package com.livelike.livelikesdk.widget.view.components
 
 import android.animation.LayoutTransition
+import android.animation.ValueAnimator
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.LinearInterpolator
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.FitCenter
@@ -23,6 +25,7 @@ import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.determinateBar
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.percentageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
+import kotlin.math.roundToInt
 
 internal class TextItemView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
     private var inflated = false
@@ -44,8 +47,9 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
             layoutTransition = LayoutTransition()
         }
         text_button.text = option.description
-        determinateBar.progress = option.percentage
-        percentageText.text = "${option.percentage}%"
+
+        animateProgress(option, determinateBar.progress.toFloat())
+
         clickListener?.apply {
             text_button.setOnClickListener(clickListener)
         }
@@ -55,6 +59,21 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
         )
     }
 
+    private fun animateProgress(option: Option, startValue: Float) {
+        ValueAnimator.ofFloat(startValue, option.percentage.toFloat()).apply {
+            addUpdateListener {
+                val progress = (it.animatedValue as Float).roundToInt()
+                determinateBar?.progress = progress
+                percentageText?.text = "$progress%"
+                imageBar?.progress = progress
+                imagePercentage?.text = "$progress%"
+            }
+            interpolator = LinearInterpolator()
+            duration = 500
+            start()
+        }
+    }
+
     private fun setupImageItem(option: Option) {
         if (!inflated) {
             inflated = true
@@ -62,8 +81,9 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
             layoutTransition = LayoutTransition()
         }
         imageText.text = option.description
-        imageBar.progress = option.percentage
-        imagePercentage.text = "${option.percentage}%"
+
+        animateProgress(option, imageBar.progress.toFloat())
+
         Glide.with(context)
             .load(option.image_url)
             .apply(
