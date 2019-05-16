@@ -7,6 +7,7 @@ import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -15,16 +16,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.livelike.engagementsdkapi.WidgetEvent
-import com.livelike.engagementsdkapi.WidgetEventListener
-import com.livelike.engagementsdkapi.WidgetTransientState
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.util.registerLogsHandler
+import com.livelike.livelikesdk.utils.registerLogsHandler
 import com.livelike.livelikesdk.widget.WidgetType
 import kotlinx.android.synthetic.main.activity_standalone_widget.log_label
 import kotlinx.android.synthetic.main.activity_standalone_widget.toolbar
 import kotlinx.android.synthetic.main.activity_standalone_widget.widget_command
-import kotlinx.android.synthetic.main.activity_standalone_widget.widget_view
 import kotlinx.android.synthetic.main.widget_command_row_element.view.command
 import java.io.IOException
 import java.nio.charset.Charset
@@ -176,7 +173,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 }
                             }
                         }
-                        hideCommand -> widget_view.dismissCurrentWidget()
+                        hideCommand -> Log.i(this::class.java.simpleName, "Hide Command")
                         correctAnswerCommand -> {
                             when {
                                 predictionType -> {
@@ -205,17 +202,17 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 quizType -> {
                                     commandList.remove(displayResults)
                                     updateCommandAdapter()
-                                    if (isVariance(getString(R.string.text))) {
-                                        showWidget(
-                                            WidgetType.TEXT_QUIZ_RESULT,
-                                            getPayload("quiz/text/quiz_text_result.json")
-                                        )
-                                    } else if (isVariance(getString(R.string.image))) {
-                                        showWidget(
-                                            WidgetType.IMAGE_QUIZ_RESULT,
-                                            getPayload("quiz/image/quiz_result.json")
-                                        )
-                                    }
+//                                    if (isVariance(getString(R.string.text))) {
+//                                        showWidget(
+//                                            WidgetType.TEXT_QUIZ_RESULT,
+//                                            getPayload("quiz/text/quiz_text_result.json")
+//                                        )
+//                                    } else if (isVariance(getString(R.string.image))) {
+//                                        showWidget(
+//                                            WidgetType.IMAGE_QUIZ_RESULT,
+//                                            getPayload("quiz/image/quiz_result.json")
+//                                        )
+//                                    }
                                 }
                                 pollType -> {
                                     showPollWidgetResults()
@@ -237,33 +234,32 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                 commandList.add(displayResults)
                 updateCommandAdapter()
             }, 7500L)
-            widget_view.widgetListener = null
-            widget_view.widgetListener = object : WidgetEventListener {
-                override fun subscribeForResults(channel: String) {}
-
-                override fun onOptionVoteUpdate(
-                    oldVoteUrl: String,
-                    newVoteId: String,
-                    channel: String,
-                    voteUpdateCallback: ((String) -> Unit)?
-                ) {
-                }
-
-                override fun onWidgetDisplayed(impressionUrl: String) {}
-
-                override fun onOptionVote(voteUrl: String, channel: String, voteUpdateCallback: ((String) -> Unit)?) {}
-
-                override fun onFetchingQuizResult(answerUrl: String) {}
-
-                override fun onWidgetEvent(event: WidgetEvent) {
-                    if (event == WidgetEvent.WIDGET_DISMISS) {
-                        quizDisplayHandler.removeCallbacksAndMessages(null)
-                        commandList.clear()
-                        commandList.add(showCommand)
-                        updateCommandAdapter()
-                    }
-                }
-            }
+//            widget_view.widgetListener = object : WidgetEventListener {
+//                override fun subscribeForResults(channel: String) {}
+//
+//                override fun onOptionVoteUpdate(
+//                    oldVoteUrl: String,
+//                    newVoteId: String,
+//                    channel: String,
+//                    voteUpdateCallback: ((String) -> Unit)?
+//                ) {
+//                }
+//
+//                override fun onWidgetDisplayed(impressionUrl: String) {}
+//
+//                override fun onOptionVote(voteUrl: String, channel: String, voteUpdateCallback: ((String) -> Unit)?) {}
+//
+//                override fun onFetchingQuizResult(answerUrl: String) {}
+//
+//                override fun onWidgetEvent(event: WidgetEvent) {
+//                    if (event == WidgetEvent.WIDGET_DISMISS) {
+//                        quizDisplayHandler.removeCallbacksAndMessages(null)
+//                        commandList.clear()
+//                        commandList.add(showCommand)
+//                        updateCommandAdapter()
+//                    }
+//                }
+//            }
 
             if (isVariance(getString(R.string.text))) {
                 showWidget(WidgetType.TEXT_QUIZ, getPayload("quiz/text/quiz_text_widget.json"))
@@ -286,11 +282,11 @@ class WidgetStandaloneActivity : AppCompatActivity() {
         private fun showPredictionResultWidgetAs(testTag: String) {
             if (isVariance(getString(R.string.text))) {
                 updatePayload(testTag)
-                showWidget(WidgetType.TEXT_PREDICTION_RESULTS, payload)
+                showWidget(WidgetType.TEXT_PREDICTION_FOLLOW_UP, payload)
             } else if (isVariance(getString(R.string.image))) {
                 payload = getPayload("prediction/image/prediction_question_image_result.json")
                 payload.addProperty("testTag", testTag)
-                showWidget(WidgetType.IMAGE_PREDICTION_RESULTS, payload)
+                showWidget(WidgetType.IMAGE_PREDICTION_FOLLOW_UP, payload)
             }
         }
 
@@ -305,13 +301,13 @@ class WidgetStandaloneActivity : AppCompatActivity() {
         }
 
         private fun showPollWidgetResults() {
-            if (isVariance(getString(R.string.text))) {
-                payload = getPayload("poll/poll_text_widget_results.json")
-                showWidget(WidgetType.TEXT_POLL_RESULT, payload)
-            } else if (isVariance(getString(R.string.image))) {
-                payload = getPayload("poll/poll_image_widget_results.json")
-                showWidget(WidgetType.IMAGE_POLL_RESULT, payload)
-            }
+//            if (isVariance(getString(R.string.text))) {
+//                payload = getPayload("poll/poll_text_widget_results.json")
+//                showWidget(WidgetType.TEXT_POLL_RESULT, payload)
+//            } else if (isVariance(getString(R.string.image))) {
+//                payload = getPayload("poll/poll_image_widget_results.json")
+//                showWidget(WidgetType.IMAGE_POLL_RESULT, payload)
+//            }
         }
 
         private fun updatePayload(testTag: String) {
@@ -322,11 +318,10 @@ class WidgetStandaloneActivity : AppCompatActivity() {
         private fun isVariance(variance: String?) = this.variance == variance
 
         private fun showWidget(widgetType: WidgetType, payload: JsonObject) {
-            widget_view.displayWidget(
-                widgetType.value,
-                payload,
-                WidgetTransientState()
-            )
+//            widget_view.displayWidget(
+//                widgetType.value,
+//                payload
+//            )
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

@@ -4,12 +4,14 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -30,12 +32,12 @@ import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatTheme
 import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.analytics.analyticService
-import com.livelike.livelikesdk.animation.easing.AnimationEaseAdapter
-import com.livelike.livelikesdk.animation.easing.AnimationEaseInterpolator
-import com.livelike.livelikesdk.util.AndroidResource.Companion.dpToPx
-import com.livelike.livelikesdk.util.AndroidResource.Companion.pxToDp
-import com.livelike.livelikesdk.util.logError
+import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
+import com.livelike.livelikesdk.utils.AndroidResource.Companion.pxToDp
+import com.livelike.livelikesdk.utils.logError
+import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseAdapter
+import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseInterpolator
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
@@ -79,6 +81,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private var viewRoot: View = LayoutInflater.from(context)
         .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
 
+    private var viewModel =
+        ViewModelProviders.of(context as AppCompatActivity).get(ChatViewModel::class.java)
+
     init {
         (context as Activity).window.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
@@ -99,20 +104,25 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
         session.chatRenderer = this
-        if (session.chatState.chatAdapter == null) {
-            session.chatState.chatAdapter = ChatAdapter(
+
+        if (viewModel.currentChatAdapter() == null) {
+            showLoadingSpinner()
+            viewModel.addAdapter(
+                ChatAdapter(
                 session,
                 ChatTheme(), DefaultChatCellFactory(context, null)
+                )
             )
-            showLoadingSpinner()
         }
-        setDataSource(session.chatState.chatAdapter!!)
+        viewModel.currentChatAdapter()?.let {
+            setDataSource(it)
+        }
     }
 
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
         Handler(Looper.getMainLooper()).post {
-            session.chatState.chatAdapter?.addMessage(message)
+            viewModel.currentChatAdapter()?.addMessage(message)
         }
     }
 
@@ -247,7 +257,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString()
         )
-        session.chatState.chatAdapter?.addMessage(newMessage)
+        viewModel.currentChatAdapter()?.addMessage(newMessage)
 
         hideLoadingSpinner()
         snapToLive()
@@ -311,7 +321,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun snapToLive() {
-        chatdisplay.smoothScrollToPositionFromTop(session.chatState.chatAdapter?.count?.minus(1) ?: 0, 0, 500)
+        chatdisplay.smoothScrollToPositionFromTop(viewModel.currentChatAdapter()?.count?.minus(1) ?: 0, 0, 500)
     }
 }
 

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:animateLayoutChanges="true"
+                                             android:layout_height="wrap_content"
+                                             android:background="#99000000">
+
+    <!--suppress AndroidDomInspection -->
+    <Button
+            android:id="@+id/text_button"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/button_default"
+            android:fontFamily="@font/option_font"
+            android:textSize="@dimen/option_text_size"
+            android:textColor="@color/option_text_color"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Some Hockey Player"
+            android:paddingRight="46dp"
+            android:paddingLeft="16dp"
+            android:textAlignment="textStart"/>
+
+    <ProgressBar
+            android:id="@+id/determinateBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="8dp"
+            android:elevation="1dp"
+            android:indeterminate="false"
+            android:visibility="invisible"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            tools:progress="60"
+            tools:visibility="visible"
+            tools:progressDrawable="@drawable/progress_bar_user_correct"/>
+
+    <TextView
+            android:id="@+id/percentageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="8dp"
+            android:textColor="@color/percent_label_text_color"
+            android:textSize="@dimen/percent_label_text_size"
+            android:gravity="end"
+
+            app:fontFamily="@font/header_font"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/determinateBar"
+            app:layout_constraintStart_toStartOf="@+id/determinateBar"
+            app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
+            app:layout_constraintHorizontal_bias="1.0"
+
+            android:layout_marginEnd="10dp"
+            tools:text="80%"/>
+
+</android.support.constraint.ConstraintLayout>

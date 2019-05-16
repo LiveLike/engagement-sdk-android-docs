@@ -1,15 +1,17 @@
 package com.livelike.engagementsdkapi
 
+import com.google.gson.JsonObject
+
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
  *  component.
  */
 interface LiveLikeContentSession {
-    val programUrl: String
-    var widgetRenderer: WidgetRenderer?
+    var programUrl: String
+    var currentPlayheadTime: () -> EpochTime // need to be replace by a proper time getter Java compatible
     var chatRenderer: ChatRenderer?
     val currentUser: LiveLikeUser?
-    val chatState: ChatState
+    val currentWidgetInfosStream: Stream<WidgetInfos?>
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -28,4 +30,14 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
 }
 
-// TODO: The UserId shouldn't be bound to the User Session as a user can have multiple sessions
+interface Stream<T> {
+    fun onNext(data1: T?)
+    fun subscribe(key: Any, observer: (T?) -> Unit)
+    fun unsubscribe(key: Any)
+    fun clear()
+}
+
+class WidgetInfos(
+    val type: String,
+    val payload: JsonObject
+)

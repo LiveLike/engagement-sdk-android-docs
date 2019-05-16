@@ -6,16 +6,17 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
-import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.engagementsdkapi.WidgetRenderer
+import com.livelike.engagementsdkapi.Stream
+import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
 import kotlinx.android.synthetic.main.activity_chat_only.chat_toolbar
 import kotlinx.android.synthetic.main.activity_chat_only.chat_view
 import java.util.Timer
 import java.util.TimerTask
+import java.util.concurrent.ConcurrentHashMap
 
 class ChatOnlyActivity : AppCompatActivity() {
     private val chatMessageList = mutableListOf<ChatMessage>()
@@ -24,7 +25,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat_only)
         LiveLikeSDK("1234", baseContext)
         updateToolbar()
-        val session = TestSession()
+        val session = TestSession({ EpochTime(0) }, TestStream(), "")
         chat_view.setSession(session)
 
         prePopulateChatWithMessages()
@@ -86,11 +87,12 @@ class ChatOnlyActivity : AppCompatActivity() {
         chatMessageList.add(ChatMessage(emojiMessage, "8", "Emojicon", "8", "3:00:00"))
     }
 
-    inner class TestSession : LiveLikeContentSession {
-        override val programUrl: String get() = ""
-        override val chatState = ChatState()
-        override var widgetRenderer: WidgetRenderer? = null
-            get() = null
+    inner class TestSession(
+        override var currentPlayheadTime: () -> EpochTime,
+        override val currentWidgetInfosStream: Stream<WidgetInfos?>,
+        override var programUrl: String
+    ) :
+        LiveLikeContentSession {
         override var chatRenderer: ChatRenderer? = null
             get() = null
         override val currentUser: LiveLikeUser?
@@ -105,7 +107,29 @@ class ChatOnlyActivity : AppCompatActivity() {
         override fun contentSessionId(): String { return "TestSession" }
     }
 
-    fun getEmojiByUnicode(unicode: Int): String {
+    private fun getEmojiByUnicode(unicode: Int): String {
         return String(Character.toChars(unicode))
+    }
+}
+
+internal class TestStream<T> : Stream<T> {
+    private val widgetMap = ConcurrentHashMap<Any, (T?) -> Unit>()
+
+    override fun onNext(data1: T?) {
+        widgetMap.forEach {
+            it.value.invoke(data1)
+        }
+    }
+
+    override fun subscribe(key: Any, observer: (T?) -> Unit) {
+        widgetMap[key] = observer
+    }
+
+    override fun unsubscribe(key: Any) {
+        widgetMap.remove(key)
+    }
+
+    override fun clear() {
+        widgetMap.clear()
     }
 }

@@ -4,9 +4,11 @@ import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.analytics.analyticService
-import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
+import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
+
+private var sdkInstance: LiveLikeSDK? = null
 
 /**
  * Use this class to initialize the LiveLike SDK. This is the entry point for SDK usage. This creates a singleton instance of LiveLike SDK.
@@ -16,20 +18,37 @@ import com.livelike.livelikesdk.util.liveLikeSharedPrefs.initLiveLikeSharedPrefs
  * @param clientId Client's id
  * @param applicationContext The application context
  */
-open class LiveLikeSDK(val clientId: String, private val applicationContext: Context) {
+class LiveLikeSDK(val clientId: String, private val applicationContext: Context) {
 
     companion object {
-        const val CONFIG_URL = BuildConfig.CONFIG_URL
+        private const val CONFIG_URL = BuildConfig.CONFIG_URL
         val MIXPANEL_TOKEN = "5c82369365be76b28b3716f260fbd2f5" // TODO: This should come from CMS
+        lateinit var currentSession: LiveLikeContentSession // TODO: We don't like the singleton pattern, let's find something better here
+        var configuration: SdkConfiguration? = null
     }
 
-    var configuration: SdkConfiguration? = null
     private val dataClient = LiveLikeDataClientImpl()
 
     init {
-        AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
-        initLiveLikeSharedPrefs(applicationContext)
-        analyticService.initialize(applicationContext, MIXPANEL_TOKEN)
+        if (sdkInstance == null) {
+            AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
+            initLiveLikeSharedPrefs(applicationContext)
+            analyticService.initialize(applicationContext, MIXPANEL_TOKEN)
+
+            currentSession = LiveLikeContentSessionImpl(
+                object : Provider<SdkConfiguration> {
+                    override fun subscribe(ready: (SdkConfiguration) -> Unit) {
+                        if (configuration != null) ready(configuration!!)
+                        else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
+                            configuration = it
+                            ready(it)
+                        }
+                    }
+                }, applicationContext
+            )
+
+            sdkInstance = this
+        }
     }
 
     /**
@@ -37,45 +56,14 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
      *  @param programId Backend generated unique identifier for current program
      */
     fun createContentSession(programId: String): LiveLikeContentSession {
-        return LiveLikeContentSessionImpl(
-            programId,
-            { EpochTime(0) },
-            object : Provider<SdkConfiguration> {
-                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-                    if (configuration != null) ready(configuration!!)
-                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
-                        configuration = it
-                        ready(it)
-                    }
-                }
-            }, applicationContext
-        )
-    }
-
-    /**
-     *  Creates a content session with sync.
-     *  @param programId Backend generated identifier for current program
-     *  @param currentPlayheadTime
-     */
-    @JvmSynthetic
-    fun createContentSession(programId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
-        return LiveLikeContentSessionImpl(
-            programId,
-            { EpochTime(currentPlayheadTime()) },
-            object : Provider<SdkConfiguration> {
-                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-                    if (configuration != null) ready(configuration!!)
-                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
-                        configuration = it
-                        ready(it)
-                    }
-                }
-            }, applicationContext
-        )
+        currentSession.programUrl = ""
+        currentSession.programUrl = programId
+        currentSession.currentPlayheadTime = { EpochTime(0) }
+        return currentSession
     }
 
     interface TimecodeGetter {
-        fun getTimecode(): Long
+        fun getTimecode(): EpochTime
     }
 
     /**
@@ -84,19 +72,10 @@ open class LiveLikeSDK(val clientId: String, private val applicationContext: Con
      *  @param timecodeGetter returns the video timecode
      */
     fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
-        return LiveLikeContentSessionImpl(
-            programId,
-            { EpochTime(timecodeGetter.getTimecode()) },
-            object : Provider<SdkConfiguration> {
-                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-                    if (configuration != null) ready(configuration!!)
-                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
-                        configuration = it
-                        ready(it)
-                    }
-                }
-            }, applicationContext
-        )
+        currentSession.programUrl = ""
+        currentSession.programUrl = programId
+        currentSession.currentPlayheadTime = { timecodeGetter.getTimecode() }
+        return currentSession
     }
 
     data class SdkConfiguration(

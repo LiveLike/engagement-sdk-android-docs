@@ -17,15 +17,36 @@ internal data class Resource(
     val correct_option_id: String = "",
     val confirmation_message: String = "",
     val testTag: String = "",
-    val choices: List<Option> = listOf(),
-    val options: List<Option> = listOf(),
+    val choices: List<Option>? = listOf(),
+    val options: List<Option>? = listOf(),
     val impression_url: String = ""
 ) {
-    val totalVotes: Int by lazy {
-        options.map { it.vote_count }.sum()
+    private val totalVotes: Int =
+        options?.map { it.vote_count ?: 0 }?.sum() ?: 0
+
+    private val totalAnswers: Int =
+        choices?.map { it.answer_count ?: 0 }?.sum() ?: 0
+
+    fun getMergedOptions(): List<Option>? {
+        return if (choices != null && choices.isNotEmpty()) {
+            choices
+        } else {
+            options
+        }
     }
-    val totalAnswers: Int by lazy {
-        choices.map { it.answer_count }.sum()
+
+    fun getMergedTotal(): Int {
+        return if (totalAnswers == 0) {
+            totalVotes
+        } else {
+            totalAnswers
+        }
+    }
+
+    init {
+        getMergedOptions()?.forEach {
+            it.percentage = it.getPercent(getMergedTotal().toFloat())
+        }
     }
 }
 
@@ -51,20 +72,41 @@ internal data class Option(
     val url: String = "",
     val description: String = "",
     val is_correct: Boolean = false,
-    val answer_url: String = "",
-    val vote_url: String = "",
-    val image_url: String = "",
-    val answer_count: Int = 0,
-    val vote_count: Int = 0
+    val answer_url: String? = "",
+    val vote_url: String? = "",
+    val image_url: String? = "",
+    var answer_count: Int? = 0,
+    var vote_count: Int? = 0
 ) {
+    @Deprecated("Use getPercent instead")
     fun getPercentVote(total: Float): Int {
         if (total == 0F) return 0
-        return Math.round((vote_count / total) * 100)
+        return Math.round((vote_count!! / total) * 100)
     }
 
-    fun getPercentAnswer(total: Float): Int {
+    fun getPercent(total: Float): Int {
         if (total == 0F) return 0
-        return Math.round((answer_count / total) * 100)
+        val nbVote: Int = answer_count ?: (vote_count ?: 0)
+        return Math.round((nbVote / total) * 100)
+    }
+
+    fun getMergedVoteCount(): Float {
+        return (answer_count ?: (vote_count ?: 0)).toFloat()
+    }
+
+    fun getMergedVoteUrl(): String? {
+        return if (vote_url.isNullOrEmpty()) {
+            answer_url
+        } else {
+            vote_url
+        }
+    }
+
+    var percentage = 0
+
+    fun updateCount(option: Option) {
+        answer_count = option.answer_count
+        vote_count = option.vote_count
     }
 }
 

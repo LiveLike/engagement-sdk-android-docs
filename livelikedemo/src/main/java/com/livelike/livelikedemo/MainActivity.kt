@@ -19,12 +19,9 @@ class MainActivity : AppCompatActivity() {
 
     data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>)
 
-    lateinit var application: LiveLikeApplication
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        application = getApplication() as LiveLikeApplication
-        val channelManager = application.channelManager
+        val channelManager = (application as LiveLikeApplication).channelManager
         setContentView(R.layout.activity_main)
 
         val player = PlayerInfo("Exo Player", ExoPlayerActivity::class)

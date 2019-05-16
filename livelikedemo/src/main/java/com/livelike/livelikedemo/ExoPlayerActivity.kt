@@ -14,7 +14,8 @@ import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.util.registerLogsHandler
+import com.livelike.livelikesdk.utils.registerLogsHandler
+import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
 import kotlinx.android.synthetic.main.activity_exo_player.openLogs
@@ -127,7 +128,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(), sdk)
 
             chat_view.setSession(session)
-            widget_view.setSession(session)
+            WidgetContainerViewModel(widget_view, session)
 
             this.session = session
 

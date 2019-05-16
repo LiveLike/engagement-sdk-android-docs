@@ -2,50 +2,54 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.livelike.engagementsdkapi.ChatRenderer
-import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.engagementsdkapi.WidgetStateProcessor
-import com.livelike.engagementsdkapi.WidgetTransientState
-import com.livelike.livelikesdk.analytics.analyticService
+import com.livelike.engagementsdkapi.Stream
+import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
-import com.livelike.livelikesdk.messaging.proxies.syncTo
-import com.livelike.livelikesdk.messaging.proxies.withPreloader
-import com.livelike.livelikesdk.messaging.pubnub.PubnubMessagingClient
-import com.livelike.livelikesdk.messaging.sendbird.SendbirdChatClient
-import com.livelike.livelikesdk.messaging.sendbird.SendbirdMessagingClient
-import com.livelike.livelikesdk.network.LiveLikeDataClientImpl
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getNickename
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.getSessionId
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setNickname
-import com.livelike.livelikesdk.util.liveLikeSharedPrefs.setSessionId
+import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.livelikesdk.services.messaging.proxies.syncTo
+import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
+import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdChatClient
+import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
+import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
-import com.livelike.livelikesdk.widget.cache.WidgetStateProcessorImpl
+import java.util.concurrent.ConcurrentHashMap
 
 internal class LiveLikeContentSessionImpl(
-    override val programUrl: String,
-    val currentPlayheadTime: () -> EpochTime,
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
     private val applicationContext: Context
 ) : LiveLikeContentSession {
+    override var programUrl: String = ""
+        set(value) {
+            if (field != value) {
+                field = value
+                llDataClient.getLiveLikeProgramData(value) {
+                    if (it !== null) {
+                        program = it
+//                        currentWidgetInfosStream.clear()
+                        initializeWidgetMessaging(it)
+                        initializeChatMessaging(it)
+                    }
+                }
+            }
+        }
+    override var currentPlayheadTime: () -> EpochTime = { EpochTime(0) }
 
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
-    private var widgetQueue: WidgetManager? = null
+    private var widgetEventsQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
-    private val widgetStateMap = HashMap<String, WidgetTransientState>()
-    private val currentWidgetMap = HashMap<String, String>()
-    private val stateStorage: WidgetStateProcessor by lazy {
-        WidgetStateProcessorImpl(
-            widgetStateMap,
-            currentWidgetMap
-        )
-    }
-    override var chatState = ChatState()
+
+    override val currentWidgetInfosStream = SubscriptionManager<WidgetInfos?>()
 
     init {
         getUser()
@@ -73,27 +77,11 @@ internal class LiveLikeContentSessionImpl(
 
     override var currentUser: LiveLikeUser? = null
 
-    override var widgetRenderer: WidgetRenderer? = null
-        set(value) {
-            field = value
-            widgetQueue?.renderer = widgetRenderer
-        }
-
     override var chatRenderer: ChatRenderer? = null
         set(renderer) {
             field = renderer
             chatQueue?.renderer = chatRenderer
         }
-
-    init {
-        llDataClient.getLiveLikeProgramData(programUrl) {
-            if (it !== null) {
-                program = it
-                initializeWidgetMessaging(it)
-                initializeChatMessaging(it)
-            }
-        }
-    }
 
     override fun getPlayheadTime(): EpochTime {
         return currentPlayheadTime()
@@ -106,11 +94,10 @@ internal class LiveLikeContentSessionImpl(
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
                     .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, stateStorage)
+                    .asWidgetManager(llDataClient, currentWidgetInfosStream)
             widgetQueue.unsubscribeAll()
-            widgetQueue.subscribe(listOf(program.subscribeChannel))
-            widgetQueue.renderer = widgetRenderer
-            this.widgetQueue = widgetQueue
+            widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
+            this.widgetEventsQueue = widgetQueue
         }
     }
 
@@ -132,12 +119,10 @@ internal class LiveLikeContentSessionImpl(
     }
 
     override fun pause() {
-        widgetQueue?.toggleEmission(true)
         chatQueue?.toggleEmission(true)
     }
 
     override fun resume() {
-        widgetQueue?.toggleEmission(false)
         chatQueue?.toggleEmission(false)
     }
 
@@ -156,4 +141,31 @@ internal class LiveLikeContentSessionImpl(
 
 internal interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
+}
+
+internal class SubscriptionManager<T> : Stream<T> {
+    private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
+    private var currentData: T? = null
+
+    override fun onNext(data1: T?) {
+        observerMap.forEach {
+            it.value.invoke(data1)
+        }
+        currentData = data1
+    }
+
+    override fun subscribe(key: Any, observer: (T?) -> Unit) {
+        observerMap[key] = observer
+        observer.invoke(currentData)
+    }
+
+    override fun unsubscribe(key: Any) {
+        observerMap.remove(key)
+    }
+
+    override fun clear() {
+        currentData = null
+        onNext(null)
+        observerMap.clear()
+    }
 }
