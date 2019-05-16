@@ -8,10 +8,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.widget.LinearLayout
-import com.livelike.livelikesdk.widget.adapters.PollViewAdapter
+import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
+import com.livelike.livelikesdk.widget.viewModel.PollWidget
 import kotlinx.android.synthetic.main.organism_text_prediction.view.textRecyclerView
 import kotlinx.android.synthetic.main.organism_text_prediction.view.titleView
 
@@ -31,8 +32,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
         viewModel.results.observe(context, resultsObserver())
     }
 
-    private fun resourceObserver() = Observer<Resource> { resource ->
-        if (resource != null) {
+    private fun resourceObserver() = Observer<PollWidget> { widget ->
+        widget?.apply {
             val optionList = resource.getMergedOptions() ?: return@Observer
             if (!inflated) {
                 inflated = true
@@ -52,7 +53,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
 
             titleView.title = resource.question
 
-            viewModel.adapter = viewModel.adapter ?: PollViewAdapter(optionList)
+            viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(optionList, { viewModel.vote() }, type)
 
             textRecyclerView.apply {
                 this.layoutManager = viewManager
@@ -61,7 +62,9 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
             }
 
             viewModel.startDismissTimout(resource.timeout)
-        } else {
+        }
+
+        if (widget == null) {
             inflated = false
         }
     }
@@ -78,7 +81,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
         resource?.apply {
             val optionResults = resource.getMergedOptions() ?: return@Observer
             val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
-            val options = viewModel.data.value?.getMergedOptions() ?: return@Observer
+            val options = viewModel.data.value?.resource?.getMergedOptions() ?: return@Observer
             options.forEach { opt ->
                 optionResults.find {
                     it.id == opt.id

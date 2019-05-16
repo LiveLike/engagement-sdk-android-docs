@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatState
@@ -12,8 +11,7 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.Stream
-import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.engagementsdkapi.WidgetTransientState
+import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
 import kotlinx.android.synthetic.main.activity_chat_only.chat_toolbar
 import kotlinx.android.synthetic.main.activity_chat_only.chat_view
@@ -92,14 +90,11 @@ class ChatOnlyActivity : AppCompatActivity() {
 
     inner class TestSession(
         override var currentPlayheadTime: () -> EpochTime,
-        override val widgetStream: Stream<String?, JsonObject?>,
+        override val currentWidgetInfosStream: Stream<WidgetInfos?>,
         override var programUrl: String
     ) :
         LiveLikeContentSession {
         override val chatState = ChatState()
-        override var widgetState = WidgetTransientState()
-        override var widgetRenderer: WidgetRenderer? = null
-            get() = null
         override var chatRenderer: ChatRenderer? = null
             get() = null
         override val currentUser: LiveLikeUser?
@@ -114,21 +109,21 @@ class ChatOnlyActivity : AppCompatActivity() {
         override fun contentSessionId(): String { return "TestSession" }
     }
 
-    fun getEmojiByUnicode(unicode: Int): String {
+    private fun getEmojiByUnicode(unicode: Int): String {
         return String(Character.toChars(unicode))
     }
 }
 
-internal class TestStream<T, T2> : Stream<T, T2> {
-    private val widgetMap = ConcurrentHashMap<Any, (T?, T2?) -> Unit>()
+internal class TestStream<T> : Stream<T> {
+    private val widgetMap = ConcurrentHashMap<Any, (T?) -> Unit>()
 
-    override fun onNext(view: T?, to: T2?) {
+    override fun onNext(data1: T?) {
         widgetMap.forEach {
-            it.value.invoke(view, to)
+            it.value.invoke(data1)
         }
     }
 
-    override fun subscribe(key: Any, observer: (T?, T2?) -> Unit) {
+    override fun subscribe(key: Any, observer: (T?) -> Unit) {
         widgetMap[key] = observer
     }
 

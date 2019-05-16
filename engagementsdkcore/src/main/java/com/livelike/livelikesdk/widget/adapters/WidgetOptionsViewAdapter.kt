@@ -3,17 +3,26 @@ package com.livelike.livelikesdk.widget.adapters
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Option
 import com.livelike.livelikesdk.widget.view.components.TextItemView
 
-internal class PredictionViewAdapter(
-    private val myDataset: List<Option>,
-    private val onClick: (selectedOption: Option) -> Unit
+internal class WidgetOptionsViewAdapter(
+    internal var myDataset: List<Option>,
+    private val onClick: (selectedOption: Option) -> Unit,
+    private val widgetType: WidgetType,
+    private val correctOptionId: String = "",
+    private val selectedPredictionId: String = ""
 ) :
-    RecyclerView.Adapter<PredictionViewAdapter.TextOptionViewHolder>() {
+    RecyclerView.Adapter<WidgetOptionsViewAdapter.TextOptionViewHolder>() {
 
     var selectedPosition = RecyclerView.NO_POSITION
     var selectionLocked = false
+    var showPercentage = false
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
     var predictionSelected = ""
     var predictionCorrect = ""
 
@@ -49,7 +58,10 @@ internal class PredictionViewAdapter(
         val item = myDataset[position]
         val itemIsSelected = selectedPosition == position
 
-        holder.textItemView.setData(item, itemIsSelected)
+        holder.textItemView.setData(item, itemIsSelected, widgetType, correctOptionId, selectedPredictionId)
+        if (showPercentage) {
+            holder.textItemView.setProgressVisibility(showPercentage)
+        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)

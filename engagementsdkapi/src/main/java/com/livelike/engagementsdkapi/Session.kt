@@ -9,12 +9,10 @@ import com.google.gson.JsonObject
 interface LiveLikeContentSession {
     var programUrl: String
     var currentPlayheadTime: () -> EpochTime // need to be replace by a proper time getter Java compatible
-    var widgetRenderer: WidgetRenderer?
     var chatRenderer: ChatRenderer?
     val currentUser: LiveLikeUser?
     val chatState: ChatState
-    var widgetState: WidgetTransientState
-    val widgetStream: Stream<String?, JsonObject?>
+    val currentWidgetInfosStream: Stream<WidgetInfos?>
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -33,9 +31,14 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
 }
 
-interface Stream<T, T2> {
-    fun onNext(data1: T?, data2: T2?)
-    fun subscribe(key: Any, observer: (T?, T2?) -> Unit)
+interface Stream<T> {
+    fun onNext(data1: T?)
+    fun subscribe(key: Any, observer: (T?) -> Unit)
     fun unsubscribe(key: Any)
     fun clear()
 }
+
+class WidgetInfos(
+    val type: String,
+    val payload: JsonObject
+)

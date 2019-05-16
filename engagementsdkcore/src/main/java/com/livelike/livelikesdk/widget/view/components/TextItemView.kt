@@ -16,6 +16,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Option
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
@@ -31,22 +32,23 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
     private var inflated = false
     var clickListener: OnClickListener? = null
 
-    init {
-        // Get the viewModel
-        // Get the currentSelection
-        // Subscribe to the currentSelection
-    }
-
-    fun setData(option: Option, itemIsSelected: Boolean) {
+    fun setData(
+        option: Option,
+        itemIsSelected: Boolean,
+        widgetType: WidgetType,
+        correctOptionId: String = "",
+        selectedPredictionId: String = ""
+    ) {
         if (!option.image_url.isNullOrEmpty()) {
-            setupImageItem(option, itemIsSelected)
+            setupImageItem(option)
         } else {
-            setupTextItem(option, itemIsSelected)
+            setupTextItem(option)
         }
+        setItemBackground(itemIsSelected, widgetType, correctOptionId, selectedPredictionId, option)
     }
 
     // TODO: Split this in 2 classes, 2 adapters
-    private fun setupTextItem(option: Option, itemIsSelected: Boolean) {
+    private fun setupTextItem(option: Option) {
         if (!inflated) {
             inflated = true
             inflate(context, R.layout.atom_widget_text_item, this)
@@ -63,25 +65,36 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+    }
 
+    private fun setItemBackground(
+        itemIsSelected: Boolean,
+        widgetType: WidgetType,
+        correctOptionId: String,
+        selectedPredictionId: String,
+        option: Option
+    ) {
         if (itemIsSelected) {
-            if (widgetType) {
-                updateViewBackground(R.drawable.button_poll_answer_outline) // TODO: make a set with the entire widget customization drawable and pass it from the adapter
+            when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
+                WidgetType.TEXT_PREDICTION -> updateViewBackground(R.drawable.prediction_button_pressed)
+                WidgetType.TEXT_POLL -> updateViewBackground(R.drawable.button_poll_answer_outline)
+                WidgetType.TEXT_QUIZ -> updateViewBackground(R.drawable.quiz_button_pressed)
+                else -> updateViewBackground(R.drawable.button_poll_answer_outline)
             }
         } else {
             updateViewBackground(R.drawable.button_default)
         }
 
         // it's follow up
-        if (predictionCorrect.isNotEmpty()) {
-            if (predictionSelected == item.id) {
+        if (correctOptionId.isNotEmpty()) {
+            if (selectedPredictionId == option.id) {
                 updateViewBackground(R.drawable.button_wrong_answer_outline)
             }
-            if (predictionCorrect == item.id) {
+            if (correctOptionId == option.id) {
                 updateViewBackground(R.drawable.button_correct_answer_outline)
             }
         }
-        setProgressVisibility(predictionCorrect.isNotEmpty())
+        setProgressVisibility(correctOptionId.isNotEmpty())
     }
 
     private fun animateProgress(option: Option, startValue: Float) {
@@ -99,7 +112,7 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
         }
     }
 
-    private fun setupImageItem(option: Option, itemIsSelected: Boolean) {
+    private fun setupImageItem(option: Option) {
         if (!inflated) {
             inflated = true
             inflate(context, R.layout.atom_widget_image_item, this)

@@ -202,17 +202,17 @@ class WidgetStandaloneActivity : AppCompatActivity() {
                                 quizType -> {
                                     commandList.remove(displayResults)
                                     updateCommandAdapter()
-                                    if (isVariance(getString(R.string.text))) {
-                                        showWidget(
-                                            WidgetType.TEXT_QUIZ_RESULT,
-                                            getPayload("quiz/text/quiz_text_result.json")
-                                        )
-                                    } else if (isVariance(getString(R.string.image))) {
-                                        showWidget(
-                                            WidgetType.IMAGE_QUIZ_RESULT,
-                                            getPayload("quiz/image/quiz_result.json")
-                                        )
-                                    }
+//                                    if (isVariance(getString(R.string.text))) {
+//                                        showWidget(
+//                                            WidgetType.TEXT_QUIZ_RESULT,
+//                                            getPayload("quiz/text/quiz_text_result.json")
+//                                        )
+//                                    } else if (isVariance(getString(R.string.image))) {
+//                                        showWidget(
+//                                            WidgetType.IMAGE_QUIZ_RESULT,
+//                                            getPayload("quiz/image/quiz_result.json")
+//                                        )
+//                                    }
                                 }
                                 pollType -> {
                                     showPollWidgetResults()
@@ -282,11 +282,11 @@ class WidgetStandaloneActivity : AppCompatActivity() {
         private fun showPredictionResultWidgetAs(testTag: String) {
             if (isVariance(getString(R.string.text))) {
                 updatePayload(testTag)
-                showWidget(WidgetType.TEXT_PREDICTION_RESULTS, payload)
+                showWidget(WidgetType.TEXT_PREDICTION_FOLLOW_UP, payload)
             } else if (isVariance(getString(R.string.image))) {
                 payload = getPayload("prediction/image/prediction_question_image_result.json")
                 payload.addProperty("testTag", testTag)
-                showWidget(WidgetType.IMAGE_PREDICTION_RESULTS, payload)
+                showWidget(WidgetType.IMAGE_PREDICTION_FOLLOW_UP, payload)
             }
         }
 
@@ -301,13 +301,13 @@ class WidgetStandaloneActivity : AppCompatActivity() {
         }
 
         private fun showPollWidgetResults() {
-            if (isVariance(getString(R.string.text))) {
-                payload = getPayload("poll/poll_text_widget_results.json")
-                showWidget(WidgetType.TEXT_POLL_RESULT, payload)
-            } else if (isVariance(getString(R.string.image))) {
-                payload = getPayload("poll/poll_image_widget_results.json")
-                showWidget(WidgetType.IMAGE_POLL_RESULT, payload)
-            }
+//            if (isVariance(getString(R.string.text))) {
+//                payload = getPayload("poll/poll_text_widget_results.json")
+//                showWidget(WidgetType.TEXT_POLL_RESULT, payload)
+//            } else if (isVariance(getString(R.string.image))) {
+//                payload = getPayload("poll/poll_image_widget_results.json")
+//                showWidget(WidgetType.IMAGE_POLL_RESULT, payload)
+//            }
         }
 
         private fun updatePayload(testTag: String) {

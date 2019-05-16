@@ -9,10 +9,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
-import com.livelike.livelikesdk.widget.adapters.PredictionViewAdapter
-import com.livelike.livelikesdk.widget.model.Resource
+import com.livelike.livelikesdk.widget.WidgetType
+import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.PredictionViewModel
+import com.livelike.livelikesdk.widget.viewModel.PredictionWidget
 import kotlinx.android.synthetic.main.atom_widget_confirmation_message.view.confirmMessageAnimation
 import kotlinx.android.synthetic.main.organism_text_prediction.view.confirmationMessage
 import kotlinx.android.synthetic.main.organism_text_prediction.view.followupAnimation
@@ -30,12 +31,12 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
 
     init {
         context as AppCompatActivity
-        viewModel.data.observe(context, resourceObserver())
+        viewModel.data.observe(context, widgetObserver())
         viewModel.state.observe(context, stateObserver())
     }
 
-    private fun resourceObserver() = Observer<Resource> { resource ->
-        if (resource != null) {
+    private fun widgetObserver() = Observer<PredictionWidget> { widget ->
+        widget?.apply {
             val optionList = resource.getMergedOptions() ?: return@Observer
             if (!inflated) {
                 inflated = true
@@ -55,8 +56,21 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
 
             titleView.title = resource.question
 
-            viewModel.adapter = viewModel.adapter ?: PredictionViewAdapter(
-                optionList
+            // TODO: Pass the type directly...
+            if (resource.correct_option_id.isNullOrEmpty()) {
+                // Follow-up
+                if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
+                ) {
+                    // IMAGE
+                }
+            }
+
+            viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(
+                optionList,
+                {},
+                WidgetType.TEXT_QUIZ,
+                resource.correct_option_id,
+                resource.text_prediction_id // or image
             )
 
             textRecyclerView.apply {
@@ -66,7 +80,9 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
             }
 
             viewModel.startDismissTimout(resource.timeout, resource.correct_option_id.isNotEmpty())
-        } else {
+        }
+
+        if (widget == null) {
             inflated = false
         }
     }
@@ -75,7 +91,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
         when (it) {
             "confirmation" -> {
                 confirmationMessage.apply {
-                    text = viewModel.data.value?.confirmation_message ?: ""
+                    text = viewModel.data.value?.resource?.confirmation_message ?: ""
                     startAnimation(viewModel.animationPath, viewModel.animationProgress)
                     confirmMessageAnimation.addAnimatorUpdateListener { valueAnimator ->
                         viewModel.animationProgress = valueAnimator.animatedFraction

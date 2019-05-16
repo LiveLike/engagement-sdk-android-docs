@@ -2,6 +2,7 @@ package com.livelike.livelikepreintegrators
 
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.Timeline
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.LiveLikeSDK
 
@@ -17,9 +18,11 @@ fun LiveLikeSDK.createExoplayerSession(
     player: () -> SimpleExoPlayer?,
     programId: String
 ): LiveLikeContentSession {
-    return this.createContentSession(programId) {
-        getExoplayerPdtTime(player)
-    }
+    return this.createContentSession(programId, object : LiveLikeSDK.TimecodeGetter {
+        override fun getTimecode(): EpochTime {
+            return EpochTime(getExoplayerPdtTime(player))
+        }
+    })
 }
 
 @JvmSynthetic

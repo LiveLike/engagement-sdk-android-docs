@@ -7,11 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import com.facebook.testing.screenshot.Screenshot
 import com.facebook.testing.screenshot.ViewHelpers
-import com.livelike.engagementsdkapi.WidgetTransientState
-import com.livelike.livelikesdk.widget.animation.ViewAnimationManager
-import com.livelike.livelikesdk.widget.model.Alert
-import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
-import kotlinx.android.synthetic.main.widget_view.view.widgetContainerView
 import org.junit.Before
 import org.junit.Test
 
@@ -50,34 +45,34 @@ class AlertWidgetImage {
         context = InstrumentationRegistry.getInstrumentation().context
         val inflater = LayoutInflater.from(context)
         val widgetView = inflater.inflate(com.livelike.livelikesdk.R.layout.widget_view, null, true)
-        val alertWidget = AlertWidgetViewModel(context)
-        alertWidget.initialize(
-            {}, Alert(
-                "an-id",
-                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
-                "alert",
-                "nothing",
-                "something",
-                "something",
-                "time",
-                "time",
-                title,
-                bodyText,
-                imageUrl,
-                linkUrl,
-                linkText
-            ),
-            WidgetTransientState(),
-            ViewAnimationManager(alertWidget),
-            {}
-        )
-
-        ViewHelpers.setupView(alertWidget)
-            .setExactWidthDp(300)
-            .setExactHeightDp(200)
-            .layout()
-
-        widgetView.widgetContainerView.addView(alertWidget)
+//        val alertWidget = AlertWidgetViewModel(context)
+//        alertWidget.initialize(
+//            {}, Alert(
+//                "an-id",
+//                "https://facebook.github.io/screenshot-tests-for-android/static/logo.png",
+//                "alert",
+//                "nothing",
+//                "something",
+//                "something",
+//                "time",
+//                "time",
+//                title,
+//                bodyText,
+//                imageUrl,
+//                linkUrl,
+//                linkText
+//            ),
+//            WidgetTransientState(),
+//            ViewAnimationManager(alertWidget),
+//            {}
+//        )
+//
+//        ViewHelpers.setupView(alertWidget)
+//            .setExactWidthDp(300)
+//            .setExactHeightDp(200)
+//            .layout()
+//
+//        widgetView.widgetContainerView.addView(alertWidget)
 
         ViewHelpers.setupView(widgetView)
             .setExactWidthDp(300)
@@ -107,11 +102,11 @@ class AlertWidgetImage {
 
     @Test
     fun doScreenshot() {
-        takeScreenshot(imageOnly, "Alert-Widget-Image-Only")
-        takeScreenshot(imageAndLabel, "Alert-Widget-Image-Label")
-        takeScreenshot(imageAndLabelAndLink, "Alert-Widget-Image-Label-Link")
-        takeScreenshot(textOnly, "Alert-Widget-Body-Only")
-        takeScreenshot(textAndLabel, "Alert-Widget-Body-Label")
-        takeScreenshot(textAndLabelAndLink, "Alert-Widget-Body-Label-Link")
+        takeScreenshot(imageOnly, "Alert-WidgetInfos-Image-Only")
+        takeScreenshot(imageAndLabel, "Alert-WidgetInfos-Image-Label")
+        takeScreenshot(imageAndLabelAndLink, "Alert-WidgetInfos-Image-Label-Link")
+        takeScreenshot(textOnly, "Alert-WidgetInfos-Body-Only")
+        takeScreenshot(textAndLabel, "Alert-WidgetInfos-Body-Label")
+        takeScreenshot(textAndLabelAndLink, "Alert-WidgetInfos-Body-Label-Link")
     }
 }

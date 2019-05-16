@@ -24,9 +24,9 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
         private const val CONFIG_URL = BuildConfig.CONFIG_URL
         val MIXPANEL_TOKEN = "5c82369365be76b28b3716f260fbd2f5" // TODO: This should come from CMS
         lateinit var currentSession: LiveLikeContentSession // TODO: We don't like the singleton pattern, let's find something better here
+        var configuration: SdkConfiguration? = null
     }
 
-    var configuration: SdkConfiguration? = null
     private val dataClient = LiveLikeDataClientImpl()
 
     init {
@@ -61,20 +61,8 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
         return currentSession
     }
 
-    /**
-     *  Creates a content session with sync.
-     *  @param programId Backend generated identifier for current program
-     *  @param currentPlayheadTime
-     */
-    @JvmSynthetic
-    fun createContentSession(programId: String, currentPlayheadTime: () -> Long): LiveLikeContentSession {
-        currentSession.programUrl = programId
-        currentSession.currentPlayheadTime = { EpochTime(currentPlayheadTime.invoke()) }
-        return currentSession
-    }
-
     interface TimecodeGetter {
-        fun getTimecode(): Long
+        fun getTimecode(): EpochTime
     }
 
     /**
@@ -84,7 +72,7 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
      */
     fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
         currentSession.programUrl = programId
-        currentSession.currentPlayheadTime = { EpochTime(timecodeGetter.getTimecode()) }
+        currentSession.currentPlayheadTime = { timecodeGetter.getTimecode() }
         return currentSession
     }
 

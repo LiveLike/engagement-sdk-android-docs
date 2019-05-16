@@ -3,7 +3,7 @@ package com.livelike.livelikesdk.widget.viewModel
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.os.Handler
-import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
@@ -16,17 +16,14 @@ internal class AlertWidgetViewModel : ViewModel() {
     var data: MutableLiveData<Alert?> = MutableLiveData()
 
     init {
-        currentSession.widgetStream.subscribe(this::class.java) { s: String?, j: JsonObject? ->
-            widgetObserver(
-                s ?: "",
-                j
-            )
+        currentSession.currentWidgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
+            widgetObserver(widgetInfos)
         }
     }
 
-    private fun widgetObserver(type: String, payload: JsonObject?) {
-        if (payload != null && WidgetType.fromString(type) == WidgetType.ALERT) {
-            data.postValue(gson.fromJson(payload.toString(), Alert::class.java) ?: null)
+    private fun widgetObserver(widgetInfos: WidgetInfos?) {
+        if (widgetInfos != null && WidgetType.fromString(widgetInfos.type) == WidgetType.ALERT) {
+            data.postValue(gson.fromJson(widgetInfos.payload.toString(), Alert::class.java) ?: null)
         } else {
             data.postValue(null)
         }
@@ -43,7 +40,7 @@ internal class AlertWidgetViewModel : ViewModel() {
     }
 
     fun dismiss() {
-        currentSession.widgetStream.onNext(null, null)
+        currentSession.currentWidgetInfosStream.onNext(null)
         timeoutStarted = false
     }
 
@@ -51,6 +48,6 @@ internal class AlertWidgetViewModel : ViewModel() {
         // NEED  TO CLEAR THE viewModel when timer expires
         logDebug { "ViewModel is cleared" }
         // need to clear
-        currentSession.widgetStream.unsubscribe(this::class.java)
+        currentSession.currentWidgetInfosStream.unsubscribe(this::class.java)
     }
 }

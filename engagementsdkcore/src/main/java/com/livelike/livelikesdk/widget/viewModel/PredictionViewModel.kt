@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
-import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
@@ -14,36 +14,46 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.addWidgetPredictionVot
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
-import com.livelike.livelikesdk.widget.adapters.PredictionViewAdapter
+import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 
+internal class PredictionWidget(
+    val type: WidgetType,
+    val resource: Resource
+)
+
 internal class PredictionViewModel(application: Application) : AndroidViewModel(application) {
-    val data: MutableLiveData<Resource> = MutableLiveData()
+    val data: MutableLiveData<PredictionWidget> = MutableLiveData()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
     var state: MutableLiveData<String> = MutableLiveData() // confirmation, followup
 
-    var adapter: PredictionViewAdapter? = null
+    var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
     var animationProgress = 0f
     var animationPath = ""
 
     init {
-        currentSession.widgetStream.subscribe(this::class.java) { s: String?, j: JsonObject? ->
-            widgetObserver(
-                WidgetType.fromString(s ?: ""),
-                j
-            )
+        currentSession.currentWidgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
+            widgetObserver(widgetInfos)
         }
     }
 
-    private fun widgetObserver(type: WidgetType, payload: JsonObject?) {
-        if (payload != null &&
-            (type == WidgetType.IMAGE_PREDICTION ||
-                    type == WidgetType.IMAGE_PREDICTION_RESULTS ||
-                    type == WidgetType.TEXT_PREDICTION ||
-                    type == WidgetType.TEXT_PREDICTION_RESULTS)
-        ) {
-            data.postValue(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
+    private fun widgetObserver(widgetInfos: WidgetInfos?) {
+        if (widgetInfos != null) {
+            val type = WidgetType.fromString(widgetInfos.type)
+            if (type == WidgetType.IMAGE_PREDICTION ||
+                type == WidgetType.IMAGE_PREDICTION_FOLLOW_UP ||
+                type == WidgetType.TEXT_PREDICTION ||
+                type == WidgetType.TEXT_PREDICTION_FOLLOW_UP
+            ) {
+                val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
+                resource?.apply {
+                    data.postValue(PredictionWidget(type, resource))
+                }
+                // Specify to Prediction widgetInfos here
+            } else {
+                cleanUp()
+            }
         } else {
             cleanUp()
         }
@@ -57,7 +67,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
             if (isFollowup) {
                 Handler().postDelayed({ dismiss() }, AndroidResource.parseDuration(timeout))
                 data.value?.apply {
-                    followupState(text_prediction_id, correct_option_id)
+                    followupState(resource.text_prediction_id, resource.correct_option_id)
                 }
             } else {
                 Handler().postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
@@ -69,18 +79,18 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         data.value?.let {
             adapter?.apply {
                 if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
-                    val selectedOption = it.getMergedOptions()?.get(selectedPosition)
+                    val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
 
                     // Prediction widget votes on dismiss
                     selectedOption?.getMergedVoteUrl()?.let { it1 -> dataClient.vote(it1) }
 
                     // Save widget id and voted option for followup widget
-                    addWidgetPredictionVoted(it.id, selectedOption?.id ?: "")
+                    addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
                 }
             }
         }
 
-        currentSession.widgetStream.onNext(null, null)
+        currentSession.currentWidgetInfosStream.onNext(null)
     }
 
     private fun followupState(textPredictionId: String, correctOptionId: String) {
@@ -120,6 +130,6 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     }
 
     override fun onCleared() {
-        currentSession.widgetStream.unsubscribe(this::class.java)
+        currentSession.currentWidgetInfosStream.unsubscribe(this::class.java)
     }
 }

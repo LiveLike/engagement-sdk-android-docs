@@ -5,8 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.FrameLayout
-import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.WidgetType
@@ -16,11 +16,8 @@ import com.livelike.livelikesdk.widget.util.SwipeDismissTouchListener
 class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val session: LiveLikeContentSession) {
 
     init {
-        session.widgetStream.subscribe(WidgetContainerViewModel::class.java) { s: String?, j: JsonObject? ->
-            widgetObserver(
-                s,
-                j
-            )
+        session.currentWidgetInfosStream.subscribe(WidgetContainerViewModel::class.java) { widgetInfos: WidgetInfos? ->
+            widgetObserver(widgetInfos)
         }
 
         // Swipe to dismiss
@@ -34,7 +31,7 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
                     }
 
                     override fun onDismiss(view: View?, token: Any?) {
-                        session.widgetStream.onNext(null, null)
+                        session.currentWidgetInfosStream.onNext(null)
                     }
                 })
         )
@@ -43,11 +40,11 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
         widgetContainer.layoutTransition = LayoutTransition()
     }
 
-    private fun widgetObserver(type: String?, payload: JsonObject?) {
-        if (type.isNullOrEmpty()) {
+    private fun widgetObserver(widgetInfos: WidgetInfos?) {
+        if (widgetInfos == null) {
             dismissWidget()
         } else {
-            displayWidget(type)
+            displayWidget(widgetInfos.type)
         }
     }
 
@@ -60,7 +57,7 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
             )
             if (view != null) {
                 widgetContainer.addView(view)
-                logDebug { "NOW - Show Widget" }
+                logDebug { "NOW - Show WidgetInfos" }
             } else {
                 logError { "Can't display view of type: $widgetView" }
             }
@@ -68,11 +65,11 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
     }
 
     private fun dismissWidget() {
-        logDebug { "NOW - Dismiss Widget" }
+        logDebug { "NOW - Dismiss WidgetInfos" }
         widgetContainer.removeAllViews()
     }
 
     fun close() {
-        session.widgetStream.unsubscribe(WidgetContainerViewModel::class.java)
+        session.currentWidgetInfosStream.unsubscribe(WidgetContainerViewModel::class.java)
     }
 }

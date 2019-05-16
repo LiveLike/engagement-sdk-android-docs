@@ -1,18 +1,16 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
-import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.Stream
-import com.livelike.engagementsdkapi.WidgetRenderer
-import com.livelike.engagementsdkapi.WidgetTransientState
-import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
+import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
@@ -38,6 +36,8 @@ internal class LiveLikeContentSessionImpl(
                 llDataClient.getLiveLikeProgramData(value) {
                     if (it !== null) {
                         program = it
+//                        currentWidgetInfosStream.clear()
+                        chatState.chatAdapter = null
                         initializeWidgetMessaging(it)
                         initializeChatMessaging(it)
                     }
@@ -48,12 +48,11 @@ internal class LiveLikeContentSessionImpl(
 
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
-    private var widgetQueue: WidgetManager? = null
+    private var widgetEventsQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
 
-    override var chatState = ChatState()
-    override var widgetState = WidgetTransientState()
-    override val widgetStream = SubscriptionManager<String?, JsonObject?>()
+    override var chatState = ChatState() // TODO: Use ViewModel here
+    override val currentWidgetInfosStream = SubscriptionManager<WidgetInfos?>()
 
     init {
         getUser()
@@ -81,12 +80,6 @@ internal class LiveLikeContentSessionImpl(
 
     override var currentUser: LiveLikeUser? = null
 
-    override var widgetRenderer: WidgetRenderer? = null
-        set(value) {
-            field = value
-            widgetQueue?.renderer = widgetRenderer
-        }
-
     override var chatRenderer: ChatRenderer? = null
         set(renderer) {
             field = renderer
@@ -104,11 +97,10 @@ internal class LiveLikeContentSessionImpl(
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
                     .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, widgetStream)
+                    .asWidgetManager(llDataClient, currentWidgetInfosStream)
             widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
-            widgetQueue.renderer = widgetRenderer
-            this.widgetQueue = widgetQueue
+            this.widgetEventsQueue = widgetQueue
         }
     }
 
@@ -154,22 +146,20 @@ internal interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
 }
 
-internal class SubscriptionManager<T, T2> : Stream<T, T2> {
-    private val observerMap = ConcurrentHashMap<Any, (T?, T2?) -> Unit>()
+internal class SubscriptionManager<T> : Stream<T> {
+    private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
     private var currentData: T? = null
-    private var currentData2: T2? = null
 
-    override fun onNext(data1: T?, data2: T2?) {
+    override fun onNext(data1: T?) {
         observerMap.forEach {
-            it.value.invoke(data1, data2)
+            it.value.invoke(data1)
         }
         currentData = data1
-        currentData2 = data2
     }
 
-    override fun subscribe(key: Any, observer: (T?, T2?) -> Unit) {
+    override fun subscribe(key: Any, observer: (T?) -> Unit) {
         observerMap[key] = observer
-        observer.invoke(currentData, currentData2)
+        observer.invoke(currentData)
     }
 
     override fun unsubscribe(key: Any) {
@@ -177,8 +167,8 @@ internal class SubscriptionManager<T, T2> : Stream<T, T2> {
     }
 
     override fun clear() {
-        observerMap.clear()
         currentData = null
-        currentData2 = null
+        onNext(null)
+        observerMap.clear()
     }
 }
