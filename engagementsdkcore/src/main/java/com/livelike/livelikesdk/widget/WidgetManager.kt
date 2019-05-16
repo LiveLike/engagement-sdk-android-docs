@@ -3,7 +3,6 @@ package com.livelike.livelikesdk.widget
 import android.os.Handler
 import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.Stream
-import com.livelike.engagementsdkapi.WidgetEvent
 import com.livelike.engagementsdkapi.WidgetEventListener
 import com.livelike.engagementsdkapi.WidgetRenderer
 import com.livelike.livelikesdk.services.messaging.ClientMessage
@@ -61,60 +60,11 @@ internal class WidgetManager(
             listener?.exemptionList = exemptionList
         }
 
-    override fun onWidgetEvent(event: WidgetEvent) {
-        when (event) {
-            WidgetEvent.WIDGET_DISMISS -> {
-                isProcessing = false
-                upstream.unsubscribe(widgetSubscribedChannels)
-                widgetSubscribedChannels.clear()
-                triggerListener?.onTrigger("done")
-            }
-            else -> {
-            }
-        }
-    }
-
     override fun subscribeForResults(channel: String) {
         if (channel.isNotEmpty() && !widgetSubscribedChannels.contains(channel)) {
             widgetSubscribedChannels.add(channel)
             upstream.subscribe(listOf(channel))
         }
-    }
-
-    override fun onOptionVote(voteUrl: String, channel: String, voteChangeCallback: ((String) -> Unit)?) {
-        if (processingVoteUpdate)
-            return
-        processingVoteUpdate = true
-        dataClient.vote(voteUrl) {
-            voteChangeCallback?.invoke(it)
-            processingVoteUpdate = false
-        }
-        subscribeForResults(channel)
-    }
-
-    override fun onOptionVoteUpdate(
-        oldVoteUrl: String,
-        newVoteId: String,
-        channel: String,
-        voteUpdateCallback: ((String) -> Unit)?
-    ) {
-        if (processingVoteUpdate) {
-            voteUpdateHandler.removeCallbacksAndMessages(null)
-            voteUpdateHandler.postDelayed(
-                { onOptionVoteUpdate(oldVoteUrl, newVoteId, channel, voteUpdateCallback) },
-                200
-            )
-            return
-        }
-        processingVoteUpdate = true
-        dataClient.changeVote(oldVoteUrl, newVoteId) {
-            voteUpdateCallback?.invoke(it)
-            processingVoteUpdate = false
-        }
-    }
-
-    override fun onFetchingQuizResult(answerUrl: String) {
-        dataClient.fetchQuizResult(answerUrl)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

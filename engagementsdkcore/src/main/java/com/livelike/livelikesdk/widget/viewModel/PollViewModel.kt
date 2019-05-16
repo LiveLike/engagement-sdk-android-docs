@@ -26,10 +26,8 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
 
     init {
         currentSession.widgetStream.subscribe(this::class.java) { s: String?, jsonObject: JsonObject? ->
-            widgetObserver(
-                WidgetType.fromString(s ?: ""),
-                jsonObject
-            )
+            // TODO: WidgetInfo(type, payload)
+            widgetObserver(WidgetType.fromString(s ?: ""), jsonObject)
         }
     }
 

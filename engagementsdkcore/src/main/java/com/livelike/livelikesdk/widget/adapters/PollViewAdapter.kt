@@ -57,7 +57,7 @@ internal class PollViewAdapter(var myDataset: List<Option>) :
 
     override fun onBindViewHolder(holder: TextOptionViewHolder, position: Int) {
         val item = myDataset[position]
-        holder.textItemView.setData(item)
+        holder.textItemView.setData(item, itemIsSelected)
 
         if (selectedPosition == position) {
             holder.textItemView.updateViewBackground(R.drawable.button_poll_answer_outline)

@@ -3,14 +3,12 @@ package com.livelike.livelikesdk.widget.adapters
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.widget.model.Option
 import com.livelike.livelikesdk.widget.view.components.TextItemView
 
-internal class PredictionViewAdapter(
-    private val myDataset: List<Option>,
-    private val onClick: (selectedOption: Option) -> Unit
-) :
-    RecyclerView.Adapter<PredictionViewAdapter.TextOptionViewHolder>() {
+internal class BaseViewAdapter(private val myDataset: List<Option>) :
+    RecyclerView.Adapter<BaseViewAdapter.TextOptionViewHolder>() {
 
     var selectedPosition = RecyclerView.NO_POSITION
     var selectionLocked = false
@@ -41,15 +39,29 @@ internal class PredictionViewAdapter(
         viewType: Int
     ): TextOptionViewHolder {
         val textView = TextItemView(parent.context)
-        return TextOptionViewHolder(textView, onClick)
+        return TextOptionViewHolder(textView)
     }
 
-    // TODO: Remove the logic from the adapter and move it to the view itself
     override fun onBindViewHolder(holder: TextOptionViewHolder, position: Int) {
         val item = myDataset[position]
-        val itemIsSelected = selectedPosition == position
-
         holder.textItemView.setData(item, itemIsSelected)
+
+        if (selectedPosition == position) {
+            holder.textItemView.updateViewBackground(R.drawable.button_poll_answer_outline)
+        } else {
+            holder.textItemView.updateViewBackground(R.drawable.button_default)
+        }
+
+        // it's follow up
+        if (predictionCorrect.isNotEmpty()) {
+            if (predictionSelected == item.id) {
+                holder.textItemView.updateViewBackground(R.drawable.button_wrong_answer_outline)
+            }
+            if (predictionCorrect == item.id) {
+                holder.textItemView.updateViewBackground(R.drawable.button_correct_answer_outline)
+            }
+        }
+        holder.textItemView.setProgressVisibility(predictionCorrect.isNotEmpty())
     }
 
     // Return the size of your dataset (invoked by the layout manager)

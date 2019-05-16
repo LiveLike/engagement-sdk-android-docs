@@ -31,16 +31,22 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
     private var inflated = false
     var clickListener: OnClickListener? = null
 
-    fun setData(option: Option) {
+    init {
+        // Get the viewModel
+        // Get the currentSelection
+        // Subscribe to the currentSelection
+    }
+
+    fun setData(option: Option, itemIsSelected: Boolean) {
         if (!option.image_url.isNullOrEmpty()) {
-            setupImageItem(option)
+            setupImageItem(option, itemIsSelected)
         } else {
-            setupTextItem(option)
+            setupTextItem(option, itemIsSelected)
         }
     }
 
     // TODO: Split this in 2 classes, 2 adapters
-    private fun setupTextItem(option: Option) {
+    private fun setupTextItem(option: Option, itemIsSelected: Boolean) {
         if (!inflated) {
             inflated = true
             inflate(context, R.layout.atom_widget_text_item, this)
@@ -57,6 +63,25 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+
+        if (itemIsSelected) {
+            if (widgetType) {
+                updateViewBackground(R.drawable.button_poll_answer_outline) // TODO: make a set with the entire widget customization drawable and pass it from the adapter
+            }
+        } else {
+            updateViewBackground(R.drawable.button_default)
+        }
+
+        // it's follow up
+        if (predictionCorrect.isNotEmpty()) {
+            if (predictionSelected == item.id) {
+                updateViewBackground(R.drawable.button_wrong_answer_outline)
+            }
+            if (predictionCorrect == item.id) {
+                updateViewBackground(R.drawable.button_correct_answer_outline)
+            }
+        }
+        setProgressVisibility(predictionCorrect.isNotEmpty())
     }
 
     private fun animateProgress(option: Option, startValue: Float) {
@@ -74,7 +99,7 @@ internal class TextItemView(context: Context, attr: AttributeSet? = null) : Cons
         }
     }
 
-    private fun setupImageItem(option: Option) {
+    private fun setupImageItem(option: Option, itemIsSelected: Boolean) {
         if (!inflated) {
             inflated = true
             inflate(context, R.layout.atom_widget_image_item, this)

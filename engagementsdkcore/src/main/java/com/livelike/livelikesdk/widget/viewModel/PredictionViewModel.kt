@@ -49,6 +49,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         }
     }
 
+    // TODO: need to move the followup logic back to the widget observer instead of there
     fun startDismissTimout(timeout: String, isFollowup: Boolean) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
