@@ -2,7 +2,6 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.livelike.engagementsdkapi.ChatRenderer
-import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
@@ -37,7 +36,6 @@ internal class LiveLikeContentSessionImpl(
                     if (it !== null) {
                         program = it
 //                        currentWidgetInfosStream.clear()
-                        chatState.chatAdapter = null
                         initializeWidgetMessaging(it)
                         initializeChatMessaging(it)
                     }
@@ -51,7 +49,6 @@ internal class LiveLikeContentSessionImpl(
     private var widgetEventsQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
 
-    override var chatState = ChatState() // TODO: Use ViewModel here
     override val currentWidgetInfosStream = SubscriptionManager<WidgetInfos?>()
 
     init {

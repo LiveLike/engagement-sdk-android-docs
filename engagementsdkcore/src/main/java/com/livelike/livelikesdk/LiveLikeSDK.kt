@@ -56,6 +56,7 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
      *  @param programId Backend generated unique identifier for current program
      */
     fun createContentSession(programId: String): LiveLikeContentSession {
+        currentSession.programUrl = ""
         currentSession.programUrl = programId
         currentSession.currentPlayheadTime = { EpochTime(0) }
         return currentSession
@@ -71,6 +72,7 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
      *  @param timecodeGetter returns the video timecode
      */
     fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
+        currentSession.programUrl = ""
         currentSession.programUrl = programId
         currentSession.currentPlayheadTime = { timecodeGetter.getTimecode() }
         return currentSession

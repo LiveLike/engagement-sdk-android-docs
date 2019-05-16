@@ -11,7 +11,6 @@ interface LiveLikeContentSession {
     var currentPlayheadTime: () -> EpochTime // need to be replace by a proper time getter Java compatible
     var chatRenderer: ChatRenderer?
     val currentUser: LiveLikeUser?
-    val chatState: ChatState
     val currentWidgetInfosStream: Stream<WidgetInfos?>
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */

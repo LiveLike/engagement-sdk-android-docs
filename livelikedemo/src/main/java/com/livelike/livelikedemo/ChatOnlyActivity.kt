@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
-import com.livelike.engagementsdkapi.ChatState
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
@@ -94,7 +93,6 @@ class ChatOnlyActivity : AppCompatActivity() {
         override var programUrl: String
     ) :
         LiveLikeContentSession {
-        override val chatState = ChatState()
         override var chatRenderer: ChatRenderer? = null
             get() = null
         override val currentUser: LiveLikeUser?

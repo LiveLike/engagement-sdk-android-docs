@@ -66,24 +66,24 @@ internal class SynchronizedMessagingClient(
         }
     }
 
-    fun publishEvent(event: ClientMessage) {
+    private fun publishEvent(event: ClientMessage) {
         listener?.onClientMessageEvent(this, event)
     }
 
-    fun shouldPublishEvent(event: ClientMessage): Boolean =
+    private fun shouldPublishEvent(event: ClientMessage): Boolean =
         timeSource() <= EpochTime(0) || // Timesource return 0 - sync disabled
                 event.timeStamp <= EpochTime(0) || // Event time is 0 - bypass sync
                 (event.timeStamp <= timeSource() && event.timeStamp >= timeSource() - validEventBufferMs)
 
-    fun shouldDismissEvent(event: ClientMessage): Boolean =
+    private fun shouldDismissEvent(event: ClientMessage): Boolean =
         event.timeStamp > EpochTime(0) &&
                 (event.timeStamp < timeSource() - validEventBufferMs)
 
     private fun logDismissedEvent(event: ClientMessage) =
         logVerbose {
-            "Dismissed Client Message -- the message was too old! " +
+            "Dismissed Client Message: ${event.message} -- the message was too old! eventTime" +
                     event.timeStamp.timeSinceEpochInMs +
-                    " : " + timeSource().timeSinceEpochInMs
+                    " : timeSourceTime" + timeSource().timeSinceEpochInMs
         }
 }
 

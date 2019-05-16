@@ -11,6 +11,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.livelikepreintegrators.PlayerProvider
 import com.livelike.livelikepreintegrators.createExoplayerSession
 import com.livelike.livelikepreintegrators.getExoplayerPdtTime
 import com.livelike.livelikesdk.LiveLikeSDK
@@ -44,7 +45,11 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     }
 
     override fun getPDT(): Long {
-        return getExoplayerPdtTime { getPlayer() }
+        return getExoplayerPdtTime(object : PlayerProvider {
+            override fun get(): SimpleExoPlayer? {
+                return getPlayer()
+            }
+        })
     }
 
     private fun buildMediaSource(uri: Uri): HlsMediaSource {
@@ -54,7 +59,11 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
 
     override fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
         return sdk.createExoplayerSession(
-            { getPlayer() },
+            object : PlayerProvider {
+                override fun get(): SimpleExoPlayer? {
+                    return getPlayer()
+                }
+            },
             sessionId
         )
     }
