@@ -31,8 +31,6 @@ internal class PollWidget(
 internal class PollViewModel(application: Application) : AndroidViewModel(application) {
     val data: MutableLiveData<PollWidget> = MutableLiveData()
     val results: MutableLiveData<Resource> = MutableLiveData()
-
-    var state: MutableLiveData<String> = MutableLiveData() // confirmation, followup
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
 
     var adapter: WidgetOptionsViewAdapter? = null
@@ -50,19 +48,17 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
                     val widgetType = event.message.get("event").asString ?: ""
                     logDebug { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
-                    // TODO: need to debounce
+                    // TODO: need to debounce?
                     results.postValue(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
                 }
 
                 override fun onClientMessageError(client: MessagingClient, error: Error) {}
                 override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
-
             })
         }
         currentSession.currentWidgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
             widgetObserver(widgetInfos)
         }
-
     }
 
     fun vote() {
@@ -82,9 +78,9 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
-        if (widgetInfos != null
-            && (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL
-                    || WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL)
+        if (widgetInfos != null &&
+            (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL ||
+                    WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL)
         ) {
             val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
@@ -128,7 +124,6 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         animationProgress = 0f
         animationPath = ""
         voteUrl = null
-        state.postValue("")
         data.postValue(null)
         results.postValue(null)
     }

@@ -28,7 +28,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
     init {
         context as AppCompatActivity
         viewModel.data.observe(context, resourceObserver())
-        viewModel.state.observe(context, stateObserver())
         viewModel.results.observe(context, resultsObserver())
     }
 
@@ -66,14 +65,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
 
         if (widget == null) {
             inflated = false
-        }
-    }
-
-    private fun stateObserver() = Observer<String> {
-        when (it) {
-            "confirmation" -> {
-                // when timer expires show wrong and correct
-            }
         }
     }
 
