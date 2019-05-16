@@ -89,19 +89,24 @@ internal class LiveLikeContentSessionImpl(
 
     override fun contentSessionId() = program?.contentId ?: ""
     private fun initializeWidgetMessaging(program: Program) {
+        widgetEventsQueue?.apply {
+            unsubscribeAll()
+        }
         sdkConfiguration.subscribe {
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
-                    .syncTo(currentPlayheadTime)
+//                    .syncTo(currentPlayheadTime)
                     .asWidgetManager(llDataClient, currentWidgetInfosStream)
-            widgetQueue.unsubscribeAll()
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
         }
     }
 
     private fun initializeChatMessaging(program: Program) {
+        chatQueue?.apply {
+            unsubscribeAll()
+        }
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
             // validEventBufferMs for chat is currently 24 hours
@@ -111,7 +116,6 @@ internal class LiveLikeContentSessionImpl(
                 sendBirdMessagingClient
                     .syncTo(currentPlayheadTime, 86400000L)
                     .toChatQueue(chatClient)
-            chatQueue.unsubscribeAll()
             chatQueue.subscribe(listOf(program.chatChannel))
             chatQueue.renderer = chatRenderer
             this.chatQueue = chatQueue
