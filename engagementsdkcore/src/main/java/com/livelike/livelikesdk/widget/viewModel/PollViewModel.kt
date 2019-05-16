@@ -56,9 +56,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
                 override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
             })
         }
-        currentSession.currentWidgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
-            widgetObserver(widgetInfos)
-        }
+        currentSession.currentWidgetInfosStream.subscribe(this::class.java, this::widgetObserver)
     }
 
     fun vote() {

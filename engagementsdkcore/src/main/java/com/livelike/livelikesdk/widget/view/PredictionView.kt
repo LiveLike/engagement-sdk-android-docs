@@ -9,7 +9,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
-import com.livelike.livelikesdk.widget.WidgetType
+import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.PredictionViewModel
@@ -40,7 +40,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
             val optionList = resource.getMergedOptions() ?: return@Observer
             if (!inflated) {
                 inflated = true
-                inflate(context, com.livelike.livelikesdk.R.layout.organism_text_prediction, this@PredictionView)
+                inflate(context, R.layout.organism_text_prediction, this@PredictionView)
             }
             if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
             ) {
@@ -55,20 +55,12 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
             }
 
             titleView.title = resource.question
-
-            // TODO: Pass the type directly...
-            if (resource.correct_option_id.isNullOrEmpty()) {
-                // Follow-up
-                if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
-                ) {
-                    // IMAGE
-                }
-            }
+            titleView.background = R.drawable.prediciton_rounded_corner
 
             viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
                 {},
-                WidgetType.TEXT_QUIZ,
+                widget.type,
                 resource.correct_option_id,
                 resource.text_prediction_id // or image
             )

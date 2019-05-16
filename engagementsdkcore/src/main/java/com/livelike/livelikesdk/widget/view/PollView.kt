@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.widget.LinearLayout
+import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
@@ -51,6 +52,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
             }
 
             titleView.title = resource.question
+            titleView.background = R.drawable.poll_textview_rounded_corner
 
             viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(optionList, { viewModel.vote() }, type)
 

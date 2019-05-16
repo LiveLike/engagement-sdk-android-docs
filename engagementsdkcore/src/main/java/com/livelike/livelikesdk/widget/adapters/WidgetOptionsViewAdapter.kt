@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Option
-import com.livelike.livelikesdk.widget.view.components.TextItemView
+import com.livelike.livelikesdk.widget.view.components.WidgetItemView
 
 internal class WidgetOptionsViewAdapter(
     internal var myDataset: List<Option>,
@@ -26,7 +26,7 @@ internal class WidgetOptionsViewAdapter(
     var predictionSelected = ""
     var predictionCorrect = ""
 
-    inner class TextOptionViewHolder(val textItemView: TextItemView, val onClick: (selectedOption: Option) -> Unit) :
+    inner class TextOptionViewHolder(val textItemView: WidgetItemView, val onClick: (selectedOption: Option) -> Unit) :
         RecyclerView.ViewHolder(textItemView),
         View.OnClickListener {
         init {
@@ -49,7 +49,7 @@ internal class WidgetOptionsViewAdapter(
         parent: ViewGroup,
         viewType: Int
     ): TextOptionViewHolder {
-        val textView = TextItemView(parent.context)
+        val textView = WidgetItemView(parent.context)
         return TextOptionViewHolder(textView, onClick)
     }
 

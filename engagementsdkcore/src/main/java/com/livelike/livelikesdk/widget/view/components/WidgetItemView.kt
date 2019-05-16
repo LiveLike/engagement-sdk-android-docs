@@ -28,7 +28,7 @@ import kotlinx.android.synthetic.main.atom_widget_text_item.view.percentageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
 import kotlin.math.roundToInt
 
-internal class TextItemView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
+internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
     private var inflated = false
     var clickListener: OnClickListener? = null
 

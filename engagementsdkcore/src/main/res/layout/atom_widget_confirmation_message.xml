@@ -32,8 +32,9 @@
             android:layout_height="60dp"
             android:id="@+id/confirmMessageAnimation"
             android:visibility="visible"
-            app:layout_constraintTop_toTopOf="@+id/confirmMessageText"
             app:layout_constraintStart_toStartOf="@+id/confirmMessageText"
-            app:layout_constraintEnd_toEndOf="@+id/confirmMessageText"/>
+            app:layout_constraintEnd_toEndOf="@+id/confirmMessageText"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintBottom_toBottomOf="@+id/confirmMessageText"/>
 
 </android.support.constraint.ConstraintLayout>

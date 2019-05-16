@@ -6,7 +6,9 @@ import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
 import java.util.Random
 
+fun Any.unit() = Unit
 internal class AndroidResource {
+
     companion object {
         fun dpToPx(dp: Int): Int {
             val scale = Resources.getSystem().displayMetrics.density
