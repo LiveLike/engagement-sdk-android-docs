@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.activity_exo_player.playerView
 import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
 import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
+import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 import java.util.Date
 import java.util.Timer
@@ -126,7 +127,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(), sdk)
 
-//            chat_view.setSession(session)
+            chat_view.setSession(session)
             WidgetContainerViewModel(widget_view, session)
 
             this.session = session
