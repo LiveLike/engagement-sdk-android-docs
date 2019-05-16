@@ -71,23 +71,22 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         itemIsSelected: Boolean,
         widgetType: WidgetType,
         correctOptionId: String,
-        selectedPredictionId: String,
+        userSelectedOptionId: String,
         option: Option
     ) {
         if (itemIsSelected) {
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
-                WidgetType.TEXT_PREDICTION -> updateViewBackground(R.drawable.prediction_button_pressed)
-                WidgetType.TEXT_POLL -> updateViewBackground(R.drawable.button_poll_answer_outline)
-                WidgetType.TEXT_QUIZ -> updateViewBackground(R.drawable.quiz_button_pressed)
+                WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> updateViewBackground(R.drawable.prediction_button_pressed)
+                WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> updateViewBackground(R.drawable.button_poll_answer_outline)
+                WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> updateViewBackground(R.drawable.quiz_button_pressed)
                 else -> updateViewBackground(R.drawable.button_poll_answer_outline)
             }
         } else {
             updateViewBackground(R.drawable.button_default)
         }
 
-        // it's follow up
         if (correctOptionId.isNotEmpty()) {
-            if (selectedPredictionId == option.id) {
+            if (userSelectedOptionId == option.id) {
                 updateViewBackground(R.drawable.button_wrong_answer_outline)
             }
             if (correctOptionId == option.id) {

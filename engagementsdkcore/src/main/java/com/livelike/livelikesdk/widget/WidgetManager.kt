@@ -20,13 +20,10 @@ internal class WidgetManager(
 
     init {
         widgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
-            // TODO: Find a better way to debounce the widgets
-            // TODO: We need 1 pubnub for the main events
-            // TODO: And 1 pubnub at the widget level
-//            isProcessing = (s != null)
-//            if (!isProcessing) {
-//                triggerListener?.onTrigger("done")
-//            }
+            isProcessing = (widgetInfos != null)
+            if (!isProcessing) {
+                triggerListener?.onTrigger("done")
+            }
         }
     }
 
@@ -58,9 +55,7 @@ enum class WidgetType(val value: String) {
     IMAGE_PREDICTION_FOLLOW_UP("image-prediction-follow-up-created"),
     HTML5("html-widget"),
     TEXT_QUIZ("text-quiz-created"),
-    //    TEXT_QUIZ_RESULT("text-quiz-results"),
     IMAGE_QUIZ("image-quiz-created"),
-    //    IMAGE_QUIZ_RESULT("image-quiz-results"),
     TEXT_POLL("text-poll-created"),
     IMAGE_POLL("image-poll-created"),
     ALERT("alert-created"),

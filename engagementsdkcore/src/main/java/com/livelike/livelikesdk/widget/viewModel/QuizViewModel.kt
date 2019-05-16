@@ -23,20 +23,21 @@ import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 
-internal class PollWidget(
+internal class QuizWidget(
     val type: WidgetType,
     val resource: Resource
 )
 
-internal class PollViewModel(application: Application) : AndroidViewModel(application) {
-    val data: MutableLiveData<PollWidget> = MutableLiveData()
+internal class QuizViewModel(application: Application) : AndroidViewModel(application) {
+    val data: MutableLiveData<QuizWidget> = MutableLiveData()
     val results: MutableLiveData<Resource> = MutableLiveData()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
+    var state: MutableLiveData<String> = MutableLiveData() // results
 
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
     var animationProgress = 0f
-    private var animationPath = ""
+    internal var animationPath = ""
     var voteUrl: String? = null
     private var pubnub: PubnubMessagingClient? = null
 
@@ -78,13 +79,13 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null &&
-            (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL ||
-                    WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL)
+            (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ ||
+                    WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ)
         ) {
             val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.postValue(PollWidget(WidgetType.fromString(widgetInfos.type), resource))
+                data.postValue(QuizWidget(WidgetType.fromString(widgetInfos.type), resource))
             }
         } else {
             cleanUp()
@@ -94,8 +95,8 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            Handler().removeCallbacks { confirmationState() }
-            Handler().postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
+            Handler().removeCallbacks { resultsState() }
+            Handler().postDelayed({ resultsState() }, AndroidResource.parseDuration(timeout))
         }
     }
 
@@ -103,15 +104,20 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         currentSession.currentWidgetInfosStream.onNext(null)
     }
 
-    private fun confirmationState() {
+    private fun resultsState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismiss()
             return
         }
 
+        val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
+        val rootPath = if (isUserCorrect) "correctAnswer" else "wrongAnswer"
+
+        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, getApplication()) ?: ""
         adapter?.selectionLocked = true
 
+        state.postValue("results")
         Handler().removeCallbacks { dismiss() }
         Handler().postDelayed({ dismiss() }, 6000)
     }
@@ -125,6 +131,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         voteUrl = null
         data.postValue(null)
         results.postValue(null)
+        state.postValue(null)
     }
 
     override fun onCleared() {

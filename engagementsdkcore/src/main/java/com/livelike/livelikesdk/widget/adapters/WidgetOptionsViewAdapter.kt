@@ -11,8 +11,8 @@ internal class WidgetOptionsViewAdapter(
     internal var myDataset: List<Option>,
     private val onClick: (selectedOption: Option) -> Unit,
     private val widgetType: WidgetType,
-    private val correctOptionId: String = "",
-    private val selectedPredictionId: String = ""
+    var correctOptionId: String = "",
+    var userSelectedOptionId: String = ""
 ) :
     RecyclerView.Adapter<WidgetOptionsViewAdapter.TextOptionViewHolder>() {
 
@@ -23,8 +23,6 @@ internal class WidgetOptionsViewAdapter(
             field = value
             notifyDataSetChanged()
         }
-    var predictionSelected = ""
-    var predictionCorrect = ""
 
     inner class TextOptionViewHolder(val textItemView: WidgetItemView, val onClick: (selectedOption: Option) -> Unit) :
         RecyclerView.ViewHolder(textItemView),
@@ -58,7 +56,7 @@ internal class WidgetOptionsViewAdapter(
         val item = myDataset[position]
         val itemIsSelected = selectedPosition == position
 
-        holder.textItemView.setData(item, itemIsSelected, widgetType, correctOptionId, selectedPredictionId)
+        holder.textItemView.setData(item, itemIsSelected, widgetType, correctOptionId, userSelectedOptionId)
         if (showPercentage) {
             holder.textItemView.setProgressVisibility(showPercentage)
         }

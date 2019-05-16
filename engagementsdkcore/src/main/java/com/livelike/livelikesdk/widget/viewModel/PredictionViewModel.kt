@@ -94,11 +94,11 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     }
 
     private fun followupState(textPredictionId: String, correctOptionId: String) {
-        adapter?.predictionSelected = getWidgetPredictionVotedAnswerIdOrEmpty(textPredictionId)
-        adapter?.predictionCorrect = correctOptionId
+        adapter?.correctOptionId = getWidgetPredictionVotedAnswerIdOrEmpty(textPredictionId)
+        adapter?.userSelectedOptionId = correctOptionId
         adapter?.selectionLocked = true
 
-        val rootPath = if (adapter?.predictionCorrect == adapter?.predictionSelected) "correctAnswer" else "wrongAnswer"
+        val rootPath = if (adapter?.userSelectedOptionId == adapter?.correctOptionId) "correctAnswer" else "wrongAnswer"
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, getApplication()) ?: ""
 
         state.postValue("followup")
