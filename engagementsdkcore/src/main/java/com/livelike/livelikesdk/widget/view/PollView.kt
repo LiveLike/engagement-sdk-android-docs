@@ -14,8 +14,8 @@ import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollWidget
-import kotlinx.android.synthetic.main.organism_text_prediction.view.textRecyclerView
-import kotlinx.android.synthetic.main.organism_text_prediction.view.titleView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 
 class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
 
@@ -37,7 +37,11 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
             val optionList = resource.getMergedOptions() ?: return@Observer
             if (!inflated) {
                 inflated = true
-                inflate(context, com.livelike.livelikesdk.R.layout.organism_text_prediction, this@PollView)
+                if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()) {
+                    inflate(context, R.layout.widget_image_option_selection, this@PollView)
+                } else {
+                    inflate(context, R.layout.widget_text_option_selection, this@PollView)
+                }
             }
             if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
             ) {

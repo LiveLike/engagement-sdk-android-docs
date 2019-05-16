@@ -15,10 +15,10 @@ import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.PredictionViewModel
 import com.livelike.livelikesdk.widget.viewModel.PredictionWidget
 import kotlinx.android.synthetic.main.atom_widget_confirmation_message.view.confirmMessageAnimation
-import kotlinx.android.synthetic.main.organism_text_prediction.view.confirmationMessage
-import kotlinx.android.synthetic.main.organism_text_prediction.view.followupAnimation
-import kotlinx.android.synthetic.main.organism_text_prediction.view.textRecyclerView
-import kotlinx.android.synthetic.main.organism_text_prediction.view.titleView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 
 class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
 
@@ -40,7 +40,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
             val optionList = resource.getMergedOptions() ?: return@Observer
             if (!inflated) {
                 inflated = true
-                inflate(context, R.layout.organism_text_prediction, this@PredictionView)
+                if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()) {
+                    inflate(context, R.layout.widget_image_option_selection, this@PredictionView)
+                } else {
+                    inflate(context, R.layout.widget_text_option_selection, this@PredictionView)
+                }
             }
             if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
             ) {

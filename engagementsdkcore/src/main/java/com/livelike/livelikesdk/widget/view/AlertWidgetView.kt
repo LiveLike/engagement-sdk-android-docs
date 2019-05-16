@@ -17,15 +17,15 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
-import kotlinx.android.synthetic.main.alert_widget.view.bodyBackground
-import kotlinx.android.synthetic.main.alert_widget.view.bodyImage
-import kotlinx.android.synthetic.main.alert_widget.view.bodyText
-import kotlinx.android.synthetic.main.alert_widget.view.labelBackground
-import kotlinx.android.synthetic.main.alert_widget.view.labelText
-import kotlinx.android.synthetic.main.alert_widget.view.linkArrow
-import kotlinx.android.synthetic.main.alert_widget.view.linkBackground
-import kotlinx.android.synthetic.main.alert_widget.view.linkText
-import kotlinx.android.synthetic.main.alert_widget.view.widgetContainer
+import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
+import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
+import kotlinx.android.synthetic.main.widget_alert.view.bodyText
+import kotlinx.android.synthetic.main.widget_alert.view.labelBackground
+import kotlinx.android.synthetic.main.widget_alert.view.labelText
+import kotlinx.android.synthetic.main.widget_alert.view.linkArrow
+import kotlinx.android.synthetic.main.widget_alert.view.linkBackground
+import kotlinx.android.synthetic.main.widget_alert.view.linkText
+import kotlinx.android.synthetic.main.widget_alert.view.widgetContainer
 
 internal class AlertWidgetView : ConstraintLayout {
     constructor(context: Context) : super(context)
@@ -51,7 +51,7 @@ internal class AlertWidgetView : ConstraintLayout {
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
             inflated = true
-            LayoutInflater.from(context).inflate(R.layout.alert_widget, this, true) as ConstraintLayout
+            LayoutInflater.from(context).inflate(R.layout.widget_alert, this, true) as ConstraintLayout
         }
 
         bodyText.text = resourceAlert.text
