@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             channelManager.show(this)
         }
 
-        channelManager.addChannelSelectListener {
+        channelManager.addChannelSelectListener("mainActivity") {
             channelManager.hide()
             events_label.text = it.name
         }

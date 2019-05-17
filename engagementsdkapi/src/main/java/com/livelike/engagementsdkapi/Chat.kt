@@ -32,17 +32,15 @@ data class ChatMessage(
     val timeStamp: String = ""
 )
 
-class ChatState {
-    var chatAdapter: ChatAdapter? = null
-}
-
 interface ChatCell {
+    var messageId: String
     fun setMessage(
         message: ChatMessage?,
         isMe: Boolean?
     )
 
     fun getView(): View
+    override fun equals(other: Any?): Boolean
 }
 
 interface ChatCellFactory {
@@ -84,10 +82,14 @@ class ChatAdapter() : BaseAdapter() {
     private val chatMessages = mutableListOf<ChatCell>()
 
     fun addMessage(chat: ChatMessage) {
-        val cell = cellFactory.getCell()
-        cell.setMessage(chat, session.currentUser?.sessionId == chat.senderId)
-        chatMessages.add(cell)
-        notifyDataSetChanged()
+        val cell = cellFactory.getCell().also {
+            it.setMessage(chat, session.currentUser?.sessionId == chat.senderId)
+        }
+        if (!chatMessages.contains(cell)) {
+            // avoid duplicated messages
+            chatMessages.add(cell)
+            notifyDataSetChanged()
+        }
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {

@@ -26,6 +26,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     private val client: OkHttpClient = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val channelSelectListeners = mutableListOf<(Channel) -> Unit>()
+    private val channelListenersKeys = mutableListOf<String>()
     private val view: ChannelSelectionView = ChannelSelectionView(appContext)
     private var channelBottomSheetDialog: BottomSheetDialog? = null
     val channelList: MutableList<Channel> = mutableListOf()
@@ -92,8 +93,11 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             .apply()
     }
 
-    fun addChannelSelectListener(listener: (Channel) -> Unit) {
-        channelSelectListeners.add(listener)
+
+    fun addChannelSelectListener(key: String, listener: (Channel) -> Unit) {
+        if (!channelListenersKeys.contains(key)) {
+            channelSelectListeners.add(listener)
+        }
     }
 
     fun removeChannelSelectListener(listener: (Channel) -> Unit) {

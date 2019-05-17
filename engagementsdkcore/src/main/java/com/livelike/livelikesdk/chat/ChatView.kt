@@ -78,8 +78,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
     private val animationEaseAdapter = AnimationEaseAdapter()
-    private var viewRoot: View = LayoutInflater.from(context)
-        .inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
 
     private var viewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(ChatViewModel::class.java)
@@ -89,6 +87,15 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
+
+
+        LayoutInflater.from(context).inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
+
+        viewModel.currentLastPos()?.let {
+            Handler(Looper.getMainLooper()).post {
+                chatdisplay.setSelectionFromTop(it, 0)
+            }
+        }
     }
 
     private fun verifyViewMinWidth(view: View) {
@@ -156,6 +163,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
      */
     private fun setDataSource(chatAdapter: ChatAdapter) {
         chatdisplay.adapter = chatAdapter
+
         chatdisplay.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScroll(
                 view: AbsListView?,
@@ -163,8 +171,11 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 visibleItemCount: Int,
                 totalItemCount: Int
             ) {
-                val lastpos = view?.lastVisiblePosition ?: 0
-                if (lastpos >= totalItemCount - 3)
+                val lastPos = view?.lastVisiblePosition ?: 0
+                if (lastPos > 0) {
+                    viewModel.setLastPos(lastPos)
+                }
+                if (lastPos >= totalItemCount - 3)
                     hideSnapToLive()
                 else
                     showSnapToLive()
@@ -229,6 +240,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 recycle()
             }
         }
+
+
     }
 
     private fun showLoadingSpinner() {
@@ -335,6 +348,13 @@ internal class DefaultChatCellFactory(val context: Context, cellattrs: Attribute
 }
 
 internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatCell {
+    override var messageId: String = ""
+
+    override fun equals(other: Any?): Boolean {
+        return if (other !is ChatCell) false
+        else this.messageId == other.messageId
+    }
+
     init {
         LayoutInflater.from(context)
             .inflate(com.livelike.livelikesdk.R.layout.default_chat_cell, this, true)
@@ -345,6 +365,7 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
         isMe: Boolean?
     ) {
         message?.apply {
+            messageId = message.id
             if (isMe == true) {
                 chat_nickname.setTextColor(
                     ContextCompat.getColor(
@@ -368,5 +389,9 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
 
     override fun getView(): View {
         return this
+    }
+
+    override fun hashCode(): Int {
+        return messageId.hashCode()
     }
 }

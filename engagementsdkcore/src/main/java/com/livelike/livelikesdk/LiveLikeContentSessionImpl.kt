@@ -32,12 +32,14 @@ internal class LiveLikeContentSessionImpl(
         set(value) {
             if (field != value) {
                 field = value
-                llDataClient.getLiveLikeProgramData(value) {
-                    if (it !== null) {
-                        program = it
+                if (programUrl.isNotEmpty()) {
+                    llDataClient.getLiveLikeProgramData(value) {
+                        if (it !== null) {
+                            program = it
 //                        currentWidgetInfosStream.clear()
-                        initializeWidgetMessaging(it)
-                        initializeChatMessaging(it)
+                            initializeWidgetMessaging(it)
+                            initializeChatMessaging(it)
+                        }
                     }
                 }
             }
