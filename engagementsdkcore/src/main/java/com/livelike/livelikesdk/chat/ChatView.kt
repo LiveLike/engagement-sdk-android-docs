@@ -283,6 +283,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         if (!showingSnapToLive)
             return
         showingSnapToLive = false
+        snap_live.visibility = View.GONE
         animateSnapToLiveButton()
     }
 
@@ -290,6 +291,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         if (showingSnapToLive)
             return
         showingSnapToLive = true
+        snap_live.visibility = View.VISIBLE
         animateSnapToLiveButton()
     }
 
