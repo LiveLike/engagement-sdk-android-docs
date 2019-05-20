@@ -76,20 +76,6 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     }
 
     fun dismiss() {
-        data.value?.let {
-            adapter?.apply {
-                if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
-                    val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
-
-                    // Prediction widget votes on dismiss
-                    selectedOption?.getMergedVoteUrl()?.let { it1 -> dataClient.vote(it1) }
-
-                    // Save widget id and voted option for followup widget
-                    addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
-                }
-            }
-        }
-
         currentSession.currentWidgetInfosStream.onNext(null)
     }
 
@@ -109,6 +95,21 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
             // If the user never selected an option dismiss the widget with no confirmation
             dismiss()
             return
+        }
+
+        // Vote for the selected option before starting the confirm animation
+        data.value?.let {
+            adapter?.apply {
+                if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
+                    val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
+
+                    // Prediction widget votes on dismiss
+                    selectedOption?.getMergedVoteUrl()?.let { it1 -> dataClient.vote(it1) }
+
+                    // Save widget id and voted option for followup widget
+                    addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
+                }
+            }
         }
 
         adapter?.selectionLocked = true
