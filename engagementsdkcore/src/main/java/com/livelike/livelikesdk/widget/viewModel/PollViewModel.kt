@@ -32,8 +32,7 @@ internal class PollWidget(
 internal class PollViewModel(application: Application) : AndroidViewModel(application) {
     val data: MutableLiveData<PollWidget> = MutableLiveData()
     val results: MutableLiveData<Resource> = MutableLiveData()
-    val currentVoteId: MutableLiveData<String?> =
-        MutableLiveData() // TODO: Debouncing done, need to update local value now
+    val currentVoteId: MutableLiveData<String?> = MutableLiveData()
     private val debouncer = currentVoteId.debounce()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
 
@@ -79,8 +78,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
                     ?.let { url -> dataClient.vote(url) { voteUrl = it } }
             } else {
                 voteUrl?.apply {
-                    myDataset[selectedPosition].getMergedVoteUrl()
-                        ?.let { dataClient.changeVote(this, myDataset[selectedPosition].id) {} }
+                    dataClient.changeVote(this, myDataset[selectedPosition].id) {}
                 }
             }
         }
@@ -140,5 +138,34 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
 
     override fun onCleared() {
         currentSession.currentWidgetInfosStream.unsubscribe(this::class.java)
+    }
+
+    // This is to update the vote value locally
+    private var previousOptionClickedId: String? = null
+
+    fun onOptionClicked(it: String?) {
+        if (it != previousOptionClickedId) {
+            data.value?.apply {
+                val options = resource.getMergedOptions() ?: return
+                options.forEach { opt ->
+                    opt.apply {
+                        if (opt.id == it) {
+                            opt.vote_count = opt.vote_count?.plus(1) ?: 0
+                        } else if (previousOptionClickedId == opt.id) {
+                            opt.vote_count = opt.vote_count?.minus(1) ?: 0
+                        }
+                    }
+                }
+                options.forEach { opt ->
+                    opt.apply {
+                        opt.percentage = opt.getPercent((resource.getMergedTotal()).toFloat())
+                    }
+                }
+                adapter?.myDataset = options
+                adapter?.showPercentage = true
+                adapter?.notifyDataSetChanged()
+                previousOptionClickedId = it
+            }
+        }
     }
 }

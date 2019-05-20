@@ -39,6 +39,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
 
     private fun clickedOptionObserver() = Observer<String?> {
         logDebug { "Option clicked $it" }
+        viewModel.onOptionClicked(it)
     }
 
     private fun resourceObserver() = Observer<PollWidget> { widget ->
