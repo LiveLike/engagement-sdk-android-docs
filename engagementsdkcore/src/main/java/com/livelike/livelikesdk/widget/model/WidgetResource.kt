@@ -21,12 +21,6 @@ internal data class Resource(
     val options: List<Option>? = listOf(),
     val impression_url: String = ""
 ) {
-    private val totalVotes: Int =
-        options?.map { it.vote_count ?: 0 }?.sum() ?: 0
-
-    private val totalAnswers: Int =
-        choices?.map { it.answer_count ?: 0 }?.sum() ?: 0
-
     fun getMergedOptions(): List<Option>? {
         return if (choices != null && choices.isNotEmpty()) {
             choices
@@ -36,8 +30,9 @@ internal data class Resource(
     }
 
     fun getMergedTotal(): Int {
+        val totalAnswers = options?.map { it.vote_count ?: 0 }?.sum() ?: 0
         return if (totalAnswers == 0) {
-            totalVotes
+            choices?.map { it.answer_count ?: 0 }?.sum() ?: 0
         } else {
             totalAnswers
         }
