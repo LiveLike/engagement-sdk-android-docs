@@ -84,6 +84,12 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         adapter?.userSelectedOptionId = correctOptionId
         adapter?.selectionLocked = true
 
+        data.postValue(data.value?.apply {
+            resource.getMergedOptions()?.forEach { opt ->
+                opt.percentage = opt.getPercent(resource.getMergedTotal().toFloat())
+            }
+        })
+
         val rootPath = if (adapter?.userSelectedOptionId == adapter?.correctOptionId) "correctAnswer" else "wrongAnswer"
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, getApplication()) ?: ""
 

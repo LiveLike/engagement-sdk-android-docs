@@ -96,9 +96,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
                 }
             }
             "followup" -> {
-                viewModel.data.value?.resource?.getMergedOptions()?.forEach { opt ->
-                    opt.percentage = opt.getPercent(viewModel.data.value?.resource?.getMergedTotal()?.toFloat() ?: 0f)
-                }
                 followupAnimation.apply {
                     setAnimation(viewModel.animationPath)
                     progress = viewModel.animationProgress
