@@ -93,7 +93,6 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             .apply()
     }
 
-
     fun addChannelSelectListener(key: String, listener: (Channel) -> Unit) {
         if (!channelListenersKeys.contains(key)) {
             channelSelectListeners.add(listener)

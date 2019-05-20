@@ -88,7 +88,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
 
-
         LayoutInflater.from(context).inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
 
         viewModel.currentLastPos()?.let {
@@ -240,8 +239,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 recycle()
             }
         }
-
-
     }
 
     private fun showLoadingSpinner() {
