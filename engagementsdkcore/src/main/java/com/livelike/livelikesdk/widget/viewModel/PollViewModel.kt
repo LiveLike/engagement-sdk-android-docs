@@ -22,6 +22,7 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import debounce
 
 internal class PollWidget(
     val type: WidgetType,
@@ -31,6 +32,9 @@ internal class PollWidget(
 internal class PollViewModel(application: Application) : AndroidViewModel(application) {
     val data: MutableLiveData<PollWidget> = MutableLiveData()
     val results: MutableLiveData<Resource> = MutableLiveData()
+    val currentVoteId: MutableLiveData<String?> =
+        MutableLiveData() // TODO: Debouncing done, need to update local value now
+    private val debouncer = currentVoteId.debounce()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
 
     var adapter: WidgetOptionsViewAdapter? = null
@@ -59,9 +63,13 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
             })
         }
         currentSession.currentWidgetInfosStream.subscribe(this::class.java, this::widgetObserver)
+
+        debouncer.observeForever {
+            if (it != null) vote()
+        }
     }
 
-    fun vote() {
+    private fun vote() {
         adapter?.showPercentage = true
         adapter?.notifyDataSetChanged()
         // TODO: this needs to be debounced
@@ -127,6 +135,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         data.postValue(null)
         results.postValue(null)
         animationEggTimerProgress = 0f
+        currentVoteId.postValue(null)
     }
 
     override fun onCleared() {

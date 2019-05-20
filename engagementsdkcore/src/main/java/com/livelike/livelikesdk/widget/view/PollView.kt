@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
@@ -33,6 +34,11 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
         context as AppCompatActivity
         viewModel.data.observe(context, resourceObserver())
         viewModel.results.observe(context, resultsObserver())
+        viewModel.currentVoteId.observe(context, clickedOptionObserver())
+    }
+
+    private fun clickedOptionObserver() = Observer<String?> {
+        logDebug { "Option clicked $it" }
     }
 
     private fun resourceObserver() = Observer<PollWidget> { widget ->
@@ -61,7 +67,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
             titleView.title = resource.question
             titleView.background = R.drawable.poll_textview_rounded_corner
 
-            viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(optionList, { viewModel.vote() }, type)
+            viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(optionList, {
+                val selectedId = viewModel.adapter?.myDataset?.get(viewModel.adapter?.selectedPosition ?: -1)?.id ?: ""
+                viewModel.currentVoteId.postValue(selectedId)
+            }, type)
 
             textRecyclerView.apply {
                 this.layoutManager = viewManager
