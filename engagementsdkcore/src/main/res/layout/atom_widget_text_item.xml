@@ -23,7 +23,10 @@
             tools:text="Some Hockey Player"
             android:paddingRight="46dp"
             android:paddingLeft="16dp"
-            android:textAlignment="textStart"/>
+            android:textAlignment="textStart"
+            android:paddingEnd="46dp"
+            android:paddingStart="16dp"
+    />
 
     <ProgressBar
             android:id="@+id/determinateBar"
@@ -31,9 +34,9 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_margin="8dp"
-            android:elevation="1dp"
             android:indeterminate="false"
             android:visibility="invisible"
+            android:progressDrawable="@drawable/progress_bar_user_correct"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -42,13 +45,13 @@
 
             tools:progress="60"
             tools:visibility="visible"
-            tools:progressDrawable="@drawable/progress_bar_user_correct"/>
+            tools:progressDrawable="@drawable/progress_bar_user_correct"
+    />
 
     <TextView
             android:id="@+id/percentageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:elevation="8dp"
             android:textColor="@color/percent_label_text_color"
             android:textSize="@dimen/percent_label_text_size"
             android:gravity="end"
@@ -61,6 +64,7 @@
             app:layout_constraintHorizontal_bias="1.0"
 
             android:layout_marginEnd="10dp"
-            tools:text="80%"/>
+            tools:text="80%"
+            tools:visibility="visible"/>
 
 </android.support.constraint.ConstraintLayout>

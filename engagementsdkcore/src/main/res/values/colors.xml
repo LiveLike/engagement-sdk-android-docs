@@ -62,6 +62,8 @@
 
     <color name="default_bar_gradient_left">#33ffffff</color>
     <color name="default_bar_gradient_right">#33ffffff</color>
+    <color name="quiz_bar_gradient_left">@color/default_bar_gradient_left</color>
+    <color name="quiz_bar_gradient_right">@color/default_bar_gradient_right</color>
     <color name="poll_bar_gradient_left">@color/default_bar_gradient_left</color>
     <color name="poll_bar_gradient_right">@color/default_bar_gradient_right</color>
     <color name="correct_bar_gradient_left">@color/default_bar_gradient_left</color>

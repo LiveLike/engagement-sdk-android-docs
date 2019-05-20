@@ -76,20 +76,35 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
     ) {
         if (itemIsSelected) {
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
-                WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> updateViewBackground(R.drawable.prediction_button_pressed)
-                WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> updateViewBackground(R.drawable.button_poll_answer_outline)
-                WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> updateViewBackground(R.drawable.quiz_button_pressed)
-                else -> updateViewBackground(R.drawable.button_poll_answer_outline)
+                WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
+                    updateViewBackground(R.drawable.prediction_button_pressed)
+                }
+                WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> {
+                    updateViewProgressBar(R.drawable.progress_bar_user_selection_poll)
+                    updateViewBackground(R.drawable.button_poll_answer_outline)
+                }
+                WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> {
+                    updateViewProgressBar(R.drawable.progress_bar_user_selection_quiz)
+                    updateViewBackground(R.drawable.quiz_button_pressed)
+                }
+                else -> {
+                    updateViewProgressBar(R.drawable.progress_bar_user_selection_neutral)
+                    updateViewBackground(R.drawable.button_poll_answer_outline)
+                }
             }
         } else {
+            updateViewProgressBar(R.drawable.progress_bar_user_selection_neutral)
             updateViewBackground(R.drawable.button_default)
         }
 
         if (correctOptionId.isNotEmpty()) {
+            updateViewProgressBar(R.drawable.progress_bar_user_selection_neutral)
             if (userSelectedOptionId == option.id) {
+                updateViewProgressBar(R.drawable.progress_bar_user_selection_wrong)
                 updateViewBackground(R.drawable.button_wrong_answer_outline)
             }
             if (correctOptionId == option.id) {
+                updateViewProgressBar(R.drawable.progress_bar_user_correct)
                 updateViewBackground(R.drawable.button_correct_answer_outline)
             }
         }
@@ -135,6 +150,11 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
+    }
+
+    fun updateViewProgressBar(drawable: Int) {
+        determinateBar?.progressDrawable = AppCompatResources.getDrawable(context, drawable)
+        imageBar?.progressDrawable = AppCompatResources.getDrawable(context, drawable)
     }
 
     fun updateViewBackground(drawable: Int) {
