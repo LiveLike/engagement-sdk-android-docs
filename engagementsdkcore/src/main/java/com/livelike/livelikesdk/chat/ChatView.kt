@@ -224,8 +224,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
                 // Send message on tap Enter
                 edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
-                    if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)
-                        || (actionId == EditorInfo.IME_ACTION_SEND)
+                    if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
+                        (actionId == EditorInfo.IME_ACTION_SEND)
                     ) {
                         hideKeyboard()
                         sendMessageNow()
