@@ -10,13 +10,18 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
+import com.livelike.livelikesdk.widget.view.components.EggTimerView
 import com.livelike.livelikesdk.widget.viewModel.PredictionViewModel
 import com.livelike.livelikesdk.widget.viewModel.PredictionWidget
-import kotlinx.android.synthetic.main.atom_widget_confirmation_message.view.confirmMessageAnimation
+import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageCloseButton
+import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textCloseButton
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 
@@ -38,16 +43,17 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
     private fun widgetObserver() = Observer<PredictionWidget> { widget ->
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return@Observer
+            val isImageWidget = optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
+
             if (!inflated) {
                 inflated = true
-                if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()) {
+                if (isImageWidget) {
                     inflate(context, R.layout.widget_image_option_selection, this@PredictionView)
                 } else {
                     inflate(context, R.layout.widget_text_option_selection, this@PredictionView)
                 }
             }
-            if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
-            ) {
+            if (isImageWidget) {
                 if (optionList.size > 3) {
                     viewManager =
                         LinearLayoutManager(context).apply { orientation = LinearLayout.HORIZONTAL }
@@ -76,10 +82,29 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
             }
 
             viewModel.startDismissTimout(resource.timeout, resource.correct_option_id.isNotEmpty())
+
+            val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
+            if (viewModel.animationEggTimerProgress < 1f) {
+                imageEggTimer?.setupEggTimer(animationLength)
+                textEggTimer?.setupEggTimer(animationLength)
+            }
         }
 
         if (widget == null) {
             inflated = false
+        }
+    }
+
+    private fun EggTimerView.setupEggTimer(animationLength: Float) {
+        visibility = View.VISIBLE
+        startAnimationFrom(viewModel.animationEggTimerProgress, animationLength) {
+            viewModel.animationEggTimerProgress = it
+            if (it >= 1) {
+                textCloseButton?.visibility = View.VISIBLE
+                imageCloseButton?.visibility = View.VISIBLE
+                textEggTimer?.visibility = View.VISIBLE
+                imageEggTimer?.visibility = View.VISIBLE
+            }
         }
     }
 
@@ -89,8 +114,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
                 confirmationMessage.apply {
                     text = viewModel.data.value?.resource?.confirmation_message ?: ""
                     startAnimation(viewModel.animationPath, viewModel.animationProgress)
-                    confirmMessageAnimation.addAnimatorUpdateListener { valueAnimator ->
-                        viewModel.animationProgress = valueAnimator.animatedFraction
+                    subscribeToAnimationUpdates { value ->
+                        viewModel.animationProgress = value
                     }
                     visibility = View.VISIBLE
                 }
@@ -107,6 +132,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : ConstraintL
                     }
                     visibility = View.VISIBLE
                 }
+                textEggTimer?.visibility = View.GONE
+                imageEggTimer?.visibility = View.GONE
+                textCloseButton?.visibility = View.VISIBLE
+                imageCloseButton?.visibility = View.VISIBLE
             }
         }
     }

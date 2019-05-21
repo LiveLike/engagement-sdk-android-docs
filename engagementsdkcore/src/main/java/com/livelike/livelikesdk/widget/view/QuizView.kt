@@ -10,13 +10,19 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
+import com.livelike.livelikesdk.widget.view.components.EggTimerView
 import com.livelike.livelikesdk.widget.viewModel.QuizViewModel
 import com.livelike.livelikesdk.widget.viewModel.QuizWidget
+import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageCloseButton
+import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textCloseButton
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 
@@ -71,10 +77,29 @@ class QuizView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
             }
 
             viewModel.startDismissTimout(resource.timeout)
+
+            val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
+            if (viewModel.animationEggTimerProgress < 1f) {
+                imageEggTimer?.setupEggTimer(animationLength)
+                textEggTimer?.setupEggTimer(animationLength)
+            }
         }
 
         if (widget == null) {
             inflated = false
+        }
+    }
+
+    private fun EggTimerView.setupEggTimer(animationLength: Float) {
+        visibility = View.VISIBLE
+        startAnimationFrom(viewModel.animationEggTimerProgress, animationLength) {
+            viewModel.animationEggTimerProgress = it
+            if (it >= 1) {
+                textCloseButton?.visibility = View.VISIBLE
+                imageCloseButton?.visibility = View.VISIBLE
+                textEggTimer?.visibility = View.VISIBLE
+                imageEggTimer?.visibility = View.VISIBLE
+            }
         }
     }
 
