@@ -196,7 +196,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             try {
                 val inputTextColor = getColor(
                     com.livelike.livelikesdk.R.styleable.ChatView_inputTextColor,
-                    resources.getColor(com.livelike.livelikesdk.R.color.colorInputText)
+                    resources.getColor(com.livelike.livelikesdk.R.color.livelike_colorInputText)
                 )
                 ColorStateList.valueOf(inputTextColor).toString()
                 val defaultText = getString(com.livelike.livelikesdk.R.styleable.ChatView_inputTextDefault)
@@ -371,7 +371,7 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
                 chat_nickname.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        com.livelike.livelikesdk.R.color.openChatNicknameMe
+                        com.livelike.livelikesdk.R.color.livelike_openChatNicknameMe
                     )
                 )
                 chat_nickname.text = "(Me) ${message.senderDisplayName}"
@@ -379,7 +379,7 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
                 chat_nickname.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        com.livelike.livelikesdk.R.color.openChatNicknameOther
+                        com.livelike.livelikesdk.R.color.livelike_openChatNicknameOther
                     )
                 )
                 chat_nickname.text = message.senderDisplayName

@@ -6,8 +6,8 @@
                 <corners android:radius="@dimen/percent_bar_corner_radius"/>
                 <gradient
                         android:angle="@integer/percent_bar_gradient_angle"
-                        android:startColor="@color/correct_bar_gradient_left"
-                        android:endColor="@color/correct_bar_gradient_right"
+                        android:startColor="@color/livelike_correct_bar_gradient_left"
+                        android:endColor="@color/livelike_correct_bar_gradient_right"
                         />
                 <padding android:bottom="15dp"
                          android:top="14dp"

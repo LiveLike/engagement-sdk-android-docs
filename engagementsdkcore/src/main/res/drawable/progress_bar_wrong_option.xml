@@ -7,8 +7,8 @@
 
                 <gradient
                         android:angle="@integer/percent_bar_gradient_angle"
-                        android:endColor="@color/neutral_bar_gradient_right"
-                        android:startColor="@color/neutral_bar_gradient_left"
+                        android:endColor="@color/livelike_neutral_bar_gradient_right"
+                        android:startColor="@color/livelike_neutral_bar_gradient_left"
                         />
                 <padding android:left="8dp"
                          android:right="8dp"

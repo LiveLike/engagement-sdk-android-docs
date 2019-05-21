@@ -3,7 +3,7 @@
     <solid android:color="#99000000"/>
     <stroke
             android:width="@dimen/confirm_outline_stroke_width"
-            android:color="@color/colorPrimaryDark"/>
+            android:color="@color/livelike_colorPrimaryDark"/>
     <corners
             android:radius="@dimen/button_corner_radius"/>
 </shape>

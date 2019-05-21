@@ -22,7 +22,7 @@
             android:src="@drawable/ic_chat_ic_live"
             app:layout_constraintBottom_toTopOf="@id/chatInput"
             app:layout_constraintEnd_toEndOf="@id/chatdisplay"
-            android:background="@color/transparent"
+            android:background="@color/livelike_transparent"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="16dp"
             android:elevation="1dp"

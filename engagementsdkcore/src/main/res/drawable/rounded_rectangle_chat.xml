@@ -3,7 +3,7 @@
        android:shape="rectangle">
 
     <solid
-            android:color="@color/chat_rounded_rect_color">
+            android:color="@color/livelike_chat_rounded_rect_color">
     </solid>
 
     <corners

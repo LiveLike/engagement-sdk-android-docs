@@ -120,7 +120,7 @@
             android:layout_marginTop="13dp"
             android:animateLayoutChanges="true"
             android:background="@drawable/alert_notification_label_background"
-            android:backgroundTint="@color/alert_label_background_shadow"
+            android:backgroundTint="@color/livelike_alert_label_background_shadow"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/widgetContainer"
             app:layout_constraintEnd_toEndOf="@+id/labelText"

@@ -4,8 +4,8 @@
         <shape>
             <gradient
                     android:angle="@integer/chat_background_gradient_angle"
-                    android:endColor="@color/chat_background_end_color"
-                    android:startColor="@color/chat_background_start_color"
+                    android:endColor="@color/livelike_chat_background_end_color"
+                    android:startColor="@color/livelike_chat_background_start_color"
                     android:type="linear"/>
         </shape>
     </item>

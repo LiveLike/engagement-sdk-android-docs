@@ -2,11 +2,11 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <stroke
             android:width="@dimen/header_outline_stroke_width"
-            android:color="@color/colorPrimaryDark"/>
+            android:color="@color/livelike_colorPrimaryDark"/>
 
     <gradient
-            android:startColor="@color/prediction_title_gradient_left"
-            android:endColor="@color/prediction_title_gradient_right"
+            android:startColor="@color/livelike_prediction_title_gradient_left"
+            android:endColor="@color/livelike_prediction_title_gradient_right"
             android:angle="@integer/header_gradient_angle"/>
     <padding
             android:left="16dp"
