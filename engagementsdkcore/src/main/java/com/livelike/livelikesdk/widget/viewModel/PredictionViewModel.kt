@@ -41,6 +41,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
+        cleanUp()
         if (widgetInfos != null) {
             val type = WidgetType.fromString(widgetInfos.type)
             if (type == WidgetType.IMAGE_PREDICTION ||
@@ -53,11 +54,9 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
                     data.postValue(PredictionWidget(type, resource))
                 }
                 // Specify to Prediction widgetInfos here
-            } else {
-                cleanUp()
             }
         } else {
-            cleanUp()
+            data.postValue(null)
         }
     }
 

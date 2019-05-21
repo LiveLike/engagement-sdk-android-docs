@@ -1,5 +1,6 @@
 package com.livelike.livelikesdk.widget
 
+import android.os.Handler
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.services.messaging.ClientMessage
@@ -17,11 +18,13 @@ internal class WidgetManager(
     MessagingClientProxy(upstream),
     ExternalMessageTrigger {
 
+    val handler = Handler()
+
     init {
         widgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
             isProcessing = (widgetInfos != null)
             if (!isProcessing) {
-                triggerListener?.onTrigger("done")
+                handler.postDelayed({ triggerListener?.onTrigger("done") }, 500)
             }
         }
     }
