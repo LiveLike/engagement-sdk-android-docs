@@ -9,7 +9,6 @@ import com.livelike.livelikesdk.services.messaging.proxies.ExternalTriggerListen
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.services.messaging.proxies.TriggeredMessagingClient
 
-// / Transforms ClientEvent into WidgetViews and sends to WidgetRenderer
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
