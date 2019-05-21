@@ -14,6 +14,7 @@ import com.livelike.livelikesdk.widget.model.Alert
 internal class AlertWidgetViewModel : ViewModel() {
     private var timeoutStarted = false
     var data: MutableLiveData<Alert?> = MutableLiveData()
+    val handler = Handler()
 
     init {
         currentSession.currentWidgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
@@ -26,22 +27,27 @@ internal class AlertWidgetViewModel : ViewModel() {
             data.postValue(gson.fromJson(widgetInfos.payload.toString(), Alert::class.java) ?: null)
         } else {
             data.postValue(null)
+            cleanup()
         }
     }
 
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            Handler().postDelayed({
+            handler.postDelayed({
                 dismiss()
                 timeoutStarted = false
             }, AndroidResource.parseDuration(timeout))
         }
     }
 
-    fun dismiss() {
+    private fun dismiss() {
         currentSession.currentWidgetInfosStream.onNext(null)
+    }
+
+    private fun cleanup() {
         timeoutStarted = false
+        handler.removeCallbacksAndMessages(null)
     }
 
     override fun onCleared() {

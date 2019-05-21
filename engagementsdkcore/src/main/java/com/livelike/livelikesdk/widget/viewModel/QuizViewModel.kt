@@ -40,6 +40,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     internal var animationPath = ""
     var voteUrl: String? = null
     private var pubnub: PubnubMessagingClient? = null
+    private val handler = Handler()
 
     init {
         LiveLikeSDK.configuration?.pubNubKey?.let {
@@ -95,8 +96,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            Handler().removeCallbacks { resultsState() }
-            Handler().postDelayed({ resultsState() }, AndroidResource.parseDuration(timeout))
+            handler.postDelayed({ resultsState() }, AndroidResource.parseDuration(timeout))
         }
     }
 
@@ -118,11 +118,11 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
         adapter?.selectionLocked = true
 
         state.postValue("results")
-        Handler().removeCallbacks { dismiss() }
-        Handler().postDelayed({ dismiss() }, 6000)
+        handler.postDelayed({ dismiss() }, 6000)
     }
 
     private fun cleanUp() {
+        handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false
         adapter = null

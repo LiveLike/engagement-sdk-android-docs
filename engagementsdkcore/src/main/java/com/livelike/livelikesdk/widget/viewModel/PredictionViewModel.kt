@@ -32,6 +32,8 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     var animationProgress = 0f
     var animationPath = ""
 
+    private val handler = Handler()
+
     init {
         currentSession.currentWidgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
             widgetObserver(widgetInfos)
@@ -63,19 +65,18 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     fun startDismissTimout(timeout: String, isFollowup: Boolean) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            Handler().removeCallbacks { confirmationState() }
             if (isFollowup) {
-                Handler().postDelayed({ dismiss() }, AndroidResource.parseDuration(timeout))
+                handler.postDelayed({ dismiss() }, AndroidResource.parseDuration(timeout))
                 data.value?.apply {
                     followupState(resource.text_prediction_id, resource.correct_option_id)
                 }
             } else {
-                Handler().postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
+                handler.postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
             }
         }
     }
 
-    fun dismiss() {
+    private fun dismiss() {
         currentSession.currentWidgetInfosStream.onNext(null)
     }
 
@@ -103,6 +104,15 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
             return
         }
 
+        adapter?.selectionLocked = true
+        animationPath = AndroidResource.selectRandomLottieAnimation("confirmMessage", getApplication()) ?: ""
+
+        state.postValue("confirmation")
+
+        handler.postDelayed({ dismiss() }, 6000)
+    }
+
+    private fun cleanUp() {
         // Vote for the selected option before starting the confirm animation
         data.value?.let {
             adapter?.apply {
@@ -117,17 +127,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
                 }
             }
         }
-
-        adapter?.selectionLocked = true
-        animationPath = AndroidResource.selectRandomLottieAnimation("confirmMessage", getApplication()) ?: ""
-
-        state.postValue("confirmation")
-
-        Handler().removeCallbacks { dismiss() }
-        Handler().postDelayed({ dismiss() }, 6000)
-    }
-
-    private fun cleanUp() {
+        handler.removeCallbacksAndMessages(null)
         timeoutStarted = false
         adapter = null
         animationProgress = 0f

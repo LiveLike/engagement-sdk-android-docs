@@ -39,6 +39,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     private var animationPath = ""
     var voteUrl: String? = null
     private var pubnub: PubnubMessagingClient? = null
+    private val handler = Handler()
 
     init {
         LiveLikeSDK.configuration?.pubNubKey?.let {
@@ -94,8 +95,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            Handler().removeCallbacks { confirmationState() }
-            Handler().postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
+            handler.postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
         }
     }
 
@@ -112,11 +112,11 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
 
         adapter?.selectionLocked = true
 
-        Handler().removeCallbacks { dismiss() }
-        Handler().postDelayed({ dismiss() }, 6000)
+        handler.postDelayed({ dismiss() }, 6000)
     }
 
     private fun cleanUp() {
+        handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false
         adapter = null
