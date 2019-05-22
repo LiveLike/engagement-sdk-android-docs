@@ -7,8 +7,8 @@
                     android:centerColor="@color/livelike_image_option_background_center"
                     android:endColor="@color/livelike_image_option_background_end"
                     android:angle="@integer/image_option_gradient_angle"/>
-            <corners android:bottomRightRadius="@dimen/button_corner_radius"
-                     android:bottomLeftRadius="@dimen/button_corner_radius"/>
+            <corners android:bottomRightRadius="@dimen/livelike_button_corner_radius"
+                     android:bottomLeftRadius="@dimen/livelike_button_corner_radius"/>
         </shape>
     </item>
 </selector>

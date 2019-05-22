@@ -7,7 +7,7 @@
     </solid>
 
     <corners
-            android:radius="@dimen/chat_rounded_rect_radius">
+            android:radius="@dimen/livelike_chat_rounded_rect_radius">
     </corners>
 
     <padding

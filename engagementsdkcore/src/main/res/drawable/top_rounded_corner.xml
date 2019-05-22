@@ -11,7 +11,7 @@
             android:bottom="10dp"
     />
     <corners
-            android:topRightRadius="@dimen/button_corner_radius"
-            android:topLeftRadius="@dimen/button_corner_radius"
+            android:topRightRadius="@dimen/livelike_button_corner_radius"
+            android:topLeftRadius="@dimen/livelike_button_corner_radius"
     />
 </shape>

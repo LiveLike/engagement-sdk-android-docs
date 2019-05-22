@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--livelike text size overrides-->
-    <dimen name="alert_body_text_size">14sp</dimen>
-    <dimen name="alert_link_text_size">14sp</dimen>
-    <dimen name="alert_label_text_size">12sp</dimen>
+    <dimen name="livelike_alert_body_text_size">14sp</dimen>
+    <dimen name="livelike_alert_link_text_size">14sp</dimen>
+    <dimen name="livelike_alert_label_text_size">12sp</dimen>
 
-    <dimen name="percent_label_text_size">18sp</dimen>
-    <dimen name="header_text_size">14sp</dimen>
-    <dimen name="option_text_size">14sp</dimen>
+    <dimen name="livelike_percent_label_text_size">18sp</dimen>
+    <dimen name="livelike_header_text_size">14sp</dimen>
+    <dimen name="livelike_option_text_size">14sp</dimen>
 </resources>

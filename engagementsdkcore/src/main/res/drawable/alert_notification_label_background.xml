@@ -9,6 +9,6 @@
             android:angle="@integer/header_default_background_gradient_angle"/>
 
     <corners
-            android:radius="@dimen/header_background_notification_label_radius"/>
+            android:radius="@dimen/livelike_header_background_notification_label_radius"/>
 
 </shape>

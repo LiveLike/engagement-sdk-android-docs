@@ -8,5 +8,5 @@
             android:type="linear"
             android:angle="@integer/header_default_background_gradient_angle"/>
 
-    <corners android:radius="@dimen/header_corner_radius"/>
+    <corners android:radius="@dimen/livelike_header_corner_radius"/>
 </shape>

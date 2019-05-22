@@ -3,7 +3,7 @@
     <item android:id="@android:id/progress">
         <scale android:scaleWidth="100%">
             <shape>
-                <corners android:radius="@dimen/percent_bar_corner_radius"/>
+                <corners android:radius="@dimen/livelike_percent_bar_corner_radius"/>
                 <gradient
                         android:angle="@integer/percent_bar_gradient_angle"
                         android:startColor="@color/livelike_poll_bar_gradient_left"

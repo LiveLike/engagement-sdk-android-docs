@@ -4,7 +4,7 @@
     <item android:id="@android:id/background">
         <shape>
             <corners
-                    android:radius="@dimen/percent_bar_corner_radius_image"/>
+                    android:radius="@dimen/livelike_percent_bar_corner_radius_image"/>
 
         </shape>
     </item>
@@ -13,7 +13,7 @@
         <clip>
             <shape>
                 <corners
-                        android:radius="@dimen/percent_bar_corner_radius_image"/>
+                        android:radius="@dimen/livelike_percent_bar_corner_radius_image"/>
                 <gradient
                         android:startColor="@color/livelike_poll_bar_gradient_left"
                         android:centerY="1.0"

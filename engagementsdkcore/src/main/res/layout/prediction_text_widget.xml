@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/prediction_text_widget"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="wrap_content"
+                                             android:background="#99000000">
+    <!--suppress AndroidDomInspection -->
+    <TextView
+            android:id="@+id/questionTextView"
+            android:layout_height="wrap_content"
+            android:layout_width="400dp"
+            android:background="@drawable/top_rounded_corner"
+            android:textColor="@color/header_text_color"
+            android:textSize="@dimen/livelike_header_text_size"
+            app:fontFamily="@font/header_font"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Question Text goes here"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    <View
+            android:id="@+id/closeButton"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/widget_ic_x"
+            tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="@id/questionTextView"
+            app:layout_constraintEnd_toEndOf="@id/questionTextView"/>
+
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/option_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:itemCount="4"
+            tools:listitem="@layout/text_option_row_element"
+            android:orientation="vertical"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/questionTextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+    />
+
+    <include layout="@layout/confirm_message"
+             android:id="@+id/confirm_message"
+             app:layout_constraintTop_toTopOf="parent"
+             app:layout_constraintBottom_toBottomOf="parent"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintEnd_toEndOf="parent"/>
+</android.support.constraint.ConstraintLayout>

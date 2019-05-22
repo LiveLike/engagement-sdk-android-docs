@@ -21,7 +21,7 @@
                 android:layout_height="45dp"
                 android:background="@drawable/button_default"
                 android:fontFamily="@font/option_font"
-                android:textSize="@dimen/option_text_size"
+                android:textSize="@dimen/livelike_option_text_size"
                 android:textColor="@color/option_text_color"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:elevation="8dp"
                 android:textColor="@color/livelike_percent_label_text_color"
-                android:textSize="@dimen/percent_label_text_size"
+                android:textSize="@dimen/livelike_percent_label_text_size"
                 android:gravity="end"
 
                 app:fontFamily="@font/header_font"
