@@ -69,8 +69,6 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun vote() {
-        adapter?.showPercentage = true
-        adapter?.notifyDataSetChanged()
         adapter?.apply {
             if (voteUrl == null) {
                 myDataset[selectedPosition].getMergedVoteUrl()
@@ -81,6 +79,8 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
                 }
             }
         }
+        adapter?.showPercentage = true
+        adapter?.notifyDataSetChanged()
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
@@ -127,6 +127,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun cleanUp() {
+        vote() // Vote on dismiss
         handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false
@@ -148,6 +149,9 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     private var previousOptionClickedId: String? = null
 
     fun onOptionClicked(it: String?) {
+        if (previousOptionClickedId == null) {
+            vote() // Vote on first click
+        }
         if (it != previousOptionClickedId) {
             data.value?.apply {
                 val options = resource.getMergedOptions() ?: return
