@@ -7,19 +7,15 @@ import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
-import android.view.View
 import android.widget.LinearLayout
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
-import com.livelike.livelikesdk.widget.view.components.EggTimerView
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollWidget
-import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageCloseButton
 import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageEggTimer
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textCloseButton
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -77,26 +73,16 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel.animationEggTimerProgress < 1f) {
-                imageEggTimer?.setupEggTimer(animationLength)
-                textEggTimer?.setupEggTimer(animationLength)
+                listOf(textEggTimer, imageEggTimer).forEach { v ->
+                    v?.startAnimationFrom(viewModel.animationEggTimerProgress, animationLength) {
+                        viewModel.animationEggTimerProgress = it
+                    }
+                }
             }
         }
 
         if (widget == null) {
             inflated = false
-        }
-    }
-
-    private fun EggTimerView.setupEggTimer(animationLength: Float) {
-        visibility = View.VISIBLE
-        startAnimationFrom(viewModel.animationEggTimerProgress, animationLength) {
-            viewModel.animationEggTimerProgress = it
-            if (it >= 1) {
-                textCloseButton?.visibility = View.VISIBLE
-                imageCloseButton?.visibility = View.VISIBLE
-                textEggTimer?.visibility = View.VISIBLE
-                imageEggTimer?.visibility = View.VISIBLE
-            }
         }
     }
 
