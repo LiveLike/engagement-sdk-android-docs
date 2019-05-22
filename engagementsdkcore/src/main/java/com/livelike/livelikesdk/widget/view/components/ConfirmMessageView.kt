@@ -25,4 +25,8 @@ class ConfirmMessageView(context: Context, attr: AttributeSet) : ConstraintLayou
             confirmMessageAnimation.resumeAnimation()
         }
     }
+
+    fun subscribeToAnimationUpdates(onUpdate: (Float) -> Unit) {
+        confirmMessageAnimation.addAnimatorUpdateListener { onUpdate(it.animatedFraction) }
+    }
 }

@@ -41,6 +41,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     var voteUrl: String? = null
     private var pubnub: PubnubMessagingClient? = null
     private val handler = Handler()
+    var animationEggTimerProgress = 0f
 
     init {
         LiveLikeSDK.configuration?.pubNubKey?.let {
@@ -132,6 +133,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
         data.postValue(null)
         results.postValue(null)
         state.postValue(null)
+        animationEggTimerProgress = 0f
     }
 
     override fun onCleared() {

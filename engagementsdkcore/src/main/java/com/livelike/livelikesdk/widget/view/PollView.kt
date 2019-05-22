@@ -9,11 +9,14 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollWidget
+import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageEggTimer
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 
@@ -67,6 +70,15 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
             }
 
             viewModel.startDismissTimout(resource.timeout)
+
+            val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
+            if (viewModel.animationEggTimerProgress < 1f) {
+                listOf(textEggTimer, imageEggTimer).forEach { v ->
+                    v?.startAnimationFrom(viewModel.animationEggTimerProgress, animationLength) {
+                        viewModel.animationEggTimerProgress = it
+                    }
+                }
+            }
         }
 
         if (widget == null) {

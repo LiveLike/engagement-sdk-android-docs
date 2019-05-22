@@ -30,6 +30,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
     var animationProgress = 0f
+    var animationEggTimerProgress = 0f
     var animationPath = ""
 
     private val handler = Handler()
@@ -53,7 +54,6 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
                 resource?.apply {
                     data.postValue(PredictionWidget(type, resource))
                 }
-                // Specify to Prediction widgetInfos here
             }
         } else {
             data.postValue(null)
@@ -133,6 +133,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         animationPath = ""
         state.postValue("")
         data.postValue(null)
+        animationEggTimerProgress = 0f
     }
 
     override fun onCleared() {

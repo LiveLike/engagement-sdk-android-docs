@@ -35,11 +35,12 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
 
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
-    var animationProgress = 0f
+    var animationResultsProgress = 0f
     private var animationPath = ""
     var voteUrl: String? = null
     private var pubnub: PubnubMessagingClient? = null
     private val handler = Handler()
+    var animationEggTimerProgress = 0f
 
     init {
         LiveLikeSDK.configuration?.pubNubKey?.let {
@@ -120,11 +121,12 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         pubnub?.unsubscribeAll()
         timeoutStarted = false
         adapter = null
-        animationProgress = 0f
+        animationResultsProgress = 0f
         animationPath = ""
         voteUrl = null
         data.postValue(null)
         results.postValue(null)
+        animationEggTimerProgress = 0f
     }
 
     override fun onCleared() {

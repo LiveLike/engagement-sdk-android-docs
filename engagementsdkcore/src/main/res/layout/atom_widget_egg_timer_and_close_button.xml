@@ -16,4 +16,17 @@
             app:layout_constraintTop_toTopOf="parent"
     />
 
+    <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/eggTimer"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            app:lottie_fileName="egg_timer.json"
+            app:lottie_autoPlay="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+    />
+
 </android.support.constraint.ConstraintLayout>
