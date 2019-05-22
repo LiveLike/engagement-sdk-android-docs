@@ -10,7 +10,6 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
-import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
@@ -38,7 +37,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
     }
 
     private fun clickedOptionObserver() = Observer<String?> {
-        logDebug { "Option clicked $it" }
         viewModel.onOptionClicked(it)
     }
 
