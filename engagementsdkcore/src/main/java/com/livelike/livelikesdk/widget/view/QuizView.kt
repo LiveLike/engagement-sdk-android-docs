@@ -90,7 +90,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
         }
     }
 
-
     private fun resultsObserver() = Observer<Resource> { resource ->
         resource?.apply {
             val optionResults = resource.getMergedOptions() ?: return@Observer
