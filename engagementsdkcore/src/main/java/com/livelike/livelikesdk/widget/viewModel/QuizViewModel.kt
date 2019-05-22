@@ -69,6 +69,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun vote() {
+        if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
         adapter?.apply {
             if (voteUrl == null) {
                 myDataset[selectedPosition].getMergedVoteUrl()
