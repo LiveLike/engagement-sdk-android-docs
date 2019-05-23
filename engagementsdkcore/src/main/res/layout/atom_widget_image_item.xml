@@ -4,11 +4,9 @@
                                              xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content"
-                                             android:layout_marginRight="2dp"
                                              android:animateLayoutChanges="true"
-                                             android:layout_marginLeft="2dp"
                                              android:background="@drawable/image_prediction_rounded_corner"
-                                             android:minWidth="125dp">
+>
     <ProgressBar
             android:id="@+id/imageBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
@@ -75,17 +73,19 @@
             android:fontFamily="@font/option_font"
             android:textColor="@color/option_text_color"
             android:textSize="@dimen/livelike_option_text_size"
-            android:layout_marginStart="8dp"
             android:textAlignment="textEnd"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/text_background"
-            app:layout_constraintEnd_toEndOf="@+id/text_background"
-            app:layout_constraintTop_toTopOf="@+id/text_background"
-            app:layout_constraintStart_toStartOf="@+id/text_background"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imageButtonBackground"
+            app:layout_constraintEnd_toEndOf="@+id/imageButtonBackground"
+            app:layout_constraintTop_toTopOf="@+id/imageButtonBackground"
             tools:text="blah blah blah blah blah blah blah blah "
-            android:gravity="end"/>
+            android:gravity="end"
+            android:layout_marginRight="16dp"
+            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"/>
 
     <View android:layout_width="0dp"
           android:layout_height="0dp"

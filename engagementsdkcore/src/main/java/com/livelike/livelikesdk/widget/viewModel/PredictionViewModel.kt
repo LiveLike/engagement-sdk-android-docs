@@ -67,7 +67,10 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
             if (isFollowup) {
                 handler.postDelayed({ dismiss() }, AndroidResource.parseDuration(timeout))
                 data.value?.apply {
-                    followupState(resource.text_prediction_id, resource.correct_option_id)
+                    followupState(
+                        if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id,
+                        resource.correct_option_id
+                    )
                 }
             } else {
                 handler.postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
@@ -80,8 +83,8 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     }
 
     private fun followupState(textPredictionId: String, correctOptionId: String) {
-        adapter?.correctOptionId = getWidgetPredictionVotedAnswerIdOrEmpty(textPredictionId)
-        adapter?.userSelectedOptionId = correctOptionId
+        adapter?.correctOptionId = correctOptionId
+        adapter?.userSelectedOptionId = getWidgetPredictionVotedAnswerIdOrEmpty(textPredictionId)
         adapter?.selectionLocked = true
 
         data.postValue(data.value?.apply {

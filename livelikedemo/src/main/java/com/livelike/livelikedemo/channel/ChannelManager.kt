@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.support.annotation.NonNull
 import android.support.design.widget.BottomSheetDialog
+import android.util.Log
 import android.view.ViewGroup
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -68,11 +69,13 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                         view.channelList = channelList
                         view.channelSelectListener = { channel -> selectedChannel = channel }
                     } catch (e: JSONException) {
+                        Log.e("ChannelMger", e.message)
                     }
                 }
             }
 
             override fun onFailure(call: okhttp3.Call, e: IOException?) {
+                Log.e("ChannelMgr", e?.message)
             }
         })
     }

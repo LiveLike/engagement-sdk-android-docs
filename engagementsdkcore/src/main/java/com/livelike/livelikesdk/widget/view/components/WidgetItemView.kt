@@ -152,12 +152,12 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         )
     }
 
-    fun updateViewProgressBar(drawable: Int) {
+    private fun updateViewProgressBar(drawable: Int) {
         determinateBar?.progressDrawable = AppCompatResources.getDrawable(context, drawable)
         imageBar?.progressDrawable = AppCompatResources.getDrawable(context, drawable)
     }
 
-    fun updateViewBackground(drawable: Int) {
+    private fun updateViewBackground(drawable: Int) {
         text_button?.background = AppCompatResources.getDrawable(context, drawable)
         imageButtonBackground?.background = AppCompatResources.getDrawable(context, drawable)
     }

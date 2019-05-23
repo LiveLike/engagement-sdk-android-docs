@@ -171,29 +171,35 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
 
     override fun getLiveLikeUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit) {
         val requestString = "{}"
-        client.newCall(
-            Request.Builder().url(url).post(
-                RequestBody.create(
-                    MediaType.parse(requestString),
-                    requestString
-                )
-            ).build()
-        ).enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
+        try {
+            client.newCall(
+                Request.Builder().url(url).post(
+                    RequestBody.create(
+                        MediaType.parse(requestString),
+                        requestString
+                    )
+                ).build()
 
-                val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
-                val user = LiveLikeUser(
-                    responseData.extractStringOrEmpty("id"),
-                    responseData.extractStringOrEmpty("nickname")
-                )
-                logVerbose { user }
-                mainHandler.post { responseCallback.invoke(user) }
-            }
 
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
-        })
+            ).enqueue(object : Callback {
+                override fun onResponse(call: Call?, response: Response) {
+
+                    val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                    val user = LiveLikeUser(
+                        responseData.extractStringOrEmpty("id"),
+                        responseData.extractStringOrEmpty("nickname")
+                    )
+                    logVerbose { user }
+                    mainHandler.post { responseCallback.invoke(user) }
+                }
+
+                override fun onFailure(call: Call?, e: IOException?) {
+                    logError { e }
+                }
+            })
+        } catch (e: IllegalArgumentException) {
+            logError { "Check the program URL: $e" }
+        }
     }
 
     override fun vote(voteUrl: String) {
