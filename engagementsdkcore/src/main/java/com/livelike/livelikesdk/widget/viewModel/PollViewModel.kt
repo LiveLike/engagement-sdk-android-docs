@@ -22,6 +22,7 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import debounce
 
 internal class PollWidget(
     val type: WidgetType,
@@ -31,6 +32,8 @@ internal class PollWidget(
 internal class PollViewModel(application: Application) : AndroidViewModel(application) {
     val data: MutableLiveData<PollWidget> = MutableLiveData()
     val results: MutableLiveData<Resource> = MutableLiveData()
+    val currentVoteId: MutableLiveData<String?> = MutableLiveData()
+    private val debouncer = currentVoteId.debounce()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
 
     var adapter: WidgetOptionsViewAdapter? = null
@@ -59,23 +62,27 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
             })
         }
         currentSession.currentWidgetInfosStream.subscribe(this::class.java, this::widgetObserver)
+
+        debouncer.observeForever {
+            if (it != null) vote()
+        }
     }
 
-    fun vote() {
-        adapter?.showPercentage = true
-        adapter?.notifyDataSetChanged()
-        // TODO: this needs to be debounced
+    private fun vote() {
+        if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
+
         adapter?.apply {
             if (voteUrl == null) {
                 myDataset[selectedPosition].getMergedVoteUrl()
                     ?.let { url -> dataClient.vote(url) { voteUrl = it } }
             } else {
                 voteUrl?.apply {
-                    myDataset[selectedPosition].getMergedVoteUrl()
-                        ?.let { dataClient.changeVote(this, myDataset[selectedPosition].id) {} }
+                    dataClient.changeVote(this, myDataset[selectedPosition].id) {}
                 }
             }
         }
+        adapter?.showPercentage = true
+        adapter?.notifyDataSetChanged()
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
@@ -117,6 +124,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun cleanUp() {
+        vote() // Vote on dismiss
         handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false
@@ -127,9 +135,42 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         data.postValue(null)
         results.postValue(null)
         animationEggTimerProgress = 0f
+        currentVoteId.postValue(null)
     }
 
     override fun onCleared() {
         currentSession.currentWidgetInfosStream.unsubscribe(this::class.java)
+    }
+
+    // This is to update the vote value locally
+    private var previousOptionClickedId: String? = null
+
+    fun onOptionClicked(it: String?) {
+        if (previousOptionClickedId == null) {
+            vote() // Vote on first click
+        }
+        if (it != previousOptionClickedId) {
+            data.value?.apply {
+                val options = resource.getMergedOptions() ?: return
+                options.forEach { opt ->
+                    opt.apply {
+                        if (opt.id == it) {
+                            opt.vote_count = opt.vote_count?.plus(1) ?: 0
+                        } else if (previousOptionClickedId == opt.id) {
+                            opt.vote_count = opt.vote_count?.minus(1) ?: 0
+                        }
+                    }
+                }
+                options.forEach { opt ->
+                    opt.apply {
+                        opt.percentage = opt.getPercent((resource.getMergedTotal()).toFloat())
+                    }
+                }
+                adapter?.myDataset = options
+                adapter?.showPercentage = true
+                adapter?.notifyDataSetChanged()
+                previousOptionClickedId = it
+            }
+        }
     }
 }

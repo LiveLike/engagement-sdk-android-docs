@@ -22,6 +22,7 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import debounce
 
 internal class QuizWidget(
     val type: WidgetType,
@@ -31,6 +32,8 @@ internal class QuizWidget(
 internal class QuizViewModel(application: Application) : AndroidViewModel(application) {
     val data: MutableLiveData<QuizWidget> = MutableLiveData()
     val results: MutableLiveData<Resource> = MutableLiveData()
+    val currentVoteId: MutableLiveData<String?> = MutableLiveData()
+    private val debouncer = currentVoteId.debounce()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
     var state: MutableLiveData<String> = MutableLiveData() // results
 
@@ -51,7 +54,6 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
                     val widgetType = event.message.get("event").asString ?: ""
                     logDebug { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
-                    // TODO: need to debounce?
                     results.postValue(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
                 }
 
@@ -60,23 +62,26 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
             })
         }
         currentSession.currentWidgetInfosStream.subscribe(this::class.java, this::widgetObserver)
+
+        debouncer.observeForever {
+            if (it != null) vote()
+        }
     }
 
-    fun vote() {
-        adapter?.showPercentage = true
-        adapter?.notifyDataSetChanged()
-        // TODO: this needs to be debounced
+    private fun vote() {
+        if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
         adapter?.apply {
             if (voteUrl == null) {
                 myDataset[selectedPosition].getMergedVoteUrl()
                     ?.let { url -> dataClient.vote(url) { voteUrl = it } }
             } else {
                 voteUrl?.apply {
-                    myDataset[selectedPosition].getMergedVoteUrl()
-                        ?.let { dataClient.changeVote(this, myDataset[selectedPosition].id) {} }
+                    dataClient.changeVote(this, myDataset[selectedPosition].id) {}
                 }
             }
         }
+        adapter?.showPercentage = true
+        adapter?.notifyDataSetChanged()
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
@@ -123,6 +128,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     }
 
     private fun cleanUp() {
+        vote() // Vote on dismiss
         handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false
@@ -138,5 +144,37 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
 
     override fun onCleared() {
         currentSession.currentWidgetInfosStream.unsubscribe(this::class.java)
+    }
+
+    // This is to update the vote value locally
+    private var previousOptionClickedId: String? = null
+
+    fun onOptionClicked(it: String?) {
+        if (previousOptionClickedId == null) {
+            vote() // Vote on first click
+        }
+        if (it != previousOptionClickedId) {
+            data.value?.apply {
+                val options = resource.getMergedOptions() ?: return
+                options.forEach { opt ->
+                    opt.apply {
+                        if (opt.id == it) {
+                            opt.answer_count = opt.answer_count?.plus(1) ?: 0
+                        } else if (previousOptionClickedId == opt.id) {
+                            opt.answer_count = opt.answer_count?.minus(1) ?: 0
+                        }
+                    }
+                }
+                options.forEach { opt ->
+                    opt.apply {
+                        opt.percentage = opt.getPercent((resource.getMergedTotal()).toFloat())
+                    }
+                }
+                adapter?.myDataset = options
+                adapter?.showPercentage = true
+                adapter?.notifyDataSetChanged()
+                previousOptionClickedId = it
+            }
+        }
     }
 }
