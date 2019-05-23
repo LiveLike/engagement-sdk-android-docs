@@ -3,6 +3,7 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">livecut-streams.livelikecdn.com</domain>
         <domain includeSubdomains="true">livelike-demos.s3.amazonaws.com</domain>
+        <domain includeSubdomains="true">livelike-webs.s3.amazonaws.com</domain>
         <domain includeSubdomains="true">marchmadnesslive.cdn.turner.com</domain>
     </domain-config>
 </network-security-config>

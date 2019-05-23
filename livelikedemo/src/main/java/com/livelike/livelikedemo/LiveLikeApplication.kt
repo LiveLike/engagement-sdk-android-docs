@@ -12,7 +12,7 @@ class LiveLikeApplication : Application() {
 
     companion object {
         const val TEST_CONFIG_URL =
-            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-demo.json"
+            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android.json"
     }
 
     lateinit var channelManager: ChannelManager
