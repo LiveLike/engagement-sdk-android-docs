@@ -37,6 +37,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
         viewModel.data.observe(context, resourceObserver())
         viewModel.results.observe(context, resultsObserver())
         viewModel.state.observe(context, stateObserver())
+        viewModel.currentVoteId.observe(context, onClickObserver())
+    }
+
+    private fun onClickObserver() = Observer<String?> {
+        viewModel.onOptionClicked(it)
     }
 
     private fun resourceObserver() = Observer<QuizWidget> { widget ->
@@ -65,7 +70,12 @@ class QuizView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
             titleView.title = resource.question
             titleView.background = R.drawable.quiz_textview_rounded_corner
 
-            viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(optionList, { viewModel.vote() }, type)
+            viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(optionList, {
+                viewModel.adapter?.apply {
+                    val currentSelectionId = myDataset[selectedPosition]
+                    viewModel.currentVoteId.postValue(currentSelectionId.id)
+                }
+            }, type)
 
             textRecyclerView.apply {
                 this.layoutManager = viewManager
