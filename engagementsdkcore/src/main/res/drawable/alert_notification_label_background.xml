@@ -3,12 +3,12 @@
        android:shape="rectangle">
 
     <gradient
-            android:startColor="@color/alert_notification_label_gradient_left"
-            android:endColor="@color/alert_notification_label_gradient_right"
+            android:startColor="@color/livelike_alert_notification_label_gradient_left"
+            android:endColor="@color/livelike_alert_notification_label_gradient_right"
             android:type="linear"
             android:angle="@integer/header_default_background_gradient_angle"/>
 
     <corners
-            android:radius="@dimen/header_background_notification_label_radius"/>
+            android:radius="@dimen/livelike_header_background_notification_label_radius"/>
 
 </shape>

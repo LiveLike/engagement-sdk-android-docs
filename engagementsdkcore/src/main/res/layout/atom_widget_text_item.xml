@@ -14,7 +14,7 @@
             android:layout_height="45dp"
             android:background="@drawable/button_default"
             android:fontFamily="@font/option_font"
-            android:textSize="@dimen/option_text_size"
+            android:textSize="@dimen/livelike_option_text_size"
             android:textColor="@color/option_text_color"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -37,7 +37,7 @@
             android:indeterminate="false"
             android:visibility="invisible"
             android:progressDrawable="@drawable/progress_bar_user_correct"
-
+            android:textSize="@dimen/livelike_option_text_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,8 +52,8 @@
             android:id="@+id/percentageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/percent_label_text_color"
-            android:textSize="@dimen/percent_label_text_size"
+            android:textColor="@color/livelike_percent_label_text_color"
+            android:textSize="@dimen/livelike_percent_label_text_size"
             android:gravity="end"
 
             app:fontFamily="@font/header_font"

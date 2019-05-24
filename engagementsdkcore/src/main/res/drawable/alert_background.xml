@@ -3,10 +3,10 @@
        android:shape="rectangle">
 
     <gradient
-            android:startColor="@color/alert_background_gradient_left"
-            android:endColor="@color/alert_background_gradient_right"
+            android:startColor="@color/livelike_alert_background_gradient_left"
+            android:endColor="@color/livelike_alert_background_gradient_right"
             android:type="linear"
             android:angle="@integer/header_default_background_gradient_angle"/>
 
-    <corners android:radius="@dimen/header_corner_radius"/>
+    <corners android:radius="@dimen/livelike_header_corner_radius"/>
 </shape>

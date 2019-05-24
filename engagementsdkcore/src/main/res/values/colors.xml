@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="white">#ffffff</color>
-    <color name="black">#000000</color>
-    <color name="transparent">#00000000</color>
-    <color name="colorPrimary">#32373c</color>
-    <color name="colorPrimaryDark">#99000000</color>
-    <color name="colorAccent">#FFFFFF</color>
+    <color name="livelike_white">#ffffff</color>
+    <color name="livelike_black">#000000</color>
+    <color name="livelike_colorPrimary">#32373c</color>
+    <color name="livelike_colorPrimaryDark">#99000000</color>
+    <color name="livelike_transparent">#00000000</color>
+    <color name="livelike_colorAccent">#FFFFFF</color>
 
-    <color name="chatBackground">#88555555</color>
-    <color name="colorInputText">#FFFFFF</color>
-    <color name="colorDisplayText">#ccffffff</color>
-    <color name="colorDisplayTextHighlight">#3333ff</color>
+    <color name="livelike_chatBackground">#88555555</color>
+    <color name="livelike_colorInputText">#FFFFFF</color>
+    <color name="livelike_colorDisplayText">#ccffffff</color>
+    <color name="livelike_colorDisplayTextHighlight">#3333ff</color>
 
-    <color name="default_chat_cell_name_color">#66ffffff</color>
-    <color name="default_chat_cell_message_color">#dfdfdf</color>
-    <color name="default_button_background_color">#99000000</color>
-    <color name="chat_background_start_color">#212121</color>
-    <color name="chat_background_end_color">#424242</color>
-    <color name="chat_rounded_rect_color">#D3000000</color>
-    <color name="openChatNicknameOther">#7b8391</color>
-    <color name="openChatNicknameMe">#00BCD4</color>
+    <color name="livelike_default_chat_cell_name_color">#66ffffff</color>
+    <color name="livelike_default_chat_cell_message_color">#dfdfdf</color>
+    <color name="livelike_default_button_background_color">#99000000</color>
+    <color name="livelike_chat_background_start_color">#212121</color>
+    <color name="livelike_chat_background_end_color">#424242</color>
+    <color name="livelike_chat_rounded_rect_color">#D3000000</color>
+    <color name="livelike_openChatNicknameOther">#7b8391</color>
+    <color name="livelike_openChatNicknameMe">#00BCD4</color>
 
-    <color name="default_text_color">#ffffff</color>
-    <color name="header_text_color">@color/default_text_color</color>
-    <color name="option_text_color">@color/default_text_color</color>
-    <color name="percent_label_text_color">@color/default_text_color</color>
-    <color name="alert_body_text_color">@color/default_text_color</color>
-    <color name="alert_link_text_color">@color/default_text_color</color>
-    <color name="alert_label_text_color">@color/default_text_color</color>
+    <color name="livelike_default_text_color">#ffffff</color>
+    <color name="livelike_header_text_color">@color/livelike_default_text_color</color>
+    <color name="livelike_option_text_color">@color/livelike_default_text_color</color>
+    <color name="livelike_percent_label_text_color">@color/livelike_default_text_color</color>
+    <color name="livelike_alert_body_text_color">@color/livelike_default_text_color</color>
+    <color name="livelike_alert_link_text_color">@color/livelike_default_text_color</color>
+    <color name="livelike_alert_label_text_color">@color/livelike_default_text_color</color>
 
-    <color name="alert_background_gradient_left">#282828</color>
-    <color name="alert_background_gradient_right">#121212</color>
-    <color name="alert_notification_label_gradient_left">#9f041b</color>
-    <color name="alert_notification_label_gradient_right">#9f041b</color>
-    <color name="alert_label_background_shadow">#000000</color>
+    <color name="livelike_alert_background_gradient_left">#282828</color>
+    <color name="livelike_alert_background_gradient_right">#121212</color>
+    <color name="livelike_alert_notification_label_gradient_left">#9f041b</color>
+    <color name="livelike_alert_notification_label_gradient_right">#9f041b</color>
+    <color name="livelike_alert_label_background_shadow">#000000</color>
 
-    <color name="default_title_gradient_left">#003264</color>
-    <color name="default_title_gradient_right">#0096c8</color>
-    <color name="default_option_selected_border">#00b4c8</color>
+    <color name="livelike_default_title_gradient_left">#003264</color>
+    <color name="livelike_default_title_gradient_right">#0096c8</color>
+    <color name="livelike_default_option_selected_border">#00b4c8</color>
 
-    <color name="prediction_title_gradient_left">@color/default_title_gradient_left</color>
-    <color name="prediction_title_gradient_right">@color/default_title_gradient_right</color>
-    <color name="prediction_option_selected_border">@color/default_option_selected_border</color>
-    <color name="prediction_image_option_selected_border">@color/prediction_option_selected_border</color>
+    <color name="livelike_prediction_title_gradient_left">@color/livelike_default_title_gradient_left</color>
+    <color name="livelike_prediction_title_gradient_right">@color/livelike_default_title_gradient_right</color>
+    <color name="livelike_prediction_option_selected_border">@color/livelike_default_option_selected_border</color>
+    <color name="livelike_prediction_image_option_selected_border">@color/livelike_prediction_option_selected_border</color>
 
-    <color name="quiz_title_gradient_left">@color/default_title_gradient_left</color>
-    <color name="quiz_title_gradient_right">@color/default_title_gradient_right</color>
-    <color name="quiz_option_selected_border">@color/default_option_selected_border</color>
+    <color name="livelike_quiz_title_gradient_left">@color/livelike_default_title_gradient_left</color>
+    <color name="livelike_quiz_title_gradient_right">@color/livelike_default_title_gradient_right</color>
+    <color name="livelike_quiz_option_selected_border">@color/livelike_default_option_selected_border</color>
 
-    <color name="poll_title_gradient_left">@color/default_title_gradient_left</color>
-    <color name="poll_title_gradient_right">@color/default_title_gradient_right</color>
-    <color name="poll_option_selected_border">@color/default_option_selected_border</color>
+    <color name="livelike_poll_title_gradient_left">@color/livelike_default_title_gradient_left</color>
+    <color name="livelike_poll_title_gradient_right">@color/livelike_default_title_gradient_right</color>
+    <color name="livelike_poll_option_selected_border">@color/livelike_default_option_selected_border</color>
 
-    <color name="image_option_background_start">#00000000</color>
-    <color name="image_option_background_center">#99000000</color>
-    <color name="image_option_background_end">#000000</color>
+    <color name="livelike_image_option_background_start">#00000000</color>
+    <color name="livelike_image_option_background_center">#99000000</color>
+    <color name="livelike_image_option_background_end">#000000</color>
 
-    <color name="neutral_option_border_color">#99000000</color>
-    <color name="incorrect_option_border_color">#c8000d</color>
-    <color name="correct_option_border_color">#00c83c</color>
+    <color name="livelike_neutral_option_border_color">#99000000</color>
+    <color name="livelike_incorrect_option_border_color">#c8000d</color>
+    <color name="livelike_correct_option_border_color">#00c83c</color>
 
-    <color name="default_bar_gradient_left">#33ffffff</color>
-    <color name="default_bar_gradient_right">#33ffffff</color>
+    <color name="livelike_default_bar_gradient_left">#33ffffff</color>
+    <color name="livelike_default_bar_gradient_right">#33ffffff</color>
     <color name="quiz_bar_gradient_left">@color/default_bar_gradient_left</color>
     <color name="quiz_bar_gradient_right">@color/default_bar_gradient_right</color>
-    <color name="poll_bar_gradient_left">@color/default_bar_gradient_left</color>
-    <color name="poll_bar_gradient_right">@color/default_bar_gradient_right</color>
-    <color name="correct_bar_gradient_left">@color/default_bar_gradient_left</color>
-    <color name="correct_bar_gradient_right">@color/default_bar_gradient_right</color>
-    <color name="incorrect_bar_gradient_left">@color/default_bar_gradient_left</color>
-    <color name="incorrect_bar_gradient_right">@color/default_bar_gradient_right</color>
-    <color name="neutral_bar_gradient_left">@color/default_bar_gradient_left</color>
-    <color name="neutral_bar_gradient_right">@color/default_bar_gradient_right</color>
+    <color name="livelike_poll_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
+    <color name="livelike_poll_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
+    <color name="livelike_correct_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
+    <color name="livelike_correct_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
+    <color name="livelike_incorrect_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
+    <color name="livelike_incorrect_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
+    <color name="livelike_neutral_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
+    <color name="livelike_neutral_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
 </resources>

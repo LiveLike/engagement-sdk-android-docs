@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
-            android:startColor="@color/prediction_title_gradient_left"
-            android:endColor="@color/prediction_title_gradient_right"
+            android:startColor="@color/livelike_prediction_title_gradient_left"
+            android:endColor="@color/livelike_prediction_title_gradient_right"
             android:angle="@integer/header_gradient_angle"/>
     <padding
             android:left="16dp"
@@ -11,7 +11,7 @@
             android:bottom="10dp"
     />
     <corners
-            android:topRightRadius="@dimen/button_corner_radius"
-            android:topLeftRadius="@dimen/button_corner_radius"
+            android:topRightRadius="@dimen/livelike_button_corner_radius"
+            android:topLeftRadius="@dimen/livelike_button_corner_radius"
     />
 </shape>
