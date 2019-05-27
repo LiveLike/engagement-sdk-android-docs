@@ -35,7 +35,7 @@
             android:maxLines="1"
             android:inputType="text"
             android:textColor="@color/livelike_chat_input_text_color"
-            android:textColorHint="#8e8e8e"
+            android:textColorHint="@color/livelike_chat_input_text_color"
             android:textSize="@dimen/livelike_default_chat_input_text_size"
             app:layout_constraintBottom_toBottomOf="@+id/chat_input_border"
             app:layout_constraintEnd_toStartOf="@+id/button_emoji"
