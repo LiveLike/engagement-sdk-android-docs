@@ -16,10 +16,16 @@
     <color name="livelike_default_chat_cell_message_color">#dfdfdf</color>
     <color name="livelike_default_button_background_color">#99000000</color>
     <color name="livelike_chat_background_start_color">#212121</color>
+    <color name="livelike_chat_input_text_color">@color/livelike_white</color>
+    <color name="livelike_chat_input_background_color">@color/livelike_transparent</color>
+    <color name="livelike_chat_input_border_color">@color/livelike_white</color>
     <color name="livelike_chat_background_end_color">#424242</color>
     <color name="livelike_chat_rounded_rect_color">#D3000000</color>
     <color name="livelike_openChatNicknameOther">#7b8391</color>
     <color name="livelike_openChatNicknameMe">#00BCD4</color>
+    <color name="livelike_live_button_background_color">#FFF</color>
+    <color name="livelike_live_button_arrow_color">#23282D</color>
+
 
     <color name="livelike_default_text_color">#ffffff</color>
     <color name="livelike_header_text_color">@color/livelike_default_text_color</color>

@@ -3,7 +3,7 @@
     <item>
         <shape>
             <gradient
-                    android:angle="@integer/chat_background_gradient_angle"
+                    android:angle="@integer/livelike_chat_background_gradient_angle"
                     android:endColor="@color/livelike_chat_background_end_color"
                     android:startColor="@color/livelike_chat_background_start_color"
                     android:type="linear"/>
