@@ -196,7 +196,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             try {
                 val inputTextColor = getColor(
                     com.livelike.livelikesdk.R.styleable.ChatView_inputTextColor,
-                    resources.getColor(com.livelike.livelikesdk.R.color.livelike_colorInputText)
+                    resources.getColor(com.livelike.livelikesdk.R.color.livelike_chat_input_text_color)
                 )
                 ColorStateList.valueOf(inputTextColor).toString()
                 val defaultText = getString(com.livelike.livelikesdk.R.styleable.ChatView_inputTextDefault)

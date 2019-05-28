@@ -11,8 +11,8 @@
     </corners>
 
     <padding
-            android:left="16dp"
-            android:top="8dp"
-            android:right="16dp"
-            android:bottom="8dp"/>
+            android:left="@dimen/livelike_default_chat_cell_padding_left"
+            android:top="@dimen/livelike_default_chat_cell_padding_top"
+            android:right="@dimen/livelike_default_chat_cell_padding_right"
+            android:bottom="@dimen/livelike_default_chat_cell_padding_bottom"/>
 </shape>
