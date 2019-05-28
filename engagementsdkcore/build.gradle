@@ -14,7 +14,9 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
+        // required for customizing vector icon colors
         vectorDrawables.useSupportLibrary = true
+        
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
