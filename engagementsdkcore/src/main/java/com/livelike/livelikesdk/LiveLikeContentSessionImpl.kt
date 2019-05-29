@@ -50,7 +50,6 @@ internal class LiveLikeContentSessionImpl(
     private var program: Program? = null
     private var widgetEventsQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
-
     override val currentWidgetInfosStream = SubscriptionManager<WidgetInfos?>()
 
     init {
