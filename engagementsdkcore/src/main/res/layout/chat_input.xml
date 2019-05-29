@@ -19,7 +19,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
-            android:layout_marginRight="8dp"/>
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"/>
 
     <EditText
             android:id="@+id/edittext_chat_message"

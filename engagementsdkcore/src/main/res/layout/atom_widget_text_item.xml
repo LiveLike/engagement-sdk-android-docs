@@ -15,7 +15,7 @@
             android:background="@drawable/button_default"
             android:fontFamily="@font/option_font"
             android:textSize="@dimen/livelike_option_text_size"
-            android:textColor="@color/option_text_color"
+            android:textColor="@color/livelike_option_text_color"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="parent"
@@ -26,7 +26,7 @@
             android:textAlignment="textStart"
             android:paddingEnd="46dp"
             android:paddingStart="16dp"
-    />
+            android:gravity="start"/>
 
     <ProgressBar
             android:id="@+id/determinateBar"
@@ -65,6 +65,7 @@
 
             android:layout_marginEnd="10dp"
             tools:text="80%"
-            tools:visibility="visible"/>
+            tools:visibility="visible"
+            android:layout_marginRight="10dp"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -68,8 +68,8 @@
 
     <color name="livelike_default_bar_gradient_left">#33ffffff</color>
     <color name="livelike_default_bar_gradient_right">#33ffffff</color>
-    <color name="quiz_bar_gradient_left">@color/default_bar_gradient_left</color>
-    <color name="quiz_bar_gradient_right">@color/default_bar_gradient_right</color>
+    <color name="livelike_quiz_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
+    <color name="livelike_quiz_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
     <color name="livelike_poll_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
     <color name="livelike_poll_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
     <color name="livelike_correct_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>

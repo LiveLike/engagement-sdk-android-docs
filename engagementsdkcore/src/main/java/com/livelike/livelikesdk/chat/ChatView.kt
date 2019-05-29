@@ -10,8 +10,8 @@ import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
+import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -80,7 +80,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private val animationEaseAdapter = AnimationEaseAdapter()
 
     private var viewModel =
-        ViewModelProviders.of(context as AppCompatActivity).get(ChatViewModel::class.java)
+        ViewModelProviders.of(context as FragmentActivity).get(ChatViewModel::class.java)
 
     init {
         (context as Activity).window.setSoftInputMode(
@@ -99,7 +99,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private fun verifyViewMinWidth(view: View) {
 //        visibility = View.VISIBLE
-        view.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val width = pxToDp(view.width)
         if (width < CHAT_MINIMUM_SIZE_DP) {
 //            visibility = View.GONE
