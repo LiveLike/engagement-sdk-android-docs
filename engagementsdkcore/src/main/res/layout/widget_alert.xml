@@ -63,7 +63,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/bodyBackground"
                 app:layout_constraintTop_toTopOf="@+id/bodyBackground"
-                tools:text="Lorem ipsum"
+                tools:text="Lorem ipsume"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="90dp"/>
 
