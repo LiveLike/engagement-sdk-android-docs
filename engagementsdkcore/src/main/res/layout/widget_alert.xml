@@ -54,7 +54,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="90dp"
                 android:layout_marginBottom="20dp"
-                android:textColor="@color/alert_body_text_color"
+                android:textColor="@color/livelike_alert_body_text_color"
                 android:textSize="@dimen/livelike_alert_body_text_size"
                 android:visibility="visible"
                 android:fontFamily="@font/alert_body_font"
