@@ -153,7 +153,7 @@
             android:paddingRight="8dp"
             android:textAllCaps="true"
             android:maxLength="30"
-            android:textColor="@color/alert_label_text_color"
+            android:textColor="@color/livelike_alert_label_text_color"
             android:fontFamily="@font/alert_label_font"
             android:textSize="@dimen/livelike_alert_label_text_size"
             android:textStyle="bold"
