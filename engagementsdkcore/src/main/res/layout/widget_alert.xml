@@ -63,7 +63,9 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/bodyBackground"
                 app:layout_constraintTop_toTopOf="@+id/bodyBackground"
-                tools:text="Lorem ipsum"/>
+                tools:text="Lorem ipsum"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="90dp"/>
 
         <View
                 android:id="@+id/linkBackground"
@@ -99,7 +101,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:textColor="@color/alert_link_text_color"
+                android:textColor="@color/livelike_alert_link_text_color"
                 android:fontFamily="@font/alert_link_font"
                 android:textSize="@dimen/livelike_alert_link_text_size"
                 android:textStyle="bold"
