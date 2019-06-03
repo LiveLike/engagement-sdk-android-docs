@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="ChatView">
-        <attr name="inputTextColor"
-              format="color"/>
-        <attr name="inputTextDefault"
-              format="string"/>
-        <attr name="displayTextColor"
-              format="color"/>
-        <attr name="displayTextHighlightColor"
-              format="color"/>
-        <attr name="displayTextBackground"
-              format="reference"/>
-    </declare-styleable>
-
+    <!--Widgets-->
     <item name="livelike_option_font"
           type="font">@font/titillium_semibold
     </item>
@@ -26,6 +14,14 @@
           type="font">@font/titillium_semibold
     </item>
     <item name="livelike_alert_label_font"
+          type="font">@font/titillium_semibold
+    </item>
+
+    <!--Chat-->
+    <item name="livelike_chat_message_font"
+          type="font">@font/titillium_semibold
+    </item>
+    <item name="livelike_chat_nickname_font"
           type="font">@font/titillium_semibold
     </item>
 </resources>

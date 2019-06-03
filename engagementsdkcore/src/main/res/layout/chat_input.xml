@@ -30,7 +30,7 @@
             android:layout_marginEnd="8dp"
             android:maxLength="150"
             android:background="@android:color/transparent"
-            android:hint="Say Something..."
+            android:hint="@string/livelike_chat_input_hint"
             android:imeOptions="flagNoExtractUi|actionSend"
             android:imeActionLabel="Send"
             android:maxLines="1"

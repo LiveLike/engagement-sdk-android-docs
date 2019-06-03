@@ -55,4 +55,9 @@
     <item name="livelike_option_font"
           type="font">@font/antenna_light
     </item>
+
+    <item name="livelike_chat_message_font"
+          type="font">@font/antenna_bold
+    </item>
+    <string name="livelike_chat_input_hint">Hi from Livelike…</string>
 </resources>
