@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:background="@drawable/button_default"
-            android:fontFamily="@font/option_font"
+            android:fontFamily="@font/livelike_option_font"
             android:textSize="@dimen/livelike_option_text_size"
             android:textColor="@color/livelike_option_text_color"
             app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +56,7 @@
             android:textSize="@dimen/livelike_percent_label_text_size"
             android:gravity="end"
 
-            app:fontFamily="@font/header_font"
+            app:fontFamily="@font/livelike_header_font"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/determinateBar"
             app:layout_constraintStart_toStartOf="@+id/determinateBar"

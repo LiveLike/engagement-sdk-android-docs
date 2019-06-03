@@ -13,9 +13,19 @@
               format="reference"/>
     </declare-styleable>
 
-    <item name="option_font" type="font" >@font/titillium_semibold</item>
-    <item name="header_font" type="font" >@font/titillium_bold</item>
-    <item name="alert_body_font" type="font" >@font/titillium_semibold</item>
-    <item name="alert_link_font" type="font" >@font/titillium_semibold</item>
-    <item name="alert_label_font" type="font" >@font/titillium_semibold</item>
+    <item name="livelike_option_font"
+          type="font">@font/titillium_semibold
+    </item>
+    <item name="livelike_header_font"
+          type="font">@font/titillium_bold
+    </item>
+    <item name="livelike_alert_body_font"
+          type="font">@font/titillium_semibold
+    </item>
+    <item name="livelike_alert_link_font"
+          type="font">@font/titillium_semibold
+    </item>
+    <item name="livelike_alert_label_font"
+          type="font">@font/titillium_semibold
+    </item>
 </resources>

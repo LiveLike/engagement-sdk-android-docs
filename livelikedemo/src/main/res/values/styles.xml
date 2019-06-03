@@ -49,6 +49,10 @@
     </style>
 
     <!--livelike font customization-->
-    <item name="header_font" type="font" >@font/antenna_bold</item>
-    <item name="option_font" type="font" >@font/antenna_light</item>
+    <item name="livelike_header_font"
+          type="font">@font/antenna_bold
+    </item>
+    <item name="livelike_option_font"
+          type="font">@font/antenna_light
+    </item>
 </resources>

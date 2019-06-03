@@ -12,7 +12,7 @@
             android:background="@drawable/top_rounded_corner"
             android:textColor="@color/livelike_header_text_color"
             android:textSize="@dimen/livelike_header_text_size"
-            app:fontFamily="@font/header_font"
+            app:fontFamily="@font/livelike_header_font"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Question Text goes here"
             app:layout_constraintStart_toStartOf="parent"
