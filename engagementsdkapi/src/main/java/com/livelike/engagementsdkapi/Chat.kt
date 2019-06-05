@@ -55,27 +55,16 @@ interface ChatCellFactory {
  */
 class ChatAdapter() : BaseAdapter() {
     private lateinit var session: LiveLikeContentSession
-    private lateinit var theme: ChatTheme
     private lateinit var cellFactory: ChatCellFactory
 
     /**
-     *  Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter] and provide custom [ChatTheme].
-     *  @param chatTheme The theme which would be applied to the Chat session.
-     */
-    constructor(chatTheme: ChatTheme) : this() {
-        this.theme = chatTheme
-    }
-
-    /**
-     *  Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter] and provide custom [ChatTheme] and their
+     *  Use this constructor to bind [LiveLikeContentSession] with the [ChatAdapter] and their
      *  own [ChatCellFactory].
      *  @param session The [LiveLikeContentSession] which needs to be bounded with the Chat.
-     *  @param theme The theme which would be applied to the Chat session.
      *  @param cellFactory The [ChatCell] which needs to be inflated when the chat session is created.
      */
-    constructor(session: LiveLikeContentSession, theme: ChatTheme, cellFactory: ChatCellFactory) : this(theme) {
+    constructor(session: LiveLikeContentSession, cellFactory: ChatCellFactory) : this() {
         this.session = session
-        this.theme = theme
         this.cellFactory = cellFactory
     }
 

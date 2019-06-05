@@ -18,7 +18,7 @@
             tools:text="Well done my friend!"
             android:paddingTop="30dp"
             android:paddingBottom="16dp"
-            app:fontFamily="@font/option_font"
+            app:fontFamily="@font/livelike_option_font"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

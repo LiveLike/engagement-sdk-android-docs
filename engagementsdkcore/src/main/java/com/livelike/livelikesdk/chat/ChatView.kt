@@ -6,7 +6,6 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
-import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
@@ -30,7 +29,6 @@ import com.livelike.engagementsdkapi.ChatCellFactory
 import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
-import com.livelike.engagementsdkapi.ChatTheme
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
@@ -116,7 +114,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             viewModel.addAdapter(
                 ChatAdapter(
                 session,
-                ChatTheme(), DefaultChatCellFactory(context, null)
+                    DefaultChatCellFactory(context, null)
                 )
             )
         }
@@ -187,59 +185,38 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             snapToLive()
         }
 
-        context.theme.obtainStyledAttributes(
-            attrs,
-            com.livelike.livelikesdk.R.styleable.ChatView,
-            0, 0
-        ).apply {
+        button_chat_send.visibility = View.GONE
 
-            try {
-                val inputTextColor = getColor(
-                    com.livelike.livelikesdk.R.styleable.ChatView_inputTextColor,
-                    resources.getColor(com.livelike.livelikesdk.R.color.livelike_chat_input_text_color)
-                )
-                ColorStateList.valueOf(inputTextColor).toString()
-                val defaultText = getString(com.livelike.livelikesdk.R.styleable.ChatView_inputTextDefault)
+        edittext_chat_message.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-                edittext_chat_message.setTextColor(inputTextColor)
-                edittext_chat_message.setText(defaultText.orEmpty())
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-                button_chat_send.visibility = View.GONE
-
-                edittext_chat_message.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-
-                    override fun afterTextChanged(s: Editable) {
-                        if (s.isNotEmpty()) {
-                            button_chat_send.isEnabled = true
-                            button_chat_send.visibility = View.VISIBLE
-                        } else {
-                            button_chat_send.isEnabled = false
-                            button_chat_send.visibility = View.GONE
-                        }
-                    }
-                })
-
-                // Send message on tap Enter
-                edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
-                    if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
-                        (actionId == EditorInfo.IME_ACTION_SEND)
-                    ) {
-                        hideKeyboard()
-                        sendMessageNow()
-                    }
-                    false
+            override fun afterTextChanged(s: Editable) {
+                if (s.isNotEmpty()) {
+                    button_chat_send.isEnabled = true
+                    button_chat_send.visibility = View.VISIBLE
+                } else {
+                    button_chat_send.isEnabled = false
+                    button_chat_send.visibility = View.GONE
                 }
-
-                button_chat_send.isEnabled = false
-                button_chat_send.setOnClickListener { v ->
-                    sendMessageNow()
-                }
-            } finally {
-                recycle()
             }
+        })
+
+        // Send message on tap Enter
+        edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
+            if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
+                (actionId == EditorInfo.IME_ACTION_SEND)
+            ) {
+                hideKeyboard()
+                sendMessageNow()
+            }
+            false
+        }
+
+        button_chat_send.isEnabled = false
+        button_chat_send.setOnClickListener { v ->
+            sendMessageNow()
         }
     }
 

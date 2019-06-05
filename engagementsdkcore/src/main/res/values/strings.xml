@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">LiveLikeSDK</string>
-    <string name="user_message_seperator">:</string>
-    <string name="prediction_confirm_message">Alright! Stay tuned to see the results</string>
-    <string name="prediction_question">WHO WILL WIN THE MAN OF THE MATCH?</string>
+    <string name="livelike_chat_input_hint">Say Something…</string>
 </resources>
