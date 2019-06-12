@@ -1,7 +1,9 @@
 package com.livelike.livelikesdk.widget
 
 import android.content.Context
-import android.view.View
+import android.support.constraint.ConstraintLayout
+import android.util.AttributeSet
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION
@@ -21,7 +23,7 @@ import com.livelike.livelikesdk.widget.view.QuizView
  *
  */
 internal class WidgetViewProvider {
-    fun get(widgetType: WidgetType, context: Context): View? {
+    fun get(widgetType: WidgetType, context: Context): SpecifiedWidgetView? {
         return when (widgetType) {
             ALERT -> AlertWidgetView(context)
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
@@ -31,4 +33,11 @@ internal class WidgetViewProvider {
             else -> null
         }
     }
+}
+
+
+open class SpecifiedWidgetView @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : ConstraintLayout(context, attrs, defStyleAttr) {
+    open var currentSession: LiveLikeContentSession? = null
 }

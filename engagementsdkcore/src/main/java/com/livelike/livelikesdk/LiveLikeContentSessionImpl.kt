@@ -143,6 +143,12 @@ internal class LiveLikeContentSessionImpl(
     }
 
     override fun close() {
+        chatQueue?.apply {
+            unsubscribeAll()
+        }
+        widgetEventsQueue?.apply {
+            unsubscribeAll()
+        }
     }
 }
 

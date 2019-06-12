@@ -3,15 +3,16 @@ package com.livelike.livelikesdk.widget.view
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
-import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.logDebug
+import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
@@ -23,7 +24,13 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggT
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 
-class QuizView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
+class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+
+    override var currentSession: LiveLikeContentSession? = null
+        set(value) {
+            field = value
+            viewModel.setSession(currentSession)
+        }
 
     private var viewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(QuizViewModel::class.java)
@@ -88,9 +95,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel.animationEggTimerProgress < 1f) {
                 listOf(textEggTimer, imageEggTimer).forEach { v ->
-                    v?.startAnimationFrom(viewModel.animationEggTimerProgress, animationLength) {
+                    v?.startAnimationFrom(viewModel.animationEggTimerProgress, animationLength, {
                         viewModel.animationEggTimerProgress = it
-                    }
+                    }, currentSession)
                 }
             }
         }
@@ -121,7 +128,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(
     private fun stateObserver() = Observer<String> { state ->
         when (state) {
             "results" -> {
-                listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton() }
+                listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton(currentSession) }
                 viewModel.adapter?.userSelectedOptionId = viewModel.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
                 viewModel.adapter?.correctOptionId = viewModel.adapter?.selectedPosition?.let { it1 ->
                     viewModel.adapter?.myDataset?.get(it1)?.id

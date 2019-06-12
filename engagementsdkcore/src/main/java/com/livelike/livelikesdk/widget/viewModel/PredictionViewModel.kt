@@ -5,8 +5,8 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
@@ -34,12 +34,6 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     var animationPath = ""
 
     private val handler = Handler()
-
-    init {
-        currentSession.currentWidgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
-            widgetObserver(widgetInfos)
-        }
-    }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         cleanUp()
@@ -79,7 +73,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     }
 
     private fun dismiss() {
-        currentSession.currentWidgetInfosStream.onNext(null)
+        currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
     private fun followupState(textPredictionId: String, correctOptionId: String) {
@@ -140,6 +134,18 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     }
 
     override fun onCleared() {
-        currentSession.currentWidgetInfosStream.unsubscribe(this::class.java)
+        currentSession?.currentWidgetInfosStream?.unsubscribe(this::class.java)
+    }
+
+    var currentSession: LiveLikeContentSession? = null
+        set(value) {
+            field = value
+            value?.currentWidgetInfosStream?.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
+                widgetObserver(widgetInfos)
+            }
+        }
+
+    fun setSession(currentSession: LiveLikeContentSession?) {
+        this.currentSession = currentSession
     }
 }

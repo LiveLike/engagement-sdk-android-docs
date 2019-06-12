@@ -3,8 +3,8 @@ package com.livelike.livelikesdk.widget.viewModel
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.os.Handler
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.logDebug
@@ -15,12 +15,13 @@ internal class AlertWidgetViewModel : ViewModel() {
     private var timeoutStarted = false
     var data: MutableLiveData<Alert?> = MutableLiveData()
     val handler = Handler()
-
-    init {
-        currentSession.currentWidgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
-            widgetObserver(widgetInfos)
+    var currentSession: LiveLikeContentSession? = null
+        set(value) {
+            field = value
+            value?.currentWidgetInfosStream?.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
+                widgetObserver(widgetInfos)
+            }
         }
-    }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null && WidgetType.fromString(widgetInfos.type) == WidgetType.ALERT) {
@@ -42,7 +43,7 @@ internal class AlertWidgetViewModel : ViewModel() {
     }
 
     private fun dismiss() {
-        currentSession.currentWidgetInfosStream.onNext(null)
+        currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
     private fun cleanup() {
@@ -54,6 +55,10 @@ internal class AlertWidgetViewModel : ViewModel() {
         // NEED  TO CLEAR THE viewModel when timer expires
         logDebug { "ViewModel is cleared" }
         // need to clear
-        currentSession.currentWidgetInfosStream.unsubscribe(this::class.java)
+        currentSession?.currentWidgetInfosStream?.unsubscribe(this::class.java)
+    }
+
+    fun setSession(currentSession: LiveLikeContentSession?) {
+        this.currentSession = currentSession
     }
 }

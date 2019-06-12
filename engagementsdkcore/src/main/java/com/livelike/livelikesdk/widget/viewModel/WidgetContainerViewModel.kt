@@ -56,6 +56,7 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
                 widgetContainer.context
             )
             if (view != null) {
+                view.currentSession = session
                 widgetContainer.addView(view)
                 logDebug { "NOW - Show WidgetInfos" }
             } else {
