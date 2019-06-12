@@ -29,7 +29,6 @@ import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseAdapter
@@ -75,7 +74,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private val animationEaseAdapter = AnimationEaseAdapter()
 
     private val viewModel: ChatViewModel?
-        get() = currentSession?.chatViewModel
+        get() = session?.chatViewModel
 
     init {
         (context as Activity).window.setSoftInputMode(

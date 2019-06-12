@@ -5,9 +5,9 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error
@@ -61,7 +61,6 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
                 override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
             })
         }
-        currentSession.currentWidgetInfosStream.subscribe(this::class.java, this::widgetObserver)
 
         debouncer.observeForever {
             if (it != null) vote()
@@ -107,7 +106,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun dismiss() {
-        currentSession.currentWidgetInfosStream.onNext(null)
+        currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
     private fun resultsState() {
@@ -143,7 +142,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     }
 
     override fun onCleared() {
-        currentSession.currentWidgetInfosStream.unsubscribe(this::class.java)
+        currentSession?.currentWidgetInfosStream?.unsubscribe(this::class.java)
     }
 
     // This is to update the vote value locally
@@ -176,5 +175,17 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
                 previousOptionClickedId = it
             }
         }
+    }
+
+    var currentSession: LiveLikeContentSession? = null
+        set(value) {
+            field = value
+            value?.currentWidgetInfosStream?.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
+                widgetObserver(widgetInfos)
+            }
+        }
+
+    fun setSession(currentSession: LiveLikeContentSession?) {
+        this.currentSession = currentSession
     }
 }
