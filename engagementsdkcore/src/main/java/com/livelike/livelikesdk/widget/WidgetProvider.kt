@@ -35,9 +35,10 @@ internal class WidgetViewProvider {
     }
 }
 
-
 open class SpecifiedWidgetView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     open var currentSession: LiveLikeContentSession? = null
 }
