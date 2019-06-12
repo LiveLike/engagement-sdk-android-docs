@@ -11,6 +11,7 @@ import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdChatClient
@@ -32,7 +33,7 @@ internal class LiveLikeContentSessionImpl(
     override var programUrl: String = ""
         set(value) {
             if (field != value) {
-                chatViewModel.dispose()
+                chatViewModel.clear()
                 field = value
                 if (programUrl.isNotEmpty()) {
                     llDataClient.getLiveLikeProgramData(value) {
@@ -98,7 +99,7 @@ internal class LiveLikeContentSessionImpl(
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
-//                    .syncTo(currentPlayheadTime)
+                    .syncTo(currentPlayheadTime)
                     .asWidgetManager(llDataClient, currentWidgetInfosStream)
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
@@ -117,7 +118,7 @@ internal class LiveLikeContentSessionImpl(
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue =
                 sendBirdMessagingClient
-//                    .syncTo(currentPlayheadTime, 86400000L)
+                    .syncTo(currentPlayheadTime, 86400000L)
                     .toChatQueue(chatClient)
             chatQueue.subscribe(listOf(program.chatChannel))
             chatQueue.renderer = chatRenderer
