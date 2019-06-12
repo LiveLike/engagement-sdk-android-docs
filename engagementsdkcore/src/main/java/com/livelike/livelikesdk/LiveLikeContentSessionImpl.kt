@@ -2,6 +2,7 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
@@ -10,7 +11,6 @@ import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.analytics.analyticService
-import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdChatClient
@@ -28,15 +28,16 @@ internal class LiveLikeContentSessionImpl(
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
     private val applicationContext: Context
 ) : LiveLikeContentSession {
+    override val chatViewModel: ChatViewModel = ChatViewModel()
     override var programUrl: String = ""
         set(value) {
             if (field != value) {
+                chatViewModel.dispose()
                 field = value
                 if (programUrl.isNotEmpty()) {
                     llDataClient.getLiveLikeProgramData(value) {
                         if (it !== null) {
                             program = it
-//                        currentWidgetInfosStream.clear()
                             initializeWidgetMessaging(it)
                             initializeChatMessaging(it)
                         }
@@ -108,6 +109,7 @@ internal class LiveLikeContentSessionImpl(
         chatQueue?.apply {
             unsubscribeAll()
         }
+
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
             // validEventBufferMs for chat is currently 24 hours
@@ -115,7 +117,7 @@ internal class LiveLikeContentSessionImpl(
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue =
                 sendBirdMessagingClient
-                    .syncTo(currentPlayheadTime, 86400000L)
+//                    .syncTo(currentPlayheadTime, 86400000L)
                     .toChatQueue(chatClient)
             chatQueue.subscribe(listOf(program.chatChannel))
             chatQueue.renderer = chatRenderer
@@ -140,7 +142,6 @@ internal class LiveLikeContentSessionImpl(
     }
 
     override fun close() {
-        //   TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 

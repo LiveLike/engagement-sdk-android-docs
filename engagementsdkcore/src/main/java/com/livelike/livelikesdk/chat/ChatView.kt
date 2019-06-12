@@ -4,12 +4,10 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
-import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.text.Editable
 import android.text.TextWatcher
@@ -29,11 +27,11 @@ import com.livelike.engagementsdkapi.ChatCellFactory
 import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.livelikesdk.LiveLikeSDK.Companion.currentSession
 import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
-import com.livelike.livelikesdk.utils.AndroidResource.Companion.pxToDp
-import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseInterpolator
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
@@ -71,14 +69,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     override var chatListener: ChatEventListener? = null
     override val chatContext: Context = context
 
-    private val attrs: AttributeSet = attrs!!
     private lateinit var session: LiveLikeContentSession
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
     private val animationEaseAdapter = AnimationEaseAdapter()
 
-    private var viewModel =
-        ViewModelProviders.of(context as FragmentActivity).get(ChatViewModel::class.java)
+    private val viewModel: ChatViewModel?
+        get() = currentSession?.chatViewModel
 
     init {
         (context as Activity).window.setSoftInputMode(
@@ -87,38 +84,21 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
 
         LayoutInflater.from(context).inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
-
-        viewModel.currentLastPos()?.let {
-            Handler(Looper.getMainLooper()).post {
-                chatdisplay.setSelectionFromTop(it, 0)
-            }
-        }
-    }
-
-    private fun verifyViewMinWidth(view: View) {
-//        visibility = View.VISIBLE
-        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        val width = pxToDp(view.width)
-        if (width < CHAT_MINIMUM_SIZE_DP) {
-//            visibility = View.GONE
-            logError { "The Chat zone is too small to be displayed. Minimum size is $CHAT_MINIMUM_SIZE_DP dp. Measured size here is: $width dp" }
-        }
     }
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
         session.chatRenderer = this
 
-        if (viewModel.currentChatAdapter() == null) {
+        if (viewModel?.chatAdapter == null) {
             showLoadingSpinner()
-            viewModel.addAdapter(
+            viewModel?.chatAdapter =
                 ChatAdapter(
                 session,
                     DefaultChatCellFactory(context, null)
                 )
-            )
         }
-        viewModel.currentChatAdapter()?.let {
+        viewModel?.chatAdapter?.let {
             setDataSource(it)
         }
     }
@@ -126,7 +106,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
         Handler(Looper.getMainLooper()).post {
-            viewModel.currentChatAdapter()?.addMessage(message)
+            viewModel?.chatAdapter?.addMessage(message)
         }
     }
 
@@ -170,7 +150,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             ) {
                 val lastPos = view?.lastVisiblePosition ?: 0
                 if (lastPos > 0) {
-                    viewModel.setLastPos(lastPos)
+                    viewModel?.chatLastPos = view?.selectedItemPosition
                 }
                 if (lastPos >= totalItemCount - 3)
                     hideSnapToLive()
@@ -218,6 +198,12 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         button_chat_send.setOnClickListener { v ->
             sendMessageNow()
         }
+
+        viewModel?.chatLastPos?.let {
+            Handler(Looper.getMainLooper()).post {
+                chatdisplay.setSelection(it)
+            }
+        }
     }
 
     private fun showLoadingSpinner() {
@@ -246,7 +232,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString()
         )
-        viewModel.currentChatAdapter()?.addMessage(newMessage)
+        viewModel?.chatAdapter?.addMessage(newMessage)
 
         hideLoadingSpinner()
         snapToLive()
@@ -312,7 +298,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun snapToLive() {
-        chatdisplay.smoothScrollToPositionFromTop(viewModel.currentChatAdapter()?.count?.minus(1) ?: 0, 0, 500)
+        chatdisplay.smoothScrollToPositionFromTop(viewModel?.chatAdapter?.count?.minus(1) ?: 0, 0, 500)
     }
 }
 
@@ -326,13 +312,6 @@ internal class DefaultChatCellFactory(val context: Context, cellattrs: Attribute
 }
 
 internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatCell {
-    override var messageId: String = ""
-
-    override fun equals(other: Any?): Boolean {
-        return if (other !is ChatCell) false
-        else this.messageId == other.messageId
-    }
-
     init {
         LayoutInflater.from(context)
             .inflate(com.livelike.livelikesdk.R.layout.default_chat_cell, this, true)
@@ -343,7 +322,6 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
         isMe: Boolean?
     ) {
         message?.apply {
-            messageId = message.id
             if (isMe == true) {
                 chat_nickname.setTextColor(
                     ContextCompat.getColor(
@@ -369,7 +347,4 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
         return this
     }
 
-    override fun hashCode(): Int {
-        return messageId.hashCode()
-    }
 }

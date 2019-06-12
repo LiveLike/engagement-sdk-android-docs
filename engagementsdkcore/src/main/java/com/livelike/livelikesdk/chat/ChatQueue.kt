@@ -9,7 +9,6 @@ import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.services.messaging.sendbird.ChatClient
-import com.livelike.livelikesdk.utils.extractStringOrEmpty
 import java.util.Date
 
 internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient) :
@@ -42,7 +41,6 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
 
     override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
         // If chat is paused we can queue here
-
         val messageJson = JsonObject()
         messageJson.addProperty("message", message.message)
         messageJson.addProperty("sender", message.senderDisplayName)
@@ -54,23 +52,16 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        val controlMessage = event.message.extractStringOrEmpty("control")
-
-        when (controlMessage) {
-            ("load_complete") -> renderer?.loadComplete()
-            else -> {
-                val newMessage = ChatMessage(
-                    event.message.get("message").asString,
-                    event.message.get("sender_id").asString,
-                    event.message.get("sender").asString,
-                    event.message.get("id").asString,
-                    Date(event.timeStamp.timeSinceEpochInMs).toString()
-                )
-                if (!paused) {
-                    renderer?.displayChatMessage(newMessage)
-                    lastChatMessage = Pair(newMessage.id, event.channel)
-                }
-            }
+        val newMessage = ChatMessage(
+            event.message.get("message").asString,
+            event.message.get("sender_id").asString,
+            event.message.get("sender").asString,
+            event.message.get("id").asString,
+            Date(event.timeStamp.timeSinceEpochInMs).toString()
+        )
+        if (!paused) {
+            renderer?.displayChatMessage(newMessage)
+            lastChatMessage = Pair(newMessage.id, event.channel)
         }
     }
 

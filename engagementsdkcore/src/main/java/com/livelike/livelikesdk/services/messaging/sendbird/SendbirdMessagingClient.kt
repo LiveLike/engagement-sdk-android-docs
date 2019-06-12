@@ -1,8 +1,6 @@
 package com.livelike.livelikesdk.services.messaging.sendbird
 
 import android.content.Context
-import com.google.gson.JsonObject
-import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
@@ -107,13 +105,6 @@ internal class SendbirdMessagingClient(
                                     SendBirdUtils.clientMessageFromBaseMessage(message as UserMessage, openChannel)
                                 )
                             }
-
-                            val messageJson = JsonObject()
-                            messageJson.addProperty("control", "load_complete")
-                            listener?.onClientMessageEvent(
-                                this@SendbirdMessagingClient,
-                                ClientMessage(messageJson, openChannel.url, EpochTime(0))
-                            )
                         })
                 })
         }

@@ -12,6 +12,7 @@ interface LiveLikeContentSession {
     var chatRenderer: ChatRenderer?
     val currentUser: LiveLikeUser?
     val currentWidgetInfosStream: Stream<WidgetInfos?>
+    val chatViewModel: ChatViewModel
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
