@@ -80,7 +80,7 @@ internal class SendbirdMessagingClient(
 
                         SendBird.addChannelHandler(openChannel.url, object : SendBird.ChannelHandler() {
                             override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
-                                if (message != null && channel != null) {
+                                if (message != null && channel != null && openChannel.url == message.channelUrl) {
                                     message as UserMessage
                                     val clientMessage = SendBirdUtils.clientMessageFromBaseMessage(message, channel)
                                     logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
@@ -119,6 +119,7 @@ internal class SendbirdMessagingClient(
 
     override fun unsubscribeAll() {
         SendBird.removeAllChannelHandlers()
+        connectedChannels.clear()
     }
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {
