@@ -208,7 +208,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
                 (actionId == EditorInfo.IME_ACTION_SEND)
             ) {
-                hideKeyboard()
                 sendMessageNow()
             }
             false
@@ -238,6 +237,11 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun sendMessageNow() {
+        // Do nothing if the message is blank or empty
+        if (edittext_chat_message.text.isBlank())
+            return
+
+        hideKeyboard()
         val timeData = session.getPlayheadTime()
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
