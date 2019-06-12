@@ -346,5 +346,4 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
     override fun getView(): View {
         return this
     }
-
 }
