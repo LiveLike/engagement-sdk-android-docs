@@ -17,7 +17,7 @@ class LiveLikeApplication : Application() {
 
     lateinit var channelManager: ChannelManager
     lateinit var player: VideoPlayer
-    var session: LiveLikeContentSession? = null
+    private var session: LiveLikeContentSession? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -30,7 +30,10 @@ class LiveLikeApplication : Application() {
     }
 
     fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
-        session = player.createSession(sessionId, sdk)
+        if (session == null || session?.programUrl != sessionId) {
+            session?.close()
+            session = player.createSession(sessionId, sdk)
+        }
         return session as LiveLikeContentSession
     }
 }

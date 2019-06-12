@@ -4,7 +4,7 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.utils.gson
-import com.livelike.livelikesdk.utils.logError
+import com.livelike.livelikesdk.utils.logWarn
 import com.sendbird.android.BaseChannel
 import com.sendbird.android.UserMessage
 
@@ -32,7 +32,7 @@ internal class SendBirdUtils {
                 }
             } catch (e: Exception) {
                 // This is here because on some channels historic messages may have Date/Time format is not correct, or Json is off
-                logError { e }
+                logWarn { messageDataJson + "error: " + e }
             }
             return 0
         }

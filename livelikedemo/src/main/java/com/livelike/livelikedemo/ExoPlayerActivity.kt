@@ -92,7 +92,6 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         channelManager?.addChannelSelectListener("exoplayer") {
             channelManager?.hide()
-            (application as LiveLikeApplication).session = null
             selectChannel(it)
         }
 
@@ -122,7 +121,6 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         })
 
-        session?.close()
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(), sdk)
 

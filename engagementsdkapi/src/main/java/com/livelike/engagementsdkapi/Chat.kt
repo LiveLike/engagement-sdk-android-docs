@@ -33,14 +33,12 @@ data class ChatMessage(
 )
 
 interface ChatCell {
-    var messageId: String
     fun setMessage(
         message: ChatMessage?,
         isMe: Boolean?
     )
 
     fun getView(): View
-    override fun equals(other: Any?): Boolean
 }
 
 interface ChatCellFactory {
@@ -96,4 +94,14 @@ class ChatAdapter() : BaseAdapter() {
     override fun getCount(): Int {
         return chatMessages.size
     }
+}
+
+class ChatViewModel {
+    fun clear() {
+        chatAdapter = null
+        chatLastPos = null
+    }
+
+    var chatAdapter: ChatAdapter? = null
+    var chatLastPos: Int? = null
 }

@@ -117,20 +117,6 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         }
     }
 
-    private fun parseProgramData(programData: JsonObject): Program {
-        return Program(
-            programData.extractStringOrEmpty("url"),
-            programData.extractStringOrEmpty("timeline_url"),
-            programData.extractStringOrEmpty("content_id"),
-            programData.extractStringOrEmpty("id"),
-            programData.extractStringOrEmpty("title"),
-            programData["widgets_enabled"]?.asBoolean ?: true,
-            programData["chat_enabled"]?.asBoolean ?: true,
-            programData.extractStringOrEmpty("subscribe_channel"),
-            programData.extractStringOrEmpty("sendbird_channel")
-        )
-    }
-
     override fun getLiveLikeSdkConfig(url: String, responseCallback: (config: LiveLikeSDK.SdkConfiguration) -> Unit) {
         val request = Request.Builder()
             .url(url)

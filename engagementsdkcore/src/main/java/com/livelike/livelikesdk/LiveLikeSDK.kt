@@ -23,7 +23,6 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
     companion object {
         private const val CONFIG_URL = BuildConfig.CONFIG_URL
         val MIXPANEL_TOKEN = "5c82369365be76b28b3716f260fbd2f5" // TODO: This should come from CMS
-        lateinit var currentSession: LiveLikeContentSession // TODO: We don't like the singleton pattern, let's find something better here
         var configuration: SdkConfiguration? = null
     }
 
@@ -34,19 +33,6 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
             AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
             initLiveLikeSharedPrefs(applicationContext)
             analyticService.initialize(applicationContext, MIXPANEL_TOKEN)
-
-            currentSession = LiveLikeContentSessionImpl(
-                object : Provider<SdkConfiguration> {
-                    override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-                        if (configuration != null) ready(configuration!!)
-                        else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
-                            configuration = it
-                            ready(it)
-                        }
-                    }
-                }, applicationContext
-            )
-
             sdkInstance = this
         }
     }
@@ -56,7 +42,17 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
      *  @param programId Backend generated unique identifier for current program
      */
     fun createContentSession(programId: String): LiveLikeContentSession {
-        currentSession.programUrl = ""
+        val currentSession = LiveLikeContentSessionImpl(
+            object : Provider<SdkConfiguration> {
+                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
+                    if (configuration != null) ready(configuration!!)
+                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
+                        configuration = it
+                        ready(it)
+                    }
+                }
+            }, applicationContext
+        )
         currentSession.programUrl = programId
         currentSession.currentPlayheadTime = { EpochTime(0) }
         return currentSession
@@ -72,7 +68,17 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
      *  @param timecodeGetter returns the video timecode
      */
     fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
-        currentSession.programUrl = ""
+        val currentSession = LiveLikeContentSessionImpl(
+            object : Provider<SdkConfiguration> {
+                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
+                    if (configuration != null) ready(configuration!!)
+                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
+                        configuration = it
+                        ready(it)
+                    }
+                }
+            }, applicationContext
+        )
         currentSession.programUrl = programId
         currentSession.currentPlayheadTime = { timecodeGetter.getTimecode() }
         return currentSession

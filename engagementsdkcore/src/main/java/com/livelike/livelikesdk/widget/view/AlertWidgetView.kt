@@ -13,8 +13,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
+import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
 import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
@@ -27,7 +29,7 @@ import kotlinx.android.synthetic.main.widget_alert.view.linkBackground
 import kotlinx.android.synthetic.main.widget_alert.view.linkText
 import kotlinx.android.synthetic.main.widget_alert.view.widgetContainer
 
-internal class AlertWidgetView : ConstraintLayout {
+internal class AlertWidgetView : SpecifiedWidgetView {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
@@ -36,6 +38,12 @@ internal class AlertWidgetView : ConstraintLayout {
 
     private val viewModel: AlertWidgetViewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(AlertWidgetViewModel::class.java)
+
+    override var currentSession: LiveLikeContentSession? = null
+        set(value) {
+            field = value
+            viewModel.setSession(currentSession)
+        }
 
     init {
         viewModel.data.observe(context as AppCompatActivity, Observer {

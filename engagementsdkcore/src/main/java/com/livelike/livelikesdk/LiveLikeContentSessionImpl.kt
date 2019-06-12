@@ -2,6 +2,7 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import com.livelike.engagementsdkapi.ChatRenderer
+import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
@@ -28,15 +29,16 @@ internal class LiveLikeContentSessionImpl(
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
     private val applicationContext: Context
 ) : LiveLikeContentSession {
+    override val chatViewModel: ChatViewModel = ChatViewModel()
     override var programUrl: String = ""
         set(value) {
             if (field != value) {
+                chatViewModel.clear()
                 field = value
                 if (programUrl.isNotEmpty()) {
                     llDataClient.getLiveLikeProgramData(value) {
                         if (it !== null) {
                             program = it
-//                        currentWidgetInfosStream.clear()
                             initializeWidgetMessaging(it)
                             initializeChatMessaging(it)
                         }
@@ -97,7 +99,7 @@ internal class LiveLikeContentSessionImpl(
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
-//                    .syncTo(currentPlayheadTime)
+                    .syncTo(currentPlayheadTime)
                     .asWidgetManager(llDataClient, currentWidgetInfosStream)
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
@@ -108,6 +110,7 @@ internal class LiveLikeContentSessionImpl(
         chatQueue?.apply {
             unsubscribeAll()
         }
+
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
             // validEventBufferMs for chat is currently 24 hours
@@ -140,7 +143,12 @@ internal class LiveLikeContentSessionImpl(
     }
 
     override fun close() {
-        //   TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        chatQueue?.apply {
+            unsubscribeAll()
+        }
+        widgetEventsQueue?.apply {
+            unsubscribeAll()
+        }
     }
 }
 
