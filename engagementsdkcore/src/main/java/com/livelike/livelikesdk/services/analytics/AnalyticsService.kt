@@ -42,9 +42,9 @@ internal class MixpanelAnalytics : AnalyticsService {
         const val KEY_ACTION_TAP = "Action_Tap"
     }
 
-    private fun trackWidgets(session : LiveLikeContentSession) {
+    private fun trackWidgets(session: LiveLikeContentSession) {
         session.currentWidgetInfosStream.subscribe(KEY_WIDGET_DISPLAYED) {
-            if(it != null) {
+            if (it != null) {
                 trackWidgetDisplayed(it.type, it.payload["id"].toString())
             }
         }
