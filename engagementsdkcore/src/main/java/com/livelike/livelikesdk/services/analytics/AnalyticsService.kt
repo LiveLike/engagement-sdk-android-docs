@@ -16,6 +16,7 @@ internal interface AnalyticsService {
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
+    fun trackAppOpen()
     fun trackMessageSent(msgId: String, msgLength: Int)
     fun trackWidgetReceived(kind: WidgetType, id: String)
     fun trackWidgetDisplayed(kind: String, id: String)
@@ -86,6 +87,7 @@ internal class MixpanelAnalytics : AnalyticsService {
 
     fun initialize(context: Context, token: String) {
         mixpanel = MixpanelAPI.getInstance(context, token)
+        trackAppOpen()
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -136,6 +138,17 @@ internal class MixpanelAnalytics : AnalyticsService {
                 trackWidgetDisplayed(it.type, it.payload["id"].toString())
             }
         }
+    }
+
+    override fun trackAppOpen() {
+        val firstTimeProperties = JSONObject()
+        val timeNow = parser.format(Date(System.currentTimeMillis()))
+        firstTimeProperties.put("First App Open", timeNow)
+        mixpanel.registerSuperPropertiesOnce(firstTimeProperties)
+
+        var properties = JSONObject()
+        properties.put("Last App Open", timeNow)
+        mixpanel.registerSuperProperties(properties)
     }
 
     override fun trackMessageSent(msgId: String, msgLength: Int) {
