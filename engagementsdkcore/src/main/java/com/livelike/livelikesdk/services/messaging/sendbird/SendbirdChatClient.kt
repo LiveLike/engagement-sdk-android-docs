@@ -30,7 +30,6 @@ internal class SendbirdChatClient : ChatClient {
                 run {
                     e?.also { logError { "Error sending the message: $it" } } ?: onSuccess(usrMsg.messageId.toString())
                 }
-
             }
         }
     }

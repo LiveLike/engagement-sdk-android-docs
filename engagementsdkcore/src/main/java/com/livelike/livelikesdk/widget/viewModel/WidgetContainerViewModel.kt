@@ -49,7 +49,7 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
             dismissWidget()
         } else {
             displayWidget(widgetInfos.type)
-            analyticService.trackWidgetReceived(WidgetType.fromString(widgetInfos.type), widgetInfos.widgetId);
+            analyticService.trackWidgetReceived(WidgetType.fromString(widgetInfos.type), widgetInfos.widgetId)
         }
     }
 

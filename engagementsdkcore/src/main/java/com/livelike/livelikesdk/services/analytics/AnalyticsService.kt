@@ -9,10 +9,6 @@ import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import java.text.SimpleDateFormat
 import java.util.Date
-import android.support.v4.view.ViewCompat.getRotation
-import android.view.OrientationEventListener
-
-
 
 internal interface AnalyticsService {
     fun trackWidgetInteraction(
@@ -23,12 +19,13 @@ internal interface AnalyticsService {
     fun trackMessageSent(msgId: String, msgLength: Int)
     fun trackWidgetReceived(kind: WidgetType, id: String)
     fun trackWidgetDisplayed(kind: String, id: String)
-    fun trackWidgetDismiss(kind: WidgetType,
-                           id: String,
-                           interactionInfo: AnalyticsWidgetInteractionInfo,
-                           interactable: Boolean?,
-                           action: DismissAction
-                           )
+    fun trackWidgetDismiss(
+        kind: WidgetType,
+        id: String,
+        interactionInfo: AnalyticsWidgetInteractionInfo,
+        interactable: Boolean?,
+        action: DismissAction
+    )
     fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int = 1)
     fun trackOrientationChange(isPortrait: Boolean)
     fun trackSession(sessionId: String)
@@ -163,26 +160,28 @@ internal class MixpanelAnalytics : AnalyticsService {
         mixpanel.registerSuperProperties(properties)
     }
 
-    override fun trackWidgetDismiss(kind: WidgetType,
-                                    id: String,
-                                    interactionInfo: AnalyticsWidgetInteractionInfo,
-                                    canInteract: Boolean?,
-                                    action: DismissAction) {
+    override fun trackWidgetDismiss(
+        kind: WidgetType,
+        id: String,
+        interactionInfo: AnalyticsWidgetInteractionInfo,
+        canInteract: Boolean?,
+        action: DismissAction
+    ) {
 
-        if(action == DismissAction.TIMEOUT) {
+        if (action == DismissAction.TIMEOUT) {
             return
         }
-        val dismissAction = when(action) {
+        val dismissAction = when (action) {
             DismissAction.TAP_X -> "Tap X"
             DismissAction.SWIPE -> "Swipe"
             else -> ""
         }
 
         val timeNow = System.currentTimeMillis()
-        val timeSinceLastTap = (timeNow - interactionInfo.timeOfLastInteraction).toFloat()/1000
-        val timeSinceStart = (timeNow - interactionInfo.timeOfFirstDisplay).toFloat()/1000
+        val timeSinceLastTap = (timeNow - interactionInfo.timeOfLastInteraction).toFloat() / 1000
+        val timeSinceStart = (timeNow - interactionInfo.timeOfFirstDisplay).toFloat() / 1000
 
-        val interactionState = if(canInteract != null && canInteract) "Open To Interaction" else "Closed To Interaction"
+        val interactionState = if (canInteract != null && canInteract) "Open To Interaction" else "Closed To Interaction"
 
         val properties = JSONObject()
         properties.put("Widget Type", getWidgetType(kind))
