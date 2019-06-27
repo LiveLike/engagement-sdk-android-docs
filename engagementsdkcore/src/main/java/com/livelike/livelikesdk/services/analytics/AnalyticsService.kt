@@ -19,7 +19,7 @@ internal interface AnalyticsService {
     fun trackAppOpen()
     fun trackMessageSent(msgId: String, msgLength: Int)
     fun trackWidgetReceived(kind: WidgetType, id: String)
-    fun trackWidgetDisplayed(kind: String, id: String)
+    fun trackWidgetDisplayed(kind: WidgetType, id: String)
     fun trackWidgetDismiss(
         kind: WidgetType,
         id: String,
@@ -114,6 +114,9 @@ internal class MixpanelAnalytics : AnalyticsService {
             WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> "Image Prediction Follow-up"
             WidgetType.TEXT_PREDICTION -> "Text Prediction"
             WidgetType.TEXT_PREDICTION_FOLLOW_UP -> "Text Prediction Follow-up"
+            WidgetType.IMAGE_QUIZ -> "Image Quiz"
+            WidgetType.TEXT_QUIZ -> "Text Quiz"
+            WidgetType.ALERT -> "Alert"
             else -> ""
         }
     }
@@ -135,7 +138,7 @@ internal class MixpanelAnalytics : AnalyticsService {
     private fun trackWidgets(session: LiveLikeContentSession) {
         session.currentWidgetInfosStream.subscribe(KEY_WIDGET_DISPLAYED) {
             if (it != null) {
-                trackWidgetDisplayed(it.type, it.payload["id"].toString())
+                trackWidgetDisplayed(WidgetType.fromString(it.type), it.payload["id"].toString())
             }
         }
     }
@@ -158,10 +161,10 @@ internal class MixpanelAnalytics : AnalyticsService {
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String) {
+    override fun trackWidgetDisplayed(kind: WidgetType, id: String) {
         val properties = JSONObject()
-        properties.put("widgetType", getWidgetType(WidgetType.fromString(kind)))
-        properties.put("widgetId", id)
+        properties.put("Widget Type", getWidgetType(kind))
+        properties.put("Widget ID", id)
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
     }
 
