@@ -5,9 +5,12 @@ import android.arch.lifecycle.ViewModel
 import android.os.Handler
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
+import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.logDebug
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 
@@ -23,32 +26,44 @@ internal class AlertWidgetViewModel : ViewModel() {
             }
         }
 
+    private var currentWidgetId: String = ""
+    private var currentWidgetType: WidgetType = WidgetType.NONE
+    private val interactionData = AnalyticsWidgetInteractionInfo()
+
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         if (widgetInfos != null && WidgetType.fromString(widgetInfos.type) == WidgetType.ALERT) {
             data.postValue(gson.fromJson(widgetInfos.payload.toString(), Alert::class.java) ?: null)
+            interactionData.widgetDisplayed()
+            currentWidgetId = widgetInfos.widgetId
+            currentWidgetType = WidgetType.fromString(widgetInfos.type)
         } else {
             data.postValue(null)
             cleanup()
         }
     }
 
+    fun dismissWidget(action: DismissAction) {
+        analyticService.trackWidgetDismiss(currentWidgetType, currentWidgetId, interactionData, false, action)
+        currentSession?.currentWidgetInfosStream?.onNext(null)
+    }
+
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
             handler.postDelayed({
-                dismiss()
+                dismissWidget(DismissAction.TIMEOUT)
                 timeoutStarted = false
             }, AndroidResource.parseDuration(timeout))
         }
     }
 
-    private fun dismiss() {
-        currentSession?.currentWidgetInfosStream?.onNext(null)
-    }
-
     private fun cleanup() {
         timeoutStarted = false
         handler.removeCallbacksAndMessages(null)
+
+        currentWidgetType = WidgetType.NONE
+        currentWidgetId = ""
+        interactionData.reset()
     }
 
     override fun onCleared() {

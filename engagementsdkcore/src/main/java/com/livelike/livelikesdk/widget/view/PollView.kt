@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
@@ -28,6 +29,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             field = value
             viewModel.setSession(currentSession)
         }
+
+    override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel.dismissWidget(it) }
 
     private var viewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(PollViewModel::class.java)
@@ -91,7 +94,9 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 listOf(textEggTimer, imageEggTimer).forEach { v ->
                     v?.startAnimationFrom(viewModel.animationEggTimerProgress, animationLength, {
                         viewModel.animationEggTimerProgress = it
-                    }, currentSession)
+                    }, currentSession, {
+                        viewModel.dismissWidget(it)
+                    })
                 }
             }
         }

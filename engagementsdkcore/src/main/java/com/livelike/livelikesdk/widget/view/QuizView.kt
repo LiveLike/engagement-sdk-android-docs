@@ -12,6 +12,7 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.logDebug
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
@@ -31,6 +32,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             field = value
             viewModel.setSession(currentSession)
         }
+
+    override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel.dismissWidget(it) }
 
     private var viewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(QuizViewModel::class.java)
@@ -97,7 +100,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 listOf(textEggTimer, imageEggTimer).forEach { v ->
                     v?.startAnimationFrom(viewModel.animationEggTimerProgress, animationLength, {
                         viewModel.animationEggTimerProgress = it
-                    }, currentSession)
+                    }, currentSession) {
+                        viewModel.dismissWidget(it)
+                    }
                 }
             }
         }
@@ -128,7 +133,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver() = Observer<String> { state ->
         when (state) {
             "results" -> {
-                listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton(currentSession) }
+                listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton(currentSession) {
+                    viewModel.dismissWidget(it)
+                } }
                 viewModel.adapter?.userSelectedOptionId = viewModel.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
                 viewModel.adapter?.correctOptionId = viewModel.adapter?.selectedPosition?.let { it1 ->
                     viewModel.adapter?.myDataset?.get(it1)?.id

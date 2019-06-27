@@ -14,6 +14,7 @@ import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
@@ -57,6 +58,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
 
                 currentWidgetId = widgetInfos.widgetId
                 currentWidgetType = type
+                interactionData.widgetDisplayed()
             }
         } else {
             data.postValue(null)
@@ -68,7 +70,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
             if (isFollowup) {
-                handler.postDelayed({ dismiss() }, AndroidResource.parseDuration(timeout))
+                handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, AndroidResource.parseDuration(timeout))
                 data.value?.apply {
                     followupState(
                         if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id,
@@ -81,7 +83,8 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         }
     }
 
-    private fun dismiss() {
+    fun dismissWidget(action: DismissAction) {
+        analyticService.trackWidgetDismiss(currentWidgetType, currentWidgetId, interactionData, adapter?.selectionLocked, action)
         currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
@@ -109,7 +112,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     private fun confirmationState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
-            dismiss()
+            dismissWidget(DismissAction.TIMEOUT)
             return
         }
 
@@ -118,7 +121,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
 
         state.postValue("confirmation")
 
-        handler.postDelayed({ dismiss() }, 6000)
+        handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
         analyticService.trackWidgetInteraction(currentWidgetType, currentWidgetId, interactionData)
     }

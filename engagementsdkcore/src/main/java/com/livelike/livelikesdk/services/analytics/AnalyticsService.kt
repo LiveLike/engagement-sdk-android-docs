@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,7 +19,12 @@ internal interface AnalyticsService {
     fun trackMessageSent(containEmoji: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
     fun trackWidgetDisplayed(kind: String, id: String)
-    fun trackWidgetDismiss(kind: String, id: String)
+    fun trackWidgetDismiss(kind: WidgetType,
+                           id: String,
+                           interactionInfo: AnalyticsWidgetInteractionInfo,
+                           interactable: Boolean?,
+                           action: DismissAction
+                           )
     fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int = 1)
     fun trackOrientationChange(isPortrait: Boolean)
     fun trackSession(sessionId: String)
@@ -30,6 +36,7 @@ internal class AnalyticsWidgetInteractionInfo {
     var interactionCount: Int = 0
     var timeOfFirstInteraction: Long = -1
     var timeOfLastInteraction: Long = 0
+    var timeOfFirstDisplay: Long = -1
 
     fun incrementInteraction() {
         interactionCount += 1
@@ -39,6 +46,10 @@ internal class AnalyticsWidgetInteractionInfo {
             timeOfFirstInteraction = timeNow
         }
         timeOfLastInteraction = timeNow
+    }
+
+    fun widgetDisplayed() {
+        timeOfFirstDisplay = System.currentTimeMillis()
     }
 
     fun reset() {
@@ -83,9 +94,9 @@ internal class MixpanelAnalytics : AnalyticsService {
     companion object {
         const val KEY_CHAT_MESSAGE_SENT = "Chat_Sent_Message"
         const val KEY_WIDGET_RECEIVED = "Widget_Received"
-        const val KEY_WIDGET_DISPLAYED = "Widget_Displayed"
-        const val KEY_WIDGET_INTERACTION = "Widget_Interaction"
-        const val KEY_WIDGET_USER_DISMISS = "Widget_User_Dismiss"
+        const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
+        const val KEY_WIDGET_INTERACTION = "Widget Interaction"
+        const val KEY_WIDGET_USER_DISMISS = "Widget Dismissed"
         const val KEY_ORIENTATION_CHANGED = "Orientation_Changed"
         const val KEY_ACTION_TAP = "Action_Tap"
     }
@@ -146,10 +157,36 @@ internal class MixpanelAnalytics : AnalyticsService {
         mixpanel.track(KEY_WIDGET_RECEIVED, properties)
     }
 
-    override fun trackWidgetDismiss(kind: String, id: String) {
+    override fun trackWidgetDismiss(kind: WidgetType,
+                                    id: String,
+                                    interactionInfo: AnalyticsWidgetInteractionInfo,
+                                    canInteract: Boolean?,
+                                    action: DismissAction) {
+
+        if(action == DismissAction.TIMEOUT) {
+            return
+        }
+        val dismissAction = when(action) {
+            DismissAction.TAP_X -> "Tap X"
+            DismissAction.SWIPE -> "Swipe"
+            else -> ""
+        }
+
+        val timeNow = System.currentTimeMillis()
+        val timeSinceLastTap = (timeNow - interactionInfo.timeOfLastInteraction).toFloat()/1000
+        val timeSinceStart = (timeNow - interactionInfo.timeOfFirstDisplay).toFloat()/1000
+
+        val interactionState = if(canInteract != null && canInteract) "Open To Interaction" else "Closed To Interaction"
+
         val properties = JSONObject()
-        properties.put("kind", kind)
-        properties.put("id", id)
+        properties.put("Widget Type", getWidgetType(kind))
+        properties.put("Widget ID", id)
+        properties.put("Number Of Taps", interactionInfo.interactionCount)
+        properties.put("Dismiss Action", dismissAction)
+        properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
+        properties.put("Dismiss Seconds Since Start", timeSinceStart)
+        properties.put("Interactable State", interactionState)
+
         mixpanel.track(KEY_WIDGET_USER_DISMISS, properties)
     }
 

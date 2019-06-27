@@ -35,10 +35,17 @@ internal class WidgetViewProvider {
     }
 }
 
+enum class DismissAction {
+    TIMEOUT,
+    SWIPE,
+    TAP_X
+}
+
 open class SpecifiedWidgetView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     open var currentSession: LiveLikeContentSession? = null
+    open var dismissFunc: ((action: DismissAction) -> Unit)? = null
 }

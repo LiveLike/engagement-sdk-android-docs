@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
@@ -30,6 +31,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             field = value
             viewModel.setSession(currentSession)
         }
+
+    override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel.dismissWidget(it) }
 
     private var viewModel =
         ViewModelProviders.of(context as AppCompatActivity).get(PredictionViewModel::class.java)
@@ -95,7 +98,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 listOf(textEggTimer, imageEggTimer).forEach { v ->
                     v?.startAnimationFrom(viewModel.animationEggTimerProgress, animationLength, {
                         viewModel.animationEggTimerProgress = it
-                    }, currentSession)
+                    }, currentSession) {
+                    }
                 }
             }
         }
@@ -116,7 +120,9 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     }
                     visibility = View.VISIBLE
                 }
-                listOf(textEggTimer, imageEggTimer).forEach { it?.showCloseButton(currentSession) }
+                listOf(textEggTimer, imageEggTimer).forEach { it?.showCloseButton(currentSession) {
+                    viewModel.dismissWidget(it)
+                } }
             }
             "followup" -> {
                 followupAnimation.apply {
@@ -130,7 +136,9 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     }
                     visibility = View.VISIBLE
                 }
-                listOf(textEggTimer, imageEggTimer).forEach { it?.showCloseButton(currentSession) }
+                listOf(textEggTimer, imageEggTimer).forEach { it?.showCloseButton(currentSession) {
+                    viewModel.dismissWidget(it)
+                } }
             }
         }
     }

@@ -9,11 +9,14 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.utils.logError
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.WidgetViewProvider
 import com.livelike.livelikesdk.widget.util.SwipeDismissTouchListener
 
 class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val session: LiveLikeContentSession) {
+
+    private var dismissWidget: ((action: DismissAction) -> Unit)? = null
 
     init {
         session.currentWidgetInfosStream.subscribe(WidgetContainerViewModel::class.java) { widgetInfos: WidgetInfos? ->
@@ -31,7 +34,7 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
                     }
 
                     override fun onDismiss(view: View?, token: Any?) {
-                        session.currentWidgetInfosStream.onNext(null)
+                        dismissWidget?.invoke(DismissAction.SWIPE)
                     }
                 })
         )
@@ -57,6 +60,7 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
             )
             if (view != null) {
                 view.currentSession = session
+                dismissWidget = view.dismissFunc
                 widgetContainer.addView(view)
                 logDebug { "NOW - Show WidgetInfos" }
             } else {
