@@ -240,7 +240,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         hideLoadingSpinner()
         snapToLive()
         edittext_chat_message.setText("")
-        analyticService.trackMessageSent(false)
         chatListener?.onChatMessageSend(newMessage, timeData)
     }
 

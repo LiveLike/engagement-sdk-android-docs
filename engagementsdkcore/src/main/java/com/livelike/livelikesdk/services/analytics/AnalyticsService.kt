@@ -9,6 +9,10 @@ import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import java.text.SimpleDateFormat
 import java.util.Date
+import android.support.v4.view.ViewCompat.getRotation
+import android.view.OrientationEventListener
+
+
 
 internal interface AnalyticsService {
     fun trackWidgetInteraction(
@@ -16,8 +20,8 @@ internal interface AnalyticsService {
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
-    fun trackMessageSent(containEmoji: Boolean)
-    fun trackWidgetReceived(kind: String, id: String)
+    fun trackMessageSent(msgId: String, msgLength: Int)
+    fun trackWidgetReceived(kind: WidgetType, id: String)
     fun trackWidgetDisplayed(kind: String, id: String)
     fun trackWidgetDismiss(kind: WidgetType,
                            id: String,
@@ -92,7 +96,7 @@ internal class MixpanelAnalytics : AnalyticsService {
     }
 
     companion object {
-        const val KEY_CHAT_MESSAGE_SENT = "Chat_Sent_Message"
+        const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
         const val KEY_WIDGET_RECEIVED = "Widget_Received"
         const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
         const val KEY_WIDGET_INTERACTION = "Widget Interaction"
@@ -137,9 +141,10 @@ internal class MixpanelAnalytics : AnalyticsService {
         }
     }
 
-    override fun trackMessageSent(containEmoji: Boolean) {
+    override fun trackMessageSent(msgId: String, msgLength: Int) {
         val properties = JSONObject()
-        properties.put("containEmoji", containEmoji)
+        properties.put("Chat Message ID", msgId)
+        properties.put("Character Length", msgLength)
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
     }
 
@@ -150,11 +155,12 @@ internal class MixpanelAnalytics : AnalyticsService {
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
     }
 
-    override fun trackWidgetReceived(kind: String, id: String) {
+    override fun trackWidgetReceived(kind: WidgetType, id: String) {
         val properties = JSONObject()
-        properties.put("kind", kind)
-        properties.put("id", id)
-        mixpanel.track(KEY_WIDGET_RECEIVED, properties)
+        properties.put("Time Of Last Widget Receipt", parser.format(Date(System.currentTimeMillis())))
+        properties.put("Last Widget Type", getWidgetType(kind))
+        properties.put("Last Widget Id", id)
+        mixpanel.registerSuperProperties(properties)
     }
 
     override fun trackWidgetDismiss(kind: WidgetType,

@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.FrameLayout
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.DismissAction
@@ -48,6 +49,7 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
             dismissWidget()
         } else {
             displayWidget(widgetInfos.type)
+            analyticService.trackWidgetReceived(WidgetType.fromString(widgetInfos.type), widgetInfos.widgetId);
         }
     }
 
