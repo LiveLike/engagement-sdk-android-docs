@@ -8,6 +8,9 @@ import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
+import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetSpecificInfo
+import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error
@@ -44,6 +47,11 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     private var pubnub: PubnubMessagingClient? = null
     private val handler = Handler()
     var animationEggTimerProgress = 0f
+    private var currentWidgetId: String = ""
+    private var currentWidgetType: WidgetType = WidgetType.NONE
+
+    private val interactionData = AnalyticsWidgetInteractionInfo()
+    private val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
     init {
         LiveLikeSDK.configuration?.pubNubKey?.let {
@@ -94,6 +102,8 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
                 data.postValue(PollWidget(WidgetType.fromString(widgetInfos.type), resource))
             }
+            currentWidgetId = widgetInfos.widgetId
+            currentWidgetType = WidgetType.fromString(widgetInfos.type)
         } else {
             cleanUp()
         }
@@ -120,6 +130,8 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         adapter?.selectionLocked = true
 
         handler.postDelayed({ dismiss() }, 6000)
+
+        analyticService.trackWidgetInteraction(currentWidgetType, currentWidgetId, interactionData)
     }
 
     private fun cleanUp() {
@@ -135,6 +147,11 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         results.postValue(null)
         animationEggTimerProgress = 0f
         currentVoteId.postValue(null)
+
+        interactionData.reset()
+        widgetSpecificInfo.reset()
+        currentWidgetId = ""
+        currentWidgetType = WidgetType.NONE
     }
 
     override fun onCleared() {
@@ -145,15 +162,19 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     private var previousOptionClickedId: String? = null
 
     fun onOptionClicked(it: String?) {
+        interactionData.incrementInteraction()
+
         if (previousOptionClickedId == null) {
             vote() // Vote on first click
         }
         if (it != previousOptionClickedId) {
+            widgetSpecificInfo.responseChanges += 1
             data.value?.apply {
                 val options = resource.getMergedOptions() ?: return
-                options.forEach { opt ->
+                options.forEachIndexed { index, opt ->
                     opt.apply {
                         if (opt.id == it) {
+                            widgetSpecificInfo.finalAnswerIndex = index
                             opt.vote_count = opt.vote_count?.plus(1) ?: 0
                         } else if (previousOptionClickedId == opt.id) {
                             opt.vote_count = opt.vote_count?.minus(1) ?: 0
@@ -163,12 +184,19 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
                 options.forEach { opt ->
                     opt.apply {
                         opt.percentage = opt.getPercent((resource.getMergedTotal()).toFloat())
+
+                        if (opt.id == it) {
+                            widgetSpecificInfo.userVotePercentage = opt.percentage
+                        }
                     }
                 }
+
                 adapter?.myDataset = options
                 adapter?.showPercentage = true
                 adapter?.notifyDataSetChanged()
                 previousOptionClickedId = it
+
+                widgetSpecificInfo.totalOptions = options.size
             }
         }
     }
