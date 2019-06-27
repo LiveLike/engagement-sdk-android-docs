@@ -14,7 +14,7 @@ internal class SendbirdChatClient : ChatClient {
     private val zoneUTC = ZoneId.of("UTC")
     override var messageHandler: ChatClientResultHandler? = null
 
-    override fun sendMessage(message: ClientMessage) {
+    override fun sendMessage(message: ClientMessage, onSuccess: (msgId: String) -> Unit) {
         val messageTimestamp = gson.toJson(
             SendbirdMessagingClient.MessageData(
                 ZonedDateTime.ofInstant(
@@ -26,8 +26,11 @@ internal class SendbirdChatClient : ChatClient {
             openChannel?.sendUserMessage(
                 message.message.get("message").asString,
                 messageTimestamp, null, null
-            ) { userMessage, e ->
-                e?.also { logError { "Error sending the message: $it" } }
+            ) { usrMsg, e ->
+                run {
+                    e?.also { logError { "Error sending the message: $it" } } ?: onSuccess(usrMsg.messageId.toString())
+                }
+
             }
         }
     }
