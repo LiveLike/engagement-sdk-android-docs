@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
+import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error
@@ -45,6 +47,10 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     private var pubnub: PubnubMessagingClient? = null
     private val handler = Handler()
     var animationEggTimerProgress = 0f
+
+    private var currentWidgetId: String = ""
+    private var currentWidgetType: WidgetType = WidgetType.NONE
+    private val interactionData = AnalyticsWidgetInteractionInfo()
 
     init {
         LiveLikeSDK.configuration?.pubNubKey?.let {
@@ -93,6 +99,8 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
                 data.postValue(QuizWidget(WidgetType.fromString(widgetInfos.type), resource))
             }
+            currentWidgetId = widgetInfos.widgetId
+            currentWidgetType = WidgetType.fromString(widgetInfos.type)
         } else {
             cleanUp()
         }
@@ -124,6 +132,8 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
 
         state.postValue("results")
         handler.postDelayed({ dismiss() }, 6000)
+
+        analyticService.trackWidgetInteraction(currentWidgetType, currentWidgetId, interactionData)
     }
 
     private fun cleanUp() {
@@ -139,6 +149,10 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
         results.postValue(null)
         state.postValue(null)
         animationEggTimerProgress = 0f
+
+        currentWidgetType = WidgetType.NONE
+        currentWidgetId = ""
+        interactionData.reset()
     }
 
     override fun onCleared() {
@@ -149,6 +163,8 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     private var previousOptionClickedId: String? = null
 
     fun onOptionClicked(it: String?) {
+        interactionData.incrementInteraction()
+
         if (previousOptionClickedId == null) {
             vote() // Vote on first click
         }

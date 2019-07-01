@@ -72,7 +72,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
             viewModel.adapter = viewModel.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
-                {},
+                {
+                    val selectedId = viewModel.adapter?.myDataset?.get(viewModel.adapter?.selectedPosition ?: -1)?.id ?: ""
+                    viewModel.onOptionClicked(selectedId)
+                },
                 widget.type,
                 resource.correct_option_id,
                 if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id

@@ -40,5 +40,6 @@ interface Stream<T> {
 
 class WidgetInfos(
     val type: String,
-    val payload: JsonObject
+    val payload: JsonObject,
+    val widgetId: String
 )

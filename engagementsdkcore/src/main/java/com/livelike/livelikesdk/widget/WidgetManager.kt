@@ -35,10 +35,11 @@ internal class WidgetManager(
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
+        val widgetId = payload["id"].asString
 
         // Filter only valid widget types here
         if (WidgetType.fromString(widgetType) != WidgetType.NONE) {
-            widgetInfosStream.onNext(WidgetInfos(widgetType, payload))
+            widgetInfosStream.onNext(WidgetInfos(widgetType, payload, widgetId))
 
             // Register the impression on the backend
             payload.get("impression_url")?.asString?.let {

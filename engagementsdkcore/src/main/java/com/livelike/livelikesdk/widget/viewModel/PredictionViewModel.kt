@@ -7,6 +7,8 @@ import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
+import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
@@ -35,6 +37,10 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
 
     private val handler = Handler()
 
+    private var currentWidgetId: String = ""
+    private var currentWidgetType: WidgetType = WidgetType.NONE
+    private val interactionData = AnalyticsWidgetInteractionInfo()
+
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         cleanUp()
         if (widgetInfos != null) {
@@ -48,6 +54,9 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
                 resource?.apply {
                     data.postValue(PredictionWidget(type, resource))
                 }
+
+                currentWidgetId = widgetInfos.widgetId
+                currentWidgetType = type
             }
         } else {
             data.postValue(null)
@@ -74,6 +83,10 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
 
     private fun dismiss() {
         currentSession?.currentWidgetInfosStream?.onNext(null)
+    }
+
+    fun onOptionClicked(it: String?) {
+        interactionData.incrementInteraction()
     }
 
     private fun followupState(textPredictionId: String, correctOptionId: String) {
@@ -106,6 +119,8 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         state.postValue("confirmation")
 
         handler.postDelayed({ dismiss() }, 6000)
+
+        analyticService.trackWidgetInteraction(currentWidgetType, currentWidgetId, interactionData)
     }
 
     private fun cleanUp() {
@@ -131,6 +146,10 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         state.postValue("")
         data.postValue(null)
         animationEggTimerProgress = 0f
+
+        currentWidgetType = WidgetType.NONE
+        currentWidgetId = ""
+        interactionData.reset()
     }
 
     override fun onCleared() {
