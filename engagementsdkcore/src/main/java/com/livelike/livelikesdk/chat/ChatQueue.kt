@@ -5,6 +5,7 @@ import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.EpochTime
+import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
@@ -47,7 +48,9 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
         messageJson.addProperty("sender_id", message.senderId)
         // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
-            chatClient.sendMessage(ClientMessage(messageJson, it, timeData))
+            chatClient.sendMessage(ClientMessage(messageJson, it, timeData)) { msgId ->
+                analyticService.trackMessageSent(msgId, message.message.length)
+            }
         }
     }
 

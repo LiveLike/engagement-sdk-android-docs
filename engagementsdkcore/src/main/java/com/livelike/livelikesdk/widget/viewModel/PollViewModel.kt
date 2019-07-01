@@ -21,6 +21,7 @@ import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.logDebug
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
@@ -104,6 +105,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
+            interactionData.widgetDisplayed()
         } else {
             cleanUp()
         }
@@ -116,20 +118,26 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun dismiss() {
+    fun dismissWidget(action: DismissAction) {
+        analyticService.trackWidgetDismiss(
+            currentWidgetType,
+            currentWidgetId,
+            interactionData,
+            adapter?.selectionLocked,
+            action)
         currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
     private fun confirmationState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
-            dismiss()
+            dismissWidget(DismissAction.TIMEOUT)
             return
         }
 
         adapter?.selectionLocked = true
 
-        handler.postDelayed({ dismiss() }, 6000)
+        handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
         analyticService.trackWidgetInteraction(currentWidgetType, currentWidgetId, interactionData)
     }

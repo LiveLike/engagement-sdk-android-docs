@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
@@ -44,6 +45,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             field = value
             viewModel.setSession(currentSession)
         }
+
+    override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel.dismissWidget(it) }
 
     init {
         viewModel.data.observe(context as AppCompatActivity, Observer {

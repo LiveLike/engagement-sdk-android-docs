@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.widget.DismissAction
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.closeButton
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.eggTimer
 
@@ -15,10 +16,12 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) : Co
 
     private var session: LiveLikeContentSession? = null
 
+    private var dismiss: ((action: DismissAction) -> Unit)? = null
+
     init {
         View.inflate(context, R.layout.atom_widget_egg_timer_and_close_button, this)
         closeButton.setOnClickListener {
-            session?.currentWidgetInfosStream?.onNext(null)
+            dismiss?.invoke(DismissAction.TAP_X)
         }
     }
 
@@ -26,7 +29,8 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) : Co
         progress: Float,
         duration: Float,
         onUpdate: (Float) -> Unit,
-        session: LiveLikeContentSession?
+        session: LiveLikeContentSession?,
+        dismissAction: (action: DismissAction) -> Unit
     ) {
         eggTimer.speed = ANIMATION_BASE_TIME / duration
         eggTimer.progress = progress
@@ -37,13 +41,14 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) : Co
                 onUpdate(it.animatedFraction)
             } else {
                 eggTimer.removeAllUpdateListeners()
-                showCloseButton(session)
+                showCloseButton(session, dismissAction)
             }
         }
     }
 
-    fun showCloseButton(session: LiveLikeContentSession?) {
+    fun showCloseButton(session: LiveLikeContentSession?, dismissAction: (action: DismissAction) -> Unit) {
         this.session = session
+        dismiss = dismissAction
         closeButton.visibility = View.VISIBLE
         eggTimer.visibility = View.GONE
     }

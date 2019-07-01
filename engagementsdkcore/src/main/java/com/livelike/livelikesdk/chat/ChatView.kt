@@ -29,7 +29,6 @@ import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseInterpolator
@@ -240,7 +239,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         hideLoadingSpinner()
         snapToLive()
         edittext_chat_message.setText("")
-        analyticService.trackMessageSent(false)
         chatListener?.onChatMessageSend(newMessage, timeData)
     }
 

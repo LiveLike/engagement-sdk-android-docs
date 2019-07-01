@@ -4,7 +4,7 @@ import com.livelike.livelikesdk.services.messaging.ClientMessage
 
 internal interface ChatClient {
     var messageHandler: ChatClientResultHandler?
-    fun sendMessage(message: ClientMessage)
+    fun sendMessage(message: ClientMessage, onSuccess: (msgId: String) -> Unit)
     fun updateMessage(message: ClientMessage)
     fun deleteMessage(message: ClientMessage)
     fun updateMessagesSinceMessage(messageId: String, channel: String)
