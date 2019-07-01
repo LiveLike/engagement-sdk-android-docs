@@ -40,7 +40,7 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
         super.unsubscribeAll()
     }
 
-    override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
+    override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime, onSuccess: ((msgId: String) -> Unit)?) {
         // If chat is paused we can queue here
         val messageJson = JsonObject()
         messageJson.addProperty("message", message.message)
@@ -50,6 +50,7 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
         connectedChannels.forEach {
             chatClient.sendMessage(ClientMessage(messageJson, it, timeData)) { msgId ->
                 analyticService.trackMessageSent(msgId, message.message.length)
+                onSuccess?.invoke(msgId)
             }
         }
     }

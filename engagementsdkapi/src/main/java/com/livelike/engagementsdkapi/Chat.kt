@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 
 interface ChatEventListener {
-    fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
+    fun onChatMessageSend(message: ChatMessage, timeData: EpochTime, onSuccess: ((msgId: String) -> Unit)?)
 }
 
 interface ChatRenderer {
