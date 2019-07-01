@@ -184,7 +184,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
         edittext_chat_message.setOnFocusChangeListener { v, hasFocus ->
             run {
-                if(hasFocus) {
+                if (hasFocus) {
                     analyticService.trackKeyboardOpen("Standard")
                 }
             }
@@ -228,7 +228,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             0
         )
 
-        if(reason != "Sent Message") {
+        if (reason != "Sent Message") {
             analyticService.trackKeyboardClose("Standard", reason)
         }
     }
