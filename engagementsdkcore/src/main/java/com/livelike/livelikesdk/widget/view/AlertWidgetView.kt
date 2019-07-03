@@ -15,6 +15,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
@@ -119,6 +120,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     }
 
     private fun openBrowser(context: Context, linkUrl: String) {
+        viewModel.onClickLink()
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl))
         startActivity(context, browserIntent, Bundle.EMPTY)
     }

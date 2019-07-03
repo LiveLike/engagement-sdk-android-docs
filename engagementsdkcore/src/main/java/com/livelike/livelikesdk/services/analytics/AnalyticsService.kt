@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 internal interface AnalyticsService {
+    fun trackConfiguration(internalAppName: String) // add more info if required in the future
     fun trackWidgetInteraction(
         kind: WidgetType,
         id: String,
@@ -96,6 +97,10 @@ internal class MixpanelAnalytics : AnalyticsService {
 
     fun setSession(session: LiveLikeContentSession) {
         trackWidgets(session)
+
+        val properties = JSONObject()
+        properties.put("Program ID", session.contentSessionId())
+        mixpanel.registerSuperProperties(properties)
     }
 
     companion object {
@@ -127,9 +132,14 @@ internal class MixpanelAnalytics : AnalyticsService {
         }
     }
 
+    override fun trackConfiguration(internalAppName: String) {
         val properties = JSONObject()
-    private fun getKeyboardType(kType: KeyboardType): String {
-        return when (kType) {
+        properties.put("Internal App Name", internalAppName)
+        mixpanel.registerSuperPropertiesOnce(properties)
+    }
+
+    private fun getKeyboardType (kType: KeyboardType) : String {
+        return when(kType) {
             KeyboardType.STANDARD -> "Standard"
             KeyboardType.EMOJI -> "Emoji"
         }
@@ -167,6 +177,7 @@ internal class MixpanelAnalytics : AnalyticsService {
         properties.put("Widget ID", id)
         properties.put("First Tap Time", parser.format(Date(interactionInfo.timeOfFirstInteraction)))
         properties.put("Last Tap Time", timeOfLastInteraction)
+        properties.put("No of Taps", interactionInfo.interactionCount)
 
         mixpanel.track(KEY_WIDGET_INTERACTION, properties)
 

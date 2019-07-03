@@ -56,6 +56,12 @@ internal class LiveLikeContentSessionImpl(
 
     init {
         getUser()
+
+        sdkConfiguration.subscribe { configuration ->
+            run {
+                analyticService.trackConfiguration(configuration.name)
+            }
+        }
     }
 
     private fun getUser() {

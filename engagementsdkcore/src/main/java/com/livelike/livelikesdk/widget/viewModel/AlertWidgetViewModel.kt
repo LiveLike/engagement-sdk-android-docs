@@ -42,6 +42,11 @@ internal class AlertWidgetViewModel : ViewModel() {
         }
     }
 
+    fun onClickLink() {
+        interactionData.incrementInteraction()
+        analyticService.trackWidgetInteraction(currentWidgetType,currentWidgetId,interactionData)
+    }
+
     fun dismissWidget(action: DismissAction) {
         analyticService.trackWidgetDismiss(currentWidgetType, currentWidgetId, interactionData, false, action)
         currentSession?.currentWidgetInfosStream?.onNext(null)
