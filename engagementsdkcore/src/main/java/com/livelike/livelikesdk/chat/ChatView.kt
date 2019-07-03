@@ -29,6 +29,7 @@ import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseInterpolator
@@ -55,6 +56,16 @@ import java.util.UUID
  *  Once the view has been created, provide data source for this view
  *  using [setDataSource]. See [ChatAdapter] class on how to create a data source.
  */
+
+internal enum class KeyboardHideReason {
+    MESSAGE_SENT,
+    TAP_OUTSIDE
+}
+
+internal enum class KeyboardType {
+    STANDARD,
+    EMOJI
+}
 
 class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatRenderer {
     companion object {
@@ -127,7 +138,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             val y = ev.rawY + v.top - scrcoords[1]
 
             if (x < v.left || x > v.right || y < v.top || y > v.bottom)
-                hideKeyboard()
+                hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
         }
         return super.dispatchTouchEvent(ev)
     }
@@ -181,6 +192,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
         })
 
+        edittext_chat_message.setOnFocusChangeListener { v, hasFocus ->
+            run {
+                if (hasFocus) {
+                    analyticService.trackKeyboardOpen(KeyboardType.STANDARD)
+                }
+            }
+        }
+
         // Send message on tap Enter
         edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
             if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
@@ -211,21 +230,25 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         loadingSpinner.visibility = View.GONE
     }
 
-    private fun hideKeyboard() {
+    private fun hideKeyboard(reason: KeyboardHideReason) {
         val inputManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(
             edittext_chat_message.windowToken,
             0
         )
+
+        if (reason != KeyboardHideReason.MESSAGE_SENT) {
+            analyticService.trackKeyboardClose(KeyboardType.STANDARD, reason)
+        }
     }
 
     private fun sendMessageNow() {
         // Do nothing if the message is blank or empty
         if (edittext_chat_message.text.isBlank())
             return
-
-        hideKeyboard()
+        val hideMethod = KeyboardHideReason.MESSAGE_SENT
+        hideKeyboard(hideMethod)
         val timeData = session.getPlayheadTime()
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
@@ -239,7 +262,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         hideLoadingSpinner()
         snapToLive()
         edittext_chat_message.setText("")
-        chatListener?.onChatMessageSend(newMessage, timeData)
+        chatListener?.onChatMessageSend(newMessage, timeData) {
+            analyticService.trackKeyboardClose(KeyboardType.STANDARD, hideMethod, it)
+        }
     }
 
     private fun hideSnapToLive() {
