@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk.services.analytics
 
 import android.content.Context
-import android.inputmethodservice.Keyboard
 import com.google.gson.JsonObject
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
@@ -129,8 +128,8 @@ internal class MixpanelAnalytics : AnalyticsService {
     }
 
         val properties = JSONObject()
-    private fun getKeyboardType (kType: KeyboardType) : String {
-        return when(kType) {
+    private fun getKeyboardType(kType: KeyboardType): String {
+        return when (kType) {
             KeyboardType.STANDARD -> "Standard"
             KeyboardType.EMOJI -> "Emoji"
         }
@@ -140,7 +139,7 @@ internal class MixpanelAnalytics : AnalyticsService {
         val properties = JSONObject()
         properties.put("Keyboard Type", getKeyboardType(keyboardType))
 
-        val hideReason = when(hideMethod) {
+        val hideReason = when (hideMethod) {
             KeyboardHideReason.TAP_OUTSIDE -> "Dismissed Via Tap Outside"
             KeyboardHideReason.MESSAGE_SENT -> "Sent Message"
         }
