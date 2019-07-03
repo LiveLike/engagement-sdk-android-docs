@@ -128,10 +128,7 @@ internal class MixpanelAnalytics : AnalyticsService {
         }
     }
 
-    override fun trackKeyboardClose(keyboardType: String, hideMethod: String, chatMessageId: String?) {
         val properties = JSONObject()
-        properties.put("Keyboard Type", keyboardType)
-        properties.put("Keyboard Hide Method", hideMethod)
     private fun getKeyboardType (kType: KeyboardType) : String {
         return when(kType) {
             KeyboardType.STANDARD -> "Standard"
