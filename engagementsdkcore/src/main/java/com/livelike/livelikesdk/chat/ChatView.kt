@@ -57,6 +57,16 @@ import java.util.UUID
  *  using [setDataSource]. See [ChatAdapter] class on how to create a data source.
  */
 
+internal enum class KeyboardHideReason {
+    MESSAGE_SENT,
+    TAP_OUTSIDE
+}
+
+internal enum class KeyboardType {
+    STANDARD,
+    EMOJI
+}
+
 class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatRenderer {
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
@@ -128,7 +138,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             val y = ev.rawY + v.top - scrcoords[1]
 
             if (x < v.left || x > v.right || y < v.top || y > v.bottom)
-                hideKeyboard("Dismissed Via Tap Outside")
+                hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
         }
         return super.dispatchTouchEvent(ev)
     }
@@ -185,7 +195,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         edittext_chat_message.setOnFocusChangeListener { v, hasFocus ->
             run {
                 if (hasFocus) {
-                    analyticService.trackKeyboardOpen("Standard")
+                    analyticService.trackKeyboardOpen(KeyboardType.STANDARD)
                 }
             }
         }
@@ -220,7 +230,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         loadingSpinner.visibility = View.GONE
     }
 
-    private fun hideKeyboard(reason: String) {
+    private fun hideKeyboard(reason: KeyboardHideReason) {
         val inputManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputManager.hideSoftInputFromWindow(
@@ -228,8 +238,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             0
         )
 
-        if (reason != "Sent Message") {
-            analyticService.trackKeyboardClose("Standard", reason)
+        if (reason != KeyboardHideReason.MESSAGE_SENT) {
+            analyticService.trackKeyboardClose(KeyboardType.STANDARD, reason)
         }
     }
 
@@ -237,7 +247,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         // Do nothing if the message is blank or empty
         if (edittext_chat_message.text.isBlank())
             return
-        val hideMethod = "Sent Message"
+        val hideMethod = KeyboardHideReason.MESSAGE_SENT
         hideKeyboard(hideMethod)
         val timeData = session.getPlayheadTime()
         val newMessage = ChatMessage(
@@ -253,7 +263,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         snapToLive()
         edittext_chat_message.setText("")
         chatListener?.onChatMessageSend(newMessage, timeData) {
-            analyticService.trackKeyboardClose("Standard", hideMethod, it)
+            analyticService.trackKeyboardClose(KeyboardType.STANDARD, hideMethod, it)
         }
     }
 

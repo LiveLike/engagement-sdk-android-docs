@@ -1,10 +1,13 @@
 package com.livelike.livelikesdk.services.analytics
 
 import android.content.Context
+import android.inputmethodservice.Keyboard
 import com.google.gson.JsonObject
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.livelikesdk.chat.KeyboardHideReason
+import com.livelike.livelikesdk.chat.KeyboardType
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import java.text.SimpleDateFormat
@@ -32,8 +35,8 @@ internal interface AnalyticsService {
     fun trackSession(sessionId: String)
     fun trackButtonTap(buttonName: String, extra: JsonObject)
     fun trackUsername(username: String)
-    fun trackKeyboardOpen(keyboardType: String)
-    fun trackKeyboardClose(keyboardType: String, hideMethod: String, chatMessageId: String? = null)
+    fun trackKeyboardOpen(keyboardType: KeyboardType)
+    fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
 }
 
 internal class AnalyticsWidgetInteractionInfo {
@@ -129,15 +132,31 @@ internal class MixpanelAnalytics : AnalyticsService {
         val properties = JSONObject()
         properties.put("Keyboard Type", keyboardType)
         properties.put("Keyboard Hide Method", hideMethod)
+    private fun getKeyboardType (kType: KeyboardType) : String {
+        return when(kType) {
+            KeyboardType.STANDARD -> "Standard"
+            KeyboardType.EMOJI -> "Emoji"
+        }
+    }
+
+    override fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String?) {
+        val properties = JSONObject()
+        properties.put("Keyboard Type", getKeyboardType(keyboardType))
+
+        val hideReason = when(hideMethod) {
+            KeyboardHideReason.TAP_OUTSIDE -> "Dismissed Via Tap Outside"
+            KeyboardHideReason.MESSAGE_SENT -> "Sent Message"
+        }
+        properties.put("Keyboard Hide Method", hideReason)
         chatMessageId?.apply {
             properties.put("Chat Message ID", chatMessageId)
         }
         mixpanel.track(KEY_KEYBOARD_HIDDEN, properties)
     }
 
-    override fun trackKeyboardOpen(keyboardType: String) {
+    override fun trackKeyboardOpen(keyboardType: KeyboardType) {
         val properties = JSONObject()
-        properties.put("Keyboard Type", keyboardType)
+        properties.put("Keyboard Type", getKeyboardType(keyboardType))
         mixpanel.track(KEY_KEYBOARD_SELECTED, properties)
     }
 
