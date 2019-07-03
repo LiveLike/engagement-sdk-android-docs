@@ -138,8 +138,8 @@ internal class MixpanelAnalytics : AnalyticsService {
         mixpanel.registerSuperPropertiesOnce(properties)
     }
 
-    private fun getKeyboardType (kType: KeyboardType) : String {
-        return when(kType) {
+    private fun getKeyboardType(kType: KeyboardType): String {
+        return when (kType) {
             KeyboardType.STANDARD -> "Standard"
             KeyboardType.EMOJI -> "Emoji"
         }
