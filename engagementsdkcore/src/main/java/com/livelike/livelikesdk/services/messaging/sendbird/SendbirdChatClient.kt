@@ -22,7 +22,7 @@ internal class SendbirdChatClient : ChatClient {
                 )
             )
         )
-        OpenChannel.getChannel(message.channel) { openChannel, exception ->
+        OpenChannel.getChannel(message.channel) { openChannel, _ ->
             openChannel?.sendUserMessage(
                 message.message.get("message").asString,
                 messageTimestamp, null, null
@@ -43,7 +43,7 @@ internal class SendbirdChatClient : ChatClient {
     }
 
     override fun updateMessagesSinceMessage(messageId: String, channel: String) {
-        OpenChannel.getChannel(channel) { openChannel, exception ->
+        OpenChannel.getChannel(channel) { openChannel, _ ->
             openChannel.createPreviousMessageListQuery().load(
                 SendbirdMessagingClient.CHAT_HISTORY_LIMIT, false
             ) { list, e ->

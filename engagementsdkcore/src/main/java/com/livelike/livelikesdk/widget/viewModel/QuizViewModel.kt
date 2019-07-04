@@ -50,7 +50,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     var animationEggTimerProgress = 0f
 
     private var currentWidgetId: String = ""
-    private var currentWidgetType: WidgetType = WidgetType.NONE
+    private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     init {
@@ -98,7 +98,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
             val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.postValue(QuizWidget(WidgetType.fromString(widgetInfos.type), resource))
+                data.postValue(WidgetType.fromString(widgetInfos.type)?.let { QuizWidget(it, resource) })
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -116,7 +116,15 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun dismissWidget(action: DismissAction) {
-        analyticService.trackWidgetDismiss(currentWidgetType, currentWidgetId, interactionData, adapter?.selectionLocked, action)
+        currentWidgetType?.let {
+            analyticService.trackWidgetDismiss(
+                it,
+                currentWidgetId,
+                interactionData,
+                adapter?.selectionLocked,
+                action
+            )
+        }
         currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
@@ -136,7 +144,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
         state.postValue("results")
         handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
-        analyticService.trackWidgetInteraction(currentWidgetType, currentWidgetId, interactionData)
+        currentWidgetType?.let { analyticService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {
@@ -153,7 +161,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
         state.postValue(null)
         animationEggTimerProgress = 0f
 
-        currentWidgetType = WidgetType.NONE
+        currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()
     }

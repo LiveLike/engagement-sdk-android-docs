@@ -84,7 +84,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private val animationEaseAdapter = AnimationEaseAdapter()
 
     private val viewModel: ChatViewModel?
-        get() = session?.chatViewModel
+        get() = session.chatViewModel
 
     init {
         (context as Activity).window.setSoftInputMode(
@@ -192,7 +192,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
         })
 
-        edittext_chat_message.setOnFocusChangeListener { v, hasFocus ->
+        edittext_chat_message.setOnFocusChangeListener { _, hasFocus ->
             run {
                 if (hasFocus) {
                     analyticService.trackKeyboardOpen(KeyboardType.STANDARD)
@@ -201,7 +201,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         // Send message on tap Enter
-        edittext_chat_message.setOnEditorActionListener { v, actionId, event ->
+        edittext_chat_message.setOnEditorActionListener { _, actionId, event ->
             if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
                 (actionId == EditorInfo.IME_ACTION_SEND)
             ) {
@@ -211,7 +211,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         button_chat_send.isEnabled = false
-        button_chat_send.setOnClickListener { v ->
+        button_chat_send.setOnClickListener {
             sendMessageNow()
         }
 

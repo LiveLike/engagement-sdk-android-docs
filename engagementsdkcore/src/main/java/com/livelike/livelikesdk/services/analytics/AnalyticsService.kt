@@ -2,13 +2,13 @@ package com.livelike.livelikesdk.services.analytics
 
 import android.content.Context
 import com.google.gson.JsonObject
-import com.mixpanel.android.mpmetrics.MixpanelAPI
-import org.json.JSONObject
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.chat.KeyboardHideReason
 import com.livelike.livelikesdk.chat.KeyboardType
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
+import com.mixpanel.android.mpmetrics.MixpanelAPI
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -178,7 +178,7 @@ internal class MixpanelAnalytics : AnalyticsService {
     private fun trackWidgets(session: LiveLikeContentSession) {
         session.currentWidgetInfosStream.subscribe(KEY_WIDGET_DISPLAYED) {
             if (it != null) {
-                trackWidgetDisplayed(WidgetType.fromString(it.type), it.payload["id"].toString())
+                WidgetType.fromString(it.type)?.let { it1 -> trackWidgetDisplayed(it1, it.payload["id"].toString()) }
             }
         }
     }
@@ -225,7 +225,7 @@ internal class MixpanelAnalytics : AnalyticsService {
         kind: WidgetType,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo,
-        canInteract: Boolean?,
+        interactable: Boolean?,
         action: DismissAction
     ) {
 
@@ -242,7 +242,8 @@ internal class MixpanelAnalytics : AnalyticsService {
         val timeSinceLastTap = (timeNow - interactionInfo.timeOfLastInteraction).toFloat() / 1000
         val timeSinceStart = (timeNow - interactionInfo.timeOfFirstDisplay).toFloat() / 1000
 
-        val interactionState = if (canInteract != null && canInteract) "Open To Interaction" else "Closed To Interaction"
+        val interactionState =
+            if (interactable != null && interactable) "Open To Interaction" else "Closed To Interaction"
 
         val properties = JSONObject()
         properties.put("Widget Type", getWidgetType(kind))

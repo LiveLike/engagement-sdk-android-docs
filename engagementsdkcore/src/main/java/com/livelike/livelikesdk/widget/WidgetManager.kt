@@ -38,7 +38,7 @@ internal class WidgetManager(
         val widgetId = payload["id"].asString
 
         // Filter only valid widget types here
-        if (WidgetType.fromString(widgetType) != WidgetType.NONE) {
+        if (WidgetType.fromString(widgetType) != null) {
             widgetInfosStream.onNext(WidgetInfos(widgetType, payload, widgetId))
 
             // Register the impression on the backend
@@ -51,7 +51,7 @@ internal class WidgetManager(
     }
 }
 
-enum class WidgetType(val value: String) {
+enum class WidgetType(val event: String) {
     TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_FOLLOW_UP("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("image-prediction-created"),
@@ -61,12 +61,11 @@ enum class WidgetType(val value: String) {
     IMAGE_QUIZ("image-quiz-created"),
     TEXT_POLL("text-poll-created"),
     IMAGE_POLL("image-poll-created"),
-    ALERT("alert-created"),
-    NONE("none");
+    ALERT("alert-created");
 
     companion object {
-        private val map = values().associateBy(WidgetType::value)
-        fun fromString(type: String) = map[type] ?: NONE
+        private val map = values().associateBy(WidgetType::event)
+        fun fromString(type: String) = map[type]
     }
 }
 

@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
-apply plugin: 'com.facebook.testing.screenshot'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'org.bitbucket.livelike'
@@ -22,7 +21,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "com.livelike.livelikesdk.ScreenshotTestRunner"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/applications/"'
         buildConfigField "String", "PROGRAM_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/"'

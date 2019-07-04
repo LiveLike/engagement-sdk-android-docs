@@ -49,7 +49,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     private val handler = Handler()
     var animationEggTimerProgress = 0f
     private var currentWidgetId: String = ""
-    private var currentWidgetType: WidgetType = WidgetType.NONE
+    private var currentWidgetType: WidgetType? = null
 
     private val interactionData = AnalyticsWidgetInteractionInfo()
     private val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
@@ -101,7 +101,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
             val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.postValue(PollWidget(WidgetType.fromString(widgetInfos.type), resource))
+                data.postValue(WidgetType.fromString(widgetInfos.type)?.let { PollWidget(it, resource) })
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -119,12 +119,15 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
     }
 
     fun dismissWidget(action: DismissAction) {
-        analyticService.trackWidgetDismiss(
-            currentWidgetType,
-            currentWidgetId,
-            interactionData,
-            adapter?.selectionLocked,
-            action)
+        currentWidgetType?.let {
+            analyticService.trackWidgetDismiss(
+                it,
+                currentWidgetId,
+                interactionData,
+                adapter?.selectionLocked,
+                action
+            )
+        }
         currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
@@ -139,7 +142,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
 
         handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
-        analyticService.trackWidgetInteraction(currentWidgetType, currentWidgetId, interactionData)
+        currentWidgetType?.let { analyticService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {
@@ -159,7 +162,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         interactionData.reset()
         widgetSpecificInfo.reset()
         currentWidgetId = ""
-        currentWidgetType = WidgetType.NONE
+        currentWidgetType = null
     }
 
     override fun onCleared() {
