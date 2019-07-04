@@ -51,7 +51,7 @@ internal class WidgetManager(
     }
 }
 
-enum class WidgetType(val value: String) {
+enum class WidgetType(val event: String) {
     TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_FOLLOW_UP("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("image-prediction-created"),
@@ -65,7 +65,7 @@ enum class WidgetType(val value: String) {
     NONE("none");
 
     companion object {
-        private val map = values().associateBy(WidgetType::value)
+        private val map = values().associateBy(WidgetType::event)
         fun fromString(type: String) = map[type] ?: NONE
     }
 }
