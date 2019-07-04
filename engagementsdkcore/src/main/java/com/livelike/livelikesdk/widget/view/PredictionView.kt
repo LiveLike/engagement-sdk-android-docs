@@ -3,7 +3,7 @@ package com.livelike.livelikesdk.widget.view
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.app.FragmentActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.View
@@ -35,14 +35,14 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel.dismissWidget(it) }
 
     private var viewModel =
-        ViewModelProviders.of(context as AppCompatActivity).get(PredictionViewModel::class.java)
+        ViewModelProviders.of(context as FragmentActivity).get(PredictionViewModel::class.java)
 
     private var viewManager: LinearLayoutManager =
         LinearLayoutManager(context).apply { orientation = LinearLayout.VERTICAL }
     private var inflated = false
 
     init {
-        context as AppCompatActivity
+        context as FragmentActivity
         viewModel.data.observe(context, widgetObserver())
         viewModel.state.observe(context, stateObserver())
     }

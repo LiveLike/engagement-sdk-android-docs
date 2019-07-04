@@ -7,8 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
+import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat.startActivity
-import android.support.v7.app.AppCompatActivity
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +38,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     private var inflated = false
 
     private val viewModel: AlertWidgetViewModel =
-        ViewModelProviders.of(context as AppCompatActivity).get(AlertWidgetViewModel::class.java)
+        ViewModelProviders.of(context as FragmentActivity).get(AlertWidgetViewModel::class.java)
 
     override var currentSession: LiveLikeContentSession? = null
         set(value) {
@@ -49,7 +49,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel.dismissWidget(it) }
 
     init {
-        viewModel.data.observe(context as AppCompatActivity, Observer {
+        viewModel.data.observe(context as FragmentActivity, Observer {
             if (it != null) {
                 inflate(context, it)
                 viewModel.startDismissTimout(it.timeout)
