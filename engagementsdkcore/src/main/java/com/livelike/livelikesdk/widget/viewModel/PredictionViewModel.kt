@@ -96,7 +96,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
-    fun onOptionClicked(it: String?) {
+    fun onOptionClicked() {
         interactionData.incrementInteraction()
     }
 

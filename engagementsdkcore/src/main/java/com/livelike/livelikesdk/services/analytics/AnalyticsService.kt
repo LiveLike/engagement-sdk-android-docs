@@ -225,7 +225,7 @@ internal class MixpanelAnalytics : AnalyticsService {
         kind: WidgetType,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo,
-        canInteract: Boolean?,
+        interactable: Boolean?,
         action: DismissAction
     ) {
 
@@ -242,7 +242,8 @@ internal class MixpanelAnalytics : AnalyticsService {
         val timeSinceLastTap = (timeNow - interactionInfo.timeOfLastInteraction).toFloat() / 1000
         val timeSinceStart = (timeNow - interactionInfo.timeOfFirstDisplay).toFloat() / 1000
 
-        val interactionState = if (canInteract != null && canInteract) "Open To Interaction" else "Closed To Interaction"
+        val interactionState =
+            if (interactable != null && interactable) "Open To Interaction" else "Closed To Interaction"
 
         val properties = JSONObject()
         properties.put("Widget Type", getWidgetType(kind))
