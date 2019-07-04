@@ -39,7 +39,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     private val handler = Handler()
 
     private var currentWidgetId: String = ""
-    private var currentWidgetType: WidgetType = WidgetType.NONE
+    private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
@@ -84,7 +84,15 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     }
 
     fun dismissWidget(action: DismissAction) {
-        analyticService.trackWidgetDismiss(currentWidgetType, currentWidgetId, interactionData, adapter?.selectionLocked, action)
+        currentWidgetType?.let {
+            analyticService.trackWidgetDismiss(
+                it,
+                currentWidgetId,
+                interactionData,
+                adapter?.selectionLocked,
+                action
+            )
+        }
         currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
@@ -123,7 +131,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
 
         handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
-        analyticService.trackWidgetInteraction(currentWidgetType, currentWidgetId, interactionData)
+        currentWidgetType?.let { analyticService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {
@@ -150,7 +158,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         data.postValue(null)
         animationEggTimerProgress = 0f
 
-        currentWidgetType = WidgetType.NONE
+        currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()
     }

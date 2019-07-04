@@ -38,7 +38,7 @@ internal class WidgetManager(
         val widgetId = payload["id"].asString
 
         // Filter only valid widget types here
-        if (WidgetType.fromString(widgetType) != WidgetType.NONE) {
+        if (WidgetType.fromString(widgetType) != null) {
             widgetInfosStream.onNext(WidgetInfos(widgetType, payload, widgetId))
 
             // Register the impression on the backend
@@ -61,12 +61,11 @@ enum class WidgetType(val event: String) {
     IMAGE_QUIZ("image-quiz-created"),
     TEXT_POLL("text-poll-created"),
     IMAGE_POLL("image-poll-created"),
-    ALERT("alert-created"),
-    NONE("none");
+    ALERT("alert-created");
 
     companion object {
         private val map = values().associateBy(WidgetType::event)
-        fun fromString(type: String) = map[type] ?: NONE
+        fun fromString(type: String) = map[type]
     }
 }
 

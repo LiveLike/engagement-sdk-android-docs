@@ -49,17 +49,20 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
             dismissWidget()
         } else {
             displayWidget(widgetInfos.type)
-            analyticService.trackWidgetReceived(WidgetType.fromString(widgetInfos.type), widgetInfos.widgetId)
+            WidgetType.fromString(widgetInfos.type)
+                ?.let { analyticService.trackWidgetReceived(it, widgetInfos.widgetId) }
         }
     }
 
     private fun displayWidget(widgetView: String) {
 
         Handler(Looper.getMainLooper()).post {
-            val view = WidgetViewProvider().get(
-                WidgetType.fromString(widgetView),
-                widgetContainer.context
-            )
+            val view = WidgetType.fromString(widgetView)?.let {
+                WidgetViewProvider().get(
+                    it,
+                    widgetContainer.context
+                )
+            }
             if (view != null) {
                 view.currentSession = session
                 dismissWidget = view.dismissFunc

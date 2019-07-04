@@ -27,7 +27,7 @@ internal class AlertWidgetViewModel : ViewModel() {
         }
 
     private var currentWidgetId: String = ""
-    private var currentWidgetType: WidgetType = WidgetType.NONE
+    private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
@@ -43,7 +43,15 @@ internal class AlertWidgetViewModel : ViewModel() {
     }
 
     fun dismissWidget(action: DismissAction) {
-        analyticService.trackWidgetDismiss(currentWidgetType, currentWidgetId, interactionData, false, action)
+        currentWidgetType?.let {
+            analyticService.trackWidgetDismiss(
+                it,
+                currentWidgetId,
+                interactionData,
+                false,
+                action
+            )
+        }
         currentSession?.currentWidgetInfosStream?.onNext(null)
     }
 
@@ -61,7 +69,7 @@ internal class AlertWidgetViewModel : ViewModel() {
         timeoutStarted = false
         handler.removeCallbacksAndMessages(null)
 
-        currentWidgetType = WidgetType.NONE
+        currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()
     }
