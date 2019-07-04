@@ -25,6 +25,7 @@ android {
         testInstrumentationRunner "com.livelike.livelikesdk.ScreenshotTestRunner"
 
         buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/applications/"'
+        buildConfigField "String", "PROGRAM_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/"'
     }
 
     buildTypes {

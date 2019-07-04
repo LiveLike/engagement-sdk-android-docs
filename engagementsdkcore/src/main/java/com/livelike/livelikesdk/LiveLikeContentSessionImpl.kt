@@ -30,13 +30,13 @@ internal class LiveLikeContentSessionImpl(
     private val applicationContext: Context
 ) : LiveLikeContentSession {
     override val chatViewModel: ChatViewModel = ChatViewModel()
-    override var programUrl: String = ""
+    override var programId: String = ""
         set(value) {
             if (field != value) {
                 chatViewModel.clear()
                 field = value
-                if (programUrl.isNotEmpty()) {
-                    llDataClient.getLiveLikeProgramData(value) {
+                if (programId.isNotEmpty()) {
+                    llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(value)) {
                         if (it !== null) {
                             program = it
                             initializeWidgetMessaging(it)

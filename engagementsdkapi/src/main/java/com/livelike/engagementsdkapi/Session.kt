@@ -7,7 +7,7 @@ import com.google.gson.JsonObject
  *  component.
  */
 interface LiveLikeContentSession {
-    var programUrl: String
+    var programId: String
     var currentPlayheadTime: () -> EpochTime // need to be replace by a proper time getter Java compatible
     var chatRenderer: ChatRenderer?
     val currentUser: LiveLikeUser?

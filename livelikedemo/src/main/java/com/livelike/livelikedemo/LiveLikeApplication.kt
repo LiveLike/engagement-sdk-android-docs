@@ -12,7 +12,7 @@ class LiveLikeApplication : Application() {
 
     companion object {
         const val TEST_CONFIG_URL =
-            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android.json"
+            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
     }
 
     lateinit var channelManager: ChannelManager
@@ -30,7 +30,7 @@ class LiveLikeApplication : Application() {
     }
 
     fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
-        if (session == null || session?.programUrl != sessionId) {
+        if (session == null || session?.programId != sessionId) {
             session?.close()
             session = player.createSession(sessionId, sdk)
         }

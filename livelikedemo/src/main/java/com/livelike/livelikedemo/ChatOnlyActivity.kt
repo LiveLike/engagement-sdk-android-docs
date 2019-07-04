@@ -91,7 +91,7 @@ class ChatOnlyActivity : AppCompatActivity() {
     inner class TestSession(
         override var currentPlayheadTime: () -> EpochTime,
         override val currentWidgetInfosStream: Stream<WidgetInfos?>,
-        override var programUrl: String
+        override var programId: String
     ) :
         LiveLikeContentSession {
         override val chatViewModel: ChatViewModel = ChatViewModel()
