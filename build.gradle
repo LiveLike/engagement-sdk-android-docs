@@ -17,7 +17,7 @@ buildscript {
         gradleVersion = '3.3.2'
         gsonVersion = '2.8.5'
         junitVersion = '4.12'
-        kotlinVersion = '1.3.31'
+        kotlinVersion = '1.3.41'
         ktlintVersion = '0.30.0'
         lottieVersion = '2.7.0'
         mavenPluginVersion = '2.1'
@@ -28,7 +28,6 @@ buildscript {
         pubnubVersion = '4.21.0'
         supportTestVersion = '1.0.2'
         supportLibraryVersion = '28.0.0'
-        screenshotPluginVersion = '0.8.0'
         sendbirdVersion = '3.0.88'
         threetenabpVersion = "1.1.2"
         lifecycleVersion = "1.1.1"
@@ -43,7 +42,6 @@ buildscript {
         classpath "com.android.tools.build:gradle:$gradleVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokkaVersion"
-        classpath "com.facebook.testing.screenshot:plugin:$screenshotPluginVersion"
         classpath "com.github.dcendents:android-maven-gradle-plugin:$mavenPluginVersion"
     }
 }
