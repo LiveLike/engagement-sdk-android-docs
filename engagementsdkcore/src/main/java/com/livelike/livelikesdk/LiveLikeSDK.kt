@@ -53,7 +53,7 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
                 }
             }, applicationContext
         )
-        currentSession.programUrl = programId
+        currentSession.programId = programId
         currentSession.currentPlayheadTime = { EpochTime(0) }
 
         analyticService.setSession(currentSession)
@@ -81,7 +81,7 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
                 }
             }, applicationContext
         )
-        currentSession.programUrl = programId
+        currentSession.programId = programId
         currentSession.currentPlayheadTime = { timecodeGetter.getTimecode() }
         analyticService.setSession(currentSession)
         return currentSession

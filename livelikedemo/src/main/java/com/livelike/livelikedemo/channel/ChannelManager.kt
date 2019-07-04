@@ -85,7 +85,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             channelData.getString("name"),
             URL(channelData.getString("video_url")),
             URL(channelData.getString("video_thumbnail_url")),
-            URL(channelData.getString("livelike_program_url"))
+            channelData.getString("livelike_program_url")
         )
     }
 
@@ -123,4 +123,4 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     }
 }
 
-data class Channel(val name: String, val video: URL? = null, val thumbnail: URL? = null, val llProgram: URL? = null)
+data class Channel(val name: String, val video: URL? = null, val thumbnail: URL? = null, val llProgram: String? = null)
