@@ -94,9 +94,9 @@ internal class SendbirdMessagingClient(
                     prevMessageListQuery.load(
                         CHAT_HISTORY_LIMIT,
                         true,
-                        PreviousMessageListQuery.MessageListQueryResult { messages, e ->
-                            if (e != null) {
-                                logError { e }
+                        PreviousMessageListQuery.MessageListQueryResult { messages, err ->
+                            if (err != null) {
+                                logError { err }
                                 return@MessageListQueryResult
                             }
                             for (message: BaseMessage in messages.reversed()) {

@@ -18,7 +18,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.utils.registerLogsHandler
-import com.livelike.livelikesdk.widget.WidgetType
 import kotlinx.android.synthetic.main.activity_standalone_widget.log_label
 import kotlinx.android.synthetic.main.activity_standalone_widget.toolbar
 import kotlinx.android.synthetic.main.activity_standalone_widget.widget_command
@@ -88,7 +87,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
     }
 
     private fun addCommands() {
-        val (type, variance) = getWidgetTypeWithVariance()
+        val (type, _) = getWidgetTypeWithVariance()
         when (type) {
             this.getString(R.string.quiz) -> {
                 commandList.add(showCommand)
@@ -262,41 +261,38 @@ class WidgetStandaloneActivity : AppCompatActivity() {
 //            }
 
             if (isVariance(getString(R.string.text))) {
-                showWidget(WidgetType.TEXT_QUIZ, getPayload("quiz/text/quiz_text_widget.json"))
+                showWidget()
             } else if (isVariance(getString(R.string.image))) {
-                showWidget(WidgetType.IMAGE_QUIZ, getPayload("quiz/image/quiz_widget.json"))
+                showWidget()
             }
         }
 
         private fun showPredictionQuestionWidget() {
             if (isVariance(getString(R.string.text))) {
-                showWidget(WidgetType.TEXT_PREDICTION, getPayload("prediction/text/prediction_question_text.json"))
+                showWidget()
             } else if (isVariance(getString(R.string.image))) {
-                showWidget(
-                    WidgetType.IMAGE_PREDICTION,
-                    getPayload("prediction/image/prediction_question_image.json")
-                )
+                showWidget()
             }
         }
 
         private fun showPredictionResultWidgetAs(testTag: String) {
             if (isVariance(getString(R.string.text))) {
                 updatePayload(testTag)
-                showWidget(WidgetType.TEXT_PREDICTION_FOLLOW_UP, payload)
+                showWidget()
             } else if (isVariance(getString(R.string.image))) {
                 payload = getPayload("prediction/image/prediction_question_image_result.json")
                 payload.addProperty("testTag", testTag)
-                showWidget(WidgetType.IMAGE_PREDICTION_FOLLOW_UP, payload)
+                showWidget()
             }
         }
 
         private fun showPollWidget() {
             if (isVariance(getString(R.string.text))) {
                 payload = getPayload("poll/poll_text_widget.json")
-                showWidget(WidgetType.TEXT_POLL, payload)
+                showWidget()
             } else if (isVariance(getString(R.string.image))) {
                 payload = getPayload("poll/poll_image_widget.json")
-                showWidget(WidgetType.IMAGE_POLL, payload)
+                showWidget()
             }
         }
 
@@ -317,11 +313,7 @@ class WidgetStandaloneActivity : AppCompatActivity() {
 
         private fun isVariance(variance: String?) = this.variance == variance
 
-        private fun showWidget(widgetType: WidgetType, payload: JsonObject) {
-//            widget_view.displayWidget(
-//                widgetType.value,
-//                payload
-//            )
+        private fun showWidget() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
