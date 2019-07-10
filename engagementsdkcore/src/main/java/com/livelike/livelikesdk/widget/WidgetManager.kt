@@ -37,9 +37,9 @@ internal class WidgetManager(
 
 enum class WidgetType(val event: String) {
     TEXT_PREDICTION("text-prediction-created"),
-    TEXT_PREDICTION_FOLLOW_UP("text-prediction-follow-up-created"),
+    TEXT_PREDICTION_FOLLOW_UP("text-prediction-follow-up-updated"),
     IMAGE_PREDICTION("image-prediction-created"),
-    IMAGE_PREDICTION_FOLLOW_UP("image-prediction-follow-up-created"),
+    IMAGE_PREDICTION_FOLLOW_UP("image-prediction-follow-up-updated"),
     TEXT_QUIZ("text-quiz-created"),
     IMAGE_QUIZ("image-quiz-created"),
     TEXT_POLL("text-poll-created"),
