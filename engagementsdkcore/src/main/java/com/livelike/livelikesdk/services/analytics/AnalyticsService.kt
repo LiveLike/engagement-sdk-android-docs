@@ -11,6 +11,7 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 internal interface AnalyticsService {
     fun trackConfiguration(internalAppName: String) // add more info if required in the future
@@ -115,7 +116,7 @@ internal class MixpanelAnalytics : AnalyticsService {
         const val KEY_KEYBOARD_HIDDEN = "Keyboard Hidden"
     }
 
-    private var parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+    private var parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
     private fun getWidgetType(type: WidgetType): String {
         return when (type) {
@@ -128,7 +129,6 @@ internal class MixpanelAnalytics : AnalyticsService {
             WidgetType.IMAGE_QUIZ -> "Image Quiz"
             WidgetType.TEXT_QUIZ -> "Text Quiz"
             WidgetType.ALERT -> "Alert"
-            else -> ""
         }
     }
 
@@ -200,7 +200,7 @@ internal class MixpanelAnalytics : AnalyticsService {
         firstTimeProperties.put("First App Open", timeNow)
         mixpanel.registerSuperPropertiesOnce(firstTimeProperties)
 
-        var properties = JSONObject()
+        val properties = JSONObject()
         properties.put("Last App Open", timeNow)
         mixpanel.registerSuperProperties(properties)
     }
@@ -211,7 +211,7 @@ internal class MixpanelAnalytics : AnalyticsService {
         properties.put("Character Length", msgLength)
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
 
-        var superProp = JSONObject()
+        val superProp = JSONObject()
         val timeNow = parser.format(Date(System.currentTimeMillis()))
         superProp.put("Time of Last Chat Message", timeNow)
         mixpanel.registerSuperProperties(superProp)

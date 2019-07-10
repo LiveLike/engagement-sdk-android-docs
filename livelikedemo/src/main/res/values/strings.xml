@@ -3,7 +3,7 @@
     <string name="start_ad">Start Ad</string>
     <string name="stop_ad">Stop Ad</string>
     <string name="channel">Channel</string>
-    <string name="app_id">mOBYul18quffrBDuq2IACKtVuLbUzXIPye5S3bq5</string>
+    <string name="app_id">l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu</string>
     <string name="resize_btn_label">Resize</string>
     <string name="settings_label">SETTINGS</string>
     <string name="chat_only_btn_label">Chat Only</string>
@@ -42,7 +42,7 @@
     <string name="widget_type">widgetType</string>
     <string name="widget_variance">widgetVariance</string>
     <string name="widgets">Widgets</string>
-    <string name="longChatMessage">This is a very very very long message which demonstrates that chat views will handle
+    <string name="longChatMessage">This is a very long message which demonstrates that chat views will handle
         150 characters. The number of characters in this message are 150.
     </string>
 </resources>

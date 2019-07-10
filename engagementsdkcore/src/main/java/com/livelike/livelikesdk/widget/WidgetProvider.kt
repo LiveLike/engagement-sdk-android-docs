@@ -30,7 +30,6 @@ internal class WidgetViewProvider {
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context)
             TEXT_POLL, IMAGE_POLL -> PollView(context)
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context)
-            else -> null
         }
     }
 }
