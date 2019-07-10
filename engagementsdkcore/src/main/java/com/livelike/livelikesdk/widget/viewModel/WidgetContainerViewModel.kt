@@ -1,29 +1,29 @@
 package com.livelike.livelikesdk.widget.viewModel
 
 import android.animation.LayoutTransition
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
-import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.engagementsdkapi.Stream
 import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.DismissAction
+import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.WidgetViewProvider
 import com.livelike.livelikesdk.widget.util.SwipeDismissTouchListener
 
-class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val session: LiveLikeContentSession) {
+class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>) {
 
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
+    private var widgetContainer : FrameLayout? = null
 
-    init {
-        session.currentWidgetInfosStream.subscribe(WidgetContainerViewModel::class.java) { widgetInfos: WidgetInfos? ->
-            widgetObserver(widgetInfos)
-        }
-
+    @SuppressLint("ClickableViewAccessibility")
+    fun setWidgetContainer(widgetContainer: FrameLayout){
+        this.widgetContainer = widgetContainer
         // Swipe to dismiss
         widgetContainer.setOnTouchListener(
             SwipeDismissTouchListener(
@@ -40,46 +40,36 @@ class WidgetContainerViewModel(private val widgetContainer: FrameLayout, val ses
                 })
         )
 
+        currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { widgetView: SpecifiedWidgetView? ->
+            widgetObserver(widgetView)
+        }
+
         // Show / Hide animation
         widgetContainer.layoutTransition = LayoutTransition()
     }
 
-    private fun widgetObserver(widgetInfos: WidgetInfos?) {
-        if (widgetInfos == null) {
+    private fun widgetObserver(widgetView: SpecifiedWidgetView?) {
+        if (widgetView == null) {
             dismissWidget()
         } else {
-            displayWidget(widgetInfos.type)
-            WidgetType.fromString(widgetInfos.type)
-                ?.let { analyticService.trackWidgetReceived(it, widgetInfos.widgetId) }
+            displayWidget(widgetView)
         }
     }
 
-    private fun displayWidget(widgetView: String) {
-
-        Handler(Looper.getMainLooper()).post {
-            val view = WidgetType.fromString(widgetView)?.let {
-                WidgetViewProvider().get(
-                    it,
-                    widgetContainer.context
-                )
-            }
-            if (view != null) {
-                view.currentSession = session
-                dismissWidget = view.dismissFunc
-                widgetContainer.addView(view)
-                logDebug { "NOW - Show WidgetInfos" }
-            } else {
-                logError { "Can't display view of type: $widgetView" }
-            }
+    private fun displayWidget(view: SpecifiedWidgetView?) {
+        if (view != null) {
+            dismissWidget = view.dismissFunc
+            widgetContainer?.removeAllViews()
+            (view.parent as ViewGroup?)?.removeAllViews()
+            widgetContainer?.addView(view)
+            logDebug { "NOW - Show WidgetInfos" }
+        } else {
+            logError { "Can't display view of this type" }
         }
     }
 
     private fun dismissWidget() {
         logDebug { "NOW - Dismiss WidgetInfos" }
-        widgetContainer.removeAllViews()
-    }
-
-    fun close() {
-        session.currentWidgetInfosStream.unsubscribe(WidgetContainerViewModel::class.java)
+        widgetContainer?.removeAllViews()
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION
@@ -17,6 +18,8 @@ import com.livelike.livelikesdk.widget.view.AlertWidgetView
 import com.livelike.livelikesdk.widget.view.PollView
 import com.livelike.livelikesdk.widget.view.PredictionView
 import com.livelike.livelikesdk.widget.view.QuizView
+import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
+import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
 
 /**
  * Provides a new WidgetInfos View based on the widget Type.
@@ -34,6 +37,17 @@ internal class WidgetViewProvider {
     }
 }
 
+internal class WidgetProvider {
+    fun get(widgetInfos: WidgetInfos, context: Context, dismiss: ()->Unit): SpecifiedWidgetView? {
+        return when (WidgetType.fromString(widgetInfos.type)) {
+            ALERT -> AlertWidgetView(context).apply {
+                widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss)
+            }
+            else -> AlertWidgetView(context).apply { widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss) }
+        }
+    }
+}
+
 enum class DismissAction {
     TIMEOUT,
     SWIPE,
@@ -46,5 +60,6 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     open var currentSession: LiveLikeContentSession? = null
+    open var widgetViewModel: WidgetViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
 }

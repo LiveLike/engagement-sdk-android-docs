@@ -1,5 +1,6 @@
 package com.livelike.engagementsdkapi
 
+import android.widget.FrameLayout
 import com.google.gson.JsonObject
 
 /**
@@ -29,6 +30,7 @@ interface LiveLikeContentSession {
     fun getPlayheadTime(): EpochTime
 
     fun contentSessionId(): String
+    fun setWidgetContainer(widgetView: FrameLayout)
 }
 
 interface Stream<T> {

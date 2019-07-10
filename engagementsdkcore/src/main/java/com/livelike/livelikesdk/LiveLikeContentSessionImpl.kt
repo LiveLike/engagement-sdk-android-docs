@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
+import android.widget.FrameLayout
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
@@ -21,14 +22,19 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
+import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.WidgetManager
+import com.livelike.livelikesdk.widget.WidgetProvider
 import com.livelike.livelikesdk.widget.asWidgetManager
+import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 import java.util.concurrent.ConcurrentHashMap
 
 internal class LiveLikeContentSessionImpl(
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
     private val applicationContext: Context
 ) : LiveLikeContentSession {
+
+
     override val chatViewModel: ChatViewModel = ChatViewModel()
     override var programId: String = ""
         set(value) {
@@ -53,6 +59,12 @@ internal class LiveLikeContentSessionImpl(
     private var widgetEventsQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
     override val currentWidgetInfosStream = SubscriptionManager<WidgetInfos?>()
+    private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
+    private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
+
+    override fun setWidgetContainer(widgetView: FrameLayout) {
+        widgetContainer.setWidgetContainer(widgetView)
+    }
 
     init {
         getUser()
@@ -60,6 +72,16 @@ internal class LiveLikeContentSessionImpl(
         sdkConfiguration.subscribe { configuration ->
             run {
                 analyticService.trackConfiguration(configuration.name)
+            }
+        }
+
+        currentWidgetInfosStream.subscribe(javaClass){widgetInfos ->
+            if (widgetInfos != null) {
+                currentWidgetViewStream.onNext(WidgetProvider().get(widgetInfos, applicationContext){
+                    currentWidgetInfosStream.onNext(null)
+                })
+            }else{
+                currentWidgetViewStream.onNext(null)
             }
         }
     }
@@ -105,7 +127,7 @@ internal class LiveLikeContentSessionImpl(
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
-                    .syncTo(currentPlayheadTime)
+//                    .syncTo(currentPlayheadTime)
                     .asWidgetManager(llDataClient, currentWidgetInfosStream)
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue

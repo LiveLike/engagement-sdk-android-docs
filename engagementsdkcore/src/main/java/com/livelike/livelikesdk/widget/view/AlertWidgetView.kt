@@ -1,25 +1,22 @@
 package com.livelike.livelikesdk.widget.view
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat.startActivity
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import com.bumptech.glide.Glide
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
+import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
 import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
 import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
 import kotlinx.android.synthetic.main.widget_alert.view.bodyText
@@ -37,27 +34,17 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
     private var inflated = false
 
-    private val viewModel: AlertWidgetViewModel =
-        ViewModelProviders.of(context as FragmentActivity).get(AlertWidgetViewModel::class.java)
+    var viewModel : AlertWidgetViewModel? = null
 
-    override var currentSession: LiveLikeContentSession? = null
+    override var widgetViewModel : WidgetViewModel? = null
         set(value) {
             field = value
-            viewModel.setSession(currentSession)
-        }
-
-    override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel.dismissWidget(it) }
-
-    init {
-        viewModel.data.observe(context as FragmentActivity, Observer {
-            if (it != null) {
+            viewModel = value as AlertWidgetViewModel
+            viewModel?.data?.let {
                 inflate(context, it)
-                viewModel.startDismissTimout(it.timeout)
-            } else {
-                inflated = false
+                viewModel?.startDismissTimout(it.timeout)
             }
-        })
-    }
+        }
 
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
@@ -119,7 +106,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     }
 
     private fun openBrowser(context: Context, linkUrl: String) {
-        viewModel.onClickLink()
+        viewModel?.onClickLink()
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl))
         startActivity(context, browserIntent, Bundle.EMPTY)
     }

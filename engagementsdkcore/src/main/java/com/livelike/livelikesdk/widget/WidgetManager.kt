@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.widget
 
 import android.os.Handler
+import android.os.Looper
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.services.messaging.ClientMessage
@@ -14,7 +15,7 @@ internal class WidgetManager(
 ) :
     MessagingClientProxy(upstream) {
 
-    val handler = Handler()
+    val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         val widgetType = event.message.get("event").asString ?: ""
@@ -23,7 +24,10 @@ internal class WidgetManager(
 
         // Filter only valid widget types here
         if (WidgetType.fromString(widgetType) != null) {
-            widgetInfosStream.onNext(WidgetInfos(widgetType, payload, widgetId))
+            handler.post{
+                widgetInfosStream.onNext(null)
+                widgetInfosStream.onNext(WidgetInfos(widgetType, payload, widgetId))
+            }
 
             // Register the impression on the backend
             payload.get("impression_url")?.asString?.let {
