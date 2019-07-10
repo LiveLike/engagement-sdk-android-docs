@@ -5,32 +5,16 @@ import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
-import com.livelike.livelikesdk.services.messaging.proxies.ExternalMessageTrigger
-import com.livelike.livelikesdk.services.messaging.proxies.ExternalTriggerListener
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
-import com.livelike.livelikesdk.services.messaging.proxies.TriggeredMessagingClient
 
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
     private val widgetInfosStream: Stream<WidgetInfos?>
 ) :
-    MessagingClientProxy(upstream),
-    ExternalMessageTrigger {
+    MessagingClientProxy(upstream) {
 
     val handler = Handler()
-
-    init {
-        widgetInfosStream.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
-            isProcessing = (widgetInfos != null)
-            if (!isProcessing) {
-                handler.postDelayed({ triggerListener?.onTrigger("done") }, 500)
-            }
-        }
-    }
-
-    override var isProcessing: Boolean = false
-    override var triggerListener: ExternalTriggerListener? = null
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         val widgetType = event.message.get("event").asString ?: ""
@@ -56,7 +40,6 @@ enum class WidgetType(val event: String) {
     TEXT_PREDICTION_FOLLOW_UP("text-prediction-follow-up-created"),
     IMAGE_PREDICTION("image-prediction-created"),
     IMAGE_PREDICTION_FOLLOW_UP("image-prediction-follow-up-created"),
-    HTML5("html-widget"),
     TEXT_QUIZ("text-quiz-created"),
     IMAGE_QUIZ("image-quiz-created"),
     TEXT_POLL("text-poll-created"),
@@ -81,9 +64,5 @@ internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
     widgetInfosStream: Stream<WidgetInfos?>
 ): WidgetManager {
-    val triggeredMessagingClient = TriggeredMessagingClient(this)
-    val widgetQueue =
-        WidgetManager(triggeredMessagingClient, dataClient, widgetInfosStream)
-    triggeredMessagingClient.externalTrigger = widgetQueue
-    return widgetQueue
+    return WidgetManager(this, dataClient, widgetInfosStream)
 }
