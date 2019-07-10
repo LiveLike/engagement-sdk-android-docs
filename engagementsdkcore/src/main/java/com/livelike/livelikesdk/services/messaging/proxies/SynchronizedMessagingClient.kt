@@ -116,7 +116,7 @@ internal class SyncTimer(val task: Runnable, val period: Long) {
 // Extension for MessagingClient to be synced
 internal fun MessagingClient.syncTo(
     timeSource: () -> EpochTime,
-    validEventBufferMs: Long = 10000L
+    validEventBufferMs: Long = Long.MAX_VALUE
 ): SynchronizedMessagingClient {
     return SynchronizedMessagingClient(this, timeSource, validEventBufferMs)
 }
