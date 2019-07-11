@@ -107,7 +107,7 @@ internal class LiveLikeContentSessionImpl(
             val widgetQueue =
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
-//                    .syncTo(currentPlayheadTime)
+                    .syncTo(currentPlayheadTime)
                     .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService!!, it)
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
