@@ -29,28 +29,12 @@ import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class LiveLikeContentSessionImpl(
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
-    private val applicationContext: Context
+    private val applicationContext: Context,
+    private val programId: String,
+    private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
     override val chatViewModel: ChatViewModel = ChatViewModel()
-    override var programId: String = ""
-        set(value) {
-            if (field != value) {
-                chatViewModel.clear()
-                field = value
-                if (programId.isNotEmpty()) {
-                    llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(value)) {
-                        if (it !== null) {
-                            program = it
-                            initializeWidgetMessaging(it)
-                            initializeChatMessaging(it)
-                        }
-                    }
-                }
-            }
-        }
-    override var currentPlayheadTime: () -> EpochTime = { EpochTime(0) }
-
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
     private var widgetEventsQueue: WidgetManager? = null
@@ -68,6 +52,17 @@ internal class LiveLikeContentSessionImpl(
         sdkConfiguration.subscribe { configuration ->
             run {
                 analyticService.trackConfiguration(configuration.name)
+            }
+        }
+
+        chatViewModel.clear()
+        if (programId.isNotEmpty()) {
+            llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(programId)) {
+                if (it !== null) {
+                    program = it
+                    initializeWidgetMessaging(it)
+                    initializeChatMessaging(it)
+                }
             }
         }
     }
@@ -104,7 +99,7 @@ internal class LiveLikeContentSessionImpl(
         return currentPlayheadTime()
     }
 
-    override fun contentSessionId() = program?.contentId ?: ""
+    override fun contentSessionId() = programId
     private fun initializeWidgetMessaging(program: Program) {
         widgetEventsQueue?.apply {
             unsubscribeAll()
@@ -148,14 +143,6 @@ internal class LiveLikeContentSessionImpl(
         chatQueue?.toggleEmission(false)
     }
 
-    override fun clearChatHistory() {
-        //  TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun clearFeedbackQueue() {
-        //  TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun close() {
         chatQueue?.apply {
             unsubscribeAll()
@@ -163,5 +150,6 @@ internal class LiveLikeContentSessionImpl(
         widgetEventsQueue?.apply {
             unsubscribeAll()
         }
+        currentWidgetViewStream.clear()
     }
 }
