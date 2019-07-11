@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleVie
 class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    private var viewModel : PollViewModel? = null
+    private var viewModel: PollViewModel? = null
 
     private var viewManager: LinearLayoutManager =
         LinearLayoutManager(context).apply { orientation = LinearLayout.VERTICAL }
@@ -34,16 +34,16 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         set(value) {
             field = value
             viewModel = value as PollViewModel
-            viewModel?.data?.subscribe(javaClass) {resourceObserver(it)}
-            viewModel?.results?.subscribe(javaClass) {resultsObserver(it)}
-            viewModel?.currentVoteId?.subscribe(javaClass) {clickedOptionObserver()}
+            viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
+            viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+            viewModel?.currentVoteId?.subscribe(javaClass) { clickedOptionObserver() }
         }
 
     private fun clickedOptionObserver() = Observer<String?> {
         viewModel?.onOptionClicked(it)
     }
 
-    private fun resourceObserver(widget : PollWidget?){
+    private fun resourceObserver(widget: PollWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
@@ -101,7 +101,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         }
     }
 
-    private fun resultsObserver(resource : Resource?){
+    private fun resultsObserver(resource: Resource?) {
         resource?.apply {
             val optionResults = resource.getMergedOptions() ?: return
             val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }

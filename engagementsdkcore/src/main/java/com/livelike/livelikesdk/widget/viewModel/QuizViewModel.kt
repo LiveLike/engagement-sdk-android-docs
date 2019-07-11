@@ -32,7 +32,7 @@ internal class QuizWidget(
     val resource: Resource
 )
 
-internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: ()->Unit) : WidgetViewModel(dismiss) {
+internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()

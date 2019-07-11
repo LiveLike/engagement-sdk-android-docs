@@ -24,7 +24,7 @@ internal class PredictionWidget(
     val resource: Resource
 )
 
-internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: ()->Unit, private val appContext: Context) : WidgetViewModel(dismiss) {
+internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val appContext: Context) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
     var state: Stream<String?> = SubscriptionManager() // confirmation, followup

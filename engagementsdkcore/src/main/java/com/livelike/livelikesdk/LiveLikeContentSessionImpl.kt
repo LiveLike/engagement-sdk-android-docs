@@ -32,7 +32,6 @@ internal class LiveLikeContentSessionImpl(
     private val applicationContext: Context
 ) : LiveLikeContentSession {
 
-
     override val chatViewModel: ChatViewModel = ChatViewModel()
     override var programId: String = ""
         set(value) {

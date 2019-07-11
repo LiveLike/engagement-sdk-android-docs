@@ -31,7 +31,7 @@ internal class PollWidget(
     val resource: Resource
 )
 
-internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: ()->Unit) : WidgetViewModel(dismiss) {
+internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()

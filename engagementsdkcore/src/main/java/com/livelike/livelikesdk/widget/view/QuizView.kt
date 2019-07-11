@@ -1,8 +1,6 @@
 package com.livelike.livelikesdk.widget.view
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.View
@@ -28,7 +26,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    private var viewModel : QuizViewModel? = null
+    private var viewModel: QuizViewModel? = null
 
     override var widgetViewModel: WidgetViewModel? = null
         get() = super.widgetViewModel
@@ -38,9 +36,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.data?.subscribe(javaClass) {
                 resourceObserver(it)
             }
-            viewModel?.results?.subscribe(javaClass){ resultsObserver(it) }
-            viewModel?.state?.subscribe(javaClass){ stateObserver(it)}
-            viewModel?.currentVoteId?.subscribe(javaClass){ onClickObserver(it)}
+            viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+            viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+            viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver(it) }
         }
 
     private var viewManager: LinearLayoutManager =
@@ -127,7 +125,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         }
     }
 
-    private fun stateObserver(state:String?) {
+    private fun stateObserver(state: String?) {
         when (state) {
             "results" -> {
                 listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton() {

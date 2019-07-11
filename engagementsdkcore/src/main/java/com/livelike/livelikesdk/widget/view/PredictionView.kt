@@ -25,7 +25,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    private var viewModel : PredictionViewModel? = null
+    private var viewModel: PredictionViewModel? = null
 
     private var viewManager: LinearLayoutManager =
         LinearLayoutManager(context).apply { orientation = LinearLayout.VERTICAL }
@@ -36,11 +36,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
         set(value) {
             field = value
             viewModel = value as PredictionViewModel
-            viewModel?.data?.subscribe(javaClass) {widgetObserver(it)}
-            viewModel?.state?.subscribe(javaClass) {stateObserver(it)}
+            viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
+            viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
         }
 
-    private fun widgetObserver(widget: PredictionWidget?){
+    private fun widgetObserver(widget: PredictionWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return
             val isImageWidget = optionList.elementAtOrNull(0)?.image_url?.isNotEmpty() ?: false
@@ -103,7 +103,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
         }
     }
 
-    private fun stateObserver(state : String?){
+    private fun stateObserver(state: String?) {
         when (state) {
             "confirmation" -> {
                 confirmationMessage.apply {

@@ -37,12 +37,12 @@ internal class SubscriptionManager<T> : Stream<T> {
     }
 }
 
-internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 2000L) : SubscriptionManager<T> = SubscriptionManager<T>().let { mgr ->
+internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 2000L): SubscriptionManager<T> = SubscriptionManager<T>().let { mgr ->
     val source = this
     val handler = Handler(Looper.getMainLooper())
     var running = false
 
-    fun runnable() : Runnable {
+    fun runnable(): Runnable {
         return Runnable {
             running = false
             mgr.onNext(source.currentData)
@@ -50,7 +50,7 @@ internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 2000L) : Subsc
     }
 
     source.subscribe(source) {
-        if(!running){
+        if (!running) {
             running = true
             handler.removeCallbacks(runnable())
             handler.postDelayed(runnable(), duration)

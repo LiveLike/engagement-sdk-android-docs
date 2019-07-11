@@ -15,10 +15,10 @@ import com.livelike.livelikesdk.widget.util.SwipeDismissTouchListener
 class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>) {
 
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
-    private var widgetContainer : FrameLayout? = null
+    private var widgetContainer: FrameLayout? = null
 
     @SuppressLint("ClickableViewAccessibility")
-    fun setWidgetContainer(widgetContainer: FrameLayout){
+    fun setWidgetContainer(widgetContainer: FrameLayout) {
         this.widgetContainer = widgetContainer
         // Swipe to dismiss
         widgetContainer.setOnTouchListener(

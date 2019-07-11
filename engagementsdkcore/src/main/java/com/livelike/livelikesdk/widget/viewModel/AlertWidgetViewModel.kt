@@ -10,10 +10,10 @@ import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 
-internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismiss: ()->Unit) : WidgetViewModel(dismiss) {
+internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismiss: () -> Unit) : WidgetViewModel(dismiss) {
     private var timeoutStarted = false
     var data: Alert? = null
-    val handler : Handler
+    val handler: Handler
 
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null

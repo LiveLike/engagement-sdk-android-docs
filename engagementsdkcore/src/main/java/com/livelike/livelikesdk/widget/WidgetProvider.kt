@@ -3,7 +3,6 @@ package com.livelike.livelikesdk.widget
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
@@ -25,7 +24,7 @@ import com.livelike.livelikesdk.widget.viewModel.QuizViewModel
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
 
 internal class WidgetProvider {
-    fun get(widgetInfos: WidgetInfos, context: Context, dismiss: ()->Unit): SpecifiedWidgetView? {
+    fun get(widgetInfos: WidgetInfos, context: Context, dismiss: () -> Unit): SpecifiedWidgetView? {
         return when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss)

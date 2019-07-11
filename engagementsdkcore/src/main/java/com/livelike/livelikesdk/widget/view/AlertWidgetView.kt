@@ -33,9 +33,9 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
     private var inflated = false
 
-    var viewModel : AlertWidgetViewModel? = null
+    var viewModel: AlertWidgetViewModel? = null
 
-    override var widgetViewModel : WidgetViewModel? = null
+    override var widgetViewModel: WidgetViewModel? = null
         set(value) {
             field = value
             viewModel = value as AlertWidgetViewModel
