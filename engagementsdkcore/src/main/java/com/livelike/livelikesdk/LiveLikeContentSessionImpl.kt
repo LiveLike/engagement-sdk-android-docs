@@ -53,7 +53,7 @@ internal class LiveLikeContentSessionImpl(
             analyticService?.trackConfiguration(configuration.name)
 
             getUser()
-            chatViewModel.clear()
+
             if (programId.isNotEmpty()) {
                 llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(programId)) {
                     if (it !== null) {
