@@ -97,7 +97,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 listOf(textEggTimer, imageEggTimer).forEach { v ->
                     v?.startAnimationFrom(viewModel?.animationEggTimerProgress ?: 0f, animationLength, {
                         viewModel?.animationEggTimerProgress = it
-                    }, currentSession) {
+                    }) {
                         viewModel?.dismissWidget(it)
                     }
                 }
@@ -132,7 +132,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver(state:String?) {
         when (state) {
             "results" -> {
-                listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton(currentSession) {
+                listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
                 viewModel?.adapter?.userSelectedOptionId = viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""

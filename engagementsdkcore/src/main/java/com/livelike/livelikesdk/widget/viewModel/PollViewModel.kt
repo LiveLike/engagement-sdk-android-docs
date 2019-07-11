@@ -1,13 +1,11 @@
 package com.livelike.livelikesdk.widget.viewModel
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.MutableLiveData
 import android.os.Handler
+import android.os.Looper
 import android.support.v7.widget.RecyclerView
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.SubscriptionManager
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetSpecificInfo
 import com.livelike.livelikesdk.services.analytics.analyticService
@@ -33,10 +31,10 @@ internal class PollWidget(
     val resource: Resource
 )
 
-internal class PollViewModel(application: Application) : AndroidViewModel(application) {
-    val data: MutableLiveData<PollWidget> = MutableLiveData()
-    val results: MutableLiveData<Resource> = MutableLiveData()
-    val currentVoteId: MutableLiveData<String?> = MutableLiveData()
+internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: ()->Unit) : WidgetViewModel(dismiss) {
+    val data: SubscriptionManager<PollWidget> = SubscriptionManager()
+    val results: SubscriptionManager<Resource> = SubscriptionManager()
+    val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
     private val debouncer = currentVoteId.debounce()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
 
@@ -62,8 +60,9 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
                     val widgetType = event.message.get("event").asString ?: ""
                     logDebug { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
-                    // TODO: need to debounce?
-                    results.postValue(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
+                    Handler(Looper.getMainLooper()).post {
+                        results.onNext(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
+                    }
                 }
 
                 override fun onClientMessageError(client: MessagingClient, error: Error) {}
@@ -71,9 +70,11 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
             })
         }
 
-        debouncer.observeForever {
+        debouncer.subscribe(javaClass) {
             if (it != null) vote()
         }
+
+        widgetObserver(widgetInfos)
     }
 
     private fun vote() {
@@ -101,7 +102,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
             val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.postValue(WidgetType.fromString(widgetInfos.type)?.let { PollWidget(it, resource) })
+                data.onNext(WidgetType.fromString(widgetInfos.type)?.let { PollWidget(it, resource) })
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -128,7 +129,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
                 action
             )
         }
-        currentSession?.currentWidgetInfosStream?.onNext(null)
+        this.dismissWidget()
     }
 
     private fun confirmationState() {
@@ -154,19 +155,15 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         animationResultsProgress = 0f
         animationPath = ""
         voteUrl = null
-        data.postValue(null)
-        results.postValue(null)
+        data.onNext(null)
+        results.onNext(null)
         animationEggTimerProgress = 0f
-        currentVoteId.postValue(null)
+        currentVoteId.onNext(null)
 
         interactionData.reset()
         widgetSpecificInfo.reset()
         currentWidgetId = ""
         currentWidgetType = null
-    }
-
-    override fun onCleared() {
-        currentSession?.currentWidgetInfosStream?.unsubscribe(this::class.java)
     }
 
     // This is to update the vote value locally
@@ -180,7 +177,7 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
         }
         if (it != previousOptionClickedId) {
             widgetSpecificInfo.responseChanges += 1
-            data.value?.apply {
+            data.currentData?.apply {
                 val options = resource.getMergedOptions() ?: return
                 options.forEachIndexed { index, opt ->
                     opt.apply {
@@ -210,17 +207,5 @@ internal class PollViewModel(application: Application) : AndroidViewModel(applic
                 widgetSpecificInfo.totalOptions = options.size
             }
         }
-    }
-
-    var currentSession: LiveLikeContentSession? = null
-        set(value) {
-            field = value
-            value?.currentWidgetInfosStream?.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
-                widgetObserver(widgetInfos)
-            }
-        }
-
-    fun setSession(currentSession: LiveLikeContentSession?) {
-        this.currentSession = currentSession
     }
 }

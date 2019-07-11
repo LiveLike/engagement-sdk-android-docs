@@ -97,8 +97,6 @@ internal class MixpanelAnalytics : AnalyticsService {
     }
 
     fun setSession(session: LiveLikeContentSession) {
-        trackWidgets(session)
-
         val properties = JSONObject()
         properties.put("Program ID", session.contentSessionId())
         mixpanel.registerSuperProperties(properties)
@@ -184,14 +182,6 @@ internal class MixpanelAnalytics : AnalyticsService {
         val superProp = JSONObject()
         superProp.put("Time of Last Widget Interaction", timeOfLastInteraction)
         mixpanel.registerSuperProperties(superProp)
-    }
-
-    private fun trackWidgets(session: LiveLikeContentSession) {
-        session.currentWidgetInfosStream.subscribe(KEY_WIDGET_DISPLAYED) {
-            if (it != null) {
-                WidgetType.fromString(it.type)?.let { it1 -> trackWidgetDisplayed(it1, it.payload["id"].toString()) }
-            }
-        }
     }
 
     override fun trackAppOpen() {

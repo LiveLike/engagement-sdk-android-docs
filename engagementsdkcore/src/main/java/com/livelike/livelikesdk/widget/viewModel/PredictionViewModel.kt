@@ -1,12 +1,11 @@
 package com.livelike.livelikesdk.widget.viewModel
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.MutableLiveData
+import android.content.Context
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
-import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.SubscriptionManager
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
@@ -25,10 +24,10 @@ internal class PredictionWidget(
     val resource: Resource
 )
 
-internal class PredictionViewModel(application: Application) : AndroidViewModel(application) {
-    val data: MutableLiveData<PredictionWidget> = MutableLiveData()
+internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: ()->Unit, private val appContext: Context) : WidgetViewModel(dismiss) {
+    val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
-    var state: MutableLiveData<String> = MutableLiveData() // confirmation, followup
+    var state: Stream<String?> = SubscriptionManager() // confirmation, followup
 
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
@@ -42,6 +41,10 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
+    init {
+        widgetObserver(widgetInfos)
+    }
+
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
         cleanUp()
         if (widgetInfos != null) {
@@ -53,7 +56,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
             ) {
                 val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
                 resource?.apply {
-                    data.postValue(PredictionWidget(type, resource))
+                    data.onNext(PredictionWidget(type, resource))
                 }
 
                 currentWidgetId = widgetInfos.widgetId
@@ -61,7 +64,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
                 interactionData.widgetDisplayed()
             }
         } else {
-            data.postValue(null)
+            data.onNext(null)
         }
     }
 
@@ -71,7 +74,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
             timeoutStarted = true
             if (isFollowup) {
                 handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, AndroidResource.parseDuration(timeout))
-                data.value?.apply {
+                data.currentData?.apply {
                     followupState(
                         if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id,
                         resource.correct_option_id
@@ -93,7 +96,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
                 action
             )
         }
-        currentSession?.currentWidgetInfosStream?.onNext(null)
+        this.dismissWidget()
     }
 
     fun onOptionClicked() {
@@ -105,16 +108,16 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         adapter?.userSelectedOptionId = getWidgetPredictionVotedAnswerIdOrEmpty(textPredictionId)
         adapter?.selectionLocked = true
 
-        data.postValue(data.value?.apply {
+        data.onNext(data.currentData?.apply {
             resource.getMergedOptions()?.forEach { opt ->
                 opt.percentage = opt.getPercent(resource.getMergedTotal().toFloat())
             }
         })
 
         val rootPath = if (adapter?.userSelectedOptionId == adapter?.correctOptionId) "correctAnswer" else "wrongAnswer"
-        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, getApplication()) ?: ""
+        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
 
-        state.postValue("followup")
+        state.onNext("followup")
     }
 
     private fun confirmationState() {
@@ -125,9 +128,9 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         }
 
         adapter?.selectionLocked = true
-        animationPath = AndroidResource.selectRandomLottieAnimation("confirmMessage", getApplication()) ?: ""
+        animationPath = AndroidResource.selectRandomLottieAnimation("confirmMessage", appContext) ?: ""
 
-        state.postValue("confirmation")
+        state.onNext("confirmation")
 
         handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
@@ -136,7 +139,7 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
 
     private fun cleanUp() {
         // Vote for the selected option before starting the confirm animation
-        data.value?.let {
+        data.currentData?.let {
             adapter?.apply {
                 if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
                     val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
@@ -154,28 +157,12 @@ internal class PredictionViewModel(application: Application) : AndroidViewModel(
         adapter = null
         animationProgress = 0f
         animationPath = ""
-        state.postValue("")
-        data.postValue(null)
+        state.onNext("")
+        data.onNext(null)
         animationEggTimerProgress = 0f
 
         currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()
-    }
-
-    override fun onCleared() {
-        currentSession?.currentWidgetInfosStream?.unsubscribe(this::class.java)
-    }
-
-    var currentSession: LiveLikeContentSession? = null
-        set(value) {
-            field = value
-            value?.currentWidgetInfosStream?.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
-                widgetObserver(widgetInfos)
-            }
-        }
-
-    fun setSession(currentSession: LiveLikeContentSession?) {
-        this.currentSession = currentSession
     }
 }

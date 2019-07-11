@@ -2,8 +2,6 @@ package com.livelike.livelikesdk.widget.viewModel
 
 import android.animation.LayoutTransition
 import android.annotation.SuppressLint
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -12,8 +10,6 @@ import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
-import com.livelike.livelikesdk.widget.WidgetType
-import com.livelike.livelikesdk.widget.WidgetViewProvider
 import com.livelike.livelikesdk.widget.util.SwipeDismissTouchListener
 
 class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>) {
