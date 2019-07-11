@@ -36,6 +36,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
 
                     override fun onDismiss(view: View?, token: Any?) {
                         dismissWidget?.invoke(DismissAction.SWIPE)
+                        dismissWidget()
                     }
                 })
         )

@@ -19,6 +19,7 @@ import com.livelike.livelikesdk.widget.view.PollView
 import com.livelike.livelikesdk.widget.view.PredictionView
 import com.livelike.livelikesdk.widget.view.QuizView
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
+import com.livelike.livelikesdk.widget.viewModel.QuizViewModel
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
 
 /**
@@ -42,6 +43,9 @@ internal class WidgetProvider {
         return when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss)
+            }
+            TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
+                widgetViewModel = QuizViewModel(widgetInfos, dismiss)
             }
             else -> AlertWidgetView(context).apply { widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss) }
         }

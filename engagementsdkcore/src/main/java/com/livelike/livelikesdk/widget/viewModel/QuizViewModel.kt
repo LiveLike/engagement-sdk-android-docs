@@ -1,13 +1,13 @@
 package com.livelike.livelikesdk.widget.viewModel
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.MutableLiveData
+import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.support.v7.widget.RecyclerView
-import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.SubscriptionManager
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
@@ -19,7 +19,8 @@ import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
-import com.livelike.livelikesdk.utils.logDebug
+import com.livelike.livelikesdk.utils.logError
+import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
@@ -32,13 +33,13 @@ internal class QuizWidget(
     val resource: Resource
 )
 
-internal class QuizViewModel(application: Application) : AndroidViewModel(application) {
-    val data: MutableLiveData<QuizWidget> = MutableLiveData()
-    val results: MutableLiveData<Resource> = MutableLiveData()
-    val currentVoteId: MutableLiveData<String?> = MutableLiveData()
+internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: ()->Unit) : WidgetViewModel(dismiss) {
+    val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
+    val results: Stream<Resource> = SubscriptionManager()
+    val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
     private val debouncer = currentVoteId.debounce()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
-    var state: MutableLiveData<String> = MutableLiveData() // results
+    var state: Stream<String> = SubscriptionManager() // results
 
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
@@ -59,19 +60,25 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""
-                    logDebug { "type is : $widgetType" }
+                    logVerbose { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
-                    results.postValue(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
+                    Handler(Looper.getMainLooper()).post {
+                        results.onNext(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
+                    }
                 }
 
-                override fun onClientMessageError(client: MessagingClient, error: Error) {}
-                override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
+                override fun onClientMessageError(client: MessagingClient, error: Error) {
+                }
+                override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
+                }
             })
         }
 
-        debouncer.observeForever {
+        debouncer.subscribe(javaClass) {
             if (it != null) vote()
         }
+
+        widgetObserver(widgetInfos)
     }
 
     private fun vote() {
@@ -98,7 +105,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
             val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.postValue(WidgetType.fromString(widgetInfos.type)?.let { QuizWidget(it, resource) })
+                data.onNext(WidgetType.fromString(widgetInfos.type)?.let { QuizWidget(it, resource) })
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -108,10 +115,10 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun startDismissTimout(timeout: String) {
+    fun startDismissTimout(timeout: String, context: Context) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            handler.postDelayed({ resultsState() }, AndroidResource.parseDuration(timeout))
+            handler.postDelayed({ resultsState(context) }, AndroidResource.parseDuration(timeout))
         }
     }
 
@@ -125,10 +132,10 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
                 action
             )
         }
-        currentSession?.currentWidgetInfosStream?.onNext(null)
+        this.dismissWidget()
     }
 
-    private fun resultsState() {
+    private fun resultsState(context: Context) {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
@@ -137,11 +144,11 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
 
         val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
         val rootPath = if (isUserCorrect) "correctAnswer" else "wrongAnswer"
+        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
 
-        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, getApplication()) ?: ""
         adapter?.selectionLocked = true
 
-        state.postValue("results")
+        state.onNext("results")
         handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
         currentWidgetType?.let { analyticService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
@@ -156,18 +163,14 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
         animationProgress = 0f
         animationPath = ""
         voteUrl = null
-        data.postValue(null)
-        results.postValue(null)
-        state.postValue(null)
+        data.onNext(null)
+        results.onNext(null)
+        state.onNext(null)
         animationEggTimerProgress = 0f
 
         currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()
-    }
-
-    override fun onCleared() {
-        currentSession?.currentWidgetInfosStream?.unsubscribe(this::class.java)
     }
 
     // This is to update the vote value locally
@@ -180,7 +183,7 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
             vote() // Vote on first click
         }
         if (it != previousOptionClickedId) {
-            data.value?.apply {
+            data.currentData?.apply {
                 val options = resource.getMergedOptions() ?: return
                 options.forEach { opt ->
                     opt.apply {
@@ -202,17 +205,5 @@ internal class QuizViewModel(application: Application) : AndroidViewModel(applic
                 previousOptionClickedId = it
             }
         }
-    }
-
-    var currentSession: LiveLikeContentSession? = null
-        set(value) {
-            field = value
-            value?.currentWidgetInfosStream?.subscribe(this::class.java) { widgetInfos: WidgetInfos? ->
-                widgetObserver(widgetInfos)
-            }
-        }
-
-    fun setSession(currentSession: LiveLikeContentSession?) {
-        this.currentSession = currentSession
     }
 }

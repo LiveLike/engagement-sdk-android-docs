@@ -24,7 +24,6 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.WidgetManager
-import com.livelike.livelikesdk.widget.WidgetProvider
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 import java.util.concurrent.ConcurrentHashMap
@@ -59,6 +58,7 @@ internal class LiveLikeContentSessionImpl(
     private var widgetEventsQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
     override val currentWidgetInfosStream = SubscriptionManager<WidgetInfos?>()
+
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
@@ -72,16 +72,6 @@ internal class LiveLikeContentSessionImpl(
         sdkConfiguration.subscribe { configuration ->
             run {
                 analyticService.trackConfiguration(configuration.name)
-            }
-        }
-
-        currentWidgetInfosStream.subscribe(javaClass){widgetInfos ->
-            if (widgetInfos != null) {
-                currentWidgetViewStream.onNext(WidgetProvider().get(widgetInfos, applicationContext){
-                    currentWidgetInfosStream.onNext(null)
-                })
-            }else{
-                currentWidgetViewStream.onNext(null)
             }
         }
     }
@@ -128,7 +118,7 @@ internal class LiveLikeContentSessionImpl(
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
 //                    .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, currentWidgetInfosStream)
+                    .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext)
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
         }
@@ -186,7 +176,8 @@ internal interface Provider<T> {
 
 internal class SubscriptionManager<T> : Stream<T> {
     private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
-    private var currentData: T? = null
+    var currentData: T? = null
+        private set
 
     override fun onNext(data1: T?) {
         observerMap.forEach {

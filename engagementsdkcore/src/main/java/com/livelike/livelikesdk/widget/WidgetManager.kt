@@ -1,9 +1,11 @@
 package com.livelike.livelikesdk.widget
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.SubscriptionManager
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
@@ -11,7 +13,8 @@ import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
-    private val widgetInfosStream: Stream<WidgetInfos?>
+    private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
+    private val context: Context
 ) :
     MessagingClientProxy(upstream) {
 
@@ -25,8 +28,11 @@ internal class WidgetManager(
         // Filter only valid widget types here
         if (WidgetType.fromString(widgetType) != null) {
             handler.post{
-                widgetInfosStream.onNext(null)
-                widgetInfosStream.onNext(WidgetInfos(widgetType, payload, widgetId))
+                currentWidgetViewStream.onNext(null)
+                currentWidgetViewStream.onNext(WidgetProvider().get(WidgetInfos(widgetType, payload, widgetId)
+                    , context){
+                    currentWidgetViewStream.onNext(null)
+                })
             }
 
             // Register the impression on the backend
@@ -66,7 +72,8 @@ internal interface WidgetDataClient {
 
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
-    widgetInfosStream: Stream<WidgetInfos?>
+    widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
+    context: Context
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream)
+    return WidgetManager(this, dataClient, widgetInfosStream, context)
 }
