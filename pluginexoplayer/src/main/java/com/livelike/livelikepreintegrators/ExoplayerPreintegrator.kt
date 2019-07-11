@@ -1,5 +1,6 @@
 package com.livelike.livelikepreintegrators
 
+import android.support.annotation.MainThread
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.Timeline
 import com.livelike.engagementsdkapi.EpochTime
@@ -24,6 +25,7 @@ fun LiveLikeSDK.createExoplayerSession(
     })
 }
 
+@MainThread
 fun getExoplayerPdtTime(playerProvider: PlayerProvider): Long {
     return playerProvider.get()?.let {
         it.currentTimeline?.run {

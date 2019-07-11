@@ -105,11 +105,13 @@ internal class LiveLikeContentSessionImpl(
         }
         sdkConfiguration.subscribe {
             val widgetQueue =
-                PubnubMessagingClient(it.pubNubKey)
-                    .withPreloader(applicationContext)
-                    .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService!!, it)
-            widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
+                analyticService?.let { it1 ->
+                    PubnubMessagingClient(it.pubNubKey)
+                        .withPreloader(applicationContext)
+                        .syncTo(currentPlayheadTime)
+                        .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, it1, it)
+                }
+            widgetQueue?.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
         }
     }
@@ -125,11 +127,13 @@ internal class LiveLikeContentSessionImpl(
             val chatClient = SendbirdChatClient()
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue =
-                sendBirdMessagingClient
-                    .syncTo(currentPlayheadTime, 86400000L)
-                    .toChatQueue(chatClient, analyticService!!)
-            chatQueue.subscribe(listOf(program.chatChannel))
-            chatQueue.renderer = chatRenderer
+                analyticService?.let { it1 ->
+                    sendBirdMessagingClient
+                        .syncTo(currentPlayheadTime, 86400000L)
+                        .toChatQueue(chatClient, it1)
+                }
+            chatQueue?.subscribe(listOf(program.chatChannel))
+            chatQueue?.renderer = chatRenderer
             this.chatQueue = chatQueue
         }
     }
