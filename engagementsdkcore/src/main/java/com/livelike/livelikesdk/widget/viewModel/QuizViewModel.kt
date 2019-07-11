@@ -19,7 +19,6 @@ import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
-import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetDataClient
@@ -37,12 +36,12 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: ()->Unit) : Widg
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
-    private val debouncer = currentVoteId.debounce()
+    private val debouncedVoteId = currentVoteId.debounce()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
     var state: Stream<String> = SubscriptionManager() // results
 
     var adapter: WidgetOptionsViewAdapter? = null
-    var timeoutStarted = false
+    private var timeoutStarted = false
     var animationProgress = 0f
     internal var animationPath = ""
     var voteUrl: String? = null
@@ -73,9 +72,10 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: ()->Unit) : Widg
                 }
             })
         }
-
-        debouncer.subscribe(javaClass) {
-            if (it != null) vote()
+        debouncedVoteId.subscribe(javaClass) {
+            if (it != null) {
+                vote()
+            }
         }
 
         widgetObserver(widgetInfos)

@@ -21,17 +21,25 @@ fun <T> LiveData<T>.debounce(duration: Long = 1000L) = MediatorLiveData<T>().als
     }
 }
 
-internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L) = SubscriptionManager<T>().also { mgr ->
+internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 2000L) : SubscriptionManager<T> = SubscriptionManager<T>().let { mgr ->
     val source = this
     val handler = Handler(Looper.getMainLooper())
+    var running = false
 
-    val runnable = Runnable {
-        mgr.onNext(source.currentData)
-        logError { "On next vote for ${source.currentData}" }
+    fun runnable() : Runnable {
+        return Runnable {
+            running = false
+            mgr.onNext(source.currentData)
+        }
     }
 
-    mgr.subscribe(source) {
-        handler.removeCallbacks(runnable)
-        handler.postDelayed(runnable, duration)
+    source.subscribe(source) {
+        if(!running){
+            running = true
+            handler.removeCallbacks(runnable())
+            handler.postDelayed(runnable(), duration)
+        }
     }
+
+    return mgr
 }
