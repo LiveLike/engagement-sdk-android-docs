@@ -9,7 +9,7 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
-import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.livelikesdk.services.analytics.MixpanelAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
@@ -41,27 +41,26 @@ internal class LiveLikeContentSessionImpl(
     private var chatQueue: ChatQueue? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
+    private var analyticService : MixpanelAnalytics? = null
 
     override fun setWidgetContainer(widgetView: FrameLayout) {
         widgetContainer.setWidgetContainer(widgetView)
     }
 
     init {
-        getUser()
-
         sdkConfiguration.subscribe { configuration ->
-            run {
-                analyticService.trackConfiguration(configuration.name)
-            }
-        }
+            analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+            analyticService?.trackConfiguration(configuration.name)
 
-        chatViewModel.clear()
-        if (programId.isNotEmpty()) {
-            llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(programId)) {
-                if (it !== null) {
-                    program = it
-                    initializeWidgetMessaging(it)
-                    initializeChatMessaging(it)
+            getUser()
+            chatViewModel.clear()
+            if (programId.isNotEmpty()) {
+                llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(programId)) {
+                    if (it !== null) {
+                        program = it
+                        initializeWidgetMessaging(it)
+                        initializeChatMessaging(it)
+                    }
                 }
             }
         }
@@ -72,16 +71,16 @@ internal class LiveLikeContentSessionImpl(
         val username = getNickename()
         if (!sessionId.isEmpty() && !username.isEmpty()) {
             currentUser = LiveLikeUser(sessionId, username)
-            analyticService.trackSession(sessionId)
-            analyticService.trackUsername(username)
+            analyticService?.trackSession(sessionId)
+            analyticService?.trackUsername(username)
         } else {
             sdkConfiguration.subscribe { configuration ->
                 llDataClient.getLiveLikeUserData(configuration.sessionsUrl) {
                     currentUser = it
                     setSessionId(it.sessionId)
                     setNickname(it.userName)
-                    analyticService.trackSession(it.sessionId)
-                    analyticService.trackUsername(it.userName)
+                    analyticService?.trackSession(it.sessionId)
+                    analyticService?.trackUsername(it.userName)
                 }
             }
         }
@@ -109,7 +108,7 @@ internal class LiveLikeContentSessionImpl(
                 PubnubMessagingClient(it.pubNubKey)
                     .withPreloader(applicationContext)
 //                    .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext)
+                    .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService!!, it)
             widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
         }
@@ -128,7 +127,7 @@ internal class LiveLikeContentSessionImpl(
             val chatQueue =
                 sendBirdMessagingClient
                     .syncTo(currentPlayheadTime, 86400000L)
-                    .toChatQueue(chatClient)
+                    .toChatQueue(chatClient, analyticService!!)
             chatQueue.subscribe(listOf(program.chatChannel))
             chatQueue.renderer = chatRenderer
             this.chatQueue = chatQueue

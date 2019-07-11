@@ -5,14 +5,14 @@ import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.services.messaging.sendbird.ChatClient
 import java.util.Date
 
-internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient) :
+internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient, val analyticsService: AnalyticsService) :
     MessagingClientProxy(upstream),
     ChatEventListener {
     private val connectedChannels: MutableList<String> = mutableListOf()
@@ -49,7 +49,7 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
         // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
             chatClient.sendMessage(ClientMessage(messageJson, it, timeData)) { msgId ->
-                analyticService.trackMessageSent(msgId, message.message.length)
+                analyticsService.trackMessageSent(msgId, message.message.length)
                 onSuccess?.invoke(msgId)
             }
         }
@@ -77,6 +77,6 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
     }
 }
 
-internal fun MessagingClient.toChatQueue(chatClient: ChatClient): ChatQueue {
-    return ChatQueue(this, chatClient)
+internal fun MessagingClient.toChatQueue(chatClient: ChatClient, analyticsService: AnalyticsService): ChatQueue {
+    return ChatQueue(this, chatClient, analyticsService)
 }

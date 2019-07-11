@@ -2,7 +2,6 @@ package com.livelike.livelikesdk.services.analytics
 
 import android.content.Context
 import com.google.gson.JsonObject
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.chat.KeyboardHideReason
 import com.livelike.livelikesdk.chat.KeyboardType
 import com.livelike.livelikesdk.widget.DismissAction
@@ -20,7 +19,7 @@ internal interface AnalyticsService {
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
-    fun trackAppOpen()
+    fun trackSessionStarted()
     fun trackMessageSent(msgId: String, msgLength: Int)
     fun trackWidgetReceived(kind: WidgetType, id: String)
     fun trackWidgetDisplayed(kind: WidgetType, id: String)
@@ -85,22 +84,9 @@ internal class AnalyticsWidgetSpecificInfo {
     }
 }
 
-internal val analyticService = MixpanelAnalytics()
+internal class MixpanelAnalytics(context: Context, token: String, programId: String) : AnalyticsService {
 
-internal class MixpanelAnalytics : AnalyticsService {
-
-    private lateinit var mixpanel: MixpanelAPI
-
-    fun initialize(context: Context, token: String) {
-        mixpanel = MixpanelAPI.getInstance(context, token)
-        trackAppOpen()
-    }
-
-    fun setSession(session: LiveLikeContentSession) {
-        val properties = JSONObject()
-        properties.put("Program ID", session.contentSessionId())
-        mixpanel.registerSuperProperties(properties)
-    }
+    private var mixpanel: MixpanelAPI = MixpanelAPI.getInstance(context, token)
 
     companion object {
         const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
@@ -115,6 +101,13 @@ internal class MixpanelAnalytics : AnalyticsService {
     }
 
     private var parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+
+    init {
+        trackSessionStarted()
+        val properties = JSONObject()
+        properties.put("Program ID", programId)
+        mixpanel.registerSuperProperties(properties)
+    }
 
     private fun getWidgetType(type: WidgetType): String {
         return when (type) {
@@ -184,14 +177,14 @@ internal class MixpanelAnalytics : AnalyticsService {
         mixpanel.registerSuperProperties(superProp)
     }
 
-    override fun trackAppOpen() {
+    override fun trackSessionStarted() {
         val firstTimeProperties = JSONObject()
         val timeNow = parser.format(Date(System.currentTimeMillis()))
-        firstTimeProperties.put("First App Open", timeNow)
+        firstTimeProperties.put("Session started", timeNow)
         mixpanel.registerSuperPropertiesOnce(firstTimeProperties)
 
         val properties = JSONObject()
-        properties.put("Last App Open", timeNow)
+        properties.put("Last Session started", timeNow)
         mixpanel.registerSuperProperties(properties)
     }
 

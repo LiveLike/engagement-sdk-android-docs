@@ -5,7 +5,7 @@ import android.os.Looper
 import com.livelike.engagementsdkapi.Stream
 import java.util.concurrent.ConcurrentHashMap
 
-internal interface Provider<T> {
+interface Provider<T> {
     fun subscribe(ready: (T) -> Unit)
 }
 

@@ -29,7 +29,6 @@ import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseAdapter
 import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseInterpolator
@@ -195,7 +194,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         edittext_chat_message.setOnFocusChangeListener { _, hasFocus ->
             run {
                 if (hasFocus) {
-                    analyticService.trackKeyboardOpen(KeyboardType.STANDARD)
+//                    analyticService.trackKeyboardOpen(KeyboardType.STANDARD)
                 }
             }
         }
@@ -239,7 +238,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         )
 
         if (reason != KeyboardHideReason.MESSAGE_SENT) {
-            analyticService.trackKeyboardClose(KeyboardType.STANDARD, reason)
+//            analyticService.trackKeyboardClose(KeyboardType.STANDARD, reason)
         }
     }
 
@@ -263,7 +262,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         snapToLive()
         edittext_chat_message.setText("")
         chatListener?.onChatMessageSend(newMessage, timeData) {
-            analyticService.trackKeyboardClose(KeyboardType.STANDARD, hideMethod, it)
+//            analyticService.trackKeyboardClose(KeyboardType.STANDARD, hideMethod, it)
         }
     }
 

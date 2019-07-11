@@ -4,12 +4,9 @@ import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.Provider
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
-
-private var sdkInstance: LiveLikeSDK? = null
 
 /**
  * Use this class to initialize the LiveLike SDK. This is the entry point for SDK usage. This creates a singleton instance of LiveLike SDK.
@@ -21,21 +18,23 @@ private var sdkInstance: LiveLikeSDK? = null
  */
 class LiveLikeSDK(val clientId: String, private val applicationContext: Context) {
 
-    companion object {
-        private const val CONFIG_URL = BuildConfig.CONFIG_URL
-        val MIXPANEL_TOKEN = "5c82369365be76b28b3716f260fbd2f5" // TODO: This should come from CMS
-        var configuration: SdkConfiguration? = null
+    private val CONFIG_URL = BuildConfig.CONFIG_URL
+    var configuration: SdkConfiguration? = null
+    var configurationProvider: Provider<SdkConfiguration> = object : Provider<SdkConfiguration> {
+        override fun subscribe(ready: (SdkConfiguration) -> Unit) {
+            if (configuration != null) ready(configuration!!)
+            else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
+                configuration = it
+                ready(it)
+            }
+        }
     }
-
     private val dataClient = LiveLikeDataClientImpl()
 
     init {
-        if (sdkInstance == null) {
-            AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
-            initLiveLikeSharedPrefs(applicationContext)
-            analyticService.initialize(applicationContext, MIXPANEL_TOKEN)
-            sdkInstance = this
-        }
+        AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
+        initLiveLikeSharedPrefs(applicationContext)
+
     }
 
     /**
@@ -43,20 +42,11 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
      *  @param programId Backend generated unique identifier for current program
      */
     fun createContentSession(programId: String): LiveLikeContentSession {
-        val currentSession = LiveLikeContentSessionImpl(
-            object : Provider<SdkConfiguration> {
-                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-                    if (configuration != null) ready(configuration!!)
-                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
-                        configuration = it
-                        ready(it)
-                    }
-                }
-            }, applicationContext,
-            programId){ EpochTime(0) }
-
-        analyticService.setSession(currentSession)
-        return currentSession
+        return LiveLikeContentSessionImpl(
+            configurationProvider,
+            applicationContext,
+            programId
+        ) { EpochTime(0) }
     }
 
     interface TimecodeGetter {
@@ -69,20 +59,11 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
      *  @param timecodeGetter returns the video timecode
      */
     fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
-        val currentSession = LiveLikeContentSessionImpl(
-            object : Provider<SdkConfiguration> {
-                override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-                    if (configuration != null) ready(configuration!!)
-                    else dataClient.getLiveLikeSdkConfig(CONFIG_URL.plus(clientId)) {
-                        configuration = it
-                        ready(it)
-                    }
-                }
-            }, applicationContext,
+        return LiveLikeContentSessionImpl(
+            configurationProvider,
+            applicationContext,
             programId
-        ){ timecodeGetter.getTimecode() }
-        analyticService.setSession(currentSession)
-        return currentSession
+        ) { timecodeGetter.getTimecode() }
     }
 
     data class SdkConfiguration(
@@ -95,7 +76,8 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
         val sendBirdEndpoint: String,
         val programsUrl: String,
         val sessionsUrl: String,
-        val stickerPackUrl: String
+        val stickerPackUrl: String,
+        val mixpanelToken: String
     )
 }
 
