@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk.widget.viewModel
 
 import android.os.Handler
-import android.os.Looper
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.analytics.analyticService
@@ -10,7 +9,6 @@ import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
-import java.lang.Exception
 
 internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismiss: ()->Unit) : WidgetViewModel(dismiss) {
     private var timeoutStarted = false

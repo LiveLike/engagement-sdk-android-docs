@@ -7,8 +7,6 @@ import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.engagementsdkapi.Stream
-import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.analytics.analyticService
@@ -18,6 +16,8 @@ import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdChatClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.utils.Provider
+import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
@@ -26,7 +26,6 @@ import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
-import java.util.concurrent.ConcurrentHashMap
 
 internal class LiveLikeContentSessionImpl(
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
@@ -165,37 +164,5 @@ internal class LiveLikeContentSessionImpl(
         widgetEventsQueue?.apply {
             unsubscribeAll()
         }
-    }
-}
-
-internal interface Provider<T> {
-    fun subscribe(ready: (T) -> Unit)
-}
-
-internal class SubscriptionManager<T> : Stream<T> {
-    private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
-    var currentData: T? = null
-        private set
-
-    override fun onNext(data1: T?) {
-        observerMap.forEach {
-            it.value.invoke(data1)
-        }
-        currentData = data1
-    }
-
-    override fun subscribe(key: Any, observer: (T?) -> Unit) {
-        observerMap[key] = observer
-        observer.invoke(currentData)
-    }
-
-    override fun unsubscribe(key: Any) {
-        observerMap.remove(key)
-    }
-
-    override fun clear() {
-        currentData = null
-        onNext(null)
-        observerMap.clear()
     }
 }

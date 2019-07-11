@@ -5,10 +5,10 @@ import android.os.Handler
 import android.os.Looper
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.SubscriptionManager
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
+import com.livelike.livelikesdk.utils.SubscriptionManager
 
 internal class WidgetManager(
     upstream: MessagingClient,

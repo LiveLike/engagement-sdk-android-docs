@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.SubscriptionManager
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
@@ -18,6 +17,8 @@ import com.livelike.livelikesdk.services.messaging.MessagingEventListener
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.utils.SubscriptionManager
+import com.livelike.livelikesdk.utils.debounce
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.DismissAction
@@ -25,7 +26,6 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
-import debounce
 
 internal class QuizWidget(
     val type: WidgetType,

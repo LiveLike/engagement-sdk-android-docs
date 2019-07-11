@@ -122,9 +122,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     opt.percentage = opt.getPercent(totalVotes.toFloat())
                 }
             }
-            if (options != null) {
-                viewModel?.adapter?.myDataset = options
-            }
+            viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
         }
     }

@@ -5,11 +5,11 @@ import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.SubscriptionManager
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
