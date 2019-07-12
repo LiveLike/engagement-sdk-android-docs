@@ -43,6 +43,14 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         viewModel?.onOptionClicked(it)
     }
 
+    // Refresh the view when re-attached to the activity
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
+        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+        viewModel?.currentVoteId?.subscribe(javaClass) { clickedOptionObserver() }
+    }
+
     private fun resourceObserver(widget: PollWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return

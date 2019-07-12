@@ -7,8 +7,8 @@ import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
-import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error
@@ -32,7 +32,7 @@ internal class QuizWidget(
     val resource: Resource
 )
 
-internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit) : WidgetViewModel(dismiss) {
+internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val analyticsService: AnalyticsService, private val sdkConfiguration: LiveLikeSDK.SdkConfiguration) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -54,7 +54,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit) : Wi
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     init {
-        LiveLikeSDK.configuration?.pubNubKey?.let {
+        sdkConfiguration.pubNubKey.let {
             pubnub = PubnubMessagingClient(it)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
@@ -124,7 +124,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit) : Wi
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticService.trackWidgetDismiss(
+            analyticsService.trackWidgetDismiss(
                 it,
                 currentWidgetId,
                 interactionData,
@@ -151,7 +151,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit) : Wi
         state.onNext("results")
         handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
-        currentWidgetType?.let { analyticService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
+        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {

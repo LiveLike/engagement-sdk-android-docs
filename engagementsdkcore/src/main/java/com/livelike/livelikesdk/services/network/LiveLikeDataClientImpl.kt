@@ -151,7 +151,8 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
             configData.extractStringOrEmpty("sendbird_api_endpoint"),
             configData.extractStringOrEmpty("programs_url"),
             configData.extractStringOrEmpty("sessions_url"),
-            configData.extractStringOrEmpty("sticker_packs_url")
+            configData.extractStringOrEmpty("sticker_packs_url"),
+            configData.extractStringOrEmpty("mixpanel_token")
         )
     }
 
