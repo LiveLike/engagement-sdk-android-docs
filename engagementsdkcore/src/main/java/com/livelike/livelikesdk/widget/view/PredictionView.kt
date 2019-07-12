@@ -40,6 +40,13 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
         }
 
+    // Refresh the view when re-attached to the activity
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
+        viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+    }
+
     private fun widgetObserver(widget: PredictionWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return
@@ -88,8 +95,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
                 listOf(textEggTimer, imageEggTimer).forEach { v ->
-                    viewModel?.animationEggTimerProgress?.let {
-                        v?.startAnimationFrom(it, animationLength, {
+                    viewModel?.animationEggTimerProgress?.let { time ->
+                        v?.startAnimationFrom(time, animationLength, {
                             viewModel?.animationEggTimerProgress = it
                         }) {
                         }
