@@ -25,7 +25,6 @@ fun LiveLikeSDK.createExoplayerSession(
     })
 }
 
-@MainThread
 fun getExoplayerPdtTime(playerProvider: PlayerProvider): Long {
     return playerProvider.get()?.let {
         it.currentTimeline?.run {
