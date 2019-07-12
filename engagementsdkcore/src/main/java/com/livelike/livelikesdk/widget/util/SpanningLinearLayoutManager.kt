@@ -32,20 +32,20 @@ class SpanningLinearLayoutManager(context: Context, val itemMinSize: Int) : Line
         return super.checkLayoutParams(lp)
     }
 
-    var itemSize : Int = 0
+    var itemSize: Int = 0
     private fun spanLayoutSize(layoutParams: RecyclerView.LayoutParams): RecyclerView.LayoutParams {
         if (orientation == HORIZONTAL) {
             itemSize = (horizontalSpace / itemCount.toDouble()).roundToInt()
-            if(itemSize > itemMinSize ){
+            if (itemSize > itemMinSize) {
                 layoutParams.width = itemSize
-            }else{
+            } else {
                 layoutParams.width = itemMinSize
             }
         } else if (orientation == VERTICAL) {
             itemSize = (verticalSpace / itemCount.toDouble()).roundToInt()
-            if(itemSize > itemMinSize ){
+            if (itemSize > itemMinSize) {
                 layoutParams.height = itemSize
-            }else{
+            } else {
                 layoutParams.height = itemMinSize
             }
         }
@@ -53,10 +53,10 @@ class SpanningLinearLayoutManager(context: Context, val itemMinSize: Int) : Line
     }
 
     override fun canScrollVertically(): Boolean {
-        return (itemSize < itemMinSize ) && orientation == VERTICAL
+        return (itemSize < itemMinSize) && orientation == VERTICAL
     }
 
     override fun canScrollHorizontally(): Boolean {
-        return (itemSize < itemMinSize ) && orientation == HORIZONTAL
+        return (itemSize < itemMinSize) && orientation == HORIZONTAL
     }
 }
