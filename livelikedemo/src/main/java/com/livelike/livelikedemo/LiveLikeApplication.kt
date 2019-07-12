@@ -20,11 +20,13 @@ class LiveLikeApplication : Application() {
     lateinit var player: VideoPlayer
     private var session: LiveLikeContentSession? = null
     var sdk: LiveLikeSDK? = null
+    var sdk2: LiveLikeSDK? = null
 
     override fun onCreate() {
         super.onCreate()
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
         sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
+        sdk2 = LiveLikeSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {

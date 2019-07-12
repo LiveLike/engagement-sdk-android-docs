@@ -34,7 +34,6 @@ class LiveLikeSDK(val clientId: String, private val applicationContext: Context)
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
-
     }
 
     /**
