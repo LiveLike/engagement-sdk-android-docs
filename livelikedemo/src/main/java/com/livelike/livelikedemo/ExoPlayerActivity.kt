@@ -13,7 +13,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import com.livelike.livelikesdk.LiveLikeSDK
 import com.livelike.livelikesdk.utils.registerLogsHandler
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -39,7 +38,6 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var session: LiveLikeContentSession? = null
     private var startingState: PlayerState? = null
     private var channelManager: ChannelManager? = null
-    lateinit var sdk: LiveLikeSDK
 
     private var adsPlaying = false
     set(adsPlaying) {
@@ -60,7 +58,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.activity_exo_player)
-        sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
 
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
@@ -122,7 +119,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
-            val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(), sdk)
+            val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString())
 
             chat_view.setSession(session)
             widget_view.setSession(session)

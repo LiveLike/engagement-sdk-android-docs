@@ -10,11 +10,8 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikepreintegrators.PlayerProvider
-import com.livelike.livelikepreintegrators.createExoplayerSession
 import com.livelike.livelikepreintegrators.getExoplayerPdtTime
-import com.livelike.livelikesdk.LiveLikeSDK
 
 data class PlayerState(
     var window: Int = 0,
@@ -47,7 +44,7 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     override fun getPDT(): Long {
         return getExoplayerPdtTime(object : PlayerProvider {
             override fun get(): SimpleExoPlayer? {
-                return getPlayer()
+                return player
             }
         })
     }
@@ -55,21 +52,6 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     private fun buildMediaSource(uri: Uri): HlsMediaSource {
         return HlsMediaSource.Factory(
             DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
-    }
-
-    override fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
-        return sdk.createExoplayerSession(
-            object : PlayerProvider {
-                override fun get(): SimpleExoPlayer? {
-                    return getPlayer()
-                }
-            },
-            sessionId
-        )
-    }
-
-    private fun getPlayer(): SimpleExoPlayer? {
-        return player
     }
 
     private fun buildHLSMediaSource(uri: Uri): HlsMediaSource {
@@ -118,6 +100,5 @@ interface VideoPlayer {
     fun seekTo(position: Long)
     fun release()
     fun position(): Long
-    fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession
     fun getPDT(): Long
 }

@@ -1,5 +1,6 @@
 package com.livelike.engagementsdkapi
 
+import android.widget.FrameLayout
 import com.google.gson.JsonObject
 
 /**
@@ -7,28 +8,26 @@ import com.google.gson.JsonObject
  *  component.
  */
 interface LiveLikeContentSession {
-    var programId: String
-    var currentPlayheadTime: () -> EpochTime // need to be replace by a proper time getter Java compatible
     var chatRenderer: ChatRenderer?
+
+    /** The current livelike User **/
     val currentUser: LiveLikeUser?
-    val currentWidgetInfosStream: Stream<WidgetInfos?>
+
+    /** Where the chat data are stored **/
     val chatViewModel: ChatViewModel
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
     /** Resume the current Chat and widget sessions. This generally happens when ads are completed */
     fun resume()
-    /** Clear the user's chat history. */
-    fun clearChatHistory()
-    /** Clear the feedback queue. */
-    fun clearFeedbackQueue()
     /** Closes the current session.*/
     fun close()
-
     /** Return the playheadTime for this session.*/
     fun getPlayheadTime(): EpochTime
-
+    /** Return the content Session Id (Program Id) for this session.*/
     fun contentSessionId(): String
+    /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
+    fun setWidgetContainer(widgetView: FrameLayout)
 }
 
 interface Stream<T> {

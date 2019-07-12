@@ -90,7 +90,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
             call.enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) = respondOnException {
                     when (response.code()) {
-                        in 400..499 -> error("Program Id is invalid ")
+                        in 400..499 -> error("Program Id is invalid $url")
 
                         in 500..599 -> if (requestCount++ < MAX_PROGRAM_DATA_REQUESTS) {
                             call.clone().enqueue(this)
@@ -151,7 +151,8 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
             configData.extractStringOrEmpty("sendbird_api_endpoint"),
             configData.extractStringOrEmpty("programs_url"),
             configData.extractStringOrEmpty("sessions_url"),
-            configData.extractStringOrEmpty("sticker_packs_url")
+            configData.extractStringOrEmpty("sticker_packs_url"),
+            configData.extractStringOrEmpty("mixpanel_token")
         )
     }
 

@@ -1,20 +1,28 @@
 package com.livelike.livelikesdk.widget
 
+import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
+import com.livelike.livelikesdk.utils.SubscriptionManager
 
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
-    private val widgetInfosStream: Stream<WidgetInfos?>
+    private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
+    private val context: Context,
+    private val analyticsService: AnalyticsService,
+    private val sdkConfiguration: LiveLikeSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
 
-    val handler = Handler()
+    val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         val widgetType = event.message.get("event").asString ?: ""
@@ -23,7 +31,20 @@ internal class WidgetManager(
 
         // Filter only valid widget types here
         if (WidgetType.fromString(widgetType) != null) {
-            widgetInfosStream.onNext(WidgetInfos(widgetType, payload, widgetId))
+            handler.post {
+                currentWidgetViewStream.onNext(null)
+                currentWidgetViewStream.onNext(
+                    WidgetProvider().get(
+                        WidgetInfos(widgetType, payload, widgetId),
+                        context,
+                        {
+                            currentWidgetViewStream.onNext(null)
+                        },
+                        analyticsService,
+                        sdkConfiguration
+                    )
+                )
+            }
 
             // Register the impression on the backend
             payload.get("impression_url")?.asString?.let {
@@ -62,7 +83,10 @@ internal interface WidgetDataClient {
 
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
-    widgetInfosStream: Stream<WidgetInfos?>
+    widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
+    context: Context,
+    analyticsService: AnalyticsService,
+    sdkConfiguration: LiveLikeSDK.SdkConfiguration
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream)
+    return WidgetManager(this, dataClient, widgetInfosStream, context, analyticsService, sdkConfiguration)
 }
