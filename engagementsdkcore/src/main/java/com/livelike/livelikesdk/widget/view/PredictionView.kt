@@ -60,14 +60,9 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 }
             }
             if (isImageWidget) {
-                if (optionList.size > 3) {
                     viewManager =
-                        LinearLayoutManager(context).apply { orientation = LinearLayout.HORIZONTAL }
-                } else {
-                    viewManager =
-                        SpanningLinearLayoutManager(context)
+                        SpanningLinearLayoutManager(context, AndroidResource.dpToPx(150))
                             .apply { orientation = LinearLayout.HORIZONTAL }
-                }
             }
 
             titleView.title = resource.question
