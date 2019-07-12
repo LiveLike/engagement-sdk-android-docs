@@ -135,6 +135,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
                 action
             )
         }
+        cleanUp()
         this.dismissWidget()
     }
 

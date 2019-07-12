@@ -99,6 +99,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
                 action
             )
         }
+        cleanUp()
         this.dismissWidget()
     }
 

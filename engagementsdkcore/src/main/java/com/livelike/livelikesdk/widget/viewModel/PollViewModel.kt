@@ -133,6 +133,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, val 
                 action
             )
         }
+        cleanUp()
         this.dismissWidget()
     }
 
