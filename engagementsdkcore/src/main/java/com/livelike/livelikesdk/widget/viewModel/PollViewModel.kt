@@ -112,8 +112,8 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, val 
         }
     }
 
-    private val runnable = Runnable{ confirmationState() }
-    private val runnableDimiss = Runnable{ dismissWidget(DismissAction.TIMEOUT) }
+    private val runnable = Runnable { confirmationState() }
+    private val runnableDimiss = Runnable { dismissWidget(DismissAction.TIMEOUT) }
 
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {

@@ -6,7 +6,7 @@ import android.view.WindowManager
 import kotlinx.android.synthetic.main.two_sessions_activity.widget_session_1
 import kotlinx.android.synthetic.main.two_sessions_activity.widget_session_2
 
-class TwoSessionActivity : Activity(){
+class TwoSessionActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

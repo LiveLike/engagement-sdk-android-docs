@@ -115,8 +115,8 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         }
     }
 
-    private val runnableResult = Runnable{ resultsState() }
-    private val runnableDismiss = Runnable{ dismissWidget(DismissAction.TIMEOUT) }
+    private val runnableResult = Runnable { resultsState() }
+    private val runnableDismiss = Runnable { dismissWidget(DismissAction.TIMEOUT) }
 
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {

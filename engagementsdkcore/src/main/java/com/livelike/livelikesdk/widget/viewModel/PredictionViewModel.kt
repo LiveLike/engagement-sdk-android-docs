@@ -68,8 +68,8 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
         }
     }
 
-    private val runnable = Runnable{ dismissWidget(DismissAction.TIMEOUT) }
-    private val runnableConfirm = Runnable{ confirmationState() }
+    private val runnable = Runnable { dismissWidget(DismissAction.TIMEOUT) }
+    private val runnableConfirm = Runnable { confirmationState() }
 
     // TODO: need to move the followup logic back to the widget observer instead of there
     fun startDismissTimout(timeout: String, isFollowup: Boolean) {

@@ -41,7 +41,7 @@ internal class LiveLikeContentSessionImpl(
     private var chatQueue: ChatQueue? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-    private var analyticService : MixpanelAnalytics? = null
+    private var analyticService: MixpanelAnalytics? = null
 
     override fun setWidgetContainer(widgetView: FrameLayout) {
         widgetContainer.setWidgetContainer(widgetView)

@@ -46,7 +46,7 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismis
         dismiss()
     }
 
-    val runnable = Runnable{
+    val runnable = Runnable {
         dismissWidget(DismissAction.TIMEOUT)
         timeoutStarted = false
     }

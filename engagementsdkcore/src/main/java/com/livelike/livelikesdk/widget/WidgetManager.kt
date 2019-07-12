@@ -18,7 +18,7 @@ internal class WidgetManager(
     private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
     private val context: Context,
     private val analyticsService: AnalyticsService,
-    private val sdkConfiguration : LiveLikeSDK.SdkConfiguration
+    private val sdkConfiguration: LiveLikeSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
 
@@ -45,7 +45,6 @@ internal class WidgetManager(
                     )
                 )
             }
-
 
             // Register the impression on the backend
             payload.get("impression_url")?.asString?.let {
@@ -86,8 +85,8 @@ internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
     widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
     context: Context,
-    analyticsService : AnalyticsService,
-    sdkConfiguration : LiveLikeSDK.SdkConfiguration
+    analyticsService: AnalyticsService,
+    sdkConfiguration: LiveLikeSDK.SdkConfiguration
 ): WidgetManager {
     return WidgetManager(this, dataClient, widgetInfosStream, context, analyticsService, sdkConfiguration)
 }
