@@ -64,14 +64,9 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
             ) {
-                if (optionList.size > 3) {
-                    viewManager =
-                        LinearLayoutManager(context).apply { orientation = LinearLayout.HORIZONTAL }
-                } else {
-                    viewManager =
-                        SpanningLinearLayoutManager(context)
-                            .apply { orientation = LinearLayout.HORIZONTAL }
-                }
+                viewManager =
+                    SpanningLinearLayoutManager(context, AndroidResource.dpToPx(150))
+                        .apply { orientation = LinearLayout.HORIZONTAL }
             }
 
             titleView.title = resource.question

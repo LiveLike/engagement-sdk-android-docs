@@ -5,9 +5,10 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.ViewGroup
+import kotlin.math.roundToInt
 
 // This layout takes up all the space available and disable scrolling
-class SpanningLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
+class SpanningLinearLayoutManager(context: Context, val itemMinSize: Int) : LinearLayoutManager(context) {
 
     private val horizontalSpace: Int
         get() = width - paddingRight - paddingLeft
@@ -31,20 +32,31 @@ class SpanningLinearLayoutManager(context: Context) : LinearLayoutManager(contex
         return super.checkLayoutParams(lp)
     }
 
+    var itemSize: Int = 0
     private fun spanLayoutSize(layoutParams: RecyclerView.LayoutParams): RecyclerView.LayoutParams {
         if (orientation == HORIZONTAL) {
-            layoutParams.width = Math.round(horizontalSpace / itemCount.toDouble()).toInt()
+            itemSize = (horizontalSpace / itemCount.toDouble()).roundToInt()
+            if (itemSize > itemMinSize) {
+                layoutParams.width = itemSize
+            } else {
+                layoutParams.width = itemMinSize
+            }
         } else if (orientation == VERTICAL) {
-            layoutParams.height = Math.round(verticalSpace / itemCount.toDouble()).toInt()
+            itemSize = (verticalSpace / itemCount.toDouble()).roundToInt()
+            if (itemSize > itemMinSize) {
+                layoutParams.height = itemSize
+            } else {
+                layoutParams.height = itemMinSize
+            }
         }
         return layoutParams
     }
 
     override fun canScrollVertically(): Boolean {
-        return false
+        return (itemSize < itemMinSize) && orientation == VERTICAL
     }
 
     override fun canScrollHorizontally(): Boolean {
-        return false
+        return (itemSize < itemMinSize) && orientation == HORIZONTAL
     }
 }
