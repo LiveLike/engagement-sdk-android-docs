@@ -5,6 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
@@ -14,7 +16,9 @@ internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
     private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
-    private val context: Context
+    private val context: Context,
+    private val analyticsService: AnalyticsService,
+    private val sdkConfiguration : LiveLikeSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
 
@@ -29,10 +33,19 @@ internal class WidgetManager(
         if (WidgetType.fromString(widgetType) != null) {
             handler.post {
                 currentWidgetViewStream.onNext(null)
-                currentWidgetViewStream.onNext(WidgetProvider().get(WidgetInfos(widgetType, payload, widgetId), context) {
-                    currentWidgetViewStream.onNext(null)
-                })
+                currentWidgetViewStream.onNext(
+                    WidgetProvider().get(
+                        WidgetInfos(widgetType, payload, widgetId),
+                        context,
+                        {
+                            currentWidgetViewStream.onNext(null)
+                        },
+                        analyticsService,
+                        sdkConfiguration
+                    )
+                )
             }
+
 
             // Register the impression on the backend
             payload.get("impression_url")?.asString?.let {
@@ -72,7 +85,9 @@ internal interface WidgetDataClient {
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
     widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
-    context: Context
+    context: Context,
+    analyticsService : AnalyticsService,
+    sdkConfiguration : LiveLikeSDK.SdkConfiguration
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream, context)
+    return WidgetManager(this, dataClient, widgetInfosStream, context, analyticsService, sdkConfiguration)
 }

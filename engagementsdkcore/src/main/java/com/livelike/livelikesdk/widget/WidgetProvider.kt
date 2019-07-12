@@ -4,6 +4,8 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION
@@ -24,20 +26,26 @@ import com.livelike.livelikesdk.widget.viewModel.QuizViewModel
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
 
 internal class WidgetProvider {
-    fun get(widgetInfos: WidgetInfos, context: Context, dismiss: () -> Unit): SpecifiedWidgetView? {
+    fun get(
+        widgetInfos: WidgetInfos,
+        context: Context,
+        dismiss: () -> Unit,
+        analyticsService: AnalyticsService,
+        sdkConfiguration: LiveLikeSDK.SdkConfiguration
+    ): SpecifiedWidgetView? {
         return when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
-                widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss)
+                widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss, analyticsService)
             }
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
-                widgetViewModel = QuizViewModel(widgetInfos, dismiss)
+                widgetViewModel = QuizViewModel(widgetInfos, dismiss, analyticsService, sdkConfiguration)
             }
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
-                widgetViewModel = PredictionViewModel(widgetInfos, dismiss, context)
+                widgetViewModel = PredictionViewModel(widgetInfos, dismiss, context, analyticsService)
             }
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
-                widgetViewModel = PollViewModel(widgetInfos, dismiss)
+                widgetViewModel = PollViewModel(widgetInfos, dismiss, analyticsService, sdkConfiguration)
             }
             null -> SpecifiedWidgetView(context) // TODO: Why is this here?
         }

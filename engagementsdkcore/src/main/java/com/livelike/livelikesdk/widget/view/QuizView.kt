@@ -33,9 +33,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         set(value) {
             field = value
             viewModel = value as QuizViewModel
-            viewModel?.data?.subscribe(javaClass) {
-                resourceObserver(it)
-            }
+            viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
             viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
             viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver(it) }
@@ -47,6 +45,15 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun onClickObserver(it: String?) {
         viewModel?.onOptionClicked(it)
+    }
+
+    // Refresh the view when re-attached to the activity
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
+        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+        viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+        viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver(it) }
     }
 
     private fun resourceObserver(widget: QuizWidget?) {

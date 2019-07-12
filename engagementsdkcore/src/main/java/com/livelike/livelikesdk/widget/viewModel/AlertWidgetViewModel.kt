@@ -2,15 +2,15 @@ package com.livelike.livelikesdk.widget.viewModel
 
 import android.os.Handler
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
-import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 
-internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismiss: () -> Unit) : WidgetViewModel(dismiss) {
+internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismiss: () -> Unit, val analyticsService: AnalyticsService) : WidgetViewModel(dismiss) {
     private var timeoutStarted = false
     var data: Alert? = null
     val handler: Handler
@@ -29,12 +29,12 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismis
 
     fun onClickLink() {
         interactionData.incrementInteraction()
-        currentWidgetType?.let { analyticService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
+        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticService.trackWidgetDismiss(
+            analyticsService.trackWidgetDismiss(
                 it,
                 currentWidgetId,
                 interactionData,

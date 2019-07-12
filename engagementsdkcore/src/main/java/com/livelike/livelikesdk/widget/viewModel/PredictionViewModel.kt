@@ -5,8 +5,8 @@ import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
-import com.livelike.livelikesdk.services.analytics.analyticService
 import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.SubscriptionManager
@@ -24,7 +24,7 @@ internal class PredictionWidget(
     val resource: Resource
 )
 
-internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val appContext: Context) : WidgetViewModel(dismiss) {
+internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val appContext: Context, val analyticsService: AnalyticsService) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
     var state: Stream<String?> = SubscriptionManager() // confirmation, followup
@@ -88,7 +88,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticService.trackWidgetDismiss(
+            analyticsService.trackWidgetDismiss(
                 it,
                 currentWidgetId,
                 interactionData,
@@ -134,7 +134,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
 
         handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
 
-        currentWidgetType?.let { analyticService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
+        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {

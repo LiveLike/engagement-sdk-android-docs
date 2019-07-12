@@ -9,7 +9,7 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
-import com.livelike.livelikesdk.services.analytics.analyticService
+import com.livelike.livelikesdk.services.analytics.MixpanelAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
@@ -29,45 +29,39 @@ import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class LiveLikeContentSessionImpl(
     private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
-    private val applicationContext: Context
+    private val applicationContext: Context,
+    private val programId: String,
+    private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
     override val chatViewModel: ChatViewModel = ChatViewModel()
-    override var programId: String = ""
-        set(value) {
-            if (field != value) {
-                chatViewModel.clear()
-                field = value
-                if (programId.isNotEmpty()) {
-                    llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(value)) {
-                        if (it !== null) {
-                            program = it
-                            initializeWidgetMessaging(it)
-                            initializeChatMessaging(it)
-                        }
-                    }
-                }
-            }
-        }
-    override var currentPlayheadTime: () -> EpochTime = { EpochTime(0) }
-
     private val llDataClient = LiveLikeDataClientImpl()
     private var program: Program? = null
     private var widgetEventsQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
+    private var analyticService : MixpanelAnalytics? = null
 
     override fun setWidgetContainer(widgetView: FrameLayout) {
         widgetContainer.setWidgetContainer(widgetView)
     }
 
     init {
-        getUser()
-
         sdkConfiguration.subscribe { configuration ->
-            run {
-                analyticService.trackConfiguration(configuration.name)
+            analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+            analyticService?.trackConfiguration(configuration.name)
+
+            getUser()
+
+            if (programId.isNotEmpty()) {
+                llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(programId)) {
+                    if (it !== null) {
+                        program = it
+                        initializeWidgetMessaging(it)
+                        initializeChatMessaging(it)
+                    }
+                }
             }
         }
     }
@@ -77,16 +71,16 @@ internal class LiveLikeContentSessionImpl(
         val username = getNickename()
         if (!sessionId.isEmpty() && !username.isEmpty()) {
             currentUser = LiveLikeUser(sessionId, username)
-            analyticService.trackSession(sessionId)
-            analyticService.trackUsername(username)
+            analyticService?.trackSession(sessionId)
+            analyticService?.trackUsername(username)
         } else {
             sdkConfiguration.subscribe { configuration ->
                 llDataClient.getLiveLikeUserData(configuration.sessionsUrl) {
                     currentUser = it
                     setSessionId(it.sessionId)
                     setNickname(it.userName)
-                    analyticService.trackSession(it.sessionId)
-                    analyticService.trackUsername(it.userName)
+                    analyticService?.trackSession(it.sessionId)
+                    analyticService?.trackUsername(it.userName)
                 }
             }
         }
@@ -104,18 +98,20 @@ internal class LiveLikeContentSessionImpl(
         return currentPlayheadTime()
     }
 
-    override fun contentSessionId() = program?.contentId ?: ""
+    override fun contentSessionId() = programId
     private fun initializeWidgetMessaging(program: Program) {
         widgetEventsQueue?.apply {
             unsubscribeAll()
         }
         sdkConfiguration.subscribe {
             val widgetQueue =
-                PubnubMessagingClient(it.pubNubKey)
-                    .withPreloader(applicationContext)
-//                    .syncTo(currentPlayheadTime)
-                    .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext)
-            widgetQueue.subscribe(hashSetOf(program.subscribeChannel).toList())
+                analyticService?.let { it1 ->
+                    PubnubMessagingClient(it.pubNubKey)
+                        .withPreloader(applicationContext)
+                        .syncTo(currentPlayheadTime)
+                        .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, it1, it)
+                }
+            widgetQueue?.subscribe(hashSetOf(program.subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
         }
     }
@@ -131,11 +127,13 @@ internal class LiveLikeContentSessionImpl(
             val chatClient = SendbirdChatClient()
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue =
-                sendBirdMessagingClient
-                    .syncTo(currentPlayheadTime, 86400000L)
-                    .toChatQueue(chatClient)
-            chatQueue.subscribe(listOf(program.chatChannel))
-            chatQueue.renderer = chatRenderer
+                analyticService?.let { it1 ->
+                    sendBirdMessagingClient
+                        .syncTo(currentPlayheadTime, 86400000L)
+                        .toChatQueue(chatClient, it1)
+                }
+            chatQueue?.subscribe(listOf(program.chatChannel))
+            chatQueue?.renderer = chatRenderer
             this.chatQueue = chatQueue
         }
     }
@@ -148,14 +146,6 @@ internal class LiveLikeContentSessionImpl(
         chatQueue?.toggleEmission(false)
     }
 
-    override fun clearChatHistory() {
-        //  TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun clearFeedbackQueue() {
-        //  TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun close() {
         chatQueue?.apply {
             unsubscribeAll()
@@ -163,5 +153,6 @@ internal class LiveLikeContentSessionImpl(
         widgetEventsQueue?.apply {
             unsubscribeAll()
         }
+        currentWidgetViewStream.clear()
     }
 }

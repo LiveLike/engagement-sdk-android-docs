@@ -2,6 +2,7 @@ package com.livelike.livelikedemo
 
 import android.app.Application
 import com.google.android.exoplayer2.ui.PlayerView
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
@@ -30,9 +31,13 @@ class LiveLikeApplication : Application() {
     }
 
     fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
-        if (session == null || session?.programId != sessionId) {
+        if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
-            session = player.createSession(sessionId, sdk)
+            session = sdk.createContentSession(sessionId, object : LiveLikeSDK.TimecodeGetter {
+                override fun getTimecode(): EpochTime {
+                    return EpochTime(player.getPDT())
+                }
+            })
         }
         return session as LiveLikeContentSession
     }
