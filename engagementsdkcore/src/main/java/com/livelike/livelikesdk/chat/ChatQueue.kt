@@ -51,6 +51,7 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
             chatClient.sendMessage(ClientMessage(messageJson, it, timeData)) { msgId ->
                 analyticsService.trackMessageSent(msgId, message.message.length)
                 onSuccess?.invoke(msgId)
+                lastChatMessage = Pair(msgId, it)
             }
         }
     }
