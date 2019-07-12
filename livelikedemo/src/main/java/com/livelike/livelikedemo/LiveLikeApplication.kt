@@ -19,10 +19,12 @@ class LiveLikeApplication : Application() {
     lateinit var channelManager: ChannelManager
     lateinit var player: VideoPlayer
     private var session: LiveLikeContentSession? = null
+    var sdk: LiveLikeSDK? = null
 
     override fun onCreate() {
         super.onCreate()
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
+        sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
@@ -30,10 +32,10 @@ class LiveLikeApplication : Application() {
         return player
     }
 
-    fun createSession(sessionId: String, sdk: LiveLikeSDK): LiveLikeContentSession {
+    fun createSession(sessionId: String): LiveLikeContentSession {
         if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
-            session = sdk.createContentSession(sessionId, object : LiveLikeSDK.TimecodeGetter {
+            session = sdk?.createContentSession(sessionId, object : LiveLikeSDK.TimecodeGetter {
                 override fun getTimecode(): EpochTime {
                     return EpochTime(player.getPDT())
                 }
