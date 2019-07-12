@@ -68,12 +68,15 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
         }
     }
 
+    private val runnable = Runnable{ dismissWidget(DismissAction.TIMEOUT) }
+    private val runnableConfirm = Runnable{ confirmationState() }
+
     // TODO: need to move the followup logic back to the widget observer instead of there
     fun startDismissTimout(timeout: String, isFollowup: Boolean) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
             if (isFollowup) {
-                handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, AndroidResource.parseDuration(timeout))
+                handler.postDelayed(runnable, AndroidResource.parseDuration(timeout))
                 data.currentData?.apply {
                     followupState(
                         if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id,
@@ -81,7 +84,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
                     )
                 }
             } else {
-                handler.postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
+                handler.postDelayed(runnableConfirm, AndroidResource.parseDuration(timeout))
             }
         }
     }
@@ -132,7 +135,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
 
         state.onNext("confirmation")
 
-        handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
+        handler.postDelayed(runnable, 6000)
 
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
@@ -152,6 +155,8 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
                 }
             }
         }
+        handler.removeCallbacks(runnable)
+        handler.removeCallbacks(runnableConfirm)
         handler.removeCallbacksAndMessages(null)
         timeoutStarted = false
         adapter = null

@@ -32,7 +32,7 @@ internal class QuizWidget(
     val resource: Resource
 )
 
-internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val analyticsService: AnalyticsService, private val sdkConfiguration: LiveLikeSDK.SdkConfiguration) : WidgetViewModel(dismiss) {
+internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val analyticsService: AnalyticsService, private val sdkConfiguration: LiveLikeSDK.SdkConfiguration, val context: Context) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -115,10 +115,13 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         }
     }
 
-    fun startDismissTimout(timeout: String, context: Context) {
+    private val runnableResult = Runnable{ resultsState() }
+    private val runnableDismiss = Runnable{ dismissWidget(DismissAction.TIMEOUT) }
+
+    fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            handler.postDelayed({ resultsState(context) }, AndroidResource.parseDuration(timeout))
+            handler.postDelayed(runnableResult, AndroidResource.parseDuration(timeout))
         }
     }
 
@@ -135,7 +138,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         this.dismissWidget()
     }
 
-    private fun resultsState(context: Context) {
+    private fun resultsState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
@@ -149,13 +152,15 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         adapter?.selectionLocked = true
 
         state.onNext("results")
-        handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
+        handler.postDelayed(runnableDismiss, 6000)
 
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {
         vote() // Vote on dismiss
+        handler.removeCallbacks(runnableResult)
+        handler.removeCallbacks(runnableDismiss)
         handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false

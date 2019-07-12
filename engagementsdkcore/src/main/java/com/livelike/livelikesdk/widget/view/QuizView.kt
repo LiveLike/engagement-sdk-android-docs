@@ -95,7 +95,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 setHasFixedSize(true)
             }
 
-            viewModel?.startDismissTimout(resource.timeout, context.applicationContext)
+            viewModel?.startDismissTimout(resource.timeout)
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f) {

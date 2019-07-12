@@ -112,10 +112,14 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, val 
         }
     }
 
+    private val runnable = Runnable{ confirmationState() }
+    private val runnableDimiss = Runnable{ dismissWidget(DismissAction.TIMEOUT) }
+
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            handler.postDelayed({ confirmationState() }, AndroidResource.parseDuration(timeout))
+            handler.removeCallbacks(runnable)
+            handler.postDelayed(runnable, AndroidResource.parseDuration(timeout))
         }
     }
 
@@ -141,13 +145,15 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, val 
 
         adapter?.selectionLocked = true
 
-        handler.postDelayed({ dismissWidget(DismissAction.TIMEOUT) }, 6000)
+        handler.postDelayed(runnableDimiss, 6000)
 
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {
         vote() // Vote on dismiss
+        handler.removeCallbacks(runnable)
+        handler.removeCallbacks(runnableDimiss)
         handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false

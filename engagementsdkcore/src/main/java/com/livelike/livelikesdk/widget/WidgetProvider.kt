@@ -38,7 +38,7 @@ internal class WidgetProvider {
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss, analyticsService)
             }
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
-                widgetViewModel = QuizViewModel(widgetInfos, dismiss, analyticsService, sdkConfiguration)
+                widgetViewModel = QuizViewModel(widgetInfos, dismiss, analyticsService, sdkConfiguration, context)
             }
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {

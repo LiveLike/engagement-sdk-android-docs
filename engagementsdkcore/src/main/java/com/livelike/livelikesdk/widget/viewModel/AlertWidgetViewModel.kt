@@ -46,18 +46,22 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismis
         dismiss()
     }
 
+    val runnable = Runnable{
+        dismissWidget(DismissAction.TIMEOUT)
+        timeoutStarted = false
+    }
+
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            handler.postDelayed({
-                dismissWidget(DismissAction.TIMEOUT)
-                timeoutStarted = false
-            }, AndroidResource.parseDuration(timeout))
+            handler.removeCallbacks(runnable)
+            handler.postDelayed(runnable, AndroidResource.parseDuration(timeout))
         }
     }
 
     private fun cleanup() {
         timeoutStarted = false
+        handler.removeCallbacks(runnable)
         handler.removeCallbacksAndMessages(null)
         currentWidgetType = null
         currentWidgetId = ""
