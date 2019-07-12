@@ -124,6 +124,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
+            viewModel?.adapter?.showPercentage = true
         }
     }
 

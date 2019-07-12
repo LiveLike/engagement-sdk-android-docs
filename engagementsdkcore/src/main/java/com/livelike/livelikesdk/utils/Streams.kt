@@ -37,7 +37,7 @@ internal class SubscriptionManager<T> : Stream<T> {
     }
 }
 
-internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 2000L): SubscriptionManager<T> = SubscriptionManager<T>().let { mgr ->
+internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> = SubscriptionManager<T>().let { mgr ->
     val source = this
     val handler = Handler(Looper.getMainLooper())
     var running = false

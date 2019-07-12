@@ -89,11 +89,10 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
                     ?.let { url -> dataClient.vote(url) { voteUrl = it } }
             } else {
                 voteUrl?.apply {
-                    dataClient.changeVote(this, myDataset[selectedPosition].id) {}
+                    dataClient.changeAnswer(this, myDataset[selectedPosition].id) {}
                 }
             }
         }
-        adapter?.showPercentage = true
         adapter?.notifyDataSetChanged()
     }
 
@@ -115,13 +114,19 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         }
     }
 
+    private val runnablePreResult = Runnable {
+        debouncedVoteId.unsubscribe(javaClass)
+        adapter?.selectionLocked = true
+        vote()
+        handler.postDelayed(runnableResult, 2000)
+    }
     private val runnableResult = Runnable { resultsState() }
     private val runnableDismiss = Runnable { dismissWidget(DismissAction.TIMEOUT) }
 
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            handler.postDelayed(runnableResult, AndroidResource.parseDuration(timeout))
+            handler.postDelayed(runnablePreResult, AndroidResource.parseDuration(timeout))
         }
     }
 
@@ -179,37 +184,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         interactionData.reset()
     }
 
-    // This is to update the vote value locally
-    private var previousOptionClickedId: String? = null
-
     fun onOptionClicked(it: String?) {
         interactionData.incrementInteraction()
-
-        if (previousOptionClickedId == null) {
-            vote() // Vote on first click
-        }
-        if (it != previousOptionClickedId) {
-            data.currentData?.apply {
-                val options = resource.getMergedOptions() ?: return
-                options.forEach { opt ->
-                    opt.apply {
-                        if (opt.id == it) {
-                            opt.answer_count = opt.answer_count?.plus(1) ?: 0
-                        } else if (previousOptionClickedId == opt.id) {
-                            opt.answer_count = opt.answer_count?.minus(1) ?: 0
-                        }
-                    }
-                }
-                options.forEach { opt ->
-                    opt.apply {
-                        opt.percentage = opt.getPercent((resource.getMergedTotal()).toFloat())
-                    }
-                }
-                adapter?.myDataset = options
-                adapter?.showPercentage = true
-                adapter?.notifyDataSetChanged()
-                previousOptionClickedId = it
-            }
-        }
     }
 }

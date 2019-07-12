@@ -79,6 +79,7 @@ internal interface WidgetDataClient {
     fun changeVote(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?)
     fun registerImpression(impressionUrl: String)
     fun fetchQuizResult(answerUrl: String)
+    fun changeAnswer(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?)
 }
 
 internal fun MessagingClient.asWidgetManager(

@@ -217,6 +217,20 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         }
     }
 
+    override fun changeAnswer(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?) {
+        if (voteUrl == "null" || voteUrl.isEmpty()) {
+            logError { "Vote Change failed as voteUrl is empty" }
+            return
+        }
+        put(
+            voteUrl, FormBody.Builder()
+                .add("choice_id", newVoteId)
+                .build()
+        ) { responseJson ->
+            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
+        }
+    }
+
     override fun fetchQuizResult(answerUrl: String) {
         if (answerUrl == "null" || answerUrl.isEmpty()) {
             logError { "Cannot make a post request to answerUrl as it is empty" }

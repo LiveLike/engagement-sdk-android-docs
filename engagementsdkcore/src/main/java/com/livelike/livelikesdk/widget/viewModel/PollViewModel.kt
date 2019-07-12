@@ -178,41 +178,5 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, val 
 
     fun onOptionClicked(it: String?) {
         interactionData.incrementInteraction()
-
-        if (previousOptionClickedId == null) {
-            vote() // Vote on first click
-        }
-        if (it != previousOptionClickedId) {
-            widgetSpecificInfo.responseChanges += 1
-            data.currentData?.apply {
-                val options = resource.getMergedOptions() ?: return
-                options.forEachIndexed { index, opt ->
-                    opt.apply {
-                        if (opt.id == it) {
-                            widgetSpecificInfo.finalAnswerIndex = index
-                            opt.vote_count = opt.vote_count?.plus(1) ?: 0
-                        } else if (previousOptionClickedId == opt.id) {
-                            opt.vote_count = opt.vote_count?.minus(1) ?: 0
-                        }
-                    }
-                }
-                options.forEach { opt ->
-                    opt.apply {
-                        opt.percentage = opt.getPercent((resource.getMergedTotal()).toFloat())
-
-                        if (opt.id == it) {
-                            widgetSpecificInfo.userVotePercentage = opt.percentage
-                        }
-                    }
-                }
-
-                adapter?.myDataset = options
-                adapter?.showPercentage = true
-                adapter?.notifyDataSetChanged()
-                previousOptionClickedId = it
-
-                widgetSpecificInfo.totalOptions = options.size
-            }
-        }
     }
 }
