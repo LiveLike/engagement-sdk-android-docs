@@ -11,7 +11,7 @@ import com.livelike.livelikesdk.utils.logVerbose
 internal class SynchronizedMessagingClient(
     upstream: MessagingClient,
     var timeSource: () -> EpochTime,
-    val validEventBufferMs: Long
+    private val validEventBufferMs: Long
 ) :
     MessagingClientProxy(upstream) {
 

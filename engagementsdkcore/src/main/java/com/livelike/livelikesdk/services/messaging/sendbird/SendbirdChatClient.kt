@@ -10,7 +10,6 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 
 internal class SendbirdChatClient : ChatClient {
-    private val TAG = javaClass.simpleName
     private val zoneUTC = ZoneId.of("UTC")
     override var messageHandler: ChatClientResultHandler? = null
 

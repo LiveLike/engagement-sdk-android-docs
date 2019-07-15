@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetSpecificInfo
@@ -14,7 +14,7 @@ import com.livelike.livelikesdk.services.messaging.Error
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.MessagingEventListener
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.debounce
@@ -31,12 +31,12 @@ internal class PollWidget(
     val resource: Resource
 )
 
-internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, val analyticsService: AnalyticsService, private val sdkConfiguration: LiveLikeSDK.SdkConfiguration) : WidgetViewModel(dismiss) {
+internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
     private val debouncer = currentVoteId.debounce()
-    private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
+    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
 
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
@@ -173,10 +173,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, val 
         currentWidgetType = null
     }
 
-    // This is to update the vote value locally
-    private var previousOptionClickedId: String? = null
-
-    fun onOptionClicked(it: String?) {
+    fun onOptionClicked() {
         interactionData.incrementInteraction()
     }
 }

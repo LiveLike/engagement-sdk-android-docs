@@ -40,7 +40,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         }
 
     private fun clickedOptionObserver() = Observer<String?> {
-        viewModel?.onOptionClicked(it)
+        viewModel?.onOptionClicked()
     }
 
     // Refresh the view when re-attached to the activity

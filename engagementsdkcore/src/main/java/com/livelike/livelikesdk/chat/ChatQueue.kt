@@ -12,7 +12,7 @@ import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.services.messaging.sendbird.ChatClient
 import java.util.Date
 
-internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient, val analyticsService: AnalyticsService) :
+internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient, private val analyticsService: AnalyticsService) :
     MessagingClientProxy(upstream),
     ChatEventListener {
     private val connectedChannels: MutableList<String> = mutableListOf()

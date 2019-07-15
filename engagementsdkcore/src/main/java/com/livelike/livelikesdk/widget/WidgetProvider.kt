@@ -4,7 +4,7 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
@@ -31,7 +31,7 @@ internal class WidgetProvider {
         context: Context,
         dismiss: () -> Unit,
         analyticsService: AnalyticsService,
-        sdkConfiguration: LiveLikeSDK.SdkConfiguration
+        sdkConfiguration: EngagementSDK.SdkConfiguration
     ): SpecifiedWidgetView? {
         return when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
@@ -47,7 +47,7 @@ internal class WidgetProvider {
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
                 widgetViewModel = PollViewModel(widgetInfos, dismiss, analyticsService, sdkConfiguration)
             }
-            null -> SpecifiedWidgetView(context) // TODO: Why is this here?
+            else -> null
         }
     }
 }

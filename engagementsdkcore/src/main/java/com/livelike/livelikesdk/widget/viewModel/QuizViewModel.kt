@@ -6,7 +6,7 @@ import android.os.Looper
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.messaging.ClientMessage
@@ -15,7 +15,7 @@ import com.livelike.livelikesdk.services.messaging.Error
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.MessagingEventListener
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.debounce
@@ -32,12 +32,12 @@ internal class QuizWidget(
     val resource: Resource
 )
 
-internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val analyticsService: AnalyticsService, private val sdkConfiguration: LiveLikeSDK.SdkConfiguration, val context: Context) : WidgetViewModel(dismiss) {
+internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration, val context: Context) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
     private val debouncedVoteId = currentVoteId.debounce()
-    private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
+    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
     var state: Stream<String> = SubscriptionManager() // results
 
     var adapter: WidgetOptionsViewAdapter? = null

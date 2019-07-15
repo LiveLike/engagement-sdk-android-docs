@@ -4,7 +4,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.Timeline
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
-import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.EngagementSDK
 
 /**
  * This extension act as a plugin for Exoplayer.
@@ -13,11 +13,11 @@ import com.livelike.livelikesdk.LiveLikeSDK
  * @param playerProvider An interface returning the latest player instance when called.
  * @param programId The program to connect the session with. This Id can be created from the Engagement CMS.
  */
-fun LiveLikeSDK.createExoplayerSession(
+fun EngagementSDK.createExoplayerSession(
     playerProvider: PlayerProvider,
     programId: String
 ): LiveLikeContentSession {
-    return this.createContentSession(programId, object : LiveLikeSDK.TimecodeGetter {
+    return this.createContentSession(programId, object : EngagementSDK.TimecodeGetter {
         override fun getTimecode(): EpochTime {
             return EpochTime(getExoplayerPdtTime(playerProvider))
         }

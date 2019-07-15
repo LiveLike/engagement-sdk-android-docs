@@ -30,8 +30,6 @@ import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
-import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseAdapter
-import com.livelike.livelikesdk.widget.animation.easing.AnimationEaseInterpolator
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
@@ -52,8 +50,6 @@ import java.util.UUID
  *   </com.livelike.sdk.chat.ChatView>
  *  ```
  *
- *  Once the view has been created, provide data source for this view
- *  using [setDataSource]. See [ChatAdapter] class on how to create a data source.
  */
 
 internal enum class KeyboardHideReason {
@@ -80,7 +76,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private lateinit var session: LiveLikeContentSession
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
-    private val animationEaseAdapter = AnimationEaseAdapter()
 
     private val viewModel: ChatViewModel?
         get() = session.chatViewModel
@@ -291,20 +286,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             if (showingSnapToLive) 0f else dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION).toFloat()
         )
         translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
-        val finalTranslationAnimator = animationEaseAdapter.createAnimationEffectWith(
-            AnimationEaseInterpolator.Ease.EaseOutCubic,
-            SNAP_TO_LIVE_ANIMATION_DURATION,
-            translateAnimation
-        )
-
         val alphaAnimation = ObjectAnimator.ofFloat(snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
         alphaAnimation.duration = (SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION).toLong()
-        val finalAlphaAnimator = animationEaseAdapter.createAnimationEffectWith(
-            AnimationEaseInterpolator.Ease.EaseOutCubic,
-            SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION,
-            alphaAnimation
-        )
-        finalAlphaAnimator.addListener(object : Animator.AnimatorListener {
+        alphaAnimation.addListener(object : Animator.AnimatorListener {
             override fun onAnimationEnd(animation: Animator) {
                 snap_live.visibility = if (showingSnapToLive) View.VISIBLE else View.GONE
             }
@@ -318,7 +302,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         })
 
         snapToLiveAnimation = AnimatorSet()
-        snapToLiveAnimation?.play(finalTranslationAnimator)?.with(finalAlphaAnimator)
+        snapToLiveAnimation?.play(translateAnimation)?.with(alphaAnimation)
         snapToLiveAnimation?.start()
     }
 

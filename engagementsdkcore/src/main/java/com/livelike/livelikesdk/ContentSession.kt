@@ -15,7 +15,7 @@ import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdChatClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
-import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.Provider
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
@@ -27,16 +27,15 @@ import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
-internal class LiveLikeContentSessionImpl(
-    private val sdkConfiguration: Provider<LiveLikeSDK.SdkConfiguration>,
+internal class ContentSession(
+    private val sdkConfiguration: Provider<EngagementSDK.SdkConfiguration>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
     override val chatViewModel: ChatViewModel = ChatViewModel()
-    private val llDataClient = LiveLikeDataClientImpl()
-    private var program: Program? = null
+    private val llDataClient = EngagementDataClientImpl()
     private var widgetEventsQueue: WidgetManager? = null
     private var chatQueue: ChatQueue? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
@@ -55,11 +54,10 @@ internal class LiveLikeContentSessionImpl(
             getUser()
 
             if (programId.isNotEmpty()) {
-                llDataClient.getLiveLikeProgramData(BuildConfig.PROGRAM_URL.plus(programId)) {
+                llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) {
                     if (it !== null) {
-                        program = it
-                        initializeWidgetMessaging(it)
-                        initializeChatMessaging(it)
+                        initializeWidgetMessaging(it.subscribeChannel)
+                        initializeChatMessaging(it.chatChannel)
                     }
                 }
             }
@@ -69,13 +67,13 @@ internal class LiveLikeContentSessionImpl(
     private fun getUser() {
         val sessionId = getSessionId()
         val username = getNickename()
-        if (!sessionId.isEmpty() && !username.isEmpty()) {
+        if (sessionId.isNotEmpty() && username.isNotEmpty()) {
             currentUser = LiveLikeUser(sessionId, username)
             analyticService?.trackSession(sessionId)
             analyticService?.trackUsername(username)
         } else {
             sdkConfiguration.subscribe { configuration ->
-                llDataClient.getLiveLikeUserData(configuration.sessionsUrl) {
+                llDataClient.getUserData(configuration.sessionsUrl) {
                     currentUser = it
                     setSessionId(it.sessionId)
                     setNickname(it.userName)
@@ -99,7 +97,7 @@ internal class LiveLikeContentSessionImpl(
     }
 
     override fun contentSessionId() = programId
-    private fun initializeWidgetMessaging(program: Program) {
+    private fun initializeWidgetMessaging(subscribeChannel: String) {
         widgetEventsQueue?.apply {
             unsubscribeAll()
         }
@@ -111,28 +109,28 @@ internal class LiveLikeContentSessionImpl(
                         .syncTo(currentPlayheadTime)
                         .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, it1, it)
                 }
-            widgetQueue?.subscribe(hashSetOf(program.subscribeChannel).toList())
+            widgetQueue?.subscribe(hashSetOf(subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
         }
     }
 
-    private fun initializeChatMessaging(program: Program) {
+    private fun initializeChatMessaging(chatChannel: String) {
         chatQueue?.apply {
             unsubscribeAll()
         }
 
         sdkConfiguration.subscribe {
             val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
-            // validEventBufferMs for chat is currently 24 hours
             val chatClient = SendbirdChatClient()
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue =
                 analyticService?.let { it1 ->
                     sendBirdMessagingClient
+                        // validEventBufferMs for chat is currently 24 hours
                         .syncTo(currentPlayheadTime, 86400000L)
                         .toChatQueue(chatClient, it1)
                 }
-            chatQueue?.subscribe(listOf(program.chatChannel))
+            chatQueue?.subscribe(listOf(chatChannel))
             chatQueue?.renderer = chatRenderer
             this.chatQueue = chatQueue
         }

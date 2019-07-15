@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
@@ -18,7 +18,7 @@ internal class WidgetManager(
     private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
     private val context: Context,
     private val analyticsService: AnalyticsService,
-    private val sdkConfiguration: LiveLikeSDK.SdkConfiguration
+    private val sdkConfiguration: EngagementSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
 
@@ -87,7 +87,7 @@ internal fun MessagingClient.asWidgetManager(
     widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
     context: Context,
     analyticsService: AnalyticsService,
-    sdkConfiguration: LiveLikeSDK.SdkConfiguration
+    sdkConfiguration: EngagementSDK.SdkConfiguration
 ): WidgetManager {
     return WidgetManager(this, dataClient, widgetInfosStream, context, analyticsService, sdkConfiguration)
 }

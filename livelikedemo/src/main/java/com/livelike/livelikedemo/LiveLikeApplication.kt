@@ -7,7 +7,7 @@ import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
-import com.livelike.livelikesdk.LiveLikeSDK
+import com.livelike.livelikesdk.EngagementSDK
 
 class LiveLikeApplication : Application() {
 
@@ -19,14 +19,14 @@ class LiveLikeApplication : Application() {
     lateinit var channelManager: ChannelManager
     lateinit var player: VideoPlayer
     private var session: LiveLikeContentSession? = null
-    var sdk: LiveLikeSDK? = null
-    var sdk2: LiveLikeSDK? = null
+    var sdk: EngagementSDK? = null
+    var sdk2: EngagementSDK? = null
 
     override fun onCreate() {
         super.onCreate()
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
-        sdk = LiveLikeSDK(getString(R.string.app_id), applicationContext)
-        sdk2 = LiveLikeSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
+        sdk = EngagementSDK(getString(R.string.app_id), applicationContext)
+        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
@@ -37,7 +37,7 @@ class LiveLikeApplication : Application() {
     fun createSession(sessionId: String): LiveLikeContentSession {
         if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
-            session = sdk?.createContentSession(sessionId, object : LiveLikeSDK.TimecodeGetter {
+            session = sdk?.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {
                 override fun getTimecode(): EpochTime {
                     return EpochTime(player.getPDT())
                 }

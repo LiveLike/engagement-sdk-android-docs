@@ -7,7 +7,7 @@ import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
-import com.livelike.livelikesdk.services.network.LiveLikeDataClientImpl
+import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.gson
@@ -24,9 +24,9 @@ internal class PredictionWidget(
     val resource: Resource
 )
 
-internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val appContext: Context, val analyticsService: AnalyticsService) : WidgetViewModel(dismiss) {
+internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val appContext: Context, private val analyticsService: AnalyticsService) : WidgetViewModel(dismiss) {
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
-    private val dataClient: WidgetDataClient = LiveLikeDataClientImpl()
+    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
     var state: Stream<String?> = SubscriptionManager() // confirmation, followup
 
     var adapter: WidgetOptionsViewAdapter? = null

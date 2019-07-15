@@ -36,6 +36,14 @@ internal class ImagePreloaderMessagingClient(
             other as ImageMessage
             return other.clientMessage == this.clientMessage
         }
+
+        override fun hashCode(): Int {
+            var result = clientMessage.hashCode()
+            result = 31 * result + messagingClient.hashCode()
+            result = 31 * result + imageCount
+            result = 31 * result + imagePreloaded
+            return result
+        }
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

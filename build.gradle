@@ -12,7 +12,6 @@ buildscript {
         dokkaVersion = "0.9.17"
         expressoVersion = "3.0.2"
         exoplayerVersion = "2.9.3"
-        easingVersion = "2.1"
         glideVersion = '4.9.0'
         gradleVersion = '3.4.2'
         gsonVersion = '2.8.5'

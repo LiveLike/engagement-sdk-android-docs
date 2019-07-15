@@ -10,7 +10,7 @@ import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 
-internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismiss: () -> Unit, val analyticsService: AnalyticsService) : WidgetViewModel(dismiss) {
+internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismiss: () -> Unit, private val analyticsService: AnalyticsService) : WidgetViewModel(dismiss) {
     private var timeoutStarted = false
     var data: Alert? = null
     val handler: Handler
@@ -46,7 +46,7 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismis
         dismiss()
     }
 
-    val runnable = Runnable {
+    private val runnable = Runnable {
         dismissWidget(DismissAction.TIMEOUT)
         timeoutStarted = false
     }

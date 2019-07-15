@@ -28,11 +28,7 @@ class SpanningLinearLayoutManager(context: Context, val itemMinSize: Int) : Line
         return spanLayoutSize(super.generateLayoutParams(lp))
     }
 
-    override fun checkLayoutParams(lp: RecyclerView.LayoutParams?): Boolean {
-        return super.checkLayoutParams(lp)
-    }
-
-    var itemSize: Int = 0
+    private var itemSize: Int = 0
     private fun spanLayoutSize(layoutParams: RecyclerView.LayoutParams): RecyclerView.LayoutParams {
         if (orientation == HORIZONTAL) {
             itemSize = (horizontalSpace / itemCount.toDouble()).roundToInt()

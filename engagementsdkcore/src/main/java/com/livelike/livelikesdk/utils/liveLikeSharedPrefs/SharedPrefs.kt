@@ -4,11 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.livelike.livelikesdk.utils.gson
 
-private val PREFERENCE_KEY_SESSION_ID = "SessionId"
-private val PREFERENCE_KEY_NICKNAME = "Username"
-
-private val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
-
+private const val PREFERENCE_KEY_SESSION_ID = "SessionId"
+private const val PREFERENCE_KEY_NICKNAME = "Username"
+private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
 private var mAppContext: Context? = null
 
 internal fun initLiveLikeSharedPrefs(appContext: Context) {

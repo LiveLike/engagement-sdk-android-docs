@@ -8,10 +8,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.MalformedJsonException
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.livelikesdk.LiveLikeDataClient
-import com.livelike.livelikesdk.LiveLikeSDK
-import com.livelike.livelikesdk.LiveLikeSdkDataClient
-import com.livelike.livelikesdk.Program
+import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.utils.extractStringOrEmpty
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.logError
@@ -29,7 +26,7 @@ import okhttp3.Response
 import okio.ByteString
 import java.io.IOException
 
-internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClient, WidgetDataClient {
+internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
 
     private val MAX_PROGRAM_DATA_REQUESTS = 13
 
@@ -70,7 +67,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
     @Suppress("unused")
     private fun Any?.unit() = Unit
 
-    override fun getLiveLikeProgramData(url: String, responseCallback: (program: Program?) -> Unit) {
+    override fun getProgramData(url: String, responseCallback: (program: Program?) -> Unit) {
 
         fun respondWith(value: Program?) = mainHandler.post { responseCallback(value) }.unit()
 
@@ -117,7 +114,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         }
     }
 
-    override fun getLiveLikeSdkConfig(url: String, responseCallback: (config: LiveLikeSDK.SdkConfiguration) -> Unit) {
+    override fun getEngagementSdkConfig(url: String, responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit) {
         val request = Request.Builder()
             .url(url)
             .build()
@@ -140,8 +137,8 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         })
     }
 
-    private fun pareseSdkConfiguration(configData: JsonObject): LiveLikeSDK.SdkConfiguration {
-        return LiveLikeSDK.SdkConfiguration(
+    private fun pareseSdkConfiguration(configData: JsonObject): EngagementSDK.SdkConfiguration {
+        return EngagementSDK.SdkConfiguration(
             configData.extractStringOrEmpty("url"),
             configData.extractStringOrEmpty("name"),
             configData.extractStringOrEmpty("client_id"),
@@ -156,7 +153,7 @@ internal class LiveLikeDataClientImpl : LiveLikeDataClient, LiveLikeSdkDataClien
         )
     }
 
-    override fun getLiveLikeUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit) {
+    override fun getUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit) {
         val requestString = "{}"
         try {
             client.newCall(

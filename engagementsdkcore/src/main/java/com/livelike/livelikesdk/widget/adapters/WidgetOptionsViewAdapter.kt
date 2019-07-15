@@ -51,7 +51,6 @@ internal class WidgetOptionsViewAdapter(
         return TextOptionViewHolder(textView, onClick)
     }
 
-    // TODO: Remove the logic from the adapter and move it to the view itself
     override fun onBindViewHolder(holder: TextOptionViewHolder, position: Int) {
         val item = myDataset[position]
         val itemIsSelected = selectedPosition == position

@@ -1,11 +1,12 @@
-package com.livelike.livelikesdk
+package com.livelike.livelikesdk.services.network
 
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.google.gson.annotations.SerializedName
+import com.livelike.livelikesdk.EngagementSDK
 
-internal interface LiveLikeDataClient {
-    fun getLiveLikeProgramData(url: String, responseCallback: (program: Program?) -> Unit)
-    fun getLiveLikeUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit)
+internal interface DataClient {
+    fun getProgramData(url: String, responseCallback: (program: Program?) -> Unit)
+    fun getUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit)
 }
 
 internal data class Program(
@@ -28,3 +29,7 @@ internal data class Program(
     @SerializedName("sendbird_channel")
     val chatChannel: String
 )
+
+internal interface EngagementSdkDataClient {
+    fun getEngagementSdkConfig(url: String, responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit)
+}
