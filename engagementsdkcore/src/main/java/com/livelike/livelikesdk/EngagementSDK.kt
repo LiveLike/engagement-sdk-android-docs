@@ -77,4 +77,3 @@ class EngagementSDK(val clientId: String, private val applicationContext: Contex
         val mixpanelToken: String
     )
 }
-
