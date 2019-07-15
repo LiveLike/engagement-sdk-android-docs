@@ -4,15 +4,25 @@
                                              xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="match_parent"
                                              android:animateLayoutChanges="true"
-                                             android:layout_height="wrap_content"
-                                             android:background="#99000000">
+                                             android:layout_height="wrap_content">
+
+
+    <View
+            android:id="@+id/bkgrd"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/button_default"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+    />
 
     <!--suppress AndroidDomInspection -->
     <Button
             android:id="@+id/text_button"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:background="@drawable/button_default"
             android:fontFamily="@font/livelike_option_font"
             android:textSize="@dimen/livelike_option_text_size"
             android:textColor="@color/livelike_option_text_color"
@@ -26,7 +36,8 @@
             android:textAlignment="textStart"
             android:paddingEnd="46dp"
             android:paddingStart="16dp"
-            android:gravity="start"/>
+            android:gravity="start|center"
+    />
 
     <ProgressBar
             android:id="@+id/determinateBar"
@@ -48,6 +59,7 @@
             tools:progressDrawable="@drawable/progress_bar_user_correct"
     />
 
+    <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/percentageText"
             android:layout_width="wrap_content"
@@ -56,7 +68,7 @@
             android:textSize="@dimen/livelike_percent_label_text_size"
             android:gravity="end"
 
-            app:fontFamily="@font/livelike_header_font"
+            app:fontFamily="@font/livelike_option_font"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/determinateBar"
             app:layout_constraintStart_toStartOf="@+id/determinateBar"
@@ -67,5 +79,7 @@
             tools:text="80%"
             tools:visibility="visible"
             android:layout_marginRight="10dp"/>
+
+
 
 </android.support.constraint.ConstraintLayout>

@@ -20,6 +20,7 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">#4db6ac</item>
         <item name="android:lineSpacingExtra">10sp</item>
+        <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_width">wrap_content</item>
@@ -39,25 +40,14 @@
 
     <style name="TestAppButton" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingRight">16dp</item>
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">#de000000</item>
-        <item name="android:textAlignment">viewStart</item>
+        <item name="android:gravity">start|center</item>
         <item name="android:lineSpacingExtra">8sp</item>
     </style>
-
-    <!--livelike font customization-->
-    <item name="livelike_header_font"
-          type="font">@font/antenna_bold
-    </item>
-    <item name="livelike_option_font"
-          type="font">@font/antenna_light
-    </item>
-
-    <item name="livelike_chat_message_font"
-          type="font">@font/antenna_bold
-    </item>
-    <string name="livelike_chat_input_hint">Hi from Livelike…</string>
 </resources>

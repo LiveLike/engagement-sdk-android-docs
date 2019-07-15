@@ -24,6 +24,7 @@
                                                                              android:layout_marginEnd="16dp"/>
 
     <android.support.v7.widget.RecyclerView android:id="@+id/textRecyclerView"
+                                            android:hapticFeedbackEnabled="true"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             tools:listitem="@layout/atom_widget_text_item"
@@ -47,8 +48,7 @@
             android:id="@+id/followupAnimation"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            app:lottie_scale="2"
+            android:scaleType="centerCrop"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"

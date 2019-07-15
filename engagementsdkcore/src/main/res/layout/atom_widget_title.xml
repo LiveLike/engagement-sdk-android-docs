@@ -5,6 +5,7 @@
                                              android:layout_width="match_parent"
                                              android:layout_height="match_parent">
 
+    <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/titleTextView"
             android:layout_height="wrap_content"
@@ -15,7 +16,14 @@
             app:fontFamily="@font/livelike_header_font"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Question Text goes here"
+            android:paddingStart="16dp"
+            android:paddingRight="16dp"
+            android:paddingEnd="16dp"
+            android:textAlignment="textStart"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textAllCaps="true"
+            android:gravity="start|center"
+            android:paddingLeft="16dp"/>
 
 </android.support.constraint.ConstraintLayout>

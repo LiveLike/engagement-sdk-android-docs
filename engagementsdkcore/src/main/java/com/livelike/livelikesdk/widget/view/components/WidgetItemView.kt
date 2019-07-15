@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.widget.view.components
 
 import android.animation.LayoutTransition
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
@@ -94,7 +95,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
             }
         } else {
             updateViewProgressBar(R.drawable.progress_bar_user_selection_neutral)
-            updateViewBackground(R.drawable.button_default)
+            updateViewBackground(R.color.livelike_transparent)
         }
 
         if (correctOptionId.isNotEmpty()) {
@@ -111,6 +112,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         setProgressVisibility(correctOptionId.isNotEmpty())
     }
 
+    @SuppressLint("SetTextI18n")
     private fun animateProgress(option: Option, startValue: Float) {
         ValueAnimator.ofFloat(startValue, option.percentage.toFloat()).apply {
             addUpdateListener {

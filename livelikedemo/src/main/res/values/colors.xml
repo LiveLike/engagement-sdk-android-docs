@@ -5,47 +5,4 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorDivider">#8BBDBDBD</color>
     <color name="text_color">#ffffff</color>
-
-    <!--livelike customization values-->
-
-    <!--title gradients (question text)-->
-    <color name="livelike_default_title_gradient_left">#003264</color>
-    <color name="livelike_default_title_gradient_right">#0096c8</color>
-
-    <color name="livelike_prediction_title_gradient_left">#003264</color>
-    <color name="livelike_prediction_title_gradient_right">#0096c8</color>
-    <color name="livelike_quiz_title_gradient_left">#f76b1c</color>
-    <color name="livelike_quiz_title_gradient_right">#ffb400</color>
-    <color name="livelike_poll_title_gradient_left">#3023ae</color>
-    <color name="livelike_poll_title_gradient_right">#c864c8</color>
-
-    <!--option selection-->
-    <color name="livelike_default_option_selected_border">#990000</color>
-    <color name="livelike_poll_option_selected_border">#c86dd7</color>
-    <color name="livelike_quiz_option_selected_border">#ffc800</color>
-    <color name="livelike_prediction_option_selected_border">#00b4c8</color>
-
-    <!--option percentage bars-->
-    <color name="livelike_default_bar_gradient_left">#99ff0000</color>
-    <color name="livelike_default_bar_gradient_right">#33ffffff</color>
-    <color name="livelike_correct_bar_gradient_left">#e681ca00</color>
-    <color name="livelike_correct_bar_gradient_right">#e6429321</color>
-    <color name="livelike_incorrect_bar_gradient_left">#e6dc0028</color>
-    <color name="livelike_incorrect_bar_gradient_right">#e6d0021b</color>
-    <color name="livelike_neutral_bar_gradient_left">#33ffffff</color>
-    <color name="livelike_neutral_bar_gradient_right">#33ffffff</color>
-
-    <!--text colors-->
-    <color name="livelike_default_text_color">#ffffff</color>
-    <color name="livelike_header_text_color">@color/livelike_default_text_color</color>
-    <color name="livelike_option_text_color">@color/livelike_default_text_color</color>
-    <color name="livelike_percent_label_text_color">@color/livelike_default_text_color</color>
-    <color name="livelike_alert_body_text_color">@color/livelike_default_text_color</color>
-    <color name="livelike_alert_link_text_color">@color/livelike_default_text_color</color>
-    <color name="livelike_alert_label_text_color">@color/livelike_default_text_color</color>
-
-    <!--livelike customization values not exposed for special customization-->
-    <color name="livelike_prediction_image_option_selected_border">#f21c1c1c</color>
-    <color name="livelike_poll_bar_gradient_left">#e69650be</color>
-    <color name="livelike_poll_bar_gradient_right">#e6c864c8</color>
 </resources>
