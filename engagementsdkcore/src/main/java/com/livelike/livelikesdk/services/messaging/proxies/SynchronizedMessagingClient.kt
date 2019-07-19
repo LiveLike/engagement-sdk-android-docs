@@ -14,6 +14,17 @@ internal class SynchronizedMessagingClient(
     private val validEventBufferMs: Long
 ) :
     MessagingClientProxy(upstream) {
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+        upstream.publishMessage(message, channel, timeSinceEpoch)
+    }
+
+    override fun stop() {
+        upstream.stop()
+    }
+
+    override fun resume() {
+        upstream.resume()
+    }
 
     companion object {
         const val SYNC_TIME_FIDELITY = 100L

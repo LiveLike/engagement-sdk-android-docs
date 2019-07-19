@@ -1,10 +1,12 @@
 package com.livelike.livelikesdk.services.messaging.sendbird
 
 import android.content.Context
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.MessagingEventListener
+import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.logDebug
 import com.livelike.livelikesdk.utils.logError
 import com.sendbird.android.BaseChannel
@@ -16,6 +18,8 @@ import com.sendbird.android.SendBird.UserInfoUpdateHandler
 import com.sendbird.android.SendBirdException
 import com.sendbird.android.User
 import com.sendbird.android.UserMessage
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.util.Date
 
@@ -25,6 +29,50 @@ internal class SendbirdMessagingClient(
     private val liveLikeUser: LiveLikeUser?
 ) :
     MessagingClient, ChatClientResultHandler {
+    private val zoneUTC = ZoneId.of("UTC")
+
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+        val messageTimestamp = gson.toJson(
+            MessageData(
+                ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs), zoneUTC
+                )
+            )
+        )
+        OpenChannel.getChannel(channel) { openChannel, _ ->
+            openChannel?.sendUserMessage(
+                message,
+                messageTimestamp, null, null
+            ) { _, e ->
+                e?.also { logError { "Error sending the message: $it" } }
+            }
+        }
+    }
+
+    override fun stop() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun resume() {
+
+        // On Resume: Resubscribe and pull missed messages
+//        OpenChannel.getChannel(channel) { openChannel, _ ->
+//            openChannel.createPreviousMessageListQuery().load(
+//                SendbirdMessagingClient.CHAT_HISTORY_LIMIT, false
+//            ) { list, e ->
+//                if (e != null) {
+//                    logError { e }
+//                    return@load
+//                }
+//                messageHandler?.handleMessages(list.takeLastWhile { it.messageId.toString() > messageId }.map {
+//                    SendBirdUtils.clientMessageFromBaseMessage(
+//                        it as UserMessage,
+//                        openChannel
+//                    )
+//                })
+//            }
+//        }
+    }
 
     companion object {
         val CHAT_HISTORY_LIMIT = 50
@@ -131,4 +179,8 @@ internal class SendbirdMessagingClient(
             listener?.onClientMessageEvent(this, it)
         }
     }
+}
+
+internal interface ChatClientResultHandler {
+    fun handleMessages(messages: List<ClientMessage>)
 }

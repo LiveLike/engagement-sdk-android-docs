@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.utils.AndroidResource
@@ -22,6 +23,17 @@ internal class ImagePreloaderMessagingClient(
     val context: Context
 ) :
     MessagingClientProxy(upstream) {
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+        upstream.publishMessage(message, channel, timeSinceEpoch)
+    }
+
+    override fun stop() {
+        upstream.stop()
+    }
+
+    override fun resume() {
+        upstream.resume()
+    }
 
     private val processingList = mutableListOf<ImageMessage>()
     private val downloadedImages = mutableListOf<String>()

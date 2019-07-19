@@ -14,7 +14,6 @@ import com.livelike.livelikesdk.services.analytics.MixpanelAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdChatClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
@@ -22,13 +21,14 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
+import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
-    sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
@@ -98,14 +98,22 @@ internal class ContentSession(
     }
 
     private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
-        val widgetQueue =
+        widgetEventsQueue =
             PubnubMessagingClient(config.pubNubKey)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
+                .apply {
+                    subscribe(hashSetOf(subscribeChannel).toList())
+                }
+    }
 
-        widgetQueue.subscribe(hashSetOf(subscribeChannel).toList())
-        this.widgetEventsQueue = widgetQueue
+    fun pauseWidgets(){
+        widgetEventsQueue?.stop() // Disconnect pubnub
+    }
+
+    fun resumeWidgets(){
+        widgetEventsQueue?.resume() // Reconnect pubnub
     }
 
 
@@ -118,32 +126,34 @@ internal class ContentSession(
         }
 
     private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
-            val sendBirdMessagingClient = SendbirdMessagingClient(config.sendBirdAppId, applicationContext, currentUser)
-            val chatClient = SendbirdChatClient()
-            chatClient.messageHandler = sendBirdMessagingClient
-            val chatQueue =
-                    sendBirdMessagingClient
-                        // validEventBufferMs for chat is currently 24 hours
-                        .syncTo(currentPlayheadTime, 86400000L)
-                        .toChatQueue(chatClient, analyticService)
-
-            chatQueue.subscribe(listOf(chatChannel))
-            chatQueue.renderer = chatRenderer
-            this.chatQueue = chatQueue
+        chatQueue =
+            SendbirdMessagingClient(config.sendBirdAppId, applicationContext, currentUser)
+                // validEventBufferMs for chat is currently 24 hours
+                .syncTo(currentPlayheadTime, 86400000L)
+                .toChatQueue(analyticService)
+                .apply {
+                    subscribe(listOf(chatChannel))
+                    renderer = chatRenderer
+                }
     }
 
 
     //////// Global Session Controls ////////
 
     override fun pause() {
-        chatQueue?.toggleEmission(true)
+        logError { "Pausing the Session" }
+        pauseWidgets()
+//        chatQueue?.toggleEmission(true)
     }
 
     override fun resume() {
-        chatQueue?.toggleEmission(false)
+        logError { "Resuming the Session" }
+        resumeWidgets()
+//        chatQueue?.toggleEmission(false)
     }
 
     override fun close() {
+        logError { "Closing the Session" }
         chatQueue?.apply {
             unsubscribeAll()
         }
