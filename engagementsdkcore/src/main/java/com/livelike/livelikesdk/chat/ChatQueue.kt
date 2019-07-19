@@ -11,7 +11,7 @@ import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import java.util.Date
 
-internal class ChatQueue(upstream: MessagingClient, private val analyticsService: AnalyticsService) :
+internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
     ChatEventListener {
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -27,7 +27,6 @@ internal class ChatQueue(upstream: MessagingClient, private val analyticsService
     }
 
     private val connectedChannels: MutableList<String> = mutableListOf()
-    private var lastChatMessage: Pair<String, String>? = null
     private var paused = false
 
     var renderer: ChatRenderer? = null
@@ -51,7 +50,7 @@ internal class ChatQueue(upstream: MessagingClient, private val analyticsService
         super.unsubscribeAll()
     }
 
-    override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime, onSuccess: ((msgId: String) -> Unit)?) {
+    override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
         // If chat is paused we can queue here
         val messageJson = JsonObject()
         messageJson.addProperty("message", message.message)
@@ -60,9 +59,6 @@ internal class ChatQueue(upstream: MessagingClient, private val analyticsService
         // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
             publishMessage(message.message, it, timeData)
-            analyticsService.trackMessageSent(message.id, message.message.length)
-            onSuccess?.invoke(message.id)
-            lastChatMessage = Pair(message.id, it)
         }
 
     }
@@ -77,7 +73,6 @@ internal class ChatQueue(upstream: MessagingClient, private val analyticsService
         )
         if (!paused) {
             renderer?.displayChatMessage(newMessage)
-            lastChatMessage = Pair(newMessage.id, event.channel)
         }
     }
 
@@ -90,6 +85,6 @@ internal class ChatQueue(upstream: MessagingClient, private val analyticsService
     }
 }
 
-internal fun MessagingClient.toChatQueue(analyticsService: AnalyticsService): ChatQueue {
-    return ChatQueue(this, analyticsService)
+internal fun MessagingClient.toChatQueue(): ChatQueue {
+    return ChatQueue(this)
 }

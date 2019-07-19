@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.services.messaging.sendbird
 import android.content.Context
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.MessagingEventListener
@@ -24,12 +25,41 @@ import org.threeten.bp.ZonedDateTime
 import java.util.Date
 
 internal class SendbirdMessagingClient(
-    subscribeKey: String,
+    val subscribeKey: String,
     val context: Context,
+    private val analyticsService: AnalyticsService,
     private val liveLikeUser: LiveLikeUser?
 ) :
     MessagingClient, ChatClientResultHandler {
     private val zoneUTC = ZoneId.of("UTC")
+    var lastChatMessage: Pair<String, String>? = null
+
+    companion object {
+        val CHAT_HISTORY_LIMIT = 50
+    }
+
+    private var listener: MessagingEventListener? = null
+    private val TAG = javaClass.simpleName
+    private var connectedChannels: MutableList<OpenChannel> = mutableListOf()
+    private val userId = fetchUserId()
+    private val messageIdList = mutableListOf<Long>()
+
+    init {
+        SendBird.init(subscribeKey, context)
+        SendBird.connect(userId, object : SendBird.ConnectHandler {
+            override fun onConnected(user: User?, e: SendBirdException?) {
+                if (e != null || user == null) { // Error.
+                    return
+                }
+                SendBird.updateCurrentUserInfo(fetchUsername(), null,
+                    UserInfoUpdateHandler { exception ->
+                        if (exception != null) { // Error.
+                            return@UserInfoUpdateHandler
+                        }
+                    })
+            }
+        })
+    }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val messageTimestamp = gson.toJson(
@@ -43,17 +73,35 @@ internal class SendbirdMessagingClient(
             openChannel?.sendUserMessage(
                 message,
                 messageTimestamp, null, null
-            ) { _, e ->
+            ) { msg, e ->
                 e?.also { logError { "Error sending the message: $it" } }
+                analyticsService.trackMessageSent(msg.messageId.toString(), msg.message.length)
+                lastChatMessage = Pair(msg.messageId.toString(), channel)
+                messageIdList.add(msg.messageId)
             }
         }
     }
 
     override fun stop() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        SendBird.disconnect {  }
     }
 
     override fun resume() {
+        SendBird.init(subscribeKey, context)
+        SendBird.connect(userId, object : SendBird.ConnectHandler {
+            override fun onConnected(user: User?, e: SendBirdException?) {
+                if (e != null || user == null) { // Error.
+                    return
+                }
+                SendBird.updateCurrentUserInfo(fetchUsername(), null,
+                    UserInfoUpdateHandler { exception ->
+                        if (exception != null) { // Error.
+                            return@UserInfoUpdateHandler
+                        }
+                    })
+                subscribe(connectedChannels.toList().map { it.url })
+            }
+        })
 
         // On Resume: Resubscribe and pull missed messages
 //        OpenChannel.getChannel(channel) { openChannel, _ ->
@@ -74,31 +122,7 @@ internal class SendbirdMessagingClient(
 //        }
     }
 
-    companion object {
-        val CHAT_HISTORY_LIMIT = 50
-    }
 
-    private var listener: MessagingEventListener? = null
-    private val TAG = javaClass.simpleName
-    private var connectedChannels: MutableList<OpenChannel> = mutableListOf()
-
-    init {
-        val userId = fetchUserId()
-        SendBird.init(subscribeKey, context)
-        SendBird.connect(userId, object : SendBird.ConnectHandler {
-            override fun onConnected(user: User?, e: SendBirdException?) {
-                if (e != null || user == null) { // Error.
-                    return
-                }
-                SendBird.updateCurrentUserInfo(fetchUsername(), null,
-                    UserInfoUpdateHandler { exception ->
-                        if (exception != null) { // Error.
-                            return@UserInfoUpdateHandler
-                        }
-                    })
-            }
-        })
-    }
 
     private fun fetchUserId(): String {
         return liveLikeUser?.sessionId ?: "empty-id"
@@ -131,8 +155,12 @@ internal class SendbirdMessagingClient(
                                 if (message != null && channel != null && openChannel.url == message.channelUrl) {
                                     message as UserMessage
                                     val clientMessage = SendBirdUtils.clientMessageFromBaseMessage(message, channel)
-                                    logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
-                                    listener?.onClientMessageEvent(this@SendbirdMessagingClient, clientMessage)
+                                    if(!messageIdList.contains(message.messageId)){
+                                        logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
+                                        lastChatMessage = Pair(clientMessage.message.get("id").asString, clientMessage.channel)
+                                        listener?.onClientMessageEvent(this@SendbirdMessagingClient, clientMessage)
+                                        messageIdList.add(message.messageId)
+                                    }
                                 }
                             }
                         })
@@ -148,10 +176,14 @@ internal class SendbirdMessagingClient(
                                 return@MessageListQueryResult
                             }
                             for (message: BaseMessage in messages.reversed()) {
-                                listener?.onClientMessageEvent(
-                                    this@SendbirdMessagingClient,
-                                    SendBirdUtils.clientMessageFromBaseMessage(message as UserMessage, openChannel)
-                                )
+                                if(!messageIdList.contains(message.messageId)){
+                                    listener?.onClientMessageEvent(
+                                        this@SendbirdMessagingClient,
+                                        SendBirdUtils.clientMessageFromBaseMessage(message as UserMessage, openChannel)
+                                    )
+                                    messageIdList.add(message.messageId)
+                                }
+
                             }
                         })
                 })
