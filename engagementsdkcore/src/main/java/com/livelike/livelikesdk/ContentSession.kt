@@ -22,12 +22,13 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
 import com.livelike.livelikesdk.utils.logError
+import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
-    private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
@@ -126,25 +127,27 @@ internal class ContentSession(
     //////// Global Session Controls ////////
 
     override fun pause() {
-        logError { "Pausing the Session" }
+        logVerbose { "Pausing the Session" }
         widgetClient?.stop()
         chatClient?.stop()
     }
 
     override fun resume() {
-        logError { "Resuming the Session" }
+        logVerbose { "Resuming the Session" }
         widgetClient?.resume()
         chatClient?.resume()
     }
 
     override fun close() {
-        logError { "Closing the Session" }
+        logVerbose { "Closing the Session" }
         chatClient?.apply {
             unsubscribeAll()
         }
         widgetClient?.apply {
             unsubscribeAll()
         }
+        widgetClient?.stop()
+        chatClient?.stop()
         currentWidgetViewStream.clear()
     }
 }

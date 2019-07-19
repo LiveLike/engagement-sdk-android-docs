@@ -27,7 +27,6 @@ internal class ChatQueue(upstream: MessagingClient) :
     }
 
     private val connectedChannels: MutableList<String> = mutableListOf()
-    private var paused = false
 
     var renderer: ChatRenderer? = null
         set(value) {
@@ -71,17 +70,7 @@ internal class ChatQueue(upstream: MessagingClient) :
             event.message.get("id").asString,
             Date(event.timeStamp.timeSinceEpochInMs).toString()
         )
-        if (!paused) {
-            renderer?.displayChatMessage(newMessage)
-        }
-    }
-
-    fun toggleEmission(pause: Boolean) {
-        paused = pause
-//        val lastMessage = lastChatMessage
-//        if (!paused && lastMessage != null)
-//            chatClient.updateMessagesSinceMessage(lastMessage.first, lastMessage.second)
-        if (pause) upstream.stop() else upstream.resume()
+        renderer?.displayChatMessage(newMessage)
     }
 }
 

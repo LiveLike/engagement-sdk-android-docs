@@ -25,7 +25,7 @@ import org.threeten.bp.ZonedDateTime
 import java.util.Date
 
 internal class SendbirdMessagingClient(
-    val subscribeKey: String,
+    private val subscribeKey: String,
     val context: Context,
     private val analyticsService: AnalyticsService,
     private val liveLikeUser: LiveLikeUser?
@@ -39,12 +39,15 @@ internal class SendbirdMessagingClient(
     }
 
     private var listener: MessagingEventListener? = null
-    private val TAG = javaClass.simpleName
     private var connectedChannels: MutableList<OpenChannel> = mutableListOf()
     private val userId = fetchUserId()
     private val messageIdList = mutableListOf<Long>()
 
     init {
+        connectToSendbird()
+    }
+
+    private fun connectToSendbird() {
         SendBird.init(subscribeKey, context)
         SendBird.connect(userId, object : SendBird.ConnectHandler {
             override fun onConnected(user: User?, e: SendBirdException?) {
@@ -83,46 +86,12 @@ internal class SendbirdMessagingClient(
     }
 
     override fun stop() {
-        SendBird.disconnect {  }
+        SendBird.disconnect{}
     }
 
     override fun resume() {
-        SendBird.init(subscribeKey, context)
-        SendBird.connect(userId, object : SendBird.ConnectHandler {
-            override fun onConnected(user: User?, e: SendBirdException?) {
-                if (e != null || user == null) { // Error.
-                    return
-                }
-                SendBird.updateCurrentUserInfo(fetchUsername(), null,
-                    UserInfoUpdateHandler { exception ->
-                        if (exception != null) { // Error.
-                            return@UserInfoUpdateHandler
-                        }
-                    })
-                subscribe(connectedChannels.toList().map { it.url })
-            }
-        })
-
-        // On Resume: Resubscribe and pull missed messages
-//        OpenChannel.getChannel(channel) { openChannel, _ ->
-//            openChannel.createPreviousMessageListQuery().load(
-//                SendbirdMessagingClient.CHAT_HISTORY_LIMIT, false
-//            ) { list, e ->
-//                if (e != null) {
-//                    logError { e }
-//                    return@load
-//                }
-//                messageHandler?.handleMessages(list.takeLastWhile { it.messageId.toString() > messageId }.map {
-//                    SendBirdUtils.clientMessageFromBaseMessage(
-//                        it as UserMessage,
-//                        openChannel
-//                    )
-//                })
-//            }
-//        }
+        connectToSendbird()
     }
-
-
 
     private fun fetchUserId(): String {
         return liveLikeUser?.sessionId ?: "empty-id"
