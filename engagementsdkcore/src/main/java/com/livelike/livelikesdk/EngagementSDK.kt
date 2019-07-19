@@ -4,8 +4,9 @@ import android.content.Context
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdkapi.Stream
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
-import com.livelike.livelikesdk.utils.Provider
+import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 
 /**
@@ -14,24 +15,17 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPref
  * @param clientId Client's id
  * @param applicationContext The application context
  */
-class EngagementSDK(val clientId: String, private val applicationContext: Context) {
+class EngagementSDK(private val clientId: String, private val applicationContext: Context) {
 
-    private val CONFIG_URL = BuildConfig.CONFIG_URL
-    var configuration: SdkConfiguration? = null
-    private var configurationProvider: Provider<SdkConfiguration> = object : Provider<SdkConfiguration> {
-        override fun subscribe(ready: (SdkConfiguration) -> Unit) {
-            if (configuration != null) ready(configuration!!)
-            else dataClient.getEngagementSdkConfig(CONFIG_URL.plus("applications/$clientId")) {
-                configuration = it
-                ready(it)
-            }
-        }
-    }
+    private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
     private val dataClient = EngagementDataClientImpl()
 
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
+        dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
+            configurationStream.onNext(it)
+        }
     }
 
     /**
@@ -40,7 +34,7 @@ class EngagementSDK(val clientId: String, private val applicationContext: Contex
      */
     fun createContentSession(programId: String): LiveLikeContentSession {
         return ContentSession(
-            configurationProvider,
+            configurationStream,
             applicationContext,
             programId
         ) { EpochTime(0) }
@@ -57,7 +51,7 @@ class EngagementSDK(val clientId: String, private val applicationContext: Contex
      */
     fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
         return ContentSession(
-            configurationProvider,
+            configurationStream,
             applicationContext,
             programId
         ) { timecodeGetter.getTimecode() }

@@ -7,6 +7,7 @@ import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.engagementsdkapi.Stream
 import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.analytics.MixpanelAnalytics
@@ -16,7 +17,6 @@ import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdChatClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
-import com.livelike.livelikesdk.utils.Provider
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
@@ -28,7 +28,7 @@ import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
-    private val sdkConfiguration: Provider<EngagementSDK.SdkConfiguration>,
+    private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
@@ -47,24 +47,26 @@ internal class ContentSession(
     }
 
     init {
-        sdkConfiguration.subscribe { configuration ->
-            analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
-            analyticService.trackConfiguration(configuration.name)
+        sdkConfiguration.subscribe(javaClass.simpleName) {
+            it?.let { configuration ->
+                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+                analyticService.trackConfiguration(configuration.name)
 
-            getUser()
+                getUser(configuration.sessionsUrl)
 
-            if (programId.isNotEmpty()) {
-                llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) {
-                    if (it !== null) {
-                        initializeWidgetMessaging(it.subscribeChannel)
-                        initializeChatMessaging(it.chatChannel)
+                if (programId.isNotEmpty()) {
+                    llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program->
+                        if (program !== null) {
+                            initializeWidgetMessaging(program.subscribeChannel, configuration)
+                            initializeChatMessaging(program.chatChannel, configuration)
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun getUser() {
+    private fun getUser(sessionUrl: String) {
         val sessionId = getSessionId()
         val username = getNickename()
         if (sessionId.isNotEmpty() && username.isNotEmpty()) {
@@ -72,14 +74,12 @@ internal class ContentSession(
             analyticService.trackSession(sessionId)
             analyticService.trackUsername(username)
         } else {
-            sdkConfiguration.subscribe { configuration ->
-                llDataClient.getUserData(configuration.sessionsUrl) {
-                    currentUser = it
-                    setSessionId(it.sessionId)
-                    setNickname(it.userName)
-                    analyticService.trackSession(it.sessionId)
-                    analyticService.trackUsername(it.userName)
-                }
+            llDataClient.getUserData(sessionUrl) {
+                currentUser = it
+                setSessionId(it.sessionId)
+                setNickname(it.userName)
+                analyticService.trackSession(it.sessionId)
+                analyticService.trackUsername(it.userName)
             }
         }
     }
@@ -97,28 +97,19 @@ internal class ContentSession(
     }
 
     override fun contentSessionId() = programId
-    private fun initializeWidgetMessaging(subscribeChannel: String) {
-        widgetEventsQueue?.apply {
-            unsubscribeAll()
-        }
-        sdkConfiguration.subscribe {
+    private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
             val widgetQueue =
-                    PubnubMessagingClient(it.pubNubKey)
+                    PubnubMessagingClient(config.pubNubKey)
                         .withPreloader(applicationContext)
                         .syncTo(currentPlayheadTime)
-                        .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, it)
-            widgetQueue.subscribe(hashSetOf(subscribeChannel).toList())
+                        .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
+
+        widgetQueue.subscribe(hashSetOf(subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
-        }
     }
 
-    private fun initializeChatMessaging(chatChannel: String) {
-        chatQueue?.apply {
-            unsubscribeAll()
-        }
-
-        sdkConfiguration.subscribe {
-            val sendBirdMessagingClient = SendbirdMessagingClient(it.sendBirdAppId, applicationContext, currentUser)
+    private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
+            val sendBirdMessagingClient = SendbirdMessagingClient(config.sendBirdAppId, applicationContext, currentUser)
             val chatClient = SendbirdChatClient()
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue =
@@ -130,7 +121,6 @@ internal class ContentSession(
             chatQueue.subscribe(listOf(chatChannel))
             chatQueue.renderer = chatRenderer
             this.chatQueue = chatQueue
-        }
     }
 
     override fun pause() {
