@@ -40,7 +40,7 @@ internal class ContentSession(
     private var chatQueue: ChatQueue? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-    private var analyticService: MixpanelAnalytics? = null
+    private lateinit var analyticService: MixpanelAnalytics
 
     override fun setWidgetContainer(widgetView: FrameLayout) {
         widgetContainer.setWidgetContainer(widgetView)
@@ -49,7 +49,7 @@ internal class ContentSession(
     init {
         sdkConfiguration.subscribe { configuration ->
             analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
-            analyticService?.trackConfiguration(configuration.name)
+            analyticService.trackConfiguration(configuration.name)
 
             getUser()
 
@@ -69,16 +69,16 @@ internal class ContentSession(
         val username = getNickename()
         if (sessionId.isNotEmpty() && username.isNotEmpty()) {
             currentUser = LiveLikeUser(sessionId, username)
-            analyticService?.trackSession(sessionId)
-            analyticService?.trackUsername(username)
+            analyticService.trackSession(sessionId)
+            analyticService.trackUsername(username)
         } else {
             sdkConfiguration.subscribe { configuration ->
                 llDataClient.getUserData(configuration.sessionsUrl) {
                     currentUser = it
                     setSessionId(it.sessionId)
                     setNickname(it.userName)
-                    analyticService?.trackSession(it.sessionId)
-                    analyticService?.trackUsername(it.userName)
+                    analyticService.trackSession(it.sessionId)
+                    analyticService.trackUsername(it.userName)
                 }
             }
         }
@@ -103,13 +103,11 @@ internal class ContentSession(
         }
         sdkConfiguration.subscribe {
             val widgetQueue =
-                analyticService?.let { it1 ->
                     PubnubMessagingClient(it.pubNubKey)
                         .withPreloader(applicationContext)
                         .syncTo(currentPlayheadTime)
-                        .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, it1, it)
-                }
-            widgetQueue?.subscribe(hashSetOf(subscribeChannel).toList())
+                        .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, it)
+            widgetQueue.subscribe(hashSetOf(subscribeChannel).toList())
             this.widgetEventsQueue = widgetQueue
         }
     }
@@ -124,14 +122,13 @@ internal class ContentSession(
             val chatClient = SendbirdChatClient()
             chatClient.messageHandler = sendBirdMessagingClient
             val chatQueue =
-                analyticService?.let { it1 ->
                     sendBirdMessagingClient
                         // validEventBufferMs for chat is currently 24 hours
                         .syncTo(currentPlayheadTime, 86400000L)
-                        .toChatQueue(chatClient, it1)
-                }
-            chatQueue?.subscribe(listOf(chatChannel))
-            chatQueue?.renderer = chatRenderer
+                        .toChatQueue(chatClient, analyticService)
+
+            chatQueue.subscribe(listOf(chatChannel))
+            chatQueue.renderer = chatRenderer
             this.chatQueue = chatQueue
         }
     }

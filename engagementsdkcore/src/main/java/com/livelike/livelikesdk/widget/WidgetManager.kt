@@ -32,7 +32,6 @@ internal class WidgetManager(
         // Filter only valid widget types here
         if (WidgetType.fromString(widgetType) != null) {
             handler.post {
-                currentWidgetViewStream.onNext(null)
                 currentWidgetViewStream.onNext(
                     WidgetProvider().get(
                         WidgetInfos(widgetType, payload, widgetId),
