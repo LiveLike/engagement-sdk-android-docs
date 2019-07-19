@@ -28,23 +28,21 @@ import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
-    private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
-    override val chatViewModel: ChatViewModel = ChatViewModel()
+    private lateinit var analyticService: MixpanelAnalytics
     private val llDataClient = EngagementDataClientImpl()
-    private var widgetEventsQueue: WidgetManager? = null
+
+    override val chatViewModel: ChatViewModel = ChatViewModel()
     private var chatQueue: ChatQueue? = null
+
+    private var widgetEventsQueue: WidgetManager? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-    private lateinit var analyticService: MixpanelAnalytics
-
-    override fun setWidgetContainer(widgetView: FrameLayout) {
-        widgetContainer.setWidgetContainer(widgetView)
-    }
 
     init {
         sdkConfiguration.subscribe(javaClass.simpleName) {
@@ -66,6 +64,8 @@ internal class ContentSession(
         }
     }
 
+    override var currentUser: LiveLikeUser? = null
+
     private fun getUser(sessionUrl: String) {
         val sessionId = getSessionId()
         val username = getNickename()
@@ -84,29 +84,38 @@ internal class ContentSession(
         }
     }
 
-    override var currentUser: LiveLikeUser? = null
+    override fun getPlayheadTime(): EpochTime {
+        return currentPlayheadTime()
+    }
+
+    override fun contentSessionId() = programId
+
+
+    /////// Widgets ///////
+
+    override fun setWidgetContainer(widgetView: FrameLayout) {
+        widgetContainer.setWidgetContainer(widgetView)
+    }
+
+    private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
+        val widgetQueue =
+            PubnubMessagingClient(config.pubNubKey)
+                .withPreloader(applicationContext)
+                .syncTo(currentPlayheadTime)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
+
+        widgetQueue.subscribe(hashSetOf(subscribeChannel).toList())
+        this.widgetEventsQueue = widgetQueue
+    }
+
+
+    /////// Chat ///////
 
     override var chatRenderer: ChatRenderer? = null
         set(renderer) {
             field = renderer
             chatQueue?.renderer = chatRenderer
         }
-
-    override fun getPlayheadTime(): EpochTime {
-        return currentPlayheadTime()
-    }
-
-    override fun contentSessionId() = programId
-    private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
-            val widgetQueue =
-                    PubnubMessagingClient(config.pubNubKey)
-                        .withPreloader(applicationContext)
-                        .syncTo(currentPlayheadTime)
-                        .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
-
-        widgetQueue.subscribe(hashSetOf(subscribeChannel).toList())
-            this.widgetEventsQueue = widgetQueue
-    }
 
     private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
             val sendBirdMessagingClient = SendbirdMessagingClient(config.sendBirdAppId, applicationContext, currentUser)
@@ -122,6 +131,9 @@ internal class ContentSession(
             chatQueue.renderer = chatRenderer
             this.chatQueue = chatQueue
     }
+
+
+    //////// Global Session Controls ////////
 
     override fun pause() {
         chatQueue?.toggleEmission(true)
