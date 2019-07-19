@@ -21,7 +21,6 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
-import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.asWidgetManager
@@ -53,7 +52,7 @@ internal class ContentSession(
                 getUser(configuration.sessionsUrl)
 
                 if (programId.isNotEmpty()) {
-                    llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program->
+                    llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
@@ -90,8 +89,7 @@ internal class ContentSession(
 
     override fun contentSessionId() = programId
 
-
-    /////// Widgets ///////
+    // ///// Widgets ///////
 
     override fun setWidgetContainer(widgetView: FrameLayout) {
         widgetContainer.setWidgetContainer(widgetView)
@@ -108,14 +106,14 @@ internal class ContentSession(
                 }
     }
 
-    /////// Chat ///////
+    // ///// Chat ///////
 
     override var chatRenderer: ChatRenderer? = null
 
     private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
         chatClient =
             SendbirdMessagingClient(config.sendBirdAppId, applicationContext, analyticService, currentUser)
-                .syncTo(currentPlayheadTime, 86400000L)  // Messages are valid 24 hours
+                .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
                 .toChatQueue()
                 .apply {
                     subscribe(listOf(chatChannel))
@@ -123,8 +121,7 @@ internal class ContentSession(
                 }
     }
 
-
-    //////// Global Session Controls ////////
+    // ////// Global Session Controls ////////
 
     override fun pause() {
         logVerbose { "Pausing the Session" }

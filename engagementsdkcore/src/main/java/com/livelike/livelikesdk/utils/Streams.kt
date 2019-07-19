@@ -19,7 +19,7 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
 
     override fun subscribe(key: Any, observer: (T?) -> Unit) {
         observerMap[key] = observer
-        if(emitOnSubscribe) observer.invoke(currentData)
+        if (emitOnSubscribe) observer.invoke(currentData)
     }
 
     override fun unsubscribe(key: Any) {

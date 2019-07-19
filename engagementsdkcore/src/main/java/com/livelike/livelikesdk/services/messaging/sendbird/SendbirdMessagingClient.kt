@@ -86,7 +86,7 @@ internal class SendbirdMessagingClient(
     }
 
     override fun stop() {
-        SendBird.disconnect{}
+        SendBird.disconnect {}
     }
 
     override fun resume() {
@@ -124,7 +124,7 @@ internal class SendbirdMessagingClient(
                                 if (message != null && channel != null && openChannel.url == message.channelUrl) {
                                     message as UserMessage
                                     val clientMessage = SendBirdUtils.clientMessageFromBaseMessage(message, channel)
-                                    if(!messageIdList.contains(message.messageId)){
+                                    if (!messageIdList.contains(message.messageId)) {
                                         logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
                                         lastChatMessage = Pair(clientMessage.message.get("id").asString, clientMessage.channel)
                                         listener?.onClientMessageEvent(this@SendbirdMessagingClient, clientMessage)
@@ -145,14 +145,13 @@ internal class SendbirdMessagingClient(
                                 return@MessageListQueryResult
                             }
                             for (message: BaseMessage in messages.reversed()) {
-                                if(!messageIdList.contains(message.messageId)){
+                                if (!messageIdList.contains(message.messageId)) {
                                     listener?.onClientMessageEvent(
                                         this@SendbirdMessagingClient,
                                         SendBirdUtils.clientMessageFromBaseMessage(message as UserMessage, openChannel)
                                     )
                                     messageIdList.add(message.messageId)
                                 }
-
                             }
                         })
                 })

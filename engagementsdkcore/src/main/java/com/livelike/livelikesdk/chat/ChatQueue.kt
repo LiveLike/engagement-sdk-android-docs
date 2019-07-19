@@ -5,7 +5,6 @@ import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
@@ -59,7 +58,6 @@ internal class ChatQueue(upstream: MessagingClient) :
         connectedChannels.forEach {
             publishMessage(message.message, it, timeData)
         }
-
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

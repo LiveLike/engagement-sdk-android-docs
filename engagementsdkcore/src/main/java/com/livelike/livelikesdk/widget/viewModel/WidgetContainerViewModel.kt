@@ -66,6 +66,5 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
     private fun dismissWidget() {
         logDebug { "NOW - Dismiss WidgetInfos" }
         widgetContainer?.removeAllViews()
-
     }
 }
