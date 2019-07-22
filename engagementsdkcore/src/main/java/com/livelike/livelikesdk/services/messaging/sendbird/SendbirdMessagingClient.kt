@@ -59,7 +59,7 @@ internal class SendbirdMessagingClient(
                         if (exception != null) { // Error.
                             return@UserInfoUpdateHandler
                         }
-                        if(resubscribe){
+                        if (resubscribe) {
                             subscribe(connectedChannels.map { it.url })
                         }
                     })
