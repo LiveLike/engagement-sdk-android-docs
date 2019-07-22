@@ -79,7 +79,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
                 handler.postDelayed(runnable, AndroidResource.parseDuration(timeout))
                 data.currentData?.apply {
                     val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                    handler.postDelayed(runnable, if(selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
+                    handler.postDelayed(runnable, if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
                     followupState(
                         selectedPredictionId,
                         resource.correct_option_id

@@ -13,9 +13,9 @@ class WidgetView(context: Context, attr: AttributeSet) : FrameLayout(context, at
     }
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthDp = AndroidResource.pxToDp(width)
-        if(widthDp < 292 && widthDp!=0){
+        if (widthDp < 292 && widthDp != 0) {
             logError { "[CONFIG ERROR] Current WidgetView Width is $widthDp, it must be more than 292dp or won't display on the screen." }
-            setMeasuredDimension(0,0)
+            setMeasuredDimension(0, 0)
             return
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
