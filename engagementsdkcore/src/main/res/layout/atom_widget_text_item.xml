@@ -31,13 +31,14 @@
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:text="Some Hockey Player"
+            android:textAllCaps="false"
             android:paddingRight="46dp"
             android:paddingLeft="16dp"
             android:textAlignment="textStart"
             android:paddingEnd="46dp"
             android:paddingStart="16dp"
             android:gravity="start|center"
-    />
+            tools:ignore="TextViewEdits"/>
 
     <ProgressBar
             android:id="@+id/determinateBar"
