@@ -8,9 +8,9 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.Stream
-import com.livelike.livelikesdk.chat.ChatQueue
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.analytics.MixpanelAnalytics
+import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
@@ -21,14 +21,13 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
-import com.livelike.livelikesdk.utils.logError
+import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
-import com.livelike.livelikesdk.widget.WidgetManager
 import com.livelike.livelikesdk.widget.asWidgetManager
 import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
-    private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
@@ -38,9 +37,9 @@ internal class ContentSession(
     private val llDataClient = EngagementDataClientImpl()
 
     override val chatViewModel: ChatViewModel = ChatViewModel()
-    private var chatQueue: ChatQueue? = null
+    private var chatClient: MessagingClient? = null
 
-    private var widgetEventsQueue: WidgetManager? = null
+    private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
@@ -53,7 +52,7 @@ internal class ContentSession(
                 getUser(configuration.sessionsUrl)
 
                 if (programId.isNotEmpty()) {
-                    llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program->
+                    llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
@@ -90,15 +89,14 @@ internal class ContentSession(
 
     override fun contentSessionId() = programId
 
-
-    /////// Widgets ///////
+    // ///// Widgets ///////
 
     override fun setWidgetContainer(widgetView: FrameLayout) {
         widgetContainer.setWidgetContainer(widgetView)
     }
 
     private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
-        widgetEventsQueue =
+        widgetClient =
             PubnubMessagingClient(config.pubNubKey)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
@@ -108,58 +106,45 @@ internal class ContentSession(
                 }
     }
 
-    fun pauseWidgets(){
-        widgetEventsQueue?.stop() // Disconnect pubnub
-    }
-
-    fun resumeWidgets(){
-        widgetEventsQueue?.resume() // Reconnect pubnub
-    }
-
-
-    /////// Chat ///////
+    // ///// Chat ///////
 
     override var chatRenderer: ChatRenderer? = null
-        set(renderer) {
-            field = renderer
-            chatQueue?.renderer = chatRenderer
-        }
 
     private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
-        chatQueue =
-            SendbirdMessagingClient(config.sendBirdAppId, applicationContext, currentUser)
-                // validEventBufferMs for chat is currently 24 hours
-                .syncTo(currentPlayheadTime, 86400000L)
-                .toChatQueue(analyticService)
+        chatClient =
+            SendbirdMessagingClient(config.sendBirdAppId, applicationContext, analyticService, currentUser)
+                .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
+                .toChatQueue()
                 .apply {
                     subscribe(listOf(chatChannel))
-                    renderer = chatRenderer
+                    this.renderer = chatRenderer
                 }
     }
 
-
-    //////// Global Session Controls ////////
+    // ////// Global Session Controls ////////
 
     override fun pause() {
-        logError { "Pausing the Session" }
-        pauseWidgets()
-//        chatQueue?.toggleEmission(true)
+        logVerbose { "Pausing the Session" }
+        widgetClient?.stop()
+        chatClient?.stop()
     }
 
     override fun resume() {
-        logError { "Resuming the Session" }
-        resumeWidgets()
-//        chatQueue?.toggleEmission(false)
+        logVerbose { "Resuming the Session" }
+        widgetClient?.resume()
+        chatClient?.resume()
     }
 
     override fun close() {
-        logError { "Closing the Session" }
-        chatQueue?.apply {
+        logVerbose { "Closing the Session" }
+        chatClient?.apply {
             unsubscribeAll()
         }
-        widgetEventsQueue?.apply {
+        widgetClient?.apply {
             unsubscribeAll()
         }
+        widgetClient?.stop()
+        chatClient?.stop()
         currentWidgetViewStream.clear()
     }
 }

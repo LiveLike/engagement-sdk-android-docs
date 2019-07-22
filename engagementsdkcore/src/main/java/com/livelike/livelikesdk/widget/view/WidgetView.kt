@@ -9,10 +9,8 @@ class WidgetView(context: Context, attr: AttributeSet) : FrameLayout(context, at
     fun setSession(session: LiveLikeContentSession) {
         session.setWidgetContainer(this)
     }
-    fun pause(){
-
+    fun pause() {
     }
-    fun resume(){
-
+    fun resume() {
     }
 }
