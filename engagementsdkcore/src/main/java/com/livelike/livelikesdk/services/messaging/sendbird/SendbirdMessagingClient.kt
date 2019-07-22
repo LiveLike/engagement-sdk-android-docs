@@ -47,7 +47,7 @@ internal class SendbirdMessagingClient(
         connectToSendbird()
     }
 
-    private fun connectToSendbird() {
+    private fun connectToSendbird(resubscribe: Boolean = false) {
         SendBird.init(subscribeKey, context)
         SendBird.connect(userId, object : SendBird.ConnectHandler {
             override fun onConnected(user: User?, e: SendBirdException?) {
@@ -58,6 +58,9 @@ internal class SendbirdMessagingClient(
                     UserInfoUpdateHandler { exception ->
                         if (exception != null) { // Error.
                             return@UserInfoUpdateHandler
+                        }
+                        if(resubscribe){
+                            subscribe(connectedChannels.map { it.url })
                         }
                     })
             }
@@ -77,7 +80,9 @@ internal class SendbirdMessagingClient(
                 message,
                 messageTimestamp, null, null
             ) { msg, e ->
-                e?.also { logError { "Error sending the message: $it" } }
+                e?.also {
+                    logError { "Error sending the message: ${it.stackTrace}" }
+                }
                 analyticsService.trackMessageSent(msg.messageId.toString(), msg.message.length)
                 lastChatMessage = Pair(msg.messageId.toString(), channel)
                 messageIdList.add(msg.messageId)
@@ -90,7 +95,7 @@ internal class SendbirdMessagingClient(
     }
 
     override fun resume() {
-        connectToSendbird()
+        connectToSendbird(true)
     }
 
     private fun fetchUserId(): String {
