@@ -78,8 +78,10 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
             if (isFollowup) {
                 handler.postDelayed(runnable, AndroidResource.parseDuration(timeout))
                 data.currentData?.apply {
+                    val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+                    handler.postDelayed(runnable, if(selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
                     followupState(
-                        if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id,
+                        selectedPredictionId,
                         resource.correct_option_id
                     )
                 }
@@ -107,9 +109,9 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
         interactionData.incrementInteraction()
     }
 
-    private fun followupState(textPredictionId: String, correctOptionId: String) {
+    private fun followupState(selectedPredictionId: String, correctOptionId: String) {
         adapter?.correctOptionId = correctOptionId
-        adapter?.userSelectedOptionId = getWidgetPredictionVotedAnswerIdOrEmpty(textPredictionId)
+        adapter?.userSelectedOptionId = selectedPredictionId
         adapter?.selectionLocked = true
 
         data.onNext(data.currentData?.apply {

@@ -84,7 +84,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 setHasFixedSize(true)
             }
 
-            val isFollowUp = resource.correct_option_id.isNotEmpty()
+            val isFollowUp = resource.kind.contains("follow-up")
             viewModel?.startDismissTimout(resource.timeout, isFollowUp)
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
