@@ -5,19 +5,27 @@ import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
-import com.livelike.livelikesdk.services.messaging.sendbird.ChatClient
 import java.util.Date
 
-internal class ChatQueue(upstream: MessagingClient, private val chatClient: ChatClient, private val analyticsService: AnalyticsService) :
+internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
     ChatEventListener {
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+        upstream.publishMessage(message, channel, timeSinceEpoch)
+    }
+
+    override fun stop() {
+        upstream.stop()
+    }
+
+    override fun resume() {
+        upstream.resume()
+    }
+
     private val connectedChannels: MutableList<String> = mutableListOf()
-    private var lastChatMessage: Pair<String, String>? = null
-    private var paused = false
 
     var renderer: ChatRenderer? = null
         set(value) {
@@ -40,7 +48,7 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
         super.unsubscribeAll()
     }
 
-    override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime, onSuccess: ((msgId: String) -> Unit)?) {
+    override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
         // If chat is paused we can queue here
         val messageJson = JsonObject()
         messageJson.addProperty("message", message.message)
@@ -48,11 +56,7 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
         messageJson.addProperty("sender_id", message.senderId)
         // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
-            chatClient.sendMessage(ClientMessage(messageJson, it, timeData)) { msgId ->
-                analyticsService.trackMessageSent(msgId, message.message.length)
-                onSuccess?.invoke(msgId)
-                lastChatMessage = Pair(msgId, it)
-            }
+            publishMessage(message.message, it, timeData)
         }
     }
 
@@ -64,20 +68,10 @@ internal class ChatQueue(upstream: MessagingClient, private val chatClient: Chat
             event.message.get("id").asString,
             Date(event.timeStamp.timeSinceEpochInMs).toString()
         )
-        if (!paused) {
-            renderer?.displayChatMessage(newMessage)
-            lastChatMessage = Pair(newMessage.id, event.channel)
-        }
-    }
-
-    fun toggleEmission(pause: Boolean) {
-        paused = pause
-        val lastMessage = lastChatMessage
-        if (!paused && lastMessage != null)
-            chatClient.updateMessagesSinceMessage(lastMessage.first, lastMessage.second)
+        renderer?.displayChatMessage(newMessage)
     }
 }
 
-internal fun MessagingClient.toChatQueue(chatClient: ChatClient, analyticsService: AnalyticsService): ChatQueue {
-    return ChatQueue(this, chatClient, analyticsService)
+internal fun MessagingClient.toChatQueue(): ChatQueue {
+    return ChatQueue(this)
 }

@@ -256,9 +256,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         hideLoadingSpinner()
         snapToLive()
         edittext_chat_message.setText("")
-        chatListener?.onChatMessageSend(newMessage, timeData) {
-//            analyticService.trackKeyboardClose(KeyboardType.STANDARD, hideMethod, it)
-        }
+        chatListener?.onChatMessageSend(newMessage, timeData)
     }
 
     private fun hideSnapToLive() {

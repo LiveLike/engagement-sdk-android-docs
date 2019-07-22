@@ -147,16 +147,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
-    override fun onPause() {
-        super.onPause()
-        this.session?.pause()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        this.session?.resume()
-    }
-
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putString(CHANNEL_NAME, channelManager?.selectedChannel?.name ?: "")

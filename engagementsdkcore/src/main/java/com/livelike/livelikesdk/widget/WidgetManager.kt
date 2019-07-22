@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.widget
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.EngagementSDK
@@ -21,6 +22,18 @@ internal class WidgetManager(
     private val sdkConfiguration: EngagementSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+        upstream.publishMessage(message, channel, timeSinceEpoch)
+    }
+
+    override fun stop() {
+        currentWidgetViewStream.onNext(null)
+        upstream.stop()
+    }
+
+    override fun resume() {
+        upstream.resume()
+    }
 
     val handler = Handler(Looper.getMainLooper())
 
@@ -32,7 +45,6 @@ internal class WidgetManager(
         // Filter only valid widget types here
         if (WidgetType.fromString(widgetType) != null) {
             handler.post {
-                currentWidgetViewStream.onNext(null)
                 currentWidgetViewStream.onNext(
                     WidgetProvider().get(
                         WidgetInfos(widgetType, payload, widgetId),

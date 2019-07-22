@@ -37,7 +37,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         option: Option,
         itemIsSelected: Boolean,
         widgetType: WidgetType,
-        correctOptionId: String = "",
+        correctOptionId: String?,
         selectedPredictionId: String = ""
     ) {
         if (!option.image_url.isNullOrEmpty()) {
@@ -71,7 +71,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
     private fun setItemBackground(
         itemIsSelected: Boolean,
         widgetType: WidgetType,
-        correctOptionId: String,
+        correctOptionId: String?,
         userSelectedOptionId: String,
         option: Option
     ) {
@@ -98,7 +98,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
             updateViewBackground(R.color.livelike_transparent)
         }
 
-        if (correctOptionId.isNotEmpty()) {
+        if (!correctOptionId.isNullOrEmpty()) {
             updateViewProgressBar(R.drawable.progress_bar_user_selection_neutral)
             if (userSelectedOptionId == option.id) {
                 updateViewProgressBar(R.drawable.progress_bar_user_selection_wrong)
@@ -109,7 +109,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
                 updateViewBackground(R.drawable.button_correct_answer_outline)
             }
         }
-        setProgressVisibility(correctOptionId.isNotEmpty())
+        setProgressVisibility(!correctOptionId.isNullOrEmpty())
     }
 
     @SuppressLint("SetTextI18n")

@@ -22,6 +22,18 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
 internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+        // TODO
+    }
+
+    override fun stop() {
+        pubnub.disconnect()
+    }
+
+    override fun resume() {
+        pubnub.reconnect()
+    }
+
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
     private var pubnub: PubNub
     private var listener: MessagingEventListener? = null

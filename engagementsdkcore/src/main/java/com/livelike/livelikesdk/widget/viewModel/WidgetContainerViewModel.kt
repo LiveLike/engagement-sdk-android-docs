@@ -46,9 +46,8 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
     }
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?) {
-        if (widgetView == null) {
-            dismissWidget()
-        } else {
+        dismissWidget()
+        if (widgetView != null) {
             displayWidget(widgetView)
         }
     }
@@ -56,8 +55,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
     private fun displayWidget(view: SpecifiedWidgetView?) {
         if (view != null) {
             dismissWidget = view.dismissFunc
-            widgetContainer?.removeAllViews()
-            (view.parent as ViewGroup?)?.removeAllViews()
+            (view.parent as ViewGroup?)?.removeAllViews() // Clean the view parent in case of reuse
             widgetContainer?.addView(view)
             logDebug { "NOW - Show WidgetInfos" }
         } else {

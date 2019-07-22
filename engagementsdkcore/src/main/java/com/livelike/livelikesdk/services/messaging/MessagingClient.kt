@@ -10,6 +10,9 @@ internal interface MessagingClient {
     fun subscribe(channels: List<String>)
     fun unsubscribe(channels: List<String>)
     fun unsubscribeAll()
+    fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime)
+    fun stop()
+    fun resume()
     fun addMessagingEventListener(listener: MessagingEventListener)
 }
 

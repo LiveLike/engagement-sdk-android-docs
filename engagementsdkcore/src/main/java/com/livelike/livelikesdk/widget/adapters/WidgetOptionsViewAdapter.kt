@@ -11,7 +11,7 @@ internal class WidgetOptionsViewAdapter(
     internal var myDataset: List<Option>,
     private val onClick: (selectedOption: Option) -> Unit,
     private val widgetType: WidgetType,
-    var correctOptionId: String = "",
+    var correctOptionId: String? = null,
     var userSelectedOptionId: String = ""
 ) :
     RecyclerView.Adapter<WidgetOptionsViewAdapter.TextOptionViewHolder>() {

@@ -5,11 +5,7 @@ import android.os.Looper
 import com.livelike.engagementsdkapi.Stream
 import java.util.concurrent.ConcurrentHashMap
 
-interface Provider<T> {
-    fun subscribe(ready: (T) -> Unit)
-}
-
-internal class SubscriptionManager<T> : Stream<T> {
+internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) : Stream<T> {
     private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
     var currentData: T? = null
         private set
@@ -23,7 +19,7 @@ internal class SubscriptionManager<T> : Stream<T> {
 
     override fun subscribe(key: Any, observer: (T?) -> Unit) {
         observerMap[key] = observer
-        observer.invoke(currentData)
+        if (emitOnSubscribe) observer.invoke(currentData)
     }
 
     override fun unsubscribe(key: Any) {
