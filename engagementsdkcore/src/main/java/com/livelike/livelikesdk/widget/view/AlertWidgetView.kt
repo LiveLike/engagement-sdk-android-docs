@@ -59,9 +59,6 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             linkBackground.setOnClickListener {
                 openBrowser(context, resourceAlert.link_url)
             }
-            bodyBackground.setOnClickListener {
-                openBrowser(context, resourceAlert.link_url)
-            }
         } else {
             linkArrow.visibility = View.GONE
             linkBackground.visibility = View.GONE
