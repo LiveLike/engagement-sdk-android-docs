@@ -2,26 +2,19 @@
 <resources>
     <!--Widgets-->
     <item name="livelike_option_font"
-          type="font">@font/RobotoMedium
-    </item>
+          type="font">@font/roboto_medium</item>
     <item name="livelike_header_font"
-          type="font">@font/RobotoBold
-    </item>
+          type="font">@font/roboto_bold</item>
     <item name="livelike_alert_body_font"
-          type="font">@font/RobotoMedium
-    </item>
+          type="font">@font/roboto_medium</item>
     <item name="livelike_alert_link_font"
-          type="font">@font/RobotoMedium
-    </item>
+          type="font">@font/roboto_medium</item>
     <item name="livelike_alert_label_font"
-          type="font">@font/RobotoMedium
-    </item>
+          type="font">@font/roboto_medium</item>
 
     <!--Chat-->
     <item name="livelike_chat_message_font"
-          type="font">@font/RobotoMedium
-    </item>
+          type="font">@font/roboto_medium</item>
     <item name="livelike_chat_nickname_font"
-          type="font">@font/RobotoMedium
-    </item>
+          type="font">@font/roboto_medium</item>
 </resources>
