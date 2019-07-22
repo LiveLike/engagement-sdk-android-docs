@@ -2,15 +2,15 @@
 <resources>
     <!--Widgets-->
     <item name="livelike_option_font"
-          type="font">@font/roboto_medium</item>
+          type="font">@font/roboto_regular</item>
     <item name="livelike_header_font"
           type="font">@font/roboto_bold</item>
     <item name="livelike_alert_body_font"
-          type="font">@font/roboto_medium</item>
+          type="font">@font/roboto_regular</item>
     <item name="livelike_alert_link_font"
-          type="font">@font/roboto_medium</item>
+          type="font">@font/roboto_bold</item>
     <item name="livelike_alert_label_font"
-          type="font">@font/roboto_medium</item>
+          type="font">@font/roboto_bold</item>
 
     <!--Chat-->
     <item name="livelike_chat_message_font"
