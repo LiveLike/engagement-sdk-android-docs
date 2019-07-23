@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="#99000000"/>
-    <stroke
-            android:width="@dimen/livelike_confirm_outline_stroke_width"
-            android:color="@color/livelike_colorPrimaryDark"/>
     <corners
             android:radius="@dimen/livelike_button_corner_radius"/>
 </shape>

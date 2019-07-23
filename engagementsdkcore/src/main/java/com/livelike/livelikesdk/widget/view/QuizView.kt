@@ -124,7 +124,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
-            viewModel?.adapter?.showPercentage = true
+            viewModel?.adapter?.showPercentage = false
         }
     }
 
@@ -134,8 +134,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
-                viewModel?.adapter?.userSelectedOptionId = viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
-                viewModel?.adapter?.correctOptionId = viewModel?.adapter?.selectedPosition?.let { it1 ->
+                viewModel?.adapter?.correctOptionId = viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
+                viewModel?.adapter?.userSelectedOptionId = viewModel?.adapter?.selectedPosition?.let { it1 ->
                     viewModel?.adapter?.myDataset?.get(it1)?.id
                 } ?: ""
 
