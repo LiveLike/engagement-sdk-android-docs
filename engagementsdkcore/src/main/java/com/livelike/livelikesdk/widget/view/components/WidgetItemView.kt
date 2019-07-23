@@ -114,7 +114,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
 
     @SuppressLint("SetTextI18n")
     private fun animateProgress(option: Option, startValue: Float) {
-        if(option.percentage.toFloat() != startValue){ // Only animate if values are different
+        if (option.percentage.toFloat() != startValue) { // Only animate if values are different
             ValueAnimator.ofFloat(startValue, option.percentage.toFloat()).apply {
                 addUpdateListener {
                     val progress = (it.animatedValue as Float).roundToInt()
@@ -158,20 +158,20 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
 
     private fun updateViewProgressBar(drawableId: Int) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
-        if(determinateBar?.progressDrawable != drawable){
+        if (determinateBar?.progressDrawable != drawable) {
             determinateBar?.progressDrawable = AppCompatResources.getDrawable(context, drawableId)
         }
-        if(imageBar?.progressDrawable != drawable){
+        if (imageBar?.progressDrawable != drawable) {
             imageBar?.progressDrawable = AppCompatResources.getDrawable(context, drawableId)
         }
     }
 
     private fun updateViewBackground(drawableId: Int) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
-        if(text_button?.background != drawable){
+        if (text_button?.background != drawable) {
             text_button?.background = AppCompatResources.getDrawable(context, drawableId)
         }
-        if(imageButtonBackground?.background != drawable){
+        if (imageButtonBackground?.background != drawable) {
             imageButtonBackground?.background = AppCompatResources.getDrawable(context, drawableId)
         }
     }
