@@ -2,20 +2,16 @@ package com.livelike.livelikesdk.widget.view
 
 import android.arch.lifecycle.Observer
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
-import android.widget.LinearLayout
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
-import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollWidget
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
-import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -25,8 +21,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private var viewModel: PollViewModel? = null
 
-    private var viewManager: LinearLayoutManager =
-        LinearLayoutManager(context).apply { orientation = LinearLayout.VERTICAL }
     private var inflated = false
 
     override var widgetViewModel: WidgetViewModel? = null
@@ -56,17 +50,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
-                if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()) {
-                    inflate(context, R.layout.widget_image_option_selection, this@PollView)
-                } else {
-                    inflate(context, R.layout.widget_text_option_selection, this@PollView)
-                }
-            }
-            if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
-            ) {
-                viewManager =
-                    SpanningLinearLayoutManager(context, AndroidResource.dpToPx(150))
-                        .apply { orientation = LinearLayout.HORIZONTAL }
+                inflate(context, R.layout.widget_text_option_selection, this@PollView)
             }
 
             titleView.title = resource.question
@@ -78,16 +62,14 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }, type)
 
             textRecyclerView.apply {
-                this.layoutManager = viewManager
                 this.adapter = viewModel?.adapter
-                setHasFixedSize(true)
             }
 
             viewModel?.startDismissTimout(resource.timeout)
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f) {
-                listOf(textEggTimer, imageEggTimer).forEach { v ->
+                listOf(textEggTimer).forEach { v ->
                     viewModel?.animationEggTimerProgress?.let {
                         v?.startAnimationFrom(it, animationLength, {
                             viewModel?.animationEggTimerProgress = it

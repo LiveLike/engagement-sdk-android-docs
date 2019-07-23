@@ -27,10 +27,12 @@
                                             android:hapticFeedbackEnabled="true"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
-                                            tools:listitem="@layout/atom_widget_text_item"
+                                            tools:listitem="@layout/atom_widget_image_item"
                                             tools:itemCount="4"
                                             app:layout_constraintTop_toBottomOf="@+id/titleView"
                                             app:layout_constraintStart_toStartOf="parent"
+                                            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                                            android:orientation="vertical"
                                             app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.livelike.livelikesdk.widget.view.components.ConfirmMessageView

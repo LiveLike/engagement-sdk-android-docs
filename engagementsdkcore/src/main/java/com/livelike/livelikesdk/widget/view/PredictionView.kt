@@ -10,11 +10,9 @@ import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
-import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.PredictionViewModel
 import com.livelike.livelikesdk.widget.viewModel.PredictionWidget
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
-import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
@@ -27,8 +25,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
     private var viewModel: PredictionViewModel? = null
 
-    private var viewManager: LinearLayoutManager =
-        LinearLayoutManager(context).apply { orientation = LinearLayout.VERTICAL }
     private var inflated = false
 
     override var widgetViewModel: WidgetViewModel? = null
@@ -50,19 +46,9 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
     private fun widgetObserver(widget: PredictionWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return
-            val isImageWidget = optionList.elementAtOrNull(0)?.image_url?.isNotEmpty() ?: false
             if (!inflated) {
                 inflated = true
-                if (isImageWidget) {
-                    inflate(context, R.layout.widget_image_option_selection, this@PredictionView)
-                } else {
-                    inflate(context, R.layout.widget_text_option_selection, this@PredictionView)
-                }
-            }
-            if (isImageWidget) {
-                    viewManager =
-                        SpanningLinearLayoutManager(context, AndroidResource.dpToPx(150))
-                            .apply { orientation = LinearLayout.HORIZONTAL }
+                inflate(context, R.layout.widget_text_option_selection, this@PredictionView)
             }
 
             titleView.title = resource.question
@@ -79,7 +65,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             )
 
             textRecyclerView.apply {
-                this.layoutManager = viewManager
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
@@ -89,7 +74,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
-                listOf(textEggTimer, imageEggTimer).forEach { v ->
+                listOf(textEggTimer).forEach { v ->
                     viewModel?.animationEggTimerProgress?.let { time ->
                         v?.startAnimationFrom(time, animationLength, {
                             viewModel?.animationEggTimerProgress = it
@@ -116,7 +101,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     }
                     visibility = View.VISIBLE
                 }
-                listOf(textEggTimer, imageEggTimer).forEach { it?.showCloseButton() {
+                listOf(textEggTimer).forEach { it?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
             }
@@ -132,7 +117,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     }
                     visibility = View.VISIBLE
                 }
-                listOf(textEggTimer, imageEggTimer).forEach { it?.showCloseButton() {
+                listOf(textEggTimer).forEach { it?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
             }

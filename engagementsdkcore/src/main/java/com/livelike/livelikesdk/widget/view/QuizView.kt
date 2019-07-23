@@ -16,7 +16,6 @@ import com.livelike.livelikesdk.widget.util.SpanningLinearLayoutManager
 import com.livelike.livelikesdk.widget.viewModel.QuizViewModel
 import com.livelike.livelikesdk.widget.viewModel.QuizWidget
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
-import kotlinx.android.synthetic.main.widget_image_option_selection.view.imageEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
@@ -39,8 +38,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver(it) }
         }
 
-    private var viewManager: LinearLayoutManager =
-        LinearLayoutManager(context).apply { orientation = LinearLayout.VERTICAL }
     private var inflated = false
 
     private fun onClickObserver(it: String?) {
@@ -61,17 +58,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
-                if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()) {
-                    inflate(context, R.layout.widget_image_option_selection, this@QuizView)
-                } else {
-                    inflate(context, R.layout.widget_text_option_selection, this@QuizView)
-                }
-            }
-            if (optionList.isNotEmpty() && !optionList[0].image_url.isNullOrEmpty()
-            ) {
-                viewManager =
-                    SpanningLinearLayoutManager(context, AndroidResource.dpToPx(150))
-                        .apply { orientation = LinearLayout.HORIZONTAL }
+                inflate(context, R.layout.widget_text_option_selection, this@QuizView)
             }
 
             titleView.title = resource.question
@@ -85,7 +72,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }, type)
 
             textRecyclerView.apply {
-                this.layoutManager = viewManager
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
@@ -94,7 +80,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f) {
-                listOf(textEggTimer, imageEggTimer).forEach { v ->
+                listOf(textEggTimer).forEach { v ->
                     v?.startAnimationFrom(viewModel?.animationEggTimerProgress ?: 0f, animationLength, {
                         viewModel?.animationEggTimerProgress = it
                     }) {
@@ -131,7 +117,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver(state: String?) {
         when (state) {
             "results" -> {
-                listOf(textEggTimer, imageEggTimer).forEach { v -> v?.showCloseButton() {
+                listOf(textEggTimer).forEach { v -> v?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
                 viewModel?.adapter?.correctOptionId = viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""

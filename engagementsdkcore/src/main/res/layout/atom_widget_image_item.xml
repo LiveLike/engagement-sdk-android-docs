@@ -5,7 +5,7 @@
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content"
                                              android:animateLayoutChanges="true"
-                                             android:background="@drawable/image_prediction_rounded_corner"
+                                             android:background="@drawable/image_item_backgroung"
 >
     <ProgressBar
             android:id="@+id/imageBar"
@@ -16,54 +16,42 @@
             android:visibility="invisible"
             android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             tools:visibility="visible"
             tools:progress="50"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            android:layout_marginRight="8dp"/>
 
     <ImageView
             android:id="@+id/imageButton"
             android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_height="60dp"
             android:scaleType="centerCrop"
             android:background="@drawable/button_rounded_corners"
-            android:layout_marginTop="16dp"
             android:contentDescription="TODO"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:src="@tools:sample/avatars"
     />
 
-    <View
-            android:id="@+id/imageBackground"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:background="@drawable/image_option_background"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:src="@tools:sample/avatars"/>
-
     <!--suppress AndroidDomInspection -->
     <TextView
             android:id="@+id/imagePercentage"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/livelike_percent_label_text_color"
             android:textSize="@dimen/livelike_percent_label_text_size"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
             android:gravity="end"
             android:fontFamily="@font/livelike_header_font"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/determinateBar"
-            app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
+            app:layout_constraintTop_toBottomOf="@id/imageBar"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="50%"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"/>
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/imageBar"
+    />
 
     <!--suppress AndroidDomInspection -->
     <TextView
@@ -73,19 +61,20 @@
             android:fontFamily="@font/livelike_option_font"
             android:textColor="@color/livelike_option_text_color"
             android:textSize="@dimen/livelike_option_text_size"
-            android:textAlignment="textEnd"
+            android:textAlignment="textStart"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintBottom_toBottomOf="@+id/imageButtonBackground"
-            app:layout_constraintEnd_toEndOf="@+id/imageButtonBackground"
-            app:layout_constraintTop_toTopOf="@+id/imageButtonBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="blah blah blah blah blah blah blah blah "
-            android:gravity="end"
-            android:layout_marginRight="16dp"
-            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            android:gravity="start"
+            app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"/>
+            android:layout_marginLeft="16dp"
+            app:layout_constraintVertical_bias="0.0"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            android:layout_marginRight="8dp"/>
 
     <View android:layout_width="0dp"
           android:layout_height="0dp"

@@ -149,7 +149,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
             imageButtonBackground.setOnClickListener(clickListener)
         }
         layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
     }
