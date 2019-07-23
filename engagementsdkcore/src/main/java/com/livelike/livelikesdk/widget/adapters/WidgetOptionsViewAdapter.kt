@@ -32,7 +32,7 @@ internal class WidgetOptionsViewAdapter(
         }
 
         override fun onClick(v: View?) {
-            if (adapterPosition == RecyclerView.NO_POSITION || selectionLocked) return
+            if (adapterPosition == RecyclerView.NO_POSITION || selectionLocked || selectedPosition == adapterPosition) return
 
             // Updating old as well as new positions
             notifyItemChanged(selectedPosition)
