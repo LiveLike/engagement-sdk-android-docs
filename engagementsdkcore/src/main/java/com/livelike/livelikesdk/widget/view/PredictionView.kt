@@ -1,10 +1,8 @@
 package com.livelike.livelikesdk.widget.view
 
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.View
-import android.widget.LinearLayout
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.DismissAction
