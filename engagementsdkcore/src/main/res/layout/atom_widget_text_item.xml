@@ -11,7 +11,7 @@
             android:id="@+id/bkgrd"
             android:layout_width="match_parent"
             android:layout_height="45dp"
-            android:background="@drawable/button_default"
+            android:background="@drawable/answer_background_default"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="parent"
@@ -48,7 +48,7 @@
             android:layout_margin="8dp"
             android:indeterminate="false"
             android:visibility="invisible"
-            android:progressDrawable="@drawable/progress_bar_user_correct"
+            android:progressDrawable="@drawable/progress_bar_correct"
             android:textSize="@dimen/livelike_option_text_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -57,7 +57,7 @@
 
             tools:progress="60"
             tools:visibility="visible"
-            tools:progressDrawable="@drawable/progress_bar_user_correct"
+            tools:progressDrawable="@drawable/progress_bar_correct"
     />
 
     <!--suppress AndroidDomInspection -->

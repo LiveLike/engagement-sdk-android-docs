@@ -54,7 +54,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
 
             titleView.title = resource.question
-            titleView.background = R.drawable.poll_textview_rounded_corner
+            titleView.background = R.drawable.header_rounded_corner_poll
 
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
                 val selectedId = viewModel?.adapter?.myDataset?.get(viewModel?.adapter?.selectedPosition ?: -1)?.id ?: ""

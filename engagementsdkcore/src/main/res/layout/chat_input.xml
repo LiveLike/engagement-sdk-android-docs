@@ -12,7 +12,7 @@
             android:layout_width="0dp"
             android:layout_height="40dp"
             android:layout_marginStart="8dp"
-            android:background="@drawable/round_max_rect_shape_stroke_no_color"
+            android:background="@drawable/ic_chat_input"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button_chat_send"
@@ -60,7 +60,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/chat_input_border"
             app:layout_constraintTop_toTopOf="@+id/chat_input_border"
-            app:srcCompat="@drawable/emoji_ios_category_smileysandpeople"
+            app:srcCompat="@drawable/ic_chat_emoji_ios_category_smileysandpeople"
             tools:ignore="ContentDescription"
             android:layout_marginRight="8dp"/>
     <ImageButton
@@ -74,7 +74,7 @@
             android:gravity="center"
             android:background="@null"
             android:scaleType="fitXY"
-            android:src="@drawable/chat_send"
+            android:src="@drawable/ic_chat_send"
             android:textColor="#ffffff"
             android:textSize="14sp"
             android:visibility="visible"

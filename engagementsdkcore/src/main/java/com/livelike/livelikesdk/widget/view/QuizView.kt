@@ -59,7 +59,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
 
             titleView.title = resource.question
-            titleView.background = R.drawable.quiz_textview_rounded_corner
+            titleView.background = R.drawable.header_rounded_corner_quiz
 
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
                 viewModel?.adapter?.apply {

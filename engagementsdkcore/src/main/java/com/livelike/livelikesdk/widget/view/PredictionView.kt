@@ -50,7 +50,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
 
             titleView.title = resource.question
-            titleView.background = R.drawable.prediciton_rounded_corner
+            titleView.background = R.drawable.header_rounded_corner_prediciton
 
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,

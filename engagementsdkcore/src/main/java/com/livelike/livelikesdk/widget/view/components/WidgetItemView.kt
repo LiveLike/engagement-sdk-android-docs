@@ -78,35 +78,35 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         if (itemIsSelected) {
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
                 WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
-                    updateViewBackground(R.drawable.prediction_button_pressed)
+                    updateViewBackground(R.drawable.answer_outline_selected_prediction)
                 }
                 WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> {
-                    updateViewProgressBar(R.drawable.progress_bar_user_selection_poll)
-                    updateViewBackground(R.drawable.button_poll_answer_outline)
+                    updateViewProgressBar(R.drawable.progress_bar_poll)
+                    updateViewBackground(R.drawable.answer_outline_selected_poll)
                 }
                 WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> {
-                    updateViewProgressBar(R.drawable.progress_bar_user_selection_quiz)
-                    updateViewBackground(R.drawable.quiz_button_pressed)
+                    updateViewProgressBar(R.drawable.progress_bar_quiz)
+                    updateViewBackground(R.drawable.answer_outline_selected_quiz)
                 }
                 else -> {
-                    updateViewProgressBar(R.drawable.progress_bar_user_selection_neutral)
-                    updateViewBackground(R.drawable.button_poll_answer_outline)
+                    updateViewProgressBar(R.drawable.progress_bar_neutral)
+                    updateViewBackground(R.drawable.answer_outline_selected_poll)
                 }
             }
         } else {
-            updateViewProgressBar(R.drawable.progress_bar_user_selection_neutral)
+            updateViewProgressBar(R.drawable.progress_bar_neutral)
             updateViewBackground(R.color.livelike_transparent)
         }
 
         if (!correctOptionId.isNullOrEmpty()) {
-            updateViewProgressBar(R.drawable.progress_bar_user_selection_neutral)
-            if (userSelectedOptionId == option.id) {
-                updateViewProgressBar(R.drawable.progress_bar_user_selection_wrong)
-                updateViewBackground(R.drawable.button_wrong_answer_outline)
+            updateViewProgressBar(R.drawable.progress_bar_neutral)
+            if (userSelectedOptionId == option.id && !option.is_correct) {
+                updateViewProgressBar(R.drawable.progress_bar_wrong)
+                updateViewBackground(R.drawable.answer_outline_wrong)
             }
-            if (correctOptionId == option.id) {
-                updateViewProgressBar(R.drawable.progress_bar_user_correct)
-                updateViewBackground(R.drawable.button_correct_answer_outline)
+            if (correctOptionId == option.id && option.is_correct) {
+                updateViewProgressBar(R.drawable.progress_bar_correct)
+                updateViewBackground(R.drawable.answer_outline_correct)
             }
         }
         setProgressVisibility(!correctOptionId.isNullOrEmpty())

@@ -4,7 +4,7 @@
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              android:layout_width="match_parent"
                                              app:layout_constrainedWidth="true"
-                                             android:background="@drawable/confirm_message_textview"
+                                             android:background="@drawable/rounded_corner_with_background"
                                              app:layout_constraintWidth_percent="0.8"
                                              android:layout_height="wrap_content">
 

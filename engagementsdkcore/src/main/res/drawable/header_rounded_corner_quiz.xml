@@ -4,5 +4,6 @@
         android:startColor="@color/livelike_quiz_title_gradient_left"
         android:endColor="@color/livelike_quiz_title_gradient_right"
         android:angle="@integer/header_gradient_angle"/>
-<corners android:radius="@dimen/livelike_header_corner_radius"/>
+    <corners android:topLeftRadius="@dimen/livelike_button_corner_radius"
+             android:topRightRadius="@dimen/livelike_button_corner_radius"/>
 </shape>

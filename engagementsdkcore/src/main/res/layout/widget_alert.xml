@@ -86,7 +86,7 @@
                 android:layout_height="10dp"
                 android:layout_marginEnd="16dp"
                 android:animateLayoutChanges="true"
-                android:background="@drawable/notification_ic_arrow"
+                android:background="@drawable/alert_ic_arrow"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/linkBackground"
                 app:layout_constraintEnd_toEndOf="@+id/linkBackground"

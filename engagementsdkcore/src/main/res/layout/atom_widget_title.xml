@@ -10,7 +10,7 @@
             android:id="@+id/titleTextView"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:background="@drawable/top_rounded_corner"
+            android:background="@drawable/header_rounded_corner_default"
             android:textColor="@color/livelike_header_text_color"
             android:textSize="@dimen/livelike_header_text_size"
             app:fontFamily="@font/livelike_header_font"

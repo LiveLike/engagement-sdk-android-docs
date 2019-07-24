@@ -5,12 +5,12 @@
                                              android:layout_width="match_parent"
                                              android:layout_height="wrap_content"
                                              android:animateLayoutChanges="true"
-                                             android:background="@drawable/image_item_backgroung"
+                                             android:background="@drawable/solid_background"
 >
     <ProgressBar
             android:id="@+id/imageBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
-            android:progressDrawable="@drawable/image_option_background_progressbar"
+            android:progressDrawable="@drawable/progress_bar_background"
             android:layout_width="0dp"
             android:layout_height="22dp"
             android:visibility="invisible"
@@ -29,7 +29,6 @@
             android:layout_width="70dp"
             android:layout_height="60dp"
             android:scaleType="centerCrop"
-            android:background="@drawable/button_rounded_corners"
             android:contentDescription="TODO"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
