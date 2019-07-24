@@ -56,6 +56,9 @@
             app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"
             app:layout_constraintEnd_toEndOf="@+id/textRecyclerView"
             app:layout_constraintStart_toStartOf="@+id/textRecyclerView"
-            tools:visibility="visible"/>
+            tools:visibility="visible"
+            android:adjustViewBounds="false"
+            android:cropToPadding="false"
+    />
 
 </android.support.constraint.ConstraintLayout>
