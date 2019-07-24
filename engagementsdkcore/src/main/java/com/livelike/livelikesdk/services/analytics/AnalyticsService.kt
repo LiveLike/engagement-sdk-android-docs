@@ -39,6 +39,61 @@ internal interface AnalyticsService {
     fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
 }
 
+internal class MockAnalyticsService : AnalyticsService{
+    override fun trackConfiguration(internalAppName: String) {
+    }
+
+    override fun trackWidgetInteraction(kind: WidgetType, id: String, interactionInfo: AnalyticsWidgetInteractionInfo) {
+    }
+
+    override fun trackSessionStarted() {
+    }
+
+    override fun trackMessageSent(msgId: String, msgLength: Int) {
+    }
+
+    override fun trackWidgetReceived(kind: WidgetType, id: String) {
+    }
+
+    override fun trackWidgetDisplayed(kind: WidgetType, id: String) {
+    }
+
+    override fun trackWidgetDismiss(
+        kind: WidgetType,
+        id: String,
+        interactionInfo: AnalyticsWidgetInteractionInfo,
+        interactable: Boolean?,
+        action: DismissAction
+    ) {
+    }
+
+    override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
+    }
+
+    override fun trackOrientationChange(isPortrait: Boolean) {
+    }
+
+    override fun trackSession(sessionId: String) {
+    }
+
+    override fun trackButtonTap(buttonName: String, extra: JsonObject) {
+    }
+
+    override fun trackUsername(username: String) {
+    }
+
+    override fun trackKeyboardOpen(keyboardType: KeyboardType) {
+    }
+
+    override fun trackKeyboardClose(
+        keyboardType: KeyboardType,
+        hideMethod: KeyboardHideReason,
+        chatMessageId: String?
+    ) {
+    }
+
+}
+
 internal class AnalyticsWidgetInteractionInfo {
     var interactionCount: Int = 0
     var timeOfFirstInteraction: Long = -1

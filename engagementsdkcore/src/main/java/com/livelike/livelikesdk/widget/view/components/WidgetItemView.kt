@@ -55,12 +55,12 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
             inflate(context, R.layout.atom_widget_text_item, this)
             layoutTransition = LayoutTransition()
         }
-        text_button.text = option.description
+        text_button?.text = option.description
 
         animateProgress(option, determinateBar.progress.toFloat())
 
         clickListener?.apply {
-            text_button.setOnClickListener(clickListener)
+            text_button?.setOnClickListener(clickListener)
         }
         layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,

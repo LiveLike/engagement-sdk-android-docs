@@ -6,27 +6,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".WidgetOnlyActivity">
-    <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+    <com.livelike.livelikesdk.widget.view.WidgetTestView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="match_parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-
-            app:theme="@style/ThemeOverlay.AppCompat.Dark"/>
-
-    <android.support.v7.widget.RecyclerView
-            android:id="@+id/widget_only"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="@id/toolbar"
-            app:layout_constraintStart_toStartOf="@id/toolbar"
-            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintVertical_bias="0.168"
-            android:layout_marginTop="8dp"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
 </android.support.constraint.ConstraintLayout>
