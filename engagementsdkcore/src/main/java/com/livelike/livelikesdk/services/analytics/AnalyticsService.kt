@@ -7,6 +7,7 @@ import com.livelike.livelikesdk.chat.KeyboardType
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.mixpanel.android.mpmetrics.MixpanelExtension
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -141,7 +142,7 @@ internal class AnalyticsWidgetSpecificInfo {
 
 internal class MixpanelAnalytics(context: Context, token: String, programId: String) : AnalyticsService {
 
-    private var mixpanel: MixpanelAPI = MixpanelAPI.getInstance(context, token)
+    private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token, programId)
 
     companion object {
         const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
