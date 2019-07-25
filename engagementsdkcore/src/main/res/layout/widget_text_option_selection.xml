@@ -38,12 +38,17 @@
     <com.livelike.livelikesdk.widget.view.components.ConfirmMessageView
             android:id="@+id/confirmationMessage"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"
             app:layout_constraintEnd_toEndOf="@+id/textRecyclerView"
             app:layout_constraintStart_toStartOf="@+id/textRecyclerView"
+            android:layout_marginLeft="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginEnd="32dp"
+            tools:visibility="visible"
     />
 
     <com.airbnb.lottie.LottieAnimationView
