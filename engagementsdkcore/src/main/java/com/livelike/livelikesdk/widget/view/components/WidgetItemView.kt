@@ -43,7 +43,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         selectedPredictionId: String = "",
         itemIsLast: Boolean
     ) {
-        if(!inflated){
+        if (!inflated) {
             if (!option.image_url.isNullOrEmpty()) {
                 setupImageItem(option)
             } else {
@@ -115,9 +115,9 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
                 updateViewButtonBackground(R.drawable.answer_outline_correct)
             }
         }
-        if(itemIsLast){
+        if (itemIsLast) {
             updateViewBackground(R.drawable.answer_background_last_item)
-        }else{
+        } else {
             updateViewBackground(R.drawable.answer_background_default)
         }
         setProgressVisibility(!correctOptionId.isNullOrEmpty())
@@ -142,7 +142,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         }
     }
 
-    private fun getCurrentProgress() : Int{
+    private fun getCurrentProgress(): Int {
         return determinateBar?.progress ?: imageBar?.progress ?: 0
     }
 
@@ -172,11 +172,11 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
 
     private fun updateViewProgressBar(drawableId: Int) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
-        if (determinateBar!=null && determinateBar?.tag != drawableId) {
+        if (determinateBar != null && determinateBar?.tag != drawableId) {
             determinateBar?.progressDrawable = drawable
             determinateBar?.tag = drawableId
         }
-        if (imageBar!=null && imageBar?.tag != drawableId) {
+        if (imageBar != null && imageBar?.tag != drawableId) {
             imageBar?.progressDrawable = drawable
             determinateBar?.tag = drawableId
         }
@@ -184,11 +184,11 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
 
     private fun updateViewButtonBackground(drawableId: Int) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
-        if (text_button!=null && text_button?.tag != drawableId) {
+        if (text_button != null && text_button?.tag != drawableId) {
             text_button?.background = drawable
             text_button?.tag = drawableId
         }
-        if (imageButtonBackground!=null && imageButtonBackground?.tag != drawableId) {
+        if (imageButtonBackground != null && imageButtonBackground?.tag != drawableId) {
             imageButtonBackground?.background = drawable
             imageButtonBackground?.tag = drawableId
         }
@@ -196,11 +196,11 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
 
     private fun updateViewBackground(drawableId: Int) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
-        if (bkgrd!=null && bkgrd.tag != drawableId) {
+        if (bkgrd != null && bkgrd.tag != drawableId) {
             bkgrd.background = drawable
             bkgrd.tag = drawableId
         }
-        if (imageItemRoot!=null && imageItemRoot.tag != drawableId) {
+        if (imageItemRoot != null && imageItemRoot.tag != drawableId) {
             imageItemRoot.background = drawable
             imageItemRoot.tag = drawableId
         }

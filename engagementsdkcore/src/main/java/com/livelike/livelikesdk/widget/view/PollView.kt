@@ -32,13 +32,13 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
         }
 
-    private fun clickedOptionObserver(id : String?) {
+    private fun clickedOptionObserver(id: String?) {
         id?.let {
-            if(viewModel?.firstClick != null && viewModel?.firstClick!!){
+            if (viewModel?.firstClick != null && viewModel?.firstClick!!) {
                 val options = viewModel?.data?.currentData?.resource?.getMergedOptions()
                 options?.apply {
                     forEach { opt ->
-                        if (opt.id == id){
+                        if (opt.id == id) {
                             opt.vote_count = 1
                             opt.percentage = 100
                         }

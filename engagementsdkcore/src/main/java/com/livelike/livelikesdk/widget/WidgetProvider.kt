@@ -3,11 +3,9 @@ package com.livelike.livelikesdk.widget
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
-import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.services.analytics.AnalyticsService
-import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION

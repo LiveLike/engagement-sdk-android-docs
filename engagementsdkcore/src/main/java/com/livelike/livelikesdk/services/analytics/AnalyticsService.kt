@@ -40,7 +40,7 @@ internal interface AnalyticsService {
     fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
 }
 
-internal class MockAnalyticsService : AnalyticsService{
+internal class MockAnalyticsService : AnalyticsService {
     override fun trackConfiguration(internalAppName: String) {
     }
 
@@ -92,7 +92,6 @@ internal class MockAnalyticsService : AnalyticsService{
         chatMessageId: String?
     ) {
     }
-
 }
 
 internal class AnalyticsWidgetInteractionInfo {

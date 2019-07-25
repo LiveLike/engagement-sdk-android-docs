@@ -20,7 +20,7 @@ internal class WidgetOptionsViewAdapter(
     var selectionLocked = false
     var showPercentage = false
         set(value) {
-            if(field != value && value){
+            if (field != value && value) {
                 notifyDataSetChanged()
             }
             field = value
@@ -54,7 +54,7 @@ internal class WidgetOptionsViewAdapter(
     override fun onBindViewHolder(holder: TextOptionViewHolder, position: Int) {
         val item = myDataset[position]
         val itemIsSelected = selectedPosition == position
-        val itemIsLast = myDataset.size-1 == position
+        val itemIsLast = myDataset.size - 1 == position
 
         holder.textItemView.setData(item, itemIsSelected, widgetType, correctOptionId, userSelectedOptionId, itemIsLast)
         if (showPercentage) {

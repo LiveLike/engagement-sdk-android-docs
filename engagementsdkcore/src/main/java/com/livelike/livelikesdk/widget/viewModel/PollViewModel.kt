@@ -25,7 +25,6 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 
 internal class PollWidget(
     val type: WidgetType,
@@ -177,7 +176,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
     var firstClick = true
 
     fun onOptionClicked() {
-        if(firstClick){
+        if (firstClick) {
             firstClick = false
             vote()
         }
