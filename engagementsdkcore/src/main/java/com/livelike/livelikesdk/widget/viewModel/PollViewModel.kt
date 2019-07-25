@@ -25,6 +25,7 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 
 internal class PollWidget(
     val type: WidgetType,
@@ -70,7 +71,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
             })
         }
 
-        debouncer.subscribe(javaClass) {
+        debouncer.subscribe(javaClass.simpleName) {
             if (it != null) vote()
         }
 
@@ -173,7 +174,13 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         currentWidgetType = null
     }
 
+    var firstClick = true
+
     fun onOptionClicked() {
+        if(firstClick){
+            firstClick = false
+            vote()
+        }
         interactionData.incrementInteraction()
     }
 }

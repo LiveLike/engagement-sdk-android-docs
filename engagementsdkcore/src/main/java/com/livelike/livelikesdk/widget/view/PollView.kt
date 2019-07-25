@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.widget.view
 
-import android.arch.lifecycle.Observer
 import android.content.Context
 import android.util.AttributeSet
 import com.livelike.livelikesdk.R
@@ -28,21 +27,36 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         set(value) {
             field = value
             viewModel = value as PollViewModel
-            viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
-            viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
-            viewModel?.currentVoteId?.subscribe(javaClass) { clickedOptionObserver() }
+            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+            viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
+            viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
         }
 
-    private fun clickedOptionObserver() = Observer<String?> {
-        viewModel?.onOptionClicked()
+    private fun clickedOptionObserver(id : String?) {
+        id?.let {
+            if(viewModel?.firstClick != null && viewModel?.firstClick!!){
+                val options = viewModel?.data?.currentData?.resource?.getMergedOptions()
+                options?.apply {
+                    forEach { opt ->
+                        if (opt.id == id){
+                            opt.vote_count = 1
+                            opt.percentage = 100
+                        }
+                    }
+                    viewModel?.adapter?.myDataset = options
+                    textRecyclerView.swapAdapter(viewModel?.adapter, false)
+                }
+            }
+            viewModel?.onOptionClicked()
+        }
     }
 
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
-        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
-        viewModel?.currentVoteId?.subscribe(javaClass) { clickedOptionObserver() }
+        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
+        viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
     }
 
     private fun resourceObserver(widget: PollWidget?) {

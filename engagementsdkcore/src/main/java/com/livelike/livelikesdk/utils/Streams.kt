@@ -45,7 +45,7 @@ internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): Subscr
         }
     }
 
-    source.subscribe(source) {
+    source.subscribe(source::class.java.simpleName) {
         if (!running) {
             running = true
             handler.removeCallbacks(runnable())
