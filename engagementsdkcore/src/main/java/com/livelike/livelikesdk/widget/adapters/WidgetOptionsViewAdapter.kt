@@ -20,8 +20,10 @@ internal class WidgetOptionsViewAdapter(
     var selectionLocked = false
     var showPercentage = false
         set(value) {
+            if(field != value && value){
+                notifyDataSetChanged()
+            }
             field = value
-            notifyDataSetChanged()
         }
 
     inner class TextOptionViewHolder(val textItemView: WidgetItemView, val onClick: (selectedOption: Option) -> Unit) :
@@ -34,10 +36,8 @@ internal class WidgetOptionsViewAdapter(
         override fun onClick(v: View?) {
             if (adapterPosition == RecyclerView.NO_POSITION || selectionLocked || selectedPosition == adapterPosition) return
 
-            // Updating old as well as new positions
-            notifyItemChanged(selectedPosition)
             selectedPosition = adapterPosition
-            notifyItemChanged(selectedPosition)
+            notifyDataSetChanged()
 
             onClick(myDataset[selectedPosition])
         }
@@ -54,8 +54,9 @@ internal class WidgetOptionsViewAdapter(
     override fun onBindViewHolder(holder: TextOptionViewHolder, position: Int) {
         val item = myDataset[position]
         val itemIsSelected = selectedPosition == position
+        val itemIsLast = myDataset.size-1 == position
 
-        holder.textItemView.setData(item, itemIsSelected, widgetType, correctOptionId, userSelectedOptionId)
+        holder.textItemView.setData(item, itemIsSelected, widgetType, correctOptionId, userSelectedOptionId, itemIsLast)
         if (showPercentage) {
             holder.textItemView.setProgressVisibility(showPercentage)
         }

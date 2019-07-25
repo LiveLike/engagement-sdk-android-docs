@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.widget_test_view.view.testThird
 
 class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
 
-    private val mockConfig = EngagementSDK.SdkConfiguration("", "", "","", "", "","", "", "","", "")
+    private val mockConfig = EngagementSDK.SdkConfiguration("", "", "","", "sub-c-016db434-d156-11e8-b5de-7a9ddb77e130", "","", "", "","", "")
 
     private val textLabels = listOf(
         "NEW RECORD",
@@ -69,7 +69,6 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
 
     var imageUrl : ()->String = {""}
 
-
     private val dataAlert  =
         {"""
             {"timeout": "P0DT00H00M10S",
@@ -83,13 +82,13 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
         """}
 
     private val pollTextData =
-        {"""{"timeout":"P0DT00H00M10S","kind":"text-poll","program_date_time":null,"subscribe_channel":"","question":"${textTitle.random()}","options":[{"description":"${textOptions.random()}","image_url":"${imageUrl()}","vote_count":0,"vote_url":""},{"description":"${textOptions.random()}","image_url":"${imageUrl()}","vote_count":0,"vote_url":""}]}"""}
+        {"""{"id":"9d1b221c-50e9-4b4d-8d0e-2ddb250364f3","question":"${textTitle.random()}","timeout":"P0DT01H00M10S","options":[{"id":"9e9b519c-bec3-40a5-95b2-2ca8c89a41ba","description":"${textOptions.random()}","image_url":"${imageUrl()}","vote_count":0,"vote_url":"https://cf-blast.livelikecdn.com/api/v1/text-poll-options/9e9b519c-bec3-40a5-95b2-2ca8c89a41ba/votes/"},{"id":"65441e5e-fac8-4260-8cee-792120dd976b","description":"${textOptions.random()}","image_url":"${imageUrl()}","vote_count":0,"vote_url":"https://cf-blast.livelikecdn.com/api/v1/text-poll-options/65441e5e-fac8-4260-8cee-792120dd976b/votes/"}],"subscribe_channel":"text_poll_9d1b221c_50e9_4b4d_8d0e_2ddb250364f3","program_date_time":null}"""}
 
     private val quizTextData  =
-        {"""{"timeout":"P0DT00H00M10S","kind":"text-quiz","program_date_time":null,"subscribe_channel":"","question":"${textTitle.random()}","choices":[{"image_url":"${imageUrl()}", "description":"${textOptions.random()}","is_correct":true,"answer_url":"","answer_count":0},{"image_url":"${imageUrl()}", "description":"${textOptions.random()}","is_correct":false,"answer_url":"","answer_count":0}]}"""}
+        {"""{"timeout":"P0DT00H00M10S","kind":"text-quiz","program_date_time":null,"subscribe_channel":"text_quiz_aca0ef1f_bfd5_48cd_90e2_6bfba3d32057","question":"${textTitle.random()}","choices":[{"id":"${java.util.UUID.randomUUID()}","image_url":"${imageUrl()}", "description":"${textOptions.random()}","is_correct":true,"answer_url":"https://cf-blast.livelikecdn.com/api/v1/text-quiz-choices/866bab19-60d8-40d9-89b9-7be3b065e7be/answers/","answer_count":0},{"id":"${java.util.UUID.randomUUID()}","image_url":"${imageUrl()}", "description":"${textOptions.random()}","is_correct":false,"answer_url":"https://cf-blast.livelikecdn.com/api/v1/text-quiz-choices/5d6add12-4111-4137-8f50-95be775be012/answers/","answer_count":0}]}"""}
 
     private val  predictionTextData =
-        {"""{"timeout":"P0DT00H00M10S","kind":"text-prediction","program_date_time":null,"subscribe_channel":"","question":"${textTitle.random()}","confirmation_message":"${textOptions.random()}","options":[{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.random()}","is_correct":false,"vote_count":0,"vote_url":""},{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.random()}","is_correct":false,"vote_count":0,"vote_url":""}]}"""}
+        {"""{"timeout":"P0DT00H00M10S","kind":"text-prediction","program_date_time":null,"subscribe_channel":"text_prediction_710a9bef_9932_493b_a414_e9a37abf49d6","question":"${textTitle.random()}","confirmation_message":"${textOptions.random()}","options":[{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.random()}","is_correct":false,"vote_count":0,"vote_url":""},{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.random()}","is_correct":false,"vote_count":0,"vote_url":""}]}"""}
 
     init {
         ConstraintLayout.inflate(context, R.layout.widget_test_view, this)
