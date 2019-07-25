@@ -178,7 +178,6 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
     fun onOptionClicked() {
         if (firstClick) {
             firstClick = false
-            vote()
         }
         interactionData.incrementInteraction()
     }
