@@ -110,7 +110,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
                 updateViewProgressBar(R.drawable.progress_bar_wrong)
                 updateViewButtonBackground(R.drawable.answer_outline_wrong)
             }
-            if (correctOptionId == option.id && option.is_correct) {
+            if (option.is_correct) {
                 updateViewProgressBar(R.drawable.progress_bar_correct)
                 updateViewButtonBackground(R.drawable.answer_outline_correct)
             }
