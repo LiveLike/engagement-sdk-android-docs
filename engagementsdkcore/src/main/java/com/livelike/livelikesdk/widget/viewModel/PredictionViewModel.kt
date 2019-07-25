@@ -120,7 +120,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
             }
         })
 
-        val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
+        val isUserCorrect = adapter?.myDataset?.find { it.id == selectedPredictionId }?.is_correct ?: false
         val rootPath = if (isUserCorrect) "correctAnswer" else "wrongAnswer"
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
 
