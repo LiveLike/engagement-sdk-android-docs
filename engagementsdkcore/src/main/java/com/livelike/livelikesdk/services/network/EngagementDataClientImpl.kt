@@ -189,94 +189,23 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         }
     }
 
-    override fun vote(voteUrl: String) {
-        vote(voteUrl, null)
-    }
-
-    override fun vote(voteUrl: String, voteUpdateCallback: ((String) -> Unit)?) {
-        if (voteUrl == "null" || voteUrl.isEmpty()) {
-            logError { "Voting failed as voteUrl is empty" }
-            return
-        }
-        logVerbose { "Voting for $voteUrl" }
-        post(voteUrl) { responseJson ->
-            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
-        }
-    }
+    /// WIDGET CLIENT BELOW
 
     var voteUrl = ""
+    private val singleRunner = SingleRunner()
 
     override suspend fun voteAsync(widgetVotingUrl: String, voteId: String) {
         singleRunner.afterPrevious {
             if(voteUrl.isEmpty()){
-                logError { "POST" }
                 voteUrl = postAsync(widgetVotingUrl).extractStringOrEmpty("url")
             }else{
-                logError { "PUT" }
                 putAsync(voteUrl, FormBody.Builder()
                     .add("option_id", voteId)
+                    .add("choice_id", voteId)
                     .build())
             }
         }
     }
-
-    override fun changeVote(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?) {
-        if (voteUrl == "null" || voteUrl.isEmpty()) {
-            logError { "Vote Change failed as voteUrl is empty" }
-            return
-        }
-        put(
-            voteUrl, FormBody.Builder()
-                .add("option_id", newVoteId)
-                .build()
-        ) { responseJson ->
-            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
-        }
-    }
-
-    override fun changeAnswer(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?) {
-        if (voteUrl == "null" || voteUrl.isEmpty()) {
-            logError { "Vote Change failed as voteUrl is empty" }
-            return
-        }
-        put(
-            voteUrl, FormBody.Builder()
-                .add("choice_id", newVoteId)
-                .build()
-        ) { responseJson ->
-            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
-        }
-    }
-
-    override fun fetchQuizResult(answerUrl: String) {
-        if (answerUrl == "null" || answerUrl.isEmpty()) {
-            logError { "Cannot make a post request to answerUrl as it is empty" }
-            return
-        }
-        logVerbose { "Sending post request for $answerUrl" }
-        post(answerUrl)
-    }
-
-    private fun post(url: String, responseCallback: ((JsonObject) -> Unit)? = null) {
-        val request = Request.Builder()
-            .url(url)
-            .post(RequestBody.create(null, ByteString.EMPTY))
-            .build()
-        val call = client.newCall(request)
-        call.enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
-                mainHandler.post {
-                    responseCallback?.invoke(JsonParser().parse(response.body()?.string()).asJsonObject)
-                }
-            }
-
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
-        })
-    }
-
-    private val singleRunner = SingleRunner()
 
     private suspend fun postAsync(url: String) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
@@ -315,23 +244,4 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         })
     }
 
-
-    private fun put(url: String, body: FormBody, responseCallback: ((JsonObject) -> Unit)? = null) {
-        val request = Request.Builder()
-            .url(url)
-            .put(body)
-            .build()
-        val call = client.newCall(request)
-        call.enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
-                mainHandler.post {
-                    responseCallback?.invoke(JsonParser().parse(response.body()?.string()).asJsonObject)
-                }
-            }
-
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
-        })
-    }
 }

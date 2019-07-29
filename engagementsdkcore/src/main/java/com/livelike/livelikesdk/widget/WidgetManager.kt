@@ -86,13 +86,8 @@ enum class WidgetType(val event: String) {
 }
 
 internal interface WidgetDataClient {
-    fun vote(voteUrl: String)
-    fun vote(voteUrl: String, voteUpdateCallback: ((String) -> Unit)?)
     suspend fun voteAsync(widgetVotingUrl: String, voteId: String)
-    fun changeVote(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?)
     fun registerImpression(impressionUrl: String)
-    fun fetchQuizResult(answerUrl: String)
-    fun changeAnswer(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?)
 }
 
 internal fun MessagingClient.asWidgetManager(
