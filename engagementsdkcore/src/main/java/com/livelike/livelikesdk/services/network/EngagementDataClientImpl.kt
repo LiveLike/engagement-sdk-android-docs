@@ -15,6 +15,7 @@ import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.utils.logWarn
 import com.livelike.livelikesdk.widget.WidgetDataClient
+import com.livelike.livelikesdk.widget.viewModel.SingleRunner
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -25,9 +26,12 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
+
+// TODO: This needs to be split
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
-
     private val MAX_PROGRAM_DATA_REQUESTS = 13
 
     // TODO: This should POST first then only update the impression (or just be called on widget dismissed..)
@@ -200,6 +204,22 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         }
     }
 
+    var voteUrl = ""
+
+    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String) {
+        singleRunner.afterPrevious {
+            if(voteUrl.isEmpty()){
+                logError { "POST" }
+                voteUrl = postAsync(widgetVotingUrl).extractStringOrEmpty("url")
+            }else{
+                logError { "PUT" }
+                putAsync(voteUrl, FormBody.Builder()
+                    .add("option_id", voteId)
+                    .build())
+            }
+        }
+    }
+
     override fun changeVote(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?) {
         if (voteUrl == "null" || voteUrl.isEmpty()) {
             logError { "Vote Change failed as voteUrl is empty" }
@@ -255,6 +275,46 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             }
         })
     }
+
+    private val singleRunner = SingleRunner()
+
+    private suspend fun postAsync(url: String) = suspendCoroutine<JsonObject> {
+        val request = Request.Builder()
+            .url(url)
+            .post(RequestBody.create(null, ByteString.EMPTY))
+            .build()
+        val call = client.newCall(request)
+        call.enqueue(object : Callback {
+            override fun onResponse(call: Call?, response: Response) {
+                mainHandler.post {
+                    it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
+                }
+            }
+            override fun onFailure(call: Call?, e: IOException?) {
+                logError { e }
+            }
+        })
+    }
+
+    private suspend fun putAsync(url: String, body: FormBody) = suspendCoroutine<JsonObject> {
+        val request = Request.Builder()
+            .url(url)
+            .put(body)
+            .build()
+        val call = client.newCall(request)
+        call.enqueue(object : Callback {
+            override fun onResponse(call: Call?, response: Response) {
+                mainHandler.post {
+                    it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
+                }
+            }
+
+            override fun onFailure(call: Call?, e: IOException?) {
+                logError { e }
+            }
+        })
+    }
+
 
     private fun put(url: String, body: FormBody, responseCallback: ((JsonObject) -> Unit)? = null) {
         val request = Request.Builder()

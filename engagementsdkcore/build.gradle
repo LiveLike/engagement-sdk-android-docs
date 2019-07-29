@@ -49,6 +49,8 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "com.android.support:design:$supportLibraryVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
     // Pubnub SDK for real-time communication
     implementation group: 'com.pubnub', name: 'pubnub-gson', version: "$pubnubVersion"
