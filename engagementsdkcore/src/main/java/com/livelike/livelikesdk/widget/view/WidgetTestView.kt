@@ -55,7 +55,7 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
 
     private val linkOptions = listOf(
         "",
-        "https://google.com")
+        "https://google.fr")
 
     private val linkLabelOptions = listOf(
         "Click Here",
