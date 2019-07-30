@@ -14,11 +14,9 @@ import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.IOException
 import android.graphics.Bitmap.CompressFormat
 import android.support.test.runner.screenshot.CustomScreenCaptureProcessor
 import android.support.v4.app.ActivityCompat
-
 
 @RunWith(AndroidJUnit4::class)
 class WidgetOnlyActivityTest {
@@ -49,7 +47,6 @@ class WidgetOnlyActivityTest {
     }
 }
 
-
 fun withIndex(matcher: Matcher<View>, index: Int): Matcher<View> {
     return object : TypeSafeMatcher<View>() {
         var currentIndex = 0
@@ -65,5 +62,3 @@ fun withIndex(matcher: Matcher<View>, index: Int): Matcher<View> {
         }
     }
 }
-
-

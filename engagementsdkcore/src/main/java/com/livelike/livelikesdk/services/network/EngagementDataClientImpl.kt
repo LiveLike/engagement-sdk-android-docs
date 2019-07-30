@@ -29,7 +29,6 @@ import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-
 // TODO: This needs to be split
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
     private val MAX_PROGRAM_DATA_REQUESTS = 13
@@ -189,16 +188,16 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         }
     }
 
-    /// WIDGET CLIENT BELOW
+    // / WIDGET CLIENT BELOW
 
     var voteUrl = ""
     private val singleRunner = SingleRunner()
 
     override suspend fun voteAsync(widgetVotingUrl: String, voteId: String) {
         singleRunner.afterPrevious {
-            if(voteUrl.isEmpty()){
+            if (voteUrl.isEmpty()) {
                 voteUrl = postAsync(widgetVotingUrl).extractStringOrEmpty("url")
-            }else{
+            } else {
                 putAsync(voteUrl, FormBody.Builder()
                     .add("option_id", voteId)
                     .add("choice_id", voteId)
@@ -243,5 +242,4 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             }
         })
     }
-
 }

@@ -1,4 +1,4 @@
-package android.support.test.runner.screenshot;
+package android.support.test.runner.screenshot
 
 import android.os.Environment.DIRECTORY_PICTURES
 import android.os.Environment.getExternalStoragePublicDirectory

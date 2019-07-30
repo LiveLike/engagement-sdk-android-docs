@@ -37,7 +37,6 @@ import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import java.util.Date
 import java.util.UUID
 
