@@ -41,7 +41,7 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
 
     private val textOptions = listOf(
         "Who? Is he still playing?",
-        "For sure! He's done.",
+        "He is the man.",
         "Tom Brady",
         "For sure! He's done.",
         "He still has a lot left in the tank!",
