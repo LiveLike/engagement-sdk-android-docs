@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'org.jetbrains.dokka-android'
@@ -15,7 +13,7 @@ android {
     defaultConfig {
         // required for customizing vector icon colors
         vectorDrawables.useSupportLibrary = true
-        
+        multiDexEnabled true
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
@@ -38,10 +36,6 @@ android {
         outputDirectory = "$buildDir/javadoc"
     }
 
-    testOptions {
-        unitTests.returnDefaultValues = true
-    }
-
 }
 
 dependencies {
@@ -49,6 +43,9 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "com.android.support:design:$supportLibraryVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "com.android.support:multidex:$multidexVersion"
 
     // Pubnub SDK for real-time communication
     implementation group: 'com.pubnub', name: 'pubnub-gson', version: "$pubnubVersion"
@@ -59,12 +56,6 @@ dependencies {
 
     // Tests frameworks
     testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "com.android.support.test:runner:$supportTestVersion"
-    androidTestImplementation "com.android.support.test:rules:$supportTestVersion"
-    androidTestImplementation ("com.android.support.test.espresso:espresso-core:$expressoVersion",
-    {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
 
     // Glide
     implementation "com.github.bumptech.glide:glide:$glideVersion"

@@ -18,6 +18,7 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import kotlinx.coroutines.launch
 
 internal class PredictionWidget(
     val type: WidgetType,
@@ -146,16 +147,18 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
 
     private fun cleanUp() {
         // Vote for the selected option before starting the confirm animation
-        data.currentData?.let {
-            adapter?.apply {
-                if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
-                    val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
+        uiScope.launch {
+            data.currentData?.let {
+                adapter?.apply {
+                    if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
+                        val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
 
-                    // Prediction widget votes on dismiss
-                    selectedOption?.getMergedVoteUrl()?.let { it1 -> dataClient.vote(it1) }
+                        // Prediction widget votes on dismiss
+                        selectedOption?.getMergedVoteUrl()?.let { url -> dataClient.voteAsync(url, selectedOption.id) }
 
-                    // Save widget id and voted option for followup widget
-                    addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
+                        // Save widget id and voted option for followup widget
+                        addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
+                    }
                 }
             }
         }

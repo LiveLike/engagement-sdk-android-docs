@@ -26,6 +26,7 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import kotlinx.coroutines.launch
 
 internal class QuizWidget(
     val type: WidgetType,
@@ -83,17 +84,14 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
 
     private fun vote() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
-        adapter?.apply {
-            if (voteUrl == null) {
-                myDataset[selectedPosition].getMergedVoteUrl()
-                    ?.let { url -> dataClient.vote(url) { voteUrl = it } }
-            } else {
-                voteUrl?.apply {
-                    dataClient.changeAnswer(this, myDataset[selectedPosition].id) {}
-                }
+
+        uiScope.launch {
+            adapter?.apply {
+                val url = myDataset[selectedPosition].getMergedVoteUrl()
+                url?.let { dataClient.voteAsync(url, myDataset[selectedPosition].id) }
             }
+            adapter?.notifyDataSetChanged()
         }
-        adapter?.notifyDataSetChanged()
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {

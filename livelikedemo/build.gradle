@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
 
 android {
@@ -25,6 +23,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    adbOptions {
+        installOptions '-g', '-r'
+    }
 }
 
 dependencies {
@@ -34,8 +36,10 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
     implementation "com.android.support:multidex:$multidexVersion"
 
+    // Tests frameworks
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "com.android.support.test:runner:$supportTestVersion"
+    androidTestImplementation "com.android.support.test:rules:$supportTestVersion"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:$expressoVersion"
 
     implementation "com.android.support:design:$supportLibraryVersion"
@@ -53,4 +57,40 @@ dependencies {
     api project(':engagementsdkapi')
     api project(path: ':engagementsdkcore')
     implementation project(path: ':pluginexoplayer')
+}
+
+def reportsDirectory = "$buildDir/reports/androidTests/connected"
+
+def clearScreenshotsTask = task('clearScreenshots', type: Exec) {
+    executable "${android.getAdbExe().toString()}"
+    args 'shell', 'rm', '-r', '/sdcard/Pictures/my_app_folder'
+}
+
+def createScreenshotDirectoryTask = task('createScreenshotDirectory', type: Exec, group: 'reporting') {
+    executable "${android.getAdbExe().toString()}"
+    args 'shell', 'mkdir', '-p', '/sdcard/Pictures/my_app_folder'
+}
+
+def fetchScreenshotsTask = task('fetchScreenshots', type: Exec, group: 'reporting') {
+    executable "${android.getAdbExe().toString()}"
+    args 'pull', '/sdcard/Pictures/my_app_folder/.', reportsDirectory
+    finalizedBy {
+        clearScreenshotsTask
+    }
+
+    dependsOn {
+        createScreenshotDirectoryTask
+    }
+
+    doFirst {
+        new File(reportsDirectory).mkdirs()
+    }
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'connectedDebugAndroidTest') {
+        task.finalizedBy {
+            fetchScreenshotsTask
+        }
+    }
 }

@@ -25,6 +25,8 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 internal class PollWidget(
     val type: WidgetType,
@@ -80,18 +82,14 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
     private fun vote() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
 
-        adapter?.apply {
-            if (voteUrl == null) {
-                myDataset[selectedPosition].getMergedVoteUrl()
-                    ?.let { url -> dataClient.vote(url) { voteUrl = it } }
-            } else {
-                voteUrl?.apply {
-                    dataClient.changeVote(this, myDataset[selectedPosition].id) {}
+        uiScope.launch {
+                adapter?.apply {
+                    val url = myDataset[selectedPosition].getMergedVoteUrl()
+                    url?.let { dataClient.voteAsync(it, myDataset[selectedPosition].id) }
                 }
-            }
+                adapter?.showPercentage = true
+                adapter?.notifyDataSetChanged()
         }
-        adapter?.showPercentage = true
-        adapter?.notifyDataSetChanged()
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
@@ -107,8 +105,6 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
-        } else {
-            cleanUp()
         }
     }
 
@@ -171,6 +167,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         widgetSpecificInfo.reset()
         currentWidgetId = ""
         currentWidgetType = null
+        viewModelJob.cancel("Widget Cleanup")
     }
 
     var firstClick = true

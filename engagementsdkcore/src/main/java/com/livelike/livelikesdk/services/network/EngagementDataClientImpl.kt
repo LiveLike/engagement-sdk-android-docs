@@ -15,6 +15,7 @@ import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.utils.logWarn
 import com.livelike.livelikesdk.widget.WidgetDataClient
+import com.livelike.livelikesdk.widget.viewModel.SingleRunner
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -25,9 +26,11 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
+// TODO: This needs to be split
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
-
     private val MAX_PROGRAM_DATA_REQUESTS = 13
 
     // TODO: This should POST first then only update the impression (or just be called on widget dismissed..)
@@ -185,59 +188,25 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         }
     }
 
-    override fun vote(voteUrl: String) {
-        vote(voteUrl, null)
-    }
+    // / WIDGET CLIENT BELOW
 
-    override fun vote(voteUrl: String, voteUpdateCallback: ((String) -> Unit)?) {
-        if (voteUrl == "null" || voteUrl.isEmpty()) {
-            logError { "Voting failed as voteUrl is empty" }
-            return
-        }
-        logVerbose { "Voting for $voteUrl" }
-        post(voteUrl) { responseJson ->
-            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
-        }
-    }
+    var voteUrl = ""
+    private val singleRunner = SingleRunner()
 
-    override fun changeVote(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?) {
-        if (voteUrl == "null" || voteUrl.isEmpty()) {
-            logError { "Vote Change failed as voteUrl is empty" }
-            return
-        }
-        put(
-            voteUrl, FormBody.Builder()
-                .add("option_id", newVoteId)
-                .build()
-        ) { responseJson ->
-            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
+    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String) {
+        singleRunner.afterPrevious {
+            if (voteUrl.isEmpty()) {
+                voteUrl = postAsync(widgetVotingUrl).extractStringOrEmpty("url")
+            } else {
+                putAsync(voteUrl, FormBody.Builder()
+                    .add("option_id", voteId)
+                    .add("choice_id", voteId)
+                    .build())
+            }
         }
     }
 
-    override fun changeAnswer(voteUrl: String, newVoteId: String, voteUpdateCallback: ((String) -> Unit)?) {
-        if (voteUrl == "null" || voteUrl.isEmpty()) {
-            logError { "Vote Change failed as voteUrl is empty" }
-            return
-        }
-        put(
-            voteUrl, FormBody.Builder()
-                .add("choice_id", newVoteId)
-                .build()
-        ) { responseJson ->
-            voteUpdateCallback?.invoke(responseJson.extractStringOrEmpty("url"))
-        }
-    }
-
-    override fun fetchQuizResult(answerUrl: String) {
-        if (answerUrl == "null" || answerUrl.isEmpty()) {
-            logError { "Cannot make a post request to answerUrl as it is empty" }
-            return
-        }
-        logVerbose { "Sending post request for $answerUrl" }
-        post(answerUrl)
-    }
-
-    private fun post(url: String, responseCallback: ((JsonObject) -> Unit)? = null) {
+    private suspend fun postAsync(url: String) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
             .post(RequestBody.create(null, ByteString.EMPTY))
@@ -246,17 +215,16 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
                 mainHandler.post {
-                    responseCallback?.invoke(JsonParser().parse(response.body()?.string()).asJsonObject)
+                    it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
                 }
             }
-
             override fun onFailure(call: Call?, e: IOException?) {
                 logError { e }
             }
         })
     }
 
-    private fun put(url: String, body: FormBody, responseCallback: ((JsonObject) -> Unit)? = null) {
+    private suspend fun putAsync(url: String, body: FormBody) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
             .put(body)
@@ -265,7 +233,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
                 mainHandler.post {
-                    responseCallback?.invoke(JsonParser().parse(response.body()?.string()).asJsonObject)
+                    it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
                 }
             }
 
