@@ -15,7 +15,7 @@ import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.utils.logWarn
 import com.livelike.livelikesdk.widget.WidgetDataClient
-import com.livelike.livelikesdk.widget.viewModel.SingleRunner
+import com.livelike.livelikesdk.widget.util.SingleRunner
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody

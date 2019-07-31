@@ -1,4 +1,4 @@
-package com.livelike.livelikesdk.widget.viewModel
+package com.livelike.livelikesdk.widget.util
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
