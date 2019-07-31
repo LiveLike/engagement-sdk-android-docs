@@ -48,7 +48,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             viewModel = value as AlertWidgetViewModel
             viewModel?.data?.let {
                 inflate(context, it)
-                viewModel?.startDismissTimout(it.timeout){removeAllViews()}
+                viewModel?.startDismissTimout(it.timeout) { removeAllViews() }
             }
         }
 

@@ -50,7 +50,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
     private fun widgetObserver(widgetView: SpecifiedWidgetView?) {
         dismissWidget()
         if (widgetView != null) {
-            if(widgetView.tag != viewTag){
+            if (widgetView.tag != viewTag) {
                 dismissWidget?.invoke(DismissAction.NEW_WIDGET_RECEIVED)
                 dismissWidget = null
             }

@@ -5,7 +5,6 @@ import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
-import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
@@ -46,7 +45,7 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val analyt
         viewModelJob.cancel()
     }
 
-    fun startDismissTimout(timeout: String, onDismiss: ()->Unit) {
+    fun startDismissTimout(timeout: String, onDismiss: () -> Unit) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
             uiScope.launch {

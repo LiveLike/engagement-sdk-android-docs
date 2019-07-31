@@ -12,7 +12,6 @@ import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.utils.SubscriptionManager
-import com.livelike.livelikesdk.utils.logError
 
 internal class WidgetManager(
     upstream: MessagingClient,
