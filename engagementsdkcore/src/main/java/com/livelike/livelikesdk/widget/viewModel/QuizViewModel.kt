@@ -26,6 +26,7 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal class QuizWidget(
@@ -33,7 +34,7 @@ internal class QuizWidget(
     val resource: Resource
 )
 
-internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration, val context: Context) : WidgetViewModel(dismiss) {
+internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration, val context: Context) : WidgetViewModel() {
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -47,7 +48,6 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
     internal var animationPath = ""
     var voteUrl: String? = null
     private var pubnub: PubnubMessagingClient? = null
-    private val handler = Handler()
     var animationEggTimerProgress = 0f
 
     private var currentWidgetId: String = ""
@@ -112,19 +112,17 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         }
     }
 
-    private val runnablePreResult = Runnable {
-        debouncedVoteId.unsubscribe(javaClass)
-        adapter?.selectionLocked = true
-        vote()
-        handler.postDelayed(runnableResult, 2000)
-    }
-    private val runnableResult = Runnable { resultsState() }
-    private val runnableDismiss = Runnable { dismissWidget(DismissAction.TIMEOUT) }
-
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            handler.postDelayed(runnablePreResult, AndroidResource.parseDuration(timeout))
+            uiScope.launch {
+                delay(AndroidResource.parseDuration(timeout))
+                debouncedVoteId.unsubscribe(javaClass)
+                adapter?.selectionLocked = true
+                vote()
+                delay(2000)
+                resultsState()
+            }
         }
     }
 
@@ -139,7 +137,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
             )
         }
         cleanUp()
-        this.dismissWidget()
+        viewModelJob.cancel()
     }
 
     private fun resultsState() {
@@ -156,16 +154,16 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         adapter?.selectionLocked = true
 
         state.onNext("results")
-        handler.postDelayed(runnableDismiss, 6000)
+        uiScope.launch {
+            delay(6000)
+            dismissWidget(DismissAction.TIMEOUT)
+        }
 
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {
         vote() // Vote on dismiss
-        handler.removeCallbacks(runnableResult)
-        handler.removeCallbacks(runnableDismiss)
-        handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false
         adapter = null
@@ -182,7 +180,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         interactionData.reset()
     }
 
-    fun onOptionClicked(it: String?) {
+    fun onOptionClicked() {
         interactionData.incrementInteraction()
     }
 }

@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk.widget.viewModel
 
 import android.content.Context
-import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
@@ -18,6 +17,7 @@ import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal class PredictionWidget(
@@ -25,7 +25,7 @@ internal class PredictionWidget(
     val resource: Resource
 )
 
-internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val appContext: Context, private val analyticsService: AnalyticsService) : WidgetViewModel(dismiss) {
+internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appContext: Context, private val analyticsService: AnalyticsService) : WidgetViewModel() {
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
     var state: Stream<String?> = SubscriptionManager() // confirmation, followup
@@ -35,8 +35,6 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
     var animationProgress = 0f
     var animationEggTimerProgress = 0f
     var animationPath = ""
-
-    private val handler = Handler()
 
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
@@ -69,25 +67,33 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
         }
     }
 
-    private val runnable = Runnable { dismissWidget(DismissAction.TIMEOUT) }
-    private val runnableConfirm = Runnable { confirmationState() }
+    private val runnable = Runnable { }
 
     // TODO: need to move the followup logic back to the widget observer instead of there
     fun startDismissTimout(timeout: String, isFollowup: Boolean) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
             if (isFollowup) {
-                handler.postDelayed(runnable, AndroidResource.parseDuration(timeout))
+                uiScope.launch {
+                    delay(AndroidResource.parseDuration(timeout))
+                    dismissWidget(DismissAction.TIMEOUT)
+                }
                 data.currentData?.apply {
                     val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                    handler.postDelayed(runnable, if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
+                    uiScope.launch {
+                        delay(if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
+                        dismissWidget(DismissAction.TIMEOUT)
+                    }
                     followupState(
                         selectedPredictionId,
                         resource.correct_option_id
                     )
                 }
             } else {
-                handler.postDelayed(runnableConfirm, AndroidResource.parseDuration(timeout))
+                uiScope.launch {
+                    delay(AndroidResource.parseDuration(timeout))
+                    confirmationState()
+                }
             }
         }
     }
@@ -103,7 +109,6 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
             )
         }
         cleanUp()
-        this.dismissWidget()
     }
 
     fun onOptionClicked() {
@@ -140,7 +145,10 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
 
         state.onNext("confirmation")
 
-        handler.postDelayed(runnable, 6000)
+        uiScope.launch {
+            delay(6000)
+            dismissWidget(DismissAction.TIMEOUT)
+        }
 
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
@@ -162,9 +170,6 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit
                 }
             }
         }
-        handler.removeCallbacks(runnable)
-        handler.removeCallbacks(runnableConfirm)
-        handler.removeCallbacksAndMessages(null)
         timeoutStarted = false
         adapter = null
         animationProgress = 0f

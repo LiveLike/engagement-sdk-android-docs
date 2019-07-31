@@ -111,19 +111,19 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
         imageUrl = { if (randomImage.isEmpty()) randomImage else randomImage + java.util.UUID.randomUUID() }
         val viewAlert = AlertWidgetView(context).apply {
             val info = WidgetInfos("alert-created", gson.fromJson(dataAlert(), JsonObject::class.java), "120571e0-d665-4e9b-b497-908cf8422a64")
-            widgetViewModel = AlertWidgetViewModel(info, {}, MockAnalyticsService())
+            widgetViewModel = AlertWidgetViewModel(info, MockAnalyticsService())
         }
         val viewPoll = PollView(context).apply {
             val info = WidgetInfos("text-poll-created", gson.fromJson(pollTextData(), JsonObject::class.java), "120571e0-d665-4e9b-b497-908cf8422a64")
-            widgetViewModel = PollViewModel(info, {}, MockAnalyticsService(), mockConfig)
+            widgetViewModel = PollViewModel(info, MockAnalyticsService(), mockConfig)
         }
         val viewQuiz = QuizView(context).apply {
             val info = WidgetInfos("text-quiz-created", gson.fromJson(quizTextData(), JsonObject::class.java), "120571e0-d665-4e9b-b497-908cf8422a64")
-            widgetViewModel = QuizViewModel(info, {}, MockAnalyticsService(), mockConfig, context)
+            widgetViewModel = QuizViewModel(info, MockAnalyticsService(), mockConfig, context)
         }
         val viewPrediction = PredictionView(context).apply {
             val info = WidgetInfos("text-prediction-created", gson.fromJson(predictionTextData(), JsonObject::class.java), "120571e0-d665-4e9b-b497-908cf8422a64")
-            widgetViewModel = PredictionViewModel(info, {}, context, MockAnalyticsService())
+            widgetViewModel = PredictionViewModel(info, context, MockAnalyticsService())
         }
 
         testFirst.addView(viewPrediction)

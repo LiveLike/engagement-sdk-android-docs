@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-open class WidgetViewModel(val dismissWidget: () -> Unit) {
+open class WidgetViewModel {
     /**
      * This is the job for all coroutines started by this ViewModel.
      * Cancelling this job will cancel all coroutines started by this ViewModel.

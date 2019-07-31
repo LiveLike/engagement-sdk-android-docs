@@ -26,6 +26,7 @@ import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal class PollWidget(
@@ -33,7 +34,7 @@ internal class PollWidget(
     val resource: Resource
 )
 
-internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel(dismiss) {
+internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel() {
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -46,7 +47,6 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
     private var animationPath = ""
     var voteUrl: String? = null
     private var pubnub: PubnubMessagingClient? = null
-    private val handler = Handler()
     var animationEggTimerProgress = 0f
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
@@ -108,14 +108,13 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
         }
     }
 
-    private val runnable = Runnable { confirmationState() }
-    private val runnableDimiss = Runnable { dismissWidget(DismissAction.TIMEOUT) }
-
     fun startDismissTimout(timeout: String) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            handler.removeCallbacks(runnable)
-            handler.postDelayed(runnable, AndroidResource.parseDuration(timeout))
+            uiScope.launch {
+                delay(AndroidResource.parseDuration(timeout))
+                confirmationState()
+            }
         }
     }
 
@@ -130,7 +129,6 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
             )
         }
         cleanUp()
-        this.dismissWidget()
     }
 
     private fun confirmationState() {
@@ -142,16 +140,16 @@ internal class PollViewModel(widgetInfos: WidgetInfos, dismiss: () -> Unit, priv
 
         adapter?.selectionLocked = true
 
-        handler.postDelayed(runnableDimiss, 6000)
-
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
+
+        uiScope.launch {
+            delay(6000)
+            dismissWidget(DismissAction.TIMEOUT)
+        }
     }
 
     private fun cleanUp() {
         vote() // Vote on dismiss
-        handler.removeCallbacks(runnable)
-        handler.removeCallbacks(runnableDimiss)
-        handler.removeCallbacksAndMessages(null)
         pubnub?.unsubscribeAll()
         timeoutStarted = false
         adapter = null

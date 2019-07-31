@@ -1,19 +1,20 @@
 package com.livelike.livelikesdk.widget.viewModel
 
-import android.os.Handler
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.gson
+import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismiss: () -> Unit, private val analyticsService: AnalyticsService) : WidgetViewModel(dismiss) {
+internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService) : WidgetViewModel() {
     private var timeoutStarted = false
     var data: Alert? = null
-    val handler: Handler
 
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
@@ -24,7 +25,6 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismis
         interactionData.widgetDisplayed()
         currentWidgetId = widgetInfos.widgetId
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
-        handler = Handler()
     }
 
     fun onClickLink() {
@@ -32,7 +32,7 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismis
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
     }
 
-    private fun dismissWidget(action: DismissAction) {
+    internal fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
                 it,
@@ -43,26 +43,23 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val dismis
             )
         }
         cleanup()
-        dismiss()
+        viewModelJob.cancel()
     }
 
-    private val runnable = Runnable {
-        dismissWidget(DismissAction.TIMEOUT)
-        timeoutStarted = false
-    }
-
-    fun startDismissTimout(timeout: String) {
+    fun startDismissTimout(timeout: String, onDismiss: ()->Unit) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
-            handler.removeCallbacks(runnable)
-            handler.postDelayed(runnable, AndroidResource.parseDuration(timeout))
+            uiScope.launch {
+                delay(AndroidResource.parseDuration(timeout))
+                dismissWidget(DismissAction.TIMEOUT)
+                onDismiss()
+                timeoutStarted = false
+            }
         }
     }
 
     private fun cleanup() {
         timeoutStarted = false
-        handler.removeCallbacks(runnable)
-        handler.removeCallbacksAndMessages(null)
         currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()

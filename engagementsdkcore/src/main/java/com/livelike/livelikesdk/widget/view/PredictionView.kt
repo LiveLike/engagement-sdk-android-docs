@@ -19,11 +19,11 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleVie
 
 class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
-    override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
-
     private var viewModel: PredictionViewModel? = null
 
     private var inflated = false
+
+    override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
     override var widgetViewModel: WidgetViewModel? = null
         get() = super.widgetViewModel
@@ -85,6 +85,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
         if (widget == null) {
             inflated = false
+            removeAllViews()
         }
     }
 

@@ -16,11 +16,11 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecy
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 
 class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
-    override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
-
     private var viewModel: PollViewModel? = null
 
     private var inflated = false
+
+    override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
     override var widgetViewModel: WidgetViewModel? = null
         get() = super.widgetViewModel
@@ -97,6 +97,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
         if (widget == null) {
             inflated = false
+            removeAllViews()
         }
     }
 

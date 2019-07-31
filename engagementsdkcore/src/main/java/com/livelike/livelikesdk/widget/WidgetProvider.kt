@@ -29,23 +29,22 @@ internal class WidgetProvider {
     fun get(
         widgetInfos: WidgetInfos,
         context: Context,
-        dismiss: () -> Unit,
         analyticsService: AnalyticsService,
         sdkConfiguration: EngagementSDK.SdkConfiguration
     ): SpecifiedWidgetView? {
         return when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
-                widgetViewModel = AlertWidgetViewModel(widgetInfos, dismiss, analyticsService)
+                widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService)
             }
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
-                widgetViewModel = QuizViewModel(widgetInfos, dismiss, analyticsService, sdkConfiguration, context)
+                widgetViewModel = QuizViewModel(widgetInfos, analyticsService, sdkConfiguration, context)
             }
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
-                widgetViewModel = PredictionViewModel(widgetInfos, dismiss, context, analyticsService)
+                widgetViewModel = PredictionViewModel(widgetInfos, context, analyticsService)
             }
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
-                widgetViewModel = PollViewModel(widgetInfos, dismiss, analyticsService, sdkConfiguration)
+                widgetViewModel = PollViewModel(widgetInfos, analyticsService, sdkConfiguration)
             }
             else -> null
         }
@@ -55,7 +54,8 @@ internal class WidgetProvider {
 enum class DismissAction {
     TIMEOUT,
     SWIPE,
-    TAP_X
+    TAP_X,
+    NEW_WIDGET_RECEIVED
 }
 
 open class SpecifiedWidgetView @JvmOverloads constructor(

@@ -19,10 +19,9 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecy
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+    private var viewModel: QuizViewModel? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
-
-    private var viewModel: QuizViewModel? = null
 
     override var widgetViewModel: WidgetViewModel? = null
         get() = super.widgetViewModel
@@ -38,7 +37,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private var inflated = false
 
     private fun onClickObserver(it: String?) {
-        viewModel?.onOptionClicked(it)
+        viewModel?.onOptionClicked()
     }
 
     // Refresh the view when re-attached to the activity
@@ -89,6 +88,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
         if (widget == null) {
             inflated = false
+            removeAllViews()
         }
     }
 

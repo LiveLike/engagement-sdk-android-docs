@@ -12,6 +12,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
@@ -35,13 +36,19 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
     var viewModel: AlertWidgetViewModel? = null
 
+    override var dismissFunc: ((action: DismissAction) -> Unit)? =
+        {
+            viewModel?.dismissWidget(it)
+            removeAllViews()
+        }
+
     override var widgetViewModel: WidgetViewModel? = null
         set(value) {
             field = value
             viewModel = value as AlertWidgetViewModel
             viewModel?.data?.let {
                 inflate(context, it)
-                viewModel?.startDismissTimout(it.timeout)
+                viewModel?.startDismissTimout(it.timeout){removeAllViews()}
             }
         }
 
