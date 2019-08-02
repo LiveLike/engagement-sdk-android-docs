@@ -214,8 +214,11 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         val call = client.newCall(request)
         call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
-                mainHandler.post {
+                try {
                     it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
+                } catch (e: Exception) {
+                    logError { e }
+                    it.resume(JsonObject())
                 }
             }
             override fun onFailure(call: Call?, e: IOException?) {
@@ -232,8 +235,11 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         val call = client.newCall(request)
         call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
-                mainHandler.post {
+                try {
                     it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
+                } catch (e: Exception) {
+                    logError { e }
+                    it.resume(JsonObject())
                 }
             }
 

@@ -155,18 +155,20 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appCont
 
     private fun cleanUp() {
         // Vote for the selected option before starting the confirm animation
-        uiScope.launch {
-            data.currentData?.let {
-                adapter?.apply {
-                    if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
-                        val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
+        data.currentData?.let {
+            adapter?.apply {
+                if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
+                    val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
 
+                    uiScope.launch {
                         // Prediction widget votes on dismiss
-                        selectedOption?.getMergedVoteUrl()?.let { url -> dataClient.voteAsync(url, selectedOption.id) }
-
-                        // Save widget id and voted option for followup widget
-                        addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
+                        selectedOption?.getMergedVoteUrl()?.let { url ->
+                            dataClient.voteAsync(url, selectedOption.id)
+                        }
                     }
+
+                    // Save widget id and voted option for followup widget
+                    addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
                 }
             }
         }

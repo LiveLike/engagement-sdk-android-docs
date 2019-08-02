@@ -92,10 +92,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
     private fun stateObserver(state: String?) {
         when (state) {
             "confirmation" -> {
-                titleView.alpha = 0.2f
-                textEggTimer.alpha = 0.2f
-                textRecyclerView.alpha = 0.2f
-                confirmationMessage.apply {
+                titleView?.alpha = 0.2f
+                textEggTimer?.alpha = 0.2f
+                textRecyclerView?.alpha = 0.2f
+                confirmationMessage?.apply {
                     text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
                     viewModel?.animationPath?.let { viewModel?.animationProgress?.let { it1 -> startAnimation(it, it1) } }
                     subscribeToAnimationUpdates { value ->
@@ -108,7 +108,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 } }
             }
             "followup" -> {
-                followupAnimation.apply {
+                followupAnimation?.apply {
                     setAnimation(viewModel?.animationPath)
                     progress = viewModel?.animationProgress!!
                     addAnimatorUpdateListener { valueAnimator ->
