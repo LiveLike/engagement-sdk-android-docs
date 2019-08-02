@@ -14,23 +14,7 @@
             android:layout_marginBottom="@dimen/livelike_default_chat_input_margin_bottom"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <ImageButton
-            android:id="@+id/snap_live"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            app:srcCompat="@drawable/ic_chat_ic_live"
-            app:layout_constraintBottom_toTopOf="@id/chatInput"
-            app:layout_constraintEnd_toEndOf="@id/chatdisplay"
-            android:background="@color/livelike_transparent"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="16dp"
-            android:paddingTop="1dp"
-            android:translationY="50dp"
-            android:alpha="0"
-            tools:alpha="1"
-            android:visibility="gone"
-            tools:translationY="0dp"
-            android:layout_marginRight="20dp"/>
+
 
     <ListView
             android:id="@+id/chatdisplay"
@@ -56,4 +40,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="gone"/>
+
+    <ImageButton
+            android:id="@+id/snap_live"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            app:srcCompat="@drawable/ic_chat_ic_live"
+            app:layout_constraintBottom_toTopOf="@id/chatInput"
+            app:layout_constraintEnd_toEndOf="@id/chatdisplay"
+            android:background="@color/livelike_transparent"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="16dp"
+            android:paddingTop="1dp"
+            android:translationY="50dp"
+            android:alpha="0"
+            tools:alpha="1"
+            android:visibility="gone"
+            tools:translationY="0dp"
+            android:layout_marginRight="20dp"/>
 </android.support.constraint.ConstraintLayout>
