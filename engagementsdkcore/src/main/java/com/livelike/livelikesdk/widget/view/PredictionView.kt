@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.widget.DismissAction
@@ -86,6 +87,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
         if (widget == null) {
             inflated = false
             removeAllViews()
+            (parent as ViewGroup).removeAllViews()
         }
     }
 

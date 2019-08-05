@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat.startActivity
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
@@ -46,9 +47,14 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         set(value) {
             field = value
             viewModel = value as AlertWidgetViewModel
-            viewModel?.data?.let {
-                inflate(context, it)
-                viewModel?.startDismissTimout(it.timeout) { removeAllViews() }
+            viewModel?.data?.subscribe(javaClass){
+                if(it != null){
+                    inflate(context, it)
+                    viewModel?.startDismissTimout(it.timeout) { removeAllViews() }
+                }else{
+                    removeAllViews()
+                    (parent as ViewGroup).removeAllViews()
+                }
             }
         }
 

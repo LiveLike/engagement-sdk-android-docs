@@ -4,6 +4,7 @@ import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.utils.AndroidResource
+import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
@@ -13,14 +14,14 @@ import kotlinx.coroutines.launch
 
 internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService) : WidgetViewModel() {
     private var timeoutStarted = false
-    var data: Alert? = null
+    var data: SubscriptionManager<Alert?> = SubscriptionManager()
 
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     init {
-        data = gson.fromJson(widgetInfos.payload.toString(), Alert::class.java) ?: null
+        data.onNext(gson.fromJson(widgetInfos.payload.toString(), Alert::class.java) ?: null)
         interactionData.widgetDisplayed()
         currentWidgetId = widgetInfos.widgetId
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -58,6 +59,7 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val analyt
     }
 
     private fun cleanup() {
+        data.onNext(null)
         timeoutStarted = false
         currentWidgetType = null
         currentWidgetId = ""

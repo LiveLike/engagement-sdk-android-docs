@@ -3,6 +3,7 @@ package com.livelike.livelikesdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.logDebug
@@ -89,6 +90,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         if (widget == null) {
             inflated = false
             removeAllViews()
+            (parent as ViewGroup).removeAllViews()
         }
     }
 
