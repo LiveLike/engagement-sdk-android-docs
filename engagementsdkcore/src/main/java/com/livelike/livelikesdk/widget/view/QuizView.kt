@@ -90,7 +90,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         if (widget == null) {
             inflated = false
             removeAllViews()
-            (parent as ViewGroup).removeAllViews()
+            parent?.let { (it as ViewGroup)?.removeAllViews() }
         }
     }
 

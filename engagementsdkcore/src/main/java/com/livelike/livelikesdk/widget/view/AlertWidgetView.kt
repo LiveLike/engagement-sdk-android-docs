@@ -53,7 +53,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                     viewModel?.startDismissTimout(it.timeout) { removeAllViews() }
                 } else {
                     removeAllViews()
-                    (parent as ViewGroup).removeAllViews()
+                    parent?.let { par -> (par as ViewGroup)?.removeAllViews() }
                 }
             }
         }
