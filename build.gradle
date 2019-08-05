@@ -46,10 +46,6 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.13.0"
-}
-
 allprojects {
     repositories {
         google()
@@ -57,10 +53,4 @@ allprojects {
     }
 }
 
-spotless {
-    kotlin {
-        target "**/*.kt"
-        ktlint("$ktlintVersion")
-    }
-}
 
