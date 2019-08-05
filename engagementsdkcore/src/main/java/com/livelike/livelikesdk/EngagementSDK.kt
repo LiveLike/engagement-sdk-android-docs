@@ -16,7 +16,6 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPref
  * @param applicationContext The application context
  */
 class EngagementSDK(private val clientId: String, private val applicationContext: Context) {
-
     private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
     private val dataClient = EngagementDataClientImpl()
 
