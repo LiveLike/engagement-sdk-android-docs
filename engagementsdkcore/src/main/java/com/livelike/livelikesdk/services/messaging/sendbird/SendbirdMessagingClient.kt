@@ -19,10 +19,10 @@ import com.sendbird.android.SendBird.UserInfoUpdateHandler
 import com.sendbird.android.SendBirdException
 import com.sendbird.android.User
 import com.sendbird.android.UserMessage
+import java.util.Date
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
-import java.util.Date
 
 internal class SendbirdMessagingClient(
     private val subscribeKey: String,

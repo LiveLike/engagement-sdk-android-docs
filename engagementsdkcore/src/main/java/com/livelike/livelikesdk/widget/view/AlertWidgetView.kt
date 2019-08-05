@@ -47,11 +47,11 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         set(value) {
             field = value
             viewModel = value as AlertWidgetViewModel
-            viewModel?.data?.subscribe(javaClass){
-                if(it != null){
+            viewModel?.data?.subscribe(javaClass) {
+                if (it != null) {
                     inflate(context, it)
                     viewModel?.startDismissTimout(it.timeout) { removeAllViews() }
-                }else{
+                } else {
                     removeAllViews()
                     (parent as ViewGroup).removeAllViews()
                 }

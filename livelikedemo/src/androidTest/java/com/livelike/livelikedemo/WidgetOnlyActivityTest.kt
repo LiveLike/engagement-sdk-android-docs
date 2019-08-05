@@ -1,12 +1,15 @@
 package com.livelike.livelikedemo
 
 import android.Manifest
+import android.graphics.Bitmap.CompressFormat
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import android.support.test.runner.screenshot.CustomScreenCaptureProcessor
 import android.support.test.runner.screenshot.Screenshot
+import android.support.v4.app.ActivityCompat
 import android.view.View
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -14,9 +17,6 @@ import org.hamcrest.TypeSafeMatcher
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import android.graphics.Bitmap.CompressFormat
-import android.support.test.runner.screenshot.CustomScreenCaptureProcessor
-import android.support.v4.app.ActivityCompat
 
 @RunWith(AndroidJUnit4::class)
 class WidgetOnlyActivityTest {

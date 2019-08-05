@@ -8,12 +8,12 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import java.lang.reflect.Type
+import java.text.ParseException
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.DateTimeParseException
-import java.lang.reflect.Type
-import java.text.ParseException
 
 internal fun JsonObject.extractStringOrEmpty(propertyName: String): String {
     return if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asString else ""

@@ -30,6 +30,8 @@ import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
+import java.util.Date
+import java.util.UUID
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
@@ -37,8 +39,6 @@ import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
-import java.util.Date
-import java.util.UUID
 
 /**
  *  This view will load and display a chat component. To use chat view

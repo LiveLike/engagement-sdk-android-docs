@@ -1,7 +1,7 @@
 package com.livelike.livelikesdk.services.network
 
-import com.livelike.engagementsdkapi.LiveLikeUser
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.EngagementSDK
 
 internal interface DataClient {

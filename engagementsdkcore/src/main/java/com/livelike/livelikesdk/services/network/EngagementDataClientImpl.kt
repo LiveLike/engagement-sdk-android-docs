@@ -16,6 +16,9 @@ import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.utils.logWarn
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.util.SingleRunner
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -25,9 +28,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 // TODO: This needs to be split
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
