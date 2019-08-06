@@ -9,6 +9,7 @@ import com.google.gson.JsonParser
 import com.google.gson.stream.MalformedJsonException
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.utils.addUserAgent
 import com.livelike.livelikesdk.utils.extractStringOrEmpty
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.logError
@@ -46,6 +47,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             val request = Request.Builder()
                 .url(impressionUrl)
                 .post(formBody)
+                .addUserAgent()
                 .build()
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
@@ -83,7 +85,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         respondOnException {
             if (!URLUtil.isValidUrl(url)) error("Program Url is invalid.")
 
-            val call = client.newCall(newRequest(url).build())
+            val call = client.newCall(newRequest(url).addUserAgent().build())
 
             var requestCount = 0
 
@@ -120,6 +122,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
     override fun getEngagementSdkConfig(url: String, responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit) {
         val request = Request.Builder()
             .url(url)
+            .addUserAgent()
             .build()
 
         val call = client.newCall(request)
@@ -160,7 +163,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         val requestString = "{}"
         try {
             client.newCall(
-                Request.Builder().url(url).post(
+                Request.Builder().url(url).addUserAgent().post(
                     RequestBody.create(
                         MediaType.parse(requestString),
                         requestString
@@ -210,6 +213,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         val request = Request.Builder()
             .url(url)
             .post(RequestBody.create(null, ByteString.EMPTY))
+            .addUserAgent()
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
@@ -231,6 +235,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         val request = Request.Builder()
             .url(url)
             .put(body)
+            .addUserAgent()
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
