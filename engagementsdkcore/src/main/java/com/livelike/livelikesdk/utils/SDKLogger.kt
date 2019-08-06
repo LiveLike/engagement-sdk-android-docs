@@ -40,7 +40,7 @@ fun registerLogsHandler(logHandler: (String) -> Unit) {
 internal inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
     if (level >= minimumLogLevel) {
         message().let {
-            val tag = T::class.java.name
+            val tag = T::class.java.simpleName
             when (it) {
                 is Throwable -> level.exceptionLogger(tag, it.message ?: "", it)
                 is Unit -> Unit

@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.JsonObject
 import com.livelike.livelikesdk.chat.KeyboardHideReason
 import com.livelike.livelikesdk.chat.KeyboardType
+import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.WidgetType
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -42,21 +43,27 @@ internal interface AnalyticsService {
 
 internal class MockAnalyticsService : AnalyticsService {
     override fun trackConfiguration(internalAppName: String) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $internalAppName" }
     }
 
     override fun trackWidgetInteraction(kind: WidgetType, id: String, interactionInfo: AnalyticsWidgetInteractionInfo) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind $interactionInfo" }
     }
 
     override fun trackSessionStarted() {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}]" }
     }
 
     override fun trackMessageSent(msgId: String, msgLength: Int) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $msgId" }
     }
 
     override fun trackWidgetReceived(kind: WidgetType, id: String) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind" }
     }
 
     override fun trackWidgetDisplayed(kind: WidgetType, id: String) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind" }
     }
 
     override fun trackWidgetDismiss(
@@ -66,24 +73,31 @@ internal class MockAnalyticsService : AnalyticsService {
         interactable: Boolean?,
         action: DismissAction
     ) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind $action" }
     }
 
     override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind $interactionType" }
     }
 
     override fun trackOrientationChange(isPortrait: Boolean) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $isPortrait" }
     }
 
     override fun trackSession(sessionId: String) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $sessionId" }
     }
 
     override fun trackButtonTap(buttonName: String, extra: JsonObject) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $buttonName" }
     }
 
     override fun trackUsername(username: String) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $username" }
     }
 
     override fun trackKeyboardOpen(keyboardType: KeyboardType) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $keyboardType" }
     }
 
     override fun trackKeyboardClose(
@@ -91,6 +105,7 @@ internal class MockAnalyticsService : AnalyticsService {
         hideMethod: KeyboardHideReason,
         chatMessageId: String?
     ) {
+        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $keyboardType $hideMethod" }
     }
 }
 
