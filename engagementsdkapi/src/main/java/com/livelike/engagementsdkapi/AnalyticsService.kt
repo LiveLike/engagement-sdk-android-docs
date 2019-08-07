@@ -315,6 +315,7 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
         properties.put("Last Widget Type", kind)
         properties.put("Last Widget Id", id)
         mixpanel.registerSuperProperties(properties)
+        mixpanel.track(KEY_WIDGET_RECEIVED, properties)
     }
 
     override fun trackWidgetDismiss(
