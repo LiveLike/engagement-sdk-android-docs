@@ -8,7 +8,7 @@ import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.engagementsdkapi.MockAnalyticsService
+import com.livelike.engagementsdkapi.MixpanelAnalytics
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
@@ -47,8 +47,7 @@ internal class ContentSession(
     init {
         sdkConfiguration.subscribe(javaClass.simpleName) {
             it?.let { configuration ->
-//                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
-                analyticService = MockAnalyticsService()
+                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
                 analyticService.trackConfiguration(configuration.name)
 
                 getUser(configuration.sessionsUrl)
