@@ -2,8 +2,6 @@ package com.livelike.livelikesdk.widget.viewModel
 
 import android.os.Handler
 import android.os.Looper
-import android.os.Parcel
-import android.os.Parcelable
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.AnalyticsWidgetInteractionInfo
@@ -37,8 +35,7 @@ internal class PollWidget(
     val resource: Resource
 )
 
-internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel(),
-    Parcelable {
+internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel() {
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -174,48 +171,10 @@ internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsServ
 
     var firstClick = true
 
-    constructor(parcel: Parcel) : this(
-        TODO("widgetInfos"),
-        TODO("analyticsService"),
-        TODO("sdkConfiguration")
-    ) {
-        timeoutStarted = parcel.readByte() != 0.toByte()
-        animationResultsProgress = parcel.readFloat()
-        animationPath = parcel.readString()
-        voteUrl = parcel.readString()
-        animationEggTimerProgress = parcel.readFloat()
-        currentWidgetId = parcel.readString()
-        firstClick = parcel.readByte() != 0.toByte()
-    }
-
     fun onOptionClicked() {
         if (firstClick) {
             firstClick = false
         }
         interactionData.incrementInteraction()
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeByte(if (timeoutStarted) 1 else 0)
-        parcel.writeFloat(animationResultsProgress)
-        parcel.writeString(animationPath)
-        parcel.writeString(voteUrl)
-        parcel.writeFloat(animationEggTimerProgress)
-        parcel.writeString(currentWidgetId)
-        parcel.writeByte(if (firstClick) 1 else 0)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<PollViewModel> {
-        override fun createFromParcel(parcel: Parcel): PollViewModel {
-            return PollViewModel(parcel)
-        }
-
-        override fun newArray(size: Int): Array<PollViewModel?> {
-            return arrayOfNulls(size)
-        }
     }
 }
