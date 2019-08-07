@@ -69,7 +69,7 @@ class MockAnalyticsService : AnalyticsService {
         interactable: Boolean?,
         action: DismissAction
     ) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $action")
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $action $interactionInfo")
     }
 
     override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
@@ -129,6 +129,10 @@ class AnalyticsWidgetInteractionInfo {
         interactionCount = 0
         timeOfFirstInteraction = -1
         timeOfLastInteraction = -1
+    }
+
+    override fun toString(): String {
+        return "interactionCount: $interactionCount, timeOfFirstInteraction:$timeOfFirstInteraction, timeOfLastInteraction: $timeOfLastInteraction"
     }
 }
 
@@ -300,9 +304,14 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
         properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
         properties.put("Dismiss Seconds Since Start", timeSinceStart)
         properties.put("Interactable State", interactionState)
+        properties.put("Last Widget Type", lastWidgetType)
+
+        lastWidgetType = kind
 
         mixpanel.track(KEY_WIDGET_USER_DISMISS, properties)
     }
+
+    var lastWidgetType = ""
 
     override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
         val properties = JSONObject()

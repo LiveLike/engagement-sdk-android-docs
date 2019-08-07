@@ -42,6 +42,8 @@ internal class WidgetManager(
         val payload = event.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
+        analyticsService.trackWidgetDisplayed(widgetType, widgetId)
+
         // Filter only valid widget types here
         if (WidgetType.fromString(widgetType) != null) {
             handler.post {

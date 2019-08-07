@@ -8,10 +8,11 @@ import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.engagementsdkapi.MixpanelAnalytics
+import com.livelike.engagementsdkapi.MockAnalyticsService
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
+import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
@@ -47,7 +48,8 @@ internal class ContentSession(
     init {
         sdkConfiguration.subscribe(javaClass.simpleName) {
             it?.let { configuration ->
-                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+//                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+                analyticService = MockAnalyticsService()
                 analyticService.trackConfiguration(configuration.name)
 
                 getUser(configuration.sessionsUrl)
@@ -99,6 +101,7 @@ internal class ContentSession(
     private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
         widgetClient =
             PubnubMessagingClient(config.pubNubKey)
+                .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
