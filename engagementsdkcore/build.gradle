@@ -67,9 +67,6 @@ dependencies {
     // Time lib
     implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
 
-    // Analytics
-    implementation "com.mixpanel.android:mixpanel-android:$mixpanelVersion"
-
     // Engagement SDK API
     api project(path: ':engagementsdkapi')
 }

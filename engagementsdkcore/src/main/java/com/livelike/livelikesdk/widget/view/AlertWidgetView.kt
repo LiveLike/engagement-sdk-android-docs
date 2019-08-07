@@ -11,9 +11,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
-import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.model.Alert
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
@@ -53,7 +53,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                     viewModel?.startDismissTimout(it.timeout) { removeAllViews() }
                 } else {
                     removeAllViews()
-                    parent?.let { par -> (par as ViewGroup)?.removeAllViews() }
+                    parent?.let { par -> (par as ViewGroup).removeAllViews() }
                 }
             }
         }

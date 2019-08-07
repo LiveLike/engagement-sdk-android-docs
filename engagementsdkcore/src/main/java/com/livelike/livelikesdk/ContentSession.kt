@@ -2,14 +2,15 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.engagementsdkapi.MockAnalyticsService
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.livelikesdk.chat.toChatQueue
-import com.livelike.livelikesdk.services.analytics.MixpanelAnalytics
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
@@ -33,10 +34,10 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
-    private lateinit var analyticService: MixpanelAnalytics
+    private lateinit var analyticService: AnalyticsService
     private val llDataClient = EngagementDataClientImpl()
 
-    override val chatViewModel: ChatViewModel = ChatViewModel()
+    override val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService) }
     private var chatClient: MessagingClient? = null
 
     private var widgetClient: MessagingClient? = null
@@ -46,7 +47,8 @@ internal class ContentSession(
     init {
         sdkConfiguration.subscribe(javaClass.simpleName) {
             it?.let { configuration ->
-                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+//                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+                analyticService = MockAnalyticsService()
                 analyticService.trackConfiguration(configuration.name)
 
                 getUser(configuration.sessionsUrl)

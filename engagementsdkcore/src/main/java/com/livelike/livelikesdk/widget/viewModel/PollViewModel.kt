@@ -2,12 +2,15 @@ package com.livelike.livelikesdk.widget.viewModel
 
 import android.os.Handler
 import android.os.Looper
+import android.os.Parcel
+import android.os.Parcelable
 import android.support.v7.widget.RecyclerView
+import com.livelike.engagementsdkapi.AnalyticsService
+import com.livelike.engagementsdkapi.AnalyticsWidgetInteractionInfo
+import com.livelike.engagementsdkapi.AnalyticsWidgetSpecificInfo
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.EngagementSDK
-import com.livelike.livelikesdk.services.analytics.AnalyticsService
-import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
-import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetSpecificInfo
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error
@@ -20,7 +23,7 @@ import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.debounce
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.logDebug
-import com.livelike.livelikesdk.widget.DismissAction
+import com.livelike.livelikesdk.utils.toAnalyticsString
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
@@ -34,7 +37,8 @@ internal class PollWidget(
     val resource: Resource
 )
 
-internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel() {
+internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel(),
+    Parcelable {
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -121,7 +125,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsServ
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
-                it,
+                it.toAnalyticsString(),
                 currentWidgetId,
                 interactionData,
                 adapter?.selectionLocked,
@@ -140,7 +144,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsServ
 
         adapter?.selectionLocked = true
 
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
+        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
 
         uiScope.launch {
             delay(6000)
@@ -170,10 +174,48 @@ internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsServ
 
     var firstClick = true
 
+    constructor(parcel: Parcel) : this(
+        TODO("widgetInfos"),
+        TODO("analyticsService"),
+        TODO("sdkConfiguration")
+    ) {
+        timeoutStarted = parcel.readByte() != 0.toByte()
+        animationResultsProgress = parcel.readFloat()
+        animationPath = parcel.readString()
+        voteUrl = parcel.readString()
+        animationEggTimerProgress = parcel.readFloat()
+        currentWidgetId = parcel.readString()
+        firstClick = parcel.readByte() != 0.toByte()
+    }
+
     fun onOptionClicked() {
         if (firstClick) {
             firstClick = false
         }
         interactionData.incrementInteraction()
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeByte(if (timeoutStarted) 1 else 0)
+        parcel.writeFloat(animationResultsProgress)
+        parcel.writeString(animationPath)
+        parcel.writeString(voteUrl)
+        parcel.writeFloat(animationEggTimerProgress)
+        parcel.writeString(currentWidgetId)
+        parcel.writeByte(if (firstClick) 1 else 0)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<PollViewModel> {
+        override fun createFromParcel(parcel: Parcel): PollViewModel {
+            return PollViewModel(parcel)
+        }
+
+        override fun newArray(size: Int): Array<PollViewModel?> {
+            return arrayOfNulls(size)
+        }
     }
 }

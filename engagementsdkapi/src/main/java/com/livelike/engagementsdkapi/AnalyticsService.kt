@@ -1,12 +1,8 @@
-package com.livelike.livelikesdk.services.analytics
+package com.livelike.engagementsdkapi
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.JsonObject
-import com.livelike.livelikesdk.chat.KeyboardHideReason
-import com.livelike.livelikesdk.chat.KeyboardType
-import com.livelike.livelikesdk.utils.logVerbose
-import com.livelike.livelikesdk.widget.DismissAction
-import com.livelike.livelikesdk.widget.WidgetType
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
 import java.text.SimpleDateFormat
@@ -14,19 +10,19 @@ import java.util.Date
 import java.util.Locale
 import org.json.JSONObject
 
-internal interface AnalyticsService {
+interface AnalyticsService {
     fun trackConfiguration(internalAppName: String) // add more info if required in the future
     fun trackWidgetInteraction(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
     fun trackSessionStarted()
     fun trackMessageSent(msgId: String, msgLength: Int)
-    fun trackWidgetReceived(kind: WidgetType, id: String)
-    fun trackWidgetDisplayed(kind: WidgetType, id: String)
+    fun trackWidgetReceived(kind: String, id: String)
+    fun trackWidgetDisplayed(kind: String, id: String)
     fun trackWidgetDismiss(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo,
         interactable: Boolean?,
@@ -41,63 +37,63 @@ internal interface AnalyticsService {
     fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
 }
 
-internal class MockAnalyticsService : AnalyticsService {
+class MockAnalyticsService : AnalyticsService {
     override fun trackConfiguration(internalAppName: String) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $internalAppName" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $internalAppName")
     }
 
-    override fun trackWidgetInteraction(kind: WidgetType, id: String, interactionInfo: AnalyticsWidgetInteractionInfo) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind $interactionInfo" }
+    override fun trackWidgetInteraction(kind: String, id: String, interactionInfo: AnalyticsWidgetInteractionInfo) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $interactionInfo")
     }
 
     override fun trackSessionStarted() {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}]" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackMessageSent(msgId: String, msgLength: Int) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $msgId" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
-    override fun trackWidgetReceived(kind: WidgetType, id: String) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind" }
+    override fun trackWidgetReceived(kind: String, id: String) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind")
     }
 
-    override fun trackWidgetDisplayed(kind: WidgetType, id: String) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind" }
+    override fun trackWidgetDisplayed(kind: String, id: String) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind")
     }
 
     override fun trackWidgetDismiss(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo,
         interactable: Boolean?,
         action: DismissAction
     ) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind $action" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $action")
     }
 
     override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $kind $interactionType" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $interactionType")
     }
 
     override fun trackOrientationChange(isPortrait: Boolean) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $isPortrait" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $isPortrait")
     }
 
     override fun trackSession(sessionId: String) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $sessionId" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $sessionId")
     }
 
     override fun trackButtonTap(buttonName: String, extra: JsonObject) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $buttonName" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $buttonName")
     }
 
     override fun trackUsername(username: String) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $username" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $username")
     }
 
     override fun trackKeyboardOpen(keyboardType: KeyboardType) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $keyboardType" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $keyboardType")
     }
 
     override fun trackKeyboardClose(
@@ -105,11 +101,11 @@ internal class MockAnalyticsService : AnalyticsService {
         hideMethod: KeyboardHideReason,
         chatMessageId: String?
     ) {
-        logVerbose { "[Analytics] [${object{}.javaClass.enclosingMethod?.name}] $keyboardType $hideMethod" }
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $keyboardType $hideMethod")
     }
 }
 
-internal class AnalyticsWidgetInteractionInfo {
+class AnalyticsWidgetInteractionInfo {
     var interactionCount: Int = 0
     var timeOfFirstInteraction: Long = -1
     var timeOfLastInteraction: Long = 0
@@ -136,7 +132,7 @@ internal class AnalyticsWidgetInteractionInfo {
     }
 }
 
-internal class AnalyticsWidgetSpecificInfo {
+class AnalyticsWidgetSpecificInfo {
     var responseChanges: Int = 0
     var finalAnswerIndex: Int = -1
     var totalOptions: Int = 0
@@ -154,7 +150,8 @@ internal class AnalyticsWidgetSpecificInfo {
     }
 }
 
-internal class MixpanelAnalytics(context: Context, token: String, programId: String) : AnalyticsService {
+class MixpanelAnalytics(context: Context, token: String, programId: String) :
+    AnalyticsService {
 
     private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token, programId)
 
@@ -177,20 +174,6 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
         val properties = JSONObject()
         properties.put("Program ID", programId)
         mixpanel.registerSuperProperties(properties)
-    }
-
-    private fun getWidgetType(type: WidgetType): String {
-        return when (type) {
-            WidgetType.TEXT_POLL -> "Text Poll"
-            WidgetType.IMAGE_POLL -> "Image Poll"
-            WidgetType.IMAGE_PREDICTION -> "Image Prediction"
-            WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> "Image Prediction Follow-up"
-            WidgetType.TEXT_PREDICTION -> "Text Prediction"
-            WidgetType.TEXT_PREDICTION_FOLLOW_UP -> "Text Prediction Follow-up"
-            WidgetType.IMAGE_QUIZ -> "Image Quiz"
-            WidgetType.TEXT_QUIZ -> "Text Quiz"
-            WidgetType.ALERT -> "Alert"
-        }
     }
 
     override fun trackConfiguration(internalAppName: String) {
@@ -228,13 +211,13 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
     }
 
     override fun trackWidgetInteraction(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     ) {
         val properties = JSONObject()
         val timeOfLastInteraction = parser.format(Date(interactionInfo.timeOfLastInteraction))
-        properties.put("Widget Type", getWidgetType(kind))
+        properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
         properties.put("First Tap Time", parser.format(Date(interactionInfo.timeOfFirstInteraction)))
         properties.put("Last Tap Time", timeOfLastInteraction)
@@ -270,23 +253,23 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
         mixpanel.registerSuperProperties(superProp)
     }
 
-    override fun trackWidgetDisplayed(kind: WidgetType, id: String) {
+    override fun trackWidgetDisplayed(kind: String, id: String) {
         val properties = JSONObject()
-        properties.put("Widget Type", getWidgetType(kind))
+        properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
     }
 
-    override fun trackWidgetReceived(kind: WidgetType, id: String) {
+    override fun trackWidgetReceived(kind: String, id: String) {
         val properties = JSONObject()
         properties.put("Time Of Last Widget Receipt", parser.format(Date(System.currentTimeMillis())))
-        properties.put("Last Widget Type", getWidgetType(kind))
+        properties.put("Last Widget Type", kind)
         properties.put("Last Widget Id", id)
         mixpanel.registerSuperProperties(properties)
     }
 
     override fun trackWidgetDismiss(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo,
         interactable: Boolean?,
@@ -310,7 +293,7 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
             if (interactable != null && interactable) "Open To Interaction" else "Closed To Interaction"
 
         val properties = JSONObject()
-        properties.put("Widget Type", getWidgetType(kind))
+        properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
         properties.put("Number Of Taps", interactionInfo.interactionCount)
         properties.put("Dismiss Action", dismissAction)
@@ -351,4 +334,21 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
     override fun trackUsername(username: String) {
         mixpanel.people.set("username", username)
     }
+}
+
+enum class KeyboardHideReason {
+    MESSAGE_SENT,
+    TAP_OUTSIDE
+}
+
+enum class KeyboardType {
+    STANDARD,
+    EMOJI
+}
+
+enum class DismissAction {
+    TIMEOUT,
+    SWIPE,
+    TAP_X,
+    NEW_WIDGET_RECEIVED
 }

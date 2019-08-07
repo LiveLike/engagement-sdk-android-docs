@@ -96,7 +96,7 @@ class ChatAdapter() : BaseAdapter() {
     }
 }
 
-class ChatViewModel {
+class ChatViewModel(val analyticsService: AnalyticsService) {
     fun clear() {
         chatAdapter = null
         chatLastPos = null

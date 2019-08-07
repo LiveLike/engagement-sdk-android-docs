@@ -3,9 +3,9 @@ package com.livelike.livelikesdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
-import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource

@@ -3,9 +3,10 @@ package com.livelike.livelikesdk.widget
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
+import com.livelike.engagementsdkapi.AnalyticsService
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.EngagementSDK
-import com.livelike.livelikesdk.services.analytics.AnalyticsService
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION
@@ -49,13 +50,6 @@ internal class WidgetProvider {
             else -> null
         }
     }
-}
-
-enum class DismissAction {
-    TIMEOUT,
-    SWIPE,
-    TAP_X,
-    NEW_WIDGET_RECEIVED
 }
 
 open class SpecifiedWidgetView @JvmOverloads constructor(

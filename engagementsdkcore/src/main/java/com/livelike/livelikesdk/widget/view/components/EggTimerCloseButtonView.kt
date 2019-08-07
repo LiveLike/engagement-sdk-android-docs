@@ -4,8 +4,8 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.widget.DismissAction
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.closeButton
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.eggTimer
 
