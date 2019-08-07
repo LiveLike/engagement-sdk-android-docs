@@ -19,6 +19,8 @@ interface AnalyticsService {
     )
     fun trackSessionStarted()
     fun trackMessageSent(msgId: String, msgLength: Int)
+    fun trackLastChatStatus(status: Boolean)
+    fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
     fun trackWidgetDisplayed(kind: String, id: String)
     fun trackWidgetDismiss(
@@ -38,6 +40,14 @@ interface AnalyticsService {
 }
 
 class MockAnalyticsService : AnalyticsService {
+    override fun trackLastChatStatus(status: Boolean) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $status")
+    }
+
+    override fun trackLastWidgetStatus(status: Boolean) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $status")
+    }
+
     override fun trackConfiguration(internalAppName: String) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $internalAppName")
     }
@@ -175,9 +185,44 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
 
     init {
         trackSessionStarted()
+        JSONObject().apply {
+            put("Program ID", programId)
+            put("SDK Version", BuildConfig.SDK_VERSION)
+            put("Official App Name", getApplicationName(context))
+            put("Bundle Id", BuildConfig.APPLICATION_ID)
+            put("Operating System", "Android")
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+        }
+        context.getSharedPreferences("analytics", Context.MODE_PRIVATE).apply {
+            if (getBoolean("firstSdkOpen", true)) {
+                edit().putBoolean("firstSdkOpen", false).apply()
+                JSONObject().apply {
+                    val currentDate = parser.format(Date())
+                    put("First SDK Open", currentDate)
+                    mixpanel.registerSuperPropertiesOnce(this)
+                    mixpanel.people.set(this)
+                }
+            }
+        }
+    }
+
+    private fun getApplicationName(context: Context): String {
+        val applicationInfo = context.applicationInfo
+        val stringId = applicationInfo.labelRes
+        return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(stringId)
+    }
+
+    override fun trackLastChatStatus(status: Boolean) {
         val properties = JSONObject()
-        properties.put("Program ID", programId)
-        mixpanel.registerSuperProperties(properties)
+        properties.put("Last Chat Status", status)
+        mixpanel.registerSuperPropertiesOnce(properties)
+    }
+
+    override fun trackLastWidgetStatus(status: Boolean) {
+        val properties = JSONObject()
+        properties.put("Last Widget Status", status)
+        mixpanel.registerSuperPropertiesOnce(properties)
     }
 
     override fun trackConfiguration(internalAppName: String) {
@@ -342,6 +387,10 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
 
     override fun trackUsername(username: String) {
         mixpanel.people.set("username", username)
+        mixpanel.people.set("Nickname", username)
+        val properties = JSONObject()
+        properties.put("Nickname", username)
+        mixpanel.registerSuperProperties(properties)
     }
 }
 

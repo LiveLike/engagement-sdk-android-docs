@@ -99,6 +99,7 @@ internal class ContentSession(
     }
 
     private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
+        analyticService.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(config.pubNubKey)
                 .logAnalytics(analyticService)
@@ -115,6 +116,7 @@ internal class ContentSession(
     override var chatRenderer: ChatRenderer? = null
 
     private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
+        analyticService.trackLastChatStatus(true)
         chatClient =
             SendbirdMessagingClient(config.sendBirdAppId, applicationContext, analyticService, currentUser)
                 .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
