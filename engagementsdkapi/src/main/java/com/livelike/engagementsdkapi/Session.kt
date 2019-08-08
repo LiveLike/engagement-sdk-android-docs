@@ -16,6 +16,9 @@ interface LiveLikeContentSession {
     /** Where the chat data are stored **/
     val chatViewModel: ChatViewModel
 
+    /** The analytics services **/
+    val analyticService: AnalyticsService
+
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
     /** Resume the current Chat and widget sessions. This generally happens when ads are completed */

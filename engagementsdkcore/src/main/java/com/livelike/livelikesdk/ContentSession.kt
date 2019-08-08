@@ -35,10 +35,10 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
-    private lateinit var analyticService: AnalyticsService
+    override lateinit var analyticService: AnalyticsService
     private val llDataClient = EngagementDataClientImpl()
 
-    override val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService) }
+    override val chatViewModel: ChatViewModel by lazy { ChatViewModel() }
     private var chatClient: MessagingClient? = null
 
     private var widgetClient: MessagingClient? = null

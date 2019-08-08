@@ -10,6 +10,7 @@ import com.livelike.livelikesdk.utils.logError
 class WidgetView(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
     fun setSession(session: LiveLikeContentSession) {
         session.setWidgetContainer(this)
+        session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
     }
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthDp = AndroidResource.pxToDp(width)

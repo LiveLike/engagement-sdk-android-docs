@@ -97,6 +97,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         viewModel?.chatAdapter?.let {
             setDataSource(it)
         }
+        session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
     }
 
     override fun displayChatMessage(message: ChatMessage) {
@@ -182,7 +183,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         edittext_chat_message.setOnFocusChangeListener { _, hasFocus ->
             run {
                 if (hasFocus) {
-                    viewModel?.analyticsService?.trackKeyboardOpen(KeyboardType.STANDARD)
+                    session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
                 }
             }
         }
@@ -226,7 +227,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         )
 
         if (reason != KeyboardHideReason.MESSAGE_SENT) {
-            viewModel?.analyticsService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
+            session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
         }
     }
 

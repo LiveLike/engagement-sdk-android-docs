@@ -214,21 +214,27 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
     }
 
     override fun trackLastChatStatus(status: Boolean) {
-        val properties = JSONObject()
-        properties.put("Last Chat Status", status)
-        mixpanel.registerSuperPropertiesOnce(properties)
+        JSONObject().apply {
+            put("Last Chat Status", status)
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+        }
     }
 
     override fun trackLastWidgetStatus(status: Boolean) {
-        val properties = JSONObject()
-        properties.put("Last Widget Status", status)
-        mixpanel.registerSuperPropertiesOnce(properties)
+        JSONObject().apply {
+            put("Last Widget Status", status)
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+        }
     }
 
     override fun trackConfiguration(internalAppName: String) {
-        val properties = JSONObject()
-        properties.put("Internal App Name", internalAppName)
-        mixpanel.registerSuperPropertiesOnce(properties)
+        JSONObject().apply {
+            put("Internal App Name", internalAppName)
+            mixpanel.registerSuperPropertiesOnce(this)
+            mixpanel.people.set(this)
+        }
     }
 
     private fun getKeyboardType(kType: KeyboardType): String {
@@ -357,7 +363,8 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
         mixpanel.track(KEY_WIDGET_USER_DISMISS, properties)
     }
 
-    var lastWidgetType = ""
+    private var lastWidgetType = ""
+    private var lastOrientation: Boolean? = null
 
     override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
         val properties = JSONObject()
@@ -369,9 +376,14 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
     }
 
     override fun trackOrientationChange(isPortrait: Boolean) {
-        val properties = JSONObject()
-        properties.put("isPortrait", isPortrait)
-        mixpanel.track(KEY_ORIENTATION_CHANGED, properties)
+        if (lastOrientation == isPortrait) return // return if the orientation stays the same
+        lastOrientation = isPortrait
+        JSONObject().apply {
+            put("Device Orientation", if (isPortrait)"PORTRAIT" else "LANDSCAPE")
+            mixpanel.track(KEY_ORIENTATION_CHANGED, this)
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+        }
     }
 
     override fun trackButtonTap(buttonName: String, extra: JsonObject) {
