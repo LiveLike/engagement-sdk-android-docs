@@ -164,7 +164,7 @@ class AnalyticsWidgetSpecificInfo {
     }
 }
 
-class MixpanelAnalytics(context: Context, token: String, programId: String) :
+class MixpanelAnalytics(val context: Context, token: String, programId: String) :
     AnalyticsService {
 
     private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token, programId)
@@ -318,10 +318,10 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
     override fun trackWidgetReceived(kind: String, id: String) {
         val properties = JSONObject()
         properties.put("Time Of Last Widget Receipt", parser.format(Date(System.currentTimeMillis())))
-        properties.put("Last Widget Type", kind)
-        properties.put("Last Widget Id", id)
-        mixpanel.registerSuperProperties(properties)
+        properties.put("Widget Type", kind)
+        properties.put("Widget Id", id)
         mixpanel.track(KEY_WIDGET_RECEIVED, properties)
+        mixpanel.registerSuperProperties(properties)
     }
 
     override fun trackWidgetDismiss(
@@ -348,22 +348,22 @@ class MixpanelAnalytics(context: Context, token: String, programId: String) :
         val interactionState =
             if (interactable != null && interactable) "Open To Interaction" else "Closed To Interaction"
 
-        val properties = JSONObject()
-        properties.put("Widget Type", kind)
-        properties.put("Widget ID", id)
-        properties.put("Number Of Taps", interactionInfo.interactionCount)
-        properties.put("Dismiss Action", dismissAction)
-        properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
-        properties.put("Dismiss Seconds Since Start", timeSinceStart)
-        properties.put("Interactable State", interactionState)
-        properties.put("Last Widget Type", lastWidgetType)
+        context.getSharedPreferences("analytics", Context.MODE_PRIVATE).apply {
+            val properties = JSONObject()
+            properties.put("Widget Type", kind)
+            properties.put("Widget ID", id)
+            properties.put("Number Of Taps", interactionInfo.interactionCount)
+            properties.put("Dismiss Action", dismissAction)
+            properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
+            properties.put("Dismiss Seconds Since Start", timeSinceStart)
+            properties.put("Interactable State", interactionState)
+            properties.put("Last Widget Type", getString("lastWidgetType", ""))
+            mixpanel.track(KEY_WIDGET_USER_DISMISS, properties)
 
-        lastWidgetType = kind
-
-        mixpanel.track(KEY_WIDGET_USER_DISMISS, properties)
+            edit().putString("lastWidgetType", kind).apply()
+        }
     }
 
-    private var lastWidgetType = ""
     private var lastOrientation: Boolean? = null
 
     override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
