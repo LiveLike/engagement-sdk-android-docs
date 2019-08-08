@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.app.Application
+import com.bugsnag.android.Bugsnag
 import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
@@ -24,6 +25,7 @@ class LiveLikeApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Bugsnag.init(this)
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
         sdk = EngagementSDK(getString(R.string.app_id), applicationContext)
         sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)

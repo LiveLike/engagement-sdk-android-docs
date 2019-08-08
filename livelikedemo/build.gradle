@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.bugsnag.android.gradle'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
@@ -15,7 +16,8 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -31,6 +33,8 @@ dependencies {
     implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
     implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
     implementation "com.android.support:multidex:$multidexVersion"
+
+    implementation "com.bugsnag:bugsnag-android:$bugsnagVersion"
 
     // Tests frameworks
     testImplementation "junit:junit:$junitVersion"

@@ -20,6 +20,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'proguard-rules.pro'
 
         buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/"'
         buildConfigField "String", "SDK_VERSION", '"0.1.2"'
@@ -27,7 +28,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
