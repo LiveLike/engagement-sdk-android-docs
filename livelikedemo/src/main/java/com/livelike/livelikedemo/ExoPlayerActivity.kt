@@ -6,6 +6,7 @@ import android.os.Handler
 import android.support.constraint.Constraints
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.livelike.engagementsdkapi.LiveLikeContentSession
@@ -123,6 +124,10 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             chat_view.setSession(session)
             widget_view.setSession(session)
+
+            session.analyticService.registerHandler { _, it ->
+                Log.e("[AnalyticsHandler]", it.toString())
+            }
 
             this.session = session
 
