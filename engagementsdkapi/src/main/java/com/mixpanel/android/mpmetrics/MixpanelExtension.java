@@ -2,6 +2,8 @@ package com.mixpanel.android.mpmetrics;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.mixpanel.android.mpmetrics.MPConfig;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import java.util.HashMap;
 import java.util.Map;

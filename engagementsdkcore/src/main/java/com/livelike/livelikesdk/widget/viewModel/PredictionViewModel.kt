@@ -2,17 +2,18 @@ package com.livelike.livelikesdk.widget.viewModel
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import com.livelike.engagementsdkapi.AnalyticsService
+import com.livelike.engagementsdkapi.AnalyticsWidgetInteractionInfo
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.services.analytics.AnalyticsService
-import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
-import com.livelike.livelikesdk.widget.DismissAction
+import com.livelike.livelikesdk.utils.toAnalyticsString
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
@@ -101,7 +102,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appCont
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
-                it,
+                it.toAnalyticsString(),
                 currentWidgetId,
                 interactionData,
                 adapter?.selectionLocked,
@@ -150,7 +151,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appCont
             dismissWidget(DismissAction.TIMEOUT)
         }
 
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
+        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {

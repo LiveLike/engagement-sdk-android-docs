@@ -96,7 +96,7 @@ class ChatAdapter() : BaseAdapter() {
     }
 }
 
-class ChatViewModel {
+class ChatViewModel() {
     fun clear() {
         chatAdapter = null
         chatLastPos = null

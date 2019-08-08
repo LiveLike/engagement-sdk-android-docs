@@ -4,11 +4,12 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.support.v7.widget.RecyclerView
+import com.livelike.engagementsdkapi.AnalyticsService
+import com.livelike.engagementsdkapi.AnalyticsWidgetInteractionInfo
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.EngagementSDK
-import com.livelike.livelikesdk.services.analytics.AnalyticsService
-import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error
@@ -21,7 +22,7 @@ import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.debounce
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.logVerbose
-import com.livelike.livelikesdk.widget.DismissAction
+import com.livelike.livelikesdk.utils.toAnalyticsString
 import com.livelike.livelikesdk.widget.WidgetDataClient
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
@@ -129,7 +130,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsServ
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
-                it,
+                it.toAnalyticsString(),
                 currentWidgetId,
                 interactionData,
                 adapter?.selectionLocked,
@@ -159,7 +160,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsServ
             dismissWidget(DismissAction.TIMEOUT)
         }
 
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
+        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {

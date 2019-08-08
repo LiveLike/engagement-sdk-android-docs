@@ -1,12 +1,13 @@
 package com.livelike.livelikesdk.widget.viewModel
 
+import com.livelike.engagementsdkapi.AnalyticsService
+import com.livelike.engagementsdkapi.AnalyticsWidgetInteractionInfo
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.engagementsdkapi.WidgetInfos
-import com.livelike.livelikesdk.services.analytics.AnalyticsService
-import com.livelike.livelikesdk.services.analytics.AnalyticsWidgetInteractionInfo
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.gson
-import com.livelike.livelikesdk.widget.DismissAction
+import com.livelike.livelikesdk.utils.toAnalyticsString
 import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Alert
 import kotlinx.coroutines.delay
@@ -29,13 +30,13 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val analyt
 
     fun onClickLink() {
         interactionData.incrementInteraction()
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it, currentWidgetId, interactionData) }
+        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
     }
 
     internal fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
-                it,
+                it.toAnalyticsString(),
                 currentWidgetId,
                 interactionData,
                 false,

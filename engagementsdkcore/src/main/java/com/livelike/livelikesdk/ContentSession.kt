@@ -2,15 +2,17 @@ package com.livelike.livelikesdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.engagementsdkapi.MixpanelAnalytics
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.livelikesdk.chat.toChatQueue
-import com.livelike.livelikesdk.services.analytics.MixpanelAnalytics
 import com.livelike.livelikesdk.services.messaging.MessagingClient
+import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
@@ -33,10 +35,10 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
-    private lateinit var analyticService: MixpanelAnalytics
+    override lateinit var analyticService: AnalyticsService
     private val llDataClient = EngagementDataClientImpl()
 
-    override val chatViewModel: ChatViewModel = ChatViewModel()
+    override val chatViewModel: ChatViewModel by lazy { ChatViewModel() }
     private var chatClient: MessagingClient? = null
 
     private var widgetClient: MessagingClient? = null
@@ -96,8 +98,10 @@ internal class ContentSession(
     }
 
     private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
+        analyticService.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(config.pubNubKey)
+                .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
@@ -111,6 +115,7 @@ internal class ContentSession(
     override var chatRenderer: ChatRenderer? = null
 
     private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
+        analyticService.trackLastChatStatus(true)
         chatClient =
             SendbirdMessagingClient(config.sendBirdAppId, applicationContext, analyticService, currentUser)
                 .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours

@@ -5,10 +5,10 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.MockAnalyticsService
 import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.services.analytics.MockAnalyticsService
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
@@ -119,7 +119,8 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
         }
         val viewQuiz = QuizView(context).apply {
             val info = WidgetInfos("text-quiz-created", gson.fromJson(quizTextData(), JsonObject::class.java), "120571e0-d665-4e9b-b497-908cf8422a64")
-            widgetViewModel = QuizViewModel(info, MockAnalyticsService(), mockConfig, context)
+            widgetViewModel = QuizViewModel(info,
+                MockAnalyticsService(), mockConfig, context)
         }
         val viewPrediction = PredictionView(context).apply {
             val info = WidgetInfos("text-prediction-created", gson.fromJson(predictionTextData(), JsonObject::class.java), "120571e0-d665-4e9b-b497-908cf8422a64")

@@ -4,10 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.logDebug
-import com.livelike.livelikesdk.widget.DismissAction
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.livelikesdk.widget.model.Resource
@@ -90,7 +90,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         if (widget == null) {
             inflated = false
             removeAllViews()
-            parent?.let { (it as ViewGroup)?.removeAllViews() }
+            parent?.let { (it as ViewGroup).removeAllViews() }
         }
     }
 

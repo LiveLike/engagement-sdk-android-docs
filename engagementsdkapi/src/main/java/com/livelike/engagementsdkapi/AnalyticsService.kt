@@ -1,11 +1,8 @@
-package com.livelike.livelikesdk.services.analytics
+package com.livelike.engagementsdkapi
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.JsonObject
-import com.livelike.livelikesdk.chat.KeyboardHideReason
-import com.livelike.livelikesdk.chat.KeyboardType
-import com.livelike.livelikesdk.widget.DismissAction
-import com.livelike.livelikesdk.widget.WidgetType
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
 import java.text.SimpleDateFormat
@@ -13,19 +10,22 @@ import java.util.Date
 import java.util.Locale
 import org.json.JSONObject
 
-internal interface AnalyticsService {
+interface AnalyticsService {
+    fun registerEventObserver(eventObserver: (String, JSONObject) -> Unit)
     fun trackConfiguration(internalAppName: String) // add more info if required in the future
     fun trackWidgetInteraction(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
     fun trackSessionStarted()
     fun trackMessageSent(msgId: String, msgLength: Int)
-    fun trackWidgetReceived(kind: WidgetType, id: String)
-    fun trackWidgetDisplayed(kind: WidgetType, id: String)
+    fun trackLastChatStatus(status: Boolean)
+    fun trackLastWidgetStatus(status: Boolean)
+    fun trackWidgetReceived(kind: String, id: String)
+    fun trackWidgetDisplayed(kind: String, id: String)
     fun trackWidgetDismiss(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo,
         interactable: Boolean?,
@@ -40,50 +40,74 @@ internal interface AnalyticsService {
     fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
 }
 
-internal class MockAnalyticsService : AnalyticsService {
-    override fun trackConfiguration(internalAppName: String) {
+class MockAnalyticsService : AnalyticsService {
+    override fun registerEventObserver(eventObserver: (String, JSONObject) -> Unit) {
     }
 
-    override fun trackWidgetInteraction(kind: WidgetType, id: String, interactionInfo: AnalyticsWidgetInteractionInfo) {
+    override fun trackLastChatStatus(status: Boolean) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $status")
+    }
+
+    override fun trackLastWidgetStatus(status: Boolean) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $status")
+    }
+
+    override fun trackConfiguration(internalAppName: String) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $internalAppName")
+    }
+
+    override fun trackWidgetInteraction(kind: String, id: String, interactionInfo: AnalyticsWidgetInteractionInfo) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $interactionInfo")
     }
 
     override fun trackSessionStarted() {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackMessageSent(msgId: String, msgLength: Int) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
-    override fun trackWidgetReceived(kind: WidgetType, id: String) {
+    override fun trackWidgetReceived(kind: String, id: String) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind")
     }
 
-    override fun trackWidgetDisplayed(kind: WidgetType, id: String) {
+    override fun trackWidgetDisplayed(kind: String, id: String) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind")
     }
 
     override fun trackWidgetDismiss(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo,
         interactable: Boolean?,
         action: DismissAction
     ) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $action $interactionInfo")
     }
 
     override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $interactionType")
     }
 
     override fun trackOrientationChange(isPortrait: Boolean) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $isPortrait")
     }
 
     override fun trackSession(sessionId: String) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $sessionId")
     }
 
     override fun trackButtonTap(buttonName: String, extra: JsonObject) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $buttonName")
     }
 
     override fun trackUsername(username: String) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $username")
     }
 
     override fun trackKeyboardOpen(keyboardType: KeyboardType) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $keyboardType")
     }
 
     override fun trackKeyboardClose(
@@ -91,10 +115,11 @@ internal class MockAnalyticsService : AnalyticsService {
         hideMethod: KeyboardHideReason,
         chatMessageId: String?
     ) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $keyboardType $hideMethod")
     }
 }
 
-internal class AnalyticsWidgetInteractionInfo {
+class AnalyticsWidgetInteractionInfo {
     var interactionCount: Int = 0
     var timeOfFirstInteraction: Long = -1
     var timeOfLastInteraction: Long = 0
@@ -119,9 +144,13 @@ internal class AnalyticsWidgetInteractionInfo {
         timeOfFirstInteraction = -1
         timeOfLastInteraction = -1
     }
+
+    override fun toString(): String {
+        return "interactionCount: $interactionCount, timeOfFirstInteraction:$timeOfFirstInteraction, timeOfLastInteraction: $timeOfLastInteraction"
+    }
 }
 
-internal class AnalyticsWidgetSpecificInfo {
+class AnalyticsWidgetSpecificInfo {
     var responseChanges: Int = 0
     var finalAnswerIndex: Int = -1
     var totalOptions: Int = 0
@@ -139,7 +168,8 @@ internal class AnalyticsWidgetSpecificInfo {
     }
 }
 
-internal class MixpanelAnalytics(context: Context, token: String, programId: String) : AnalyticsService {
+class MixpanelAnalytics(val context: Context, token: String, programId: String) :
+    AnalyticsService {
 
     private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token, programId)
 
@@ -159,29 +189,64 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
 
     init {
         trackSessionStarted()
-        val properties = JSONObject()
-        properties.put("Program ID", programId)
-        mixpanel.registerSuperProperties(properties)
+        JSONObject().apply {
+            put("Program ID", programId)
+            put("SDK Version", BuildConfig.SDK_VERSION)
+            put("Official App Name", getApplicationName(context))
+            put("Bundle Id", BuildConfig.APPLICATION_ID)
+            put("Operating System", "Android")
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+        }
+        context.getSharedPreferences("analytics", Context.MODE_PRIVATE).apply {
+            if (getBoolean("firstSdkOpen", true)) {
+                edit().putBoolean("firstSdkOpen", false).apply()
+                JSONObject().apply {
+                    val currentDate = parser.format(Date())
+                    put("First SDK Open", currentDate)
+                    mixpanel.registerSuperPropertiesOnce(this)
+                    mixpanel.people.set(this)
+                }
+            }
+        }
     }
 
-    private fun getWidgetType(type: WidgetType): String {
-        return when (type) {
-            WidgetType.TEXT_POLL -> "Text Poll"
-            WidgetType.IMAGE_POLL -> "Image Poll"
-            WidgetType.IMAGE_PREDICTION -> "Image Prediction"
-            WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> "Image Prediction Follow-up"
-            WidgetType.TEXT_PREDICTION -> "Text Prediction"
-            WidgetType.TEXT_PREDICTION_FOLLOW_UP -> "Text Prediction Follow-up"
-            WidgetType.IMAGE_QUIZ -> "Image Quiz"
-            WidgetType.TEXT_QUIZ -> "Text Quiz"
-            WidgetType.ALERT -> "Alert"
+    var eventObserver: ((String, JSONObject) -> Unit)? = null
+
+    override fun registerEventObserver(eventObserver: (String, JSONObject) -> Unit) {
+        this.eventObserver = eventObserver
+    }
+
+    private fun getApplicationName(context: Context): String {
+        val applicationInfo = context.applicationInfo
+        val stringId = applicationInfo.labelRes
+        return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(stringId)
+    }
+
+    override fun trackLastChatStatus(status: Boolean) {
+        JSONObject().apply {
+            put("Last Chat Status", status)
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+            eventObserver?.invoke("Last Chat Status", this)
+        }
+    }
+
+    override fun trackLastWidgetStatus(status: Boolean) {
+        JSONObject().apply {
+            put("Last Widget Status", status)
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+            eventObserver?.invoke("Last Widget Status", this)
         }
     }
 
     override fun trackConfiguration(internalAppName: String) {
-        val properties = JSONObject()
-        properties.put("Internal App Name", internalAppName)
-        mixpanel.registerSuperPropertiesOnce(properties)
+        JSONObject().apply {
+            put("Internal App Name", internalAppName)
+            mixpanel.registerSuperPropertiesOnce(this)
+            mixpanel.people.set(this)
+        }
     }
 
     private fun getKeyboardType(kType: KeyboardType): String {
@@ -204,28 +269,31 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
             properties.put("Chat Message ID", chatMessageId)
         }
         mixpanel.track(KEY_KEYBOARD_HIDDEN, properties)
+        eventObserver?.invoke(KEY_KEYBOARD_HIDDEN, properties)
     }
 
     override fun trackKeyboardOpen(keyboardType: KeyboardType) {
         val properties = JSONObject()
         properties.put("Keyboard Type", getKeyboardType(keyboardType))
         mixpanel.track(KEY_KEYBOARD_SELECTED, properties)
+        eventObserver?.invoke(KEY_KEYBOARD_SELECTED, properties)
     }
 
     override fun trackWidgetInteraction(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     ) {
         val properties = JSONObject()
         val timeOfLastInteraction = parser.format(Date(interactionInfo.timeOfLastInteraction))
-        properties.put("Widget Type", getWidgetType(kind))
+        properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
         properties.put("First Tap Time", parser.format(Date(interactionInfo.timeOfFirstInteraction)))
         properties.put("Last Tap Time", timeOfLastInteraction)
         properties.put("No of Taps", interactionInfo.interactionCount)
 
         mixpanel.track(KEY_WIDGET_INTERACTION, properties)
+        eventObserver?.invoke(KEY_WIDGET_INTERACTION, properties)
 
         val superProp = JSONObject()
         superProp.put("Time of Last Widget Interaction", timeOfLastInteraction)
@@ -237,6 +305,7 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
         val timeNow = parser.format(Date(System.currentTimeMillis()))
         firstTimeProperties.put("Session started", timeNow)
         mixpanel.registerSuperPropertiesOnce(firstTimeProperties)
+        eventObserver?.invoke("Session started", firstTimeProperties)
 
         val properties = JSONObject()
         properties.put("Last Session started", timeNow)
@@ -248,6 +317,7 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
         properties.put("Chat Message ID", msgId)
         properties.put("Character Length", msgLength)
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
+        eventObserver?.invoke(KEY_CHAT_MESSAGE_SENT, properties)
 
         val superProp = JSONObject()
         val timeNow = parser.format(Date(System.currentTimeMillis()))
@@ -255,23 +325,26 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
         mixpanel.registerSuperProperties(superProp)
     }
 
-    override fun trackWidgetDisplayed(kind: WidgetType, id: String) {
+    override fun trackWidgetDisplayed(kind: String, id: String) {
         val properties = JSONObject()
-        properties.put("Widget Type", getWidgetType(kind))
+        properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
+        eventObserver?.invoke(KEY_WIDGET_DISPLAYED, properties)
     }
 
-    override fun trackWidgetReceived(kind: WidgetType, id: String) {
+    override fun trackWidgetReceived(kind: String, id: String) {
         val properties = JSONObject()
         properties.put("Time Of Last Widget Receipt", parser.format(Date(System.currentTimeMillis())))
-        properties.put("Last Widget Type", getWidgetType(kind))
-        properties.put("Last Widget Id", id)
+        properties.put("Widget Type", kind)
+        properties.put("Widget Id", id)
+        mixpanel.track(KEY_WIDGET_RECEIVED, properties)
         mixpanel.registerSuperProperties(properties)
+        eventObserver?.invoke(KEY_WIDGET_RECEIVED, properties)
     }
 
     override fun trackWidgetDismiss(
-        kind: WidgetType,
+        kind: String,
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo,
         interactable: Boolean?,
@@ -294,17 +367,24 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
         val interactionState =
             if (interactable != null && interactable) "Open To Interaction" else "Closed To Interaction"
 
-        val properties = JSONObject()
-        properties.put("Widget Type", getWidgetType(kind))
-        properties.put("Widget ID", id)
-        properties.put("Number Of Taps", interactionInfo.interactionCount)
-        properties.put("Dismiss Action", dismissAction)
-        properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
-        properties.put("Dismiss Seconds Since Start", timeSinceStart)
-        properties.put("Interactable State", interactionState)
+        context.getSharedPreferences("analytics", Context.MODE_PRIVATE).apply {
+            val properties = JSONObject()
+            properties.put("Widget Type", kind)
+            properties.put("Widget ID", id)
+            properties.put("Number Of Taps", interactionInfo.interactionCount)
+            properties.put("Dismiss Action", dismissAction)
+            properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
+            properties.put("Dismiss Seconds Since Start", timeSinceStart)
+            properties.put("Interactable State", interactionState)
+            properties.put("Last Widget Type", getString("lastWidgetType", ""))
+            mixpanel.track(KEY_WIDGET_USER_DISMISS, properties)
+            eventObserver?.invoke(KEY_WIDGET_USER_DISMISS, properties)
 
-        mixpanel.track(KEY_WIDGET_USER_DISMISS, properties)
+            edit().putString("lastWidgetType", kind).apply()
+        }
     }
+
+    private var lastOrientation: Boolean? = null
 
     override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
         val properties = JSONObject()
@@ -313,12 +393,19 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
         properties.put("interactionType", interactionType)
         properties.put("interactionCount", interactionCount)
         mixpanel.track(KEY_WIDGET_INTERACTION, properties)
+        eventObserver?.invoke(KEY_WIDGET_INTERACTION, properties)
     }
 
     override fun trackOrientationChange(isPortrait: Boolean) {
-        val properties = JSONObject()
-        properties.put("isPortrait", isPortrait)
-        mixpanel.track(KEY_ORIENTATION_CHANGED, properties)
+        if (lastOrientation == isPortrait) return // return if the orientation stays the same
+        lastOrientation = isPortrait
+        JSONObject().apply {
+            put("Device Orientation", if (isPortrait)"PORTRAIT" else "LANDSCAPE")
+            mixpanel.track(KEY_ORIENTATION_CHANGED, this)
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+            eventObserver?.invoke(KEY_ORIENTATION_CHANGED, this)
+        }
     }
 
     override fun trackButtonTap(buttonName: String, extra: JsonObject) {
@@ -326,6 +413,7 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
         properties.put("buttonName", buttonName)
         properties.put("extra", extra)
         mixpanel.track(KEY_ACTION_TAP, properties)
+        eventObserver?.invoke(KEY_ACTION_TAP, properties)
     }
 
     override fun trackSession(sessionId: String) {
@@ -334,6 +422,27 @@ internal class MixpanelAnalytics(context: Context, token: String, programId: Str
     }
 
     override fun trackUsername(username: String) {
-        mixpanel.people.set("username", username)
+        mixpanel.people.set("Nickname", username)
+        val properties = JSONObject()
+        properties.put("Nickname", username)
+        mixpanel.registerSuperProperties(properties)
+        eventObserver?.invoke("Nickname", properties)
     }
+}
+
+enum class KeyboardHideReason {
+    MESSAGE_SENT,
+    TAP_OUTSIDE
+}
+
+enum class KeyboardType {
+    STANDARD,
+    EMOJI
+}
+
+enum class DismissAction {
+    TIMEOUT,
+    SWIPE,
+    TAP_X,
+    NEW_WIDGET_RECEIVED
 }
