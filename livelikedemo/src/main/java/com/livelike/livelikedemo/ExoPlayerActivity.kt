@@ -125,7 +125,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             chat_view.setSession(session)
             widget_view.setSession(session)
 
-            session.analyticService.registerHandler { _, it ->
+            session.analyticService.registerEventObserver { _, it ->
                 Log.e("[AnalyticsHandler]", it.toString())
             }
 
