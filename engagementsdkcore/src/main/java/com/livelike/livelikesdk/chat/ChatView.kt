@@ -29,7 +29,9 @@ import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
+import com.livelike.livelikesdk.utils.logError
 import java.util.Date
 import java.util.UUID
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
@@ -104,6 +106,16 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         viewModel?.chatAdapter?.let {
             setDataSource(it)
         }
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val widthDp = AndroidResource.pxToDp(width)
+        if (widthDp < 292 && widthDp != 0) {
+            logError { "[CONFIG ERROR] Current ChatView Width is $widthDp, it must be more than 292dp or won't display on the screen." }
+            setMeasuredDimension(0, 0)
+            return
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
     override fun displayChatMessage(message: ChatMessage) {
