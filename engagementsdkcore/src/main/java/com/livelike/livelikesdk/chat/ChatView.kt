@@ -113,10 +113,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         if (widthDp < 292 && widthDp != 0) {
             logError { "[CONFIG ERROR] Current ChatView Width is $widthDp, it must be more than 292dp or won't display on the screen." }
             setMeasuredDimension(0, 0)
-            visibility = View.GONE
             return
         }
-        visibility = View.VISIBLE
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
