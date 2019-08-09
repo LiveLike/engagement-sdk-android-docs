@@ -403,8 +403,11 @@ class MixpanelAnalytics(val context: Context, token: String, programId: String) 
             put("Device Orientation", if (isPortrait)"PORTRAIT" else "LANDSCAPE")
             mixpanel.track(KEY_ORIENTATION_CHANGED, this)
             mixpanel.registerSuperProperties(this)
-            mixpanel.people.set(this)
             eventObserver?.invoke(KEY_ORIENTATION_CHANGED, this)
+        }
+        JSONObject().apply {
+            put("Last Device Orientation", if (isPortrait)"PORTRAIT" else "LANDSCAPE")
+            mixpanel.people.set(this)
         }
     }
 
