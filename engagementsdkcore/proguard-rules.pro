@@ -74,3 +74,5 @@
   **[] $VALUES;
   public *;
 }
+
+-keep class com.livelike.** { *; }
