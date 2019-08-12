@@ -28,10 +28,6 @@ internal class ChatQueue(upstream: MessagingClient) :
     private val connectedChannels: MutableList<String> = mutableListOf()
 
     var renderer: ChatRenderer? = null
-        set(value) {
-            field = value
-            value?.chatListener = this
-        }
 
     override fun subscribe(channels: List<String>) {
         connectedChannels.addAll(channels)

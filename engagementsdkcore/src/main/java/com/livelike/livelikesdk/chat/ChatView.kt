@@ -24,7 +24,6 @@ import android.widget.EditText
 import com.livelike.engagementsdkapi.ChatAdapter
 import com.livelike.engagementsdkapi.ChatCell
 import com.livelike.engagementsdkapi.ChatCellFactory
-import com.livelike.engagementsdkapi.ChatEventListener
 import com.livelike.engagementsdkapi.ChatMessage
 import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.ChatViewModel
@@ -65,7 +64,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         private const val CHAT_MINIMUM_SIZE_DP = 292
     }
 
-    override var chatListener: ChatEventListener? = null
     override val chatContext: Context = context
 
     private var session: LiveLikeContentSession? = null
@@ -262,7 +260,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         hideLoadingSpinner()
         snapToLive()
         edittext_chat_message.setText("")
-        chatListener?.onChatMessageSend(newMessage, timeData)
+        viewModel?.chatListener?.onChatMessageSend(newMessage, timeData)
     }
 
     private fun hideSnapToLive() {

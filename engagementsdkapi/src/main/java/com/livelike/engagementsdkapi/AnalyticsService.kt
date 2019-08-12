@@ -225,7 +225,7 @@ class MixpanelAnalytics(val context: Context, token: String, programId: String) 
 
     override fun trackLastChatStatus(status: Boolean) {
         JSONObject().apply {
-            put("Last Chat Status", status)
+            put("Last Chat Status", if (status) "Enabled" else "Disabled")
             mixpanel.registerSuperProperties(this)
             mixpanel.people.set(this)
             eventObserver?.invoke("Last Chat Status", this)
@@ -234,7 +234,7 @@ class MixpanelAnalytics(val context: Context, token: String, programId: String) 
 
     override fun trackLastWidgetStatus(status: Boolean) {
         JSONObject().apply {
-            put("Last Widget Status", status)
+            put("Last Widget Status", if (status) "Enabled" else "Disabled")
             mixpanel.registerSuperProperties(this)
             mixpanel.people.set(this)
             eventObserver?.invoke("Last Widget Status", this)

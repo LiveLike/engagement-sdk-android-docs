@@ -123,6 +123,7 @@ internal class ContentSession(
                 .apply {
                     subscribe(listOf(chatChannel))
                     this.renderer = chatRenderer
+                    chatViewModel.chatListener = this
                 }
     }
 
@@ -132,12 +133,16 @@ internal class ContentSession(
         logVerbose { "Pausing the Session" }
         widgetClient?.stop()
         chatClient?.stop()
+        analyticService.trackLastChatStatus(false)
+        analyticService.trackLastWidgetStatus(false)
     }
 
     override fun resume() {
         logVerbose { "Resuming the Session" }
         widgetClient?.resume()
         chatClient?.resume()
+        analyticService.trackLastChatStatus(true)
+        analyticService.trackLastWidgetStatus(true)
     }
 
     override fun close() {
@@ -151,5 +156,7 @@ internal class ContentSession(
         widgetClient?.stop()
         chatClient?.stop()
         currentWidgetViewStream.clear()
+        analyticService.trackLastChatStatus(false)
+        analyticService.trackLastWidgetStatus(false)
     }
 }
