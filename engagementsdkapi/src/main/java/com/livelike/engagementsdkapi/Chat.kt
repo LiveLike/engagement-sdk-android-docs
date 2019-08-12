@@ -10,7 +10,6 @@ interface ChatEventListener {
 }
 
 interface ChatRenderer {
-    var chatListener: ChatEventListener?
     val chatContext: Context
     fun displayChatMessage(message: ChatMessage)
     fun loadComplete()
@@ -102,6 +101,7 @@ class ChatViewModel() {
         chatLastPos = null
     }
 
+    var chatListener: ChatEventListener? = null
     var chatAdapter: ChatAdapter? = null
     var chatLastPos: Int? = null
 }
