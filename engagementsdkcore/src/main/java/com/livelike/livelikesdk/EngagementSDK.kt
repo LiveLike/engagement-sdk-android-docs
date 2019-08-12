@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk
 
 import android.content.Context
+import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeContentSession
@@ -59,14 +60,25 @@ class EngagementSDK(private val clientId: String, private val applicationContext
     data class SdkConfiguration(
         val url: String,
         val name: String,
+        @SerializedName("client_id")
         val clientId: String,
+        @SerializedName("media_url")
         val mediaUrl: String,
+        @SerializedName("pubnub_subscribe_key")
         val pubNubKey: String,
+        @SerializedName("sendbird_app_id")
         val sendBirdAppId: String,
+        @SerializedName("sendbird_api_endpoint")
         val sendBirdEndpoint: String,
+        @SerializedName("programs_url")
         val programsUrl: String,
+        @SerializedName("sessions_url")
         val sessionsUrl: String,
+        @SerializedName("sticker_packs_url")
         val stickerPackUrl: String,
-        val mixpanelToken: String
+        @SerializedName("mixpanel_token")
+        val mixpanelToken: String,
+        @SerializedName("analytics_properties")
+        val analyticsProps: Map<String, String>
     )
 }

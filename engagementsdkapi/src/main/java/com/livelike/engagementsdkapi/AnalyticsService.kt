@@ -38,9 +38,14 @@ interface AnalyticsService {
     fun trackUsername(username: String)
     fun trackKeyboardOpen(keyboardType: KeyboardType)
     fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
+    fun logEvent(event: Map.Entry<String, String>)
 }
 
 class MockAnalyticsService : AnalyticsService {
+    override fun logEvent(event: Map.Entry<String, String>) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $event")
+    }
+
     override fun registerEventObserver(eventObserver: (String, JSONObject) -> Unit) {
     }
 
@@ -215,6 +220,15 @@ class MixpanelAnalytics(val context: Context, token: String, programId: String) 
 
     override fun registerEventObserver(eventObserver: (String, JSONObject) -> Unit) {
         this.eventObserver = eventObserver
+    }
+
+    override fun logEvent(event: Map.Entry<String, String>) {
+        JSONObject().apply {
+            put(event.key, event.value)
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+            eventObserver?.invoke(event.key, this)
+        }
     }
 
     private fun getApplicationName(context: Context): String {

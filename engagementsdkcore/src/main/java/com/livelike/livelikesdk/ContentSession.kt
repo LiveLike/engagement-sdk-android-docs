@@ -58,6 +58,12 @@ internal class ContentSession(
                         if (program !== null) {
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
+                            program.analyticsProps.forEach { map ->
+                                analyticService.logEvent(map)
+                            }
+                            it.analyticsProps.forEach { map ->
+                                analyticService.logEvent(map)
+                            }
                         }
                     }
                 }

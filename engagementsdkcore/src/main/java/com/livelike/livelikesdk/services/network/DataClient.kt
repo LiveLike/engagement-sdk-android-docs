@@ -27,7 +27,9 @@ internal data class Program(
     @SerializedName("subscribe_channel")
     val subscribeChannel: String,
     @SerializedName("sendbird_channel")
-    val chatChannel: String
+    val chatChannel: String,
+    @SerializedName("analytics_properties")
+    val analyticsProps: Map<String, String>
 )
 
 internal interface EngagementSdkDataClient {

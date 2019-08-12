@@ -128,9 +128,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         val call = client.newCall(request)
         call.enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
-                val responseData = response.body()?.string()
                 try {
-                    mainHandler.post { responseCallback.invoke(pareseSdkConfiguration(JsonParser().parse(responseData).asJsonObject)) }
+                    mainHandler.post { responseCallback.invoke(gson.fromJson(response.body()?.string(), EngagementSDK.SdkConfiguration::class.java)) }
                 } catch (e: MalformedJsonException) {
                     logError { e }
                 }
@@ -155,7 +154,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             configData.extractStringOrEmpty("programs_url"),
             configData.extractStringOrEmpty("sessions_url"),
             configData.extractStringOrEmpty("sticker_packs_url"),
-            configData.extractStringOrEmpty("mixpanel_token")
+            configData.extractStringOrEmpty("mixpanel_token"),
+            mapOf()
         )
     }
 
