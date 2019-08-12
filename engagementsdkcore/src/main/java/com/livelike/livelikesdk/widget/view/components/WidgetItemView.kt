@@ -49,6 +49,10 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
             } else {
                 setupTextItem(option)
             }
+            determinateBar?.progress = option.percentage
+            percentageText?.text = "${option.percentage}%"
+            imageBar?.progress = option.percentage
+            imagePercentage?.text = "${option.percentage}%"
         }
 
         setItemBackground(itemIsSelected, widgetType, correctOptionId, selectedPredictionId, option, itemIsLast)
