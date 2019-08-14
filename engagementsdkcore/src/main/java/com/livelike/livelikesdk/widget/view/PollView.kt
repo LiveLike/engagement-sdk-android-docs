@@ -12,6 +12,7 @@ import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollWidget
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -118,6 +119,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
+            pointView.startAnimation(150)
         }
     }
 }

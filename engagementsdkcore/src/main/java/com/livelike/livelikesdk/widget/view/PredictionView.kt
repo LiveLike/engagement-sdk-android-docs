@@ -14,6 +14,7 @@ import com.livelike.livelikesdk.widget.viewModel.PredictionWidget
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -108,6 +109,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 listOf(textEggTimer).forEach { it?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
+                pointView.startAnimation(150)
             }
             "followup" -> {
                 followupAnimation?.apply {
@@ -124,6 +126,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 listOf(textEggTimer).forEach { it?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
+                pointView.startAnimation(150)
             }
         }
     }

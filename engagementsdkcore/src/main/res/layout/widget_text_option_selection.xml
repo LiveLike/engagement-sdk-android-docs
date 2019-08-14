@@ -23,6 +23,18 @@
                                                                              android:layout_marginRight="16dp"
                                                                              android:layout_marginEnd="16dp"/>
 
+    <com.livelike.livelikesdk.widget.view.components.PointView
+        android:id="@+id/pointView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/followupAnimation"></com.livelike.livelikesdk.widget.view.components.PointView>
+
     <android.support.v7.widget.RecyclerView android:id="@+id/textRecyclerView"
                                             android:hapticFeedbackEnabled="true"
                                             android:layout_width="match_parent"
@@ -64,6 +76,6 @@
             tools:visibility="visible"
             android:adjustViewBounds="false"
             android:cropToPadding="false"
-    />
+            app:layout_constraintHorizontal_bias="1.0" app:layout_constraintVertical_bias="1.0"/>
 
 </android.support.constraint.ConstraintLayout>
