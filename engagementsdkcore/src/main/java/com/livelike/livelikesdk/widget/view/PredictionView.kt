@@ -61,7 +61,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 },
                 widget.type,
                 resource.correct_option_id,
-                if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id
+                (if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id) ?: ""
             )
 
             textRecyclerView.apply {
@@ -109,7 +109,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 listOf(textEggTimer).forEach { it?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
-                pointView.startAnimation(150)
+                viewModel?.points?.let { pointView.startAnimation(it) }
             }
             "followup" -> {
                 followupAnimation?.apply {
@@ -126,7 +126,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 listOf(textEggTimer).forEach { it?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
-                pointView.startAnimation(150)
+
+                viewModel?.points?.let { pointView.startAnimation(it) }
             }
         }
     }
