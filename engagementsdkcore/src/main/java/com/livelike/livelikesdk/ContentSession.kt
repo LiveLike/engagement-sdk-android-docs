@@ -59,10 +59,10 @@ internal class ContentSession(
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
-                                analyticService.logEvent(map)
+                                analyticService.logEvent(map.key to map.value)
                             }
                             it.analyticsProps.forEach { map ->
-                                analyticService.logEvent(map)
+                                analyticService.logEvent(map.key to map.value)
                             }
                         }
                     }

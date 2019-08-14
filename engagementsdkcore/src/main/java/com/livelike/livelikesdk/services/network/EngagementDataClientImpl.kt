@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.stream.MalformedJsonException
+import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.utils.addUserAgent
@@ -210,8 +211,10 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         }
     }
 
-    override suspend fun rewardAsync(rewardUrl: String): Reward? {
-        return gson.fromJson(postAsync(rewardUrl), Reward::class.java)
+    override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService): Reward? {
+        return gson.fromJson(postAsync(rewardUrl), Reward::class.java)?.also {
+            analyticsService.logEvent("Lifetime Points" to (it.points?.toString() ?: "0"))
+        }
     }
 
     private suspend fun postAsync(url: String) = suspendCoroutine<JsonObject> {

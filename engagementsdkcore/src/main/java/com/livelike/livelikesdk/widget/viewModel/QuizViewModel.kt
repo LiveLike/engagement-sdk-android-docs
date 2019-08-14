@@ -157,16 +157,15 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsServ
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it)?.new_points
+                points = dataClient.rewardAsync(it, analyticsService)?.new_points
                 interactionData.pointEarned = points ?: 0
             }
 
             state.onNext("results")
+            currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }
-
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {

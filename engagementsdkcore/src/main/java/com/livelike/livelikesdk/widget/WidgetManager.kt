@@ -88,7 +88,7 @@ enum class WidgetType(val event: String) {
 internal interface WidgetDataClient {
     suspend fun voteAsync(widgetVotingUrl: String, voteId: String)
     fun registerImpression(impressionUrl: String)
-    suspend fun rewardAsync(rewardUrl: String): Reward?
+    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService): Reward?
 }
 
 internal fun MessagingClient.asWidgetManager(

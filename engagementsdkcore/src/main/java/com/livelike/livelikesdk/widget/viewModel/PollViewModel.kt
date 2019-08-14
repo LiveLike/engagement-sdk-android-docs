@@ -142,13 +142,13 @@ internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsServ
 
         adapter?.selectionLocked = true
 
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
-
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                points.onNext(dataClient.rewardAsync(it)?.new_points)
+                val reward = dataClient.rewardAsync(it, analyticsService)
+                points.onNext(reward?.new_points)
                 interactionData.pointEarned = points.currentData ?: 0
             }
+            currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }
