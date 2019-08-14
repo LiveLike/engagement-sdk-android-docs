@@ -129,6 +129,7 @@ class AnalyticsWidgetInteractionInfo {
     var timeOfFirstInteraction: Long = -1
     var timeOfLastInteraction: Long = 0
     var timeOfFirstDisplay: Long = -1
+    var pointEarned: Int = 0
 
     fun incrementInteraction() {
         interactionCount += 1

@@ -147,6 +147,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsServ
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 points.onNext(dataClient.rewardAsync(it)?.new_points)
+                interactionData.pointEarned = points.currentData ?: 0
             }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)

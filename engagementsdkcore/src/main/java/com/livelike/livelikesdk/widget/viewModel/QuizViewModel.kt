@@ -157,7 +157,9 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsServ
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it)?.new_points }
+                points = dataClient.rewardAsync(it)?.new_points
+                interactionData.pointEarned = points ?: 0
+            }
 
             state.onNext("results")
             delay(6000)
