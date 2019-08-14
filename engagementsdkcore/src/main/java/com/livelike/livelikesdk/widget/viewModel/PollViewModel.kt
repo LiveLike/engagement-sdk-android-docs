@@ -36,6 +36,7 @@ internal class PollWidget(
 )
 
 internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel() {
+    var points: SubscriptionManager<Int?> = SubscriptionManager()
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -144,6 +145,9 @@ internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsServ
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
 
         uiScope.launch {
+            data.currentData?.resource?.rewards_url?.let {
+                points.onNext(dataClient.rewardAsync(it)?.new_points)
+            }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }
