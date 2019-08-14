@@ -6,6 +6,7 @@ import com.livelike.livelikesdk.utils.gson
 
 private const val PREFERENCE_KEY_SESSION_ID = "SessionId"
 private const val PREFERENCE_KEY_NICKNAME = "Username"
+private const val PREFERENCE_KEY_POINTS_TUTORIAL = "PointsTutorial"
 private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
 private var mAppContext: Context? = null
 
@@ -56,3 +57,25 @@ internal data class SavedWidgetVote(
     val id: String,
     val optionId: String
 )
+
+internal fun getShouldShowPointsTutorial(): Int {
+    return getSharedPreferences().getInt(PREFERENCE_KEY_POINTS_TUTORIAL, PointsTutorialState.NEVER_SHOWN.value)
+}
+
+internal fun setShouldShowPointsTutorial() {
+    if (getShouldShowPointsTutorial() != PointsTutorialState.SHOWN.value) {
+        val editor = getSharedPreferences().edit()
+        editor.putInt(PREFERENCE_KEY_POINTS_TUTORIAL, PointsTutorialState.NEED_SHOW.value).apply()
+    }
+}
+
+internal fun setShownPointsTutorial() {
+    val editor = getSharedPreferences().edit()
+    editor.putInt(PREFERENCE_KEY_POINTS_TUTORIAL, PointsTutorialState.SHOWN.value).apply()
+}
+
+internal enum class PointsTutorialState(val value: Int) {
+    NEVER_SHOWN(0),
+    NEED_SHOW(1),
+    SHOWN(2),
+}

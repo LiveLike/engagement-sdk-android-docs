@@ -8,6 +8,7 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import com.livelike.livelikesdk.R
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setShouldShowPointsTutorial
 import kotlinx.android.synthetic.main.atom_widget_point.view.coinDroppingView
 import kotlinx.android.synthetic.main.atom_widget_point.view.coinView
 import kotlinx.android.synthetic.main.atom_widget_point.view.pointTextView
@@ -43,5 +44,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
         bothAnimatorSet.start()
+
+        setShouldShowPointsTutorial()
     }
 }
