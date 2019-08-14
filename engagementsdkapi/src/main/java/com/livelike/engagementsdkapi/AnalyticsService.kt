@@ -173,10 +173,10 @@ class AnalyticsWidgetSpecificInfo {
     }
 }
 
-class MixpanelAnalytics(val context: Context, token: String, programId: String) :
+class MixpanelAnalytics(val context: Context, token: String?, programId: String) :
     AnalyticsService {
 
-    private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token, programId)
+    private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token ?: "", programId)
 
     companion object {
         const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"

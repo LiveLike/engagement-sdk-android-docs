@@ -117,7 +117,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver(state: String?) {
         when (state) {
             "results" -> {
-                pointView.startAnimation(150)
+                viewModel?.points?.let { pointView.startAnimation(it) }
                 listOf(textEggTimer).forEach { v -> v?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }

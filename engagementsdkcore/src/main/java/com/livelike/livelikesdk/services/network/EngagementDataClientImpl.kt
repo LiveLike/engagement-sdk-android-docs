@@ -16,6 +16,7 @@ import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.utils.logWarn
 import com.livelike.livelikesdk.widget.WidgetDataClient
+import com.livelike.livelikesdk.widget.model.Reward
 import com.livelike.livelikesdk.widget.util.SingleRunner
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -207,6 +208,10 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
                     .build())
             }
         }
+    }
+
+    override suspend fun rewardAsync(rewardUrl: String): Reward? {
+        return gson.fromJson(postAsync(rewardUrl), Reward::class.java)
     }
 
     private suspend fun postAsync(url: String) = suspendCoroutine<JsonObject> {

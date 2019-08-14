@@ -49,7 +49,7 @@ internal class ContentSession(
         sdkConfiguration.subscribe(javaClass.simpleName) {
             it?.let { configuration ->
                 analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
-                analyticService.trackConfiguration(configuration.name)
+                analyticService.trackConfiguration(configuration.name ?: "")
 
                 getUser(configuration.sessionsUrl)
 
