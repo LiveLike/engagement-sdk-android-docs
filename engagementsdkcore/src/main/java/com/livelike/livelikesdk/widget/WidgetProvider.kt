@@ -12,6 +12,7 @@ import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION_FOLLOW_UP
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_QUIZ
+import com.livelike.livelikesdk.widget.WidgetType.POINTS_TUTORIAL
 import com.livelike.livelikesdk.widget.WidgetType.TEXT_POLL
 import com.livelike.livelikesdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.livelikesdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
@@ -20,6 +21,7 @@ import com.livelike.livelikesdk.widget.view.AlertWidgetView
 import com.livelike.livelikesdk.widget.view.PollView
 import com.livelike.livelikesdk.widget.view.PredictionView
 import com.livelike.livelikesdk.widget.view.QuizView
+import com.livelike.livelikesdk.widget.view.components.PointsTutorialView
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
 import com.livelike.livelikesdk.widget.viewModel.PredictionViewModel
@@ -47,6 +49,7 @@ internal class WidgetProvider {
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
                 widgetViewModel = PollViewModel(widgetInfos, analyticsService, sdkConfiguration)
             }
+            POINTS_TUTORIAL -> PointsTutorialView(context)
             else -> null
         }
     }

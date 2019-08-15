@@ -12,6 +12,8 @@ import com.livelike.engagementsdkapi.MixpanelAnalytics
 import com.livelike.engagementsdkapi.Stream
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
+import com.livelike.livelikesdk.services.messaging.proxies.debounce
+import com.livelike.livelikesdk.services.messaging.proxies.gamify
 import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
@@ -110,6 +112,8 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
+                .gamify()
+                .debounce(20000)
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())

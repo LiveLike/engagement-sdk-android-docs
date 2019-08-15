@@ -77,6 +77,7 @@ enum class WidgetType(val event: String) {
     IMAGE_QUIZ("image-quiz-created"),
     TEXT_POLL("text-poll-created"),
     IMAGE_POLL("image-poll-created"),
+    POINTS_TUTORIAL("points-tutorial"),
     ALERT("alert-created");
 
     companion object {

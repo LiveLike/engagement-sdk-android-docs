@@ -7,5 +7,5 @@ import okhttp3.Request
 private val userAgent = "Android/${BuildConfig.SDK_VERSION} ${Build.MODEL}/${Build.VERSION.SDK_INT}"
 fun Request.Builder.addUserAgent(): Request.Builder {
     return addHeader("User-Agent", userAgent)
-        .addHeader("Authorization", "Bearer h2L4bV5pt12KHQrVa1IApxL6JA9_p9FUmGuj450Be24mpXjx4rkBqA") // TODO: Remove this when user profile are implemented.
+        .addHeader("Authorization", "Bearer jNcZgi6JutiVPYHl7uBHxmP6w7DKGBNJvdwIqtjypnCQ71Mi2mt3Eg") // TODO: Remove this when user profile are implemented.
 }
