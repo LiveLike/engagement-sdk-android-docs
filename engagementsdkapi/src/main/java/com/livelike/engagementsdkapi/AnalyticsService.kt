@@ -38,11 +38,11 @@ interface AnalyticsService {
     fun trackUsername(username: String)
     fun trackKeyboardOpen(keyboardType: KeyboardType)
     fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
-    fun logEvent(event: Map.Entry<String, String>)
+    fun logEvent(event: Pair<String, String>)
 }
 
 class MockAnalyticsService : AnalyticsService {
-    override fun logEvent(event: Map.Entry<String, String>) {
+    override fun logEvent(event: Pair<String, String>) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $event")
     }
 
@@ -129,6 +129,7 @@ class AnalyticsWidgetInteractionInfo {
     var timeOfFirstInteraction: Long = -1
     var timeOfLastInteraction: Long = 0
     var timeOfFirstDisplay: Long = -1
+    var pointEarned: Int = 0
 
     fun incrementInteraction() {
         interactionCount += 1
@@ -173,10 +174,10 @@ class AnalyticsWidgetSpecificInfo {
     }
 }
 
-class MixpanelAnalytics(val context: Context, token: String, programId: String) :
+class MixpanelAnalytics(val context: Context, token: String?, programId: String) :
     AnalyticsService {
 
-    private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token, programId)
+    private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token ?: "5c82369365be76b28b3716f260fbd2f5", programId)
 
     companion object {
         const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
@@ -222,12 +223,12 @@ class MixpanelAnalytics(val context: Context, token: String, programId: String) 
         this.eventObserver = eventObserver
     }
 
-    override fun logEvent(event: Map.Entry<String, String>) {
+    override fun logEvent(event: Pair<String, String>) {
         JSONObject().apply {
-            put(event.key, event.value)
+            put(event.first, event.second)
             mixpanel.registerSuperProperties(this)
             mixpanel.people.set(this)
-            eventObserver?.invoke(event.key, this)
+            eventObserver?.invoke(event.first, this)
         }
     }
 
@@ -305,6 +306,7 @@ class MixpanelAnalytics(val context: Context, token: String, programId: String) 
         properties.put("First Tap Time", parser.format(Date(interactionInfo.timeOfFirstInteraction)))
         properties.put("Last Tap Time", timeOfLastInteraction)
         properties.put("No of Taps", interactionInfo.interactionCount)
+        properties.put("Points Earned", interactionInfo.pointEarned)
 
         mixpanel.track(KEY_WIDGET_INTERACTION, properties)
         eventObserver?.invoke(KEY_WIDGET_INTERACTION, properties)

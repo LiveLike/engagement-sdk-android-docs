@@ -27,6 +27,7 @@ internal class PredictionWidget(
 )
 
 internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appContext: Context, private val analyticsService: AnalyticsService) : WidgetViewModel() {
+    var points: Int? = null
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
     var state: Stream<String?> = SubscriptionManager() // confirmation, followup
@@ -131,7 +132,13 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appCont
         val rootPath = if (isUserCorrect) "correctAnswer" else "wrongAnswer"
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
 
-        state.onNext("followup")
+        uiScope.launch {
+            data.currentData?.resource?.rewards_url?.let {
+                points = dataClient.rewardAsync(it, analyticsService)?.new_points
+                interactionData.pointEarned = points ?: 0
+            }
+            state.onNext("followup")
+        }
     }
 
     private fun confirmationState() {
@@ -144,14 +151,16 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appCont
         adapter?.selectionLocked = true
         animationPath = AndroidResource.selectRandomLottieAnimation("confirmMessage", appContext) ?: ""
 
-        state.onNext("confirmation")
-
         uiScope.launch {
+            data.currentData?.resource?.rewards_url?.let {
+                points = dataClient.rewardAsync(it, analyticsService)?.new_points
+                interactionData.pointEarned = points ?: 0
+            }
+            state.onNext("confirmation")
+            currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }
-
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {

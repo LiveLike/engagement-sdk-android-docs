@@ -11,6 +11,7 @@ internal data class Resource(
     val created_at: String = "",
     val published_at: String = "",
     val follow_up_url: String = "",
+    val rewards_url: String?,
     val text_prediction_id: String = "",
     val image_prediction_id: String = "",
     val text_prediction_url: String = "",
@@ -110,4 +111,11 @@ internal data class Vote(
     val url: String = "",
     val choice_id: String = "",
     val option_id: String = ""
+)
+
+internal data class Reward(
+    val id: String?,
+    val rank: Int?,
+    val new_points: Int?,
+    val points: Int?
 )

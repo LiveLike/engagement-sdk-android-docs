@@ -59,7 +59,7 @@ class EngagementSDK(private val clientId: String, private val applicationContext
 
     data class SdkConfiguration(
         val url: String,
-        val name: String,
+        val name: String?,
         @SerializedName("client_id")
         val clientId: String,
         @SerializedName("media_url")

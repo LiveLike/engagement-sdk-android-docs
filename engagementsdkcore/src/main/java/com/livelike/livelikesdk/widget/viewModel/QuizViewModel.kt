@@ -36,6 +36,7 @@ internal class QuizWidget(
 )
 
 internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration, val context: Context) : WidgetViewModel() {
+    var points: Int? = null
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -154,13 +155,17 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsServ
 
         adapter?.selectionLocked = true
 
-        state.onNext("results")
         uiScope.launch {
+            data.currentData?.resource?.rewards_url?.let {
+                points = dataClient.rewardAsync(it, analyticsService)?.new_points
+                interactionData.pointEarned = points ?: 0
+            }
+
+            state.onNext("results")
+            currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }
-
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
     }
 
     private fun cleanUp() {

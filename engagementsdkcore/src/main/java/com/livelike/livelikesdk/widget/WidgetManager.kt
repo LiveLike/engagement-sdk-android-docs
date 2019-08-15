@@ -12,6 +12,7 @@ import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.utils.SubscriptionManager
+import com.livelike.livelikesdk.widget.model.Reward
 
 internal class WidgetManager(
     upstream: MessagingClient,
@@ -87,6 +88,7 @@ enum class WidgetType(val event: String) {
 internal interface WidgetDataClient {
     suspend fun voteAsync(widgetVotingUrl: String, voteId: String)
     fun registerImpression(impressionUrl: String)
+    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService): Reward?
 }
 
 internal fun MessagingClient.asWidgetManager(

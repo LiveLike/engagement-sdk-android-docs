@@ -49,7 +49,7 @@ internal class ContentSession(
         sdkConfiguration.subscribe(javaClass.simpleName) {
             it?.let { configuration ->
                 analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
-                analyticService.trackConfiguration(configuration.name)
+                analyticService.trackConfiguration(configuration.name ?: "")
 
                 getUser(configuration.sessionsUrl)
 
@@ -59,10 +59,10 @@ internal class ContentSession(
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
-                                analyticService.logEvent(map)
+                                analyticService.logEvent(map.key to map.value)
                             }
                             it.analyticsProps.forEach { map ->
-                                analyticService.logEvent(map)
+                                analyticService.logEvent(map.key to map.value)
                             }
                         }
                     }

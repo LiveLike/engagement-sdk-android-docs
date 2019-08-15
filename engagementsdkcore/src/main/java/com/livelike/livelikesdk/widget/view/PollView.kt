@@ -12,6 +12,7 @@ import com.livelike.livelikesdk.widget.model.Resource
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollWidget
 import com.livelike.livelikesdk.widget.viewModel.WidgetViewModel
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -58,6 +59,13 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
         viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
+        viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
+    }
+
+    private fun rewardsObserver(points: Int?) {
+        points?.let {
+            pointView.startAnimation(it)
+        }
     }
 
     private fun resourceObserver(widget: PollWidget?) {
