@@ -8,8 +8,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -20,18 +20,11 @@ import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.AbsListView
 import android.widget.EditText
-import com.livelike.engagementsdkapi.ChatAdapter
-import com.livelike.engagementsdkapi.ChatCell
-import com.livelike.engagementsdkapi.ChatCellFactory
-import com.livelike.engagementsdkapi.ChatMessage
-import com.livelike.engagementsdkapi.ChatRenderer
-import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.KeyboardHideReason
 import com.livelike.engagementsdkapi.KeyboardType
-import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.utils.logError
@@ -42,10 +35,9 @@ import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
-import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
-import kotlinx.android.synthetic.main.default_chat_cell.view.floatingUi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -59,7 +51,13 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.floatingUi
  *
  */
 
-class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatRenderer {
+class ChatViewModel() {
+    var chatListener: ChatEventListener? = null
+    var chatAdapter: ChatRecyclerAdapter? = null
+}
+
+class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs),
+    ChatRenderer {
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
         const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
@@ -91,11 +89,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
         if (viewModel?.chatAdapter == null) {
             showLoadingSpinner()
-            viewModel?.chatAdapter =
-                ChatAdapter(
-                session,
-                    DefaultChatCellFactory(context, null)
-                )
+            viewModel?.chatAdapter = ChatRecyclerAdapter()
         }
         viewModel?.chatAdapter?.let {
             setDataSource(it)
@@ -116,9 +110,12 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
         Handler(Looper.getMainLooper()).post {
-            viewModel?.chatAdapter?.addMessage(message)
+            messageList.add(message.apply { isFromMe = session?.currentUser?.sessionId == senderId })
+            viewModel?.chatAdapter?.submitList(messageList)
         }
     }
+
+    private val messageList = mutableListOf<ChatMessage>()
 
     override fun loadComplete() {
         hideLoadingSpinner()
@@ -148,45 +145,21 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
      *  Sets the data source for this view.
      *  @param chatAdapter ChatAdapter used for creating this view.
      */
-    private fun setDataSource(chatAdapter: ChatAdapter) {
+    private fun setDataSource(chatAdapter: ChatRecyclerAdapter) {
         chatdisplay.adapter = chatAdapter
 
-        chatdisplay.setOnItemLongClickListener { adapterView, view, i, l ->
-            // Hide all floating menus
-            for (iterator in 0 until adapterView.count) {
-                (adapterView.getItemAtPosition(iterator) as DefaultChatCell).hideFloatingUI()
-            }
-
-            // Show clicked item floating menu
-            (adapterView.getItemAtPosition(i) as DefaultChatCell).showFloatingUI()
-            false
-        }
-
-        chatdisplay.setOnItemClickListener { adapterView, view, i, l ->
-            // Hide all floating menus
-            for (iterator in 0 until adapterView.count) {
-                (adapterView.getItemAtPosition(iterator) as DefaultChatCell).hideFloatingUI()
-            }
-        }
-
-        chatdisplay.setOnScrollListener(object : AbsListView.OnScrollListener {
-            override fun onScroll(
-                view: AbsListView?,
-                firstVisibleItem: Int,
-                visibleItemCount: Int,
-                totalItemCount: Int
+        chatdisplay.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(
+                rv: RecyclerView,
+                dx: Int,
+                dy: Int
             ) {
-                val lastPos = view?.lastVisiblePosition ?: 0
-                if (lastPos > 0) {
-                    viewModel?.chatLastPos = view?.selectedItemPosition
-                }
-                if (lastPos >= totalItemCount - 3)
-                    hideSnapToLive()
-                else
+                val l = (rv.layoutManager as LinearLayoutManager)
+                if (l.findLastVisibleItemPosition() < l.itemCount - 3)
                     showSnapToLive()
+                else
+                    hideSnapToLive()
             }
-
-            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
         })
 
         snap_live.setOnClickListener {
@@ -233,12 +206,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         button_chat_send.setOnClickListener {
             sendMessageNow()
         }
-
-        viewModel?.chatLastPos?.let {
-            Handler(Looper.getMainLooper()).post {
-                chatdisplay.setSelection(it)
-            }
-        }
     }
 
     private fun showLoadingSpinner() {
@@ -274,14 +241,19 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             session?.currentUser?.sessionId ?: "empty-id",
             session?.currentUser?.userName ?: "John Doe",
             UUID.randomUUID().toString(),
-            Date(timeData.timeSinceEpochInMs).toString()
+            Date(timeData.timeSinceEpochInMs).toString(),
+            true
         )
-        viewModel?.chatAdapter?.addMessage(newMessage)
+        messageList.add(newMessage)
+        viewModel?.chatAdapter?.submitList(messageList)
 
         hideLoadingSpinner()
-        snapToLive()
         edittext_chat_message.setText("")
         viewModel?.chatListener?.onChatMessageSend(newMessage, timeData)
+        GlobalScope.launch {
+            delay(200)
+            snapToLive()
+        }
     }
 
     private fun hideSnapToLive() {
@@ -330,87 +302,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun snapToLive() {
-        chatdisplay.smoothScrollToPositionFromTop(viewModel?.chatAdapter?.count?.minus(1) ?: 0, 0, 500)
-    }
-}
-
-internal class DefaultChatCellFactory(val context: Context, cellattrs: AttributeSet?) :
-    ChatCellFactory {
-    private val attrs = cellattrs
-
-    override fun getCell(): ChatCell {
-        return DefaultChatCell(context, attrs)
-    }
-}
-
-internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatCell {
-    private var message: ChatMessage? = null
-    private val dialogOptions = listOf(
-        "Block this user" to { msg: ChatMessage ->
-            logError { "Blocking ${msg.message}" }
-        },
-        "Report message" to { msg: ChatMessage ->
-            logError { "Reporting ${msg.message}" }
-        })
-
-    init {
-        LayoutInflater.from(context)
-            .inflate(com.livelike.livelikesdk.R.layout.default_chat_cell, this, true)
-    }
-
-    fun showFloatingUI() {
-        floatingUi.visibility = View.VISIBLE
-        chatBackground.alpha = 0.5f
-        floatingUi?.setOnClickListener {
-            floatingUi?.visibility = View.INVISIBLE
-            chatBackground?.alpha = 1f
-            context?.let { ctx ->
-                AlertDialog.Builder(ctx).apply {
-                    setTitle("A problem?")
-                    setItems(dialogOptions.map { it.first }.toTypedArray()) { dialog, which ->
-                        message?.let {
-                            dialogOptions[which].second.invoke(it)
-                        }
-                    }
-                    create()
-                }.show()
-            }
-        }
-    }
-
-    fun hideFloatingUI() {
-        floatingUi.visibility = View.INVISIBLE
-        chatBackground.alpha = 1f
-    }
-
-    override fun setMessage(
-        message: ChatMessage?,
-        isMe: Boolean?
-    ) {
-        this.message = message
-        message?.apply {
-            if (isMe == true) {
-                chat_nickname.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        com.livelike.livelikesdk.R.color.livelike_openChatNicknameMe
-                    )
-                )
-                chat_nickname.text = "(Me) ${message.senderDisplayName}"
-            } else {
-                chat_nickname.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        com.livelike.livelikesdk.R.color.livelike_openChatNicknameOther
-                    )
-                )
-                chat_nickname.text = message.senderDisplayName
-            }
-            chatMessage.text = message.message
-        }
-    }
-
-    override fun getView(): View {
-        return this
+        chatdisplay.layoutManager?.itemCount?.let { chatdisplay.smoothScrollToPosition(it) }
     }
 }

@@ -2,10 +2,11 @@ package com.livelike.livelikesdk.utils
 
 import android.os.Handler
 import android.os.Looper
-import com.livelike.engagementsdkapi.Stream
+import com.livelike.livelikesdk.Stream
 import java.util.concurrent.ConcurrentHashMap
 
-internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) : Stream<T> {
+internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) :
+    Stream<T> {
     private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
     var currentData: T? = null
         private set

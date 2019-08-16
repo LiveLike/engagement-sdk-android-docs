@@ -7,8 +7,8 @@ import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdkapi.AnalyticsWidgetSpecificInfo
 import com.livelike.engagementsdkapi.DismissAction
-import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.WidgetInfos
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error

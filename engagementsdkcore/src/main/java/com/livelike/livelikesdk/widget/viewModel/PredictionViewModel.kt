@@ -5,8 +5,8 @@ import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdkapi.DismissAction
-import com.livelike.engagementsdkapi.Stream
-import com.livelike.engagementsdkapi.WidgetInfos
+import com.livelike.livelikesdk.Stream
+import com.livelike.livelikesdk.WidgetInfos
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.SubscriptionManager

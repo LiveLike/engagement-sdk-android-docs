@@ -5,8 +5,8 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.DismissAction
-import com.livelike.engagementsdkapi.WidgetInfos
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.WidgetInfos
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION

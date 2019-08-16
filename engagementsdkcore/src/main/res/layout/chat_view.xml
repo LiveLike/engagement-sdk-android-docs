@@ -17,10 +17,12 @@
 
 
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
             android:id="@+id/chatdisplay"
+            app:stackFromEnd="true"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/default_chat_cell"
             android:stackFromBottom="true"
             android:transcriptMode="normal"
