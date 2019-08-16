@@ -11,8 +11,6 @@
           android:background="@drawable/ic_chat_message_bubble_rounded_rectangle"
           android:layout_height="0dp"
           android:layout_width="0dp"
-          android:clickable="false"
-          android:focusable="false"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
           app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"
@@ -57,13 +55,18 @@
             app:layout_constraintStart_toStartOf="parent"
             android:paddingRight="16dp" android:paddingLeft="16dp"/>
 
-    <include android:id="@+id/floatingUi"
-             android:visibility="visible"
-             layout="@layout/atom_chat_floating_ui"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             app:layout_constraintStart_toStartOf="parent" android:layout_marginLeft="16dp"
-             android:layout_marginStart="16dp"
-             app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+            android:id="@+id/floatingUi"
+            android:layout_width="46dp"
+            android:layout_height="30dp"
+            android:visibility="visible"
+            android:src="@drawable/chat_ic_flag"
+            android:background="@drawable/ic_chat_floating_ui"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:paddingLeft="8dp" android:paddingRight="8dp"/>
 
 </android.support.constraint.ConstraintLayout>

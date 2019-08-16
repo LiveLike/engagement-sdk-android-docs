@@ -156,9 +156,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             for (iterator in 0 until adapterView.count) {
                 (adapterView.getItemAtPosition(iterator) as DefaultChatCell).hideFloatingUI()
             }
+
             // Show clicked item floating menu
             (adapterView.getItemAtPosition(i) as DefaultChatCell).showFloatingUI()
-            true
+            false
         }
 
         chatdisplay.setOnItemClickListener { adapterView, view, i, l ->
@@ -355,27 +356,30 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
     init {
         LayoutInflater.from(context)
             .inflate(com.livelike.livelikesdk.R.layout.default_chat_cell, this, true)
-        floatingUi.visibility = View.GONE
     }
 
     fun showFloatingUI() {
         floatingUi.visibility = View.VISIBLE
         chatBackground.alpha = 0.5f
-        context?.let { ctx ->
-            AlertDialog.Builder(ctx).apply {
-                setTitle("A problem?")
-                setItems(dialogOptions.map { it.first }.toTypedArray()) { dialog, which ->
-                    message?.let {
-                        dialogOptions[which].second.invoke(it)
+        floatingUi?.setOnClickListener {
+            floatingUi?.visibility = View.INVISIBLE
+            chatBackground?.alpha = 1f
+            context?.let { ctx ->
+                AlertDialog.Builder(ctx).apply {
+                    setTitle("A problem?")
+                    setItems(dialogOptions.map { it.first }.toTypedArray()) { dialog, which ->
+                        message?.let {
+                            dialogOptions[which].second.invoke(it)
+                        }
                     }
-                }
-                create()
-            }.show()
+                    create()
+                }.show()
+            }
         }
     }
 
     fun hideFloatingUI() {
-        floatingUi.visibility = View.GONE
+        floatingUi.visibility = View.INVISIBLE
         chatBackground.alpha = 1f
     }
 
@@ -407,10 +411,6 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
     }
 
     override fun getView(): View {
-        floatingUi?.setOnClickListener {
-            floatingUi?.visibility = View.GONE
-            chatBackground?.alpha = 1f
-        }
         return this
     }
 }
