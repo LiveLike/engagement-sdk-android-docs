@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -41,8 +42,10 @@ import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
+import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
+import kotlinx.android.synthetic.main.default_chat_cell.view.floatingUi
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -147,6 +150,23 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
      */
     private fun setDataSource(chatAdapter: ChatAdapter) {
         chatdisplay.adapter = chatAdapter
+
+        chatdisplay.setOnItemLongClickListener { adapterView, view, i, l ->
+            // Hide all floating menus
+            for (iterator in 0 until adapterView.count) {
+                (adapterView.getItemAtPosition(iterator) as DefaultChatCell).hideFloatingUI()
+            }
+            // Show clicked item floating menu
+            (adapterView.getItemAtPosition(i) as DefaultChatCell).showFloatingUI()
+            true
+        }
+
+        chatdisplay.setOnItemClickListener { adapterView, view, i, l ->
+            // Hide all floating menus
+            for (iterator in 0 until adapterView.count) {
+                (adapterView.getItemAtPosition(iterator) as DefaultChatCell).hideFloatingUI()
+            }
+        }
 
         chatdisplay.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScroll(
@@ -323,15 +343,47 @@ internal class DefaultChatCellFactory(val context: Context, cellattrs: Attribute
 }
 
 internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs), ChatCell {
+    private var message: ChatMessage? = null
+    private val dialogOptions = listOf(
+        "Block this user" to { msg: ChatMessage ->
+            logError { "Blocking ${msg.message}" }
+        },
+        "Report message" to { msg: ChatMessage ->
+            logError { "Reporting ${msg.message}" }
+        })
+
     init {
         LayoutInflater.from(context)
             .inflate(com.livelike.livelikesdk.R.layout.default_chat_cell, this, true)
+        floatingUi.visibility = View.GONE
+    }
+
+    fun showFloatingUI() {
+        floatingUi.visibility = View.VISIBLE
+        chatBackground.alpha = 0.5f
+        context?.let { ctx ->
+            AlertDialog.Builder(ctx).apply {
+                setTitle("A problem?")
+                setItems(dialogOptions.map { it.first }.toTypedArray()) { dialog, which ->
+                    message?.let {
+                        dialogOptions[which].second.invoke(it)
+                    }
+                }
+                create()
+            }.show()
+        }
+    }
+
+    fun hideFloatingUI() {
+        floatingUi.visibility = View.GONE
+        chatBackground.alpha = 1f
     }
 
     override fun setMessage(
         message: ChatMessage?,
         isMe: Boolean?
     ) {
+        this.message = message
         message?.apply {
             if (isMe == true) {
                 chat_nickname.setTextColor(
@@ -355,6 +407,10 @@ internal class DefaultChatCell(context: Context, attrs: AttributeSet?) : Constra
     }
 
     override fun getView(): View {
+        floatingUi?.setOnClickListener {
+            floatingUi?.visibility = View.GONE
+            chatBackground?.alpha = 1f
+        }
         return this
     }
 }
