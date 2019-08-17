@@ -21,7 +21,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffU
     }
 
     override fun areContentsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
-        return p0.message == p1.message && p0.senderDisplayName == p1.senderDisplayName
+        return p0.message == p1.message && p0.senderDisplayName == p1.senderDisplayName && p0.id == p1.id
     }
 }
 
@@ -39,13 +39,25 @@ class ChatRecyclerAdapter : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHol
         private val dialogOptions = listOf(
             "Block this user" to { msg: ChatMessage ->
                 logError { "Blocking ${msg.message}" }
+                AlertDialog.Builder(v.context).apply {
+                    setMessage("You will no longer see messages from ${msg.senderDisplayName}.")
+                    setPositiveButton("OK", null)
+                    create()
+                }.show()
             },
             "Report message" to { msg: ChatMessage ->
                 logError { "Reporting ${msg.message}" }
+                AlertDialog.Builder(v.context).apply {
+                    setMessage("This message has been reported to the moderators. Thank You.")
+                    setPositiveButton("OK", null)
+                    create()
+                }.show()
             })
 
         override fun onLongClick(p0: View?): Boolean {
-            showFloatingUI()
+            if (p0?.chat_nickname?.text?.contains("(Me)") == false) {
+                showFloatingUI()
+            }
             return true
         }
         override fun onClick(p0: View?) {
