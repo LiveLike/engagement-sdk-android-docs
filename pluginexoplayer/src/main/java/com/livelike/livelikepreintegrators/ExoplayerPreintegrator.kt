@@ -3,8 +3,8 @@ package com.livelike.livelikepreintegrators
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.Timeline
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.LiveLikeContentSession
 
 /**
  * This extension act as a plugin for Exoplayer.

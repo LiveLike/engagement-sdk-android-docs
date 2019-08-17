@@ -1,7 +1,12 @@
-package com.livelike.engagementsdkapi
+package com.livelike.livelikesdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.AnalyticsService
+import com.livelike.engagementsdkapi.EpochTime
+import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.livelikesdk.chat.ChatRenderer
+import com.livelike.livelikesdk.chat.ChatViewModel
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat

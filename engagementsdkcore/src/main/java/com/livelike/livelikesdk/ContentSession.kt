@@ -3,13 +3,11 @@ package com.livelike.livelikesdk
 import android.content.Context
 import android.widget.FrameLayout
 import com.livelike.engagementsdkapi.AnalyticsService
-import com.livelike.engagementsdkapi.ChatRenderer
-import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.MixpanelAnalytics
-import com.livelike.engagementsdkapi.Stream
+import com.livelike.livelikesdk.chat.ChatRenderer
+import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics

@@ -1,9 +1,6 @@
 package com.livelike.livelikesdk.chat
 
 import com.google.gson.JsonObject
-import com.livelike.engagementsdkapi.ChatEventListener
-import com.livelike.engagementsdkapi.ChatMessage
-import com.livelike.engagementsdkapi.ChatRenderer
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
