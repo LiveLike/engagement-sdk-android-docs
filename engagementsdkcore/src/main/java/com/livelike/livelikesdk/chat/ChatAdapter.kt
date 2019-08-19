@@ -102,7 +102,7 @@ class ChatRecyclerAdapter : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHol
             }
         }
 
-        fun setMessage(
+        private fun setMessage(
             message: ChatMessage?
         ) {
             v.apply {

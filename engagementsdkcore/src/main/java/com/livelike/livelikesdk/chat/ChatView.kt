@@ -115,6 +115,16 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
     }
 
+    override fun deleteChatMessage(messageId: String) {
+        Handler(Looper.getMainLooper()).post {
+            messageList.find { it.id == messageId }.let {
+                messageList.remove(it)
+            }
+            viewModel?.chatAdapter?.submitList(messageList)
+            viewModel?.chatAdapter?.notifyDataSetChanged()
+        }
+    }
+
     private val messageList = mutableListOf<ChatMessage>()
 
     override fun loadComplete() {

@@ -12,6 +12,7 @@ internal class SendBirdUtils {
     companion object {
         fun clientMessageFromBaseMessage(message: UserMessage, channel: BaseChannel): ClientMessage {
             val messageJson = JsonObject()
+            messageJson.addProperty("event", "new-message")
             messageJson.addProperty("message", message.message)
             messageJson.addProperty("sender", message.sender.nickname)
             messageJson.addProperty("sender_id", message.sender.userId)
