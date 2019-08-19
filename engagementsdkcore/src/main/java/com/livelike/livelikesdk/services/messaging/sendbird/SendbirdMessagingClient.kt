@@ -30,7 +30,7 @@ internal class SendbirdMessagingClient(
     private val analyticsService: AnalyticsService,
     private val liveLikeUser: LiveLikeUser?
 ) :
-    MessagingClient, ChatClientResultHandler {
+    MessagingClient, ChatClient {
     private val zoneUTC = ZoneId.of("UTC")
     var lastChatMessage: Pair<String, String>? = null
 
@@ -54,17 +54,24 @@ internal class SendbirdMessagingClient(
                 if (e != null || user == null) { // Error.
                     return
                 }
-                SendBird.updateCurrentUserInfo(fetchUsername(), null,
-                    UserInfoUpdateHandler { exception ->
-                        if (exception != null) { // Error.
-                            return@UserInfoUpdateHandler
-                        }
-                        if (resubscribe) {
-                            subscribe(connectedChannels.map { it.url })
-                        }
-                    })
+                updateNickname(fetchUsername()) {
+                    if (resubscribe) {
+                        subscribe(connectedChannels.map { it.url })
+                    }
+                }
             }
         })
+    }
+
+    override fun updateNickname(nickname: String, callback: () -> Unit) {
+        SendBird.updateCurrentUserInfo(nickname, null,
+            UserInfoUpdateHandler { exception ->
+                if (exception != null) { // Error.
+                    return@UserInfoUpdateHandler
+                }
+                callback()
+                // TODO: Should be also updated on user profile
+            })
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -186,6 +193,7 @@ internal class SendbirdMessagingClient(
     }
 }
 
-internal interface ChatClientResultHandler {
+internal interface ChatClient {
     fun handleMessages(messages: List<ClientMessage>)
+    fun updateNickname(nickname: String, callback: () -> Unit)
 }

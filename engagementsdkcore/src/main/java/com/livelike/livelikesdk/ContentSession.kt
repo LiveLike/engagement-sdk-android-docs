@@ -14,6 +14,7 @@ import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.livelikesdk.services.messaging.sendbird.ChatClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
@@ -32,7 +33,6 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
-
     override lateinit var analyticService: AnalyticsService
     private val llDataClient = EngagementDataClientImpl()
 
@@ -129,6 +129,15 @@ internal class ContentSession(
                     this.renderer = chatRenderer
                     chatViewModel.chatListener = this
                 }
+    }
+
+    override fun setChatNickname(nickname: String) {
+        (chatClient as ChatClient).apply {
+            updateNickname(nickname) {
+                setNickname(nickname)
+                currentUser?.userName = nickname
+            }
+        }
     }
 
     // ////// Global Session Controls ////////
