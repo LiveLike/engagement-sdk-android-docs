@@ -97,7 +97,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             setDataSource(it)
         }
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
-        session.currentUser.subscribe(javaClass.simpleName) {
+        session.getCurrentUserStream().subscribe(javaClass.simpleName) {
             currentUser = it
         }
     }

@@ -17,10 +17,7 @@ import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.asWidgetManager
@@ -28,10 +25,12 @@ import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    private val currentUser: Stream<LiveLikeUser>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
+
     override lateinit var analyticService: AnalyticsService
     private val llDataClient = EngagementDataClientImpl()
 
@@ -42,17 +41,22 @@ internal class ContentSession(
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
-    override var currentUser: Stream<LiveLikeUser> = SubscriptionManager()
     private var user: LiveLikeUser? = null
 
     init {
-        currentUser.subscribe(javaClass) { user = it }
+        currentUser.subscribe(javaClass) {
+            user = it
+            it?.let {
+                analyticService.trackSession(it.sessionId)
+                analyticService.trackUsername(it.nickname)
+            }
+        }
         sdkConfiguration.subscribe(javaClass.simpleName) {
             it?.let { configuration ->
                 analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
                 analyticService.trackConfiguration(configuration.name ?: "")
 
-                getUser(configuration.sessionsUrl)
+//                getUser(configuration.sessionsUrl)
 
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
@@ -72,27 +76,31 @@ internal class ContentSession(
         }
     }
 
-    private fun getUser(sessionUrl: String) {
-        val sessionId = getSessionId()
-        var nickname = getNickename()
-        if (sessionId.isNotEmpty() && nickname.isNotEmpty()) {
-            currentUser.onNext(LiveLikeUser(sessionId, nickname))
-            analyticService.trackSession(sessionId)
-            analyticService.trackUsername(nickname)
-        } else {
-            llDataClient.getUserData(sessionUrl) {
-                nickname = getNickename() // Checking again the saved nickname as it could have changed during the web request.
-                if (nickname.isNotEmpty()) {
-                    it.nickname = nickname
-                }
-                currentUser.onNext(it)
-                setSessionId(it.sessionId)
-                setNickname(it.nickname)
-                analyticService.trackSession(it.sessionId)
-                analyticService.trackUsername(it.nickname)
-            }
-        }
+    override fun getCurrentUserStream(): Stream<LiveLikeUser> {
+        return currentUser
     }
+
+//    private fun getUser(sessionUrl: String) {
+//        val sessionId = getSessionId()
+//        var nickname = getNickename()
+//        if (sessionId.isNotEmpty() && nickname.isNotEmpty()) {
+//            currentUser.onNext(LiveLikeUser(sessionId, nickname))
+//            analyticService.trackSession(sessionId)
+//            analyticService.trackUsername(nickname)
+//        } else {
+//            llDataClient.getUserData(sessionUrl) {
+//                nickname = getNickename() // Checking again the saved nickname as it could have changed during the web request.
+//                if (nickname.isNotEmpty()) {
+//                    it.nickname = nickname
+//                }
+//                currentUser.onNext(it)
+//                setSessionId(it.sessionId)
+//                setNickname(it.nickname)
+//                analyticService.trackSession(it.sessionId)
+//                analyticService.trackUsername(it.nickname)
+//            }
+//        }
+//    }
 
     override fun getPlayheadTime(): EpochTime {
         return currentPlayheadTime()

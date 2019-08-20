@@ -7,6 +7,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) :
     Stream<T> {
+    override fun latest(): T? {
+        return currentData
+    }
+
     private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
     var currentData: T? = null
         private set
