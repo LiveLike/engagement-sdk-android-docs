@@ -5,6 +5,7 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getTotalPoints
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.pointTutorialSeen
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -34,6 +35,7 @@ internal class GamificationMessagingClient(
                         EpochTime(0),
                         5000
                     )
+                    pointTutorialSeen()
                     listener?.onClientMessageEvent(this@GamificationMessagingClient, message)
                 }
             }

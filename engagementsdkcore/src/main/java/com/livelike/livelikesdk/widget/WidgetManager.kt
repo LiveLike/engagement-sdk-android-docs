@@ -13,6 +13,11 @@ import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.widget.model.Reward
+import java.util.PriorityQueue
+import java.util.Queue
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 internal class WidgetManager(
     upstream: MessagingClient,
@@ -23,6 +28,27 @@ internal class WidgetManager(
     private val sdkConfiguration: EngagementSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
+
+    data class MessageHolder(val messagingClient: MessagingClient, val clientMessage: ClientMessage) : Comparable<MessageHolder> {
+        override fun compareTo(other: MessageHolder): Int {
+            return this.clientMessage.message.get("event").asString.length - other.clientMessage.message.get("event").asString.length
+        }
+    }
+
+    private val messageQueue: Queue<MessageHolder> = PriorityQueue()
+    private var activelyCheckForNewElements = true
+
+    init {
+        GlobalScope.launch {
+            while (true) {
+                delay(1000)
+                if (activelyCheckForNewElements) {
+                    publishNextInQueue()
+                }
+            }
+        }
+    }
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
@@ -39,8 +65,20 @@ internal class WidgetManager(
     val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        val widgetType = event.message.get("event").asString ?: ""
-        val payload = event.message["payload"].asJsonObject
+        messageQueue.add(MessageHolder(client, event))
+    }
+
+    private fun publishNextInQueue() {
+        if (messageQueue.isNotEmpty()) {
+            onDequeue(messageQueue.remove())
+        } else {
+            activelyCheckForNewElements = true
+        }
+    }
+
+    private fun onDequeue(msgHolder: MessageHolder) {
+        val widgetType = msgHolder.clientMessage.message.get("event").asString ?: ""
+        val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
         analyticsService.trackWidgetDisplayed(widgetType, widgetId)
@@ -54,7 +92,9 @@ internal class WidgetManager(
                         context,
                         analyticsService,
                         sdkConfiguration
-                    )
+                    ) {
+                        publishNextInQueue()
+                    }
                 )
             }
 
@@ -63,7 +103,8 @@ internal class WidgetManager(
                 dataClient.registerImpression(it)
             }
 
-            super.onClientMessageEvent(client, event)
+            activelyCheckForNewElements = false // Next element will be dequeued on widget dismissal
+            super.onClientMessageEvent(msgHolder.messagingClient, msgHolder.clientMessage)
         }
     }
 }
