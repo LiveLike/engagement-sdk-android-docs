@@ -25,7 +25,6 @@ import kotlin.coroutines.suspendCoroutine
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
-import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -162,13 +161,13 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
     }
 
     override fun getUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit) {
-        val requestString = "{}"
         try {
             client.newCall(
-                Request.Builder().url(url).addUserAgent().post(
+                Request.Builder().url(url).addUserAgent().addHeader("Content-Lenght", "0")
+                    .post(
                     RequestBody.create(
-                        MediaType.parse(requestString),
-                        requestString
+                        null,
+                        ByteArray(0)
                     )
                 ).build()
 

@@ -15,14 +15,17 @@ import com.livelike.livelikesdk.chat.ChatViewModel
 interface LiveLikeContentSession {
     var chatRenderer: ChatRenderer?
 
-    /** The current livelike User **/
-    val currentUser: LiveLikeUser?
+    /** The current livelike User's data stream **/
+    val currentUser: Stream<LiveLikeUser>
 
     /** Where the chat data are stored **/
     val chatViewModel: ChatViewModel
 
     /** The analytics services **/
     val analyticService: AnalyticsService
+
+    /** Override the default auto-generated chat nickname **/
+    fun setChatNickname(nickname: String)
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()

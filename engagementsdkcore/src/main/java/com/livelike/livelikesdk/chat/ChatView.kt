@@ -24,6 +24,7 @@ import android.widget.EditText
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.KeyboardHideReason
 import com.livelike.engagementsdkapi.KeyboardType
+import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
@@ -70,6 +71,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
+    private var currentUser: LiveLikeUser? = null
 
     private val viewModel: ChatViewModel?
         get() = session?.chatViewModel
@@ -95,11 +97,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             setDataSource(it)
         }
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
+        session.currentUser.subscribe(javaClass.simpleName) {
+            currentUser = it
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthDp = AndroidResource.pxToDp(width)
-        if (widthDp < 292 && widthDp != 0) {
+        if (widthDp < CHAT_MINIMUM_SIZE_DP && widthDp != 0) {
             logError { "[CONFIG ERROR] Current ChatView Width is $widthDp, it must be more than 292dp or won't display on the screen." }
             setMeasuredDimension(0, 0)
             return
@@ -110,7 +115,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
         Handler(Looper.getMainLooper()).post {
-            messageList.add(message.apply { isFromMe = session?.currentUser?.sessionId == senderId })
+            messageList.add(message.apply { isFromMe = currentUser?.sessionId == senderId })
             viewModel?.chatAdapter?.submitList(messageList)
         }
     }
@@ -256,8 +261,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
-            session?.currentUser?.sessionId ?: "empty-id",
-            session?.currentUser?.userName ?: "John Doe",
+            currentUser?.sessionId ?: "empty-id", // TODO: User the user profile ID here instead
+            currentUser?.nickname ?: "John Doe",
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString(),
             true
