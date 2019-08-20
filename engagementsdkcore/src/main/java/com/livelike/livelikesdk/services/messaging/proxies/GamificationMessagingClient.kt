@@ -4,8 +4,8 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.addPoints
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getTotalPoints
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,7 +17,7 @@ internal class GamificationMessagingClient(
 
     init {
         GlobalScope.launch {
-            while (true) {
+            while (shouldShowPointTutorial()) {
                 // Check if user scored points
                 delay(5000)
 
@@ -34,7 +34,6 @@ internal class GamificationMessagingClient(
                         EpochTime(0),
                         5000
                     )
-                    addPoints(100)
                     listener?.onClientMessageEvent(this@GamificationMessagingClient, message)
                 }
             }
