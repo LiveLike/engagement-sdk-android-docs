@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.services.messaging.sendbird
 
 import android.content.Context
+import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
@@ -136,6 +137,17 @@ internal class SendbirdMessagingClient(
                                         messageIdList.add(message.messageId)
                                     }
                                 }
+                            }
+
+                            override fun onMessageDeleted(channel: BaseChannel?, msgId: Long) {
+                                if (channel != null) {
+                                    val msg = JsonObject().apply {
+                                        addProperty("event", "deletion")
+                                        addProperty("id", "$msgId")
+                                    }
+                                    listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(msg, channel.url, EpochTime(0)))
+                                }
+                                super.onMessageDeleted(channel, msgId)
                             }
                         })
                     })
