@@ -56,8 +56,6 @@ internal class ContentSession(
                 analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
                 analyticService.trackConfiguration(configuration.name ?: "")
 
-//                getUser(configuration.sessionsUrl)
-
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
@@ -79,28 +77,6 @@ internal class ContentSession(
     override fun getCurrentUserStream(): Stream<LiveLikeUser> {
         return currentUser
     }
-
-//    private fun getUser(sessionUrl: String) {
-//        val sessionId = getSessionId()
-//        var nickname = getNickename()
-//        if (sessionId.isNotEmpty() && nickname.isNotEmpty()) {
-//            currentUser.onNext(LiveLikeUser(sessionId, nickname))
-//            analyticService.trackSession(sessionId)
-//            analyticService.trackUsername(nickname)
-//        } else {
-//            llDataClient.getUserData(sessionUrl) {
-//                nickname = getNickename() // Checking again the saved nickname as it could have changed during the web request.
-//                if (nickname.isNotEmpty()) {
-//                    it.nickname = nickname
-//                }
-//                currentUser.onNext(it)
-//                setSessionId(it.sessionId)
-//                setNickname(it.nickname)
-//                analyticService.trackSession(it.sessionId)
-//                analyticService.trackUsername(it.nickname)
-//            }
-//        }
-//    }
 
     override fun getPlayheadTime(): EpochTime {
         return currentPlayheadTime()
