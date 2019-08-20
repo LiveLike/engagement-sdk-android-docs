@@ -14,7 +14,6 @@ import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
 import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.livelikesdk.services.messaging.sendbird.ChatClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
@@ -43,7 +42,11 @@ internal class ContentSession(
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
+    override var currentUser: Stream<LiveLikeUser> = SubscriptionManager()
+    private var user: LiveLikeUser? = null
+
     init {
+        currentUser.subscribe(javaClass) { user = it }
         sdkConfiguration.subscribe(javaClass.simpleName) {
             it?.let { configuration ->
                 analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
@@ -69,22 +72,24 @@ internal class ContentSession(
         }
     }
 
-    override var currentUser: LiveLikeUser? = null
-
     private fun getUser(sessionUrl: String) {
         val sessionId = getSessionId()
-        val username = getNickename()
-        if (sessionId.isNotEmpty() && username.isNotEmpty()) {
-            currentUser = LiveLikeUser(sessionId, username)
+        var nickname = getNickename()
+        if (sessionId.isNotEmpty() && nickname.isNotEmpty()) {
+            currentUser.onNext(LiveLikeUser(sessionId, nickname))
             analyticService.trackSession(sessionId)
-            analyticService.trackUsername(username)
+            analyticService.trackUsername(nickname)
         } else {
             llDataClient.getUserData(sessionUrl) {
-                currentUser = it
+                nickname = getNickename() // Checking again the saved nickname as it could have changed during the web request.
+                if (nickname.isNotEmpty()) {
+                    it.nickname = nickname
+                }
+                currentUser.onNext(it)
                 setSessionId(it.sessionId)
-                setNickname(it.userName)
+                setNickname(it.nickname)
                 analyticService.trackSession(it.sessionId)
-                analyticService.trackUsername(it.userName)
+                analyticService.trackUsername(it.nickname)
             }
         }
     }
@@ -132,11 +137,10 @@ internal class ContentSession(
     }
 
     override fun setChatNickname(nickname: String) {
-        (chatClient as ChatClient).apply {
-            updateNickname(nickname) {
-                setNickname(nickname)
-                currentUser?.userName = nickname
-            }
+        setNickname(nickname)
+        user?.apply {
+            this.nickname = nickname
+            currentUser.onNext(this)
         }
     }
 

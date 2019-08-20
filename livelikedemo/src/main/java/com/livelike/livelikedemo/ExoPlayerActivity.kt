@@ -123,6 +123,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             chat_view.setSession(session)
             widget_view.setSession(session)
+            session.setChatNickname("Le Big Boss")
 
             this.session = session
 

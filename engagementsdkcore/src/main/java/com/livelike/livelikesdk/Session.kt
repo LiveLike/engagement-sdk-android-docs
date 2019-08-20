@@ -15,8 +15,8 @@ import com.livelike.livelikesdk.chat.ChatViewModel
 interface LiveLikeContentSession {
     var chatRenderer: ChatRenderer?
 
-    /** The current livelike User **/
-    val currentUser: LiveLikeUser?
+    /** The current livelike User's data stream **/
+    val currentUser: Stream<LiveLikeUser>
 
     /** Where the chat data are stored **/
     val chatViewModel: ChatViewModel
