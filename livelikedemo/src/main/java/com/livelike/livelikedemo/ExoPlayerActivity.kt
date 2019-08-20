@@ -8,11 +8,11 @@ import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.view.WindowManager
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.utils.registerLogsHandler
 import java.util.Date
 import java.util.Timer
@@ -123,6 +123,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             chat_view.setSession(session)
             widget_view.setSession(session)
+            session.setChatNickname("Le Big Boss")
 
             this.session = session
 

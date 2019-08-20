@@ -3,7 +3,7 @@ package com.livelike.livelikesdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.logError
 

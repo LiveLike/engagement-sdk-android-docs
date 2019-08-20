@@ -1,9 +1,11 @@
 package com.livelike.livelikesdk.services.messaging.sendbird
 
 import android.content.Context
+import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.MessagingEventListener
@@ -28,9 +30,9 @@ internal class SendbirdMessagingClient(
     private val subscribeKey: String,
     val context: Context,
     private val analyticsService: AnalyticsService,
-    private val liveLikeUser: LiveLikeUser?
+    liveLikeUser: Stream<LiveLikeUser>
 ) :
-    MessagingClient, ChatClientResultHandler {
+    MessagingClient, ChatClient {
     private val zoneUTC = ZoneId.of("UTC")
     var lastChatMessage: Pair<String, String>? = null
 
@@ -40,31 +42,45 @@ internal class SendbirdMessagingClient(
 
     private var listener: MessagingEventListener? = null
     private var connectedChannels: MutableList<OpenChannel> = mutableListOf()
-    private val userId = fetchUserId()
     private val messageIdList = mutableListOf<Long>()
 
     init {
-        connectToSendbird()
+        liveLikeUser.subscribe(javaClass) {
+            it?.let { u ->
+                when (SendBird.getConnectionState()) {
+                    SendBird.ConnectionState.CLOSED -> connectToSendbird(u)
+                    SendBird.ConnectionState.OPEN -> updateNickname(u.nickname) {}
+                    else -> {}
+                }
+            }
+        }
     }
 
-    private fun connectToSendbird(resubscribe: Boolean = false) {
+    private fun connectToSendbird(livelikeUser: LiveLikeUser, resubscribe: Boolean = false) {
         SendBird.init(subscribeKey, context)
-        SendBird.connect(userId, object : SendBird.ConnectHandler {
+        SendBird.connect(livelikeUser.sessionId, object : SendBird.ConnectHandler {
             override fun onConnected(user: User?, e: SendBirdException?) {
                 if (e != null || user == null) { // Error.
                     return
                 }
-                SendBird.updateCurrentUserInfo(fetchUsername(), null,
-                    UserInfoUpdateHandler { exception ->
-                        if (exception != null) { // Error.
-                            return@UserInfoUpdateHandler
-                        }
-                        if (resubscribe) {
-                            subscribe(connectedChannels.map { it.url })
-                        }
-                    })
+                updateNickname(livelikeUser.nickname) {
+                    if (resubscribe) {
+                        subscribe(connectedChannels.map { it.url })
+                    }
+                }
             }
         })
+    }
+
+    private fun updateNickname(nickname: String, callback: () -> Unit) {
+        SendBird.updateCurrentUserInfo(nickname, null,
+            UserInfoUpdateHandler { exception ->
+                if (exception != null) { // Error.
+                    return@UserInfoUpdateHandler
+                }
+                callback()
+                // TODO: Should be also updated on user profile
+            })
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -95,15 +111,7 @@ internal class SendbirdMessagingClient(
     }
 
     override fun resume() {
-        connectToSendbird(true)
-    }
-
-    private fun fetchUserId(): String {
-        return liveLikeUser?.sessionId ?: "empty-id"
-    }
-
-    private fun fetchUsername(): String {
-        return liveLikeUser?.userName ?: "John Doe"
+        SendBird.reconnect()
     }
 
     data class MessageData(
@@ -136,6 +144,17 @@ internal class SendbirdMessagingClient(
                                         messageIdList.add(message.messageId)
                                     }
                                 }
+                            }
+
+                            override fun onMessageDeleted(channel: BaseChannel?, msgId: Long) {
+                                if (channel != null) {
+                                    val msg = JsonObject().apply {
+                                        addProperty("event", "deletion")
+                                        addProperty("id", "$msgId")
+                                    }
+                                    listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(msg, channel.url, EpochTime(0)))
+                                }
+                                super.onMessageDeleted(channel, msgId)
                             }
                         })
                     })
@@ -186,6 +205,6 @@ internal class SendbirdMessagingClient(
     }
 }
 
-internal interface ChatClientResultHandler {
+internal interface ChatClient {
     fun handleMessages(messages: List<ClientMessage>)
 }

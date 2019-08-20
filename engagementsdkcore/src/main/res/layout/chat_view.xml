@@ -3,6 +3,7 @@
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              xmlns:tools="http://schemas.android.com/tools"
                                              android:layout_width="match_parent"
+                                             android:animateLayoutChanges="true"
                                              android:layout_height="match_parent"
 >
     <include
@@ -16,10 +17,12 @@
 
 
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
             android:id="@+id/chatdisplay"
+            app:stackFromEnd="true"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/default_chat_cell"
             android:stackFromBottom="true"
             android:transcriptMode="normal"

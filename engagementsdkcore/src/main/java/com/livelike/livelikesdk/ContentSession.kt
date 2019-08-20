@@ -3,13 +3,11 @@ package com.livelike.livelikesdk
 import android.content.Context
 import android.widget.FrameLayout
 import com.livelike.engagementsdkapi.AnalyticsService
-import com.livelike.engagementsdkapi.ChatRenderer
-import com.livelike.engagementsdkapi.ChatViewModel
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.engagementsdkapi.LiveLikeContentSession
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.MixpanelAnalytics
-import com.livelike.engagementsdkapi.Stream
+import com.livelike.livelikesdk.chat.ChatRenderer
+import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.debounce
@@ -36,7 +34,6 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
-
     override lateinit var analyticService: AnalyticsService
     private val llDataClient = EngagementDataClientImpl()
 
@@ -47,7 +44,11 @@ internal class ContentSession(
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
+    override var currentUser: Stream<LiveLikeUser> = SubscriptionManager()
+    private var user: LiveLikeUser? = null
+
     init {
+        currentUser.subscribe(javaClass) { user = it }
         sdkConfiguration.subscribe(javaClass.simpleName) {
             it?.let { configuration ->
                 analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
@@ -73,22 +74,24 @@ internal class ContentSession(
         }
     }
 
-    override var currentUser: LiveLikeUser? = null
-
     private fun getUser(sessionUrl: String) {
         val sessionId = getSessionId()
-        val username = getNickename()
-        if (sessionId.isNotEmpty() && username.isNotEmpty()) {
-            currentUser = LiveLikeUser(sessionId, username)
+        var nickname = getNickename()
+        if (sessionId.isNotEmpty() && nickname.isNotEmpty()) {
+            currentUser.onNext(LiveLikeUser(sessionId, nickname))
             analyticService.trackSession(sessionId)
-            analyticService.trackUsername(username)
+            analyticService.trackUsername(nickname)
         } else {
             llDataClient.getUserData(sessionUrl) {
-                currentUser = it
+                nickname = getNickename() // Checking again the saved nickname as it could have changed during the web request.
+                if (nickname.isNotEmpty()) {
+                    it.nickname = nickname
+                }
+                currentUser.onNext(it)
                 setSessionId(it.sessionId)
-                setNickname(it.userName)
+                setNickname(it.nickname)
                 analyticService.trackSession(it.sessionId)
-                analyticService.trackUsername(it.userName)
+                analyticService.trackUsername(it.nickname)
             }
         }
     }
@@ -135,6 +138,14 @@ internal class ContentSession(
                     this.renderer = chatRenderer
                     chatViewModel.chatListener = this
                 }
+    }
+
+    override fun setChatNickname(nickname: String) {
+        setNickname(nickname)
+        user?.apply {
+            this.nickname = nickname
+            currentUser.onNext(this)
+        }
     }
 
     // ////// Global Session Controls ////////

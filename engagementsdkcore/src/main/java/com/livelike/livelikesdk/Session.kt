@@ -1,7 +1,12 @@
-package com.livelike.engagementsdkapi
+package com.livelike.livelikesdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdkapi.AnalyticsService
+import com.livelike.engagementsdkapi.EpochTime
+import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.livelikesdk.chat.ChatRenderer
+import com.livelike.livelikesdk.chat.ChatViewModel
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -10,14 +15,17 @@ import com.google.gson.JsonObject
 interface LiveLikeContentSession {
     var chatRenderer: ChatRenderer?
 
-    /** The current livelike User **/
-    val currentUser: LiveLikeUser?
+    /** The current livelike User's data stream **/
+    val currentUser: Stream<LiveLikeUser>
 
     /** Where the chat data are stored **/
     val chatViewModel: ChatViewModel
 
     /** The analytics services **/
     val analyticService: AnalyticsService
+
+    /** Override the default auto-generated chat nickname **/
+    fun setChatNickname(nickname: String)
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
