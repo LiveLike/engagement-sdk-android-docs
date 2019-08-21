@@ -26,7 +26,12 @@ internal class PredictionWidget(
     val resource: Resource
 )
 
-internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appContext: Context, private val analyticsService: AnalyticsService) : WidgetViewModel() {
+internal class PredictionViewModel(
+    widgetInfos: WidgetInfos,
+    private val appContext: Context,
+    private val analyticsService: AnalyticsService,
+    val onDismiss: () -> Unit
+) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
@@ -81,7 +86,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appCont
                     dismissWidget(DismissAction.TIMEOUT)
                 }
                 data.currentData?.apply {
-                    val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+                    val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
                     uiScope.launch {
                         delay(if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
                         dismissWidget(DismissAction.TIMEOUT)
@@ -110,6 +115,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appCont
                 action
             )
         }
+        onDismiss()
         cleanUp()
     }
 

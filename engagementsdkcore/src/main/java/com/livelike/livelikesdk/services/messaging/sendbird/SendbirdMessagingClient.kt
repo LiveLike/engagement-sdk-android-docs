@@ -6,6 +6,7 @@ import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.Stream
+import com.livelike.livelikesdk.chat.ChatMessage
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.MessagingEventListener
@@ -84,6 +85,7 @@ internal class SendbirdMessagingClient(
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+        val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val messageTimestamp = gson.toJson(
             MessageData(
                 ZonedDateTime.ofInstant(
@@ -93,7 +95,7 @@ internal class SendbirdMessagingClient(
         )
         OpenChannel.getChannel(channel) { openChannel, _ ->
             openChannel?.sendUserMessage(
-                message,
+                clientMessage.message,
                 messageTimestamp, null, null
             ) { msg, e ->
                 e?.also {
@@ -102,6 +104,13 @@ internal class SendbirdMessagingClient(
                 analyticsService.trackMessageSent(msg.messageId.toString(), msg.message.length)
                 lastChatMessage = Pair(msg.messageId.toString(), channel)
                 messageIdList.add(msg.messageId)
+
+                val newMsg = JsonObject().apply {
+                    addProperty("event", "id-updated")
+                    addProperty("new-id", "${msg.messageId}")
+                    addProperty("old-id", clientMessage.id)
+                }
+                listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(newMsg, openChannel.url, EpochTime(0)))
             }
         }
     }

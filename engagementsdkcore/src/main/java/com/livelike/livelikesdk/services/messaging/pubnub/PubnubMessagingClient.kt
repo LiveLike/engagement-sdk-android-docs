@@ -108,6 +108,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                     datePattern
                 ).toInstant().toEpochMilli()
                 val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
+                message.message.asJsonObject.addProperty("priority", 1)
 
                 val clientMessage = ClientMessage(
                     message.message.asJsonObject,

@@ -15,6 +15,7 @@ import com.livelike.livelikesdk.utils.addAuthorizationBearer
 import com.livelike.livelikesdk.utils.addUserAgent
 import com.livelike.livelikesdk.utils.extractBoolean
 import com.livelike.livelikesdk.utils.extractStringOrEmpty
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.addPoints
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.utils.logVerbose
@@ -241,7 +242,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
 
     override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService): Reward? {
         return gson.fromJson(postAsync(rewardUrl), Reward::class.java)?.also {
-            analyticsService.logEvent("Lifetime Points" to (it.points?.toString() ?: "0"))
+            addPoints(it.new_points ?: 0)
+            analyticsService.registerSuperAndPeopleProperty("Lifetime Points" to (it.points?.toString() ?: "0"))
         }
     }
 

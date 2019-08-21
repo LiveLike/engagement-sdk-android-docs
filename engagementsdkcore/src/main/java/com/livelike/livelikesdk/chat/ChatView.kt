@@ -91,7 +91,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
         if (viewModel?.chatAdapter == null) {
             showLoadingSpinner()
-            viewModel?.chatAdapter = ChatRecyclerAdapter()
+            viewModel?.chatAdapter = ChatRecyclerAdapter(session.analyticService)
         }
         viewModel?.chatAdapter?.let {
             setDataSource(it)
@@ -122,11 +122,19 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     override fun deleteChatMessage(messageId: String) {
         Handler(Looper.getMainLooper()).post {
-            messageList.find { it.id == messageId }.let {
-                messageList.remove(it)
+            messageList.find { it.id == messageId }?.apply {
+                message = "Redacted"
             }
             viewModel?.chatAdapter?.submitList(messageList)
             viewModel?.chatAdapter?.notifyDataSetChanged()
+        }
+    }
+
+    override fun updateChatMessageId(oldId: String, newId: String) {
+        messageList.find {
+            it.id == oldId
+        }?.apply {
+            id = newId
         }
     }
 

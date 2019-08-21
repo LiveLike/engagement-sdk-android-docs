@@ -35,7 +35,13 @@ internal class QuizWidget(
     val resource: Resource
 )
 
-internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration, val context: Context) : WidgetViewModel() {
+internal class QuizViewModel(
+    widgetInfos: WidgetInfos,
+    private val analyticsService: AnalyticsService,
+    sdkConfiguration: EngagementSDK.SdkConfiguration,
+    val context: Context,
+    var onDismiss: () -> Unit
+) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
@@ -138,6 +144,7 @@ internal class QuizViewModel(widgetInfos: WidgetInfos, private val analyticsServ
                 action
             )
         }
+        onDismiss()
         cleanUp()
         viewModelJob.cancel()
     }

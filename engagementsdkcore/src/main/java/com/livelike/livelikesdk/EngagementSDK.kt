@@ -8,6 +8,7 @@ import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.publicapis.IEngagement
 import com.livelike.livelikesdk.publicapis.LiveLikeUserApi
+import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
@@ -58,13 +59,14 @@ class EngagementSDK(
      *  Creates a content session without sync.
      *  @param programId Backend generated unique identifier for current program
      */
-    fun createContentSession(programId: String): LiveLikeContentSession {
+    fun createContentSession(programId: String, widgetInterceptor: WidgetInterceptor? = null): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
             currentUser,
             applicationContext,
-            programId
-        ) { EpochTime(0) }
+            programId,
+            { EpochTime(0) },
+            widgetInterceptor)
     }
 
     interface TimecodeGetter {
@@ -76,13 +78,14 @@ class EngagementSDK(
      *  @param programId Backend generated identifier for current program
      *  @param timecodeGetter returns the video timecode
      */
-    fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
+    fun createContentSession(programId: String, timecodeGetter: TimecodeGetter, widgetInterceptor: WidgetInterceptor? = null): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
             currentUser,
             applicationContext,
-            programId
-        ) { timecodeGetter.getTimecode() }
+            programId,
+            { timecodeGetter.getTimecode() },
+            widgetInterceptor)
     }
 
     data class SdkConfiguration(

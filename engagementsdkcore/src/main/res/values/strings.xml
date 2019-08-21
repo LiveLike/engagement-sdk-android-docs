@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">LiveLikeSDK</string>
     <string name="livelike_chat_input_hint">Say Something…</string>
+    <string name="point_tutorial_body">Keep responding to earn more points and reach the top of the leaderboards!</string>
+    <string name="points_tutorial_title">GREAT START!</string>
+    <string name="flag_ui_title">A problem?</string>
+    <string name="flag_ui_reporting_message">This message has been reported to the moderators. Thank You.</string>
+    <string name="flag_ui_blocking_message">You will no longer see messages from: %s.</string>
+    <string name="flag_ui_blocking_title">Block this user</string>
+    <string name="flag_ui_reporting_title">Report message</string>
+    <string name="chat_pre_nickname_me">(Me) %s</string>
 </resources>

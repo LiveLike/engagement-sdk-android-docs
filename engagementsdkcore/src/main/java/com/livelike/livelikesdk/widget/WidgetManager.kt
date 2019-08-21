@@ -13,6 +13,8 @@ import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.widget.model.Reward
+import java.util.PriorityQueue
+import java.util.Queue
 
 internal class WidgetManager(
     upstream: MessagingClient,
@@ -23,6 +25,18 @@ internal class WidgetManager(
     private val sdkConfiguration: EngagementSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
+
+    data class MessageHolder(val messagingClient: MessagingClient, val clientMessage: ClientMessage) : Comparable<MessageHolder> {
+        override fun compareTo(other: MessageHolder): Int {
+            val thisRank = this.clientMessage.message.get("priority")?.asInt ?: 0
+            val otherRank = other.clientMessage.message.get("priority")?.asInt ?: 0
+            return otherRank.compareTo(thisRank)
+        }
+    }
+
+    private val messageQueue: Queue<MessageHolder> = PriorityQueue()
+    private var widgetOnScreen = false
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
@@ -39,8 +53,23 @@ internal class WidgetManager(
     val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        val widgetType = event.message.get("event").asString ?: ""
-        val payload = event.message["payload"].asJsonObject
+        messageQueue.add(MessageHolder(client, event))
+        if (!widgetOnScreen) {
+            publishNextInQueue()
+        }
+    }
+
+    private fun publishNextInQueue() {
+        if (messageQueue.isNotEmpty()) {
+            showWidgetOnScreen(messageQueue.remove())
+        } else {
+            widgetOnScreen = false
+        }
+    }
+
+    private fun showWidgetOnScreen(msgHolder: MessageHolder) {
+        val widgetType = msgHolder.clientMessage.message.get("event").asString ?: ""
+        val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
         analyticsService.trackWidgetDisplayed(widgetType, widgetId)
@@ -54,7 +83,9 @@ internal class WidgetManager(
                         context,
                         analyticsService,
                         sdkConfiguration
-                    )
+                    ) {
+                        publishNextInQueue()
+                    }
                 )
             }
 
@@ -63,7 +94,8 @@ internal class WidgetManager(
                 dataClient.registerImpression(it)
             }
 
-            super.onClientMessageEvent(client, event)
+            widgetOnScreen = true
+            super.onClientMessageEvent(msgHolder.messagingClient, msgHolder.clientMessage)
         }
     }
 }
@@ -77,6 +109,7 @@ enum class WidgetType(val event: String) {
     IMAGE_QUIZ("image-quiz-created"),
     TEXT_POLL("text-poll-created"),
     IMAGE_POLL("image-poll-created"),
+    POINTS_TUTORIAL("points-tutorial"),
     ALERT("alert-created");
 
     companion object {
