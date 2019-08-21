@@ -45,6 +45,12 @@ class MainActivity : AppCompatActivity() {
             events_label.text = it.name
         }
 
+        getSharedPreferences("test-app", Context.MODE_PRIVATE)
+            .getString("UserNickname", "")
+            .let {
+                nicknameText.setText(it)
+            }
+
         nicknameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 getSharedPreferences("test-app", Context.MODE_PRIVATE).edit().apply {
