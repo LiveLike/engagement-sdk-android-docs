@@ -30,6 +30,7 @@ internal class GamificationMessagingClient(
                             add("payload", JsonObject().apply {
                                 addProperty("id", "none")
                             })
+                            addProperty("priority", 2)
                         },
                         "",
                         EpochTime(0),

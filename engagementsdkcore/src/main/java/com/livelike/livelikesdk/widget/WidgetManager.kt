@@ -28,7 +28,9 @@ internal class WidgetManager(
 
     data class MessageHolder(val messagingClient: MessagingClient, val clientMessage: ClientMessage) : Comparable<MessageHolder> {
         override fun compareTo(other: MessageHolder): Int {
-            return this.clientMessage.message.get("event").asString.length - other.clientMessage.message.get("event").asString.length
+            val thisRank = this.clientMessage.message.get("priority")?.asInt ?: 0
+            val otherRank = other.clientMessage.message.get("priority")?.asInt ?: 0
+            return otherRank.compareTo(thisRank)
         }
     }
 
