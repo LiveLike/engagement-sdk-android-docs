@@ -6,6 +6,8 @@ import com.livelike.livelikesdk.utils.gson
 
 private const val PREFERENCE_KEY_SESSION_ID = "SessionId"
 private const val PREFERENCE_KEY_NICKNAME = "Username"
+private const val PREFERENCE_KEY_POINTS_TUTORIAL = "PointsTutorial"
+private const val PREFERENCE_KEY_POINTS_TOTAL = "PointsTotal"
 private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
 private var mAppContext: Context? = null
 
@@ -48,7 +50,7 @@ internal fun getWidgetPredictionVoted(): Array<SavedWidgetVote> {
     return gson.fromJson(predictionVotedJson, Array<SavedWidgetVote>::class.java) ?: emptyArray()
 }
 
-internal fun getWidgetPredictionVotedAnswerIdOrEmpty(id: String): String {
+internal fun getWidgetPredictionVotedAnswerIdOrEmpty(id: String?): String {
     return getWidgetPredictionVoted().find { it.id == id }?.optionId ?: ""
 }
 
@@ -56,3 +58,21 @@ internal data class SavedWidgetVote(
     val id: String,
     val optionId: String
 )
+
+internal fun getTotalPoints(): Int {
+    return getSharedPreferences().getInt(PREFERENCE_KEY_POINTS_TOTAL, 0)
+}
+
+internal fun addPoints(points: Int) {
+    val editor = getSharedPreferences().edit()
+    editor.putInt(PREFERENCE_KEY_POINTS_TOTAL, points + getTotalPoints()).apply()
+}
+
+internal fun shouldShowPointTutorial(): Boolean {
+    return getSharedPreferences().getBoolean(PREFERENCE_KEY_POINTS_TUTORIAL, true)
+}
+
+internal fun pointTutorialSeen() {
+    val editor = getSharedPreferences().edit()
+    editor.putBoolean(PREFERENCE_KEY_POINTS_TUTORIAL, false).apply()
+}

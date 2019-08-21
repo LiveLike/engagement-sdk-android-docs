@@ -26,7 +26,12 @@ internal class PredictionWidget(
     val resource: Resource
 )
 
-internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appContext: Context, private val analyticsService: AnalyticsService) : WidgetViewModel() {
+internal class PredictionViewModel(
+    widgetInfos: WidgetInfos,
+    private val appContext: Context,
+    private val analyticsService: AnalyticsService,
+    val onDismiss: () -> Unit
+) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
@@ -110,6 +115,7 @@ internal class PredictionViewModel(widgetInfos: WidgetInfos, private val appCont
                 action
             )
         }
+        onDismiss()
         cleanUp()
     }
 

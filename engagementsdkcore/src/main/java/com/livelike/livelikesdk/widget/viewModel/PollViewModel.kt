@@ -35,7 +35,12 @@ internal class PollWidget(
     val resource: Resource
 )
 
-internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService, sdkConfiguration: EngagementSDK.SdkConfiguration) : WidgetViewModel() {
+internal class PollViewModel(
+    widgetInfos: WidgetInfos,
+    private val analyticsService: AnalyticsService,
+    sdkConfiguration: EngagementSDK.SdkConfiguration,
+    val onDismiss: () -> Unit
+) : WidgetViewModel() {
     var points: SubscriptionManager<Int?> = SubscriptionManager()
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
@@ -130,6 +135,7 @@ internal class PollViewModel(widgetInfos: WidgetInfos, private val analyticsServ
                 action
             )
         }
+        onDismiss()
         cleanUp()
     }
 

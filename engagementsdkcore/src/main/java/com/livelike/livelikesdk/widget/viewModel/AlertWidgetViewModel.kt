@@ -13,7 +13,11 @@ import com.livelike.livelikesdk.widget.model.Alert
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val analyticsService: AnalyticsService) : WidgetViewModel() {
+internal class AlertWidgetViewModel(
+    widgetInfos: WidgetInfos,
+    private val analyticsService: AnalyticsService,
+    private val onDismiss: () -> Unit
+) : WidgetViewModel() {
     private var timeoutStarted = false
     var data: SubscriptionManager<Alert?> = SubscriptionManager()
 
@@ -43,6 +47,7 @@ internal class AlertWidgetViewModel(widgetInfos: WidgetInfos, private val analyt
                 action
             )
         }
+        onDismiss()
         cleanup()
         viewModelJob.cancel()
     }

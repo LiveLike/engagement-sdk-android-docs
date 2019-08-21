@@ -10,6 +10,7 @@ import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
+import com.livelike.livelikesdk.services.messaging.proxies.gamify
 import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
@@ -113,6 +114,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
+                .gamify()
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())

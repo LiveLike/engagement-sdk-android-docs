@@ -462,6 +462,5 @@ enum class KeyboardType {
 enum class DismissAction {
     TIMEOUT,
     SWIPE,
-    TAP_X,
-    NEW_WIDGET_RECEIVED
+    TAP_X
 }
