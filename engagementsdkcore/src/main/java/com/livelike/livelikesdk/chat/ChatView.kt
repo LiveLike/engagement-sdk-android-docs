@@ -91,7 +91,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
         if (viewModel?.chatAdapter == null) {
             showLoadingSpinner()
-            viewModel?.chatAdapter = ChatRecyclerAdapter()
+            viewModel?.chatAdapter = ChatRecyclerAdapter(session.analyticService)
         }
         viewModel?.chatAdapter?.let {
             setDataSource(it)

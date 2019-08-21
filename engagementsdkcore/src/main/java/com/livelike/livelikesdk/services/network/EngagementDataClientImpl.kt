@@ -212,7 +212,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
 
     override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService): Reward? {
         return gson.fromJson(postAsync(rewardUrl), Reward::class.java)?.also {
-            analyticsService.logEvent("Lifetime Points" to (it.points?.toString() ?: "0"))
+            analyticsService.registerSuperAndPeopleProperty("Lifetime Points" to (it.points?.toString() ?: "0"))
         }
     }
 

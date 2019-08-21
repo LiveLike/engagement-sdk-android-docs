@@ -8,8 +8,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.livelikesdk.R
-import com.livelike.livelikesdk.utils.logError
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
@@ -25,7 +25,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffU
     }
 }
 
-class ChatRecyclerAdapter : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -34,22 +34,24 @@ class ChatRecyclerAdapter : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHol
         holder.bindTo(getItem(position))
     }
 
-    class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
+    inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
         private val dialogOptions = listOf(
-            "Block this user" to { msg: ChatMessage ->
-                logError { "Blocking ${msg.message}" }
+            v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
-                    setMessage("You will no longer see messages from ${msg.senderDisplayName}.")
-                    setPositiveButton("OK", null)
+                    setMessage(context.getString(R.string.flag_ui_blocking_message, msg.senderDisplayName))
+                    setPositiveButton("OK") { _, _ ->
+                        analyticsService.trackBlockingUser()
+                    }
                     create()
                 }.show()
             },
-            "Report message" to { msg: ChatMessage ->
-                logError { "Reporting ${msg.message}" }
+            v.context.getString(R.string.flag_ui_reporting_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
-                    setMessage("This message has been reported to the moderators. Thank You.")
-                    setPositiveButton("OK", null)
+                    setMessage(context.getString(R.string.flag_ui_reporting_message))
+                    setPositiveButton("OK") { _, _ ->
+                        analyticsService.trackReportingMessage()
+                    }
                     create()
                 }.show()
             })
@@ -79,15 +81,17 @@ class ChatRecyclerAdapter : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHol
                 floatingUi.visibility = View.VISIBLE
                 chatBackground.alpha = 0.5f
                 floatingUi?.setOnClickListener {
+                    analyticsService.trackFlagButtonPressed()
                     hideFloatingUI()
                     context?.let { ctx ->
                         AlertDialog.Builder(ctx).apply {
-                            setTitle("A problem?")
+                            setTitle(context.getString(R.string.flag_ui_title))
                             setItems(dialogOptions.map { it.first }.toTypedArray()) { dialog, which ->
                                 message?.let {
                                     dialogOptions[which].second.invoke(it)
                                 }
                             }
+                            setOnCancelListener { analyticsService.trackCancelFlagUi() }
                             create()
                         }.show()
                     }
@@ -115,7 +119,7 @@ class ChatRecyclerAdapter : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHol
                                 R.color.livelike_openChatNicknameMe
                             )
                         )
-                        chat_nickname.text = "(Me) ${message.senderDisplayName}"
+                        chat_nickname.text = context.getString(R.string.chat_pre_nickname_me, message.senderDisplayName)
                     } else {
                         chat_nickname.setTextColor(
                             ContextCompat.getColor(
