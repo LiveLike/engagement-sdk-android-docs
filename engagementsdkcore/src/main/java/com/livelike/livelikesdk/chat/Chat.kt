@@ -12,6 +12,7 @@ interface ChatRenderer {
     fun displayChatMessage(message: ChatMessage)
     fun deleteChatMessage(messageId: String)
     fun loadComplete()
+    fun updateChatMessageId(oldId: String, newId: String)
 }
 
 /**
@@ -23,10 +24,10 @@ interface ChatRenderer {
  *  @param timeStamp Message timeStamp.
  */
 data class ChatMessage(
-    val message: String,
+    var message: String,
     val senderId: String,
     val senderDisplayName: String,
-    val id: String,
+    var id: String,
     val timeStamp: String = "",
     var isFromMe: Boolean = false
 )

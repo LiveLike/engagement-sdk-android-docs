@@ -5,6 +5,7 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
+import com.livelike.livelikesdk.utils.gson
 import java.util.Date
 
 internal class ChatQueue(upstream: MessagingClient) :
@@ -47,9 +48,10 @@ internal class ChatQueue(upstream: MessagingClient) :
         messageJson.addProperty("message", message.message)
         messageJson.addProperty("sender", message.senderDisplayName)
         messageJson.addProperty("sender_id", message.senderId)
+        messageJson.addProperty("id", message.id)
         // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
-            publishMessage(message.message, it, timeData)
+            publishMessage(gson.toJson(message), it, timeData)
         }
     }
 
@@ -68,6 +70,9 @@ internal class ChatQueue(upstream: MessagingClient) :
             "deletion" -> {
                 val id = event.message.get("id").asString
                 renderer?.deleteChatMessage(id)
+            }
+            "id-updated" -> {
+                renderer?.updateChatMessageId(event.message.get("old-id").asString, event.message.get("new-id").asString)
             }
         }
     }
