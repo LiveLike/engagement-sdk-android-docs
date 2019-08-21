@@ -27,8 +27,8 @@ class LiveLikeApplication : Application() {
         super.onCreate()
         Bugsnag.init(this)
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
-        sdk = EngagementSDK(getString(R.string.app_id), applicationContext = applicationContext)
-        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext =  applicationContext)
+        sdk = EngagementSDK(getString(R.string.app_id), applicationContext)
+        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {

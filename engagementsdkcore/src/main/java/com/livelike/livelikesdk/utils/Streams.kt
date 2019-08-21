@@ -38,6 +38,21 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
     }
 }
 
+/**
+* Applies the given function on the same thread to each value emitted by source stream and returns stream, which emits resulting values.
+*/
+internal fun <X, Y> Stream<X>.map(applyTransformation: (x: X) -> Y): Stream<Y> {
+
+    val out = SubscriptionManager<Y>()
+    this.subscribe(out.hashCode()) {
+        it?.let {
+            out.onNext(applyTransformation(it))
+        }
+    }
+
+    return out
+}
+
 internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> = SubscriptionManager<T>().let { mgr ->
     val source = this
     val handler = Handler(Looper.getMainLooper())

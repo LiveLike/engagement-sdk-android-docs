@@ -11,6 +11,7 @@ import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.BuildConfig
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.utils.addAuthorizationBearer
 import com.livelike.livelikesdk.utils.addUserAgent
 import com.livelike.livelikesdk.utils.extractBoolean
 import com.livelike.livelikesdk.utils.extractStringOrEmpty
@@ -194,8 +195,9 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
 
     override fun getUserData(clientId: String, accessToken: String, responseCallback: (livelikeUser: LiveLikeUser?) -> Unit) {
         client.newCall(
-            Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/")).addUserAgent()
-                .addHeader("Bearer token", accessToken)
+            Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"))
+                .addUserAgent()
+                .addAuthorizationBearer()
                 .get()
                 .build()
         ).enqueue(object : Callback {
@@ -248,6 +250,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             .url(url)
             .post(RequestBody.create(null, ByteString.EMPTY))
             .addUserAgent()
+            .addAuthorizationBearer()
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
@@ -270,6 +273,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             .url(url)
             .put(body)
             .addUserAgent()
+            .addAuthorizationBearer()
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {

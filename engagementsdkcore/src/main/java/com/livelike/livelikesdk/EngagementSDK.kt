@@ -5,11 +5,13 @@ import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.livelikesdk.coreapis.IEngagement
+import com.livelike.livelikesdk.data.repository.UserRepository
+import com.livelike.livelikesdk.publicapis.IEngagement
+import com.livelike.livelikesdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
+import com.livelike.livelikesdk.utils.map
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -19,14 +21,17 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPref
  */
 class EngagementSDK(
     private val clientId: String,
-    private val userAccessToken: String? = null,
-    private val applicationContext: Context
+    private val applicationContext: Context,
+    private val userAccessToken: String? = null
 ) : IEngagement {
 
 //    TODO : Handle if integrator intialize sdk in offline state ( Once I thought of creating stream of sdk initialization requests too and handle everything gracefully :) )
 
     private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
     private val dataClient = EngagementDataClientImpl()
+
+    private val userRepository = UserRepository
+
     private val currentUser: Stream<LiveLikeUser> = SubscriptionManager()
 
     init {
@@ -36,47 +41,17 @@ class EngagementSDK(
             configurationStream.onNext(it)
         }
 
-        initUser(userAccessToken)
+        userRepository.initUser(clientId, userAccessToken)
     }
 
-    /**
-     *  getUser associated with the current sdk initialization
-     *  user returned will be new if no access-token passed during sdk initialization
-     *  null value means sdk initialization process not completed
-     */
-    private fun getUser(): LiveLikeUser? {
-        return currentUser.latest()
-    }
-
-    override fun initUser(userAccessToken: String?) {
-
-        if (userAccessToken == null) {
-            dataClient.createUserData(clientId) {
-                publishUser(it)
-            }
-        } else {
-            dataClient.getUserData(clientId, accessToken = userAccessToken) {
-                // TODO add Result class over evert network result instead of treating null as a case of invalid access token
-                if (it == null) {
-                    initUser(null)
-                } else {
-                    publishUser(it)
-                }
-            }
+    override fun getUserStream(): Stream<LiveLikeUserApi> {
+        return userRepository.currentUserStream.map {
+            LiveLikeUserApi(it.nickname, it.accessToken)
         }
-    }
-
-    private fun publishUser(it: LiveLikeUser) {
-        val nickname =
-            getNickename() // Checking again the saved nickname as it could have changed during the web request.
-        if (nickname.isNotEmpty()) {
-            it.nickname = nickname
-        }
-        currentUser.onNext(it)
     }
 
     override fun getUserAccessToken(): String? {
-        return getUser()?.accessToken
+        return userRepository.getUserAccessToken()
     }
 
     /**
