@@ -59,6 +59,7 @@ internal class DeferredMessagingClient(
         pendingMessageQueue.forEach {
             listener?.onClientMessageEvent(this, it)
         }
+        pendingMessageQueue.clear()
     }
 
     private fun dismissPendingMessages() {
