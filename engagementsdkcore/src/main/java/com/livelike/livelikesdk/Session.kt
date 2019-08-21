@@ -7,6 +7,7 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.ChatViewModel
+import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -39,6 +40,8 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
+
+    val widgetInterceptor: WidgetInterceptor?
 }
 
 interface Stream<T> {

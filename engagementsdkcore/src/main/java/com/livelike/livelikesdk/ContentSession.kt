@@ -10,7 +10,9 @@ import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
+import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.services.messaging.proxies.gamify
+import com.livelike.livelikesdk.services.messaging.proxies.integratorDeferredClient
 import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
@@ -31,7 +33,8 @@ internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val applicationContext: Context,
     private val programId: String,
-    private val currentPlayheadTime: () -> EpochTime
+    private val currentPlayheadTime: () -> EpochTime,
+    override val widgetInterceptor: WidgetInterceptor? = null
 ) : LiveLikeContentSession {
     override lateinit var analyticService: AnalyticsService
     private val llDataClient = EngagementDataClientImpl()
@@ -114,6 +117,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
+                .integratorDeferredClient(widgetInterceptor)
                 .gamify()
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
                 .apply {

@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.constraint.Constraints
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
@@ -13,6 +14,7 @@ import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.utils.registerLogsHandler
 import java.util.Date
 import java.util.Timer
@@ -119,7 +121,17 @@ class ExoPlayerActivity : AppCompatActivity() {
         })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
-            val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString())
+            val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
+                object : WidgetInterceptor() {
+                    override fun widgetWantsToShow() {
+                        AlertDialog.Builder(this@ExoPlayerActivity).apply {
+                            setMessage("You received a Widget, what do you want to do?")
+                            setPositiveButton("Show") { _, _ -> showWidget() }
+                            setNegativeButton("Dismiss") { _, _ -> dismissWidget() }
+                            create()
+                        }.show()
+                    }
+                })
 
             chat_view.setSession(session)
             widget_view.setSession(session)
