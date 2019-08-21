@@ -23,7 +23,7 @@ interface LiveLikeContentSession {
     val analyticService: AnalyticsService
 
     /** get the current livelike User's data stream **/
-    fun getCurrentUserStream(): Stream<LiveLikeUser>
+    val currentUserStream: Stream<LiveLikeUser>
 
     /** Override the default auto-generated chat nickname **/
     fun setChatNickname(nickname: String)

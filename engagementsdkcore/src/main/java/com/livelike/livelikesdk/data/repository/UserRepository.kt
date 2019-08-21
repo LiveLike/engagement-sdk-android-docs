@@ -5,6 +5,7 @@ import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
+import com.livelike.livelikesdk.utils.logError
 
 /**
  * Repository that handles user data. It knows what data sources need to be
@@ -21,6 +22,9 @@ internal object UserRepository {
      */
     val currentUserStream: Stream<LiveLikeUser> = SubscriptionManager()
 
+    val userAccessToken: String?
+        get() = currentUserStream.latest()?.accessToken
+
     /**
      * Create or init user according to passed access token.
      * If no access token new user profile will be created.
@@ -36,6 +40,7 @@ internal object UserRepository {
             dataClient.getUserData(clientId, accessToken = userAccessToken) {
                 // TODO add Result class wrapper for network result instead of treating null as a case of invalid access token
                 if (it == null) {
+                    logError { "Network error or invalid access token" }
                     initUser(clientId, null)
                 } else {
                     publishUser(it)
@@ -51,9 +56,5 @@ internal object UserRepository {
             it.nickname = nickname
         }
         currentUserStream.onNext(it)
-    }
-
-    fun getUserAccessToken(): String? {
-        return currentUserStream.latest()?.accessToken
     }
 }

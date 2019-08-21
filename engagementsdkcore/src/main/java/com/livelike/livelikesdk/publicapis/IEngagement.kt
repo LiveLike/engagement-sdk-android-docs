@@ -11,10 +11,10 @@ interface IEngagement {
      *  This access token acts as a unique identifier for a user profile in LiveLike system.
      *  Null value means sdk initialization process not completed.
      */
-    fun getUserAccessToken(): String?
+    val userAccessToken: String?
 
     /**
      * Returns public user stream.
      */
-    fun getUserStream(): Stream<LiveLikeUserApi>
+    val userStream: Stream<LiveLikeUserApi>
 }

@@ -12,5 +12,5 @@ fun Request.Builder.addUserAgent(): Request.Builder {
 }
 
 fun Request.Builder.addAuthorizationBearer(): Request.Builder {
-    return addHeader("Authorization", "Bearer ${UserRepository.getUserAccessToken()}")
+    return addHeader("Authorization", "Bearer ${UserRepository.userAccessToken}")
 }

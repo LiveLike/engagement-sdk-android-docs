@@ -23,7 +23,7 @@ import com.livelike.livelikesdk.utils.map
 class EngagementSDK(
     private val clientId: String,
     private val applicationContext: Context,
-    private val userAccessToken: String? = null
+    private var accessToken: String? = null
 ) : IEngagement {
 
 //    TODO : Handle if integrator intialize sdk in offline state ( Once I thought of creating stream of sdk initialization requests too and handle everything gracefully :) )
@@ -35,6 +35,13 @@ class EngagementSDK(
 
     private val currentUser: Stream<LiveLikeUser> = SubscriptionManager()
 
+    override val userStream: Stream<LiveLikeUserApi>
+        get() = userRepository.currentUserStream.map {
+            LiveLikeUserApi(it.nickname, it.accessToken)
+        }
+    override val userAccessToken: String?
+        get() = userRepository.userAccessToken
+
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
@@ -43,16 +50,6 @@ class EngagementSDK(
         }
 
         userRepository.initUser(clientId, userAccessToken)
-    }
-
-    override fun getUserStream(): Stream<LiveLikeUserApi> {
-        return userRepository.currentUserStream.map {
-            LiveLikeUserApi(it.nickname, it.accessToken)
-        }
-    }
-
-    override fun getUserAccessToken(): String? {
-        return userRepository.getUserAccessToken()
     }
 
     /**
@@ -66,7 +63,8 @@ class EngagementSDK(
             applicationContext,
             programId,
             { EpochTime(0) },
-            widgetInterceptor)
+            widgetInterceptor
+        )
     }
 
     interface TimecodeGetter {
@@ -78,14 +76,19 @@ class EngagementSDK(
      *  @param programId Backend generated identifier for current program
      *  @param timecodeGetter returns the video timecode
      */
-    fun createContentSession(programId: String, timecodeGetter: TimecodeGetter, widgetInterceptor: WidgetInterceptor? = null): LiveLikeContentSession {
+    fun createContentSession(
+        programId: String,
+        timecodeGetter: TimecodeGetter,
+        widgetInterceptor: WidgetInterceptor? = null
+    ): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
             currentUser,
             applicationContext,
             programId,
             { timecodeGetter.getTimecode() },
-            widgetInterceptor)
+            widgetInterceptor
+        )
     }
 
     data class SdkConfiguration(

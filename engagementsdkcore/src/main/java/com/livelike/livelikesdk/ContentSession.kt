@@ -29,7 +29,7 @@ import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
-    private val currentUser: Stream<LiveLikeUser>,
+    override val currentUserStream: Stream<LiveLikeUser>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime,
@@ -48,7 +48,7 @@ internal class ContentSession(
     private var user: LiveLikeUser? = null
 
     init {
-        currentUser.subscribe(javaClass) {
+        currentUserStream.subscribe(javaClass) {
             user = it
             it?.let {
                 analyticService.trackSession(it.sessionId)
@@ -76,10 +76,6 @@ internal class ContentSession(
                 }
             }
         }
-    }
-
-    override fun getCurrentUserStream(): Stream<LiveLikeUser> {
-        return currentUser
     }
 
     override fun getPlayheadTime(): EpochTime {
@@ -116,7 +112,7 @@ internal class ContentSession(
     private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
         analyticService.trackLastChatStatus(true)
         chatClient =
-            SendbirdMessagingClient(config.sendBirdAppId, applicationContext, analyticService, currentUser)
+            SendbirdMessagingClient(config.sendBirdAppId, applicationContext, analyticService, currentUserStream)
                 .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
                 .toChatQueue()
                 .apply {
@@ -130,7 +126,7 @@ internal class ContentSession(
         setNickname(nickname)
         user?.apply {
             this.nickname = nickname
-            currentUser.onNext(this)
+            currentUserStream.onNext(this)
         }
     }
 
