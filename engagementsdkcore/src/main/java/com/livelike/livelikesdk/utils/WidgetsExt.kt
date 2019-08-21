@@ -13,5 +13,6 @@ fun WidgetType.toAnalyticsString(): String {
         WidgetType.IMAGE_QUIZ -> "Image Quiz"
         WidgetType.TEXT_QUIZ -> "Text Quiz"
         WidgetType.ALERT -> "Alert"
+        WidgetType.POINTS_TUTORIAL -> "Points Tutorial"
     }
 }

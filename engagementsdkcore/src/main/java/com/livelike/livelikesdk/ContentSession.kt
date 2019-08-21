@@ -11,6 +11,7 @@ import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.livelikesdk.services.messaging.proxies.gamify
 import com.livelike.livelikesdk.services.messaging.proxies.integratorDeferredClient
 import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
@@ -63,10 +64,10 @@ internal class ContentSession(
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
-                                analyticService.logEvent(map.key to map.value)
+                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
                             it.analyticsProps.forEach { map ->
-                                analyticService.logEvent(map.key to map.value)
+                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
                         }
                     }
@@ -117,6 +118,7 @@ internal class ContentSession(
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .integratorDeferredClient(widgetInterceptor)
+                .gamify()
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())

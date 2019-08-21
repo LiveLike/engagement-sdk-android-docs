@@ -38,11 +38,31 @@ interface AnalyticsService {
     fun trackUsername(username: String)
     fun trackKeyboardOpen(keyboardType: KeyboardType)
     fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
-    fun logEvent(event: Pair<String, String>)
+    fun registerSuperAndPeopleProperty(event: Pair<String, String>)
+    fun trackFlagButtonPressed()
+    fun trackReportingMessage()
+    fun trackBlockingUser()
+    fun trackCancelFlagUi()
 }
 
 class MockAnalyticsService : AnalyticsService {
-    override fun logEvent(event: Pair<String, String>) {
+    override fun trackFlagButtonPressed() {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+    }
+
+    override fun trackReportingMessage() {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+    }
+
+    override fun trackCancelFlagUi() {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+    }
+
+    override fun trackBlockingUser() {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+    }
+
+    override fun registerSuperAndPeopleProperty(event: Pair<String, String>) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $event")
     }
 
@@ -176,7 +196,6 @@ class AnalyticsWidgetSpecificInfo {
 
 class MixpanelAnalytics(val context: Context, token: String?, programId: String) :
     AnalyticsService {
-
     private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token ?: "5c82369365be76b28b3716f260fbd2f5", programId)
 
     companion object {
@@ -189,6 +208,9 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         const val KEY_ACTION_TAP = "Action_Tap"
         const val KEY_KEYBOARD_SELECTED = "Keyboard Selected"
         const val KEY_KEYBOARD_HIDDEN = "Keyboard Hidden"
+        const val KEY_FLAG_BUTTON_PRESSED = "Chat Flag Button Pressed"
+        const val KEY_FLAG_ACTION_SELECTED = "Chat Flag Action Selected"
+        const val KEY_REASON = "Reason"
     }
 
     private var parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
@@ -223,7 +245,33 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         this.eventObserver = eventObserver
     }
 
-    override fun logEvent(event: Pair<String, String>) {
+    override fun trackFlagButtonPressed() {
+        mixpanel.track(KEY_FLAG_BUTTON_PRESSED)
+        eventObserver?.invoke(KEY_KEYBOARD_SELECTED, JSONObject())
+    }
+
+    override fun trackReportingMessage() {
+        val properties = JSONObject()
+        properties.put(KEY_REASON, "Reporting Message")
+        mixpanel.track(KEY_FLAG_ACTION_SELECTED, properties)
+        eventObserver?.invoke(KEY_FLAG_ACTION_SELECTED, properties)
+    }
+
+    override fun trackBlockingUser() {
+        val properties = JSONObject()
+        properties.put(KEY_REASON, "Blocking User")
+        mixpanel.track(KEY_FLAG_ACTION_SELECTED, properties)
+        eventObserver?.invoke(KEY_FLAG_ACTION_SELECTED, properties)
+    }
+
+    override fun trackCancelFlagUi() {
+        val properties = JSONObject()
+        properties.put(KEY_REASON, "Blocking User")
+        mixpanel.track(KEY_FLAG_ACTION_SELECTED, properties)
+        eventObserver?.invoke(KEY_FLAG_ACTION_SELECTED, properties)
+    }
+
+    override fun registerSuperAndPeopleProperty(event: Pair<String, String>) {
         JSONObject().apply {
             put(event.first, event.second)
             mixpanel.registerSuperProperties(this)
@@ -462,6 +510,5 @@ enum class KeyboardType {
 enum class DismissAction {
     TIMEOUT,
     SWIPE,
-    TAP_X,
-    NEW_WIDGET_RECEIVED
+    TAP_X
 }

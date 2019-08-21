@@ -16,7 +16,6 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
 
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
     private var widgetContainer: FrameLayout? = null
-    private val viewTag = "OnScreen"
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(widgetContainer: FrameLayout) {
@@ -50,11 +49,6 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
     private fun widgetObserver(widgetView: SpecifiedWidgetView?) {
         dismissWidget()
         if (widgetView != null) {
-            if (widgetView.tag != viewTag) {
-                dismissWidget?.invoke(DismissAction.NEW_WIDGET_RECEIVED)
-                dismissWidget = null
-            }
-            widgetView.tag = viewTag
             displayWidget(widgetView)
         }
     }
