@@ -6,6 +6,7 @@ import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.MixpanelAnalytics
+import com.livelike.engagementsdkapi.MockAnalyticsService
 import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
@@ -36,7 +37,7 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime,
     override val widgetInterceptor: WidgetInterceptor? = null
 ) : LiveLikeContentSession {
-    override lateinit var analyticService: AnalyticsService
+    override var analyticService: AnalyticsService = MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
 
     override val chatViewModel: ChatViewModel by lazy { ChatViewModel() }
