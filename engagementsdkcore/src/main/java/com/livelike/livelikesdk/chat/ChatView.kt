@@ -55,6 +55,7 @@ import kotlinx.coroutines.launch
 class ChatViewModel() {
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter? = null
+    val messageList = mutableListOf<ChatMessage>()
 }
 
 class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs),
@@ -115,30 +116,28 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
         Handler(Looper.getMainLooper()).post {
-            messageList.add(message.apply { isFromMe = currentUser?.sessionId == senderId })
-            viewModel?.chatAdapter?.submitList(messageList)
+            viewModel?.messageList?.add(message.apply { isFromMe = currentUser?.sessionId == senderId })
+            viewModel?.chatAdapter?.submitList(viewModel?.messageList)
         }
     }
 
     override fun deleteChatMessage(messageId: String) {
         Handler(Looper.getMainLooper()).post {
-            messageList.find { it.id == messageId }?.apply {
+            viewModel?.messageList?.find { it.id == messageId }?.apply {
                 message = "Redacted"
             }
-            viewModel?.chatAdapter?.submitList(messageList)
+            viewModel?.chatAdapter?.submitList(viewModel?.messageList)
             viewModel?.chatAdapter?.notifyDataSetChanged()
         }
     }
 
     override fun updateChatMessageId(oldId: String, newId: String) {
-        messageList.find {
+        viewModel?.messageList?.find {
             it.id == oldId
         }?.apply {
             id = newId
         }
     }
-
-    private val messageList = mutableListOf<ChatMessage>()
 
     override fun loadComplete() {
         hideLoadingSpinner()
@@ -267,8 +266,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             Date(timeData.timeSinceEpochInMs).toString(),
             true
         )
-        messageList.add(newMessage)
-        viewModel?.chatAdapter?.submitList(messageList)
+        viewModel?.messageList?.add(newMessage)
+        viewModel?.chatAdapter?.submitList(viewModel?.messageList)
 
         hideLoadingSpinner()
         edittext_chat_message.setText("")
