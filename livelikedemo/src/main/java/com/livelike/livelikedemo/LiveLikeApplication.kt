@@ -9,6 +9,7 @@ import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 
 class LiveLikeApplication : Application() {
 
@@ -36,14 +37,15 @@ class LiveLikeApplication : Application() {
         return player
     }
 
-    fun createSession(sessionId: String): LiveLikeContentSession {
+    fun createSession(sessionId: String, widgetInterceptor: WidgetInterceptor): LiveLikeContentSession {
         if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
             session = sdk?.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {
                 override fun getTimecode(): EpochTime {
                     return EpochTime(player.getPDT())
                 }
-            })
+            },
+                widgetInterceptor)
         }
         return session as LiveLikeContentSession
     }
