@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -135,7 +136,13 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             chat_view.setSession(session)
             widget_view.setSession(session)
-            session.setChatNickname("Le Big Boss")
+            getSharedPreferences("test-app", Context.MODE_PRIVATE)
+                .getString("UserNickname", "")
+                .let {
+                    if (!it.isNullOrEmpty()) {
+                        session.setChatNickname(it)
+                    }
+                }
 
             this.session = session
 
