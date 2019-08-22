@@ -12,6 +12,7 @@ import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.livelikesdk.services.messaging.proxies.filter
 import com.livelike.livelikesdk.services.messaging.proxies.gamify
 import com.livelike.livelikesdk.services.messaging.proxies.integratorDeferredClient
 import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
@@ -115,6 +116,7 @@ internal class ContentSession(
         analyticService.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(config.pubNubKey)
+                .filter()
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
