@@ -26,12 +26,12 @@ internal class FilteringWidgetsMessagingClient(
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         try {
-            val widgetType = event.message.get("event").asString ?: ""
+            val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
             val payload = event.message.get("payload").asJsonObject
             val resource = gson.fromJson(payload, Resource::class.java) ?: null
 
             resource?.let {
-                when (WidgetType.fromString(widgetType)) {
+                when (widgetType) {
                     WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> {
                         if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.image_prediction_id).isNotEmpty()) {
                             listener?.onClientMessageEvent(client, event)
@@ -47,7 +47,11 @@ internal class FilteringWidgetsMessagingClient(
                         }
                     }
                     else -> {
-                        listener?.onClientMessageEvent(client, event)
+                        if (widgetType != null) {
+                            listener?.onClientMessageEvent(client, event)
+                        } else {
+                            // Do nothing, filter this event
+                        }
                     }
                 }
             }

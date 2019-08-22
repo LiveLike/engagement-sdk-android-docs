@@ -14,7 +14,6 @@ import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.services.messaging.proxies.filter
 import com.livelike.livelikesdk.services.messaging.proxies.gamify
-import com.livelike.livelikesdk.services.messaging.proxies.integratorDeferredClient
 import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
@@ -121,8 +120,7 @@ internal class ContentSession(
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .gamify()
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
-                .integratorDeferredClient(this)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, this, config)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }

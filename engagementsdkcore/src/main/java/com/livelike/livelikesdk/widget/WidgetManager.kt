@@ -6,22 +6,28 @@ import android.os.Looper
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.WidgetInfos
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
+import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.widget.model.Reward
 import java.util.PriorityQueue
 import java.util.Queue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
     private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
     private val context: Context,
-    private val analyticsService: AnalyticsService,
+    private val session: LiveLikeContentSession,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
@@ -37,6 +43,15 @@ internal class WidgetManager(
     private val messageQueue: Queue<MessageHolder> = PriorityQueue()
     private var widgetOnScreen = false
 
+    init {
+        session.widgetInterceptor?.events?.subscribe(javaClass.simpleName) {
+            when (it) {
+                WidgetInterceptor.Decision.Show -> showPendingMessages()
+                WidgetInterceptor.Decision.Dismiss -> dismissPendingMessages()
+            }
+        }
+    }
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
@@ -50,7 +65,7 @@ internal class WidgetManager(
         upstream.resume()
     }
 
-    val handler = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         messageQueue.add(MessageHolder(client, event))
@@ -61,9 +76,34 @@ internal class WidgetManager(
 
     private fun publishNextInQueue() {
         if (messageQueue.isNotEmpty()) {
-            showWidgetOnScreen(messageQueue.remove())
+            widgetOnScreen = true
+            notifyIntegrator()
         } else {
             widgetOnScreen = false
+        }
+    }
+
+    private fun showPendingMessages() {
+        showWidgetOnScreen(messageQueue.remove())
+    }
+
+    private fun dismissPendingMessages() {
+        if (messageQueue.isNotEmpty()) {
+            messageQueue.remove()
+        }
+        publishNextInQueue()
+    }
+
+    private fun notifyIntegrator() {
+        if (session.widgetInterceptor != null) {
+            GlobalScope.launch {
+                withContext(Dispatchers.Main) {
+                    // Need to assure we are on the main thread to communicated with the external activity
+                    session.widgetInterceptor?.widgetWantsToShow()
+                }
+            }
+        } else {
+            showWidgetOnScreen(messageQueue.remove())
         }
     }
 
@@ -72,31 +112,27 @@ internal class WidgetManager(
         val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
-        analyticsService.trackWidgetDisplayed(widgetType, widgetId)
+        session.analyticService.trackWidgetDisplayed(widgetType, widgetId)
 
-        // Filter only valid widget types here
-        if (WidgetType.fromString(widgetType) != null) {
-            handler.post {
-                currentWidgetViewStream.onNext(
-                    WidgetProvider().get(
-                        WidgetInfos(widgetType, payload, widgetId),
-                        context,
-                        analyticsService,
-                        sdkConfiguration
-                    ) {
-                        publishNextInQueue()
-                    }
-                )
-            }
-
-            // Register the impression on the backend
-            payload.get("impression_url")?.asString?.let {
-                dataClient.registerImpression(it)
-            }
-
-            widgetOnScreen = true
-            super.onClientMessageEvent(msgHolder.messagingClient, msgHolder.clientMessage)
+        handler.post {
+            currentWidgetViewStream.onNext(
+                WidgetProvider().get(
+                    WidgetInfos(widgetType, payload, widgetId),
+                    context,
+                    session.analyticService,
+                    sdkConfiguration
+                ) {
+                    publishNextInQueue()
+                }
+            )
         }
+
+        // Register the impression on the backend
+        payload.get("impression_url")?.asString?.let {
+            dataClient.registerImpression(it)
+        }
+
+        super.onClientMessageEvent(msgHolder.messagingClient, msgHolder.clientMessage)
     }
 }
 
@@ -128,8 +164,8 @@ internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
     widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
     context: Context,
-    analyticsService: AnalyticsService,
+    session: LiveLikeContentSession,
     sdkConfiguration: EngagementSDK.SdkConfiguration
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream, context, analyticsService, sdkConfiguration)
+    return WidgetManager(this, dataClient, widgetInfosStream, context, session, sdkConfiguration)
 }
