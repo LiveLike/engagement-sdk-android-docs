@@ -5,8 +5,6 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -26,6 +24,7 @@ import com.livelike.engagementsdkapi.KeyboardHideReason
 import com.livelike.engagementsdkapi.KeyboardType
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.LiveLikeContentSession
+import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.utils.logError
@@ -36,7 +35,8 @@ import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -66,6 +66,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
         private const val CHAT_MINIMUM_SIZE_DP = 292
     }
+
+    private val uiScope = CoroutineScope(Dispatchers.Main)
 
     override val chatContext: Context = context
 
@@ -115,20 +117,25 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
-        Handler(Looper.getMainLooper()).post {
-            viewModel?.messageList?.add(message.apply { isFromMe = currentUser?.sessionId == senderId })
-            viewModel?.chatAdapter?.submitList(viewModel?.messageList)
+        viewModel?.messageList?.apply {
+            add(message.apply { isFromMe = currentUser?.sessionId == senderId })
+        }?.let {
+            viewModel?.chatAdapter?.submitList(ArrayList(it))
+
+            // Auto scroll if user is looking at the latest messages
+            chatdisplay?.let { rv ->
+                val l = (rv.layoutManager as LinearLayoutManager)
+                if (l.findLastVisibleItemPosition() > l.itemCount - 3)
+                    snapToLive()
+            }
         }
     }
 
     override fun deleteChatMessage(messageId: String) {
-        Handler(Looper.getMainLooper()).post {
-            viewModel?.messageList?.find { it.id == messageId }?.apply {
-                message = "Redacted"
-            }
-            viewModel?.chatAdapter?.submitList(viewModel?.messageList)
-            viewModel?.chatAdapter?.notifyDataSetChanged()
+        viewModel?.messageList?.find { it.id == messageId }?.apply {
+            message = context.getString(R.string.chat_deleted_message_redacted)
         }
+        viewModel?.chatAdapter?.submitList(ArrayList(viewModel?.messageList))
     }
 
     override fun updateChatMessageId(oldId: String, newId: String) {
@@ -272,10 +279,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         hideLoadingSpinner()
         edittext_chat_message.setText("")
         viewModel?.chatListener?.onChatMessageSend(newMessage, timeData)
-        GlobalScope.launch {
-            delay(200)
-            snapToLive()
-        }
+        snapToLive()
     }
 
     private fun hideSnapToLive() {
@@ -324,6 +328,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun snapToLive() {
-        chatdisplay.layoutManager?.itemCount?.let { chatdisplay.smoothScrollToPosition(it) }
+        uiScope.launch {
+            delay(200)
+            chatdisplay?.let { rv ->
+                rv.layoutManager?.itemCount?.let {
+                    rv.smoothScrollToPosition(it)
+                }
+            }
+        }
     }
 }

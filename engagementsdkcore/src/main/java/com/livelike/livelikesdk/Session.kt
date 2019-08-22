@@ -41,7 +41,7 @@ interface LiveLikeContentSession {
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
 
-    val widgetInterceptor: WidgetInterceptor?
+    var widgetInterceptor: WidgetInterceptor?
 }
 
 interface Stream<T> {

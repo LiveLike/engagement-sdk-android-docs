@@ -12,8 +12,8 @@ import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.livelikesdk.services.messaging.proxies.filter
 import com.livelike.livelikesdk.services.messaging.proxies.gamify
-import com.livelike.livelikesdk.services.messaging.proxies.integratorDeferredClient
 import com.livelike.livelikesdk.services.messaging.proxies.logAnalytics
 import com.livelike.livelikesdk.services.messaging.proxies.syncTo
 import com.livelike.livelikesdk.services.messaging.proxies.withPreloader
@@ -33,9 +33,9 @@ internal class ContentSession(
     override val currentUserStream: Stream<LiveLikeUser>,
     private val applicationContext: Context,
     private val programId: String,
-    private val currentPlayheadTime: () -> EpochTime,
-    override val widgetInterceptor: WidgetInterceptor? = null
+    private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
+    override var widgetInterceptor: WidgetInterceptor? = null
     override var analyticService: AnalyticsService = MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
 
@@ -101,18 +101,12 @@ internal class ContentSession(
         analyticService.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(config.pubNubKey)
+                .filter()
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .integratorDeferredClient(widgetInterceptor)
                 .gamify()
-                .asWidgetManager(
-                    llDataClient,
-                    currentWidgetViewStream,
-                    applicationContext,
-                    analyticService,
-                    config
-                )
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, this, config)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
