@@ -19,6 +19,10 @@ internal fun JsonObject.extractStringOrEmpty(propertyName: String): String {
     return if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asString else ""
 }
 
+internal fun JsonObject.extractBoolean(propertyName: String): Boolean {
+    return if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asBoolean else false
+}
+
 internal fun JsonObject.extractLong(propertyName: String, default: Long = 0): Long {
     var returnVal = default
     try {

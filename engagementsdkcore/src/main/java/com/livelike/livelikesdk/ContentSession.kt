@@ -21,10 +21,8 @@ import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
+import com.livelike.livelikesdk.utils.combineLatestOnce
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setSessionId
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.asWidgetManager
@@ -32,6 +30,7 @@ import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    override val currentUserStream: Stream<LiveLikeUser>,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime,
@@ -47,17 +46,23 @@ internal class ContentSession(
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
-    override var currentUser: Stream<LiveLikeUser> = SubscriptionManager()
     private var user: LiveLikeUser? = null
 
     init {
-        currentUser.subscribe(javaClass) { user = it }
-        sdkConfiguration.subscribe(javaClass.simpleName) {
-            it?.let { configuration ->
-                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
-                analyticService.trackConfiguration(configuration.name ?: "")
+        currentUserStream.subscribe(javaClass) {
+            user = it
+            it?.let {
+                analyticService.trackSession(it.sessionId)
+                analyticService.trackUsername(it.nickname)
+            }
+        }
 
-                getUser(configuration.sessionsUrl)
+        currentUserStream.combineLatestOnce(sdkConfiguration).subscribe(javaClass.simpleName) {
+            it?.let { pair ->
+                val configuration = pair.second
+                analyticService =
+                    MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+                analyticService.trackConfiguration(configuration.name ?: "")
 
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
@@ -67,34 +72,12 @@ internal class ContentSession(
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
-                            it.analyticsProps.forEach { map ->
+                            configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private fun getUser(sessionUrl: String) {
-        val sessionId = getSessionId()
-        var nickname = getNickename()
-        if (sessionId.isNotEmpty() && nickname.isNotEmpty()) {
-            currentUser.onNext(LiveLikeUser(sessionId, nickname))
-            analyticService.trackSession(sessionId)
-            analyticService.trackUsername(nickname)
-        } else {
-            llDataClient.getUserData(sessionUrl) {
-                nickname = getNickename() // Checking again the saved nickname as it could have changed during the web request.
-                if (nickname.isNotEmpty()) {
-                    it.nickname = nickname
-                }
-                currentUser.onNext(it)
-                setSessionId(it.sessionId)
-                setNickname(it.nickname)
-                analyticService.trackSession(it.sessionId)
-                analyticService.trackUsername(it.nickname)
             }
         }
     }
@@ -111,7 +94,10 @@ internal class ContentSession(
         widgetContainer.setWidgetContainer(widgetView)
     }
 
-    private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
+    private fun initializeWidgetMessaging(
+        subscribeChannel: String,
+        config: EngagementSDK.SdkConfiguration
+    ) {
         analyticService.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(config.pubNubKey)
@@ -120,7 +106,13 @@ internal class ContentSession(
                 .syncTo(currentPlayheadTime)
                 .integratorDeferredClient(widgetInterceptor)
                 .gamify()
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
+                .asWidgetManager(
+                    llDataClient,
+                    currentWidgetViewStream,
+                    applicationContext,
+                    analyticService,
+                    config
+                )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
@@ -130,10 +122,18 @@ internal class ContentSession(
 
     override var chatRenderer: ChatRenderer? = null
 
-    private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
+    private fun initializeChatMessaging(
+        chatChannel: String,
+        config: EngagementSDK.SdkConfiguration
+    ) {
         analyticService.trackLastChatStatus(true)
         chatClient =
-            SendbirdMessagingClient(config.sendBirdAppId, applicationContext, analyticService, currentUser)
+            SendbirdMessagingClient(
+                config.sendBirdAppId,
+                applicationContext,
+                analyticService,
+                currentUserStream
+            )
                 .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
                 .toChatQueue()
                 .apply {
@@ -147,7 +147,7 @@ internal class ContentSession(
         setNickname(nickname)
         user?.apply {
             this.nickname = nickname
-            currentUser.onNext(this)
+            currentUserStream.onNext(this)
         }
     }
 

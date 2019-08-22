@@ -9,8 +9,11 @@ import com.google.gson.JsonParser
 import com.google.gson.stream.MalformedJsonException
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.livelikesdk.BuildConfig
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.utils.addAuthorizationBearer
 import com.livelike.livelikesdk.utils.addUserAgent
+import com.livelike.livelikesdk.utils.extractBoolean
 import com.livelike.livelikesdk.utils.extractStringOrEmpty
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.addPoints
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getSessionId
@@ -35,6 +38,8 @@ import okio.ByteString
 // TODO: This needs to be split
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
     private val MAX_PROGRAM_DATA_REQUESTS = 13
+
+    // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor
 
     // TODO: This should POST first then only update the impression (or just be called on widget dismissed..)
     override fun registerImpression(impressionUrl: String) {
@@ -161,36 +166,60 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         )
     }
 
-    override fun getUserData(url: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit) {
-        try {
-            client.newCall(
-                Request.Builder().url(url).addUserAgent().addHeader("Content-Lenght", "0")
-                    .post(
-                    RequestBody.create(
-                        null,
-                        ByteArray(0)
-                    )
-                ).build()
+    override fun createUserData(clientId: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit) {
+        client.newCall(
+            Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/")).addUserAgent()
+                .post(RequestBody.create(
+                    null,
+                    ByteArray(0)
+                ))
+                .build()
+        ).enqueue(object : Callback {
+            override fun onResponse(call: Call?, response: Response) {
+                val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                val user = LiveLikeUser(
+                    responseData.extractStringOrEmpty("id"),
+                    responseData.extractStringOrEmpty("nickname"),
+                    responseData.extractStringOrEmpty("access_token"),
+                    responseData.extractBoolean("widgets_enabled"),
+                    responseData.extractBoolean("chat_enabled")
+                )
+                logVerbose { user }
+                mainHandler.post { responseCallback.invoke(user) }
+            }
 
-            ).enqueue(object : Callback {
-                override fun onResponse(call: Call?, response: Response) {
+            override fun onFailure(call: Call?, e: IOException?) {
+                logError { e }
+            }
+        })
+    }
 
-                    val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
-                    val user = LiveLikeUser(
-                        responseData.extractStringOrEmpty("id"),
-                        responseData.extractStringOrEmpty("nickname")
-                    )
-                    logVerbose { user }
-                    mainHandler.post { responseCallback.invoke(user) }
-                }
+    override fun getUserData(clientId: String, accessToken: String, responseCallback: (livelikeUser: LiveLikeUser?) -> Unit) {
+        client.newCall(
+            Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"))
+                .addUserAgent()
+                .addAuthorizationBearer(accessToken)
+                .get()
+                .build()
+        ).enqueue(object : Callback {
+            override fun onResponse(call: Call?, response: Response) {
 
-                override fun onFailure(call: Call?, e: IOException?) {
-                    logError { e }
-                }
-            })
-        } catch (e: IllegalArgumentException) {
-            logError { "Check the program URL: $e" }
-        }
+                val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                val user = LiveLikeUser(
+                    responseData.extractStringOrEmpty("id"),
+                    responseData.extractStringOrEmpty("nickname"),
+                    accessToken,
+                    responseData.extractBoolean("widgets_enabled"),
+                    responseData.extractBoolean("chat_enabled")
+                )
+                logVerbose { user }
+                mainHandler.post { responseCallback.invoke(user) }
+            }
+
+            override fun onFailure(call: Call?, e: IOException?) {
+                logError { e }
+            }
+        })
     }
 
     // / WIDGET CLIENT BELOW
@@ -223,6 +252,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             .url(url)
             .post(RequestBody.create(null, ByteString.EMPTY))
             .addUserAgent()
+            .addAuthorizationBearer()
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
@@ -245,6 +275,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             .url(url)
             .put(body)
             .addUserAgent()
+            .addAuthorizationBearer()
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {

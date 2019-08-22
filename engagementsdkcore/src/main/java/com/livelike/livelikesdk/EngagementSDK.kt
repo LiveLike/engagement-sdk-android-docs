@@ -4,10 +4,15 @@ import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdkapi.EpochTime
+import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.livelikesdk.data.repository.UserRepository
+import com.livelike.livelikesdk.publicapis.IEngagement
+import com.livelike.livelikesdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
+import com.livelike.livelikesdk.utils.map
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -15,9 +20,27 @@ import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPref
  * @param clientId Client's id
  * @param applicationContext The application context
  */
-class EngagementSDK(private val clientId: String, private val applicationContext: Context) {
+class EngagementSDK(
+    private val clientId: String,
+    private val applicationContext: Context,
+    private val accessToken: String? = null
+) : IEngagement {
+
+//    TODO : Handle if integrator intialize sdk in offline state ( Once I thought of creating stream of sdk initialization requests too and handle everything gracefully :) )
+
     private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
     private val dataClient = EngagementDataClientImpl()
+
+    private val userRepository = UserRepository
+
+    private val currentUserStream: Stream<LiveLikeUser> = userRepository.currentUserStream
+
+    override val userStream: Stream<LiveLikeUserApi>
+        get() = userRepository.currentUserStream.map {
+            LiveLikeUserApi(it.nickname, it.accessToken)
+        }
+    override val userAccessToken: String?
+        get() = userRepository.userAccessToken
 
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
@@ -25,6 +48,8 @@ class EngagementSDK(private val clientId: String, private val applicationContext
         dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
             configurationStream.onNext(it)
         }
+
+        userRepository.initUser(clientId, accessToken)
     }
 
     /**
@@ -34,10 +59,12 @@ class EngagementSDK(private val clientId: String, private val applicationContext
     fun createContentSession(programId: String, widgetInterceptor: WidgetInterceptor? = null): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
+            currentUserStream,
             applicationContext,
             programId,
             { EpochTime(0) },
-            widgetInterceptor)
+            widgetInterceptor
+        )
     }
 
     interface TimecodeGetter {
@@ -49,13 +76,19 @@ class EngagementSDK(private val clientId: String, private val applicationContext
      *  @param programId Backend generated identifier for current program
      *  @param timecodeGetter returns the video timecode
      */
-    fun createContentSession(programId: String, timecodeGetter: TimecodeGetter, widgetInterceptor: WidgetInterceptor? = null): LiveLikeContentSession {
+    fun createContentSession(
+        programId: String,
+        timecodeGetter: TimecodeGetter,
+        widgetInterceptor: WidgetInterceptor? = null
+    ): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
+            currentUserStream,
             applicationContext,
             programId,
             { timecodeGetter.getTimecode() },
-            widgetInterceptor)
+            widgetInterceptor
+        )
     }
 
     data class SdkConfiguration(
