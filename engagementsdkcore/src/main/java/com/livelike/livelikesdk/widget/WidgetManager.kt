@@ -42,6 +42,7 @@ internal class WidgetManager(
 
     private val messageQueue: Queue<MessageHolder> = PriorityQueue()
     private var widgetOnScreen = false
+    var pendingMessage: MessageHolder? = null
 
     init {
         session.widgetInterceptor?.events?.subscribe(javaClass.simpleName) {
@@ -77,33 +78,32 @@ internal class WidgetManager(
     private fun publishNextInQueue() {
         if (messageQueue.isNotEmpty()) {
             widgetOnScreen = true
-            notifyIntegrator()
+            notifyIntegrator(messageQueue.remove())
         } else {
             widgetOnScreen = false
         }
     }
 
     private fun showPendingMessages() {
-        showWidgetOnScreen(messageQueue.remove())
+        pendingMessage?.let { showWidgetOnScreen(it) }
     }
 
     private fun dismissPendingMessages() {
-        if (messageQueue.isNotEmpty()) {
-            messageQueue.remove()
-        }
         publishNextInQueue()
     }
 
-    private fun notifyIntegrator() {
-        if (session.widgetInterceptor != null) {
+    private fun notifyIntegrator(message: MessageHolder) {
+        val widgetType = WidgetType.fromString(message.clientMessage.message.get("event").asString ?: "")
+        if (session.widgetInterceptor == null || widgetType == WidgetType.POINTS_TUTORIAL) {
+            showWidgetOnScreen(message)
+        } else {
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
                     session.widgetInterceptor?.widgetWantsToShow()
                 }
             }
-        } else {
-            showWidgetOnScreen(messageQueue.remove())
+            pendingMessage = message
         }
     }
 
