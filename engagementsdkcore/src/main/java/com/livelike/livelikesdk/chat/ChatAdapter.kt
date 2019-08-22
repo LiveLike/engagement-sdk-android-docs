@@ -21,7 +21,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffU
     }
 
     override fun areContentsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
-        return p0.message == p1.message && p0.senderDisplayName == p1.senderDisplayName && p0.id == p1.id
+        return p0.message == p1.message && p0.senderDisplayName == p1.senderDisplayName
     }
 }
 

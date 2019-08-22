@@ -9,4 +9,5 @@
     <string name="flag_ui_blocking_title">Block this user</string>
     <string name="flag_ui_reporting_title">Report message</string>
     <string name="chat_pre_nickname_me">(Me) %s</string>
+    <string name="chat_deleted_message_redacted">Redacted</string>
 </resources>
