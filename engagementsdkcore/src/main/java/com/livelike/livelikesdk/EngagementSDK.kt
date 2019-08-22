@@ -23,7 +23,7 @@ import com.livelike.livelikesdk.utils.map
 class EngagementSDK(
     private val clientId: String,
     private val applicationContext: Context,
-    private var accessToken: String? = null
+    private val accessToken: String? = null
 ) : IEngagement {
 
 //    TODO : Handle if integrator intialize sdk in offline state ( Once I thought of creating stream of sdk initialization requests too and handle everything gracefully :) )
@@ -33,7 +33,7 @@ class EngagementSDK(
 
     private val userRepository = UserRepository
 
-    private val currentUser: Stream<LiveLikeUser> = SubscriptionManager()
+    private val currentUserStream: Stream<LiveLikeUser> = userRepository.currentUserStream
 
     override val userStream: Stream<LiveLikeUserApi>
         get() = userRepository.currentUserStream.map {
@@ -49,7 +49,7 @@ class EngagementSDK(
             configurationStream.onNext(it)
         }
 
-        userRepository.initUser(clientId, userAccessToken)
+        userRepository.initUser(clientId, accessToken)
     }
 
     /**
@@ -59,7 +59,7 @@ class EngagementSDK(
     fun createContentSession(programId: String, widgetInterceptor: WidgetInterceptor? = null): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
-            currentUser,
+            currentUserStream,
             applicationContext,
             programId,
             { EpochTime(0) },
@@ -83,7 +83,7 @@ class EngagementSDK(
     ): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
-            currentUser,
+            currentUserStream,
             applicationContext,
             programId,
             { timecodeGetter.getTimecode() },

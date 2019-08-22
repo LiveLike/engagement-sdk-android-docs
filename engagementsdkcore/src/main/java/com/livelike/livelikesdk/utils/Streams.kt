@@ -53,6 +53,25 @@ internal fun <X, Y> Stream<X>.map(applyTransformation: (x: X) -> Y): Stream<Y> {
     return out
 }
 
+/**
+ * combine the latest from 2 streams only once, so the stream out will be single RX
+ */
+internal fun <X, Y> Stream<X>.combineLatestOnce(other: Stream<Y>): Stream<Pair<X, Y>> {
+    val pairedStream: Stream<Pair<X, Y>> = SubscriptionManager()
+    this.subscribe(other.hashCode()) {
+        it?.let { x ->
+            this.unsubscribe(other.hashCode())
+            other.subscribe(this.hashCode()) { y ->
+                y?.let {
+                    other.unsubscribe(this.hashCode())
+                    pairedStream.onNext(Pair(x, y))
+                }
+            }
+        }
+    }
+    return pairedStream
+}
+
 internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> = SubscriptionManager<T>().let { mgr ->
     val source = this
     val handler = Handler(Looper.getMainLooper())

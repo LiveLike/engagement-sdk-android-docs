@@ -198,7 +198,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         client.newCall(
             Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"))
                 .addUserAgent()
-                .addAuthorizationBearer()
+                .addAuthorizationBearer(accessToken)
                 .get()
                 .build()
         ).enqueue(object : Callback {

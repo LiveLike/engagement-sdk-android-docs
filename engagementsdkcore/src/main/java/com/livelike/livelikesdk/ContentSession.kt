@@ -21,6 +21,7 @@ import com.livelike.livelikesdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
+import com.livelike.livelikesdk.utils.combineLatestOnce
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
@@ -55,9 +56,12 @@ internal class ContentSession(
                 analyticService.trackUsername(it.nickname)
             }
         }
-        sdkConfiguration.subscribe(javaClass.simpleName) {
-            it?.let { configuration ->
-                analyticService = MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
+
+        currentUserStream.combineLatestOnce(sdkConfiguration).subscribe(javaClass.simpleName) {
+            it?.let { pair ->
+                val configuration = pair.second
+                analyticService =
+                    MixpanelAnalytics(applicationContext, configuration.mixpanelToken, programId)
                 analyticService.trackConfiguration(configuration.name ?: "")
 
                 if (programId.isNotEmpty()) {
@@ -68,7 +72,7 @@ internal class ContentSession(
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
-                            it.analyticsProps.forEach { map ->
+                            configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
                         }
@@ -90,7 +94,10 @@ internal class ContentSession(
         widgetContainer.setWidgetContainer(widgetView)
     }
 
-    private fun initializeWidgetMessaging(subscribeChannel: String, config: EngagementSDK.SdkConfiguration) {
+    private fun initializeWidgetMessaging(
+        subscribeChannel: String,
+        config: EngagementSDK.SdkConfiguration
+    ) {
         analyticService.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(config.pubNubKey)
@@ -99,7 +106,13 @@ internal class ContentSession(
                 .syncTo(currentPlayheadTime)
                 .integratorDeferredClient(widgetInterceptor)
                 .gamify()
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
+                .asWidgetManager(
+                    llDataClient,
+                    currentWidgetViewStream,
+                    applicationContext,
+                    analyticService,
+                    config
+                )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
@@ -109,10 +122,18 @@ internal class ContentSession(
 
     override var chatRenderer: ChatRenderer? = null
 
-    private fun initializeChatMessaging(chatChannel: String, config: EngagementSDK.SdkConfiguration) {
+    private fun initializeChatMessaging(
+        chatChannel: String,
+        config: EngagementSDK.SdkConfiguration
+    ) {
         analyticService.trackLastChatStatus(true)
         chatClient =
-            SendbirdMessagingClient(config.sendBirdAppId, applicationContext, analyticService, currentUserStream)
+            SendbirdMessagingClient(
+                config.sendBirdAppId,
+                applicationContext,
+                analyticService,
+                currentUserStream
+            )
                 .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
                 .toChatQueue()
                 .apply {

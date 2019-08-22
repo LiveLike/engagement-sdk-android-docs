@@ -28,7 +28,7 @@ internal object UserRepository {
     /**
      * Create or init user according to passed access token.
      * If no access token new user profile will be created.
-     * If invalid token passed then also new user created with error. TODO: we need to review this behaviour
+     * If invalid token passed then also new user created with error.
      */
     fun initUser(clientId: String, userAccessToken: String?) {
 
