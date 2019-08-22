@@ -37,8 +37,6 @@ import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -51,15 +49,7 @@ import kotlinx.coroutines.launch
  *  ```
  *
  */
-
-class ChatViewModel() {
-    var chatListener: ChatEventListener? = null
-    var chatAdapter: ChatRecyclerAdapter? = null
-    val messageList = mutableListOf<ChatMessage>()
-}
-
-class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs),
-    ChatRenderer {
+class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(context, attrs) {
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
         const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
@@ -68,8 +58,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private val uiScope = CoroutineScope(Dispatchers.Main)
-
-    override val chatContext: Context = context
 
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
@@ -90,11 +78,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
-        session.chatRenderer = this
 
         if (viewModel?.chatAdapter == null) {
             showLoadingSpinner()
-            viewModel?.chatAdapter = ChatRecyclerAdapter(session.analyticService)
         }
         viewModel?.chatAdapter?.let {
             setDataSource(it)
@@ -102,6 +88,20 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         session.currentUserStream.subscribe(javaClass.simpleName) {
             currentUser = it
+        }
+        viewModel?.debouncedStream?.subscribe(javaClass) {
+            when (it) {
+                "new-message" -> {
+                    // Auto scroll if user is looking at the latest messages
+                    chatdisplay?.let { rv ->
+                        val l = (rv.layoutManager as LinearLayoutManager)
+                        if (l.findLastVisibleItemPosition() > l.itemCount - 3)
+                            snapToLive()
+                    }
+                }
+                "deletion" -> {
+                }
+            }
         }
     }
 
@@ -113,41 +113,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             return
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-    }
-
-    override fun displayChatMessage(message: ChatMessage) {
-        hideLoadingSpinner()
-        viewModel?.messageList?.apply {
-            add(message.apply { isFromMe = currentUser?.sessionId == senderId })
-        }?.let {
-            viewModel?.chatAdapter?.submitList(ArrayList(it))
-
-            // Auto scroll if user is looking at the latest messages
-            chatdisplay?.let { rv ->
-                val l = (rv.layoutManager as LinearLayoutManager)
-                if (l.findLastVisibleItemPosition() > l.itemCount - 3)
-                    snapToLive()
-            }
-        }
-    }
-
-    override fun deleteChatMessage(messageId: String) {
-        viewModel?.messageList?.find { it.id == messageId }?.apply {
-            message = context.getString(R.string.chat_deleted_message_redacted)
-        }
-        viewModel?.chatAdapter?.submitList(ArrayList(viewModel?.messageList))
-    }
-
-    override fun updateChatMessageId(oldId: String, newId: String) {
-        viewModel?.messageList?.find {
-            it.id == oldId
-        }?.apply {
-            id = newId
-        }
-    }
-
-    override fun loadComplete() {
-        hideLoadingSpinner()
     }
 
     // Hide keyboard when clicking outside of the EditText
@@ -265,20 +230,23 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         val hideMethod = KeyboardHideReason.MESSAGE_SENT
         hideKeyboard(hideMethod)
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
-        val newMessage = ChatMessage(
+
+        ChatMessage(
             edittext_chat_message.text.toString(),
             currentUser?.sessionId ?: "empty-id", // TODO: User the user profile ID here instead
             currentUser?.nickname ?: "John Doe",
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString(),
             true
-        )
-        viewModel?.messageList?.add(newMessage)
-        viewModel?.chatAdapter?.submitList(viewModel?.messageList)
+        ).let {
+            viewModel?.apply {
+                displayChatMessage(it)
+                chatListener?.onChatMessageSend(it, timeData)
+            }
+        }
 
         hideLoadingSpinner()
         edittext_chat_message.setText("")
-        viewModel?.chatListener?.onChatMessageSend(newMessage, timeData)
         snapToLive()
     }
 
@@ -328,12 +296,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun snapToLive() {
-        uiScope.launch {
-            delay(200)
-            chatdisplay?.let { rv ->
-                rv.layoutManager?.itemCount?.let {
-                    rv.smoothScrollToPosition(it)
-                }
+        chatdisplay?.let { rv ->
+            rv.layoutManager?.itemCount?.let {
+                rv.smoothScrollToPosition(it)
             }
         }
     }

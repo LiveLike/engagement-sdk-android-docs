@@ -7,7 +7,6 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.MixpanelAnalytics
 import com.livelike.engagementsdkapi.MockAnalyticsService
-import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
 import com.livelike.livelikesdk.services.messaging.MessagingClient
@@ -39,9 +38,8 @@ internal class ContentSession(
     override var analyticService: AnalyticsService = MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
 
-    override val chatViewModel: ChatViewModel by lazy { ChatViewModel() }
+    override val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService) }
     private var chatClient: MessagingClient? = null
-
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
@@ -114,8 +112,6 @@ internal class ContentSession(
 
     // ///// Chat ///////
 
-    override var chatRenderer: ChatRenderer? = null
-
     private fun initializeChatMessaging(
         chatChannel: String,
         config: EngagementSDK.SdkConfiguration
@@ -132,7 +128,7 @@ internal class ContentSession(
                 .toChatQueue()
                 .apply {
                     subscribe(listOf(chatChannel))
-                    this.renderer = chatRenderer
+                    this.renderer = chatViewModel
                     chatViewModel.chatListener = this
                 }
     }

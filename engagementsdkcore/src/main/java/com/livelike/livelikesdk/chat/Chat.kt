@@ -1,6 +1,5 @@
 package com.livelike.livelikesdk.chat
 
-import android.content.Context
 import com.livelike.engagementsdkapi.EpochTime
 
 interface ChatEventListener {
@@ -8,10 +7,8 @@ interface ChatEventListener {
 }
 
 interface ChatRenderer {
-    val chatContext: Context
     fun displayChatMessage(message: ChatMessage)
     fun deleteChatMessage(messageId: String)
-    fun loadComplete()
     fun updateChatMessageId(oldId: String, newId: String)
 }
 
