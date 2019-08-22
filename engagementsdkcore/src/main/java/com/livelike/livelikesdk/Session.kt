@@ -16,14 +16,14 @@ import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 interface LiveLikeContentSession {
     var chatRenderer: ChatRenderer?
 
-    /** The current livelike User's data stream **/
-    val currentUser: Stream<LiveLikeUser>
-
     /** Where the chat data are stored **/
     val chatViewModel: ChatViewModel
 
     /** The analytics services **/
     val analyticService: AnalyticsService
+
+    /** get the current livelike User's data stream **/
+    val currentUserStream: Stream<LiveLikeUser>
 
     /** Override the default auto-generated chat nickname **/
     fun setChatNickname(nickname: String)
@@ -49,6 +49,7 @@ interface Stream<T> {
     fun subscribe(key: Any, observer: (T?) -> Unit)
     fun unsubscribe(key: Any)
     fun clear()
+    fun latest(): T?
 }
 
 class WidgetInfos(
