@@ -129,6 +129,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             setMessage("You received a Widget, what do you want to do?")
                             setPositiveButton("Show") { _, _ -> showWidget() }
                             setNegativeButton("Dismiss") { _, _ -> dismissWidget() }
+                            setCancelable(false)
                             create()
                         }.show()
                     }
