@@ -17,6 +17,7 @@ import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.utils.registerLogsHandler
+import java.time.Instant
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
@@ -126,7 +127,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 object : WidgetInterceptor() {
                     override fun widgetWantsToShow() {
                         AlertDialog.Builder(this@ExoPlayerActivity).apply {
-                            setMessage("You received a Widget, what do you want to do?")
+                            setMessage("You received a Widget, what do you want to do? ${Instant.now()}")
                             setPositiveButton("Show") { _, _ -> showWidget() }
                             setNegativeButton("Dismiss") { _, _ -> dismissWidget() }
                             setCancelable(false)

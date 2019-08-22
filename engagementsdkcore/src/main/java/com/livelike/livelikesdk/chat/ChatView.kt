@@ -28,6 +28,8 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.utils.logError
+import java.util.Date
+import java.util.UUID
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
@@ -37,8 +39,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Date
-import java.util.UUID
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -336,6 +336,5 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 }
             }
         }
-
     }
 }

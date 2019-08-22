@@ -51,7 +51,7 @@ internal class FilteringWidgetsMessagingClient(
                     }
                 }
             }
-        }catch (e:IllegalStateException){
+        } catch (e: IllegalStateException) {
             listener?.onClientMessageEvent(client, event)
         }
     }

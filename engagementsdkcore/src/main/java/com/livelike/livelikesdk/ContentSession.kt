@@ -35,9 +35,9 @@ internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val applicationContext: Context,
     private val programId: String,
-    private val currentPlayheadTime: () -> EpochTime,
-    override val widgetInterceptor: WidgetInterceptor? = null
+    private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
+    override var widgetInterceptor: WidgetInterceptor? = null
     override var analyticService: AnalyticsService = MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
 
@@ -120,7 +120,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .integratorDeferredClient(widgetInterceptor)
+                .integratorDeferredClient(this)
                 .gamify()
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
                 .apply {

@@ -44,9 +44,9 @@ class LiveLikeApplication : Application() {
                 override fun getTimecode(): EpochTime {
                     return EpochTime(player.getPDT())
                 }
-            },
-                widgetInterceptor)
+            })
         }
+        session!!.widgetInterceptor = widgetInterceptor
         return session as LiveLikeContentSession
     }
 }

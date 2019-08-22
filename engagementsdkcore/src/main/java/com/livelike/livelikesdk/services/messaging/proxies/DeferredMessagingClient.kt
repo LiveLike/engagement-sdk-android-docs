@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.services.messaging.proxies
 
 import com.livelike.engagementsdkapi.EpochTime
+import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
@@ -14,14 +15,14 @@ import kotlinx.coroutines.withContext
 
 internal class DeferredMessagingClient(
     upstream: MessagingClient,
-    private val widgetInterceptor: WidgetInterceptor?
+    private val session: LiveLikeContentSession
 ) :
     MessagingClientProxy(upstream) {
 
     private val pendingMessageQueue: Queue<ClientMessage> = LinkedList()
 
     init {
-        widgetInterceptor?.events?.subscribe(javaClass.simpleName) {
+        session.widgetInterceptor?.events?.subscribe(javaClass.simpleName) {
             when (it) {
                 WidgetInterceptor.Decision.Show -> showPendingMessages()
                 WidgetInterceptor.Decision.Dismiss -> dismissPendingMessages()
@@ -42,12 +43,12 @@ internal class DeferredMessagingClient(
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        if (widgetInterceptor != null) {
+        if (session.widgetInterceptor != null) {
             pendingMessageQueue.add(event)
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
-                    widgetInterceptor.widgetWantsToShow()
+                    session.widgetInterceptor?.widgetWantsToShow()
                 }
             }
         } else {
@@ -83,7 +84,7 @@ abstract class WidgetInterceptor {
 }
 
 internal fun MessagingClient.integratorDeferredClient(
-    widgetInterceptor: WidgetInterceptor?
+    session: LiveLikeContentSession
 ): DeferredMessagingClient {
-    return DeferredMessagingClient(this, widgetInterceptor)
+    return DeferredMessagingClient(this, session)
 }
