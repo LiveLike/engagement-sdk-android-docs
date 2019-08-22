@@ -28,16 +28,17 @@ import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.utils.logError
-import java.util.Date
-import java.util.UUID
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.UUID
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -65,6 +66,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
         private const val CHAT_MINIMUM_SIZE_DP = 292
     }
+
+    private val uiScope = CoroutineScope(Dispatchers.Main)
 
     override val chatContext: Context = context
 
@@ -276,10 +279,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         hideLoadingSpinner()
         edittext_chat_message.setText("")
         viewModel?.chatListener?.onChatMessageSend(newMessage, timeData)
-        GlobalScope.launch {
-            delay(200)
-            snapToLive()
-        }
+        snapToLive()
     }
 
     private fun hideSnapToLive() {
@@ -328,6 +328,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun snapToLive() {
-        chatdisplay.layoutManager?.itemCount?.let { chatdisplay.smoothScrollToPosition(it) }
+        uiScope.launch {
+            delay(200)
+            chatdisplay?.let { rv ->
+                rv.layoutManager?.itemCount?.let {
+                    rv.smoothScrollToPosition(it)
+                }
+            }
+        }
+
     }
 }

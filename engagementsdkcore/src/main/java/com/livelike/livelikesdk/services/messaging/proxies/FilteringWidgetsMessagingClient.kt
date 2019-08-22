@@ -1,7 +1,6 @@
 package com.livelike.livelikesdk.services.messaging.proxies
 
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.livelikesdk.WidgetInfos
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.utils.gson
@@ -10,7 +9,8 @@ import com.livelike.livelikesdk.widget.WidgetType
 import com.livelike.livelikesdk.widget.model.Resource
 
 internal class FilteringWidgetsMessagingClient(
-    upstream: MessagingClient) :
+    upstream: MessagingClient
+) :
     MessagingClientProxy(upstream) {
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
@@ -25,31 +25,34 @@ internal class FilteringWidgetsMessagingClient(
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-        val widgetType = event.message.get("event").asString ?: ""
-        val payload = event.message.get("payload").asJsonObject
-        val widgetId = event.message.get("id").asString
-        val resource = gson.fromJson(payload, Resource::class.java) ?: null
+        try {
+            val widgetType = event.message.get("event").asString ?: ""
+            val payload = event.message.get("payload").asJsonObject
+            val resource = gson.fromJson(payload, Resource::class.java) ?: null
 
-        resource?.let {
-            val unit = when (WidgetType.fromString(widgetType)) {
-                WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> {
-                    if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.image_prediction_id).isNotEmpty()) {
-                        listener?.onClientMessageEvent(client, event)
-                    }else{
-                        // Do nothing, filter this event
+            resource?.let {
+                when (WidgetType.fromString(widgetType)) {
+                    WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> {
+                        if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.image_prediction_id).isNotEmpty()) {
+                            listener?.onClientMessageEvent(client, event)
+                        } else {
+                            // Do nothing, filter this event
+                        }
                     }
-                }
-                WidgetType.TEXT_PREDICTION_FOLLOW_UP -> {
-                    if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.text_prediction_id).isNotEmpty()) {
-                        listener?.onClientMessageEvent(client, event)
-                    }else{
-                        // Do nothing, filter this event
+                    WidgetType.TEXT_PREDICTION_FOLLOW_UP -> {
+                        if (getWidgetPredictionVotedAnswerIdOrEmpty(resource.text_prediction_id).isNotEmpty()) {
+                            listener?.onClientMessageEvent(client, event)
+                        } else {
+                            // Do nothing, filter this event
+                        }
                     }
-                }
-                else -> {
-                    listener?.onClientMessageEvent(client, event)
+                    else -> {
+                        listener?.onClientMessageEvent(client, event)
+                    }
                 }
             }
+        }catch (e:IllegalStateException){
+            listener?.onClientMessageEvent(client, event)
         }
     }
 }
