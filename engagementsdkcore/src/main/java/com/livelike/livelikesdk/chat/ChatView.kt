@@ -79,6 +79,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private val viewModel: ChatViewModel?
         get() = session?.chatViewModel
 
+
+
+
+
     init {
         (context as Activity).window.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
