@@ -120,9 +120,9 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .integratorDeferredClient(this)
                 .gamify()
                 .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, analyticService, config)
+                .integratorDeferredClient(this)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
