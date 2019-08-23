@@ -32,6 +32,7 @@ import java.util.Date
 import java.util.UUID
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
+import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
@@ -73,15 +74,12 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
 
-        LayoutInflater.from(context).inflate(com.livelike.livelikesdk.R.layout.chat_view, this, true)
+        LayoutInflater.from(context).inflate(R.layout.chat_view, this, true)
     }
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
 
-        if (viewModel?.chatAdapter == null) {
-            showLoadingSpinner()
-        }
         viewModel?.chatAdapter?.let {
             setDataSource(it)
         }
@@ -99,7 +97,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                             snapToLive()
                     }
                 }
-                "deletion" -> {
+                "loading-complete" -> {
+                    hideLoadingSpinner()
+                    snapToLiveWithoutAnimation()
                 }
             }
         }
@@ -140,6 +140,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
      *  @param chatAdapter ChatAdapter used for creating this view.
      */
     private fun setDataSource(chatAdapter: ChatRecyclerAdapter) {
+        if (chatAdapter.itemCount < 1) {
+            showLoadingSpinner()
+        }
         chatdisplay.adapter = chatAdapter
 
         chatdisplay.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -204,10 +207,15 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private fun showLoadingSpinner() {
         loadingSpinner.visibility = View.VISIBLE
+        chatInput.visibility = View.GONE
+        chatdisplay.visibility = View.GONE
+        snap_live.visibility = View.GONE
     }
 
     private fun hideLoadingSpinner() {
         loadingSpinner.visibility = View.GONE
+        chatInput.visibility = View.VISIBLE
+        chatdisplay.visibility = View.VISIBLE
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
@@ -299,6 +307,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         chatdisplay?.let { rv ->
             rv.layoutManager?.itemCount?.let {
                 rv.smoothScrollToPosition(it)
+            }
+        }
+    }
+
+    private fun snapToLiveWithoutAnimation() {
+        chatdisplay?.let { rv ->
+            rv.layoutManager?.itemCount?.let {
+                rv.scrollToPosition(it)
             }
         }
     }

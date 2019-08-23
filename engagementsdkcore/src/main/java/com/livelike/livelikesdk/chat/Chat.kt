@@ -10,6 +10,7 @@ interface ChatRenderer {
     fun displayChatMessage(message: ChatMessage)
     fun deleteChatMessage(messageId: String)
     fun updateChatMessageId(oldId: String, newId: String)
+    fun loadingCompleted()
 }
 
 /**

@@ -24,7 +24,7 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
         messageList.find { it.id == messageId }?.apply {
             message = "Redacted"
         }
-        chatAdapter?.submitList(ArrayList(messageList))
+        chatAdapter.submitList(ArrayList(messageList))
         eventStream.onNext("deletion")
     }
 
@@ -34,5 +34,9 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
         }?.apply {
             id = newId
         }
+    }
+
+    override fun loadingCompleted() {
+        eventStream.onNext("loading-complete")
     }
 }

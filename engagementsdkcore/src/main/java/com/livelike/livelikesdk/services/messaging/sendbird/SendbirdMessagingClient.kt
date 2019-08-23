@@ -188,6 +188,10 @@ internal class SendbirdMessagingClient(
                                     messageIdList.add(message.messageId)
                                 }
                             }
+                            val msg = JsonObject().apply {
+                                addProperty("event", "loading-complete")
+                            }
+                            listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(msg, openChannel.url, EpochTime(0)))
                         })
                 })
         }

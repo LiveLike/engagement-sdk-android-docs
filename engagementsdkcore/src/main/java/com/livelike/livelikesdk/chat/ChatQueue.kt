@@ -74,6 +74,9 @@ internal class ChatQueue(upstream: MessagingClient) :
             "id-updated" -> {
                 renderer?.updateChatMessageId(event.message.get("old-id").asString, event.message.get("new-id").asString)
             }
+            "loading-complete" -> {
+                renderer?.loadingCompleted()
+            }
         }
     }
 }
