@@ -32,7 +32,7 @@ internal class SendbirdMessagingClient(
     private val subscribeKey: String,
     val context: Context,
     private val analyticsService: AnalyticsService,
-    liveLikeUser: Stream<LiveLikeUser>
+    private val liveLikeUser: Stream<LiveLikeUser>
 ) :
     MessagingClient, ChatClient {
     private val zoneUTC = ZoneId.of("UTC")
@@ -45,11 +45,9 @@ internal class SendbirdMessagingClient(
     private var listener: MessagingEventListener? = null
     private var connectedChannels: MutableList<OpenChannel> = mutableListOf()
     private val messageIdList = mutableListOf<Long>()
-    private var user: LiveLikeUser? = null
 
     init {
         liveLikeUser.subscribe(javaClass) {
-            user = it
             it?.let { u ->
                 when (SendBird.getConnectionState()) {
                     SendBird.ConnectionState.CLOSED -> connectToSendbird(u)
@@ -123,7 +121,7 @@ internal class SendbirdMessagingClient(
     }
 
     override fun resume() {
-        user?.let { connectToSendbird(it, true) }
+        liveLikeUser.latest()?.let { connectToSendbird(it, true) }
     }
 
     data class MessageData(

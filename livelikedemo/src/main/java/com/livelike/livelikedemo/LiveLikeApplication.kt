@@ -23,7 +23,7 @@ class LiveLikeApplication : Application() {
     lateinit var player: VideoPlayer
     private var session: LiveLikeContentSession? = null
     lateinit var sdk: EngagementSDK
-    lateinit var sdk2: EngagementSDK
+//    lateinit var sdk2: EngagementSDK
 
     override fun onCreate() {
         super.onCreate()
@@ -36,7 +36,7 @@ class LiveLikeApplication : Application() {
             fetchAndPersisToken(sdk)
         }
 
-        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
+//        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
     }
 
     private fun fetchAndPersisToken(sdk: EngagementSDK) {

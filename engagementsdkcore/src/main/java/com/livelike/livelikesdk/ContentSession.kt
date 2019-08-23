@@ -35,6 +35,11 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
     override var widgetInterceptor: WidgetInterceptor? = null
+        set(value) {
+            field = value
+            widgetInterceptorStream.onNext(value)
+        }
+    private val widgetInterceptorStream: Stream<WidgetInterceptor> = SubscriptionManager()
     override var analyticService: AnalyticsService = MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
 
@@ -44,11 +49,8 @@ internal class ContentSession(
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
-    private var user: LiveLikeUser? = null
-
     init {
         currentUserStream.subscribe(javaClass) {
-            user = it
             it?.let {
                 analyticService.trackSession(it.id)
                 analyticService.trackUsername(it.nickname)
@@ -104,7 +106,7 @@ internal class ContentSession(
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .gamify()
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, this, config)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
@@ -135,7 +137,7 @@ internal class ContentSession(
 
     override fun setChatNickname(nickname: String) {
         setNickname(nickname)
-        user?.apply {
+        currentUserStream.latest()?.apply {
             this.nickname = nickname
             currentUserStream.onNext(this)
         }
