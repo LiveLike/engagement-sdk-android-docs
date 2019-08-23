@@ -118,7 +118,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     override fun displayChatMessage(message: ChatMessage) {
         hideLoadingSpinner()
         viewModel?.messageList?.apply {
-            add(message.apply { isFromMe = currentUser?.sessionId == senderId })
+            add(message.apply { isFromMe = currentUser?.id == senderId })
         }?.let {
             viewModel?.chatAdapter?.submitList(ArrayList(it))
 
@@ -267,7 +267,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
         val newMessage = ChatMessage(
             edittext_chat_message.text.toString(),
-            currentUser?.sessionId ?: "empty-id", // TODO: User the user profile ID here instead
+            currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString(),
