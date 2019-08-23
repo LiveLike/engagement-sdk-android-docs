@@ -13,7 +13,9 @@ import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.utils.SubscriptionManager
+import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.model.Reward
+import java.lang.Exception
 import java.util.PriorityQueue
 import java.util.Queue
 import kotlinx.coroutines.Dispatchers
@@ -48,8 +50,8 @@ internal class WidgetManager(
         widgetInterceptorStream.subscribe(javaClass) { wi ->
                 wi?.events?.subscribe(javaClass.simpleName) {
                 when (it) {
-                    WidgetInterceptor.Decision.Show -> showPendingMessages()
-                    WidgetInterceptor.Decision.Dismiss -> dismissPendingMessages()
+                    WidgetInterceptor.Decision.Show -> showPendingMessage()
+                    WidgetInterceptor.Decision.Dismiss -> dismissPendingMessage()
                     }
                 }
             }
@@ -86,13 +88,13 @@ internal class WidgetManager(
         }
     }
 
-    private fun showPendingMessages() {
+    private fun showPendingMessage() {
         pendingMessage?.let {
             showWidgetOnScreen(it)
         }
     }
 
-    private fun dismissPendingMessages() {
+    private fun dismissPendingMessage() {
         publishNextInQueue()
     }
 
@@ -104,7 +106,12 @@ internal class WidgetManager(
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
-                    widgetInterceptorStream.latest()?.widgetWantsToShow()
+                    try {
+                        widgetInterceptorStream.latest()?.widgetWantsToShow()
+                    } catch (e: Exception) {
+                        logError { "Widget interceptor encountered a problem: $e \n Dismissing the widget" }
+                        dismissPendingMessage()
+                    }
                 }
             }
             pendingMessage = message
