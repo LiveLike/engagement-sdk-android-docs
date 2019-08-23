@@ -241,7 +241,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
         ChatMessage(
             edittext_chat_message.text.toString(),
-            currentUser?.sessionId ?: "empty-id", // TODO: User the user profile ID here instead
+            currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString(),

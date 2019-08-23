@@ -14,6 +14,7 @@ import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.utils.SubscriptionManager
+import com.livelike.livelikesdk.utils.logError
 import com.livelike.livelikesdk.widget.model.Reward
 import java.util.PriorityQueue
 import java.util.Queue
@@ -100,7 +101,12 @@ internal class WidgetManager(
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
-                    session.widgetInterceptor?.widgetWantsToShow()
+                    try {
+                        session.widgetInterceptor?.widgetWantsToShow()
+                    } catch (e: Exception) {
+                        logError { "The Widget interceptor encountered a problem: $e \n Releasing the widget." }
+                        showWidgetOnScreen(message)
+                    }
                 }
             }
             pendingMessage = message

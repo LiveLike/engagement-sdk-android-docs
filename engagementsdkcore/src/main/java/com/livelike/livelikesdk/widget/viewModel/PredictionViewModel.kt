@@ -158,6 +158,7 @@ internal class PredictionViewModel(
         animationPath = AndroidResource.selectRandomLottieAnimation("confirmMessage", appContext) ?: ""
 
         uiScope.launch {
+            vote()
             data.currentData?.resource?.rewards_url?.let {
                 points = dataClient.rewardAsync(it, analyticsService)?.new_points
                 interactionData.pointEarned = points ?: 0
@@ -170,23 +171,8 @@ internal class PredictionViewModel(
     }
 
     private fun cleanUp() {
-        // Vote for the selected option before starting the confirm animation
-        data.currentData?.let {
-            adapter?.apply {
-                if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
-                    val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
-
-                    uiScope.launch {
-                        // Prediction widget votes on dismiss
-                        selectedOption?.getMergedVoteUrl()?.let { url ->
-                            dataClient.voteAsync(url, selectedOption.id)
-                        }
-                    }
-
-                    // Save widget id and voted option for followup widget
-                    addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
-                }
-            }
+        uiScope.launch {
+            vote()
         }
         timeoutStarted = false
         adapter = null
@@ -199,5 +185,23 @@ internal class PredictionViewModel(
         currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()
+    }
+
+    private suspend fun vote() {
+        data.currentData?.let {
+            adapter?.apply {
+                if (selectedPosition != RecyclerView.NO_POSITION) { // User has selected an option
+                    val selectedOption = it.resource.getMergedOptions()?.get(selectedPosition)
+
+                    // Prediction widget votes on dismiss
+                    selectedOption?.getMergedVoteUrl()?.let { url ->
+                        dataClient.voteAsync(url, selectedOption.id)
+                    }
+
+                    // Save widget id and voted option for followup widget
+                    addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
+                }
+            }
+        }
     }
 }
