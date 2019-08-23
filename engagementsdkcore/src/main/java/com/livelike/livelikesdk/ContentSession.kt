@@ -21,7 +21,6 @@ import com.livelike.livelikesdk.services.messaging.sendbird.SendbirdMessagingCli
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.combineLatestOnce
-import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.logVerbose
 import com.livelike.livelikesdk.widget.SpecifiedWidgetView
 import com.livelike.livelikesdk.widget.asWidgetManager
@@ -133,14 +132,6 @@ internal class ContentSession(
                     this.renderer = chatViewModel
                     chatViewModel.chatListener = this
                 }
-    }
-
-    override fun setChatNickname(nickname: String) {
-        setNickname(nickname)
-        currentUserStream.latest()?.apply {
-            this.nickname = nickname
-            currentUserStream.onNext(this)
-        }
     }
 
     // ////// Global Session Controls ////////
