@@ -57,7 +57,7 @@ internal class ContentSession(
         currentUserStream.subscribe(javaClass) {
             user = it
             it?.let {
-                analyticService.trackSession(it.sessionId)
+                analyticService.trackSession(it.id)
                 analyticService.trackUsername(it.nickname)
             }
         }

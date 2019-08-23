@@ -61,7 +61,7 @@ internal class SendbirdMessagingClient(
 
     private fun connectToSendbird(livelikeUser: LiveLikeUser, resubscribe: Boolean = false) {
         SendBird.init(subscribeKey, context)
-        SendBird.connect(livelikeUser.sessionId, object : SendBird.ConnectHandler {
+        SendBird.connect(livelikeUser.id, object : SendBird.ConnectHandler {
             override fun onConnected(user: User?, e: SendBirdException?) {
                 if (e != null || user == null) { // Error.
                     return
