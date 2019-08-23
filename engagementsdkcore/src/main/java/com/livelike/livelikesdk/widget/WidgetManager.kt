@@ -6,7 +6,6 @@ import android.os.Looper
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.EngagementSDK
-import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.WidgetInfos
 import com.livelike.livelikesdk.services.messaging.ClientMessage
@@ -27,7 +26,8 @@ internal class WidgetManager(
     private val dataClient: WidgetDataClient,
     private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
     private val context: Context,
-    private val session: LiveLikeContentSession,
+    private val widgetInterceptorStream: Stream<WidgetInterceptor>,
+    private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration
 ) :
     MessagingClientProxy(upstream) {
@@ -45,12 +45,14 @@ internal class WidgetManager(
     var pendingMessage: MessageHolder? = null
 
     init {
-        session.widgetInterceptor?.events?.subscribe(javaClass.simpleName) {
-            when (it) {
-                WidgetInterceptor.Decision.Show -> showPendingMessages()
-                WidgetInterceptor.Decision.Dismiss -> dismissPendingMessages()
+        widgetInterceptorStream.subscribe(javaClass) { wi ->
+                wi?.events?.subscribe(javaClass.simpleName) {
+                when (it) {
+                    WidgetInterceptor.Decision.Show -> showPendingMessages()
+                    WidgetInterceptor.Decision.Dismiss -> dismissPendingMessages()
+                    }
+                }
             }
-        }
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -85,7 +87,9 @@ internal class WidgetManager(
     }
 
     private fun showPendingMessages() {
-        pendingMessage?.let { showWidgetOnScreen(it) }
+        pendingMessage?.let {
+            showWidgetOnScreen(it)
+        }
     }
 
     private fun dismissPendingMessages() {
@@ -94,13 +98,13 @@ internal class WidgetManager(
 
     private fun notifyIntegrator(message: MessageHolder) {
         val widgetType = WidgetType.fromString(message.clientMessage.message.get("event").asString ?: "")
-        if (session.widgetInterceptor == null || widgetType == WidgetType.POINTS_TUTORIAL) {
+        if (widgetInterceptorStream.latest() == null || widgetType == WidgetType.POINTS_TUTORIAL) {
             showWidgetOnScreen(message)
         } else {
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
-                    session.widgetInterceptor?.widgetWantsToShow()
+                    widgetInterceptorStream.latest()?.widgetWantsToShow()
                 }
             }
             pendingMessage = message
@@ -112,14 +116,14 @@ internal class WidgetManager(
         val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
-        session.analyticService.trackWidgetDisplayed(widgetType, widgetId)
+        analyticsService.trackWidgetDisplayed(widgetType, widgetId)
 
         handler.post {
             currentWidgetViewStream.onNext(
                 WidgetProvider().get(
                     WidgetInfos(widgetType, payload, widgetId),
                     context,
-                    session.analyticService,
+                    analyticsService,
                     sdkConfiguration
                 ) {
                     publishNextInQueue()
@@ -164,8 +168,9 @@ internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
     widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
     context: Context,
-    session: LiveLikeContentSession,
+    widgetInterceptorStream: Stream<WidgetInterceptor>,
+    analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream, context, session, sdkConfiguration)
+    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration)
 }
