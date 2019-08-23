@@ -49,11 +49,8 @@ internal class ContentSession(
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
-    private var user: LiveLikeUser? = null
-
     init {
         currentUserStream.subscribe(javaClass) {
-            user = it
             it?.let {
                 analyticService.trackSession(it.id)
                 analyticService.trackUsername(it.nickname)
@@ -140,7 +137,7 @@ internal class ContentSession(
 
     override fun setChatNickname(nickname: String) {
         setNickname(nickname)
-        user?.apply {
+        currentUserStream.latest()?.apply {
             this.nickname = nickname
             currentUserStream.onNext(this)
         }
