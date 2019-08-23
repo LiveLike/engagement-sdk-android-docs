@@ -21,7 +21,7 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
 
     override fun displayChatMessage(message: ChatMessage) {
         messageList.add(message.apply {
-            isFromMe = UserRepository.currentUserStream.latest()?.sessionId == senderId
+            isFromMe = UserRepository.currentUserStream.latest()?.id == senderId
         })
         chatAdapter.submitList(ArrayList(messageList))
         eventStream.onNext(EVENT_NEW_MESSAGE)
