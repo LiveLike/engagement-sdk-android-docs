@@ -89,7 +89,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
         viewModel?.debouncedStream?.subscribe(javaClass) {
             when (it) {
-                "new-message" -> {
+                ChatViewModel.EVENT_NEW_MESSAGE -> {
                     // Auto scroll if user is looking at the latest messages
                     chatdisplay?.let { rv ->
                         val l = (rv.layoutManager as LinearLayoutManager)
@@ -97,7 +97,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                             snapToLive()
                     }
                 }
-                "loading-complete" -> {
+                ChatViewModel.EVENT_LOADING_COMPLETE -> {
                     hideLoadingSpinner()
                     snapToLiveWithoutAnimation()
                 }

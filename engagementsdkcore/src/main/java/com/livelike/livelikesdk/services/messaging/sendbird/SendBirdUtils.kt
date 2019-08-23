@@ -2,6 +2,7 @@ package com.livelike.livelikesdk.services.messaging.sendbird
 
 import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.EpochTime
+import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.utils.logWarn
@@ -12,7 +13,7 @@ internal class SendBirdUtils {
     companion object {
         fun clientMessageFromBaseMessage(message: UserMessage, channel: BaseChannel): ClientMessage {
             val messageJson = JsonObject()
-            messageJson.addProperty("event", "new-message")
+            messageJson.addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
             messageJson.addProperty("message", message.message)
             messageJson.addProperty("sender", message.sender.nickname)
             messageJson.addProperty("sender_id", message.sender.userId)

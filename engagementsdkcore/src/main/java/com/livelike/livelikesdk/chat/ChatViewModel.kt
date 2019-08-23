@@ -12,12 +12,19 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
     private val eventStream: SubscriptionManager<String> = SubscriptionManager()
     internal val debouncedStream = eventStream.debounce(1000)
 
+    companion object {
+        const val EVENT_NEW_MESSAGE = "new-message"
+        const val EVENT_MESSAGE_DELETED = "deletion"
+        const val EVENT_MESSAGE_ID_UPDATED = "id-updated"
+        const val EVENT_LOADING_COMPLETE = "loading-complete"
+    }
+
     override fun displayChatMessage(message: ChatMessage) {
         messageList.add(message.apply {
             isFromMe = UserRepository.currentUserStream.latest()?.sessionId == senderId
         })
         chatAdapter.submitList(ArrayList(messageList))
-        eventStream.onNext("new-message")
+        eventStream.onNext(EVENT_NEW_MESSAGE)
     }
 
     override fun deleteChatMessage(messageId: String) {
@@ -25,7 +32,7 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
             message = "Redacted"
         }
         chatAdapter.submitList(ArrayList(messageList))
-        eventStream.onNext("deletion")
+        eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 
     override fun updateChatMessageId(oldId: String, newId: String) {
@@ -37,6 +44,6 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
     }
 
     override fun loadingCompleted() {
-        eventStream.onNext("loading-complete")
+        eventStream.onNext(EVENT_LOADING_COMPLETE)
     }
 }
