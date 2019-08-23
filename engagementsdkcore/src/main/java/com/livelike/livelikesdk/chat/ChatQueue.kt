@@ -57,7 +57,7 @@ internal class ChatQueue(upstream: MessagingClient) :
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         when (event.message.get("event").asString) {
-            "new-message" -> {
+            ChatViewModel.EVENT_NEW_MESSAGE -> {
                 val newMessage = ChatMessage(
                     event.message.get("message").asString,
                     event.message.get("sender_id").asString,
@@ -67,12 +67,15 @@ internal class ChatQueue(upstream: MessagingClient) :
                 )
                 renderer?.displayChatMessage(newMessage)
             }
-            "deletion" -> {
+            ChatViewModel.EVENT_MESSAGE_DELETED -> {
                 val id = event.message.get("id").asString
                 renderer?.deleteChatMessage(id)
             }
-            "id-updated" -> {
+            ChatViewModel.EVENT_MESSAGE_ID_UPDATED -> {
                 renderer?.updateChatMessageId(event.message.get("old-id").asString, event.message.get("new-id").asString)
+            }
+            ChatViewModel.EVENT_LOADING_COMPLETE -> {
+                renderer?.loadingCompleted()
             }
         }
     }

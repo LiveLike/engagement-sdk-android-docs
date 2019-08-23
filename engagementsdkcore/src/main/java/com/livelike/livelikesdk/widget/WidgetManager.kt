@@ -44,7 +44,7 @@ internal class WidgetManager(
 
     private val messageQueue: Queue<MessageHolder> = PriorityQueue()
     private var widgetOnScreen = false
-    var pendingMessage: MessageHolder? = null
+    private var pendingMessage: MessageHolder? = null
 
     init {
         widgetInterceptorStream.subscribe(javaClass) { wi ->
