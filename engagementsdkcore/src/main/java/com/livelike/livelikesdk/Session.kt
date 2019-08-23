@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.livelikesdk.chat.ChatRenderer
 import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 
@@ -14,8 +13,6 @@ import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
  *  component.
  */
 interface LiveLikeContentSession {
-    var chatRenderer: ChatRenderer?
-
     /** Where the chat data are stored **/
     val chatViewModel: ChatViewModel
 

@@ -7,6 +7,7 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.chat.ChatMessage
+import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.MessagingEventListener
@@ -108,7 +109,7 @@ internal class SendbirdMessagingClient(
                 messageIdList.add(msg.messageId)
 
                 val newMsg = JsonObject().apply {
-                    addProperty("event", "id-updated")
+                    addProperty("event", ChatViewModel.EVENT_MESSAGE_ID_UPDATED)
                     addProperty("new-id", "${msg.messageId}")
                     addProperty("old-id", clientMessage.id)
                 }
@@ -160,7 +161,7 @@ internal class SendbirdMessagingClient(
                             override fun onMessageDeleted(channel: BaseChannel?, msgId: Long) {
                                 if (channel != null) {
                                     val msg = JsonObject().apply {
-                                        addProperty("event", "deletion")
+                                        addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
                                         addProperty("id", "$msgId")
                                     }
                                     listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(msg, channel.url, EpochTime(0)))
@@ -188,6 +189,10 @@ internal class SendbirdMessagingClient(
                                     messageIdList.add(message.messageId)
                                 }
                             }
+                            val msg = JsonObject().apply {
+                                addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
+                            }
+                            listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(msg, openChannel.url, EpochTime(0)))
                         })
                 })
         }
