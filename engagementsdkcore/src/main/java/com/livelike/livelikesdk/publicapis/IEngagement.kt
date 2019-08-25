@@ -17,4 +17,7 @@ interface IEngagement {
      * Returns public user stream.
      */
     val userStream: Stream<LiveLikeUserApi>
+
+    /** Override the default auto-generated chat nickname **/
+    fun updateChatNickname(nickname: String)
 }

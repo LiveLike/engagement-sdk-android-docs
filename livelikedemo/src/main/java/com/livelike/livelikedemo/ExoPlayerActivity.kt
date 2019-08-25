@@ -142,7 +142,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 .getString("UserNickname", "")
                 .let {
                     if (!it.isNullOrEmpty()) {
-                        session.setChatNickname(it)
+                        (application as LiveLikeApplication).sdk.updateChatNickname(it)
                     }
                 }
 
