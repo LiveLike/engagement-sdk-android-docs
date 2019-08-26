@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+
+    <!--suppress AndroidDomInspection -->
+    <TextView
+            android:id="@+id/titleTextView"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:background="@drawable/header_rounded_corner_default"
+            android:textColor="@color/livelike_header_text_color"
+            android:textSize="@dimen/livelike_header_text_size"
+            app:fontFamily="@font/livelike_header_font"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Question Text goes here"
+            android:paddingStart="16dp"
+            android:paddingRight="16dp"
+            android:paddingEnd="16dp"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textAllCaps="true"
+            android:gravity="start|center"
+            android:paddingLeft="16dp"
+            android:textStyle="bold"/>
+
+</android.support.constraint.ConstraintLayout>

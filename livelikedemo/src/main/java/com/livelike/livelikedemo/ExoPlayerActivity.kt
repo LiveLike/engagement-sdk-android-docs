@@ -10,13 +10,13 @@ import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.view.WindowManager
+import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.utils.registerLogsHandler
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import com.livelike.livelikesdk.LiveLikeContentSession
-import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
-import com.livelike.livelikesdk.utils.registerLogsHandler
 import java.time.Instant
 import java.util.Date
 import java.util.Timer

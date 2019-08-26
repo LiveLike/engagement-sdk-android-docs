@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/progress">
+        <scale android:scaleWidth="100%">
+            <shape>
+                <corners android:radius="@dimen/livelike_percent_bar_corner_radius"/>
+                <gradient
+                        android:angle="@integer/percent_bar_gradient_angle"
+                        android:startColor="@color/livelike_neutral_bar_gradient_left"
+                        android:endColor="@color/livelike_neutral_bar_gradient_right"/>
+                <padding android:bottom="15dp"
+                         android:top="14dp"
+                         android:right="48dp"
+                         android:left="16dp"/>
+            </shape>
+        </scale>
+    </item>
+</layer-list>

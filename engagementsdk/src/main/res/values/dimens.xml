@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="livelike_alert_body_text_size">14sp</dimen>
+    <dimen name="livelike_alert_link_text_size">14sp</dimen>
+    <dimen name="livelike_alert_label_text_size">12sp</dimen>
+
+    <dimen name="livelike_percent_label_text_size">18sp</dimen>
+    <dimen name="livelike_header_text_size">12sp</dimen>
+    <dimen name="livelike_option_text_size">14sp</dimen>
+
+    <dimen name="livelike_default_chat_cell_text_size">16sp</dimen>
+    <dimen name="livelike_default_chat_cell_name_size">13sp</dimen>
+    <dimen name="livelike_default_chat_input_text_size">14sp</dimen>
+    <dimen name="livelike_default_chat_cell_margin_vertical">8dp</dimen>
+    <dimen name="livelike_default_chat_cell_padding_horizontal">16dp</dimen>
+    <dimen name="livelike_default_chat_cell_padding_left">@dimen/livelike_default_chat_cell_padding_horizontal</dimen>
+    <dimen name="livelike_default_chat_cell_padding_right">@dimen/livelike_default_chat_cell_padding_horizontal</dimen>
+    <dimen name="livelike_default_chat_cell_padding_vertical">8dp</dimen>
+    <dimen name="livelike_default_chat_cell_padding_top">@dimen/livelike_default_chat_cell_padding_vertical</dimen>
+    <dimen name="livelike_default_chat_cell_padding_bottom">@dimen/livelike_default_chat_cell_padding_vertical</dimen>
+    <dimen name="livelike_default_chat_input_border_radius">20dp</dimen>
+    <dimen name="livelike_default_chat_input_border_stroke">1dp</dimen>
+    <dimen name="livelike_default_chat_input_margin_bottom">8dp</dimen>
+
+    <dimen name="livelike_percent_bar_corner_radius">4dp</dimen>
+    <dimen name="livelike_percent_bar_corner_radius_image">2dp</dimen>
+    <dimen name="livelike_header_corner_radius">6dp</dimen>
+    <dimen name="livelike_header_background_notification_label_radius">3dp</dimen>
+    <dimen name="livelike_chat_rounded_rect_radius">12dp</dimen>
+    <dimen name="livelike_button_corner_radius">6dp</dimen>
+    <dimen name="livelike_button_outline_stroke_width">2dp</dimen>
+    <dimen name="livelike_confirm_outline_stroke_width">1dp</dimen>
+    <dimen name="livelike_header_outline_stroke_width">1dp</dimen>
+</resources>

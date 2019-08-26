@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".WidgetOnlyActivity">
-    <com.livelike.livelikesdk.widget.view.WidgetTestView
+    <com.livelike.engagementsdk.widget.view.WidgetTestView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintTop_toTopOf="parent"
