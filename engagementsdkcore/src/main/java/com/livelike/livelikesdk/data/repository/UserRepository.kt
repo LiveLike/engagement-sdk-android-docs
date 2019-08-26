@@ -1,11 +1,15 @@
 package com.livelike.livelikesdk.data.repository
 
+import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.getNickename
+import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.livelikesdk.utils.logError
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 /**
  * Repository that handles user data. It knows what data sources need to be
@@ -13,7 +17,7 @@ import com.livelike.livelikesdk.utils.logError
  * In Typical frontend application we have local and remote data source, we will move towards that gradually[TODO].
  */
 internal object UserRepository {
-
+    private lateinit var clientId: String
     private val dataClient = EngagementDataClientImpl()
 
     /**
@@ -31,7 +35,7 @@ internal object UserRepository {
      * If invalid token passed then also new user created with error.
      */
     fun initUser(clientId: String, userAccessToken: String?) {
-
+        this.clientId = clientId
         if (userAccessToken == null) {
             dataClient.createUserData(clientId) {
                 publishUser(it)
@@ -54,7 +58,26 @@ internal object UserRepository {
             getNickename() // Checking again the saved nickname as it could have changed during the web request.
         if (nickname.isNotEmpty()) {
             it.nickname = nickname
+            GlobalScope.launch {
+                patchNickNameOnRemote(it)
+            }
         }
         currentUserStream.onNext(it)
+    }
+
+    suspend fun updateChatNickname(clientId: String, nickname: String) {
+        setNickname(nickname)
+        currentUserStream.latest()?.apply {
+            this.nickname = nickname
+            currentUserStream.onNext(this)
+            patchNickNameOnRemote(this)
+        }
+    }
+
+    private suspend fun patchNickNameOnRemote(liveLikeUser: LiveLikeUser) {
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("id", liveLikeUser.id)
+        jsonObject.addProperty("nickname", liveLikeUser.nickname)
+        dataClient.patchUser(clientId, jsonObject)
     }
 }

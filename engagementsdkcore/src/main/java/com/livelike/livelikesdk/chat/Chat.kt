@@ -1,6 +1,7 @@
 package com.livelike.livelikesdk.chat
 
 import com.livelike.engagementsdkapi.EpochTime
+import java.util.UUID
 
 interface ChatEventListener {
     fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
@@ -25,7 +26,7 @@ data class ChatMessage(
     var message: String,
     val senderId: String,
     val senderDisplayName: String,
-    var id: String,
+    var id: String = UUID.randomUUID().toString(),
     val timeStamp: String = "",
     var isFromMe: Boolean = false
 )

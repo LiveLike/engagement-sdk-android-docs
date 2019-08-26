@@ -26,9 +26,12 @@ import com.livelike.livelikesdk.widget.util.SingleRunner
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -220,6 +223,35 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
                 logError { e }
             }
         })
+    }
+
+    override suspend fun patchUser(clientId: String, userJson: JsonObject) {
+        remoteCall(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJson.toString()))
+    }
+
+    private suspend fun remoteCall(url: String, requestType: RequestType, requestBody: RequestBody?): Result<JsonObject> {
+        return withContext(Dispatchers.IO) {
+            val request = Request.Builder()
+                .url(url)
+                .method(requestType.name, requestBody)
+                .addUserAgent()
+                .addAuthorizationBearer()
+                .build()
+            val call = client.newCall(request)
+
+            try {
+                val execute = call.execute()
+//               TODO add more network handling cases and remove !!, generic exception
+                try {
+                    Result.Success(JsonParser().parse(execute.networkResponse()!!.body()?.string()).asJsonObject)
+                } catch (e: Exception) {
+                    Result.Error(e)
+                }
+            } catch (e: IOException) {
+                logError { e }
+                Result.Error(e)
+            }
+        }
     }
 
     // / WIDGET CLIENT BELOW

@@ -22,9 +22,6 @@ interface LiveLikeContentSession {
     /** get the current livelike User's data stream **/
     val currentUserStream: Stream<LiveLikeUser>
 
-    /** Override the default auto-generated chat nickname **/
-    fun setChatNickname(nickname: String)
-
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
     /** Resume the current Chat and widget sessions. This generally happens when ads are completed */

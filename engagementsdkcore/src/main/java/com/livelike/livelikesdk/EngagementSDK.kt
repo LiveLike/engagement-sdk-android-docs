@@ -12,6 +12,10 @@ import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.SubscriptionManager
 import com.livelike.livelikesdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.livelikesdk.utils.map
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -34,12 +38,9 @@ class EngagementSDK(
 
     private val currentUserStream: Stream<LiveLikeUser> = userRepository.currentUserStream
 
-    override val userStream: Stream<LiveLikeUserApi>
-        get() = userRepository.currentUserStream.map {
-            LiveLikeUserApi(it.nickname, it.accessToken)
-        }
-    override val userAccessToken: String?
-        get() = userRepository.userAccessToken
+    val job = SupervisorJob()
+    // by default sdk calls will run on Default pool and further data layer calls will run o
+    val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
@@ -49,6 +50,19 @@ class EngagementSDK(
         }
 
         userRepository.initUser(clientId, accessToken)
+    }
+
+    override val userStream: Stream<LiveLikeUserApi>
+        get() = userRepository.currentUserStream.map {
+            LiveLikeUserApi(it.nickname, it.accessToken)
+        }
+    override val userAccessToken: String?
+        get() = userRepository.userAccessToken
+
+    override fun updateChatNickname(nickname: String) {
+        sdkScope.launch {
+            userRepository.updateChatNickname(clientId, nickname)
+        }
     }
 
     /**

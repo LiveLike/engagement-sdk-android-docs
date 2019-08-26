@@ -8,7 +8,8 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService)
     private val messageList = mutableListOf<ChatMessage>()
-    internal val eventStream: SubscriptionManager<String> = SubscriptionManager()
+    internal val eventStream: SubscriptionManager<String> = SubscriptionManager(false)
+    private var chatLoaded = false
 
     companion object {
         const val EVENT_NEW_MESSAGE = "new-message"
@@ -42,6 +43,9 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
     }
 
     override fun loadingCompleted() {
-        eventStream.onNext(EVENT_LOADING_COMPLETE)
+        if (!chatLoaded) {
+            chatLoaded = true
+            eventStream.onNext(EVENT_LOADING_COMPLETE)
+        }
     }
 }

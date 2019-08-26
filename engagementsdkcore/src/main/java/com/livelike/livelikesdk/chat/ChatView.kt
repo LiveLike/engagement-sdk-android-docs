@@ -29,7 +29,6 @@ import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.livelikesdk.utils.logError
 import java.util.Date
-import java.util.UUID
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
@@ -81,10 +80,11 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     fun setSession(session: LiveLikeContentSession) {
-        this.session = session
-        session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
-        session.currentUserStream.subscribe(javaClass.simpleName) {
-            currentUser = it
+        this.session = session.apply {
+            analyticService.trackOrientationChange(resources.configuration.orientation == 1)
+            currentUserStream.subscribe(javaClass.simpleName) {
+                currentUser = it
+            }
         }
 
         viewModel?.apply {
@@ -177,45 +177,41 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             snapToLive()
         }
 
-        button_chat_send.visibility = View.GONE
+        edittext_chat_message.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-        edittext_chat_message.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-
-            override fun afterTextChanged(s: Editable) {
-                if (s.isNotEmpty()) {
-                    button_chat_send.isEnabled = true
-                    button_chat_send.visibility = View.VISIBLE
-                } else {
-                    button_chat_send.isEnabled = false
-                    button_chat_send.visibility = View.GONE
+                override fun afterTextChanged(text: Editable) {
+                    button_chat_send?.apply {
+                        isEnabled = text.isNotEmpty()
+                        visibility = if (text.isNotEmpty()) View.VISIBLE else View.GONE
+                    }
                 }
-            }
-        })
+            })
 
-        edittext_chat_message.setOnFocusChangeListener { _, hasFocus ->
-            run {
+            setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
                 }
             }
-        }
 
-        // Send message on tap Enter
-        edittext_chat_message.setOnEditorActionListener { _, actionId, event ->
-            if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
-                (actionId == EditorInfo.IME_ACTION_SEND)
-            ) {
-                sendMessageNow()
+            // Send message on tap Enter
+            setOnEditorActionListener { _, actionId, event ->
+                if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
+                    (actionId == EditorInfo.IME_ACTION_SEND)
+                ) {
+                    sendMessageNow()
+                }
+                false
             }
-            false
         }
 
-        button_chat_send.isEnabled = false
-        button_chat_send.setOnClickListener {
-            sendMessageNow()
+        button_chat_send.apply {
+            visibility = View.GONE
+            isEnabled = false
+            setOnClickListener { sendMessageNow() }
         }
     }
 
@@ -246,28 +242,26 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun sendMessageNow() {
-        // Do nothing if the message is blank or empty
-        if (edittext_chat_message.text.isBlank())
+        if (edittext_chat_message.text.isBlank()) {
+            // Do nothing if the message is blank or empty
             return
-        val hideMethod = KeyboardHideReason.MESSAGE_SENT
-        hideKeyboard(hideMethod)
+        }
+
+        hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
-            UUID.randomUUID().toString(),
             Date(timeData.timeSinceEpochInMs).toString(),
-            true
+            isFromMe = true
         ).let {
             viewModel?.apply {
                 displayChatMessage(it)
                 chatListener?.onChatMessageSend(it, timeData)
             }
         }
-
-        hideLoadingSpinner()
         edittext_chat_message.setText("")
         snapToLive()
     }
@@ -305,7 +299,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
 
             override fun onAnimationStart(animation: Animator) {
-                snap_live.visibility = View.VISIBLE
+                snap_live.visibility = if (showingSnapToLive) View.GONE else View.VISIBLE
             }
 
             override fun onAnimationCancel(animation: Animator) {}
@@ -319,8 +313,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private fun snapToLive() {
         chatdisplay?.let { rv ->
-            rv.layoutManager?.itemCount?.let {
-                rv.smoothScrollToPosition(it)
+            viewModel?.chatAdapter?.itemCount?.let {
+                rv.smoothScrollToPosition(it - 1)
             }
         }
     }
