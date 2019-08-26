@@ -10,6 +10,7 @@ import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.WidgetInfos
+import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error
@@ -40,7 +41,8 @@ internal class QuizViewModel(
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val context: Context,
-    var onDismiss: () -> Unit
+    var onDismiss: () -> Unit,
+    val userRepository: UserRepository
 ) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
@@ -96,7 +98,7 @@ internal class QuizViewModel(
         uiScope.launch {
             adapter?.apply {
                 val url = myDataset[selectedPosition].getMergedVoteUrl()
-                url?.let { dataClient.voteAsync(url, myDataset[selectedPosition].id) }
+                url?.let { dataClient.voteAsync(url, myDataset[selectedPosition].id, userRepository.userAccessToken) }
             }
             adapter?.notifyDataSetChanged()
         }
@@ -164,7 +166,7 @@ internal class QuizViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it, analyticsService)?.new_points
+                points = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)?.new_points
                 interactionData.pointEarned = points ?: 0
             }
 

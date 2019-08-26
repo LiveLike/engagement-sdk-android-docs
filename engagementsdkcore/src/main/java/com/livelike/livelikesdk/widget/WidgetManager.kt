@@ -8,6 +8,7 @@ import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.WidgetInfos
+import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.MessagingClientProxy
@@ -30,7 +31,8 @@ internal class WidgetManager(
     private val context: Context,
     private val widgetInterceptorStream: Stream<WidgetInterceptor>,
     private val analyticsService: AnalyticsService,
-    private val sdkConfiguration: EngagementSDK.SdkConfiguration
+    private val sdkConfiguration: EngagementSDK.SdkConfiguration,
+    private val userRepository: UserRepository
 ) :
     MessagingClientProxy(upstream) {
 
@@ -131,10 +133,9 @@ internal class WidgetManager(
                     WidgetInfos(widgetType, payload, widgetId),
                     context,
                     analyticsService,
-                    sdkConfiguration
-                ) {
-                    publishNextInQueue()
-                }
+                    sdkConfiguration,
+                    { publishNextInQueue() },
+                    userRepository)
             )
         }
 
@@ -166,9 +167,9 @@ enum class WidgetType(val event: String) {
 }
 
 internal interface WidgetDataClient {
-    suspend fun voteAsync(widgetVotingUrl: String, voteId: String)
+    suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?)
     fun registerImpression(impressionUrl: String)
-    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService): Reward?
+    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): Reward?
 }
 
 internal fun MessagingClient.asWidgetManager(
@@ -177,7 +178,8 @@ internal fun MessagingClient.asWidgetManager(
     context: Context,
     widgetInterceptorStream: Stream<WidgetInterceptor>,
     analyticsService: AnalyticsService,
-    sdkConfiguration: EngagementSDK.SdkConfiguration
+    sdkConfiguration: EngagementSDK.SdkConfiguration,
+    userRepository: UserRepository
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration)
+    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration, userRepository)
 }

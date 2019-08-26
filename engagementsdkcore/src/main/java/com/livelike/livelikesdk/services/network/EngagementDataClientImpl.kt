@@ -225,17 +225,17 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         })
     }
 
-    override suspend fun patchUser(clientId: String, userJson: JsonObject) {
-        remoteCall(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJson.toString()))
+    override suspend fun patchUser(clientId: String, userJson: JsonObject, accessToken: String?) {
+        remoteCall(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
     }
 
-    private suspend fun remoteCall(url: String, requestType: RequestType, requestBody: RequestBody?): Result<JsonObject> {
+    private suspend fun remoteCall(url: String, requestType: RequestType, requestBody: RequestBody?, accessToken: String?): Result<JsonObject> {
         return withContext(Dispatchers.IO) {
             val request = Request.Builder()
                 .url(url)
                 .method(requestType.name, requestBody)
                 .addUserAgent()
-                .addAuthorizationBearer()
+                .addAuthorizationBearer(accessToken)
                 .build()
             val call = client.newCall(request)
 
@@ -259,32 +259,32 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
     var voteUrl = ""
     private val singleRunner = SingleRunner()
 
-    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String) {
+    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?) {
         singleRunner.afterPrevious {
             if (voteUrl.isEmpty()) {
-                voteUrl = postAsync(widgetVotingUrl).extractStringOrEmpty("url")
+                voteUrl = postAsync(widgetVotingUrl, accessToken).extractStringOrEmpty("url")
             } else {
                 putAsync(voteUrl, FormBody.Builder()
                     .add("option_id", voteId)
                     .add("choice_id", voteId)
-                    .build())
+                    .build(), accessToken)
             }
         }
     }
 
-    override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService): Reward? {
-        return gson.fromJson(postAsync(rewardUrl), Reward::class.java)?.also {
+    override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): Reward? {
+        return gson.fromJson(postAsync(rewardUrl, accessToken), Reward::class.java)?.also {
             addPoints(it.new_points ?: 0)
             analyticsService.registerSuperAndPeopleProperty("Lifetime Points" to (it.points?.toString() ?: "0"))
         }
     }
 
-    private suspend fun postAsync(url: String) = suspendCoroutine<JsonObject> {
+    private suspend fun postAsync(url: String, accessToken: String?) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
             .post(RequestBody.create(null, ByteString.EMPTY))
             .addUserAgent()
-            .addAuthorizationBearer()
+            .addAuthorizationBearer(accessToken)
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {
@@ -302,12 +302,12 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         })
     }
 
-    private suspend fun putAsync(url: String, body: FormBody) = suspendCoroutine<JsonObject> {
+    private suspend fun putAsync(url: String, body: FormBody, accessToken: String?) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
             .put(body)
             .addUserAgent()
-            .addAuthorizationBearer()
+            .addAuthorizationBearer(accessToken)
             .build()
         val call = client.newCall(request)
         call.enqueue(object : Callback {

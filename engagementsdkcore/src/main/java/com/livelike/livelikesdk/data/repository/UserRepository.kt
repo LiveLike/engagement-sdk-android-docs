@@ -16,8 +16,7 @@ import kotlinx.coroutines.launch
  * triggered to get user and where to store the data.
  * In Typical frontend application we have local and remote data source, we will move towards that gradually[TODO].
  */
-internal object UserRepository {
-    private lateinit var clientId: String
+internal class UserRepository(private val clientId: String) {
     private val dataClient = EngagementDataClientImpl()
 
     /**
@@ -34,8 +33,7 @@ internal object UserRepository {
      * If no access token new user profile will be created.
      * If invalid token passed then also new user created with error.
      */
-    fun initUser(clientId: String, userAccessToken: String?) {
-        this.clientId = clientId
+    fun initUser(userAccessToken: String?) {
         if (userAccessToken == null) {
             dataClient.createUserData(clientId) {
                 publishUser(it)
@@ -45,7 +43,7 @@ internal object UserRepository {
                 // TODO add Result class wrapper for network result instead of treating null as a case of invalid access token
                 if (it == null) {
                     logError { "Network error or invalid access token" }
-                    initUser(clientId, null)
+                    initUser(null)
                 } else {
                     publishUser(it)
                 }
@@ -65,7 +63,7 @@ internal object UserRepository {
         currentUserStream.onNext(it)
     }
 
-    suspend fun updateChatNickname(clientId: String, nickname: String) {
+    suspend fun updateChatNickname(nickname: String) {
         setNickname(nickname)
         currentUserStream.latest()?.apply {
             this.nickname = nickname
@@ -78,6 +76,6 @@ internal object UserRepository {
         val jsonObject = JsonObject()
         jsonObject.addProperty("id", liveLikeUser.id)
         jsonObject.addProperty("nickname", liveLikeUser.nickname)
-        dataClient.patchUser(clientId, jsonObject)
+        dataClient.patchUser(clientId, jsonObject, userAccessToken)
     }
 }

@@ -1,10 +1,11 @@
 package com.livelike.livelikesdk.chat
 
 import com.livelike.engagementsdkapi.AnalyticsService
-import com.livelike.livelikesdk.data.repository.UserRepository
+import com.livelike.engagementsdkapi.LiveLikeUser
+import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.utils.SubscriptionManager
 
-class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
+class ChatViewModel(val analyticsService: AnalyticsService, val userStream: Stream<LiveLikeUser>) : ChatRenderer {
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService)
     private val messageList = mutableListOf<ChatMessage>()
@@ -20,7 +21,7 @@ class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
 
     override fun displayChatMessage(message: ChatMessage) {
         messageList.add(message.apply {
-            isFromMe = UserRepository.currentUserStream.latest()?.id == senderId
+            isFromMe = userStream.latest()?.id == senderId
         })
         chatAdapter.submitList(ArrayList(messageList))
         eventStream.onNext(EVENT_NEW_MESSAGE)

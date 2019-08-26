@@ -7,6 +7,7 @@ import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.WidgetInfos
+import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.widget.WidgetType.ALERT
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.livelikesdk.widget.WidgetType.IMAGE_PREDICTION
@@ -35,21 +36,22 @@ internal class WidgetProvider {
         context: Context,
         analyticsService: AnalyticsService,
         sdkConfiguration: EngagementSDK.SdkConfiguration,
-        onDismiss: () -> Unit
+        onDismiss: () -> Unit,
+        userRepository: UserRepository
     ): SpecifiedWidgetView? {
         return when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
-                widgetViewModel = QuizViewModel(widgetInfos, analyticsService, sdkConfiguration, context, onDismiss)
+                widgetViewModel = QuizViewModel(widgetInfos, analyticsService, sdkConfiguration, context, onDismiss, userRepository)
             }
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
-                widgetViewModel = PredictionViewModel(widgetInfos, context, analyticsService, onDismiss)
+                widgetViewModel = PredictionViewModel(widgetInfos, context, analyticsService, onDismiss, userRepository)
             }
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
-                widgetViewModel = PollViewModel(widgetInfos, analyticsService, sdkConfiguration, onDismiss)
+                widgetViewModel = PollViewModel(widgetInfos, analyticsService, sdkConfiguration, onDismiss, userRepository)
             }
             POINTS_TUTORIAL -> PointsTutorialView(context).apply {
                 widgetViewModel = PointTutorialWidgetViewModel(onDismiss)

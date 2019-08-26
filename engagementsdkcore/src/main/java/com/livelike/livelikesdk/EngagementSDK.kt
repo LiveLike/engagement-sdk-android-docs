@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 class EngagementSDK(
     private val clientId: String,
     private val applicationContext: Context,
-    private val accessToken: String? = null
+    accessToken: String? = null
 ) : IEngagement {
 
 //    TODO : Handle if integrator intialize sdk in offline state ( Once I thought of creating stream of sdk initialization requests too and handle everything gracefully :) )
@@ -34,7 +34,7 @@ class EngagementSDK(
     private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
     private val dataClient = EngagementDataClientImpl()
 
-    private val userRepository = UserRepository
+    private val userRepository = UserRepository(clientId)
 
     private val currentUserStream: Stream<LiveLikeUser> = userRepository.currentUserStream
 
@@ -48,8 +48,7 @@ class EngagementSDK(
         dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
             configurationStream.onNext(it)
         }
-
-        userRepository.initUser(clientId, accessToken)
+        userRepository.initUser(accessToken)
     }
 
     override val userStream: Stream<LiveLikeUserApi>
@@ -61,7 +60,7 @@ class EngagementSDK(
 
     override fun updateChatNickname(nickname: String) {
         sdkScope.launch {
-            userRepository.updateChatNickname(clientId, nickname)
+            userRepository.updateChatNickname(nickname)
         }
     }
 
@@ -72,7 +71,7 @@ class EngagementSDK(
     fun createContentSession(programId: String): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
-            currentUserStream,
+            userRepository,
             applicationContext,
             programId) { EpochTime(0) }
     }
@@ -89,7 +88,7 @@ class EngagementSDK(
     fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
-            currentUserStream,
+            userRepository,
             applicationContext,
             programId) { timecodeGetter.getTimecode() }
     }

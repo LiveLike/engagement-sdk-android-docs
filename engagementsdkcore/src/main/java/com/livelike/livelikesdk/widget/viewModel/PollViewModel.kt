@@ -9,6 +9,7 @@ import com.livelike.engagementsdkapi.AnalyticsWidgetSpecificInfo
 import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.WidgetInfos
+import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.ConnectionStatus
 import com.livelike.livelikesdk.services.messaging.Error
@@ -39,7 +40,8 @@ internal class PollViewModel(
     widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
-    val onDismiss: () -> Unit
+    val onDismiss: () -> Unit,
+    val userRepository: UserRepository
 ) : WidgetViewModel() {
     var points: SubscriptionManager<Int?> = SubscriptionManager()
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
@@ -92,7 +94,7 @@ internal class PollViewModel(
         uiScope.launch {
                 adapter?.apply {
                     val url = myDataset[selectedPosition].getMergedVoteUrl()
-                    url?.let { dataClient.voteAsync(it, myDataset[selectedPosition].id) }
+                    url?.let { dataClient.voteAsync(it, myDataset[selectedPosition].id, userRepository.userAccessToken) }
                 }
                 adapter?.showPercentage = true
                 adapter?.notifyDataSetChanged()
@@ -150,7 +152,7 @@ internal class PollViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                val reward = dataClient.rewardAsync(it, analyticsService)
+                val reward = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)
                 points.onNext(reward?.new_points)
                 interactionData.pointEarned = points.currentData ?: 0
             }
