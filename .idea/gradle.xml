@@ -9,13 +9,12 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/engagementsdk" />
-            <option value="$PROJECT_DIR$/engagementsdkapi" />
-            <option value="$PROJECT_DIR$/engagementsdkcore" />
             <option value="$PROJECT_DIR$/livelikedemo" />
             <option value="$PROJECT_DIR$/pluginexoplayer" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
+        <option name="testRunner" value="PLATFORM" />
       </GradleProjectSettings>
     </option>
   </component>

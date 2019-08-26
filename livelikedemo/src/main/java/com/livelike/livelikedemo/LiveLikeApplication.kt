@@ -4,11 +4,11 @@ import android.app.Application
 import android.content.Context
 import com.bugsnag.android.Bugsnag
 import com.google.android.exoplayer2.ui.PlayerView
-import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.EpochTime
 import com.livelike.livelikesdk.LiveLikeContentSession
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 

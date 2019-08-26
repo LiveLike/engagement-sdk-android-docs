@@ -2,8 +2,8 @@ package com.livelike.livelikepreintegrators
 
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.Timeline
-import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.livelikesdk.EngagementSDK
+import com.livelike.livelikesdk.EpochTime
 import com.livelike.livelikesdk.LiveLikeContentSession
 
 /**
