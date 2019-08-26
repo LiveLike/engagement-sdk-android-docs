@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
         const val AD_STATE = "adstate"
+        const val SHOWING_DIALOG = "showingDialog"
         const val POSITION = "position"
         const val CHANNEL_NAME = "channelName"
     }
@@ -76,6 +77,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         val position = savedInstanceState?.getLong(POSITION) ?: 0
         startingState = PlayerState(0, position, !adsPlaying)
 
+        showingDialog = savedInstanceState?.getBoolean(SHOWING_DIALOG) ?: false
+        if (showingDialog) {
+            dialog.showDialog()
+        }
+
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread {
@@ -112,6 +118,31 @@ class ExoPlayerActivity : AppCompatActivity() {
         initializeLiveLikeSDK(channel)
     }
 
+    private val dialog = object : WidgetInterceptor() {
+        override fun widgetWantsToShow() {
+            showDialog()
+        }
+    }
+
+    private var showingDialog = false
+
+    private fun WidgetInterceptor.showDialog() {
+        showingDialog = true
+        AlertDialog.Builder(this@ExoPlayerActivity).apply {
+            setMessage("You received a Widget, what do you want to do? ${Instant.now()}")
+            setPositiveButton("Show") { _, _ ->
+                showingDialog = false
+                showWidget()
+            }
+            setNegativeButton("Dismiss") { _, _ ->
+                showingDialog = false
+                dismissWidget()
+            }
+            setCancelable(false)
+            create()
+        }.show()
+    }
+
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object : (String) -> Unit {
             override fun invoke(text: String) {
@@ -124,17 +155,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
-                object : WidgetInterceptor() {
-                    override fun widgetWantsToShow() {
-                        AlertDialog.Builder(this@ExoPlayerActivity).apply {
-                            setMessage("You received a Widget, what do you want to do? ${Instant.now()}")
-                            setPositiveButton("Show") { _, _ -> showWidget() }
-                            setNegativeButton("Dismiss") { _, _ -> dismissWidget() }
-                            setCancelable(false)
-                            create()
-                        }.show()
-                    }
-                })
+                dialog)
 
             chat_view.setSession(session)
             widget_view.setSession(session)
@@ -173,6 +194,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState?.putString(CHANNEL_NAME, channelManager?.selectedChannel?.name ?: "")
         outState?.putBoolean(AD_STATE, adsPlaying)
+        outState?.putBoolean(SHOWING_DIALOG, showingDialog)
         outState?.putLong(POSITION, player.position())
     }
 }
