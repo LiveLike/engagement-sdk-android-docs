@@ -67,7 +67,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private var showingSnapToLive: Boolean = false
 
     private var currentUser: LiveLikeUser? = null
-    private val layoutManager = LinearLayoutManager(context)
 
     private val viewModel: ChatViewModel?
         get() = session?.chatViewModel
@@ -152,15 +151,15 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
         chatdisplay.let { rv ->
             rv.adapter = chatAdapter
-            rv.layoutManager = layoutManager
             rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(
                     rv: RecyclerView,
                     dx: Int,
                     dy: Int
                 ) {
-                    val totalItemCount = layoutManager.itemCount
-                    val lastVisible = layoutManager.findLastVisibleItemPosition()
+                    val lm = rv.layoutManager as LinearLayoutManager
+                    val totalItemCount = lm.itemCount
+                    val lastVisible = lm.findLastVisibleItemPosition()
 
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount
                     isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
