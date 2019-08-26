@@ -90,7 +90,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
-                        logError { isLastItemVisible }
                         if (isLastItemVisible) {
                             snapToLive()
                         }

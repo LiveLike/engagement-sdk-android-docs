@@ -201,7 +201,7 @@ internal class PredictionViewModel(
                     }
 
                     // Save widget id and voted option for followup widget
-                    addWidgetPredictionVoted(it.resource.id, selectedOption?.id ?: "")
+                    addWidgetPredictionVoted(it.resource.id ?: "", selectedOption?.id ?: "")
                 }
             }
         }
