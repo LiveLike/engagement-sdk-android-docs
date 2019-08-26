@@ -178,9 +178,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         button_chat_send.let { buttonChat ->
-            setOnClickListener { sendMessageNow() }
+            buttonChat.setOnClickListener { sendMessageNow() }
             buttonChat.visibility = View.GONE
             buttonChat.isEnabled = false
+
             edittext_chat_message.apply {
                 addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
