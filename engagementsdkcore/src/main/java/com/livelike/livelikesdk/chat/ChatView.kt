@@ -82,9 +82,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     fun setSession(session: LiveLikeContentSession) {
         this.session = session.apply {
             analyticService.trackOrientationChange(resources.configuration.orientation == 1)
-            currentUserStream.subscribe(javaClass.simpleName) {
-                currentUser = it
-            }
         }
 
         viewModel?.apply {
@@ -106,6 +103,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                         }
                     }
                 }
+            }
+            userStream.subscribe(javaClass.simpleName) {
+                currentUser = it
             }
         }
     }

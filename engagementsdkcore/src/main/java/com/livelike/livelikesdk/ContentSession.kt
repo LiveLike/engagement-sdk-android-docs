@@ -4,11 +4,11 @@ import android.content.Context
 import android.widget.FrameLayout
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.engagementsdkapi.MixpanelAnalytics
 import com.livelike.engagementsdkapi.MockAnalyticsService
 import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.chat.toChatQueue
+import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikesdk.services.messaging.proxies.filter
@@ -28,7 +28,7 @@ import com.livelike.livelikesdk.widget.viewModel.WidgetContainerViewModel
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
-    override val currentUserStream: Stream<LiveLikeUser>,
+    private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
@@ -42,21 +42,21 @@ internal class ContentSession(
     override var analyticService: AnalyticsService = MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
 
-    override val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService) }
+    override val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream) }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
     init {
-        currentUserStream.subscribe(javaClass) {
+        userRepository.currentUserStream.subscribe(javaClass) {
             it?.let {
                 analyticService.trackSession(it.id)
                 analyticService.trackUsername(it.nickname)
             }
         }
 
-        currentUserStream.combineLatestOnce(sdkConfiguration).subscribe(javaClass.simpleName) {
+        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration).subscribe(javaClass.simpleName) {
             it?.let { pair ->
                 val configuration = pair.second
                 analyticService =
@@ -105,7 +105,7 @@ internal class ContentSession(
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .gamify()
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
@@ -123,7 +123,7 @@ internal class ContentSession(
                 config.sendBirdAppId,
                 applicationContext,
                 analyticService,
-                currentUserStream
+                userRepository
             )
                 .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
                 .toChatQueue()

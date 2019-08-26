@@ -5,9 +5,9 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
 import com.livelike.engagementsdkapi.LiveLikeUser
-import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.chat.ChatMessage
 import com.livelike.livelikesdk.chat.ChatViewModel
+import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.services.messaging.ClientMessage
 import com.livelike.livelikesdk.services.messaging.MessagingClient
 import com.livelike.livelikesdk.services.messaging.MessagingEventListener
@@ -32,7 +32,7 @@ internal class SendbirdMessagingClient(
     private val subscribeKey: String,
     val context: Context,
     private val analyticsService: AnalyticsService,
-    private val liveLikeUser: Stream<LiveLikeUser>
+    private val liveLikeUser: UserRepository
 ) :
     MessagingClient, ChatClient {
     private val zoneUTC = ZoneId.of("UTC")
@@ -47,7 +47,7 @@ internal class SendbirdMessagingClient(
     private val messageIdList = mutableListOf<Long>()
 
     init {
-        liveLikeUser.subscribe(javaClass) {
+        liveLikeUser.currentUserStream.subscribe(javaClass) {
             it?.let { u ->
                 when (SendBird.getConnectionState()) {
                     SendBird.ConnectionState.CLOSED -> connectToSendbird(u)
@@ -121,7 +121,7 @@ internal class SendbirdMessagingClient(
     }
 
     override fun resume() {
-        liveLikeUser.latest()?.let { connectToSendbird(it, true) }
+        liveLikeUser.currentUserStream.latest()?.let { connectToSendbird(it, true) }
     }
 
     data class MessageData(

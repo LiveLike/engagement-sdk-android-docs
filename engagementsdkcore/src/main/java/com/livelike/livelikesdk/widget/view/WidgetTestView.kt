@@ -9,6 +9,7 @@ import com.livelike.engagementsdkapi.MockAnalyticsService
 import com.livelike.livelikesdk.EngagementSDK
 import com.livelike.livelikesdk.R
 import com.livelike.livelikesdk.WidgetInfos
+import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.utils.gson
 import com.livelike.livelikesdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.livelikesdk.widget.viewModel.PollViewModel
@@ -90,6 +91,7 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
     private val predictionTextData =
         { """{"timeout":"P0DT00H00M03S","kind":"text-prediction","program_date_time":null,"subscribe_channel":"text_prediction_710a9bef_9932_493b_a414_e9a37abf49d6","question":"${textTitle.first()}","confirmation_message":"${textOptions.first()}","options":[{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.first()}","is_correct":false,"vote_count":0,"vote_url":""},{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.first()}","is_correct":false,"vote_count":0,"vote_url":""}]}""" }
 
+    private var userRepository = UserRepository("")
     init {
         ConstraintLayout.inflate(context, R.layout.widget_test_view, this)
 
@@ -123,7 +125,7 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
                 gson.fromJson(pollTextData(), JsonObject::class.java),
                 "120571e0-d665-4e9b-b497-908cf8422a64"
             )
-            widgetViewModel = PollViewModel(info, MockAnalyticsService(), mockConfig) {}
+            widgetViewModel = PollViewModel(info, MockAnalyticsService(), mockConfig, {}, userRepository)
         }
         val viewQuiz = QuizView(context).apply {
             val info = WidgetInfos(
@@ -133,8 +135,7 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
             )
             widgetViewModel = QuizViewModel(
                 info,
-                MockAnalyticsService(), mockConfig, context
-            ) {}
+                MockAnalyticsService(), mockConfig, context, {}, userRepository)
         }
         val viewPrediction = PredictionView(context).apply {
             val info = WidgetInfos(
@@ -142,7 +143,7 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
                 gson.fromJson(predictionTextData(), JsonObject::class.java),
                 "120571e0-d665-4e9b-b497-908cf8422a64"
             )
-            widgetViewModel = PredictionViewModel(info, context, MockAnalyticsService()) {}
+            widgetViewModel = PredictionViewModel(info, context, MockAnalyticsService(), {}, userRepository)
         }
 
         testFirst.addView(viewPrediction)

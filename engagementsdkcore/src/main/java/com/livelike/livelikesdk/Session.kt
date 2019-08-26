@@ -4,7 +4,6 @@ import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.engagementsdkapi.EpochTime
-import com.livelike.engagementsdkapi.LiveLikeUser
 import com.livelike.livelikesdk.chat.ChatViewModel
 import com.livelike.livelikesdk.services.messaging.proxies.WidgetInterceptor
 
@@ -18,9 +17,6 @@ interface LiveLikeContentSession {
 
     /** The analytics services **/
     val analyticService: AnalyticsService
-
-    /** get the current livelike User's data stream **/
-    val currentUserStream: Stream<LiveLikeUser>
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()

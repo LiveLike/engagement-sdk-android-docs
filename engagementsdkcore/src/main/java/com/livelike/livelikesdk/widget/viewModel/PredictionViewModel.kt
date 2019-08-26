@@ -7,6 +7,7 @@ import com.livelike.engagementsdkapi.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdkapi.DismissAction
 import com.livelike.livelikesdk.Stream
 import com.livelike.livelikesdk.WidgetInfos
+import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.services.network.EngagementDataClientImpl
 import com.livelike.livelikesdk.utils.AndroidResource
 import com.livelike.livelikesdk.utils.SubscriptionManager
@@ -30,7 +31,8 @@ internal class PredictionViewModel(
     widgetInfos: WidgetInfos,
     private val appContext: Context,
     private val analyticsService: AnalyticsService,
-    val onDismiss: () -> Unit
+    val onDismiss: () -> Unit,
+    val userRepository: UserRepository
 ) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
@@ -140,7 +142,7 @@ internal class PredictionViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it, analyticsService)?.new_points
+                points = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)?.new_points
                 interactionData.pointEarned = points ?: 0
             }
             state.onNext("followup")
@@ -160,7 +162,7 @@ internal class PredictionViewModel(
         uiScope.launch {
             vote()
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it, analyticsService)?.new_points
+                points = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)?.new_points
                 interactionData.pointEarned = points ?: 0
             }
             state.onNext("confirmation")
@@ -195,7 +197,7 @@ internal class PredictionViewModel(
 
                     // Prediction widget votes on dismiss
                     selectedOption?.getMergedVoteUrl()?.let { url ->
-                        dataClient.voteAsync(url, selectedOption.id)
+                        dataClient.voteAsync(url, selectedOption.id, userRepository.userAccessToken)
                     }
 
                     // Save widget id and voted option for followup widget
