@@ -3,14 +3,12 @@ package com.livelike.livelikesdk.chat
 import com.livelike.engagementsdkapi.AnalyticsService
 import com.livelike.livelikesdk.data.repository.UserRepository
 import com.livelike.livelikesdk.utils.SubscriptionManager
-import com.livelike.livelikesdk.utils.debounce
 
 class ChatViewModel(val analyticsService: AnalyticsService) : ChatRenderer {
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService)
     private val messageList = mutableListOf<ChatMessage>()
-    private val eventStream: SubscriptionManager<String> = SubscriptionManager()
-    internal val debouncedStream = eventStream.debounce(1000)
+    internal val eventStream: SubscriptionManager<String> = SubscriptionManager()
 
     companion object {
         const val EVENT_NEW_MESSAGE = "new-message"

@@ -38,6 +38,8 @@ import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -63,7 +65,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
+
     private var currentUser: LiveLikeUser? = null
+    private val layoutManager = LinearLayoutManager(context)
 
     private val viewModel: ChatViewModel?
         get() = session?.chatViewModel
@@ -79,27 +83,29 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
-
-        viewModel?.chatAdapter?.let {
-            setDataSource(it)
-        }
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         session.currentUserStream.subscribe(javaClass.simpleName) {
             currentUser = it
         }
-        viewModel?.debouncedStream?.subscribe(javaClass) {
-            when (it) {
-                ChatViewModel.EVENT_NEW_MESSAGE -> {
-                    // Auto scroll if user is looking at the latest messages
-                    chatdisplay?.let { rv ->
-                        val l = (rv.layoutManager as LinearLayoutManager)
-                        if (l.findLastVisibleItemPosition() > l.itemCount - 3)
+
+        viewModel?.apply {
+            setDataSource(chatAdapter)
+            eventStream.subscribe(javaClass.simpleName) {
+                when (it) {
+                    ChatViewModel.EVENT_NEW_MESSAGE -> {
+                        // Auto scroll if user is looking at the latest messages
+                        logError { isLastItemVisible }
+                        if (isLastItemVisible) {
                             snapToLive()
+                        }
                     }
-                }
-                ChatViewModel.EVENT_LOADING_COMPLETE -> {
-                    hideLoadingSpinner()
-                    snapToLiveWithoutAnimation()
+                    ChatViewModel.EVENT_LOADING_COMPLETE -> {
+                        uiScope.launch {
+                            hideLoadingSpinner()
+                            delay(100)
+                            snapToLive()
+                        }
+                    }
                 }
             }
         }
@@ -135,6 +141,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         return super.dispatchTouchEvent(ev)
     }
 
+    private var isLastItemVisible = false
     /**
      *  Sets the data source for this view.
      *  @param chatAdapter ChatAdapter used for creating this view.
@@ -143,21 +150,29 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         if (chatAdapter.itemCount < 1) {
             showLoadingSpinner()
         }
-        chatdisplay.adapter = chatAdapter
+        chatdisplay.let { rv ->
+            rv.adapter = chatAdapter
+            rv.layoutManager = layoutManager
+            rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(
+                    rv: RecyclerView,
+                    dx: Int,
+                    dy: Int
+                ) {
+                    val totalItemCount = layoutManager.itemCount
+                    val lastVisible = layoutManager.findLastVisibleItemPosition()
 
-        chatdisplay.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(
-                rv: RecyclerView,
-                dx: Int,
-                dy: Int
-            ) {
-                val l = (rv.layoutManager as LinearLayoutManager)
-                if (l.findLastVisibleItemPosition() < l.itemCount - 3)
-                    showSnapToLive()
-                else
-                    hideSnapToLive()
-            }
-        })
+                    val endHasBeenReached = lastVisible + 5 >= totalItemCount
+                    isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
+                        hideSnapToLive()
+                        true
+                    } else {
+                        showSnapToLive()
+                        false
+                    }
+                }
+            })
+        }
 
         snap_live.setOnClickListener {
             snapToLive()
@@ -307,14 +322,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         chatdisplay?.let { rv ->
             rv.layoutManager?.itemCount?.let {
                 rv.smoothScrollToPosition(it)
-            }
-        }
-    }
-
-    private fun snapToLiveWithoutAnimation() {
-        chatdisplay?.let { rv ->
-            rv.layoutManager?.itemCount?.let {
-                rv.scrollToPosition(it)
             }
         }
     }
