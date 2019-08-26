@@ -36,7 +36,6 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : List
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
-//        TODO make dialog Options lazy or static
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
