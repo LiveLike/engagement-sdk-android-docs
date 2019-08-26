@@ -317,7 +317,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private fun snapToLive() {
         chatdisplay?.let { rv ->
             viewModel?.chatAdapter?.itemCount?.let {
-                rv.smoothScrollToPosition(it - 1)
+                rv.smoothScrollToPosition(it)
             }
         }
     }
