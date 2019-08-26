@@ -43,9 +43,14 @@ interface AnalyticsService {
     fun trackReportingMessage()
     fun trackBlockingUser()
     fun trackCancelFlagUi()
+    fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)
 }
 
 class MockAnalyticsService : AnalyticsService {
+    override fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+    }
+
     override fun trackFlagButtonPressed() {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
@@ -210,6 +215,7 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         const val KEY_KEYBOARD_HIDDEN = "Keyboard Hidden"
         const val KEY_FLAG_BUTTON_PRESSED = "Chat Flag Button Pressed"
         const val KEY_FLAG_ACTION_SELECTED = "Chat Flag Action Selected"
+        const val KEY_POINT_TUTORIAL_COMPLETED = "Points Tutorial Completed"
         const val KEY_REASON = "Reason"
     }
 
@@ -374,6 +380,14 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         val properties = JSONObject()
         properties.put("Last Session started", timeNow)
         mixpanel.registerSuperProperties(properties)
+    }
+
+    override fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long) {
+        val properties = JSONObject()
+        properties.put("Completion Type", completionType)
+        properties.put("Dismiss Seconds Since Start", secondsSinceStart)
+        mixpanel.track(KEY_POINT_TUTORIAL_COMPLETED, properties)
+        eventObserver?.invoke(KEY_POINT_TUTORIAL_COMPLETED, properties)
     }
 
     override fun trackMessageSent(msgId: String, msgLength: Int) {

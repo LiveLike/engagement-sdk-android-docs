@@ -52,7 +52,7 @@ internal class WidgetProvider {
                 widgetViewModel = PollViewModel(widgetInfos, analyticsService, sdkConfiguration, onDismiss)
             }
             POINTS_TUTORIAL -> PointsTutorialView(context).apply {
-                widgetViewModel = PointTutorialWidgetViewModel(onDismiss)
+                widgetViewModel = PointTutorialWidgetViewModel(onDismiss, analyticsService)
             }
             else -> null
         }
