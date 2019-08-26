@@ -31,6 +31,8 @@ import com.livelike.livelikesdk.utils.logError
 import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
+import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
@@ -67,6 +69,15 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private var currentUser: LiveLikeUser? = null
 
+    /** Boolean option to enable / disable the profile display inside chat view */
+    var displayUserProfile: Boolean = false
+        set(value) {
+            field = value
+            user_profile_display_LL?.apply {
+                visibility = if (value) View.VISIBLE else View.GONE
+            }
+        }
+
     private val viewModel: ChatViewModel?
         get() = session?.chatViewModel
 
@@ -76,7 +87,23 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
 
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.ChatView,
+            0, 0).apply {
+            try {
+                displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
+            } finally {
+                recycle()
+            }
+        }
+
+        initView(context)
+    }
+
+    private fun initView(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.chat_view, this, true)
+        user_profile_display_LL.visibility = if (displayUserProfile) View.VISIBLE else View.GONE
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -105,6 +132,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
             userStream.subscribe(javaClass.simpleName) {
                 currentUser = it
+                it?.let {
+                    user_profile_tv.text = it.nickname
+                }
             }
         }
     }

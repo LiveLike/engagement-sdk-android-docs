@@ -17,4 +17,10 @@
           type="font">@font/roboto_medium</item>
     <item name="livelike_chat_nickname_font"
           type="font">@font/roboto_medium</item>
+
+
+    <declare-styleable name="ChatView">
+        <attr name="displayUserProfile" format="boolean" />
+    </declare-styleable>
+
 </resources>
