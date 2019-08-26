@@ -177,41 +177,43 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             snapToLive()
         }
 
-        edittext_chat_message.apply {
-            addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        button_chat_send.let { buttonChat ->
+            setOnClickListener { sendMessageNow() }
+            buttonChat.visibility = View.GONE
+            buttonChat.isEnabled = false
+            edittext_chat_message.apply {
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-                override fun afterTextChanged(text: Editable) {
-                    button_chat_send?.apply {
-                        isEnabled = text.isNotEmpty()
-                        visibility = if (text.isNotEmpty()) View.VISIBLE else View.GONE
+                    override fun afterTextChanged(s: Editable) {
+                        if (s.isNotEmpty()) {
+                            buttonChat.isEnabled = true
+                            buttonChat.visibility = View.VISIBLE
+                        } else {
+                            buttonChat.isEnabled = false
+                            buttonChat.visibility = View.GONE
+                        }
+                    }
+                })
+
+                setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus) {
+                        session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
                     }
                 }
-            })
 
-            setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
+                // Send message on tap Enter
+                setOnEditorActionListener { _, actionId, event ->
+                    if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
+                        (actionId == EditorInfo.IME_ACTION_SEND)
+                    ) {
+                        sendMessageNow()
+                    }
+                    false
                 }
             }
-
-            // Send message on tap Enter
-            setOnEditorActionListener { _, actionId, event ->
-                if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
-                    (actionId == EditorInfo.IME_ACTION_SEND)
-                ) {
-                    sendMessageNow()
-                }
-                false
-            }
-        }
-
-        button_chat_send.apply {
-            visibility = View.GONE
-            isEnabled = false
-            setOnClickListener { sendMessageNow() }
         }
     }
 
