@@ -73,6 +73,8 @@ internal fun shouldShowPointTutorial(): Boolean {
 }
 
 internal fun pointTutorialSeen() {
-    val editor = getSharedPreferences().edit()
-    editor.putBoolean(PREFERENCE_KEY_POINTS_TUTORIAL, false).apply()
+    if (shouldShowPointTutorial()) {
+        val editor = getSharedPreferences().edit()
+        editor.putBoolean(PREFERENCE_KEY_POINTS_TUTORIAL, false).apply()
+    }
 }

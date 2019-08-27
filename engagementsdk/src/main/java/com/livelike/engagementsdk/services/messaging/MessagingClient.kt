@@ -30,8 +30,8 @@ internal interface MessagingEventListener {
  */
 internal data class ClientMessage(
     val message: JsonObject,
-    val channel: String,
-    val timeStamp: EpochTime,
+    val channel: String = "",
+    val timeStamp: EpochTime = EpochTime(0),
     val timeoutMs: Long = 4000
 )
 

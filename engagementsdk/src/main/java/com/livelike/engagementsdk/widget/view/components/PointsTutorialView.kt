@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.pointTutorialSeen
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
@@ -33,6 +34,7 @@ class PointsTutorialView(context: Context, attr: AttributeSet? = null) : Specifi
         }
 
     init {
+        pointTutorialSeen()
         inflate(context, R.layout.atom_widget_points_tutorial, this)
     }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
@@ -117,7 +118,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver(state: String?) {
         when (state) {
             "results" -> {
-                viewModel?.points?.let { pointView.startAnimation(it) }
+                viewModel?.points?.let {
+                    if (!shouldShowPointTutorial()) {
+                        pointView.startAnimation(it)
+                    }
+                }
                 listOf(textEggTimer).forEach { v -> v?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }

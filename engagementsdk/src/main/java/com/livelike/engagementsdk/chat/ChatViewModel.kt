@@ -32,6 +32,7 @@ class ChatViewModel(val analyticsService: AnalyticsService, val userStream: Stre
             message = "Redacted"
         }
         chatAdapter.submitList(ArrayList(messageList))
+        chatAdapter.notifyDataSetChanged()
         eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 

@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.widget
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
@@ -14,6 +15,8 @@ import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.utils.SubscriptionManager
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.model.Reward
 import java.lang.Exception
@@ -134,7 +137,10 @@ internal class WidgetManager(
                     context,
                     analyticsService,
                     sdkConfiguration,
-                    { publishNextInQueue() },
+                    {
+                        checkForPointTutorial()
+                        publishNextInQueue()
+                    },
                     userRepository)
             )
         }
@@ -145,6 +151,25 @@ internal class WidgetManager(
         }
 
         super.onClientMessageEvent(msgHolder.messagingClient, msgHolder.clientMessage)
+    }
+
+    private fun checkForPointTutorial() {
+        if (shouldShowPointTutorial()) {
+            // Check if user scored points
+            if (getTotalPoints() != 0 && getTotalPoints() < 20) {
+                // If first time scoring points, publish Points Tutorial
+                val message = ClientMessage(
+                    JsonObject().apply {
+                        addProperty("event", "points-tutorial")
+                        add("payload", JsonObject().apply {
+                            addProperty("id", "gameification")
+                        })
+                        addProperty("priority", 2)
+                    }
+                )
+                onClientMessageEvent(this, message)
+            }
+        }
     }
 }
 

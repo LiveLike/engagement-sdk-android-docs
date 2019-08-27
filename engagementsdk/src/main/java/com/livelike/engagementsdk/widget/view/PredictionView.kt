@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
@@ -109,7 +110,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 listOf(textEggTimer).forEach { it?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
-                viewModel?.points?.let { pointView.startAnimation(it) }
+                viewModel?.points?.let {
+                    if (!shouldShowPointTutorial()) {
+                        pointView.startAnimation(it)
+                    }
+                }
             }
             "followup" -> {
                 followupAnimation?.apply {
@@ -127,7 +132,11 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     viewModel?.dismissWidget(it)
                 } }
 
-                viewModel?.points?.let { pointView.startAnimation(it) }
+                viewModel?.points?.let {
+                    if (!shouldShowPointTutorial()) {
+                        pointView.startAnimation(it)
+                    }
+                }
             }
         }
     }

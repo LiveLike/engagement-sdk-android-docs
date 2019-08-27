@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
@@ -63,8 +64,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun rewardsObserver(points: Int?) {
-        points?.let {
-            pointView.startAnimation(it)
+        if (!shouldShowPointTutorial()) {
+            points?.let {
+                pointView.startAnimation(it)
+            }
         }
     }
 
