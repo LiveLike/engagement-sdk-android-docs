@@ -34,11 +34,9 @@ class EngagementSDK(
 
     private val userRepository = UserRepository(clientId)
 
-    private val currentUserStream: Stream<LiveLikeUser> = userRepository.currentUserStream
-
-    val job = SupervisorJob()
+    private val job = SupervisorJob()
     // by default sdk calls will run on Default pool and further data layer calls will run o
-    val sdkScope = CoroutineScope(Dispatchers.Default + job)
+    private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
