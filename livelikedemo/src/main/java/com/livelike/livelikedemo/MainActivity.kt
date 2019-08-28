@@ -37,12 +37,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         events_button.setOnClickListener {
-            channelManager.show(this)
-        }
-
-        channelManager.addChannelSelectListener("mainActivity") {
-            channelManager.hide()
-            events_label.text = it.name
+            val channel = channelManager.getChannel()
+            events_label.text = channel.name
         }
 
         getSharedPreferences("test-app", Context.MODE_PRIVATE)

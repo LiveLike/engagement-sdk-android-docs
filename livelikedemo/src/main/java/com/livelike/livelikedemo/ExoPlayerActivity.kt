@@ -17,7 +17,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.time.Instant
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
@@ -58,6 +57,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             session?.resume()
         }
     }
+    val timer = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +82,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             dialog.showDialog()
         }
 
-        Timer().schedule(object : TimerTask() {
+        timer.schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread {
                     val pdtTime = player.getPDT()
@@ -97,12 +97,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             selectChannel(it.selectedChannel)
         }
 
-        channelManager?.addChannelSelectListener("exoplayer") {
-            channelManager?.hide()
-            selectChannel(it)
+        selectChannelButton.setOnClickListener {
+            channelManager?.getChannel()?.let { it1 -> selectChannel(it1) }
         }
-
-        selectChannelButton.setOnClickListener { channelManager?.show(this) }
     }
 
     private fun setUpAdClickListeners() {
@@ -129,7 +126,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private fun WidgetInterceptor.showDialog() {
         showingDialog = true
         AlertDialog.Builder(this@ExoPlayerActivity).apply {
-            setMessage("You received a Widget, what do you want to do? ${Instant.now()}")
+            setMessage("You received a Widget, what do you want to do?")
             setPositiveButton("Show") { _, _ ->
                 showingDialog = false
                 showWidget()
@@ -186,6 +183,8 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        timer.cancel()
+        timer.purge()
         player.release()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }

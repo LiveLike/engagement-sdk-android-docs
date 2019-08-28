@@ -4,9 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.support.annotation.NonNull
-import android.support.design.widget.BottomSheetDialog
 import android.util.Log
-import android.view.ViewGroup
 import java.io.IOException
 import java.net.URL
 import okhttp3.Callback
@@ -27,9 +25,6 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     private val client: OkHttpClient = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val channelSelectListeners = mutableListOf<(Channel) -> Unit>()
-    private val channelListenersKeys = mutableListOf<String>()
-    private val view: ChannelSelectionView = ChannelSelectionView(appContext)
-    private var channelBottomSheetDialog: BottomSheetDialog? = null
     val channelList: MutableList<Channel> = mutableListOf()
     @NonNull
     var selectedChannel: Channel = NONE_CHANNEL
@@ -66,8 +61,6 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                                 selectedChannel = channel
                             }
                         }
-                        view.channelList = channelList
-                        view.channelSelectListener = { channel -> selectedChannel = channel }
                     } catch (e: JSONException) {
                         Log.e("ChannelMger", e.message)
                     }
@@ -96,30 +89,8 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             .apply()
     }
 
-    fun addChannelSelectListener(key: String, listener: (Channel) -> Unit) {
-        if (!channelListenersKeys.contains(key)) {
-            channelSelectListeners.add(listener)
-        }
-    }
-
-    fun removeChannelSelectListener(listener: (Channel) -> Unit) {
-        channelSelectListeners.remove(listener)
-    }
-
-    fun show(context: Context) {
-        channelBottomSheetDialog = BottomSheetDialog(context)
-        removeViewParentIfExists()
-        channelBottomSheetDialog?.setContentView(view)
-        channelBottomSheetDialog?.show()
-    }
-
-    fun hide() {
-        channelBottomSheetDialog?.hide()
-    }
-
-    private fun removeViewParentIfExists() {
-        if (view.parent != null)
-            (view.parent as ViewGroup).removeView(view)
+    fun getChannel(): Channel {
+        return channelList.first()
     }
 }
 
