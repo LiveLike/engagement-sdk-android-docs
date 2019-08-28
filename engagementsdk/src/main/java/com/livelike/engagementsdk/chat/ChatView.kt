@@ -32,6 +32,7 @@ import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.pointView
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
@@ -39,6 +40,7 @@ import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -134,6 +136,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 currentUser = it
                 it?.let {
                     user_profile_tv.text = it.nickname
+                    uiScope.launch {
+                        delay(500)
+                        pointView.startAnimation(100)
+                    }
                 }
             }
         }
