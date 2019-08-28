@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group='org.bitbucket.livelike'
+group='com.livelike'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -36,7 +36,7 @@ dependencies {
     compileOnly "com.google.android.exoplayer:exoplayer:$exoplayerVersion"
 
     // livelike SDKs
-    compileOnly project(path: ':engagementsdkcore')
+    compileOnly project(path: ':engagementsdk')
 }
 repositories {
     mavenCentral()

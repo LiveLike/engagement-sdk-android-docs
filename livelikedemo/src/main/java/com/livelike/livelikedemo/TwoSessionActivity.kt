@@ -13,7 +13,7 @@ class TwoSessionActivity : Activity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         setContentView(R.layout.two_sessions_activity)
 
-        (application as LiveLikeApplication).sdk?.let {
+        (application as LiveLikeApplication).sdk.let {
             widget_session_1.setSession(it.createContentSession("3d639cb0-b2c4-4f70-8875-e39c74197580"))
         }
         (application as LiveLikeApplication).sdk2?.let {

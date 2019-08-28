@@ -19,3 +19,60 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keepattributes Exceptions, InnerClasses, Signature, Deprecated, SourceFile, LineNumberTable, *Annotation*, EnclosingMethod
+
+-keep class com.google.android.gms.ads.identifier.** { *; }
+
+# Joda-Time
+-dontwarn org.joda.time.**
+-keep class org.joda.time.** { *; }
+
+# Gson
+-dontwarn sun.misc.**
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.examples.android.model.** { *; }
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+
+# OkHttp3
+-dontwarn okhttp3.**
+-dontwarn org.codehaus.mojo.animal_sniffer.*
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+
+# Okio
+-dontwarn okio.**
+
+# Retrofit 2.X
+-dontwarn retrofit2.**
+-dontwarn javax.annotation.**
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
+
+# Logback and slf4j-api
+-dontwarn ch.qos.logback.core.net.*
+-dontwarn org.slf4j.**
+-keep class ch.qos.** { *; }
+-keep class org.slf4j.** { *; }
+
+# PubNub
+-dontwarn com.pubnub.**
+-keep class com.pubnub.** { *; }
+
+# Sendbird
+-dontwarn com.sendbird.android.shadow.**
+
+#Glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
+-keep class com.livelike.** { *; }

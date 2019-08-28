@@ -1,19 +1,26 @@
 package com.livelike.livelikedemo
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.support.constraint.Constraints
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.view.WindowManager
-import com.livelike.engagementsdkapi.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.utils.registerLogsHandler
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import com.livelike.livelikesdk.utils.registerLogsHandler
+import java.time.Instant
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
 import kotlinx.android.synthetic.main.activity_exo_player.openLogs
@@ -23,13 +30,11 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
         const val AD_STATE = "adstate"
+        const val SHOWING_DIALOG = "showingDialog"
         const val POSITION = "position"
         const val CHANNEL_NAME = "channelName"
     }
@@ -72,6 +77,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         val position = savedInstanceState?.getLong(POSITION) ?: 0
         startingState = PlayerState(0, position, !adsPlaying)
 
+        showingDialog = savedInstanceState?.getBoolean(SHOWING_DIALOG) ?: false
+        if (showingDialog) {
+            dialog.showDialog()
+        }
+
         Timer().schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread {
@@ -108,6 +118,31 @@ class ExoPlayerActivity : AppCompatActivity() {
         initializeLiveLikeSDK(channel)
     }
 
+    private val dialog = object : WidgetInterceptor() {
+        override fun widgetWantsToShow() {
+            showDialog()
+        }
+    }
+
+    private var showingDialog = false
+
+    private fun WidgetInterceptor.showDialog() {
+        showingDialog = true
+        AlertDialog.Builder(this@ExoPlayerActivity).apply {
+            setMessage("You received a Widget, what do you want to do? ${Instant.now()}")
+            setPositiveButton("Show") { _, _ ->
+                showingDialog = false
+                showWidget()
+            }
+            setNegativeButton("Dismiss") { _, _ ->
+                showingDialog = false
+                dismissWidget()
+            }
+            setCancelable(false)
+            create()
+        }.show()
+    }
+
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object : (String) -> Unit {
             override fun invoke(text: String) {
@@ -119,10 +154,18 @@ class ExoPlayerActivity : AppCompatActivity() {
         })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
-            val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString())
+            val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
+                dialog)
 
             chat_view.setSession(session)
             widget_view.setSession(session)
+            getSharedPreferences("test-app", Context.MODE_PRIVATE)
+                .getString("UserNickname", "")
+                .let {
+                    if (!it.isNullOrEmpty()) {
+                        (application as LiveLikeApplication).sdk.updateChatNickname(it)
+                    }
+                }
 
             this.session = session
 
@@ -151,6 +194,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState?.putString(CHANNEL_NAME, channelManager?.selectedChannel?.name ?: "")
         outState?.putBoolean(AD_STATE, adsPlaying)
+        outState?.putBoolean(SHOWING_DIALOG, showingDialog)
         outState?.putLong(POSITION, player.position())
     }
 }

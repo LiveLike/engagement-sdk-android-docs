@@ -8,13 +8,14 @@ buildscript {
         targetSdkVersion = 28
 
         // App dependencies
+        bugsnagVersion = "4+"
         constraintLayoutVersion = "1.1.3"
         dokkaVersion = "0.9.17"
         expressoVersion = "3.0.2"
         exoplayerVersion = "2.9.3"
         coroutinesVersion = "1.3.0-RC"
         glideVersion = '4.9.0'
-        gradleVersion = '3.4.2'
+        gradleVersion = '3.5.0'
         gsonVersion = '2.8.5'
         junitVersion = '4.12'
         kotlinVersion = '1.3.41'
@@ -43,11 +44,8 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokkaVersion"
         classpath "com.github.dcendents:android-maven-gradle-plugin:$mavenPluginVersion"
+        classpath "com.bugsnag:bugsnag-android-gradle-plugin:$bugsnagVersion"
     }
-}
-
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.13.0"
 }
 
 allprojects {
@@ -57,10 +55,4 @@ allprojects {
     }
 }
 
-spotless {
-    kotlin {
-        target "**/*.kt"
-        ktlint("$ktlintVersion")
-    }
-}
 

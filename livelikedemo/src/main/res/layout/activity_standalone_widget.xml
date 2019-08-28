@@ -20,7 +20,7 @@
             android:minHeight="?attr/actionBarSize"
             app:theme="@style/ThemeOverlay.AppCompat.Dark"/>
 
-    <com.livelike.livelikesdk.widget.view.WidgetView
+    <com.livelike.engagementsdk.widget.view.WidgetView
             android:id="@+id/widget_view"
             android:layout_width="match_parent"
             android:layout_height="250dp"

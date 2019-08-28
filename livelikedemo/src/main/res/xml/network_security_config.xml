@@ -6,4 +6,10 @@
         <domain includeSubdomains="true">livelike-webs.s3.amazonaws.com</domain>
         <domain includeSubdomains="true">marchmadnesslive.cdn.turner.com</domain>
     </domain-config>
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Trust user added CAs while debuggable only -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
 </network-security-config>

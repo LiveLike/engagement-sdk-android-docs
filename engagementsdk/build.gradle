@@ -1,38 +1,78 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'com.github.dcendents.android-maven'
 
-group='org.bitbucket.livelike'
+group = 'com.livelike'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
 
     defaultConfig {
+        // required for customizing vector icon colors
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'proguard-rules.pro'
+
+        buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/"'
+        buildConfigField "String", "SDK_VERSION", '"0.1.3"'
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
+    dokka {
+        outputFormat = 'html'
+        outputDirectory = "$buildDir/javadoc"
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
-    testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "com.android.support.test:runner:$supportTestVersion"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:$expressoVersion"
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation "com.android.support:design:$supportLibraryVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "com.android.support:multidex:$multidexVersion"
 
-    // Engagement SDK
-    api project(path: ':engagementsdkapi')
-    implementation project(path: ':engagementsdkcore')
+    // Pubnub SDK for real-time communication
+    implementation group: 'com.pubnub', name: 'pubnub-gson', version: "$pubnubVersion"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
+
+    // Sendbird SDK for Chat messaging
+    implementation "com.sendbird.sdk:sendbird-android-sdk:$sendbirdVersion"
+
+    // Tests frameworks
+    testImplementation "junit:junit:$junitVersion"
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+
+    // Mock library
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+
+    // Time lib
+    implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
+
+    // Analytics
+    implementation "com.mixpanel.android:mixpanel-android:$mixpanelVersion"
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://raw.githubusercontent.com/smilefam/SendBird-SDK-Android/master/" }
+    google()
 }
