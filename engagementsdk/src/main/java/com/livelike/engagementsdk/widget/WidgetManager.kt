@@ -156,8 +156,7 @@ internal class WidgetManager(
     private fun checkForPointTutorial() {
         if (shouldShowPointTutorial()) {
             // Check if user scored points
-            if (getTotalPoints() != 0 && getTotalPoints() < 20) {
-                // If first time scoring points, publish Points Tutorial
+            if (getTotalPoints() != 0) {
                 val message = ClientMessage(
                     JsonObject().apply {
                         addProperty("event", "points-tutorial")
