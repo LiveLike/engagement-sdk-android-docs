@@ -141,6 +141,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
     }
 
+    override fun onViewRemoved(view: View?) {
+        viewModel?.apply {
+            eventStream.unsubscribe(javaClass.simpleName)
+            userStream.unsubscribe(javaClass.simpleName)
+        }
+        super.onViewRemoved(view)
+    }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthDp = AndroidResource.pxToDp(width)
         if (widthDp < CHAT_MINIMUM_SIZE_DP && widthDp != 0) {
