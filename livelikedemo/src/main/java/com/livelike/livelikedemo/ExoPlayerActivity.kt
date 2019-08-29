@@ -79,7 +79,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         showingDialog = savedInstanceState?.getBoolean(SHOWING_DIALOG) ?: false
         if (showingDialog) {
-            dialog.showDialog()
+            dialog.showDialog(this@ExoPlayerActivity)
         }
 
         timer.schedule(object : TimerTask() {
@@ -98,7 +98,17 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
 
         selectChannelButton.setOnClickListener {
-            channelManager?.getChannel()?.let { it1 -> selectChannel(it1) }
+            channelManager?.let { cm ->
+                val channels = cm.getChannels()
+                AlertDialog.Builder(this).apply {
+                    setTitle("Choose a channel to watch!")
+                    setItems(channels.map { it.name }.toTypedArray()) { dialog, which ->
+                        cm.selectedChannel = channels[which]
+                        selectChannel(channels[which])
+                    }
+                    create()
+                }.show()
+            }
         }
     }
 
@@ -117,15 +127,15 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private val dialog = object : WidgetInterceptor() {
         override fun widgetWantsToShow() {
-            showDialog()
+            showDialog(this@ExoPlayerActivity)
         }
     }
 
     private var showingDialog = false
 
-    private fun WidgetInterceptor.showDialog() {
+    private fun WidgetInterceptor.showDialog(context: Context) {
         showingDialog = true
-        AlertDialog.Builder(this@ExoPlayerActivity).apply {
+        AlertDialog.Builder(context).apply {
             setMessage("You received a Widget, what do you want to do?")
             setPositiveButton("Show") { _, _ ->
                 showingDialog = false
@@ -182,11 +192,24 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         timer.cancel()
         timer.purge()
         player.release()
+        session?.widgetInterceptor = null
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        super.onDestroy()
+    }
+
+    override fun onPause() {
+        session?.widgetInterceptor = null
+        super.onPause()
+    }
+
+    override fun onResume() {
+        channelManager?.let {
+            selectChannel(it.selectedChannel)
+        }
+        super.onResume()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

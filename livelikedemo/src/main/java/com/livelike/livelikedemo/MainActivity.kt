@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -37,9 +38,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         events_button.setOnClickListener {
-            val channel = channelManager.getChannel()
-            events_label.text = channel.name
+            val channels = channelManager.getChannels()
+            AlertDialog.Builder(this).apply {
+                setTitle("Choose a channel to watch!")
+                setItems(channels.map { it.name }.toTypedArray()) { dialog, which ->
+                    channelManager.selectedChannel = channels[which]
+                    events_label.text = channelManager.selectedChannel.name
+                }
+                create()
+            }.show()
         }
+        events_label.text = channelManager.selectedChannel.name
 
         getSharedPreferences("test-app", Context.MODE_PRIVATE)
             .getString("UserNickname", "")

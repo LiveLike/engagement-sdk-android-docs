@@ -89,8 +89,8 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             .apply()
     }
 
-    fun getChannel(): Channel {
-        return channelList.first()
+    fun getChannels(): ArrayList<Channel> {
+        return ArrayList(channelList)
     }
 }
 
