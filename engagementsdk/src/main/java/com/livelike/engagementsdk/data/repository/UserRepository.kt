@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.data.repository
 
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
@@ -27,6 +28,9 @@ internal class UserRepository(private val clientId: String) {
 
     val userAccessToken: String?
         get() = currentUserStream.latest()?.accessToken
+
+    val lifetimePoints: Stream<Int> = SubscriptionManager()
+    val rank: Stream<Int> = SubscriptionManager()
 
     /**
      * Create or init user according to passed access token.
@@ -77,5 +81,17 @@ internal class UserRepository(private val clientId: String) {
         jsonObject.addProperty("id", liveLikeUser.id)
         jsonObject.addProperty("nickname", liveLikeUser.nickname)
         dataClient.patchUser(clientId, jsonObject, userAccessToken)
+    }
+
+    var rewardType = "none"
+
+    suspend fun getPointsForReward(rewardUrl: String, analyticsService: AnalyticsService): Int? {
+        if (rewardType == "none") {
+            return null
+        }
+        val reward = dataClient.rewardAsync(rewardUrl, analyticsService, accessToken = userAccessToken)
+        lifetimePoints.onNext(reward?.points)
+        rank.onNext(reward?.rank)
+        return reward?.new_points
     }
 }

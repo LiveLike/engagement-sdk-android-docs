@@ -66,6 +66,7 @@ internal class ContentSession(
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
+                            userRepository.rewardType = program.rewardsType
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->

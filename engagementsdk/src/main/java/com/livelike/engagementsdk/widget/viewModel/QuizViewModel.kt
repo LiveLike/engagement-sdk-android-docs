@@ -42,7 +42,7 @@ internal class QuizViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val context: Context,
     var onDismiss: () -> Unit,
-    val userRepository: UserRepository
+    private val userRepository: UserRepository
 ) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
@@ -166,8 +166,10 @@ internal class QuizViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)?.new_points
-                interactionData.pointEarned = points ?: 0
+                userRepository.getPointsForReward(it, analyticsService)?.let { pts ->
+                    points = pts
+                    interactionData.pointEarned = points ?: 0
+                }
             }
 
             state.onNext("results")

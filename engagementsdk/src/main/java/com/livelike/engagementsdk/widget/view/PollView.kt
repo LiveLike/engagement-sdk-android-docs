@@ -33,6 +33,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
             viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
+            viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
         }
 
     private fun clickedOptionObserver(id: String?) {
@@ -64,8 +65,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun rewardsObserver(points: Int?) {
-        if (!shouldShowPointTutorial()) {
-            points?.let {
+        points?.let {
+            if (!shouldShowPointTutorial()) {
                 pointView.startAnimation(it)
             }
         }
