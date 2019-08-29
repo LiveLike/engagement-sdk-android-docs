@@ -17,7 +17,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.time.Instant
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
@@ -58,6 +57,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             session?.resume()
         }
     }
+    val timer = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,10 +79,10 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         showingDialog = savedInstanceState?.getBoolean(SHOWING_DIALOG) ?: false
         if (showingDialog) {
-            dialog.showDialog()
+            dialog.showDialog(this@ExoPlayerActivity)
         }
 
-        Timer().schedule(object : TimerTask() {
+        timer.schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread {
                     val pdtTime = player.getPDT()
@@ -97,12 +97,19 @@ class ExoPlayerActivity : AppCompatActivity() {
             selectChannel(it.selectedChannel)
         }
 
-        channelManager?.addChannelSelectListener("exoplayer") {
-            channelManager?.hide()
-            selectChannel(it)
+        selectChannelButton.setOnClickListener {
+            channelManager?.let { cm ->
+                val channels = cm.getChannels()
+                AlertDialog.Builder(this).apply {
+                    setTitle("Choose a channel to watch!")
+                    setItems(channels.map { it.name }.toTypedArray()) { dialog, which ->
+                        cm.selectedChannel = channels[which]
+                        selectChannel(channels[which])
+                    }
+                    create()
+                }.show()
+            }
         }
-
-        selectChannelButton.setOnClickListener { channelManager?.show(this) }
     }
 
     private fun setUpAdClickListeners() {
@@ -120,16 +127,16 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private val dialog = object : WidgetInterceptor() {
         override fun widgetWantsToShow() {
-            showDialog()
+            showDialog(this@ExoPlayerActivity)
         }
     }
 
     private var showingDialog = false
 
-    private fun WidgetInterceptor.showDialog() {
+    private fun WidgetInterceptor.showDialog(context: Context) {
         showingDialog = true
-        AlertDialog.Builder(this@ExoPlayerActivity).apply {
-            setMessage("You received a Widget, what do you want to do? ${Instant.now()}")
+        AlertDialog.Builder(context).apply {
+            setMessage("You received a Widget, what do you want to do?")
             setPositiveButton("Show") { _, _ ->
                 showingDialog = false
                 showWidget()
@@ -185,9 +192,24 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        timer.cancel()
+        timer.purge()
         player.release()
+        session?.widgetInterceptor = null
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        super.onDestroy()
+    }
+
+    override fun onPause() {
+        session?.widgetInterceptor = null
+        super.onPause()
+    }
+
+    override fun onResume() {
+        channelManager?.let {
+            selectChannel(it.selectedChannel)
+        }
+        super.onResume()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

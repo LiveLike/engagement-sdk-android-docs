@@ -133,10 +133,20 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             userStream.subscribe(javaClass.simpleName) {
                 currentUser = it
                 it?.let {
-                    user_profile_tv.text = it.nickname
+                    uiScope.launch {
+                        user_profile_tv.text = it.nickname
+                    }
                 }
             }
         }
+    }
+
+    override fun onViewRemoved(view: View?) {
+        viewModel?.apply {
+            eventStream.unsubscribe(javaClass.simpleName)
+            userStream.unsubscribe(javaClass.simpleName)
+        }
+        super.onViewRemoved(view)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -180,13 +190,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
         chatdisplay.let { rv ->
             rv.adapter = chatAdapter
+            val lm = rv.layoutManager as LinearLayoutManager
+            lm.recycleChildrenOnDetach = true
             rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(
                     rv: RecyclerView,
                     dx: Int,
                     dy: Int
                 ) {
-                    val lm = rv.layoutManager as LinearLayoutManager
                     val totalItemCount = lm.itemCount
                     val lastVisible = lm.findLastVisibleItemPosition()
 
@@ -349,5 +360,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 rv.smoothScrollToPosition(it)
             }
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        chatdisplay.adapter = null
     }
 }
