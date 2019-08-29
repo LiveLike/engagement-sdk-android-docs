@@ -32,7 +32,9 @@ internal data class Program(
     @SerializedName("sendbird_channel")
     val chatChannel: String,
     @SerializedName("analytics_properties")
-    val analyticsProps: Map<String, String>
+    val analyticsProps: Map<String, String>,
+    @SerializedName("rewards_type")
+    val rewardsType: String // none, points, bagdes
 )
 
 internal interface EngagementSdkDataClient {

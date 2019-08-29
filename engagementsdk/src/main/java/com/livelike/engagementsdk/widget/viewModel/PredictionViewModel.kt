@@ -32,7 +32,7 @@ internal class PredictionViewModel(
     private val appContext: Context,
     private val analyticsService: AnalyticsService,
     val onDismiss: () -> Unit,
-    val userRepository: UserRepository
+    private val userRepository: UserRepository
 ) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
@@ -142,9 +142,12 @@ internal class PredictionViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)?.new_points
-                interactionData.pointEarned = points ?: 0
+                userRepository.getPointsForReward(it, analyticsService)?.let { pts ->
+                    points = pts
+                    interactionData.pointEarned = points ?: 0
+                }
             }
+
             state.onNext("followup")
         }
     }
@@ -162,8 +165,10 @@ internal class PredictionViewModel(
         uiScope.launch {
             vote()
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)?.new_points
-                interactionData.pointEarned = points ?: 0
+                userRepository.getPointsForReward(it, analyticsService)?.let { pts ->
+                    points = pts
+                    interactionData.pointEarned = points ?: 0
+                }
             }
             state.onNext("confirmation")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
