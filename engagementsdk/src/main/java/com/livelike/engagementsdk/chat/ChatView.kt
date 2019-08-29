@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
+import kotlinx.android.synthetic.main.chat_view.view.topBarGradient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -252,12 +253,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         chatInput.visibility = View.GONE
         chatdisplay.visibility = View.GONE
         snap_live.visibility = View.GONE
+        topBarGradient.visibility = View.GONE
     }
 
     private fun hideLoadingSpinner() {
         loadingSpinner.visibility = View.GONE
         chatInput.visibility = View.VISIBLE
         chatdisplay.visibility = View.VISIBLE
+        topBarGradient.visibility = View.VISIBLE
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {

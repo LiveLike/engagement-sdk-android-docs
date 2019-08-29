@@ -24,22 +24,24 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-            android:id="@+id/chat_nickname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            app:fontFamily="@font/livelike_chat_nickname_font"
-            android:text="Terry"
-            tools:text="@tools:sample/full_names"
-            android:textColor="@color/livelike_default_chat_cell_name_color"
-            android:textSize="@dimen/livelike_default_chat_cell_name_size"
-            android:textStyle="bold"
-            tools:ignore="HardcodedText"
-            app:layout_constraintTop_toTopOf="@+id/chatBackground"
-            app:layout_constraintStart_toStartOf="@+id/chatBackground"
-            android:layout_alignParentLeft="true" android:layout_marginTop="8dp" android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:paddingRight="16dp"/>
+        android:id="@+id/chat_nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingRight="24dp"
+        android:text="Terry"
+        android:textColor="@color/livelike_default_chat_cell_name_color"
+        android:textSize="@dimen/livelike_default_chat_cell_name_size"
+        android:textStyle="bold"
+        app:fontFamily="@font/livelike_chat_nickname_font"
+        app:layout_constraintStart_toStartOf="@+id/chatBackground"
+        app:layout_constraintTop_toTopOf="@+id/chatBackground"
+        tools:ignore="HardcodedText"
+        tools:text="asd asd as dasd as dasdas sad as das ad sad ad asd asd sad asd asd asd asd" />
 
     <TextView
         android:id="@+id/chatMessage"
