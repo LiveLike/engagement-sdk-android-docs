@@ -19,6 +19,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.KeyboardHideReason
 import com.livelike.engagementsdk.KeyboardType
@@ -40,7 +41,6 @@ import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -81,7 +81,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
     private val viewModel: ChatViewModel?
-        get() = session?.chatViewModel
+        get() = (session as ContentSession)?.chatViewModel
 
     init {
         (context as Activity).window.setSoftInputMode(
@@ -138,8 +138,12 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     user_profile_tv.text = it.nickname
                     uiScope.launch {
                         delay(500)
-                        pointView.startAnimation(100)
                     }
+                }
+            }
+            programRepository.programRankStream.subscribe(javaClass.simpleName) {
+                it?.let { programRank ->
+                        pointView.startAnimation(programRank.points)
                 }
             }
         }

@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
@@ -42,7 +43,8 @@ internal class QuizViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val context: Context,
     var onDismiss: () -> Unit,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val programRepository: ProgramRepository
 ) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
@@ -171,7 +173,7 @@ internal class QuizViewModel(
                     interactionData.pointEarned = points ?: 0
                 }
             }
-
+            programRepository.fetchProgramRank()
             state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)

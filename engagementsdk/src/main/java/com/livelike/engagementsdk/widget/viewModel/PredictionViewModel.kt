@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -32,7 +33,8 @@ internal class PredictionViewModel(
     private val appContext: Context,
     private val analyticsService: AnalyticsService,
     val onDismiss: () -> Unit,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val programRepository: ProgramRepository
 ) : WidgetViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
@@ -147,8 +149,8 @@ internal class PredictionViewModel(
                     interactionData.pointEarned = points ?: 0
                 }
             }
-
             state.onNext("followup")
+            programRepository.fetchProgramRank()
         }
     }
 
@@ -171,6 +173,7 @@ internal class PredictionViewModel(
                 }
             }
             state.onNext("confirmation")
+            programRepository.fetchProgramRank()
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)

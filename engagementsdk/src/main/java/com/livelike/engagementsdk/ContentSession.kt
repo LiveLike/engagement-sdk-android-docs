@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
@@ -20,6 +21,8 @@ import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
@@ -38,11 +41,13 @@ internal class ContentSession(
         MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
 
-    override val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream) }
+    val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository) }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
+
+    private val programRepository = ProgramRepository(programId, userRepository)
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -75,6 +80,10 @@ internal class ContentSession(
                             configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
+                            GlobalScope.launch() {
+                                programRepository.program = program
+                                programRepository.fetchProgramRank()
+                            }
                         }
                     }
                 }
@@ -105,7 +114,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }

@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.services.network
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.webkit.URLUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -31,7 +32,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
-import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -226,11 +226,12 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
     }
 
     override suspend fun patchUser(clientId: String, userJson: JsonObject, accessToken: String?) {
-        remoteCall(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
+//        remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
     }
 
-    private suspend fun remoteCall(url: String, requestType: RequestType, requestBody: RequestBody?, accessToken: String?): Result<JsonObject> {
+    internal suspend inline fun <reified T : Any> remoteCall(url: String, requestType: RequestType, requestBody: RequestBody? = null, accessToken: String?): Result<Any> {
         return withContext(Dispatchers.IO) {
+            Log.d("url : ", url)
             val request = Request.Builder()
                 .url(url)
                 .method(requestType.name, requestBody)
@@ -242,11 +243,12 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             try {
                 val execute = call.execute()
 //               TODO add more network handling cases and remove !!, generic exception
-                try {
-                    Result.Success(JsonParser().parse(execute.networkResponse()!!.body()?.string()).asJsonObject)
-                } catch (e: Exception) {
-                    Result.Error(e)
-                }
+                    val responseString = execute.body()!!.string()
+                    val data: T = gson.fromJson<T>(
+                        responseString,
+                        T::class.java
+                    )
+                    Result.Success(data)
             } catch (e: IOException) {
                 logError { e }
                 Result.Error(e)
