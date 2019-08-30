@@ -80,13 +80,22 @@ internal class ContentSession(
                             configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
-                            GlobalScope.launch() {
+                            GlobalScope.launch {
                                 programRepository.program = program
                                 programRepository.fetchProgramRank()
                             }
                         }
                     }
                 }
+            }
+        }
+        startObservingPointsThisProgram()
+    }
+
+    private fun startObservingPointsThisProgram() {
+        programRepository.programRankStream.subscribe(javaClass.simpleName) {
+            it?.let {
+                analyticService.trackPointThisProgram(it.points)
             }
         }
     }
