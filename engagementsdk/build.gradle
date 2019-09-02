@@ -69,6 +69,7 @@ dependencies {
 
     // Analytics
     implementation "com.mixpanel.android:mixpanel-android:$mixpanelVersion"
+
 }
 
 repositories {

@@ -14,7 +14,7 @@ internal class ChatViewModel(
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService)
     private val messageList = mutableListOf<ChatMessage>()
-    internal val eventStream: SubscriptionManager<String> = SubscriptionManager(false)
+    internal val eventStream: Stream<String> = SubscriptionManager(false)
     private var chatLoaded = false
 
     companion object {
