@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.services.network
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.webkit.URLUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -18,6 +17,7 @@ import com.livelike.engagementsdk.utils.extractBoolean
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSessionId
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
@@ -231,7 +231,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
 
     internal suspend inline fun <reified T : Any> remoteCall(url: String, requestType: RequestType, requestBody: RequestBody? = null, accessToken: String?): Result<Any> {
         return withContext(Dispatchers.IO) {
-            Log.d("url : ", url)
+            logDebug { "url : $url" }
             val request = Request.Builder()
                 .url(url)
                 .method(requestType.name, requestBody)

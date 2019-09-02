@@ -21,7 +21,10 @@ import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 internal class ContentSession(
@@ -48,6 +51,9 @@ internal class ContentSession(
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
     private val programRepository = ProgramRepository(programId, userRepository)
+
+    private val job = SupervisorJob()
+    private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -80,7 +86,7 @@ internal class ContentSession(
                             configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
-                            GlobalScope.launch {
+                            contentSessionScope.launch {
                                 programRepository.program = program
                                 programRepository.fetchProgramRank()
                             }
@@ -172,6 +178,7 @@ internal class ContentSession(
 
     override fun close() {
         logVerbose { "Closing the Session" }
+        contentSessionScope.cancel()
         chatClient?.apply {
             unsubscribeAll()
         }
