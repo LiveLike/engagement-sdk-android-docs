@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.AnalyticsWidgetSpecificInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
@@ -41,7 +42,8 @@ internal class PollViewModel(
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val programRepository: ProgramRepository
 ) : WidgetViewModel() {
     var points: SubscriptionManager<Int?> = SubscriptionManager(false)
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
@@ -157,6 +159,7 @@ internal class PollViewModel(
                 }
                 interactionData.pointEarned = points.currentData ?: 0
             }
+            programRepository.fetchProgramRank()
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)

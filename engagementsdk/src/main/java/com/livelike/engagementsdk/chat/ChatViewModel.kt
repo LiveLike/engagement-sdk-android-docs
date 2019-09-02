@@ -3,9 +3,14 @@ package com.livelike.engagementsdk.chat
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 
-class ChatViewModel(val analyticsService: AnalyticsService, val userStream: Stream<LiveLikeUser>) : ChatRenderer {
+internal class ChatViewModel(
+    val analyticsService: AnalyticsService,
+    val userStream: Stream<LiveLikeUser>,
+    val programRepository: ProgramRepository
+) : ChatRenderer {
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService)
     private val messageList = mutableListOf<ChatMessage>()

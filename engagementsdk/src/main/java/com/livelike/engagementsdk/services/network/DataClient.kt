@@ -17,6 +17,8 @@ internal data class Program(
     val programUrl: String?,
     @SerializedName("timeline_url")
     val timelineUrl: String,
+    @SerializedName("rank_url")
+    val rankUrl: String,
     @SerializedName("content_id")
     val contentId: String,
     @SerializedName("id")

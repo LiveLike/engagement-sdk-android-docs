@@ -4,7 +4,6 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.setNickname
@@ -17,8 +16,7 @@ import kotlinx.coroutines.launch
  * triggered to get user and where to store the data.
  * In Typical frontend application we have local and remote data source, we will move towards that gradually[TODO].
  */
-internal class UserRepository(private val clientId: String) {
-    private val dataClient = EngagementDataClientImpl()
+internal class UserRepository(private val clientId: String) : BaseRepository() {
 
     /**
      *  User returned will be new if no access-token passed.
@@ -58,7 +56,7 @@ internal class UserRepository(private val clientId: String) {
     private fun publishUser(it: LiveLikeUser) {
         val nickname =
             getNickename() // Checking again the saved nickname as it could have changed during the web request.
-        if (nickname.isNotEmpty()) {
+        if (nickname.isNotEmpty() && !it.nickname.equals(nickname)) {
             it.nickname = nickname
             GlobalScope.launch {
                 patchNickNameOnRemote(it)

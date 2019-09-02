@@ -3,6 +3,7 @@ package com.livelike.engagementsdk
 import android.content.Context
 import android.util.Log
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -43,9 +44,15 @@ interface AnalyticsService {
     fun trackBlockingUser()
     fun trackCancelFlagUi()
     fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)
+    fun trackPointThisProgram(points: Int)
+//    TODO we not need to have method for each event and property rather have general methods and then use enum class to decide the flow of analytics.
 }
 
 class MockAnalyticsService : AnalyticsService {
+    override fun trackPointThisProgram(points: Int) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]$points")
+    }
+
     override fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
@@ -199,6 +206,7 @@ class AnalyticsWidgetSpecificInfo {
 
 class MixpanelAnalytics(val context: Context, token: String?, programId: String) :
     AnalyticsService {
+
     private var mixpanel: MixpanelAPI = MixpanelAPI.getInstance(context, token ?: "5c82369365be76b28b3716f260fbd2f5")
 
     companion object {
@@ -386,6 +394,15 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         properties.put("Dismiss Seconds Since Start", secondsSinceStart)
         mixpanel.track(KEY_POINT_TUTORIAL_COMPLETED, properties)
         eventObserver?.invoke(KEY_POINT_TUTORIAL_COMPLETED, properties)
+    }
+
+    override fun trackPointThisProgram(points: Int) {
+        JSONObject().apply {
+            put(AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key, points)
+            mixpanel.registerSuperProperties(this)
+            mixpanel.people.set(this)
+            eventObserver?.invoke(AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key, this)
+        }
     }
 
     override fun trackMessageSent(msgId: String, msgLength: Int) {

@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
@@ -35,7 +36,8 @@ internal class WidgetManager(
     private val widgetInterceptorStream: Stream<WidgetInterceptor>,
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val programRepository: ProgramRepository
 ) :
     MessagingClientProxy(upstream) {
 
@@ -141,7 +143,8 @@ internal class WidgetManager(
                         checkForPointTutorial()
                         publishNextInQueue()
                     },
-                    userRepository)
+                    userRepository,
+                    programRepository)
             )
         }
 
@@ -203,7 +206,8 @@ internal fun MessagingClient.asWidgetManager(
     widgetInterceptorStream: Stream<WidgetInterceptor>,
     analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    programRepository: ProgramRepository
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration, userRepository)
+    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration, userRepository, programRepository)
 }
