@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+<!--TODO define the fonts usage so that any developer can make use of it.-->
     <!--Widgets-->
     <item name="livelike_option_font"
           type="font">@font/roboto_regular</item>

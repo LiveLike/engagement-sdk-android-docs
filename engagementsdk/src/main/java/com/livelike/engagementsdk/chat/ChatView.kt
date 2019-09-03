@@ -143,7 +143,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
             programRepository.programRankStream.subscribe(javaClass.simpleName) {
                 it?.let { programRank ->
-                        pointView.startAnimation(programRank.points)
+                        pointView.showPoints(programRank.points)
                 }
             }
         }
