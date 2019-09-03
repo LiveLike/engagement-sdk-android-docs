@@ -31,4 +31,9 @@
     <dimen name="livelike_button_outline_stroke_width">2dp</dimen>
     <dimen name="livelike_confirm_outline_stroke_width">1dp</dimen>
     <dimen name="livelike_header_outline_stroke_width">1dp</dimen>
+
+
+<!--    Gamification-->
+    <dimen name="livelike_rank_label_text_size">10sp</dimen>
+
 </resources>

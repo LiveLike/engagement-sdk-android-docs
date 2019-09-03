@@ -26,6 +26,7 @@ import com.livelike.engagementsdk.KeyboardType
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.data.models.ProgramRank
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.logError
@@ -34,6 +35,8 @@ import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.pointView
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.rank_label
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.rank_value
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
@@ -144,9 +147,16 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             programRepository.programRankStream.subscribe(javaClass.simpleName) {
                 it?.let { programRank ->
                         pointView.showPoints(programRank.points)
+                        showUserRank(programRank)
                 }
             }
         }
+    }
+
+    private fun showUserRank(programRank: ProgramRank) {
+        rank_label.visibility = View.VISIBLE
+        rank_value.visibility = View.VISIBLE
+        rank_value.text = "#${programRank.rank}"
     }
 
     override fun onViewRemoved(view: View?) {

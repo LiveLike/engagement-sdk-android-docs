@@ -37,13 +37,21 @@
         android:id="@+id/rank_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Rank"/>
+        android:padding="4dp"
+        android:visibility="gone"
+        android:text="@string/livelike_rank_label"
+        style="@style/livlelike_rank_label_text_style" />
 
     <TextView
         android:id="@+id/rank_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="#12"/>
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        tools:textColor="@color/livelike_black"
+        android:visibility="gone"
+        tools:text="#12"
+        style="@style/livelike_rank_value_text_style" />
 
 
 </LinearLayout>

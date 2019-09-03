@@ -172,6 +172,7 @@ internal class ContentSession(
         logVerbose { "Resuming the Session" }
         widgetClient?.resume()
         chatClient?.resume()
+        contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticService.trackLastChatStatus(true)
         analyticService.trackLastWidgetStatus(true)
     }
