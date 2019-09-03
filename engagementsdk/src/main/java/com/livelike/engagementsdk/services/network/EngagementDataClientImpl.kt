@@ -32,6 +32,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -226,7 +227,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
     }
 
     override suspend fun patchUser(clientId: String, userJson: JsonObject, accessToken: String?) {
-//        remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
+        remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
     }
 
     internal suspend inline fun <reified T : Any> remoteCall(url: String, requestType: RequestType, requestBody: RequestBody? = null, accessToken: String?): Result<Any> {

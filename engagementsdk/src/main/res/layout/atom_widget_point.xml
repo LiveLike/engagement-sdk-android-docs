@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                              xmlns:app="http://schemas.android.com/apk/res-auto"
                                              xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_gravity="center_vertical"
                                              android:layout_width="100dp"
                                              android:layout_height="100dp">
 
@@ -20,6 +21,7 @@
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/coinView"
         app:layout_constraintTop_toTopOf="@+id/coinView"
+        tools:textColor="@color/livelike_black"
         tools:text="+100" />
 
 

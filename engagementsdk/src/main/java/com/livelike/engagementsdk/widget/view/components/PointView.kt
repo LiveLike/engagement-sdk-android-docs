@@ -30,7 +30,6 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
     init {
         inflate(context, R.layout.atom_widget_point, this)
-        clipParents(false)
         context.theme.obtainStyledAttributes(
             attr,
             R.styleable.PointView,
@@ -55,6 +54,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
     fun startAnimation(newPoint: Int) {
         visibility = View.VISIBLE
+        clipParents(false)
         ValueAnimator.ofInt(0, newPoint).apply {
             addUpdateListener {
                 point = it.animatedValue as Int
@@ -72,5 +72,10 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
         bothAnimatorSet.start()
+    }
+
+    fun showPoints(points: Int) {
+        visibility = View.VISIBLE
+        point = points
     }
 }
