@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
+import com.livelike.engagementsdk.data.models.Program
 import com.livelike.engagementsdk.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.utils.addUserAgent
 import com.livelike.engagementsdk.utils.extractBoolean
