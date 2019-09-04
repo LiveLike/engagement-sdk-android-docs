@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
+import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.MessagingClient
@@ -34,6 +35,7 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
+    private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
             field = value
@@ -78,6 +80,7 @@ internal class ContentSession(
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
                             userRepository.rewardType = program.rewardsType
+                            isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
@@ -88,7 +91,7 @@ internal class ContentSession(
                             }
                             contentSessionScope.launch {
                                 programRepository.program = program
-                                programRepository.fetchProgramRank()
+                                if (isGamificationEnabled) programRepository.fetchProgramRank()
                             }
                         }
                     }
@@ -172,7 +175,7 @@ internal class ContentSession(
         logVerbose { "Resuming the Session" }
         widgetClient?.resume()
         chatClient?.resume()
-        contentSessionScope.launch { programRepository.fetchProgramRank() }
+        if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticService.trackLastChatStatus(true)
         analyticService.trackLastWidgetStatus(true)
     }

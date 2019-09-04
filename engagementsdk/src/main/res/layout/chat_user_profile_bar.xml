@@ -30,7 +30,7 @@
         app:hidePlus="true"
         app:iconSize="14dp"
         app:textSize="12sp"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 
 
     <TextView
