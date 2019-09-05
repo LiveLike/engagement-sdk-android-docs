@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.services.network.RequestType
 import com.livelike.engagementsdk.services.network.Result
 import com.livelike.engagementsdk.utils.SubscriptionManager
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,7 +40,9 @@ internal class ProgramRepository(
         )
         if (result is Result.Success) {
             withContext(Dispatchers.Main) {
-                programRankStream.onNext(result.data as ProgramRank)
+                val programRank = result.data as ProgramRank
+                logDebug { "points update : ${programRank.points}, rank update: ${programRank.rank}" }
+                programRankStream.onNext(programRank)
             }
         }
     }

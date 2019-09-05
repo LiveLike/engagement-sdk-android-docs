@@ -113,6 +113,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     fun setSession(session: LiveLikeContentSession) {
+        hideGamification()
         this.session = session.apply {
             analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         }
@@ -153,10 +154,18 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
     }
 
+    private fun hideGamification() {
+        pointView.visibility = View.GONE
+        rank_label.visibility = View.GONE
+        rank_value.visibility = View.GONE
+    }
+
     private fun showUserRank(programRank: ProgramRank) {
-        rank_label.visibility = View.VISIBLE
-        rank_value.visibility = View.VISIBLE
-        rank_value.text = "#${programRank.rank}"
+        if (programRank.points> 0) {
+            rank_label.visibility = View.VISIBLE
+            rank_value.visibility = View.VISIBLE
+            rank_value.text = "#${programRank.rank}"
+        }
     }
 
     override fun onViewRemoved(view: View?) {
