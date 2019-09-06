@@ -27,7 +27,7 @@ class EpochTime(val timeSinceEpochInMs: Long) : Comparable<EpochTime> {
         EpochTime(timeSinceEpochInMs + timeStamp)
 }
 
-fun String.parseISO8601(): ZonedDateTime? {
+internal fun String.parseISO8601(): ZonedDateTime? {
     return try {
         if (isEmpty()) null else ZonedDateTime.parse(
             this,
@@ -39,6 +39,6 @@ fun String.parseISO8601(): ZonedDateTime? {
     }
 }
 
-fun ZonedDateTime.formatIso8601(): String {
+internal fun ZonedDateTime.formatIso8601(): String {
     return DateTimeFormatter.ISO_DATE_TIME.format(this)
 }
