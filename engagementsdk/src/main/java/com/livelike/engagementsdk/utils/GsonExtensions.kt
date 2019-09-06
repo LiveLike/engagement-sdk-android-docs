@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.utils
 
-import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -8,12 +7,12 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import com.livelike.engagementsdk.formatIso8601
+import com.livelike.engagementsdk.parseISO8601
 import java.lang.reflect.Type
-import java.text.ParseException
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.DateTimeParseException
 
 internal fun JsonObject.extractStringOrEmpty(propertyName: String): String {
     return if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asString else ""
@@ -45,23 +44,14 @@ internal class DateDeserializer : JsonDeserializer<ZonedDateTime> {
 
     override fun deserialize(element: JsonElement, arg1: Type, arg2: JsonDeserializationContext): ZonedDateTime? {
         val date = element.asString
-
-        return try {
-            ZonedDateTime.parse(date, isoUTCDateTimeFormatter)
-        } catch (e: ParseException) {
-            Log.e("Deserialize", "Failed to parse Date due to:", e)
-            null
-        } catch (e: DateTimeParseException) {
-            Log.e("Deserialize", "Failed to parse Date due to:", e)
-            null
-        }
+        return date.parseISO8601()
     }
 }
 
 internal class DateSerializer : JsonSerializer<ZonedDateTime> {
     override fun serialize(src: ZonedDateTime?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
         val obj = JsonObject()
-        obj.addProperty("program_date_time", isoUTCDateTimeFormatter.format(src).toString())
+        obj.addProperty("program_date_time", src?.formatIso8601())
         return obj.get("program_date_time")
     }
 }
