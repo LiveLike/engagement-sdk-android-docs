@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.setNickname
@@ -83,13 +84,13 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
 
     var rewardType = "none"
 
-    suspend fun getPointsForReward(rewardUrl: String, analyticsService: AnalyticsService): Int? {
+    suspend fun getGamificationReward(rewardUrl: String, analyticsService: AnalyticsService): ProgramGamificationProfile? {
         if (rewardType == "none") {
             return null
         }
         val reward = dataClient.rewardAsync(rewardUrl, analyticsService, accessToken = userAccessToken)
         lifetimePoints.onNext(reward?.points)
         rank.onNext(reward?.rank)
-        return reward?.new_points
+        return reward
     }
 }

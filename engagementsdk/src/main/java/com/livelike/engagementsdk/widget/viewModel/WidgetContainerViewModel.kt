@@ -12,6 +12,8 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 
+// TODO remove view references from this view model, also clean content session for same.
+
 class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>) {
 
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null

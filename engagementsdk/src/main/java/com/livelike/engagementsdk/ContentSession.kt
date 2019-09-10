@@ -41,7 +41,8 @@ internal class ContentSession(
             field = value
             widgetInterceptorStream.onNext(value)
         }
-    private val widgetInterceptorStream: Stream<WidgetInterceptor> = SubscriptionManager()
+    private val widgetInterceptorStream:
+            Stream<WidgetInterceptor> = SubscriptionManager()
     override var analyticService: AnalyticsService =
         MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
@@ -102,7 +103,7 @@ internal class ContentSession(
     }
 
     private fun startObservingPointsThisProgram() {
-        programRepository.programRankStream.subscribe(javaClass.simpleName) {
+        programRepository.programGamificationProfileStream.subscribe(javaClass.simpleName) {
             it?.let {
                 analyticService.trackPointThisProgram(it.points)
             }

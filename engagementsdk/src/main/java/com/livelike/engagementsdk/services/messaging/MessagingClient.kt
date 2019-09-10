@@ -37,6 +37,7 @@ internal data class ClientMessage(
 
 /**
  * Represents a MessagingClient error that can be sent from a MessagingClient
+ * TODO add enum for error types
  */
 internal data class Error(val type: String, val message: String)
 

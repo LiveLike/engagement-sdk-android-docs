@@ -26,7 +26,7 @@ import com.livelike.engagementsdk.KeyboardType
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.data.models.ProgramRank
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.logError
@@ -145,10 +145,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     }
                 }
             }
-            programRepository.programRankStream.subscribe(javaClass.simpleName) {
+            programRepository.programGamificationProfileStream.subscribe(javaClass.simpleName) {
                 it?.let { programRank ->
+                    if (programRank.newPoints == 0)
                         pointView.showPoints(programRank.points)
-                        showUserRank(programRank)
+                    else
+                        pointView.startAnimation(programRank.points)
+                    showUserRank(programRank)
                 }
             }
         }
@@ -160,11 +163,11 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         rank_value.visibility = View.GONE
     }
 
-    private fun showUserRank(programRank: ProgramRank) {
-        if (programRank.points> 0) {
+    private fun showUserRank(programGamificationProfile: ProgramGamificationProfile) {
+        if (programGamificationProfile.points> 0) {
             rank_label.visibility = View.VISIBLE
             rank_value.visibility = View.VISIBLE
-            rank_value.text = "#${programRank.rank}"
+            rank_value.text = "#${programGamificationProfile.rank}"
         }
     }
 

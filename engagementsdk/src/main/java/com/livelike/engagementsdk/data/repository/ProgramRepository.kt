@@ -2,7 +2,7 @@ package com.livelike.engagementsdk.data.repository
 
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.data.models.Program
-import com.livelike.engagementsdk.data.models.ProgramRank
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.services.network.RequestType
 import com.livelike.engagementsdk.services.network.Result
@@ -22,10 +22,12 @@ internal class ProgramRepository(
 ) : BaseRepository() {
 
     lateinit var program: Program
+
+    val rewardType: RewardsType by lazy { RewardsType.valueOf(program.rewardsType.toUpperCase()) }
     /**
      *  user points and other gamification stuff under this program.
      */
-    val programRankStream: Stream<ProgramRank> = SubscriptionManager()
+    val programGamificationProfileStream: Stream<ProgramGamificationProfile> = SubscriptionManager()
 
     suspend fun fetchProgramRank() {
         if (program.rewardsType.equals(RewardsType.NONE.key)) {
@@ -33,16 +35,16 @@ internal class ProgramRepository(
             return
         }
 
-        val result = dataClient.remoteCall<ProgramRank>(
+        val result = dataClient.remoteCall<ProgramGamificationProfile>(
             program.rankUrl,
             RequestType.GET,
             accessToken = userRepository.userAccessToken
         )
         if (result is Result.Success) {
             withContext(Dispatchers.Main) {
-                val programRank = result.data as ProgramRank
-                logDebug { "points update : ${programRank.points}, rank update: ${programRank.rank}" }
-                programRankStream.onNext(programRank)
+                val programGamification = result.data as ProgramGamificationProfile
+                logDebug { "points update : ${programGamification.points}, rank update: ${programGamification.rank}" }
+                programGamificationProfileStream.onNext(programGamification)
             }
         }
     }

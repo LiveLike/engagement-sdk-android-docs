@@ -54,6 +54,8 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
     fun startAnimation(newPoint: Int) {
         visibility = View.VISIBLE
+        clipChildren = false
+        clipToPadding = false
         clipParents(false)
         ValueAnimator.ofInt(0, newPoint).apply {
             addUpdateListener {
