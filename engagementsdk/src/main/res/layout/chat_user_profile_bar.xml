@@ -6,7 +6,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginLeft="8dp"
+    android:gravity="center_vertical"
     android:orientation="horizontal"
     tools:showIn="@layout/chat_input">
 
@@ -16,8 +17,9 @@
         android:layout_height="wrap_content"
         android:background="@drawable/ic_chat_message_bubble_rounded_rectangle"
         android:textColor="@color/livelike_white"
-        android:textSize="10sp"
+        android:textSize="@dimen/livelike_default_chat_cell_name_size"
         android:textStyle="bold"
+        android:paddingLeft="16dp"
         android:text="Me (SilverDog318)" />
 
 
@@ -25,8 +27,9 @@
         android:id="@+id/pointView"
         android:layout_width="48dp"
         android:layout_height="26dp"
-        android:layout_margin="8dp"
-        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
         app:hidePlus="true"
         app:iconSize="14dp"
         app:textSize="12sp"
