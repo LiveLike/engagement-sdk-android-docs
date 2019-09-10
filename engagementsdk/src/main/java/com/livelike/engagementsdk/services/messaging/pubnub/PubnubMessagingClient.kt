@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
 import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.parseISO8601
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -18,8 +19,6 @@ import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
-import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.format.DateTimeFormatter
 
 internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -95,18 +94,15 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                 }
             }
 
-            val datePattern =
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSZZZZZ")
-
             override fun message(pubnub: PubNub, message: PNMessageResult) {
                 logMessage(message)
                 val payload = message.message.asJsonObject.getAsJsonObject("payload")
                 val timeoutReceived = payload.extractStringOrEmpty("timeout")
                 val pdtString = payload.extractStringOrEmpty("program_date_time")
-                val epochTimeMs = if (pdtString.isEmpty()) 0 else ZonedDateTime.parse(
-                    pdtString,
-                    datePattern
-                ).toInstant().toEpochMilli()
+                var epochTimeMs = 0L
+                pdtString.parseISO8601()?.let {
+                    epochTimeMs = it.toInstant().toEpochMilli()
+                }
                 val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
                 message.message.asJsonObject.addProperty("priority", 1)
 
