@@ -3,17 +3,24 @@ package com.livelike.engagementsdk.services.messaging.proxies
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.utils.SubscriptionManager
 
+/**
+ * Integrator will pass implementation of this proxy to intercept widgets,
+ * SDK will call widgetWantsToShow() and in same sequence/order sdk will listen on events stream for the decision on that widget.
+ */
 abstract class WidgetInterceptor {
     abstract fun widgetWantsToShow()
-    val events: Stream<Decision> =
+    internal val events: Stream<Decision> =
         SubscriptionManager()
+
     fun showWidget() {
         events.onNext(Decision.Show)
     }
+
     fun dismissWidget() {
         events.onNext(Decision.Dismiss)
     }
-    enum class Decision {
+
+    internal enum class Decision {
         Show,
         Dismiss
     }

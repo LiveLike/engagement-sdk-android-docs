@@ -5,6 +5,9 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 
+/**
+ * Meessaging Proxy/Pipe for adding analytics for our widgets received.
+*/
 internal class LogAnalyticsMessagingClient(
     upstream: MessagingClient,
     val analyticsService: AnalyticsService

@@ -168,12 +168,13 @@ internal class QuizViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                userRepository.getPointsForReward(it, analyticsService)?.let { pts ->
-                    points = pts
+                userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
+                    points = pts.newPoints
+                    programRepository.programGamificationProfileStream.onNext(pts)
                     interactionData.pointEarned = points ?: 0
                 }
             }
-            programRepository.fetchProgramRank()
+//            programRepository.fetchProgramRank()
             state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)

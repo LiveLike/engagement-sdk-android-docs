@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.data.models.Program
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.utils.addUserAgent
 import com.livelike.engagementsdk.utils.extractBoolean
@@ -23,7 +24,6 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
 import com.livelike.engagementsdk.widget.WidgetDataClient
-import com.livelike.engagementsdk.widget.model.Reward
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -277,9 +277,9 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         }
     }
 
-    override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): Reward? {
-        return gson.fromJson(postAsync(rewardUrl, accessToken), Reward::class.java)?.also {
-            addPoints(it.new_points ?: 0)
+    override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile? {
+        return gson.fromJson(postAsync(rewardUrl, accessToken), ProgramGamificationProfile::class.java)?.also {
+            addPoints(it.newPoints ?: 0)
             analyticsService.registerSuperAndPeopleProperty("Lifetime Points" to (it.points?.toString() ?: "0"))
         }
     }

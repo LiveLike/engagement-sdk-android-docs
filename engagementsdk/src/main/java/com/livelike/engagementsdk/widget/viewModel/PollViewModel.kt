@@ -154,12 +154,13 @@ internal class PollViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                userRepository.getPointsForReward(it, analyticsService)?.let { pts ->
-                    publishPoints(pts)
+                userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
+                    publishPoints(pts.newPoints)
+                    programRepository.programGamificationProfileStream.onNext(pts)
                 }
                 interactionData.pointEarned = points.currentData ?: 0
             }
-            programRepository.fetchProgramRank()
+//            programRepository.fetchProgramRank()
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)

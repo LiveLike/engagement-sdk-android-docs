@@ -144,13 +144,14 @@ internal class PredictionViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                userRepository.getPointsForReward(it, analyticsService)?.let { pts ->
-                    points = pts
+                userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
+                    points = pts.newPoints
+                    programRepository.programGamificationProfileStream.onNext(pts)
                     interactionData.pointEarned = points ?: 0
                 }
             }
             state.onNext("followup")
-            programRepository.fetchProgramRank()
+//            programRepository.fetchProgramRank()
         }
     }
 
@@ -167,13 +168,14 @@ internal class PredictionViewModel(
         uiScope.launch {
             vote()
             data.currentData?.resource?.rewards_url?.let {
-                userRepository.getPointsForReward(it, analyticsService)?.let { pts ->
-                    points = pts
+                userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
+                    points = pts.newPoints
+                    programRepository.programGamificationProfileStream.onNext(pts)
                     interactionData.pointEarned = points ?: 0
                 }
             }
             state.onNext("confirmation")
-            programRepository.fetchProgramRank()
+//            programRepository.fetchProgramRank()
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)

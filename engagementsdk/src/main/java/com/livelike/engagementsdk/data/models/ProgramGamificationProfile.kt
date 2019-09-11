@@ -2,7 +2,7 @@ package com.livelike.engagementsdk.data.models
 
 import com.google.gson.annotations.SerializedName
 
-data class ProgramRank(
+data class ProgramGamificationProfile(
     @SerializedName("id")
     val id: String,
     @SerializedName("nickname")
@@ -10,17 +10,21 @@ data class ProgramRank(
     @SerializedName("points")
     val points: Int,
     @SerializedName("points_to_next_badge")
-    val pointsToNextBadge: Any,
+    val pointsToNextBadge: Int,
     @SerializedName("previous_badge")
-    val previousBadge: Any,
+    val previousBadge: Badge,
     @SerializedName("next_badge")
-    val nextBadge: Any,
+    val nextBadge: Badge,
     @SerializedName("current_badge")
-    val currentBadge: Any,
+    val currentBadge: Badge,
+    @SerializedName("new_badges")
+    val newBadges: List<Badge>,
     @SerializedName("rank")
     val rank: Int,
     @SerializedName("total_players")
     val totalPlayers: Int,
     @SerializedName("total_points")
-    val totalPoints: Int
+    val totalPoints: Int,
+    @SerializedName("new_points")
+    val newPoints: Int
 )

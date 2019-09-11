@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.ClientMessage
@@ -19,8 +20,6 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
-import com.livelike.engagementsdk.widget.model.Reward
-import java.lang.Exception
 import java.util.PriorityQueue
 import java.util.Queue
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +54,7 @@ internal class WidgetManager(
 
     init {
         widgetInterceptorStream.subscribe(javaClass) { wi ->
+//            TODO BUG : unsubscribe old widget interceptor events
                 wi?.events?.subscribe(javaClass.simpleName) {
                 when (it) {
                     WidgetInterceptor.Decision.Show -> showPendingMessage()
@@ -196,7 +196,7 @@ enum class WidgetType(val event: String) {
 internal interface WidgetDataClient {
     suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?)
     fun registerImpression(impressionUrl: String)
-    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): Reward?
+    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile?
 }
 
 internal fun MessagingClient.asWidgetManager(
