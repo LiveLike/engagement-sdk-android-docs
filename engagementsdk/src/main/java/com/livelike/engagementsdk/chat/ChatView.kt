@@ -30,7 +30,6 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.logError
-import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
@@ -47,6 +46,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -147,10 +147,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
             programRepository.programGamificationProfileStream.subscribe(javaClass.simpleName) {
                 it?.let { programRank ->
-                    if (programRank.newPoints == 0)
+                    if (programRank.newPoints == 0 || pointView.visibility== View.GONE)
                         pointView.showPoints(programRank.points)
                     else
-                        pointView.startAnimation(programRank.points)
+                        pointView.apply {
+                            postDelayed({ startAnimation(programRank.points) },
+                                500)
+                        }
                     showUserRank(programRank)
                 }
             }

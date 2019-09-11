@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="115dp"
+    android:layout_height="30dp">
+
+
+    <View
+        android:layout_width="100dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/livelike_rounded_solid_backgound" />
+
+
+    <View
+        android:id="@+id/progression_meter_progress_view"
+        android:layout_width="50dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/livelike_progression_meter_indicator" />
+
+    <TextView
+        android:id="@+id/progression_meter_text"
+        android:layout_width="100dp"
+        android:layout_height="16dp"
+        style="@style/livelike_extra_small_text_style"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:textColor="@color/livelike_white"
+        tools:text="150/300"/>
+
+
+    <ImageView
+        android:id="@+id/gamification_badge_iv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="end"
+        tools:src="@drawable/coin" />
+
+
+</FrameLayout>
