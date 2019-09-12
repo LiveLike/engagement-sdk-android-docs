@@ -45,7 +45,7 @@ internal class QuizViewModel(
     var onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository
-) : WidgetViewModel() {
+) : ViewModel() {
     var points: Int? = null
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()

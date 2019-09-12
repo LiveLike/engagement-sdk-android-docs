@@ -12,7 +12,7 @@ import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionWidget
-import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
@@ -28,7 +28,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    override var widgetViewModel: WidgetViewModel? = null
+    override var widgetViewModel: ViewModel? = null
         get() = super.widgetViewModel
         set(value) {
             field = value

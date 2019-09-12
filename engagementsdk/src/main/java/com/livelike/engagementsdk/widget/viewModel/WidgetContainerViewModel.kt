@@ -35,7 +35,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
                     override fun onDismiss(view: View?, token: Any?) {
                         dismissWidget?.invoke(DismissAction.SWIPE)
                         dismissWidget = null
-                        dismissWidget()
+                        removeViews()
                     }
                 })
         )
@@ -49,7 +49,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
     }
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?) {
-        dismissWidget()
+        removeViews()
         if (widgetView != null) {
             displayWidget(widgetView)
         }
@@ -66,7 +66,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
         }
     }
 
-    private fun dismissWidget() {
+    private fun removeViews() {
         logDebug { "NOW - Dismiss WidgetInfos" }
         widgetContainer?.removeAllViews()
     }

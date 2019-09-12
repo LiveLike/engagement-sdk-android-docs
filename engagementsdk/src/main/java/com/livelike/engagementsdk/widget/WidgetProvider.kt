@@ -29,7 +29,7 @@ import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
-import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.ViewModel
 
 internal class WidgetProvider {
     fun get(
@@ -68,6 +68,6 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
-    open var widgetViewModel: WidgetViewModel? = null
+    open var widgetViewModel: ViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
 }

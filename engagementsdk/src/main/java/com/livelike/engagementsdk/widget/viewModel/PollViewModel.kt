@@ -44,7 +44,7 @@ internal class PollViewModel(
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository
-) : WidgetViewModel() {
+) : ViewModel() {
     var points: SubscriptionManager<Int?> = SubscriptionManager(false)
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
