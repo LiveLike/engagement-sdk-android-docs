@@ -6,7 +6,6 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.gamification_badge_iv
 
 fun View.clipParents(isClip: Boolean) {
     var view = this
@@ -25,5 +24,5 @@ fun ImageView.loadImage(url: String, size: Int) {
             RequestOptions().override(size, size)
                 .transform(FitCenter())
         )
-        .into(gamification_badge_iv)
+        .into(this)
 }

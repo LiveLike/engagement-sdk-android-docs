@@ -9,7 +9,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.gamification_badge_iv
+import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.badge_iv
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.badge_name_tv
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.collect_badge_button
 
@@ -28,11 +28,11 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
         }
 
     private fun animateView(badge: Badge) {
-        gamification_badge_iv.loadImage(badge.imageFile, AndroidResource.dpToPx(80))
+        badge_iv.loadImage(badge.imageFile, AndroidResource.dpToPx(80))
         badge_name_tv.text = badge.name
 
         collect_badge_button.setOnClickListener {
-            viewModel?.dismissWidget(DismissAction.TIMEOUT)
+            dismissFunc?.invoke(DismissAction.TIMEOUT)
         }
     }
 

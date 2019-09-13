@@ -60,7 +60,7 @@
         android:textColor="#ffffff"
         android:gravity="center"
         android:background="@drawable/livelike_rank_label_gradient_background"
-        tools:text="Collect"/>
+        android:text="@string/collect"/>
 
 
 
