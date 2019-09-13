@@ -38,6 +38,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/followupAnimation" />
 
+
+    <com.livelike.engagementsdk.widget.view.components.ProgressionMeterView
+        android:id="@+id/progressionMeterView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pointView" />
+
+
     <android.support.v7.widget.RecyclerView android:id="@+id/textRecyclerView"
                                             android:hapticFeedbackEnabled="true"
                                             android:layout_width="match_parent"

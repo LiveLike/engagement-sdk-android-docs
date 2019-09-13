@@ -7,8 +7,11 @@ import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.domain.GamificationManager
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
@@ -17,6 +20,7 @@ import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addWidgetPredictionV
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetDataClient
+import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
@@ -34,9 +38,14 @@ internal class PredictionViewModel(
     private val analyticsService: AnalyticsService,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository
+    private val programRepository: ProgramRepository,
+    val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
     var points: Int? = null
+    val gamificationProfile: Stream<ProgramGamificationProfile>
+        get() = programRepository.programGamificationProfileStream
+    val rewardsType: RewardsType
+        get() = programRepository.rewardType
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
     var state: Stream<String?> = SubscriptionManager() // confirmation, followup
@@ -147,6 +156,7 @@ internal class PredictionViewModel(
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
                     points = pts.newPoints
                     programRepository.programGamificationProfileStream.onNext(pts)
+                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     interactionData.pointEarned = points ?: 0
                 }
             }
@@ -171,6 +181,7 @@ internal class PredictionViewModel(
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
                     points = pts.newPoints
                     programRepository.programGamificationProfileStream.onNext(pts)
+                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     interactionData.pointEarned = points ?: 0
                 }
             }

@@ -8,9 +8,13 @@ import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.AnalyticsWidgetSpecificInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.domain.GamificationManager
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -25,6 +29,7 @@ import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetDataClient
+import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
@@ -43,9 +48,14 @@ internal class PollViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository
+    private val programRepository: ProgramRepository,
+    val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
     var points: SubscriptionManager<Int?> = SubscriptionManager(false)
+    val gamificationProfile: Stream<ProgramGamificationProfile>
+        get() = programRepository.programGamificationProfileStream
+    val rewardsType: RewardsType
+        get() = programRepository.rewardType
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -157,6 +167,7 @@ internal class PollViewModel(
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
                     publishPoints(pts.newPoints)
                     programRepository.programGamificationProfileStream.onNext(pts)
+                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                 }
                 interactionData.pointEarned = points.currentData ?: 0
             }

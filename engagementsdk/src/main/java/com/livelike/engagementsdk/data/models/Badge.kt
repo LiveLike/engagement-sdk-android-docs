@@ -17,4 +17,9 @@ data class Badge(
     val name: String,
     @SerializedName("points")
     val points: Int
-)
+) : Comparable<Badge> {
+
+    override fun compareTo(other: Badge): Int {
+        return level.compareTo(other.level)
+    }
+}

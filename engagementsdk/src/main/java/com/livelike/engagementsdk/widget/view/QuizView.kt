@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -121,6 +122,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 viewModel?.points?.let {
                     if (!shouldShowPointTutorial()) {
                         pointView.startAnimation(it)
+                        wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
                     }
                 }
                 listOf(textEggTimer).forEach { v -> v?.showCloseButton() {

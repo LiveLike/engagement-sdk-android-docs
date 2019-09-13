@@ -2,12 +2,9 @@ package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.util.AttributeSet
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.FitCenter
-import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.data.models.Badge
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
@@ -22,24 +19,18 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
         set(value) {
             field = value
             viewModel = value as CollectBadgeWidgetViewModel
-            viewModel?.apply {
+            viewModel?.run {
                 startDismissTimeout(5000) {
                     removeAllViews()
                 }
-                animateView(programGamificationProfile)
+                animateView(badge)
             }
         }
 
-    private fun animateView(programGamificationProfile: ProgramGamificationProfile) {
-        val badge = programGamificationProfile.newBadges[0]
-        Glide.with(context)
-            .load(badge.imageFile)
-            .apply(
-                RequestOptions().override(AndroidResource.dpToPx(80), AndroidResource.dpToPx(80))
-                    .transform(FitCenter())
-            )
-            .into(gamification_badge_iv)
+    private fun animateView(badge: Badge) {
+        gamification_badge_iv.loadImage(badge.imageFile, AndroidResource.dpToPx(80))
         badge_name_tv.text = badge.name
+
         collect_badge_button.setOnClickListener {
             viewModel?.dismissWidget(DismissAction.TIMEOUT)
         }
