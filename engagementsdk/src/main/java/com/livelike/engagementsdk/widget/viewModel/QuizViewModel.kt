@@ -178,8 +178,8 @@ internal class QuizViewModel(
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
-                    points = pts.newPoints
                     programRepository.programGamificationProfileStream.onNext(pts)
+                    points = pts.newPoints
                     GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     interactionData.pointEarned = points ?: 0
                 }
