@@ -8,18 +8,18 @@ import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.pointTutorialSeen
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
-import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.pointsAnimation
 import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.pointsTutoView
 
 class PointsTutorialView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
     private var viewModel: PointTutorialWidgetViewModel? = null
-    override var widgetViewModel: WidgetViewModel? = null
+    override var widgetViewModel: ViewModel? = null
         set(value) {
             field = value
             viewModel = value as PointTutorialWidgetViewModel
             viewModel?.apply {
-                startDismissTimout(5000) {
+                startDismissTimeout(5000) {
                     removeAllViews()
                 }
                 pointsAnimation.playAnimation()

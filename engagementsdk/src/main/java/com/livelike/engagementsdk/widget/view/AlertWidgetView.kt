@@ -17,7 +17,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
-import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
 import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
 import kotlinx.android.synthetic.main.widget_alert.view.bodyText
@@ -43,7 +43,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             removeAllViews()
         }
 
-    override var widgetViewModel: WidgetViewModel? = null
+    override var widgetViewModel: ViewModel? = null
         set(value) {
             field = value
             viewModel = value as AlertWidgetViewModel

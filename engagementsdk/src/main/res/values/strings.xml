@@ -11,4 +11,7 @@
     <string name="chat_pre_nickname_me">(Me) %s</string>
     <string name="chat_deleted_message_redacted">Redacted</string>
     <string name="livelike_rank_label">Rank</string>
+    <string name="badge_earned_congrats_message">Congrats! You just earn a new badge!</string>
+    <string name="new_badge">NEW BADGE!!!</string>
+    <string name="collect">Collect</string>
 </resources>

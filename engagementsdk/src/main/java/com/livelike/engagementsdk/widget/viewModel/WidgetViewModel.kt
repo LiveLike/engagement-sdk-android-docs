@@ -1,20 +1,38 @@
 package com.livelike.engagementsdk.widget.viewModel
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.DismissAction
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-open class WidgetViewModel {
-    /**
-     * This is the job for all coroutines started by this ViewModel.
-     * Cancelling this job will cancel all coroutines started by this ViewModel.
-     */
-    val viewModelJob = SupervisorJob()
+// TODO inherit all widget viewModels from here and  add widget common code here.
+internal abstract class WidgetViewModel(
+    private val onDismiss: () -> Unit,
+    val analyticsService: AnalyticsService
+) : ViewModel() {
 
-    /**
-     * This is the main scope for all coroutines launched by MainViewModel.
-     * Since we pass viewModelJob, you can cancel all coroutines
-     * launched by uiScope by calling viewModelJob.cancel()
-     */
-    val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+    private var timeoutStarted = false
+
+    open fun dismissWidget(action: DismissAction) {
+        onDismiss()
+        onClear()
+    }
+
+    fun startDismissTimeout(timeout: Long, function: () -> Unit) {
+        if (!timeoutStarted) {
+            timeoutStarted = true
+            uiScope.launch {
+                delay(timeout)
+                dismissWidget(DismissAction.TIMEOUT)
+                onDismiss()
+                function()
+                timeoutStarted = false
+            }
+        }
+    }
+
+    open fun onClear() {
+        viewModelJob.cancel()
+        timeoutStarted = false
+    }
 }

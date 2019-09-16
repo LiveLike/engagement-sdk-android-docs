@@ -15,12 +15,22 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+
+        debug{
+            buildConfigField "String", "APP_CLIENT_ID", '"l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu"'
+            applicationIdSuffix ".debug"
+        }
         release {
+            buildConfigField "String", "APP_CLIENT_ID", '"mOBYul18quffrBDuq2IACKtVuLbUzXIPye5S3bq5"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=mOBYul18quffrBDuq2IACKtVuLbUzXIPye5S3bq5"'
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -54,7 +64,9 @@ dependencies {
     implementation "com.google.code.gson:gson:$gsonVersion"
 
     //sdk
-    api project(path: ':engagementsdk')
+    debugApi project(path: ':engagementsdk')
+    releaseApi project(path: ':engagementsdk') //TODO  define configuration: 'release' for release variant currently it is not building in it.
+
     implementation project(path: ':pluginexoplayer')
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'

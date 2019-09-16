@@ -92,6 +92,7 @@ internal class WidgetManager(
             notifyIntegrator(messageQueue.remove())
         } else {
             widgetOnScreen = false
+            currentWidgetViewStream.onNext(null) // sometimes widget view obscure the whole screen chat due t which app seems unresponsive
         }
     }
 
@@ -107,7 +108,7 @@ internal class WidgetManager(
 
     private fun notifyIntegrator(message: MessageHolder) {
         val widgetType = WidgetType.fromString(message.clientMessage.message.get("event").asString ?: "")
-        if (widgetInterceptorStream.latest() == null || widgetType == WidgetType.POINTS_TUTORIAL) {
+        if (widgetInterceptorStream.latest() == null || widgetType == WidgetType.POINTS_TUTORIAL || widgetType == WidgetType.COLLECT_BADGE) {
             showWidgetOnScreen(message)
         } else {
             GlobalScope.launch {
@@ -135,6 +136,7 @@ internal class WidgetManager(
         handler.post {
             currentWidgetViewStream.onNext(
                 WidgetProvider().get(
+                    this,
                     WidgetInfos(widgetType, payload, widgetId),
                     context,
                     analyticsService,
@@ -166,7 +168,7 @@ internal class WidgetManager(
                         add("payload", JsonObject().apply {
                             addProperty("id", "gameification")
                         })
-                        addProperty("priority", 2)
+                        addProperty("priority", 3)
                     }
                 )
                 onClientMessageEvent(this, message)
@@ -185,6 +187,7 @@ enum class WidgetType(val event: String) {
     TEXT_POLL("text-poll-created"),
     IMAGE_POLL("image-poll-created"),
     POINTS_TUTORIAL("points-tutorial"),
+    COLLECT_BADGE("collect-badge"),
     ALERT("alert-created");
 
     companion object {

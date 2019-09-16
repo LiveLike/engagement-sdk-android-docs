@@ -12,13 +12,13 @@ data class ProgramGamificationProfile(
     @SerializedName("points_to_next_badge")
     val pointsToNextBadge: Int,
     @SerializedName("previous_badge")
-    val previousBadge: Badge,
+    val previousBadge: Badge?,
     @SerializedName("next_badge")
-    val nextBadge: Badge,
+    val nextBadge: Badge?,
     @SerializedName("current_badge")
-    val currentBadge: Badge,
+    val currentBadge: Badge?,
     @SerializedName("new_badges")
-    val newBadges: List<Badge>,
+    val newBadges: List<Badge>?,
     @SerializedName("rank")
     val rank: Int,
     @SerializedName("total_players")

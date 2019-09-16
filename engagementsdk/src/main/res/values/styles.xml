@@ -19,6 +19,11 @@
         <item name="android:fontFamily">@font/roboto_bold</item>
     </style>
 
+    <style name="livelike_large_text_style" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+    </style>
+
 
     <style name="livlelike_rank_label_text_style" parent="livelike_extra_small_text_style">
         <item name="android:textSize">@dimen/livelike_rank_label_text_size</item>

@@ -30,10 +30,12 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.widget.view.loadImage
 import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.gamification_badge_iv
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.pointView
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.rank_label
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.rank_value
@@ -147,13 +149,34 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
             programRepository.programGamificationProfileStream.subscribe(javaClass.simpleName) {
                 it?.let { programRank ->
-                    if (programRank.newPoints == 0)
+                    if (programRank.newPoints == 0 || pointView.visibility == View.GONE)
                         pointView.showPoints(programRank.points)
-                    else
-                        pointView.startAnimation(programRank.points)
+                    else if (programRank.points == programRank.newPoints) {
+                            pointView.apply {
+                                postDelayed({ startAnimation(programRank.points) },
+                                    6300)
+                            }
+                        } else {
+                            pointView.apply {
+                                postDelayed({ startAnimation(programRank.points) },
+                                    1000)
+                            }
+                        }
                     showUserRank(programRank)
+                    wouldShowBadge(programRank)
                 }
             }
+        }
+    }
+
+    private fun wouldShowBadge(programRank: ProgramGamificationProfile) {
+        var currentBadge = programRank.newBadges?.max()
+        if (currentBadge == null) {
+            currentBadge = programRank.currentBadge
+        }
+        currentBadge?.let {
+            gamification_badge_iv.visibility = View.VISIBLE
+            gamification_badge_iv.loadImage(it.imageFile, dpToPx(14))
         }
     }
 

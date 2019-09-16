@@ -13,9 +13,6 @@ import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
-import com.livelike.engagementsdk.widget.viewModel.PollViewModel
-import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
-import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import kotlinx.android.synthetic.main.widget_test_view.view.buttonRefresh
 import kotlinx.android.synthetic.main.widget_test_view.view.testFirst
 import kotlinx.android.synthetic.main.widget_test_view.view.testFourth
@@ -123,41 +120,54 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
                 MockAnalyticsService()
             ) {}
         }
-        val viewPoll = PollView(context).apply {
-            val info = WidgetInfos(
-                "text-poll-created",
-                gson.fromJson(pollTextData(), JsonObject::class.java),
-                "120571e0-d665-4e9b-b497-908cf8422a64"
-            )
-            widgetViewModel = PollViewModel(info,
-                MockAnalyticsService(), mockConfig, {}, userRepository, programRepository
-            )
-        }
-        val viewQuiz = QuizView(context).apply {
-            val info = WidgetInfos(
-                "text-quiz-created",
-                gson.fromJson(quizTextData(), JsonObject::class.java),
-                "120571e0-d665-4e9b-b497-908cf8422a64"
-            )
-            widgetViewModel = QuizViewModel(
-                info,
-                MockAnalyticsService(), mockConfig, context, {}, userRepository, programRepository
-            )
-        }
-        val viewPrediction = PredictionView(context).apply {
-            val info = WidgetInfos(
-                "text-prediction-created",
-                gson.fromJson(predictionTextData(), JsonObject::class.java),
-                "120571e0-d665-4e9b-b497-908cf8422a64"
-            )
-            widgetViewModel = PredictionViewModel(info, context,
-                MockAnalyticsService(), {}, userRepository, programRepository
-            )
-        }
-
-        testFirst.addView(viewPrediction)
-        testSecond.addView(viewPoll)
-        testThird.addView(viewQuiz)
+//        val viewPoll = PollView(context).apply {
+//            val info = WidgetInfos(
+//                "text-poll-created",
+//                gson.fromJson(pollTextData(), JsonObject::class.java),
+//                "120571e0-d665-4e9b-b497-908cf8422a64"
+//            )
+//            widgetViewModel = PollViewModel(
+//                info,
+//                MockAnalyticsService(),
+//                mockConfig,
+//                {},
+//                userRepository,
+//                programRepository,
+//                widgetMessagingClient
+//            )
+//        }
+//        val viewQuiz = QuizView(context).apply {
+//            val info = WidgetInfos(
+//                "text-quiz-created",
+//                gson.fromJson(quizTextData(), JsonObject::class.java),
+//                "120571e0-d665-4e9b-b497-908cf8422a64"
+//            )
+//            widgetViewModel = QuizViewModel(
+//                info,
+//                MockAnalyticsService(),
+//                mockConfig,
+//                context,
+//                {},
+//                userRepository,
+//                programRepository,
+//                widgetMessagingClient
+//            )
+//        }
+//        val viewPrediction = PredictionView(context).apply {
+//            val info = WidgetInfos(
+//                "text-prediction-created",
+//                gson.fromJson(predictionTextData(), JsonObject::class.java),
+//                "120571e0-d665-4e9b-b497-908cf8422a64"
+//            )
+//            widgetViewModel = PredictionViewModel(
+//                info, context,
+//                MockAnalyticsService(), {}, userRepository, programRepository, widgetMessagingClient
+//            )
+//        }
+//
+//        testFirst.addView(viewPrediction)
+//        testSecond.addView(viewPoll)
+//        testThird.addView(viewQuiz)
         testFourth.addView(viewAlert)
     }
 }
