@@ -32,7 +32,7 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
         visibility = View.GONE
     }
 
-    fun animatePointsBadgeProgression(currentPoints: Int, newPoints: Int, totalPointsNextBadge: Int, badgeIconURL: String) {
+    fun animatePointsBadgeProgression(currentPointsForNextBadge: Int, newPoints: Int, totalPointsNextBadge: Int, badgeIconURL: String) {
         visibility = View.VISIBLE
         clipChildren = false
         clipToPadding = false
@@ -41,35 +41,39 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
         gamification_badge_iv.loadImage(badgeIconURL, AndroidResource.dpToPx(30))
         totalPointsToNextbadge = totalPointsNextBadge
 
-        val colorMatrix = ColorMatrix()
+        var colorMatrix = ColorMatrix()
         colorMatrix.setSaturation(0f)
-        val filter = ColorMatrixColorFilter(colorMatrix)
+        var filter = ColorMatrixColorFilter(colorMatrix)
         gamification_badge_iv.colorFilter = filter
+        gamification_badge_iv.invalidate()
 
-        val newBadgeEarned = totalPointsToNextbadge == currentPoints + newPoints
+        val newBadgeEarned = totalPointsToNextbadge == currentPointsForNextBadge + newPoints
         if (newBadgeEarned) {
             new_badge_label.visibility = View.VISIBLE
             gamification_badge_iv.postDelayed({
-                val colorMatrix = ColorMatrix()
+                colorMatrix = ColorMatrix()
                 colorMatrix.setSaturation(1f)
-                val filter = ColorMatrixColorFilter(colorMatrix)
+                filter = ColorMatrixColorFilter(colorMatrix)
                 gamification_badge_iv.colorFilter = filter
+                gamification_badge_iv.invalidate()
             }, 500)
         } else {
             new_badge_label.visibility = View.GONE
         }
 
-        ValueAnimator.ofInt(currentPoints, currentPoints + newPoints).apply {
+        ValueAnimator.ofInt(currentPointsForNextBadge, currentPointsForNextBadge + newPoints).apply {
             addUpdateListener {
                 progression = it.animatedValue as Int
             }
             duration = 1000
             start()
         }
-        val startPercentage = (currentPoints / totalPointsToNextbadge.toFloat()) * 100
-        val endPercentage = min(100f, ((currentPoints + newPoints) / totalPointsToNextbadge.toFloat()) *100)
-        ValueAnimator.ofInt(AndroidResource.dpToPx(startPercentage.toInt()*AndroidResource.dpToPx(100)),
-            AndroidResource.dpToPx(endPercentage.toInt()*AndroidResource.dpToPx(100))).apply {
+        val startPercentage = (currentPointsForNextBadge / totalPointsToNextbadge.toFloat()) * 100
+        val endPercentage = min(100f, ((currentPointsForNextBadge + newPoints) / totalPointsToNextbadge.toFloat()) *100)
+        ValueAnimator.ofInt(
+            ((startPercentage * AndroidResource.dpToPx(100)) / 100).toInt(),
+            (endPercentage.toInt() * AndroidResource.dpToPx(100) / 100).toInt()
+        ).apply {
             addUpdateListener {
                 val layoutParams = progression_meter_progress_view.layoutParams
                 layoutParams.width = it.animatedValue as Int
