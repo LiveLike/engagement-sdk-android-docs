@@ -65,7 +65,7 @@ dependencies {
 
     //sdk
     debugApi project(path: ':engagementsdk')
-    releaseApi project(path: ':engagementsdk', configuration: 'release')
+    releaseApi project(path: ':engagementsdk') //TODO  define configuration: 'release' for release variant currently it is not building in it.
 
     implementation project(path: ':pluginexoplayer')
 
