@@ -92,6 +92,7 @@ internal class WidgetManager(
             notifyIntegrator(messageQueue.remove())
         } else {
             widgetOnScreen = false
+            currentWidgetViewStream.onNext(null) // sometimes widget view obscure the whole screen chat due t which app seems unresponsive
         }
     }
 

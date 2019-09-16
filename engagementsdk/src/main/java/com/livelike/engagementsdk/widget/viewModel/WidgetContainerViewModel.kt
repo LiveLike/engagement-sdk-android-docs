@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import android.animation.LayoutTransition
 import android.annotation.SuppressLint
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -69,5 +70,13 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
     private fun removeViews() {
         logDebug { "NOW - Dismiss WidgetInfos" }
         widgetContainer?.removeAllViews()
+        widgetContainer?.apply {
+            if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    !isInLayout
+                } else {
+                    true
+                }
+            ) requestLayout()
+        }
     }
 }
