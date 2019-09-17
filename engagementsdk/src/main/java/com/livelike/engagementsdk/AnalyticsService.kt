@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.util.Log
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -45,10 +46,20 @@ interface AnalyticsService {
     fun trackCancelFlagUi()
     fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)
     fun trackPointThisProgram(points: Int)
+    fun registerSuperProperty(analyticsSuperProperties: AnalyticsSuperProperties, value: Any?)
+
 //    TODO we not need to have method for each event and property rather have general methods and then use enum class to decide the flow of analytics.
 }
 
 class MockAnalyticsService : AnalyticsService {
+
+    override fun registerSuperProperty(
+        analyticsSuperProperties: AnalyticsSuperProperties,
+        value: Any?
+    ) {
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$value")
+    }
+
     override fun trackPointThisProgram(points: Int) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]$points")
     }
@@ -400,8 +411,18 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         JSONObject().apply {
             put(AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key, points)
             mixpanel.registerSuperProperties(this)
-            mixpanel.people.set(this)
             eventObserver?.invoke(AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key, this)
+        }
+    }
+
+    override fun registerSuperProperty(analyticsSuperProperties: AnalyticsSuperProperties, value: Any?) {
+        JSONObject().apply {
+            put(analyticsSuperProperties.key, value ?: JsonNull.INSTANCE)
+            mixpanel.registerSuperProperties(this)
+            if (analyticsSuperProperties.isPeopleProperty) {
+                mixpanel.people.set(this)
+            }
+            eventObserver?.invoke(analyticsSuperProperties.key, this)
         }
     }
 
