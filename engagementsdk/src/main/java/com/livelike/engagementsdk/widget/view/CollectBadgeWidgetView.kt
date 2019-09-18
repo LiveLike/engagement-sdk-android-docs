@@ -32,6 +32,9 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
         badge_name_tv.text = badge.name
 
         collect_badge_button.setOnClickListener {
+            viewModel?.let {
+                it.analyticsService.trackBadgeCollectedButtonPressed(it.badge.id, it.badge.level)
+            }
             dismissFunc?.invoke(DismissAction.TIMEOUT)
         }
     }
