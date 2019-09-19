@@ -45,7 +45,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     WidgetDataClient, ChatDataClient {
     override suspend fun reportMessage(programId: String, message: ChatMessage, accessToken: String?) {
         remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("programs/$programId/report/"), RequestType.POST, RequestBody.create(
-            MediaType.parse("application/json; charset=utf-8"), message.toJson()), accessToken)
+            MediaType.parse("application/json; charset=utf-8"), message.toReportMessageJson()), accessToken)
     }
 
     private val MAX_PROGRAM_DATA_REQUESTS = 13

@@ -32,7 +32,7 @@ data class ChatMessage(
     val timeStamp: String = "",
     var isFromMe: Boolean = false
 ) {
-    fun toJson(): String {
+    fun toReportMessageJson(): String {
         return """{
                     "channel": "$channel",
                     "user_id": "$senderId",
