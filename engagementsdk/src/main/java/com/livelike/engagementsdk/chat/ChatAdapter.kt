@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
@@ -42,7 +43,7 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : List
                     setMessage(context.getString(R.string.flag_ui_blocking_message, msg.senderDisplayName))
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackBlockingUser()
-
+                        blockUser(msg.senderId)
                     }
                     create()
                 }.show()

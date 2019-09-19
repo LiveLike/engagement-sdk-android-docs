@@ -5,6 +5,7 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -25,6 +26,9 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
+        if (getBlockedUsers().contains(message.senderId)){
+            return
+        }
         messageList.add(message.apply {
             isFromMe = userStream.latest()?.id == senderId
         })
