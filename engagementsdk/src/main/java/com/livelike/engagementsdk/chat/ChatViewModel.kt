@@ -7,14 +7,14 @@ import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.services.network.ChatDataClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.utils.SubscriptionManager
-import kotlinx.coroutines.GlobalScope
+import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.launch
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
     val userStream: Stream<LiveLikeUser>,
     val programRepository: ProgramRepository
-) : ChatRenderer {
+) : ChatRenderer, ViewModel() {
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     private val messageList = mutableListOf<ChatMessage>()
@@ -62,7 +62,7 @@ internal class ChatViewModel(
     }
 
     private fun reportChatMessage(message: ChatMessage) {
-        GlobalScope.launch {
+        uiScope.launch {
             dataClient.reportMessage(programRepository.program.id, message, userStream.latest()?.accessToken)
         }
     }
