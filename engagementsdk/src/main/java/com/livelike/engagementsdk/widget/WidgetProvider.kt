@@ -62,7 +62,7 @@ internal class WidgetProvider {
                 widgetViewModel = PollViewModel(widgetInfos, analyticsService, sdkConfiguration, onDismiss, userRepository, programRepository, widgetMessagingClient)
             }
             POINTS_TUTORIAL -> PointsTutorialView(context).apply {
-                widgetViewModel = PointTutorialWidgetViewModel(onDismiss, analyticsService)
+                widgetViewModel = PointTutorialWidgetViewModel(onDismiss, analyticsService, programRepository.rewardType, programRepository.programGamificationProfileStream.latest())
             }
             COLLECT_BADGE -> CollectBadgeWidgetView(context).apply {
                 widgetViewModel = CollectBadgeWidgetViewModel(gson.fromJson(widgetInfos.payload, Badge::class.java), onDismiss, analyticsService)

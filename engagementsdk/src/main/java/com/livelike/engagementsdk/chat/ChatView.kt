@@ -184,6 +184,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         pointView.visibility = View.GONE
         rank_label.visibility = View.GONE
         rank_value.visibility = View.GONE
+        gamification_badge_iv.visibility = View.GONE
     }
 
     private fun showUserRank(programGamificationProfile: ProgramGamificationProfile) {
