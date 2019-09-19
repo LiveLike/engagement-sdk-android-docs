@@ -42,6 +42,7 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : List
                     setMessage(context.getString(R.string.flag_ui_blocking_message, msg.senderDisplayName))
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackBlockingUser()
+
                     }
                     create()
                 }.show()
