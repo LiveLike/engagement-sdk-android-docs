@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
+import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.data.models.Program
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 
@@ -22,4 +23,8 @@ internal interface WidgetDataClient {
     suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?)
     fun registerImpression(impressionUrl: String)
     suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile?
+}
+
+internal interface ChatDataClient {
+    suspend fun reportMessage(programId: String, message: ChatMessage, accessToken: String?)
 }

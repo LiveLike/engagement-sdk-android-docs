@@ -25,7 +25,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffU
     }
 }
 
-class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, private val reporter: (ChatMessage)->Unit) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -51,6 +51,7 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : List
                     setMessage(context.getString(R.string.flag_ui_reporting_message))
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackReportingMessage()
+                        reporter(msg)
                     }
                     create()
                 }.show()

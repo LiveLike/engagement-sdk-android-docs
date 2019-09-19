@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
+import okhttp3.MediaType
 import java.util.UUID
 
 interface ChatEventListener {
@@ -23,10 +24,21 @@ interface ChatRenderer {
  *  @param timeStamp Message timeStamp.
  */
 data class ChatMessage(
+    var channel: String,
     var message: String,
     val senderId: String,
     val senderDisplayName: String,
     var id: String = UUID.randomUUID().toString(),
     val timeStamp: String = "",
     var isFromMe: Boolean = false
-)
+) {
+    fun toJson(): String {
+        return """{
+                    "channel": "$channel",
+                    "user_id": "$senderId",
+                    "nickname": "$senderDisplayName",
+                    "message_id": "$id",
+                    "message": "$message"
+                }""".trimIndent()
+    }
+}
