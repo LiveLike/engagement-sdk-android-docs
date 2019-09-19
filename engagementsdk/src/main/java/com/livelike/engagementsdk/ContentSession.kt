@@ -2,8 +2,10 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
@@ -27,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import org.threeten.bp.ZonedDateTime
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
@@ -90,22 +93,49 @@ internal class ContentSession(
                             configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
+                            programRepository.program = program
                             contentSessionScope.launch {
-                                programRepository.program = program
                                 if (isGamificationEnabled) programRepository.fetchProgramRank()
                             }
+                            startObservingForGamificationAnalytics(analyticService, programRepository.programGamificationProfileStream, programRepository.rewardType)
                         }
                     }
                 }
             }
         }
-        startObservingPointsThisProgram()
     }
 
-    private fun startObservingPointsThisProgram() {
-        programRepository.programGamificationProfileStream.subscribe(javaClass.simpleName) {
-            it?.let {
-                analyticService.trackPointThisProgram(it.points)
+    private fun startObservingForGamificationAnalytics(
+        analyticService: AnalyticsService,
+        programGamificationProfileStream: Stream<ProgramGamificationProfile>,
+        rewardType: RewardsType
+    ) {
+        if (rewardType != RewardsType.NONE) {
+            programGamificationProfileStream.subscribe(javaClass.simpleName) {
+                it?.let {
+                    analyticService.trackPointThisProgram(it.points)
+                    if (rewardType == RewardsType.BADGES) {
+                        if (it.points == 0 && it.currentBadge == null) {
+                            analyticService.registerSuperProperty(
+                                AnalyticsSuperProperties.TIME_LAST_BADGE_AWARD,
+                                null
+                            )
+                            analyticService.registerSuperProperty(
+                                AnalyticsSuperProperties.BADGE_LEVEL_THIS_PROGRAM,
+                                0
+                            )
+                        } else if (it.currentBadge != null && it.newBadges?.isNotEmpty() == true) {
+                            analyticService.registerSuperProperty(
+                                AnalyticsSuperProperties.TIME_LAST_BADGE_AWARD,
+                                ZonedDateTime.now().formatIsoLocal8601()
+                            )
+                            analyticService.registerSuperProperty(
+                                AnalyticsSuperProperties.BADGE_LEVEL_THIS_PROGRAM,
+                                it.currentBadge.level
+                            )
+                        }
+                    }
+                }
             }
         }
     }

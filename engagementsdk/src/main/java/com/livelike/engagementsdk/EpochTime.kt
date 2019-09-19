@@ -39,6 +39,12 @@ internal fun String.parseISO8601(): ZonedDateTime? {
     }
 }
 
+/** Formats in 2019-09-17T17:31:08.914+05:30[Asia/Kolkata] */
 internal fun ZonedDateTime.formatIso8601(): String {
     return DateTimeFormatter.ISO_DATE_TIME.format(this)
+}
+
+/** Formats in 2019-09-17T10:30:56 */
+internal fun ZonedDateTime.formatIsoLocal8601(): String {
+    return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(this)
 }
