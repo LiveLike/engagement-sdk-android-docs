@@ -23,7 +23,6 @@ import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
-import com.livelike.engagementsdk.widget.WidgetDataClient
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -41,7 +40,8 @@ import okhttp3.Response
 import okio.ByteString
 
 // TODO: This needs to be split
-internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
+internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
+    WidgetDataClient {
     private val MAX_PROGRAM_DATA_REQUESTS = 13
 
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor

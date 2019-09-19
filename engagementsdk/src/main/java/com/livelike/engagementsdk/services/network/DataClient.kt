@@ -1,9 +1,11 @@
 package com.livelike.engagementsdk.services.network
 
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.data.models.Program
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 
 internal interface DataClient {
     fun getProgramData(url: String, responseCallback: (program: Program?) -> Unit)
@@ -14,4 +16,10 @@ internal interface DataClient {
 
 internal interface EngagementSdkDataClient {
     fun getEngagementSdkConfig(url: String, responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit)
+}
+
+internal interface WidgetDataClient {
+    suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?)
+    fun registerImpression(impressionUrl: String)
+    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile?
 }
