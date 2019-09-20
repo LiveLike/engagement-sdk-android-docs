@@ -1,7 +1,7 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.parseISO8601
+import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -100,7 +100,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                 val timeoutReceived = payload.extractStringOrEmpty("timeout")
                 val pdtString = payload.extractStringOrEmpty("program_date_time")
                 var epochTimeMs = 0L
-                pdtString.parseISO8601()?.let {
+                pdtString.parseISODateTime()?.let {
                     epochTimeMs = it.toInstant().toEpochMilli()
                 }
                 val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
