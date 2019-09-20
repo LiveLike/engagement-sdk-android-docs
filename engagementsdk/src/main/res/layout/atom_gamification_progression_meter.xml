@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    tools:background="@drawable/livelike_rounded_solid_backgound"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <FrameLayout
@@ -55,12 +56,11 @@
         android:layout_height="wrap_content"
         style="@style/livelike_small_text_style"
         android:textColor="#ffffff"
-        tools:text="@string/new_badge"
+        android:text="@string/new_badge"
         tools:background="@color/livelike_black"
         android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/progression_meter_container"/>
 
 </android.support.constraint.ConstraintLayout>

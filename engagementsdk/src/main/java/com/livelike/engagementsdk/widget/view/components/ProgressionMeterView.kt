@@ -45,7 +45,6 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
         colorMatrix.setSaturation(0f)
         var filter = ColorMatrixColorFilter(colorMatrix)
         gamification_badge_iv.colorFilter = filter
-        gamification_badge_iv.invalidate()
 
         val newBadgeEarned = totalPointsToNextbadge <= currentPointsForNextBadge + newPoints
         if (newBadgeEarned) {
@@ -54,7 +53,6 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
                 colorMatrix.setSaturation(1f)
                 filter = ColorMatrixColorFilter(colorMatrix)
                 gamification_badge_iv.colorFilter = filter
-                gamification_badge_iv.invalidate()
                 new_badge_label.visibility = View.VISIBLE
             }, 500)
         } else {
