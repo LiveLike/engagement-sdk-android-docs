@@ -64,7 +64,6 @@ internal class ContentSession(
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
             it?.let {
-                analyticService.trackSession(it.id)
                 analyticService.trackUsername(it.nickname)
             }
         }
@@ -78,6 +77,8 @@ internal class ContentSession(
                         configuration.mixpanelToken,
                         programId
                     )
+                analyticService.trackSession(pair.first.id)
+                analyticService.trackUsername(pair.first.nickname)
                 analyticService.trackConfiguration(configuration.name ?: "")
 
                 if (programId.isNotEmpty()) {
