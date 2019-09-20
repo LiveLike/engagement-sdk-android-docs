@@ -28,7 +28,7 @@ import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.toAnalyticsString
-import com.livelike.engagementsdk.widget.WidgetDataClient
+import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter

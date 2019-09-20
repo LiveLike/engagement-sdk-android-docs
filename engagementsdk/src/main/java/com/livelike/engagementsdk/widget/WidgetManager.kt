@@ -9,13 +9,13 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
@@ -194,12 +194,6 @@ enum class WidgetType(val event: String) {
         private val map = values().associateBy(WidgetType::event)
         fun fromString(type: String) = map[type]
     }
-}
-
-internal interface WidgetDataClient {
-    suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?)
-    fun registerImpression(impressionUrl: String)
-    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile?
 }
 
 internal fun MessagingClient.asWidgetManager(
