@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
+import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.data.models.Program
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.addAuthorizationBearer
@@ -23,7 +24,6 @@ import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
-import com.livelike.engagementsdk.widget.WidgetDataClient
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -41,7 +41,13 @@ import okhttp3.Response
 import okio.ByteString
 
 // TODO: This needs to be split
-internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
+internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
+    WidgetDataClient, ChatDataClient {
+    override suspend fun reportMessage(programId: String, message: ChatMessage, accessToken: String?) {
+        remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("programs/$programId/report/"), RequestType.POST, RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"), message.toReportMessageJson()), accessToken)
+    }
+
     private val MAX_PROGRAM_DATA_REQUESTS = 13
 
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor

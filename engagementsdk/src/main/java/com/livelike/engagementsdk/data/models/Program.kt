@@ -9,8 +9,6 @@ internal data class Program(
     val timelineUrl: String,
     @SerializedName("rank_url")
     val rankUrl: String,
-    @SerializedName("content_id")
-    val contentId: String,
     @SerializedName("id")
     val id: String,
     @SerializedName("title")

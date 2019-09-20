@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.util.Log
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -12,6 +13,10 @@ import org.json.JSONObject
 
 interface AnalyticsService {
     fun registerEventObserver(eventObserver: (String, JSONObject) -> Unit)
+
+    fun registerSuperProperty(analyticsSuperProperties: AnalyticsSuperProperties, value: Any?)
+    fun registerSuperAndPeopleProperty(event: Pair<String, String>)
+
     fun trackConfiguration(internalAppName: String) // add more info if required in the future
     fun trackWidgetInteraction(
         kind: String,
@@ -38,17 +43,30 @@ interface AnalyticsService {
     fun trackUsername(username: String)
     fun trackKeyboardOpen(keyboardType: KeyboardType)
     fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
-    fun registerSuperAndPeopleProperty(event: Pair<String, String>)
     fun trackFlagButtonPressed()
     fun trackReportingMessage()
     fun trackBlockingUser()
     fun trackCancelFlagUi()
     fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)
     fun trackPointThisProgram(points: Int)
+    fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)
+
 //    TODO we not need to have method for each event and property rather have general methods and then use enum class to decide the flow of analytics.
 }
 
 class MockAnalyticsService : AnalyticsService {
+
+    override fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int) {
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$badgeId $badgeLevel")
+    }
+
+    override fun registerSuperProperty(
+        analyticsSuperProperties: AnalyticsSuperProperties,
+        value: Any?
+    ) {
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$value")
+    }
+
     override fun trackPointThisProgram(points: Int) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]$points")
     }
@@ -223,6 +241,7 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         const val KEY_FLAG_ACTION_SELECTED = "Chat Flag Action Selected"
         const val KEY_POINT_TUTORIAL_COMPLETED = "Points Tutorial Completed"
         const val KEY_REASON = "Reason"
+        const val KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED = "Badge Collected Button Pressed"
     }
 
     private var parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
@@ -400,8 +419,26 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         JSONObject().apply {
             put(AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key, points)
             mixpanel.registerSuperProperties(this)
-            mixpanel.people.set(this)
             eventObserver?.invoke(AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key, this)
+        }
+    }
+
+    override fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int) {
+        val properties = JSONObject()
+        properties.put("Badge ID", badgeId)
+        properties.put("Level", badgeLevel)
+        mixpanel.track(KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED, properties)
+        eventObserver?.invoke(KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED, properties)
+    }
+
+    override fun registerSuperProperty(analyticsSuperProperties: AnalyticsSuperProperties, value: Any?) {
+        JSONObject().apply {
+            put(analyticsSuperProperties.key, value ?: JsonNull.INSTANCE)
+            mixpanel.registerSuperProperties(this)
+            if (analyticsSuperProperties.isPeopleProperty) {
+                mixpanel.people.set(this)
+            }
+            eventObserver?.invoke(analyticsSuperProperties.key, this)
         }
     }
 
