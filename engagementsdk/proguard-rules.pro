@@ -75,4 +75,9 @@
   public *;
 }
 
+#Livelike classes, this should be reduced in scope (if possible)
 -keep class com.livelike.** { *; }
+
+#Mixpanel multi instances hack
+-keep class com.mixpanel.android.mpmetrics.MixpanelExtension
+
