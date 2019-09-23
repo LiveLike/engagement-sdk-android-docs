@@ -179,7 +179,13 @@ class AnalyticsWidgetInteractionInfo {
     var timeOfFirstInteraction: Long = -1
     var timeOfLastInteraction: Long = 0
     var timeOfFirstDisplay: Long = -1
+
+    // gamification
     var pointEarned: Int = 0
+    var badgeEarned: String? = null
+    var badgeLevelEarned: Int? = null
+    var pointsInCurrentLevel: Int? = null
+    var pointsToNextLevel: Int? = null
 
     fun incrementInteraction() {
         interactionCount += 1
@@ -233,7 +239,7 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
         const val KEY_WIDGET_RECEIVED = "Widget_Received"
         const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
-        const val KEY_WIDGET_INTERACTION = "Widget Interaction"
+        const val KEY_WIDGET_INTERACTION = "Widget Interacted"
         const val KEY_WIDGET_USER_DISMISS = "Widget Dismissed"
         const val KEY_ORIENTATION_CHANGED = "Orientation_Changed"
         const val KEY_ACTION_TAP = "Action_Tap"
@@ -388,6 +394,13 @@ class MixpanelAnalytics(val context: Context, token: String?, programId: String)
         properties.put("Last Tap Time", timeOfLastInteraction)
         properties.put("No of Taps", interactionInfo.interactionCount)
         properties.put("Points Earned", interactionInfo.pointEarned)
+
+        interactionInfo.badgeEarned?.let {
+            properties.put("Badge Earned", interactionInfo.badgeEarned)
+            properties.put("Badge Level Earned", interactionInfo.badgeLevelEarned)
+        }
+        interactionInfo.pointsInCurrentLevel?.let { properties.put("Points In Current Level", it) }
+        interactionInfo.pointsToNextLevel?.let { properties.put("Points To Next Level", it) }
 
         mixpanel.track(KEY_WIDGET_INTERACTION, properties)
         eventObserver?.invoke(KEY_WIDGET_INTERACTION, properties)

@@ -13,17 +13,18 @@ import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.domain.GamificationManager
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.utils.toAnalyticsString
-import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -182,11 +183,10 @@ internal class PredictionViewModel(
                     programRepository.programGamificationProfileStream.onNext(pts)
                     points = pts.newPoints
                     GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
-                    interactionData.pointEarned = points ?: 0
+                    interactionData.addGamificationAnalyticsData(pts)
                 }
             }
             state.onNext("confirmation")
-//            programRepository.fetchProgramRank()
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)

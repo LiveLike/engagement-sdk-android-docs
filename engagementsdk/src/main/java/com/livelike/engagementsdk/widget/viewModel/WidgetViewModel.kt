@@ -24,7 +24,6 @@ internal abstract class WidgetViewModel(
             uiScope.launch {
                 delay(timeout)
                 dismissWidget(DismissAction.TIMEOUT)
-                onDismiss()
                 function()
                 timeoutStarted = false
             }
