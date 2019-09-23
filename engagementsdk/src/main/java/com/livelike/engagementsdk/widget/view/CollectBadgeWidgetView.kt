@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.data.models.Badge
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
@@ -21,6 +22,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
             viewModel = value as CollectBadgeWidgetViewModel
             viewModel?.run {
                 startDismissTimeout(5000) {
+                    this.animationEventsStream.onNext(ViewAnimationEvents.BADGE_COLLECTED)
                     removeAllViews()
                 }
                 animateView(badge)
@@ -34,6 +36,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
         collect_badge_button.setOnClickListener {
             viewModel?.let {
                 it.analyticsService.trackBadgeCollectedButtonPressed(it.badge.id, it.badge.level)
+                it.animationEventsStream.onNext(ViewAnimationEvents.BADGE_COLLECTED)
             }
             dismissFunc?.invoke(DismissAction.TIMEOUT)
         }

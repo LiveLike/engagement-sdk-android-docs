@@ -50,13 +50,15 @@ internal class ContentSession(
         MockAnalyticsService()
     private val llDataClient = EngagementDataClientImpl()
 
-    val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository) }
+    val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream) }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
     private val programRepository = ProgramRepository(programId, userRepository)
+
+    private val animationEventsStream = SubscriptionManager<ViewAnimationEvents>()
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
@@ -164,7 +166,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }

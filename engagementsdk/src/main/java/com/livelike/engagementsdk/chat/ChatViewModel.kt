@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.chat
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.services.network.ChatDataClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
     val userStream: Stream<LiveLikeUser>,
-    val programRepository: ProgramRepository
+    val programRepository: ProgramRepository,
+    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
 ) : ChatRenderer, ViewModel() {
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
@@ -31,7 +33,7 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
-        if (getBlockedUsers().contains(message.senderId)){
+        if (getBlockedUsers().contains(message.senderId)) {
             return
         }
         messageList.add(message.apply {

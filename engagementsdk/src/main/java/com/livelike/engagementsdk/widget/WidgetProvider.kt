@@ -6,10 +6,12 @@ import android.util.AttributeSet
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.data.models.Badge
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.widget.WidgetType.ALERT
 import com.livelike.engagementsdk.widget.WidgetType.COLLECT_BADGE
@@ -45,7 +47,8 @@ internal class WidgetProvider {
         sdkConfiguration: EngagementSDK.SdkConfiguration,
         onDismiss: () -> Unit,
         userRepository: UserRepository,
-        programRepository: ProgramRepository
+        programRepository: ProgramRepository,
+        animationEventsStream: SubscriptionManager<ViewAnimationEvents>
     ): SpecifiedWidgetView? {
         return when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
@@ -65,7 +68,7 @@ internal class WidgetProvider {
                 widgetViewModel = PointTutorialWidgetViewModel(onDismiss, analyticsService, programRepository.rewardType, programRepository.programGamificationProfileStream.latest())
             }
             COLLECT_BADGE -> CollectBadgeWidgetView(context).apply {
-                widgetViewModel = CollectBadgeWidgetViewModel(gson.fromJson(widgetInfos.payload, Badge::class.java), onDismiss, analyticsService)
+                widgetViewModel = CollectBadgeWidgetViewModel(gson.fromJson(widgetInfos.payload, Badge::class.java), onDismiss, analyticsService, animationEventsStream)
             }
             else -> null
         }
