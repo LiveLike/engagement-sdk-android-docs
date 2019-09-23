@@ -22,17 +22,18 @@ import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.toAnalyticsString
-import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -181,10 +182,9 @@ internal class QuizViewModel(
                     programRepository.programGamificationProfileStream.onNext(pts)
                     points = pts.newPoints
                     GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
-                    interactionData.pointEarned = points ?: 0
+                    interactionData.addGamificationAnalyticsData(pts)
                 }
             }
-//            programRepository.fetchProgramRank()
             state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
