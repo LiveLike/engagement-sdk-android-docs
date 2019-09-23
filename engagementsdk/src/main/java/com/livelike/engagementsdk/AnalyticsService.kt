@@ -6,6 +6,7 @@ import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.mixpanel.android.mpmetrics.MixpanelExtension
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -182,6 +183,7 @@ class AnalyticsWidgetInteractionInfo {
 
     fun incrementInteraction() {
         interactionCount += 1
+
         val timeNow = System.currentTimeMillis()
         if (timeOfFirstInteraction < 0) {
             timeOfFirstInteraction = timeNow
@@ -225,7 +227,7 @@ class AnalyticsWidgetSpecificInfo {
 class MixpanelAnalytics(val context: Context, token: String?, programId: String) :
     AnalyticsService {
 
-    private var mixpanel: MixpanelAPI = MixpanelAPI.getInstance(context, token ?: "5c82369365be76b28b3716f260fbd2f5")
+    private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token ?: "5c82369365be76b28b3716f260fbd2f5", programId)
 
     companion object {
         const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
