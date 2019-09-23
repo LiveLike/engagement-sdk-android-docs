@@ -44,6 +44,7 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackBlockingUser()
                         blockUser(msg.senderId)
+                        reporter(msg)
                     }
                     create()
                 }.show()
