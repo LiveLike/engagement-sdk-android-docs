@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
+import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import java.util.Date
@@ -169,13 +170,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
             animationEventsStream.subscribe(javaClass.simpleName) {
                 if (it == ViewAnimationEvents.BADGE_COLLECTED) {
-                    programRepository.programGamificationProfileStream.latest()?.let { wouldShowBadge(it) }
+                    programRepository.programGamificationProfileStream.latest()?.let { programGamificationProfile ->
+                        wouldShowBadge(programGamificationProfile, true) }
                 }
             }
         }
     }
 
-    private fun wouldShowBadge(programRank: ProgramGamificationProfile) {
+    private fun wouldShowBadge(programRank: ProgramGamificationProfile, animate: Boolean = false) {
         var currentBadge = programRank.newBadges?.max()
         if (currentBadge == null) {
             currentBadge = programRank.currentBadge
@@ -183,6 +185,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         currentBadge?.let {
             gamification_badge_iv.visibility = View.VISIBLE
             gamification_badge_iv.loadImage(it.imageFile, dpToPx(14))
+            if (animate) {
+                gamification_badge_iv.buildScaleAnimator(0f, 1f, 500).start()
+            }
         }
     }
 
