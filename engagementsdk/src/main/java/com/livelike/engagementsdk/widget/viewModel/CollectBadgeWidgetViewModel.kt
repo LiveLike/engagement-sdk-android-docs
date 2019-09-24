@@ -14,6 +14,7 @@ internal class CollectBadgeWidgetViewModel(
 ) : WidgetViewModel(onDismiss, analyticsService) {
 
     override fun dismissWidget(action: DismissAction) {
+        animationEventsStream.onNext(ViewAnimationEvents.BADGE_COLLECTED)
         super.dismissWidget(action)
     }
 }
