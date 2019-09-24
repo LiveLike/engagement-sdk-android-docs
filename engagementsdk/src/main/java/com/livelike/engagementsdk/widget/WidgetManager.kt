@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
@@ -36,7 +37,8 @@ internal class WidgetManager(
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository
+    private val programRepository: ProgramRepository,
+    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
 ) :
     MessagingClientProxy(upstream) {
 
@@ -146,7 +148,8 @@ internal class WidgetManager(
                         publishNextInQueue()
                     },
                     userRepository,
-                    programRepository)
+                    programRepository,
+                    animationEventsStream)
             )
         }
 
@@ -204,7 +207,8 @@ internal fun MessagingClient.asWidgetManager(
     analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     userRepository: UserRepository,
-    programRepository: ProgramRepository
+    programRepository: ProgramRepository,
+    animationEventsStream: SubscriptionManager<ViewAnimationEvents>
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration, userRepository, programRepository)
+    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration, userRepository, programRepository, animationEventsStream)
 }
