@@ -10,7 +10,7 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 abstract class WidgetInterceptor {
     abstract fun widgetWantsToShow()
     internal val events: Stream<Decision> =
-        SubscriptionManager()
+        SubscriptionManager(false)
 
     fun showWidget() {
         events.onNext(Decision.Show)
