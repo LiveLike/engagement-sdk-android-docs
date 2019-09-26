@@ -26,15 +26,16 @@ internal object EnagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptionH
         var record = false // should record exception if it possibility is due to SDK.
 
         p1?.let { throwable ->
-            if (p0?.name == "main" || throwable is ClassNotFoundException) {
-                swallow = false
-                return@let
-            }
 
             for (s in throwable.stackTrace) {
                 if (s.className.contains("com.livelike.engagementsdk")) {
                     record = true
                 }
+            }
+
+            if (p0?.name == "main" || throwable is ClassNotFoundException) {
+                swallow = false
+                return@let
             }
         }
 
