@@ -187,16 +187,20 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                 .build()
         ).enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
-                val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
-                val user = LiveLikeUser(
-                    responseData.extractStringOrEmpty("id"),
-                    responseData.extractStringOrEmpty("nickname"),
-                    responseData.extractStringOrEmpty("access_token"),
-                    responseData.extractBoolean("widgets_enabled"),
-                    responseData.extractBoolean("chat_enabled")
-                )
-                logVerbose { user }
-                mainHandler.post { responseCallback.invoke(user) }
+                try {
+                    val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                    val user = LiveLikeUser(
+                        responseData.extractStringOrEmpty("id"),
+                        responseData.extractStringOrEmpty("nickname"),
+                        responseData.extractStringOrEmpty("access_token"),
+                        responseData.extractBoolean("widgets_enabled"),
+                        responseData.extractBoolean("chat_enabled")
+                    )
+                    logVerbose { user }
+                    mainHandler.post { responseCallback.invoke(user) }
+                }catch (e: java.lang.Exception){
+                    logError { e }
+                }
             }
 
             override fun onFailure(call: Call?, e: IOException?) {
@@ -214,17 +218,20 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                 .build()
         ).enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
-
-                val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
-                val user = LiveLikeUser(
-                    responseData.extractStringOrEmpty("id"),
-                    responseData.extractStringOrEmpty("nickname"),
-                    accessToken,
-                    responseData.extractBoolean("widgets_enabled"),
-                    responseData.extractBoolean("chat_enabled")
-                )
-                logVerbose { user }
-                mainHandler.post { responseCallback.invoke(user) }
+                    try {
+                        val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                        val user = LiveLikeUser(
+                            responseData.extractStringOrEmpty("id"),
+                            responseData.extractStringOrEmpty("nickname"),
+                            accessToken,
+                            responseData.extractBoolean("widgets_enabled"),
+                            responseData.extractBoolean("chat_enabled")
+                        )
+                        logVerbose { user }
+                        mainHandler.post { responseCallback.invoke(user) }
+                    }catch (e: java.lang.Exception){
+                        logError { e }
+                    }
             }
 
             override fun onFailure(call: Call?, e: IOException?) {
