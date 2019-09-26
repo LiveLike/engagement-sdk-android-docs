@@ -56,7 +56,6 @@ internal class WidgetManager(
 
     init {
         widgetInterceptorStream.subscribe(javaClass) { wi ->
-//            TODO BUG : unsubscribe old widget interceptor events
                 wi?.events?.subscribe(javaClass.simpleName) {
                 when (it) {
                     WidgetInterceptor.Decision.Show -> showPendingMessage()

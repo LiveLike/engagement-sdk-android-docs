@@ -7,8 +7,6 @@
         <item name="android:textColor">#ffffff</item>
     </style>
 
-
-<!-- TODO get the actual font from design team-->
     <style name="livelike_extra_small_text_style" parent="TextAppearance.AppCompat.Small">
         <item name="android:textSize">10sp</item>
         <item name="android:fontFamily">@font/roboto_bold</item>

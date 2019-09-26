@@ -37,7 +37,7 @@ class LiveLikeApplication : Application() {
             fetchAndPersisToken(sdk)
         }
 
-//        TODO commenting needs discussion on this call
+//        TODO: THIS SHOULD BE FIXED ASAP
 //        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
     }
 

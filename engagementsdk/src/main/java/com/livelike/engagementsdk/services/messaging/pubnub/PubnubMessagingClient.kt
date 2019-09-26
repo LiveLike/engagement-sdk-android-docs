@@ -22,7 +22,6 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
 internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-        // TODO
     }
 
     override fun stop() {
@@ -81,14 +80,12 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                             }
 
                             else -> {
-                                // TODO: Handle other relevant categories here
                                 // Some other category we have yet to handle
                             }
                         }
                     }
 
                     else -> {
-                        // TODO: handle other Operation Types, or default here
                         // some other Operation Type we are not handling yet.
                     }
                 }

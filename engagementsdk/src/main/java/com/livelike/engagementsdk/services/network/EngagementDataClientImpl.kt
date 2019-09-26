@@ -40,7 +40,6 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
 
-// TODO: This needs to be split
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     WidgetDataClient, ChatDataClient {
     override suspend fun reportMessage(programId: String, message: ChatMessage, accessToken: String?) {
@@ -52,7 +51,6 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
 
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor
 
-    // TODO: This should POST first then only update the impression (or just be called on widget dismissed..)
     override fun registerImpression(impressionUrl: String) {
         if (impressionUrl.isNullOrEmpty()) {
             return

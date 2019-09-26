@@ -51,8 +51,6 @@ interface AnalyticsService {
     fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)
     fun trackPointThisProgram(points: Int)
     fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)
-
-//    TODO we not need to have method for each event and property rather have general methods and then use enum class to decide the flow of analytics.
 }
 
 class MockAnalyticsService : AnalyticsService {
