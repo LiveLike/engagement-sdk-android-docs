@@ -3,6 +3,7 @@ package com.livelike.engagementsdk
 import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.livelike.engagementsdk.core.EnagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
@@ -40,6 +41,7 @@ class EngagementSDK(
     private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
     init {
+        EnagementSdkUncaughtExceptionHandler.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
         dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
