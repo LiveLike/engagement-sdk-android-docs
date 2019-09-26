@@ -198,7 +198,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
-                }catch (e: java.lang.Exception){
+                } catch (e: java.lang.Exception) {
                     logError { e }
                 }
             }
@@ -229,7 +229,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         )
                         logVerbose { user }
                         mainHandler.post { responseCallback.invoke(user) }
-                    }catch (e: java.lang.Exception){
+                    } catch (e: java.lang.Exception) {
                         logError { e }
                     }
             }
@@ -259,12 +259,16 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
             try {
                 val execute = call.execute()
 //               TODO add more network handling cases and remove !!, generic exception
+                if (execute.isSuccessful) {
                     val responseString = execute.body()!!.string()
                     val data: T = gson.fromJson<T>(
                         responseString,
                         T::class.java
                     )
                     Result.Success(data)
+                } else {
+                    Result.Error(IOException("response code : {$execute.code()} - ${execute.message()}"))
+                }
             } catch (e: IOException) {
                 logError { e }
                 Result.Error(e)
