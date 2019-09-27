@@ -55,6 +55,7 @@ internal class WidgetManager(
     private var pendingMessage: MessageHolder? = null
 
     init {
+        // TODO BUG : unsubscribe old widget interceptor events. ANDSDK-468
         widgetInterceptorStream.subscribe(javaClass) { wi ->
                 wi?.events?.subscribe(javaClass.simpleName) {
                 when (it) {

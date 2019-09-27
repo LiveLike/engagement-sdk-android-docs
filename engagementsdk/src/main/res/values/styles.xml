@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- TODO get the actual font from design team-->
     <style name="buttonStyle">
         <item name="android:textSize">30sp</item>
         <item name="android:colorBackground">#99000000</item>
