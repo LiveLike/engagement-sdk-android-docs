@@ -4,6 +4,8 @@ import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.core.EnagementSdkUncaughtExceptionHandler
+import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
+import com.livelike.engagementsdk.core.exceptionhelpers.safeProxy
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
@@ -41,7 +43,8 @@ class EngagementSDK(
     private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
     init {
-        EnagementSdkUncaughtExceptionHandler.wouldInitializeBugsnagClient(applicationContext)
+        EnagementSdkUncaughtExceptionHandler
+        BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
         dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
@@ -72,7 +75,7 @@ class EngagementSDK(
             configurationStream,
             userRepository,
             applicationContext,
-            programId) { EpochTime(0) }
+            programId) { EpochTime(0) }.safeProxy()
     }
 
     interface TimecodeGetter {
@@ -89,7 +92,7 @@ class EngagementSDK(
             configurationStream,
             userRepository,
             applicationContext,
-            programId) { timecodeGetter.getTimecode() }
+            programId) { timecodeGetter.getTimecode() }.safeProxy()
     }
 
     data class SdkConfiguration(

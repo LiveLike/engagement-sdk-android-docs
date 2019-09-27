@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.core
 
-import android.content.Context
-import com.bugsnag.android.Client
+import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient.client
 
 /**
  * It is like Global exception handler for our sdk running on host process :)
@@ -13,8 +12,6 @@ internal object EnagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptionH
 
     var defaultHandler: Thread.UncaughtExceptionHandler =
         Thread.getDefaultUncaughtExceptionHandler()
-
-    var client: Client? = null
 
     init {
         Thread.setDefaultUncaughtExceptionHandler(this)
@@ -48,12 +45,6 @@ internal object EnagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptionH
                 client?.notify(p1)
                 p1.printStackTrace()
             }
-        }
-    }
-
-    fun wouldInitializeBugsnagClient(applicationContext: Context) {
-        if (client == null) {
-            client = Client(applicationContext, "abb12b7b7d7868c07733e3e3808656c8")
         }
     }
 }

@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.utils
 import android.os.Handler
 import android.os.Looper
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.core.exceptionhelpers.safeCodeBlockCall
 import java.util.concurrent.ConcurrentHashMap
 
 internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) :
@@ -17,9 +18,11 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
 
     override fun onNext(data1: T?) {
         // TODO add debug log with class name appended
-        observerMap.forEach {
-            it.value.invoke(data1)
-        }
+        safeCodeBlockCall({
+            observerMap.forEach {
+                it.value.invoke(data1)
+            }
+        })
         currentData = data1
     }
 
