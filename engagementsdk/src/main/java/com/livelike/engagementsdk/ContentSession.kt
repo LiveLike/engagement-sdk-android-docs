@@ -47,7 +47,7 @@ internal class ContentSession(
     private val widgetInterceptorStream:
             Stream<WidgetInterceptor> = SubscriptionManager()
     override var analyticService: AnalyticsService =
-        MockAnalyticsService()
+        MockAnalyticsService(programId)
     private val llDataClient = EngagementDataClientImpl()
 
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream) }
