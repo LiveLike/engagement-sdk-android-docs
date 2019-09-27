@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- TODO get the actual font from design team-->
     <style name="buttonStyle">
         <item name="android:textSize">30sp</item>
         <item name="android:colorBackground">#99000000</item>
         <item name="android:textColor">#ffffff</item>
     </style>
 
-
-<!-- TODO get the actual font from design team-->
     <style name="livelike_extra_small_text_style" parent="TextAppearance.AppCompat.Small">
         <item name="android:textSize">10sp</item>
         <item name="android:fontFamily">@font/roboto_bold</item>

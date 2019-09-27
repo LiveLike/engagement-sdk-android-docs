@@ -29,8 +29,8 @@ interface LiveLikeContentSession {
     var widgetInterceptor: WidgetInterceptor?
 }
 
-interface Stream<T> {
-//    TODO remove nullable event in stream
+interface Stream<T>{
+// TODO remove nullable event in stream
     fun onNext(data1: T?)
     fun subscribe(key: Any, observer: (T?) -> Unit)
     fun unsubscribe(key: Any)
