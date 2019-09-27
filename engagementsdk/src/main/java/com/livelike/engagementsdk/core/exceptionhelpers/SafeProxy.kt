@@ -4,6 +4,9 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 
+/**
+ *
+ */
 class SafeInvocationHandler(private val target: Any) : InvocationHandler {
 
     override fun invoke(p0: Any?, method: Method, args: Array<out Any>?): Any {
@@ -19,7 +22,7 @@ class SafeInvocationHandler(private val target: Any) : InvocationHandler {
     }
 }
 
-fun <T : Any> T.safeProxy(): T {
+fun <T : Any> T.safeProxyForEmptyReturnCalls(): T {
 
     val loader = javaClass.classLoader
     val classes = javaClass.interfaces

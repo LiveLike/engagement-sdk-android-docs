@@ -8,7 +8,7 @@ import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient.client
  * we filter out on the basis of sdk package name and propogate back the remaining to root handler.
  */
 
-internal object EnagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
+internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
 
     var defaultHandler: Thread.UncaughtExceptionHandler =
         Thread.getDefaultUncaughtExceptionHandler()

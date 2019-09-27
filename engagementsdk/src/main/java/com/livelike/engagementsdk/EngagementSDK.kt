@@ -3,9 +3,9 @@ package com.livelike.engagementsdk
 import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.livelike.engagementsdk.core.EnagementSdkUncaughtExceptionHandler
+import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
-import com.livelike.engagementsdk.core.exceptionhelpers.safeProxy
+import com.livelike.engagementsdk.core.exceptionhelpers.safeProxyForEmptyReturnCalls
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
@@ -43,7 +43,7 @@ class EngagementSDK(
     private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
     init {
-        EnagementSdkUncaughtExceptionHandler
+        EnagagementSdkUncaughtExceptionHandler
         BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
@@ -75,7 +75,7 @@ class EngagementSDK(
             configurationStream,
             userRepository,
             applicationContext,
-            programId) { EpochTime(0) }.safeProxy()
+            programId) { EpochTime(0) }.safeProxyForEmptyReturnCalls()
     }
 
     interface TimecodeGetter {
@@ -92,7 +92,7 @@ class EngagementSDK(
             configurationStream,
             userRepository,
             applicationContext,
-            programId) { timecodeGetter.getTimecode() }.safeProxy()
+            programId) { timecodeGetter.getTimecode() }.safeProxyForEmptyReturnCalls()
     }
 
     data class SdkConfiguration(

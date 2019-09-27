@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.ChatMessage
+import com.livelike.engagementsdk.core.exceptionhelpers.safeRemoteApiCall
 import com.livelike.engagementsdk.data.models.Program
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.addAuthorizationBearer
@@ -246,34 +247,30 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     }
 
     internal suspend inline fun <reified T : Any> remoteCall(url: String, requestType: RequestType, requestBody: RequestBody? = null, accessToken: String?): Result<Any> {
-        return withContext(Dispatchers.IO) {
-            logDebug { "url : $url" }
-            val request = Request.Builder()
-                .url(url)
-                .method(requestType.name, requestBody)
-                .addUserAgent()
-                .addAuthorizationBearer(accessToken)
-                .build()
-            val call = client.newCall(request)
-
-            try {
+        return safeRemoteApiCall({
+            withContext(Dispatchers.IO) {
+                logDebug { "url : $url" }
+                val request = Request.Builder()
+                    .url(url)
+                    .method(requestType.name, requestBody)
+                    .addUserAgent()
+                    .addAuthorizationBearer(accessToken)
+                    .build()
+                val call = client.newCall(request)
                 val execute = call.execute()
 //               TODO add more network handling cases and remove !!, generic exception
-                if (execute.isSuccessful) {
-                    val responseString = execute.body()!!.string()
-                    val data: T = gson.fromJson<T>(
-                        responseString,
-                        T::class.java
-                    )
-                    Result.Success(data)
-                } else {
-                    Result.Error(IOException("response code : {$execute.code()} - ${execute.message()}"))
-                }
-            } catch (e: IOException) {
-                logError { e }
-                Result.Error(e)
+                    if (execute.isSuccessful) {
+                        val responseString = execute.body()?.string()
+                        val data: T = gson.fromJson<T>(
+                            responseString,
+                            T::class.java
+                        )
+                        Result.Success(data)
+                    } else {
+                        Result.Error(IOException("response code : {$execute.code()} - ${execute.message()}"))
+                    }
             }
-        }
+        })
     }
 
     // / WIDGET CLIENT BELOW
