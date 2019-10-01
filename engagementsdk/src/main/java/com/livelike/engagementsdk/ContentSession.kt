@@ -2,8 +2,12 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.data.models.RewardsType
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
@@ -20,6 +24,12 @@ import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import org.threeten.bp.ZonedDateTime
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
@@ -28,26 +38,34 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
+    private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
             field = value
             widgetInterceptorStream.onNext(value)
         }
-    private val widgetInterceptorStream: Stream<WidgetInterceptor> = SubscriptionManager()
+    private val widgetInterceptorStream:
+            Stream<WidgetInterceptor> = SubscriptionManager()
     override var analyticService: AnalyticsService =
-        MockAnalyticsService()
+        MockAnalyticsService(programId)
     private val llDataClient = EngagementDataClientImpl()
 
-    override val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream) }
+    val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream) }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
+    private val programRepository = ProgramRepository(programId, userRepository)
+
+    private val animationEventsStream = SubscriptionManager<ViewAnimationEvents>()
+
+    private val job = SupervisorJob()
+    private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
+
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
             it?.let {
-                analyticService.trackSession(it.id)
                 analyticService.trackUsername(it.nickname)
             }
         }
@@ -61,11 +79,15 @@ internal class ContentSession(
                         configuration.mixpanelToken,
                         programId
                     )
+                analyticService.trackSession(pair.first.id)
+                analyticService.trackUsername(pair.first.nickname)
                 analyticService.trackConfiguration(configuration.name ?: "")
 
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
+                            userRepository.rewardType = program.rewardsType
+                            isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
                             initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
@@ -74,6 +96,46 @@ internal class ContentSession(
                             configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
+                            programRepository.program = program
+                            contentSessionScope.launch {
+                                if (isGamificationEnabled) programRepository.fetchProgramRank()
+                            }
+                            startObservingForGamificationAnalytics(analyticService, programRepository.programGamificationProfileStream, programRepository.rewardType)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startObservingForGamificationAnalytics(
+        analyticService: AnalyticsService,
+        programGamificationProfileStream: Stream<ProgramGamificationProfile>,
+        rewardType: RewardsType
+    ) {
+        if (rewardType != RewardsType.NONE) {
+            programGamificationProfileStream.subscribe(javaClass.simpleName) {
+                it?.let {
+                    analyticService.trackPointThisProgram(it.points)
+                    if (rewardType == RewardsType.BADGES) {
+                        if (it.points == 0 && it.currentBadge == null) {
+                            analyticService.registerSuperProperty(
+                                AnalyticsSuperProperties.TIME_LAST_BADGE_AWARD,
+                                null
+                            )
+                            analyticService.registerSuperProperty(
+                                AnalyticsSuperProperties.BADGE_LEVEL_THIS_PROGRAM,
+                                0
+                            )
+                        } else if (it.currentBadge != null && it.newBadges?.isNotEmpty() == true) {
+                            analyticService.registerSuperProperty(
+                                AnalyticsSuperProperties.TIME_LAST_BADGE_AWARD,
+                                ZonedDateTime.now().formatIsoLocal8601()
+                            )
+                            analyticService.registerSuperProperty(
+                                AnalyticsSuperProperties.BADGE_LEVEL_THIS_PROGRAM,
+                                it.currentBadge.level
+                            )
                         }
                     }
                 }
@@ -104,7 +166,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
@@ -147,12 +209,14 @@ internal class ContentSession(
         logVerbose { "Resuming the Session" }
         widgetClient?.resume()
         chatClient?.resume()
+        if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticService.trackLastChatStatus(true)
         analyticService.trackLastWidgetStatus(true)
     }
 
     override fun close() {
         logVerbose { "Closing the Session" }
+        contentSessionScope.cancel()
         chatClient?.apply {
             unsubscribeAll()
         }

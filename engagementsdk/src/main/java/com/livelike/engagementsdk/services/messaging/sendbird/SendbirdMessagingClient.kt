@@ -81,7 +81,6 @@ internal class SendbirdMessagingClient(
                     return@UserInfoUpdateHandler
                 }
                 callback()
-                // TODO: Should be also updated on user profile
             })
     }
 

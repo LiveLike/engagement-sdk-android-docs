@@ -19,22 +19,34 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.KeyboardHideReason
 import com.livelike.engagementsdk.KeyboardType
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.ViewAnimationEvents
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
+import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.widget.view.loadImage
 import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
+import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.gamification_badge_iv
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.pointView
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.rank_label
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.rank_value
+import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
+import kotlinx.android.synthetic.main.chat_view.view.topBarGradient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -67,8 +79,17 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private var currentUser: LiveLikeUser? = null
 
+    /** Boolean option to enable / disable the profile display inside chat view */
+    var displayUserProfile: Boolean = false
+        set(value) {
+            field = value
+            user_profile_display_LL?.apply {
+                visibility = if (value) View.VISIBLE else View.GONE
+            }
+        }
+
     private val viewModel: ChatViewModel?
-        get() = session?.chatViewModel
+        get() = (session as ContentSession)?.chatViewModel
 
     init {
         (context as Activity).window.setSoftInputMode(
@@ -76,10 +97,27 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
 
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.ChatView,
+            0, 0).apply {
+            try {
+                displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
+            } finally {
+                recycle()
+            }
+        }
+
+        initView(context)
+    }
+
+    private fun initView(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.chat_view, this, true)
+        user_profile_display_LL.visibility = if (displayUserProfile) View.VISIBLE else View.GONE
     }
 
     fun setSession(session: LiveLikeContentSession) {
+        hideGamification()
         this.session = session.apply {
             analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         }
@@ -105,8 +143,75 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
             userStream.subscribe(javaClass.simpleName) {
                 currentUser = it
+                it?.let {
+                    uiScope.launch {
+                        user_profile_tv.text = it.nickname
+                    }
+                }
+            }
+            programRepository.programGamificationProfileStream.subscribe(javaClass.simpleName) {
+                it?.let { programRank ->
+                    if (programRank.newPoints == 0 || pointView.visibility == View.GONE) {
+                        pointView.showPoints(programRank.points)
+                        wouldShowBadge(programRank)
+                    } else if (programRank.points == programRank.newPoints) {
+                            pointView.apply {
+                                postDelayed({ startAnimation(programRank.points) },
+                                    6300)
+                            }
+                        } else {
+                            pointView.apply {
+                                postDelayed({ startAnimation(programRank.points) },
+                                    1000)
+                            }
+                        }
+                    showUserRank(programRank)
+                }
+            }
+            animationEventsStream.subscribe(javaClass.simpleName) {
+                if (it == ViewAnimationEvents.BADGE_COLLECTED) {
+                    programRepository.programGamificationProfileStream.latest()?.let { programGamificationProfile ->
+                        wouldShowBadge(programGamificationProfile, true) }
+                }
             }
         }
+    }
+
+    private fun wouldShowBadge(programRank: ProgramGamificationProfile, animate: Boolean = false) {
+        var currentBadge = programRank.newBadges?.max()
+        if (currentBadge == null) {
+            currentBadge = programRank.currentBadge
+        }
+        currentBadge?.let {
+            gamification_badge_iv.visibility = View.VISIBLE
+            gamification_badge_iv.loadImage(it.imageFile, dpToPx(14))
+            if (animate) {
+                gamification_badge_iv.buildScaleAnimator(0f, 1f, 500).start()
+            }
+        }
+    }
+
+    private fun hideGamification() {
+        pointView.visibility = View.GONE
+        rank_label.visibility = View.GONE
+        rank_value.visibility = View.GONE
+        gamification_badge_iv.visibility = View.GONE
+    }
+
+    private fun showUserRank(programGamificationProfile: ProgramGamificationProfile) {
+        if (programGamificationProfile.points> 0) {
+            rank_label.visibility = View.VISIBLE
+            rank_value.visibility = View.VISIBLE
+            rank_value.text = "#${programGamificationProfile.rank}"
+        }
+    }
+
+    override fun onViewRemoved(view: View?) {
+        viewModel?.apply {
+            eventStream.unsubscribe(javaClass.simpleName)
+            userStream.unsubscribe(javaClass.simpleName)
+        }
+        super.onViewRemoved(view)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -150,13 +255,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
         chatdisplay.let { rv ->
             rv.adapter = chatAdapter
+            val lm = rv.layoutManager as LinearLayoutManager
+            lm.recycleChildrenOnDetach = true
             rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(
                     rv: RecyclerView,
                     dx: Int,
                     dy: Int
                 ) {
-                    val lm = rv.layoutManager as LinearLayoutManager
                     val totalItemCount = lm.itemCount
                     val lastVisible = lm.findLastVisibleItemPosition()
 
@@ -222,12 +328,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         chatInput.visibility = View.GONE
         chatdisplay.visibility = View.GONE
         snap_live.visibility = View.GONE
+        topBarGradient.visibility = View.GONE
     }
 
     private fun hideLoadingSpinner() {
         loadingSpinner.visibility = View.GONE
         chatInput.visibility = View.VISIBLE
         chatdisplay.visibility = View.VISIBLE
+        topBarGradient.visibility = View.VISIBLE
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
@@ -253,6 +361,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(
+            viewModel?.programRepository?.program?.chatChannel ?: "",
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
@@ -319,5 +428,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 rv.smoothScrollToPosition(it)
             }
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        chatdisplay.adapter = null
     }
 }

@@ -11,17 +11,19 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
+import com.livelike.engagementsdk.chat.ChatMessage
+import com.livelike.engagementsdk.data.models.Program
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.utils.addUserAgent
 import com.livelike.engagementsdk.utils.extractBoolean
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSessionId
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
-import com.livelike.engagementsdk.widget.WidgetDataClient
-import com.livelike.engagementsdk.widget.model.Reward
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import java.io.IOException
 import kotlin.coroutines.resume
@@ -38,13 +40,17 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
 
-// TODO: This needs to be split
-internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, WidgetDataClient {
+internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
+    WidgetDataClient, ChatDataClient {
+    override suspend fun reportMessage(programId: String, message: ChatMessage, accessToken: String?) {
+        remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("programs/$programId/report/"), RequestType.POST, RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"), message.toReportMessageJson()), accessToken)
+    }
+
     private val MAX_PROGRAM_DATA_REQUESTS = 13
 
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor
 
-    // TODO: This should POST first then only update the impression (or just be called on widget dismissed..)
     override fun registerImpression(impressionUrl: String) {
         if (impressionUrl.isNullOrEmpty()) {
             return
@@ -179,16 +185,20 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
                 .build()
         ).enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
-                val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
-                val user = LiveLikeUser(
-                    responseData.extractStringOrEmpty("id"),
-                    responseData.extractStringOrEmpty("nickname"),
-                    responseData.extractStringOrEmpty("access_token"),
-                    responseData.extractBoolean("widgets_enabled"),
-                    responseData.extractBoolean("chat_enabled")
-                )
-                logVerbose { user }
-                mainHandler.post { responseCallback.invoke(user) }
+                try {
+                    val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                    val user = LiveLikeUser(
+                        responseData.extractStringOrEmpty("id"),
+                        responseData.extractStringOrEmpty("nickname"),
+                        responseData.extractStringOrEmpty("access_token"),
+                        responseData.extractBoolean("widgets_enabled"),
+                        responseData.extractBoolean("chat_enabled")
+                    )
+                    logVerbose { user }
+                    mainHandler.post { responseCallback.invoke(user) }
+                } catch (e: java.lang.Exception) {
+                    logError { e }
+                }
             }
 
             override fun onFailure(call: Call?, e: IOException?) {
@@ -206,17 +216,20 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
                 .build()
         ).enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
-
-                val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
-                val user = LiveLikeUser(
-                    responseData.extractStringOrEmpty("id"),
-                    responseData.extractStringOrEmpty("nickname"),
-                    accessToken,
-                    responseData.extractBoolean("widgets_enabled"),
-                    responseData.extractBoolean("chat_enabled")
-                )
-                logVerbose { user }
-                mainHandler.post { responseCallback.invoke(user) }
+                    try {
+                        val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                        val user = LiveLikeUser(
+                            responseData.extractStringOrEmpty("id"),
+                            responseData.extractStringOrEmpty("nickname"),
+                            accessToken,
+                            responseData.extractBoolean("widgets_enabled"),
+                            responseData.extractBoolean("chat_enabled")
+                        )
+                        logVerbose { user }
+                        mainHandler.post { responseCallback.invoke(user) }
+                    } catch (e: java.lang.Exception) {
+                        logError { e }
+                    }
             }
 
             override fun onFailure(call: Call?, e: IOException?) {
@@ -226,11 +239,13 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
     }
 
     override suspend fun patchUser(clientId: String, userJson: JsonObject, accessToken: String?) {
-        remoteCall(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
+        remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
     }
 
-    private suspend fun remoteCall(url: String, requestType: RequestType, requestBody: RequestBody?, accessToken: String?): Result<JsonObject> {
+    internal suspend inline fun <reified T : Any> remoteCall(url: String, requestType: RequestType, requestBody: RequestBody? = null, accessToken: String?): Result<Any> {
         return withContext(Dispatchers.IO) {
+            logDebug { "url : $url" }
             val request = Request.Builder()
                 .url(url)
                 .method(requestType.name, requestBody)
@@ -242,10 +257,15 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
             try {
                 val execute = call.execute()
 //               TODO add more network handling cases and remove !!, generic exception
-                try {
-                    Result.Success(JsonParser().parse(execute.networkResponse()!!.body()?.string()).asJsonObject)
-                } catch (e: Exception) {
-                    Result.Error(e)
+                if (execute.isSuccessful) {
+                    val responseString = execute.body()!!.string()
+                    val data: T = gson.fromJson<T>(
+                        responseString,
+                        T::class.java
+                    )
+                    Result.Success(data)
+                } else {
+                    Result.Error(IOException("response code : {$execute.code()} - ${execute.message()}"))
                 }
             } catch (e: IOException) {
                 logError { e }
@@ -272,9 +292,9 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient, W
         }
     }
 
-    override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): Reward? {
-        return gson.fromJson(postAsync(rewardUrl, accessToken), Reward::class.java)?.also {
-            addPoints(it.new_points ?: 0)
+    override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile? {
+        return gson.fromJson(postAsync(rewardUrl, accessToken), ProgramGamificationProfile::class.java)?.also {
+            addPoints(it.newPoints ?: 0)
             analyticsService.registerSuperAndPeopleProperty("Lifetime Points" to (it.points?.toString() ?: "0"))
         }
     }

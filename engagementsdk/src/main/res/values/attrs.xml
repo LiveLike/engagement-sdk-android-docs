@@ -14,7 +14,19 @@
 
     <!--Chat-->
     <item name="livelike_chat_message_font"
-          type="font">@font/roboto_medium</item>
+          type="font">@font/roboto_regular</item>
     <item name="livelike_chat_nickname_font"
-          type="font">@font/roboto_medium</item>
+          type="font">@font/roboto_bold</item>
+
+
+    <declare-styleable name="ChatView">
+        <attr name="displayUserProfile" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="PointView">
+        <attr name="hidePlus" format="boolean" />
+        <attr name="iconSize" format="dimension" />
+        <attr name="textSize" format="dimension" />
+    </declare-styleable>
+
 </resources>

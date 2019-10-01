@@ -15,8 +15,9 @@ import com.livelike.livelikedemo.video.VideoPlayer
 class LiveLikeApplication : Application() {
 
     companion object {
-        const val TEST_CONFIG_URL =
-            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
+        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
+//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
+
     }
 
     lateinit var channelManager: ChannelManager
@@ -31,12 +32,13 @@ class LiveLikeApplication : Application() {
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
 
         val accessToken = getSharedPreferences("Test_Demo", Context.MODE_PRIVATE).getString(PREF_USER_ACCESS_TOKEN, null)
-        sdk = EngagementSDK(getString(R.string.app_id), applicationContext, accessToken)
+        sdk = EngagementSDK(BuildConfig.APP_CLIENT_ID, applicationContext, accessToken)
         if (accessToken == null) {
             fetchAndPersisToken(sdk)
         }
 
-        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
+//        TODO: THIS SHOULD BE FIXED ASAP
+//        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
     }
 
     private fun fetchAndPersisToken(sdk: EngagementSDK) {

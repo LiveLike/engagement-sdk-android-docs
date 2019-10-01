@@ -9,6 +9,7 @@ private const val PREFERENCE_KEY_NICKNAME = "Username"
 private const val PREFERENCE_KEY_POINTS_TUTORIAL = "PointsTutorial"
 private const val PREFERENCE_KEY_POINTS_TOTAL = "PointsTotal"
 private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
+private const val BLOCKED_USERS = "blocked-users"
 private var mAppContext: Context? = null
 
 internal fun initLiveLikeSharedPrefs(appContext: Context) {
@@ -66,6 +67,19 @@ internal fun getTotalPoints(): Int {
 internal fun addPoints(points: Int) {
     val editor = getSharedPreferences().edit()
     editor.putInt(PREFERENCE_KEY_POINTS_TOTAL, points + getTotalPoints()).apply()
+}
+
+internal fun blockUser(userId: String) {
+    val editor = getSharedPreferences().edit()
+    val currentList = getSharedPreferences().getString(BLOCKED_USERS, "") ?: ""
+    if(!currentList.contains(userId)){
+        editor.putString(BLOCKED_USERS, "$currentList,$userId").apply()
+    }
+}
+
+internal fun getBlockedUsers() : List<String> {
+    val currentList = getSharedPreferences().getString(BLOCKED_USERS, "") ?: ""
+    return currentList.split(",")
 }
 
 internal fun shouldShowPointTutorial(): Boolean {

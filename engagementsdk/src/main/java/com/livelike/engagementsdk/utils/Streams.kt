@@ -16,6 +16,7 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
         private set
 
     override fun onNext(data1: T?) {
+        // TODO add debug log with class name appended
         observerMap.forEach {
             it.value.invoke(data1)
         }

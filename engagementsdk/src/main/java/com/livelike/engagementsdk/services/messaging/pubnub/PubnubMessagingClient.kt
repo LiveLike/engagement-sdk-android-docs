@@ -1,7 +1,7 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.parseISO8601
+import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -22,7 +22,6 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
 internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-        // TODO
     }
 
     override fun stop() {
@@ -81,14 +80,12 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                             }
 
                             else -> {
-                                // TODO: Handle other relevant categories here
                                 // Some other category we have yet to handle
                             }
                         }
                     }
 
                     else -> {
-                        // TODO: handle other Operation Types, or default here
                         // some other Operation Type we are not handling yet.
                     }
                 }
@@ -100,7 +97,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
                 val timeoutReceived = payload.extractStringOrEmpty("timeout")
                 val pdtString = payload.extractStringOrEmpty("program_date_time")
                 var epochTimeMs = 0L
-                pdtString.parseISO8601()?.let {
+                pdtString.parseISODateTime()?.let {
                     epochTimeMs = it.toInstant().toEpochMilli()
                 }
                 val timeoutMs = AndroidResource.parseDuration(timeoutReceived)

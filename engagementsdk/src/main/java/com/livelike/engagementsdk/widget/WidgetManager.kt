@@ -8,18 +8,19 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
-import com.livelike.engagementsdk.widget.model.Reward
-import java.lang.Exception
 import java.util.PriorityQueue
 import java.util.Queue
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,9 @@ internal class WidgetManager(
     private val widgetInterceptorStream: Stream<WidgetInterceptor>,
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val programRepository: ProgramRepository,
+    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
 ) :
     MessagingClientProxy(upstream) {
 
@@ -52,6 +55,7 @@ internal class WidgetManager(
     private var pendingMessage: MessageHolder? = null
 
     init {
+        // TODO BUG : unsubscribe old widget interceptor events. ANDSDK-468
         widgetInterceptorStream.subscribe(javaClass) { wi ->
                 wi?.events?.subscribe(javaClass.simpleName) {
                 when (it) {
@@ -90,6 +94,7 @@ internal class WidgetManager(
             notifyIntegrator(messageQueue.remove())
         } else {
             widgetOnScreen = false
+            currentWidgetViewStream.onNext(null) // sometimes widget view obscure the whole screen chat due t which app seems unresponsive
         }
     }
 
@@ -105,7 +110,7 @@ internal class WidgetManager(
 
     private fun notifyIntegrator(message: MessageHolder) {
         val widgetType = WidgetType.fromString(message.clientMessage.message.get("event").asString ?: "")
-        if (widgetInterceptorStream.latest() == null || widgetType == WidgetType.POINTS_TUTORIAL) {
+        if (widgetInterceptorStream.latest() == null || widgetType == WidgetType.POINTS_TUTORIAL || widgetType == WidgetType.COLLECT_BADGE) {
             showWidgetOnScreen(message)
         } else {
             GlobalScope.launch {
@@ -133,6 +138,7 @@ internal class WidgetManager(
         handler.post {
             currentWidgetViewStream.onNext(
                 WidgetProvider().get(
+                    this,
                     WidgetInfos(widgetType, payload, widgetId),
                     context,
                     analyticsService,
@@ -141,7 +147,9 @@ internal class WidgetManager(
                         checkForPointTutorial()
                         publishNextInQueue()
                     },
-                    userRepository)
+                    userRepository,
+                    programRepository,
+                    animationEventsStream)
             )
         }
 
@@ -156,15 +164,14 @@ internal class WidgetManager(
     private fun checkForPointTutorial() {
         if (shouldShowPointTutorial()) {
             // Check if user scored points
-            if (getTotalPoints() != 0 && getTotalPoints() < 20) {
-                // If first time scoring points, publish Points Tutorial
+            if (getTotalPoints() != 0) {
                 val message = ClientMessage(
                     JsonObject().apply {
                         addProperty("event", "points-tutorial")
                         add("payload", JsonObject().apply {
                             addProperty("id", "gameification")
                         })
-                        addProperty("priority", 2)
+                        addProperty("priority", 3)
                     }
                 )
                 onClientMessageEvent(this, message)
@@ -183,18 +190,13 @@ enum class WidgetType(val event: String) {
     TEXT_POLL("text-poll-created"),
     IMAGE_POLL("image-poll-created"),
     POINTS_TUTORIAL("points-tutorial"),
+    COLLECT_BADGE("collect-badge"),
     ALERT("alert-created");
 
     companion object {
         private val map = values().associateBy(WidgetType::event)
         fun fromString(type: String) = map[type]
     }
-}
-
-internal interface WidgetDataClient {
-    suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?)
-    fun registerImpression(impressionUrl: String)
-    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): Reward?
 }
 
 internal fun MessagingClient.asWidgetManager(
@@ -204,7 +206,9 @@ internal fun MessagingClient.asWidgetManager(
     widgetInterceptorStream: Stream<WidgetInterceptor>,
     analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
-    userRepository: UserRepository
+    userRepository: UserRepository,
+    programRepository: ProgramRepository,
+    animationEventsStream: SubscriptionManager<ViewAnimationEvents>
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration, userRepository)
+    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration, userRepository, programRepository, animationEventsStream)
 }

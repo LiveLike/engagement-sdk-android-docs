@@ -2,7 +2,6 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
-import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 
 /**
@@ -10,8 +9,6 @@ import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
  *  component.
  */
 interface LiveLikeContentSession {
-    /** Where the chat data are stored **/
-    val chatViewModel: ChatViewModel
 
     /** The analytics services **/
     val analyticService: AnalyticsService
@@ -32,7 +29,8 @@ interface LiveLikeContentSession {
     var widgetInterceptor: WidgetInterceptor?
 }
 
-interface Stream<T> {
+interface Stream<T>{
+// TODO remove nullable event in stream
     fun onNext(data1: T?)
     fun subscribe(key: Any, observer: (T?) -> Unit)
     fun unsubscribe(key: Any)

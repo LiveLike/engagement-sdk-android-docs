@@ -12,8 +12,9 @@ import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollWidget
-import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -25,7 +26,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    override var widgetViewModel: WidgetViewModel? = null
+    override var widgetViewModel: ViewModel? = null
         get() = super.widgetViewModel
         set(value) {
             field = value
@@ -33,6 +34,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
             viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
+            viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
         }
 
     private fun clickedOptionObserver(id: String?) {
@@ -64,9 +66,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun rewardsObserver(points: Int?) {
-        if (!shouldShowPointTutorial()) {
-            points?.let {
+        points?.let {
+            if (!shouldShowPointTutorial()) {
                 pointView.startAnimation(it)
+                wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
             }
         }
     }

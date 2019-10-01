@@ -59,7 +59,6 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         animateProgress(option)
     }
 
-    // TODO: Split this in 2 classes, 2 adapters
     private fun setupTextItem(option: Option) {
         if (!inflated) {
             inflated = true

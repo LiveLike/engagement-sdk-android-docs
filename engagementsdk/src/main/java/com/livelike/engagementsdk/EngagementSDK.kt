@@ -27,18 +27,16 @@ class EngagementSDK(
     accessToken: String? = null
 ) : IEngagement {
 
-//    TODO : Handle if integrator intialize sdk in offline state ( Once I thought of creating stream of sdk initialization requests too and handle everything gracefully :) )
+//    We should add errorDelegate as parameter of SDK init, on this error delegate we can propogate the events of network failures or any other. Based on it integrator can re-init sdk
 
     private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
     private val dataClient = EngagementDataClientImpl()
 
     private val userRepository = UserRepository(clientId)
 
-    private val currentUserStream: Stream<LiveLikeUser> = userRepository.currentUserStream
-
-    val job = SupervisorJob()
+    private val job = SupervisorJob()
     // by default sdk calls will run on Default pool and further data layer calls will run o
-    val sdkScope = CoroutineScope(Dispatchers.Default + job)
+    private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
     init {
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib

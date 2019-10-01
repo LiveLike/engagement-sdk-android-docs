@@ -12,10 +12,10 @@
     <color name="livelike_default_button_background_color">#99000000</color>
     <color name="livelike_chat_background_start_color">#212121</color>
     <color name="livelike_chat_input_text_color">@color/livelike_white</color>
-    <color name="livelike_chat_input_background_color">@color/livelike_transparent</color>
-    <color name="livelike_chat_input_border_color">@color/livelike_white</color>
+    <color name="livelike_chat_input_background_color">#66000000</color>
+    <color name="livelike_chat_input_border_color">#33ffffff</color>
     <color name="livelike_chat_background_end_color">#424242</color>
-    <color name="livelike_chat_rounded_rect_color">#D3000000</color>
+    <color name="livelike_chat_rounded_rect_color">#66000000</color>
     <color name="livelike_openChatNicknameOther">#7b8391</color>
     <color name="livelike_openChatNicknameMe">#00BCD4</color>
 
@@ -74,4 +74,9 @@
     <color name="livelike_incorrect_bar_gradient_right">#e6d0021b</color>
     <color name="livelike_neutral_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
     <color name="livelike_neutral_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
+
+<!--  Gamification -->
+    <color name="livelike_rank_label_text_color">#fff000</color>
+    <color name="livelike_rank_label_gradient_right">#4b28b4</color>
+    <color name="livelike_rank_label_gradient_left">#6928b4</color>
 </resources>

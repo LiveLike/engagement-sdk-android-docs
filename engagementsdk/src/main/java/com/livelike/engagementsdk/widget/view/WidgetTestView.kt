@@ -9,12 +9,10 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
-import com.livelike.engagementsdk.widget.viewModel.PollViewModel
-import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
-import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import kotlinx.android.synthetic.main.widget_test_view.view.buttonRefresh
 import kotlinx.android.synthetic.main.widget_test_view.view.testFirst
 import kotlinx.android.synthetic.main.widget_test_view.view.testFourth
@@ -92,6 +90,7 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
         { """{"timeout":"P0DT00H00M03S","kind":"text-prediction","program_date_time":null,"subscribe_channel":"text_prediction_710a9bef_9932_493b_a414_e9a37abf49d6","question":"${textTitle.first()}","confirmation_message":"${textOptions.first()}","options":[{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.first()}","is_correct":false,"vote_count":0,"vote_url":""},{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.first()}","is_correct":false,"vote_count":0,"vote_url":""}]}""" }
 
     private var userRepository = UserRepository("")
+    private var programRepository = ProgramRepository("", userRepository)
     init {
         ConstraintLayout.inflate(context, R.layout.widget_test_view, this)
 
@@ -121,38 +120,54 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
                 MockAnalyticsService()
             ) {}
         }
-        val viewPoll = PollView(context).apply {
-            val info = WidgetInfos(
-                "text-poll-created",
-                gson.fromJson(pollTextData(), JsonObject::class.java),
-                "120571e0-d665-4e9b-b497-908cf8422a64"
-            )
-            widgetViewModel = PollViewModel(info,
-                MockAnalyticsService(), mockConfig, {}, userRepository)
-        }
-        val viewQuiz = QuizView(context).apply {
-            val info = WidgetInfos(
-                "text-quiz-created",
-                gson.fromJson(quizTextData(), JsonObject::class.java),
-                "120571e0-d665-4e9b-b497-908cf8422a64"
-            )
-            widgetViewModel = QuizViewModel(
-                info,
-                MockAnalyticsService(), mockConfig, context, {}, userRepository)
-        }
-        val viewPrediction = PredictionView(context).apply {
-            val info = WidgetInfos(
-                "text-prediction-created",
-                gson.fromJson(predictionTextData(), JsonObject::class.java),
-                "120571e0-d665-4e9b-b497-908cf8422a64"
-            )
-            widgetViewModel = PredictionViewModel(info, context,
-                MockAnalyticsService(), {}, userRepository)
-        }
-
-        testFirst.addView(viewPrediction)
-        testSecond.addView(viewPoll)
-        testThird.addView(viewQuiz)
+//        val viewPoll = PollView(context).apply {
+//            val info = WidgetInfos(
+//                "text-poll-created",
+//                gson.fromJson(pollTextData(), JsonObject::class.java),
+//                "120571e0-d665-4e9b-b497-908cf8422a64"
+//            )
+//            widgetViewModel = PollViewModel(
+//                info,
+//                MockAnalyticsService(),
+//                mockConfig,
+//                {},
+//                userRepository,
+//                programRepository,
+//                widgetMessagingClient
+//            )
+//        }
+//        val viewQuiz = QuizView(context).apply {
+//            val info = WidgetInfos(
+//                "text-quiz-created",
+//                gson.fromJson(quizTextData(), JsonObject::class.java),
+//                "120571e0-d665-4e9b-b497-908cf8422a64"
+//            )
+//            widgetViewModel = QuizViewModel(
+//                info,
+//                MockAnalyticsService(),
+//                mockConfig,
+//                context,
+//                {},
+//                userRepository,
+//                programRepository,
+//                widgetMessagingClient
+//            )
+//        }
+//        val viewPrediction = PredictionView(context).apply {
+//            val info = WidgetInfos(
+//                "text-prediction-created",
+//                gson.fromJson(predictionTextData(), JsonObject::class.java),
+//                "120571e0-d665-4e9b-b497-908cf8422a64"
+//            )
+//            widgetViewModel = PredictionViewModel(
+//                info, context,
+//                MockAnalyticsService(), {}, userRepository, programRepository, widgetMessagingClient
+//            )
+//        }
+//
+//        testFirst.addView(viewPrediction)
+//        testSecond.addView(viewPoll)
+//        testThird.addView(viewQuiz)
         testFourth.addView(viewAlert)
     }
 }

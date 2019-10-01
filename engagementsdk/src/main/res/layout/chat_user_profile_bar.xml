@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    tools:showIn="@layout/chat_input">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_chat_message_bubble_rounded_rectangle"
+        android:animateLayoutChanges="true">
+
+    <TextView
+        android:id="@+id/user_profile_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:textColor="@color/livelike_white"
+        android:textSize="@dimen/livelike_default_chat_cell_name_size"
+        android:textStyle="bold"
+        android:text="Me (SilverDog318)" />
+
+    <ImageView
+        android:id="@+id/gamification_badge_iv"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginLeft="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/user_profile_tv"
+        android:visibility="gone"
+        tools:src="@drawable/coin"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <com.livelike.engagementsdk.widget.view.components.PointView
+        android:id="@+id/pointView"
+        android:layout_width="48dp"
+        android:layout_height="26dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        app:hidePlus="true"
+        app:iconSize="14dp"
+        app:textSize="12sp"
+        android:visibility="gone"/>
+
+
+    <TextView
+        android:id="@+id/rank_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:visibility="gone"
+        android:text="@string/livelike_rank_label"
+        style="@style/livlelike_rank_label_text_style" />
+
+    <TextView
+        android:id="@+id/rank_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        tools:textColor="@color/livelike_black"
+        android:visibility="gone"
+        tools:text="#12"
+        style="@style/livelike_rank_value_text_style" />
+
+
+</LinearLayout>
+
+
+    

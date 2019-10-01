@@ -4,17 +4,15 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.support.annotation.NonNull
-import android.support.design.widget.BottomSheetDialog
 import android.util.Log
-import android.view.ViewGroup
-import java.io.IOException
-import java.net.URL
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
+import java.net.URL
 
 class ChannelManager(private val channelConfigUrl: String, val appContext: Context) {
 
@@ -27,9 +25,6 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     private val client: OkHttpClient = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val channelSelectListeners = mutableListOf<(Channel) -> Unit>()
-    private val channelListenersKeys = mutableListOf<String>()
-    private val view: ChannelSelectionView = ChannelSelectionView(appContext)
-    private var channelBottomSheetDialog: BottomSheetDialog? = null
     val channelList: MutableList<Channel> = mutableListOf()
     @NonNull
     var selectedChannel: Channel = NONE_CHANNEL
@@ -61,13 +56,13 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                         val results = json.getJSONArray("results")
                         for (i in 0..(results.length() - 1)) {
                             val channel = getChannelFor(results.getJSONObject(i))
-                            channelList.add(channel)
+                            channel?.let {
+                                channelList.add(channel)
                             if (savedChannel == channel.name) {
                                 selectedChannel = channel
                             }
+                            }
                         }
-                        view.channelList = channelList
-                        view.channelSelectListener = { channel -> selectedChannel = channel }
                     } catch (e: JSONException) {
                         Log.e("ChannelMger", e.message)
                     }
@@ -80,13 +75,16 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
         })
     }
 
-    private fun getChannelFor(channelData: JSONObject): Channel {
-        return Channel(
-            channelData.getString("name"),
-            URL(channelData.getString("video_url")),
-            URL(channelData.getString("video_thumbnail_url")),
-            channelData.getString("livelike_program_url")
-        )
+    private fun getChannelFor(channelData: JSONObject): Channel? {
+        return if(!channelData.getString("stream_url").equals("null") && channelData.getString("status").equals("live"))
+            Channel(
+                channelData.getString("title"),
+                URL(channelData.getString("stream_url")),
+                null,
+                channelData.getString("id")
+            )
+        else
+            null
     }
 
     private fun persistChannel(channelName: String) {
@@ -96,30 +94,8 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             .apply()
     }
 
-    fun addChannelSelectListener(key: String, listener: (Channel) -> Unit) {
-        if (!channelListenersKeys.contains(key)) {
-            channelSelectListeners.add(listener)
-        }
-    }
-
-    fun removeChannelSelectListener(listener: (Channel) -> Unit) {
-        channelSelectListeners.remove(listener)
-    }
-
-    fun show(context: Context) {
-        channelBottomSheetDialog = BottomSheetDialog(context)
-        removeViewParentIfExists()
-        channelBottomSheetDialog?.setContentView(view)
-        channelBottomSheetDialog?.show()
-    }
-
-    fun hide() {
-        channelBottomSheetDialog?.hide()
-    }
-
-    private fun removeViewParentIfExists() {
-        if (view.parent != null)
-            (view.parent as ViewGroup).removeView(view)
+    fun getChannels(): ArrayList<Channel> {
+        return ArrayList(channelList)
     }
 }
 

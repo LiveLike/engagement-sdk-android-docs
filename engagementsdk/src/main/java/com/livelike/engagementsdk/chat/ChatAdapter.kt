@@ -10,10 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
-import kotlinx.android.synthetic.main.default_chat_cell.view.floatingUi
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -25,7 +26,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffU
     }
 }
 
-class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, private val reporter: (ChatMessage) -> Unit) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -42,6 +43,7 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : List
                     setMessage(context.getString(R.string.flag_ui_blocking_message, msg.senderDisplayName))
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackBlockingUser()
+                        blockUser(msg.senderId)
                     }
                     create()
                 }.show()
@@ -51,6 +53,7 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : List
                     setMessage(context.getString(R.string.flag_ui_reporting_message))
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackReportingMessage()
+                        reporter(msg)
                     }
                     create()
                 }.show()
@@ -77,34 +80,29 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService) : List
         }
 
         private fun showFloatingUI() {
-            v.apply {
-                floatingUi.visibility = View.VISIBLE
-                chatBackground.alpha = 0.5f
-                floatingUi?.setOnClickListener {
-                    analyticsService.trackFlagButtonPressed()
-                    hideFloatingUI()
-                    context?.let { ctx ->
-                        AlertDialog.Builder(ctx).apply {
-                            setTitle(context.getString(R.string.flag_ui_title))
-                            setItems(dialogOptions.map { it.first }.toTypedArray()) { dialog, which ->
-                                message?.let {
-                                    dialogOptions[which].second.invoke(it)
-                                }
+            v.chatBackground.alpha = 0.5f
+            ChatReactionPopupView(v.context, View.OnClickListener { view ->
+                analyticsService.trackFlagButtonPressed()
+                hideFloatingUI()
+                v.context?.let { ctx ->
+                    AlertDialog.Builder(ctx).apply {
+                        setTitle(context.getString(R.string.flag_ui_title))
+                        setItems(dialogOptions.map { it.first }.toTypedArray()) { dialog, which ->
+                            message?.let {
+                                dialogOptions[which].second.invoke(it)
                             }
-                            setOnCancelListener { analyticsService.trackCancelFlagUi() }
-                            create()
-                        }.show()
-                    }
-                }
-            }
+                        }
+                        setOnCancelListener { analyticsService.trackCancelFlagUi() }
+                        create()
+                    }.show()
+                } }, ::hideFloatingUI).showAsDropDown(v, 0, -AndroidResource.dpToPx(8))
         }
 
         private fun hideFloatingUI() {
             v.apply {
-                floatingUi.visibility = View.INVISIBLE
                 chatBackground.alpha = 1f
             }
-        }
+    }
 
         private fun setMessage(
             message: ChatMessage?

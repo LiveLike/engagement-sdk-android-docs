@@ -8,8 +8,13 @@ import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.AnalyticsWidgetSpecificInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.data.models.RewardsType
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.domain.GamificationManager
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -17,16 +22,18 @@ import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.toAnalyticsString
-import com.livelike.engagementsdk.widget.WidgetDataClient
+import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -41,9 +48,16 @@ internal class PollViewModel(
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
-    val userRepository: UserRepository
-) : WidgetViewModel() {
-    var points: SubscriptionManager<Int?> = SubscriptionManager()
+    private val userRepository: UserRepository,
+    private val programRepository: ProgramRepository,
+    val widgetMessagingClient: WidgetManager
+) : ViewModel() {
+//    TODO remove points for all view models and make it follow dry, move it to gamification stream
+    var points: SubscriptionManager<Int?> = SubscriptionManager(false)
+    val gamificationProfile: Stream<ProgramGamificationProfile>
+        get() = programRepository.programGamificationProfileStream
+    val rewardsType: RewardsType
+        get() = programRepository.rewardType
     val data: SubscriptionManager<PollWidget> = SubscriptionManager()
     val results: SubscriptionManager<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -152,14 +166,22 @@ internal class PollViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                val reward = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)
-                points.onNext(reward?.new_points)
-                interactionData.pointEarned = points.currentData ?: 0
+                userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
+                    programRepository.programGamificationProfileStream.onNext(pts)
+                    publishPoints(pts.newPoints)
+                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    interactionData.addGamificationAnalyticsData(pts)
+                }
             }
+
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }
+    }
+
+    private fun publishPoints(pts: Int) {
+        this.points.onNext(pts)
     }
 
     private fun cleanUp() {

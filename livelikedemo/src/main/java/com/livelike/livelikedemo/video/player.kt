@@ -80,7 +80,10 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     }
 
     override fun release() {
+        player?.stop()
         player?.release()
+        player?.setVideoSurfaceHolder(null)
+        player = null
         playerState = PlayerState()
     }
 

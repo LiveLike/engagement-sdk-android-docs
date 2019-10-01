@@ -49,6 +49,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         messageJson.addProperty("sender", message.senderDisplayName)
         messageJson.addProperty("sender_id", message.senderId)
         messageJson.addProperty("id", message.id)
+        messageJson.addProperty("channel", message.channel)
         // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
             publishMessage(gson.toJson(message), it, timeData)
@@ -59,6 +60,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         when (event.message.get("event").asString) {
             ChatViewModel.EVENT_NEW_MESSAGE -> {
                 val newMessage = ChatMessage(
+                    event.channel,
                     event.message.get("message").asString,
                     event.message.get("sender_id").asString,
                     event.message.get("sender").asString,

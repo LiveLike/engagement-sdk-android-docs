@@ -10,7 +10,11 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.data.models.RewardsType
+import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.domain.GamificationManager
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -18,16 +22,18 @@ import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.toAnalyticsString
-import com.livelike.engagementsdk.widget.WidgetDataClient
+import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -42,9 +48,15 @@ internal class QuizViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val context: Context,
     var onDismiss: () -> Unit,
-    val userRepository: UserRepository
-) : WidgetViewModel() {
+    private val userRepository: UserRepository,
+    private val programRepository: ProgramRepository,
+    val widgetMessagingClient: WidgetManager
+) : ViewModel() {
     var points: Int? = null
+    val gamificationProfile: Stream<ProgramGamificationProfile>
+        get() = programRepository.programGamificationProfileStream
+    val rewardsType: RewardsType
+        get() = programRepository.rewardType
     val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
     val results: Stream<Resource> = SubscriptionManager()
     val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
@@ -166,10 +178,13 @@ internal class QuizViewModel(
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
-                points = dataClient.rewardAsync(it, analyticsService, userRepository.userAccessToken)?.new_points
-                interactionData.pointEarned = points ?: 0
+                userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
+                    programRepository.programGamificationProfileStream.onNext(pts)
+                    points = pts.newPoints
+                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    interactionData.addGamificationAnalyticsData(pts)
+                }
             }
-
             state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(6000)

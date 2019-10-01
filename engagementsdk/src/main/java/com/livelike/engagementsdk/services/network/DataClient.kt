@@ -1,9 +1,12 @@
 package com.livelike.engagementsdk.services.network
 
 import com.google.gson.JsonObject
-import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
+import com.livelike.engagementsdk.chat.ChatMessage
+import com.livelike.engagementsdk.data.models.Program
+import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 
 internal interface DataClient {
     fun getProgramData(url: String, responseCallback: (program: Program?) -> Unit)
@@ -12,29 +15,16 @@ internal interface DataClient {
     suspend fun patchUser(clientId: String, userJson: JsonObject, accessToken: String?)
 }
 
-internal data class Program(
-    @SerializedName("url")
-    val programUrl: String?,
-    @SerializedName("timeline_url")
-    val timelineUrl: String,
-    @SerializedName("content_id")
-    val contentId: String,
-    @SerializedName("id")
-    val id: String,
-    @SerializedName("title")
-    val title: String,
-    @SerializedName("widgets_enabled")
-    val widgetsEnabled: Boolean,
-    @SerializedName("chat_enabled")
-    val chatEnabled: Boolean,
-    @SerializedName("subscribe_channel")
-    val subscribeChannel: String,
-    @SerializedName("sendbird_channel")
-    val chatChannel: String,
-    @SerializedName("analytics_properties")
-    val analyticsProps: Map<String, String>
-)
-
 internal interface EngagementSdkDataClient {
     fun getEngagementSdkConfig(url: String, responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit)
+}
+
+internal interface WidgetDataClient {
+    suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?)
+    fun registerImpression(impressionUrl: String)
+    suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile?
+}
+
+internal interface ChatDataClient {
+    suspend fun reportMessage(programId: String, message: ChatMessage, accessToken: String?)
 }

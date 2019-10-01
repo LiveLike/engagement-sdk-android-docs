@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import android.animation.LayoutTransition
 import android.annotation.SuppressLint
+import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -11,6 +12,8 @@ import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
+
+// TODO remove view references from this view model, also clean content session for same.
 
 class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>) {
 
@@ -33,7 +36,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
                     override fun onDismiss(view: View?, token: Any?) {
                         dismissWidget?.invoke(DismissAction.SWIPE)
                         dismissWidget = null
-                        dismissWidget()
+                        removeViews()
                     }
                 })
         )
@@ -47,7 +50,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
     }
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?) {
-        dismissWidget()
+        removeViews()
         if (widgetView != null) {
             displayWidget(widgetView)
         }
@@ -64,8 +67,16 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
         }
     }
 
-    private fun dismissWidget() {
+    private fun removeViews() {
         logDebug { "NOW - Dismiss WidgetInfos" }
         widgetContainer?.removeAllViews()
+        widgetContainer?.apply {
+            if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    !isInLayout
+                } else {
+                    true
+                }
+            ) requestLayout()
+        }
     }
 }
