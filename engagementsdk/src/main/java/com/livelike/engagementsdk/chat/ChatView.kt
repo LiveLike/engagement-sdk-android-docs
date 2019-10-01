@@ -49,6 +49,7 @@ import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.topBarGradient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -154,18 +155,26 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     if (programRank.newPoints == 0 || pointView.visibility == View.GONE) {
                         pointView.showPoints(programRank.points)
                         wouldShowBadge(programRank)
+                        showUserRank(programRank)
                     } else if (programRank.points == programRank.newPoints) {
                             pointView.apply {
-                                postDelayed({ startAnimation(programRank.points) },
+                                postDelayed(
+                                    {
+                                        startAnimation(programRank.points)
+                                        showUserRank(programRank)
+                                    },
                                     6300)
                             }
                         } else {
                             pointView.apply {
-                                postDelayed({ startAnimation(programRank.points) },
+                                postDelayed(
+                                    {
+                                        startAnimation(programRank.points)
+                                        showUserRank(programRank)
+                                    },
                                     1000)
                             }
                         }
-                    showUserRank(programRank)
                 }
             }
             animationEventsStream.subscribe(javaClass.simpleName) {
@@ -199,10 +208,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun showUserRank(programGamificationProfile: ProgramGamificationProfile) {
-        if (programGamificationProfile.points> 0) {
+        if (programGamificationProfile.points > 0) {
             rank_label.visibility = View.VISIBLE
             rank_value.visibility = View.VISIBLE
-            rank_value.text = "#${programGamificationProfile.rank}"
+            uiScope.async {
+                delay(1000)
+                rank_value.text = "#${programGamificationProfile.rank}"
+            }
         }
     }
 
