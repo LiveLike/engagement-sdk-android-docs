@@ -37,7 +37,7 @@ class PointsTutorialView(context: Context, attr: AttributeSet? = null) : Specifi
                             programGamificationProfile,
                             progressionMeterView
                         )
-                    }, 1000)
+                    }, 1300)
                 }
             }
         }

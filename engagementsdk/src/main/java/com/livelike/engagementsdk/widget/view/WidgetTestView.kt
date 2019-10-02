@@ -9,10 +9,13 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import kotlinx.android.synthetic.main.widget_test_view.view.buttonRefresh
 import kotlinx.android.synthetic.main.widget_test_view.view.testFirst
 import kotlinx.android.synthetic.main.widget_test_view.view.testFourth
@@ -110,16 +113,21 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
     private fun addWidgetViews() {
         val randomImage = imageUrlOption.first()
         imageUrl = { if (randomImage.isEmpty()) randomImage else randomImage + java.util.UUID.randomUUID() }
-        val viewAlert = AlertWidgetView(context).apply {
-            val info = WidgetInfos(
-                "alert-created",
-                gson.fromJson(dataAlert(), JsonObject::class.java),
-                "120571e0-d665-4e9b-b497-908cf8422a64"
-            )
-            widgetViewModel = AlertWidgetViewModel(info,
-                MockAnalyticsService()
-            ) {}
+        val viewTutorial = PointsTutorialView(context).apply {
+
         }
+        viewTutorial.widgetViewModel = PointTutorialWidgetViewModel({},MockAnalyticsService(),RewardsType.BADGES, programRepository.programGamificationProfileStream.latest())
+        testSecond.addView(viewTutorial)
+//        val viewAlert = AlertWidgetView(context).apply {
+//            val info = WidgetInfos(
+//                "alert-created",
+//                gson.fromJson(dataAlert(), JsonObject::class.java),
+//                "120571e0-d665-4e9b-b497-908cf8422a64"
+//            )
+//            widgetViewModel = AlertWidgetViewModel(info,
+//                MockAnalyticsService()
+//            ) {}
+//        }
 //        val viewPoll = PollView(context).apply {
 //            val info = WidgetInfos(
 //                "text-poll-created",
@@ -168,6 +176,6 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
 //        testFirst.addView(viewPrediction)
 //        testSecond.addView(viewPoll)
 //        testThird.addView(viewQuiz)
-        testFourth.addView(viewAlert)
+//        testFourth.addView(viewAlert)
     }
 }
