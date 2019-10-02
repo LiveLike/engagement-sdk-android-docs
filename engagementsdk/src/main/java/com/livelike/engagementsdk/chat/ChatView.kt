@@ -155,12 +155,12 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                         wouldShowBadge(programRank)
                     } else if (programRank.points == programRank.newPoints) {
                             pointView.apply {
-                                postDelayed({ startAnimation(programRank.points) },
+                                postDelayed({ startAnimationFromTop(programRank.points) },
                                     6300)
                             }
                         } else {
                             pointView.apply {
-                                postDelayed({ startAnimation(programRank.points) },
+                                postDelayed({ startAnimationFromTop(programRank.points) },
                                     1000)
                             }
                         }

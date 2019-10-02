@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.widget.view.components
 
+import android.animation.Animator
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
@@ -70,7 +71,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         }
     }
 
-    fun startAnimation(newPoint: Int) {
+    fun startAnimation(newPoint: Int, hideOnEnd:Boolean=false) {
         visibility = View.VISIBLE
         clipChildren = false
         clipToPadding = false
@@ -88,10 +89,43 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
         val dropping = AnimatorInflater.loadAnimator(context, R.animator.dropping) as AnimatorSet
         dropping.setTarget(coinDroppingView)
-
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
         bothAnimatorSet.startDelay = 300
+        bothAnimatorSet.addListener(object : Animator.AnimatorListener{
+            override fun onAnimationRepeat(animation: Animator?) {}
+
+            override fun onAnimationEnd(animation: Animator?) {
+                if(hideOnEnd) visibility = View.GONE
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {}
+
+            override fun onAnimationStart(animation: Animator?) {}
+        })
+        bothAnimatorSet.start()
+    }
+
+    fun startAnimationFromTop(newPoint: Int) {
+        visibility = View.VISIBLE
+        clipChildren = false
+        clipToPadding = false
+        clipParents(false)
+        ValueAnimator.ofInt(0, newPoint).apply {
+            addUpdateListener {
+                point = it.animatedValue as Int
+            }
+            duration = 500
+            start()
+        }
+
+        val popping = AnimatorInflater.loadAnimator(context, R.animator.popping) as AnimatorSet
+        popping.setTarget(coinView)
+
+        val dropping = AnimatorInflater.loadAnimator(context, R.animator.dropping_from_top) as AnimatorSet
+        dropping.setTarget(coinDroppingView)
+        val bothAnimatorSet = AnimatorSet()
+        bothAnimatorSet.playTogether(popping, dropping)
         bothAnimatorSet.start()
     }
 
