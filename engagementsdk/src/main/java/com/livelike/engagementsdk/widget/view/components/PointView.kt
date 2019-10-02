@@ -73,6 +73,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
+        bothAnimatorSet.startDelay = 300
         bothAnimatorSet.start()
     }
 
