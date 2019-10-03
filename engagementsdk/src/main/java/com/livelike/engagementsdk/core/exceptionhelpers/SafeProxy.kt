@@ -6,15 +6,21 @@ import java.lang.reflect.Proxy
 
 internal class SafeInvocationHandler(val target: Any) : InvocationHandler {
 
-    override fun invoke(p0: Any?, method: Method, args: Array<out Any>?): Any {
-        return if (method.returnType == null || method.returnType.name == "void" || method.returnType == Unit.javaClass) {
+    override fun invoke(p0: Any?, method: Method, args: Array<out Any>?): Any? {
+        return if (method.returnType.name == "void" || method.returnType == Unit.javaClass) {
             try {
-                if (args?.isNotEmpty() == true) method.invoke(target, args) else method.invoke(target)
+                if (args?.isNotEmpty() == true) {
+                    method.invoke(target, *args) // kotlin uses spread operator(*) to pass array as varargs
+                } else {
+                    method.invoke(target)
+                }
             } catch (ex: Throwable) {
                 BugsnagClient.client?.notify(ex.cause ?: ex)
                 ex.cause?.printStackTrace() ?: ex.printStackTrace()
             }
-        } else if (args?.isNotEmpty() == true) method.invoke(target, args) else method.invoke(target)
+        } else if (args?.isNotEmpty() == true) method.invoke(target, *args) else method.invoke(
+            target
+        )
     }
 }
 
@@ -25,7 +31,6 @@ internal fun <T : Any> T.safeProxyForEmptyReturnCalls(): T {
     return Proxy.newProxyInstance(
         loader, classes, SafeInvocationHandler(this)
     ) as T
-//    return this
 }
 
 internal fun <T> T.getTargetObject(): Any? {
@@ -33,6 +38,6 @@ internal fun <T> T.getTargetObject(): Any? {
     return if (Proxy.isProxyClass(clazz)) {
         (Proxy.getInvocationHandler(this) as SafeInvocationHandler).target
     } else {
-        null
+        this
     }
 }
