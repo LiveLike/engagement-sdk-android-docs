@@ -55,7 +55,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
         //            badge_iv.animate().setDuration(500).setStartDelay(500)
         //                .translationY(badge_iv.translationY + collect_badge_box.height/2)
         val badgeTranslateDownCenter = badge_iv.buildTranslateYAnimator(
-            300,
+            100,
             badge_iv.translationY,
             badge_iv.translationY + collect_badge_box.height / 2,
             LinearInterpolator()
