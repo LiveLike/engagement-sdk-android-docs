@@ -66,13 +66,4 @@
         android:scaleType="fitXY"
         tools:translationY="0dp" />
 
-    <View
-        android:id="@+id/topBarGradient"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@drawable/ic_chat_top_bar_gradient"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/chatdisplay"
-        app:layout_constraintTop_toTopOf="@+id/chatdisplay" />
-
 </android.support.constraint.ConstraintLayout>
