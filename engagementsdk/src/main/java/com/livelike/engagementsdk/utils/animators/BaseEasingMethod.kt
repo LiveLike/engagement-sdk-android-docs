@@ -3,7 +3,7 @@ package com.livelike.engagementsdk.utils.animators
 import android.animation.TypeEvaluator
 
 /**
- * Refer : https://github.com/daimajia/AnimationEasingFunctions,
+ * Refer : https://github.com/daimajia/AnimationEasingFunctions
  */
 abstract class BaseEasingMethod(private var mDuration: Float) : TypeEvaluator<Number> {
 
@@ -11,28 +11,6 @@ abstract class BaseEasingMethod(private var mDuration: Float) : TypeEvaluator<Nu
 
     interface EasingListener {
         fun on(time: Float, value: Float, start: Float, end: Float, duration: Float)
-    }
-
-    fun addEasingListener(l: EasingListener) {
-        mListeners.add(l)
-    }
-
-    fun addEasingListeners(vararg ls: EasingListener) {
-        for (l in ls) {
-            mListeners.add(l)
-        }
-    }
-
-    fun removeEasingListener(l: EasingListener) {
-        mListeners.remove(l)
-    }
-
-    fun clearEasingListeners() {
-        mListeners.clear()
-    }
-
-    fun setDuration(duration: Float) {
-        mDuration = duration
     }
 
     override fun evaluate(fraction: Float, startValue: Number, endValue: Number): Float? {
