@@ -33,7 +33,6 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
@@ -48,8 +47,10 @@ import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -153,18 +154,26 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     if (programRank.newPoints == 0 || pointView.visibility == View.GONE) {
                         pointView.showPoints(programRank.points)
                         wouldShowBadge(programRank)
+                        showUserRank(programRank)
                     } else if (programRank.points == programRank.newPoints) {
                             pointView.apply {
-                                postDelayed({ startAnimationFromTop(programRank.points) },
+                                postDelayed(
+                                    {
+                                        startAnimationFromTop(programRank.points)
+                                        showUserRank(programRank)
+                                    },
                                     6300)
                             }
                         } else {
                             pointView.apply {
-                                postDelayed({ startAnimationFromTop(programRank.points) },
+                                postDelayed(
+                                    {
+                                        startAnimationFromTop(programRank.points)
+                                        showUserRank(programRank)
+                                    },
                                     1000)
                             }
                         }
-                    showUserRank(programRank)
                 }
             }
             animationEventsStream.subscribe(javaClass.simpleName) {
@@ -198,10 +207,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun showUserRank(programGamificationProfile: ProgramGamificationProfile) {
-        if (programGamificationProfile.points> 0) {
+        if (programGamificationProfile.points > 0) {
             rank_label.visibility = View.VISIBLE
             rank_value.visibility = View.VISIBLE
-            rank_value.text = "#${programGamificationProfile.rank}"
+            uiScope.async {
+                delay(1000)
+                rank_value.text = "#${programGamificationProfile.rank}"
+            }
         }
     }
 

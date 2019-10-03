@@ -13,10 +13,10 @@ import android.view.View
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.clipParents
+import kotlin.math.roundToInt
 import kotlinx.android.synthetic.main.atom_widget_point.view.coinDroppingView
 import kotlinx.android.synthetic.main.atom_widget_point.view.coinView
 import kotlinx.android.synthetic.main.atom_widget_point.view.pointTextView
-import kotlin.math.roundToInt
 
 class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context, attr) {
 
@@ -64,14 +64,13 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
                     topMargin = AndroidResource.dpToPx(5)
                 }
             }
-
         }
         if (textSize != 0f) {
             pointTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         }
     }
 
-    fun startAnimation(newPoint: Int, hideOnEnd:Boolean=false) {
+    fun startAnimation(newPoint: Int, hideOnEnd: Boolean = false) {
         visibility = View.VISIBLE
         clipChildren = false
         clipToPadding = false
@@ -92,11 +91,11 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
         bothAnimatorSet.startDelay = 300
-        bothAnimatorSet.addListener(object : Animator.AnimatorListener{
+        bothAnimatorSet.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {}
 
             override fun onAnimationEnd(animation: Animator?) {
-                if(hideOnEnd) visibility = View.GONE
+                if (hideOnEnd) visibility = View.GONE
             }
 
             override fun onAnimationCancel(animation: Animator?) {}

@@ -1,5 +1,7 @@
 package com.livelike.engagementsdk.widget.view.components
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.ColorMatrix
@@ -9,6 +11,8 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.animators.buildRotationAnimator
+import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.widget.view.clipParents
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlin.math.min
@@ -53,12 +57,19 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
                 colorMatrix.setSaturation(1f)
                 filter = ColorMatrixColorFilter(colorMatrix)
                 gamification_badge_iv.colorFilter = filter
-                new_badge_label.visibility = View.VISIBLE
+                gamification_badge_iv.buildRotationAnimator(500).apply {
+                    addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            new_badge_label.visibility = View.VISIBLE
+                            new_badge_label.buildScaleAnimator(0f, 1f, 300).start()
+                        }
+                    })
+                }.start()
             }, 500)
         } else {
             new_badge_label.visibility = View.GONE
         }
-
         ValueAnimator.ofInt(currentPointsForNextBadge, currentPointsForNextBadge + newPoints).apply {
             addUpdateListener {
                 progression = it.animatedValue as Int
@@ -80,5 +91,7 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
             duration = 1000
             start()
         }
+//        Add transition out using transition choreography api(TransitionSet),
+//        Also we can add some kotlin's DSL from here : https://github.com/arunkumar9t2/transition-x
     }
 }

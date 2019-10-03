@@ -113,7 +113,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 } }
                 viewModel?.points?.let {
                     if (!shouldShowPointTutorial()) {
-                        pointView.startAnimation(it,true)
+                        pointView.startAnimation(it, true)
                         wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
                     }
                 }
@@ -136,7 +136,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
                 viewModel?.points?.let {
                     if (!shouldShowPointTutorial()) {
-                        pointView.startAnimation(it,true)
+                        pointView.startAnimation(it, true)
                         wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
                     }
                 }

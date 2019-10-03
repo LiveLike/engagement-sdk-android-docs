@@ -58,7 +58,7 @@ internal class ContentSession(
 
     private val programRepository = ProgramRepository(programId, userRepository)
 
-    private val animationEventsStream = SubscriptionManager<ViewAnimationEvents>()
+    private val animationEventsStream = SubscriptionManager<ViewAnimationEvents>(false)
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
