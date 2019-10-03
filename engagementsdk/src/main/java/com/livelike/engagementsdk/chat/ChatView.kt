@@ -27,12 +27,14 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
+import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
@@ -50,7 +52,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Date
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -89,7 +90,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
     private val viewModel: ChatViewModel?
-        get() = (session as ContentSession)?.chatViewModel
+        get() = (session.getTargetObject() as ContentSession?)?.chatViewModel
 
     init {
         (context as Activity).window.setSoftInputMode(

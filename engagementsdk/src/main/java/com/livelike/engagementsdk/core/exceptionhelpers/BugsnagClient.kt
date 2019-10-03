@@ -5,7 +5,7 @@ import android.content.Context
 import com.bugsnag.android.Client
 import com.livelike.engagementsdk.BUGSNAG_ENGAGEMENT_SDK_KEY
 
-object BugsnagClient {
+internal object BugsnagClient {
 
     var client: Client? = null
 

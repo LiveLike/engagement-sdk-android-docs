@@ -4,29 +4,40 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 
-/**
- *
- */
-class SafeInvocationHandler(private val target: Any) : InvocationHandler {
+internal class SafeInvocationHandler(val target: Any) : InvocationHandler {
 
-    override fun invoke(p0: Any?, method: Method, args: Array<out Any>?): Any {
+    override fun invoke(p0: Any?, method: Method, args: Array<out Any>?): Any? {
         return if (method.returnType.name == "void" || method.returnType == Unit.javaClass) {
             try {
-                method.invoke(target, args)
+                if (args?.isNotEmpty() == true) {
+                    method.invoke(target, *args) // kotlin uses spread operator(*) to pass array as varargs
+                } else {
+                    method.invoke(target)
+                }
             } catch (ex: Throwable) {
                 BugsnagClient.client?.notify(ex.cause ?: ex)
                 ex.cause?.printStackTrace() ?: ex.printStackTrace()
             }
-        } else
-            method.invoke(target, args)
+        } else if (args?.isNotEmpty() == true) method.invoke(target, *args) else method.invoke(
+            target
+        )
     }
 }
 
-fun <T : Any> T.safeProxyForEmptyReturnCalls(): T {
+internal fun <T : Any> T.safeProxyForEmptyReturnCalls(): T {
 
     val loader = javaClass.classLoader
     val classes = javaClass.interfaces
     return Proxy.newProxyInstance(
         loader, classes, SafeInvocationHandler(this)
     ) as T
+}
+
+internal fun <T> T.getTargetObject(): Any? {
+    val clazz = (this as Object).getClass()
+    return if (Proxy.isProxyClass(clazz)) {
+        (Proxy.getInvocationHandler(this) as SafeInvocationHandler).target
+    } else {
+        this
+    }
 }
