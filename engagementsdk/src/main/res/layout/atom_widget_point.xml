@@ -10,18 +10,19 @@
         android:id="@+id/pointTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:gravity="start|center"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:gravity="center|start|center_vertical"
         android:textAlignment="textStart"
         android:textAllCaps="true"
         android:textColor="#ffffff"
         android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/coinView"
         app:layout_constraintStart_toEndOf="@+id/coinView"
         app:layout_constraintTop_toTopOf="@+id/coinView"
-        tools:textColor="@color/livelike_black"
-        tools:text="+100" />
+        tools:text="+100"
+        tools:textColor="@color/livelike_black" />
 
 
     <ImageView

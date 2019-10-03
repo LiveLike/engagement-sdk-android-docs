@@ -45,13 +45,11 @@
         android:id="@+id/pointView"
         android:layout_width="wrap_content"
         android:layout_height="26dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
         app:hidePlus="true"
         app:iconSize="14dp"
         app:textSize="12sp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 
     <TextView
@@ -65,7 +63,8 @@
         android:visibility="gone"
         android:text="@string/livelike_rank_label"
         android:letterSpacing="-0.05"
-        style="@style/livlelike_rank_label_text_style" />
+        style="@style/livlelike_rank_label_text_style"
+        tools:visibility="visible"/>
 
     <TextView
         android:id="@+id/rank_value"
@@ -76,7 +75,8 @@
         tools:textColor="@color/livelike_black"
         android:visibility="gone"
         tools:text="#12"
-        style="@style/livelike_rank_value_text_style" />
+        style="@style/livelike_rank_value_text_style"
+        tools:visibility="visible" />
 
 
 </LinearLayout>

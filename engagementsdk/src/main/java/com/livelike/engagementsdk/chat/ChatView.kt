@@ -33,7 +33,6 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
@@ -46,12 +45,12 @@ import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
-import kotlinx.android.synthetic.main.chat_view.view.topBarGradient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -160,7 +159,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                             pointView.apply {
                                 postDelayed(
                                     {
-                                        startAnimation(programRank.points)
+                                        startAnimationFromTop(programRank.points)
                                         showUserRank(programRank)
                                     },
                                     6300)
@@ -169,7 +168,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                             pointView.apply {
                                 postDelayed(
                                     {
-                                        startAnimation(programRank.points)
+                                        startAnimationFromTop(programRank.points)
                                         showUserRank(programRank)
                                     },
                                     1000)
@@ -340,14 +339,12 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         chatInput.visibility = View.GONE
         chatdisplay.visibility = View.GONE
         snap_live.visibility = View.GONE
-        topBarGradient.visibility = View.GONE
     }
 
     private fun hideLoadingSpinner() {
         loadingSpinner.visibility = View.GONE
         chatInput.visibility = View.VISIBLE
         chatdisplay.visibility = View.VISIBLE
-        topBarGradient.visibility = View.VISIBLE
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
