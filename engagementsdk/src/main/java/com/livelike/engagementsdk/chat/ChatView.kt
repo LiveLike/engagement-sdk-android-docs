@@ -200,8 +200,14 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             }
         }
 
-        // Pulling the sticker pack, TODO: should handle empty
-        sticker_keyboard.setProgram(session.contentSessionId())
+        sticker_keyboard.setProgram(session.contentSessionId()){
+            if(it.isNullOrEmpty()){
+                button_emoji?.visibility = View.GONE
+                sticker_keyboard?.visibility = View.GONE
+            }else {
+                button_emoji?.visibility = View.VISIBLE
+            }
+        }
         // used to pass the shortcode to the keyboard
         sticker_keyboard.setOnClickListener(object : FragmentClickListener {
             override fun onClick(sticker: Sticker) {
@@ -267,12 +273,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
         })
 
-
         button_emoji.setOnClickListener {
             sticker_keyboard.visibility = if(sticker_keyboard.visibility==View.GONE) View.VISIBLE else View.GONE
         }
-
-
     }
 
     private fun getMatcher(text: String) : Matcher

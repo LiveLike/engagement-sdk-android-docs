@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
+import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
 
@@ -31,6 +32,9 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : C
             val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(changedView.windowToken, 0)
         }
+        // TODO: Need to hide the StickerKeyboard when softinput is openning..
+        // TODO: Click back button close the StickerKeyboard
+        // TODO: Recent stickers must be program-scoped
         super.onVisibilityChanged(changedView, visibility)
     }
 
@@ -48,9 +52,10 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : C
         return viewModel.getFromShortcode(s)?.file ?: ""
     }
 
-    fun setProgram(programId: String) {
+    fun setProgram(programId: String, onLoaded: ((List<StickerPack>?)->Unit)? = null) {
         viewModel = StickerKeyboardViewModel(StickerPackRepository(programId))
         viewModel.stickerPacks.subscribe(javaClass){
+            onLoaded?.invoke(it)
             it?.let { stickerPacks ->
                 stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context as AppCompatActivity).supportFragmentManager, stickerPacks){ s-> listener?.onClick(s)}
                 pager.adapter = stickerCollectionPagerAdapter
