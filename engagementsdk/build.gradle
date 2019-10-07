@@ -9,6 +9,10 @@ group = 'com.livelike'
 android {
     compileSdkVersion rootProject.compileSdkVersion
 
+    androidExtensions {
+        experimental = true
+    }
+
     defaultConfig {
         // required for customizing vector icon colors
         vectorDrawables.useSupportLibrary = true
@@ -67,6 +71,7 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
 
     // Glide
+    //noinspection GradleDependency
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
 
