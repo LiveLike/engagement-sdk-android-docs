@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
-import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
 
@@ -48,12 +47,8 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : C
         return imageView
     }
 
-    fun getUrlFromShortcode(s:String) : String{
-        return viewModel.getFromShortcode(s)?.file ?: ""
-    }
-
-    fun setProgram(programId: String, onLoaded: ((List<StickerPack>?)->Unit)? = null) {
-        viewModel = StickerKeyboardViewModel(StickerPackRepository(programId))
+    fun setProgram(stickerPackRepository: StickerPackRepository, onLoaded: ((List<StickerPack>?)->Unit)? = null) {
+        viewModel = StickerKeyboardViewModel(stickerPackRepository)
         viewModel.stickerPacks.subscribe(javaClass){
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->

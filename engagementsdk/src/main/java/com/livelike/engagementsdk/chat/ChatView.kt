@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
@@ -38,6 +39,8 @@ import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
+import com.livelike.engagementsdk.stickerKeyboard.findStickers
+import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
@@ -172,117 +175,86 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                         wouldShowBadge(programRank)
                         showUserRank(programRank)
                     } else if (programRank.points == programRank.newPoints) {
-                            pointView.apply {
-                                postDelayed(
-                                    {
-                                        startAnimationFromTop(programRank.points)
-                                        showUserRank(programRank)
-                                    },
-                                    6300)
-                            }
-                        } else {
-                            pointView.apply {
-                                postDelayed(
-                                    {
-                                        startAnimationFromTop(programRank.points)
-                                        showUserRank(programRank)
-                                    },
-                                    1000)
-                            }
+                        pointView.apply {
+                            postDelayed(
+                                {
+                                    startAnimationFromTop(programRank.points)
+                                    showUserRank(programRank)
+                                },
+                                6300
+                            )
                         }
+                    } else {
+                        pointView.apply {
+                            postDelayed(
+                                {
+                                    startAnimationFromTop(programRank.points)
+                                    showUserRank(programRank)
+                                },
+                                1000
+                            )
+                        }
+                    }
                 }
             }
             animationEventsStream.subscribe(javaClass.simpleName) {
                 if (it == ViewAnimationEvents.BADGE_COLLECTED) {
-                    programRepository.programGamificationProfileStream.latest()?.let { programGamificationProfile ->
-                        wouldShowBadge(programGamificationProfile, true) }
-                }
-            }
-        }
-
-        sticker_keyboard.setProgram(session.contentSessionId()){
-            if(it.isNullOrEmpty()){
-                button_emoji?.visibility = View.GONE
-                sticker_keyboard?.visibility = View.GONE
-            }else {
-                button_emoji?.visibility = View.VISIBLE
-            }
-        }
-        // used to pass the shortcode to the keyboard
-        sticker_keyboard.setOnClickListener(object : FragmentClickListener {
-            override fun onClick(sticker: Sticker) {
-                val textToInsert = ":${sticker.shortcode}:"
-                val start = max(edittext_chat_message.selectionStart, 0)
-                val end = max(edittext_chat_message.selectionEnd, 0)
-                edittext_chat_message.text.replace( // replace selected text or start where the cursor is
-                    min(start, end), max(start, end),
-                    textToInsert, 0, textToInsert.length)
-            }
-        })
-
-        edittext_chat_message.addTextChangedListener(object : TextWatcher{
-            override fun afterTextChanged(s: Editable?) {
-                val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
-                val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
-                existingSpans?.forEach { imageSpan ->
-                    existingSpanPositions.add(s.getSpanStart(imageSpan))
-                }
-                val matcher = getMatcher(s.toString())
-
-                while (matcher.find()){
-
-                    val url = sticker_keyboard.getUrlFromShortcode(matcher.group().replace(":",""))
-
-                    val startIndex = matcher.start()
-                    val end = matcher.end()
-
-                    if(url.isEmpty() // No url for this shortcode
-                        || existingSpanPositions.contains(startIndex) // The shortcode has already been replaced by an image
-                    ){
-                        continue
-                    }
-
-                    Glide.with(this@ChatView)
-                        .load(url)
-                        .into( object: CustomTarget<Drawable>(50,50){
-                            override fun onLoadCleared(placeholder: Drawable?) {
-                            }
-
-                            override fun onResourceReady(
-                                resource: Drawable,
-                                transition: Transition<in Drawable>?
-                            ) {
-                                if (resource.intrinsicWidth > edittext_chat_message.width) {
-                                    val aspectRatio = resource.intrinsicHeight.toFloat() / resource.intrinsicWidth.toFloat()
-                                    resource.setBounds(0, 0, edittext_chat_message.width, (aspectRatio * edittext_chat_message.width).toInt())
-                                } else {
-                                    resource.setBounds(0, 0, resource.intrinsicWidth, resource.intrinsicHeight)
-                                }
-                                val span = ImageSpan(resource, url, DynamicDrawableSpan.ALIGN_BASELINE)
-                                s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            }
-                        } )
+                    programRepository.programGamificationProfileStream.latest()
+                        ?.let { programGamificationProfile ->
+                            wouldShowBadge(programGamificationProfile, true)
+                        }
                 }
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            sticker_keyboard.setProgram(stickerPackRepository) {
+                if (it.isNullOrEmpty()) {
+                    button_emoji?.visibility = View.GONE
+                    sticker_keyboard?.visibility = View.GONE
+                } else {
+                    button_emoji?.visibility = View.VISIBLE
+                }
             }
+            // used to pass the shortcode to the keyboard
+            sticker_keyboard.setOnClickListener(object : FragmentClickListener {
+                override fun onClick(sticker: Sticker) {
+                    val textToInsert = ":${sticker.shortcode}:"
+                    val start = max(edittext_chat_message.selectionStart, 0)
+                    val end = max(edittext_chat_message.selectionEnd, 0)
+                    edittext_chat_message.text.replace( // replace selected text or start where the cursor is
+                        min(start, end), max(start, end),
+                        textToInsert, 0, textToInsert.length
+                    )
+                }
+            })
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            edittext_chat_message.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    replaceWithStickers(
+                        s as Spannable,
+                        this@ChatView.context,
+                        stickerPackRepository,
+                        edittext_chat_message
+                    )
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+
+            })
+
+            button_emoji.setOnClickListener {
+                sticker_keyboard.visibility =
+                    if (sticker_keyboard.visibility == View.GONE) View.VISIBLE else View.GONE
             }
-
-        })
-
-        button_emoji.setOnClickListener {
-            sticker_keyboard.visibility = if(sticker_keyboard.visibility==View.GONE) View.VISIBLE else View.GONE
         }
-    }
-
-    private fun getMatcher(text: String) : Matcher
-    {
-        val regex = ":[^:\\s]*:"
-        val pattern = Pattern.compile (regex)
-        return pattern.matcher (text)
     }
 
     private fun wouldShowBadge(programRank: ProgramGamificationProfile, animate: Boolean = false) {
