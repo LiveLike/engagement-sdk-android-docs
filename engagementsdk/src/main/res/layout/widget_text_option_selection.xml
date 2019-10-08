@@ -7,7 +7,7 @@
                                              android:layout_height="match_parent">
 
     <com.livelike.engagementsdk.widget.view.components.TitleView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
                                                                android:layout_height="wrap_content"
                                                                app:layout_constraintTop_toTopOf="parent"
                                                                app:layout_constraintStart_toStartOf="parent"
@@ -51,7 +51,7 @@
 
     <android.support.v7.widget.RecyclerView android:id="@+id/textRecyclerView"
                                             android:hapticFeedbackEnabled="true"
-                                            android:layout_width="match_parent"
+                                            android:layout_width="0dp"
                                             android:layout_height="wrap_content"
                                             tools:listitem="@layout/atom_widget_image_item"
                                             tools:itemCount="4"
