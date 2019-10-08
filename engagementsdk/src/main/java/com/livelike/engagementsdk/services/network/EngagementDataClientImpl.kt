@@ -146,7 +146,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
             if(result is Result.Success){
                 responseCallback.invoke(result.data)
             }else{
-                responseCallback(pareseSdkConfiguration(JsonObject()))
+                logError { "The client id is incorrect. Check your configuration." }
             }
         }
     }
