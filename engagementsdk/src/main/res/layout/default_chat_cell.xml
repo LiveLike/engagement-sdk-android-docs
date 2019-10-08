@@ -52,16 +52,6 @@
         tools:ignore="HardcodedText"
         tools:text="@tools:sample/lorem[30]" />
 
-
-    <ImageView
-        android:id="@+id/stickerImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chat_nickname"/>
-
-
 </android.support.constraint.ConstraintLayout>
 
 

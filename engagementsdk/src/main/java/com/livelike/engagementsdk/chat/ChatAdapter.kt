@@ -5,25 +5,23 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
-import android.text.Spannable
 import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
-import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
-import kotlinx.android.synthetic.main.default_chat_cell.view.stickerImage
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -136,25 +134,26 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
                         )
                         chat_nickname.text = message.senderDisplayName
                     }
-//                    val s = SpannableString(message.message)
-//                    replaceWithStickers(s, context, stickerPackRepository, null){
-//                        chatMessage.text = s
-//                    }
+                    val spaceRemover = Pattern.compile("[\\s]")
+                    val inputNoString = spaceRemover.matcher(message.message).replaceAll(Matcher.quoteReplacement(""))
+                    val onlyEmoji = inputNoString.findIsOnlyStickers().matches()
+                    val atLeastOneEmoji = inputNoString.findStickers().find()
 
-                    val matcher = message.message.findStickers()
-                    while (matcher.find()) {
-                        // TODO: Add ImageView programmatically
-                        val shortcode = matcher.group().replace(":","")
-                        Glide.with(context)
-                            .load(stickerPackRepository.getSticker(shortcode)?.file)
-                            .into(stickerImage)
+                    when {
+                        onlyEmoji -> {
+                            val s = SpannableString(message.message)
+                            replaceWithStickers(s, context, stickerPackRepository, null, 200){
+                                chatMessage.text = s
+                            }
+                        }
+                        atLeastOneEmoji -> {
+                            val s = SpannableString(message.message)
+                            replaceWithStickers(s, context, stickerPackRepository, null){
+                                chatMessage.text = s
+                            }
+                        }
+                        else -> chatMessage.text = message.message
                     }
-
-                    chatMessage.visibility = View.GONE
-
-//                    chatMessage.text = s
-//                    message.message.findStickers()
-//                    chatMessage.text =  // TODO: Replace with sticker.. if only sticker: image view, if sticker + text = spannable
                 }
             }
         }
