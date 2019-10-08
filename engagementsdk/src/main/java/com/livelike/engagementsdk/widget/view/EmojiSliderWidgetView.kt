@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.widget.view.imageslider
+package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.util.AttributeSet

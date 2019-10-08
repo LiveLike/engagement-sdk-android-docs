@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.widget.view.imageslider
+package com.livelike.engagementsdk.widget.view.components.imageslider
 
 import android.content.Context
 import android.content.res.TypedArray
@@ -44,12 +44,12 @@ class ImageSlider @JvmOverloads constructor(
      * Should the slider ignore touches outside of the thumb?
      * This increases the target area, but might not be good when user is scrolling.
      */
-    var registerTouchOnTrack = true
+    private var registerTouchOnTrack = true
 
     /**
      * If false, user won't be able to move the slider.
      */
-    var isUserSeekable = true
+    private var isUserSeekable = true
 
     /**
      * Initial position of progress in range form `0.0` to `1.0`.
@@ -218,7 +218,7 @@ class ImageSlider @JvmOverloads constructor(
     private fun TypedArray.getIsTouchDisabled(): Boolean =
             this.getBoolean(R.styleable.ImageSlider_is_touch_disabled, isUserSeekable)
 
-    private fun Float.limitToRange() = Math.max(Math.min(this, 1f), 0f)
+    private fun Float.limitToRange() = this.coerceAtMost(1f).coerceAtLeast(0f)
 
     private fun Rect.containsXY(motionEvent: MotionEvent): Boolean =
             this.contains(motionEvent.x.toInt(), motionEvent.y.toInt())

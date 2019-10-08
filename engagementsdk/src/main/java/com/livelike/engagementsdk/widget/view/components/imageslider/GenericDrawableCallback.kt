@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.widget.view.imageslider
+package com.livelike.engagementsdk.widget.view.components.imageslider
 
 import android.graphics.Canvas
 import android.graphics.ColorFilter

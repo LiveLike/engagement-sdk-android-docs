@@ -1,4 +1,4 @@
-package com.livelike.engagementsdk.widget.view.imageslider
+package com.livelike.engagementsdk.widget.view.components.imageslider
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -24,7 +24,7 @@ class ScaleDrawable(private val bitmap: Bitmap, scale: Float = 1f) : Drawable() 
     private val paint =
             Paint(Paint.ANTI_ALIAS_FLAG)
     private val rect = RectF()
-    var scaledBitmap: Bitmap? = null
+    private var scaledBitmap: Bitmap? = null
 
     init {
         //        paint.shader = BitmapShader(bitmap, TileMode.REPEAT, TileMode.REPEAT)
