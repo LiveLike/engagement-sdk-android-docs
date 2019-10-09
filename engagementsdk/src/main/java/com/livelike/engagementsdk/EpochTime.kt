@@ -86,7 +86,7 @@ internal fun String.parseISODateTime(): ZonedDateTime? {
 
     return ZonedDateTime.of(
         Integer.parseInt(matcher.group(1)),
-        Integer.parseInt(matcher.group(2)) - 1, // Note: The month value is 0-based, hence the -1 on group(2)
+        Integer.parseInt(matcher.group(2)),
         Integer.parseInt(matcher.group(3)),
         Integer.parseInt(matcher.group(4)),
         Integer.parseInt(matcher.group(5)),
