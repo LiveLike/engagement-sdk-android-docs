@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_QUIZ
+import com.livelike.engagementsdk.widget.WidgetType.IMAGE_SLIDER
 import com.livelike.engagementsdk.widget.WidgetType.POINTS_TUTORIAL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
@@ -26,12 +27,14 @@ import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_QUIZ
 import com.livelike.engagementsdk.widget.view.AlertWidgetView
 import com.livelike.engagementsdk.widget.view.CollectBadgeWidgetView
+import com.livelike.engagementsdk.widget.view.EmojiSliderWidgetView
 import com.livelike.engagementsdk.widget.view.PollView
 import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
@@ -69,6 +72,10 @@ internal class WidgetProvider {
             }
             COLLECT_BADGE -> CollectBadgeWidgetView(context).apply {
                 widgetViewModel = CollectBadgeWidgetViewModel(gson.fromJson(widgetInfos.payload, Badge::class.java), onDismiss, analyticsService, animationEventsStream)
+            }
+            IMAGE_SLIDER -> EmojiSliderWidgetView(context).apply {
+                widgetViewModel = EmojiSliderWidgetViewModel(widgetInfos, analyticsService, sdkConfiguration, onDismiss,
+                    userRepository, programRepository, widgetMessagingClient)
             }
             else -> null
         }

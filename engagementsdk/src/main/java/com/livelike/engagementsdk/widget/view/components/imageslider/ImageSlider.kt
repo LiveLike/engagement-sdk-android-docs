@@ -101,6 +101,7 @@ class ImageSlider @JvmOverloads constructor(
     set(value) {
         field = value
         thumbDrawable?.callback = this
+        visibility = VISIBLE
         invalidate()
     }
 
@@ -288,14 +289,13 @@ class ImageSlider @JvmOverloads constructor(
                 } else {
                     trackTouchEvent(event)
                 }
-                invalidate()
             }
             MotionEvent.ACTION_CANCEL -> {
                 if (mIsDragging) {
                     mIsDragging = false
                     isPressed = false
                 }
-                invalidate() // see https://developer.android.com/reference/android/view/ViewGroup.html#onInterceptTouchEvent%28android.view.MotionEvent%29
+                // see https://developer.android.com/reference/android/view/ViewGroup.html#onInterceptTouchEvent%28android.view.MotionEvent%29
             }
         }
 

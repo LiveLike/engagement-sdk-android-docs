@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.data.models.Program
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import okhttp3.RequestBody
 
 internal interface DataClient {
     fun getProgramData(url: String, responseCallback: (program: Program?) -> Unit)
@@ -20,7 +21,7 @@ internal interface EngagementSdkDataClient {
 }
 
 internal interface WidgetDataClient {
-    suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?)
+    suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?, body: RequestBody? = null)
     fun registerImpression(impressionUrl: String)
     suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile?
 }
