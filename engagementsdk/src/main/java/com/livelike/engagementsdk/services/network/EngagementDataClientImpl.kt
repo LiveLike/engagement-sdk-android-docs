@@ -15,6 +15,8 @@ import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.core.exceptionhelpers.safeRemoteApiCall
 import com.livelike.engagementsdk.data.models.Program
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.data.models.ProgramModel
+import com.livelike.engagementsdk.data.models.toProgram
 import com.livelike.engagementsdk.utils.addAuthorizationBearer
 import com.livelike.engagementsdk.utils.addUserAgent
 import com.livelike.engagementsdk.utils.extractBoolean
@@ -30,6 +32,8 @@ import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
@@ -119,14 +123,14 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         }
 
                         else -> {
-                            val parsedObject = gson.fromJson(response.body()?.string(), Program::class.java)
+                            val parsedObject = gson.fromJson(response.body()?.string(), ProgramModel::class.java)
                                 ?: error("Program data was null")
 
                             if (parsedObject.programUrl == null) {
                                 // Program Url is the only required field
                                 error("Program Url not present in response.")
                             }
-                            respondWith(parsedObject)
+                            respondWith(parsedObject.toProgram())
                         }
                     }
                 }
@@ -137,26 +141,14 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     }
 
     override fun getEngagementSdkConfig(url: String, responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit) {
-        val request = Request.Builder()
-            .url(url)
-            .addUserAgent()
-            .build()
-
-        val call = client.newCall(request)
-        call.enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
-                try {
-                    mainHandler.post { responseCallback.invoke(gson.fromJson(response.body()?.string(), EngagementSDK.SdkConfiguration::class.java)) }
-                } catch (e: MalformedJsonException) {
-                    logError { e }
-                }
+        GlobalScope.launch {
+            val result = remoteCall<EngagementSDK.SdkConfiguration>(url, RequestType.GET, null, null)
+            if(result is Result.Success){
+                responseCallback.invoke(result.data)
+            }else{
+                logError { "The client id is incorrect. Check your configuration." }
             }
-
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-                mainHandler.post { responseCallback(pareseSdkConfiguration(JsonObject())) }
-            }
-        })
+        }
     }
 
     private fun pareseSdkConfiguration(configData: JsonObject): EngagementSDK.SdkConfiguration {
@@ -244,7 +236,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
             MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
     }
 
-    internal suspend inline fun <reified T : Any> remoteCall(url: String, requestType: RequestType, requestBody: RequestBody? = null, accessToken: String?): Result<Any> {
+    internal suspend inline fun <reified T : Any> remoteCall(url: String, requestType: RequestType, requestBody: RequestBody? = null, accessToken: String?): Result<T> {
         return safeRemoteApiCall({
             withContext(Dispatchers.IO) {
                 logDebug { "url : $url" }
