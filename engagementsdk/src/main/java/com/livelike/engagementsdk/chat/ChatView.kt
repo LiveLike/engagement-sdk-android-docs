@@ -16,6 +16,7 @@ import android.text.TextWatcher
 import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -128,6 +129,30 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         initView(context)
+
+        setBackButtonInterceptor()
+    }
+
+    private fun setBackButtonInterceptor() {
+        isFocusableInTouchMode = true
+        requestFocus()
+        setOnKeyListener(object : OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+                if (event?.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (sticker_keyboard.visibility == View.VISIBLE) {
+                        sticker_keyboard.visibility = View.GONE
+                        return true
+                    }
+                }
+                if (event?.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (sticker_keyboard.visibility == View.VISIBLE) {
+                        sticker_keyboard.visibility = View.GONE
+                        return true
+                    }
+                }
+                return false
+            }
+        })
     }
 
     private fun initView(context: Context) {
@@ -251,6 +276,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             })
 
             button_emoji.setOnClickListener {
+                setBackButtonInterceptor()
                 sticker_keyboard.visibility =
                     if (sticker_keyboard.visibility == View.GONE) View.VISIBLE else View.GONE
             }
@@ -272,10 +298,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun hideGamification() {
-        pointView.visibility = View.GONE
-        rank_label.visibility = View.GONE
-        rank_value.visibility = View.GONE
-        gamification_badge_iv.visibility = View.GONE
+        pointView?.visibility = View.GONE
+        rank_label?.visibility = View.GONE
+        rank_value?.visibility = View.GONE
+        gamification_badge_iv?.visibility = View.GONE
     }
 
     private fun showUserRank(programGamificationProfile: ProgramGamificationProfile) {
