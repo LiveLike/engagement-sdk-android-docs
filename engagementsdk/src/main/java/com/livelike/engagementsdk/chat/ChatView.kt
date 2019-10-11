@@ -40,6 +40,7 @@ import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
+import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -129,14 +130,12 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         initView(context)
-
-        setBackButtonInterceptor()
     }
 
-    private fun setBackButtonInterceptor() {
-        isFocusableInTouchMode = true
-        requestFocus()
-        setOnKeyListener(object : OnKeyListener {
+    private fun setBackButtonInterceptor(v : View) {
+        v.isFocusableInTouchMode = true
+        v.requestFocus()
+        v.setOnKeyListener(object : OnKeyListener {
             override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
                 if (event?.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
                     if (sticker_keyboard.visibility == View.VISIBLE) {
@@ -272,13 +271,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 }
-
             })
 
             button_emoji.setOnClickListener {
-                setBackButtonInterceptor()
-                sticker_keyboard.visibility =
-                    if (sticker_keyboard.visibility == View.GONE) View.VISIBLE else View.GONE
+                if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard()
             }
         }
     }
@@ -347,8 +343,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
 
-            if (x < v.left || x > v.right || y < v.top || y > v.bottom)
+            if (x < v.left || x > v.right || y < v.top || y > v.bottom){
+                sticker_keyboard?.visibility = View.GONE
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            }
         }
         return super.dispatchTouchEvent(ev)
     }
@@ -416,6 +414,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
                         session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
+                        hideStickerKeyboard()
+                    }
+                    if(!hasFocus){
+                        hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     }
                 }
 
@@ -429,6 +431,18 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     false
                 }
             }
+        }
+    }
+
+    private fun hideStickerKeyboard(){
+        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
+    }
+
+    private fun showStickerKeyboard(){
+        uiScope.launch {
+            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            delay(200) // delay to make sure the keyboard is hidden
+            findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
         }
     }
 
@@ -456,6 +470,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         if (reason != KeyboardHideReason.MESSAGE_SENT) {
             session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
         }
+
+        setBackButtonInterceptor(this)
     }
 
     private fun sendMessageNow() {
