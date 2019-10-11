@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.stickerKeyboard
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -14,6 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addRecentSticker
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getRecentStickers
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_item.view.itemImage
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.rvStickers
 
@@ -38,7 +39,7 @@ class StickerCollectionPagerAdapter(
                         onClickCallback(sticker)
                     }
                 })
-                getRecentStickers()
+                updateRecentStickers()
             }
             return recentStickerView as Fragment
         }else{
@@ -56,7 +57,7 @@ class StickerCollectionPagerAdapter(
     }
 
     fun refreshRecents() {
-        recentStickerView?.getRecentStickers()
+        recentStickerView?.updateRecentStickers()
     }
 }
 
@@ -88,10 +89,8 @@ class RecentStickerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun getRecentStickers() {
-        val stickerSet : MutableSet<String> = context?.applicationContext?.getSharedPreferences("PREFSS", Context.MODE_PRIVATE)?.getStringSet("recent-stickers", mutableSetOf()) ?: mutableSetOf()
-        val stickers = stickerSet.map { Sticker(it.split("///")[0], it.split("///")[1]) }
-        adapter.submitList(stickers)
+    fun updateRecentStickers() {
+        adapter.submitList(getRecentStickers())
     }
 }
 
@@ -140,15 +139,11 @@ class StickerAdapter(private val onClick: (Sticker) -> Unit) : ListAdapter<Stick
     }
 
     class StickerViewHolder(private val view: View) : RecyclerView.ViewHolder(view){
-        private val sharedPrefs = view.context?.applicationContext?.getSharedPreferences("PREFSS", Context.MODE_PRIVATE)
-
         fun onBind(sticker: Sticker, onClick: (Sticker) -> Unit){
             Glide.with(view).load(sticker.file).into(view.itemImage)
             view.itemImage.setOnClickListener {
                 onClick(sticker)
-                val stickerSet : MutableSet<String> = sharedPrefs?.getStringSet("recent-stickers", mutableSetOf()) ?: mutableSetOf()
-                stickerSet.add(sticker.file + "///" + sticker.shortcode)
-                sharedPrefs?.edit()?.putStringSet("recent-stickers", stickerSet)?.apply()
+                addRecentSticker(sticker)
             }
         }
     }
