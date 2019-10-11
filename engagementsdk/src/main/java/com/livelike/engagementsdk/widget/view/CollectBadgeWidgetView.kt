@@ -28,7 +28,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
             field = value
             viewModel = value as CollectBadgeWidgetViewModel
             viewModel?.run {
-                startDismissTimeout(5000) {
+                startInteractionTimeout(5000) {
                     removeAllViews()
                 }
                 animateView(badge)

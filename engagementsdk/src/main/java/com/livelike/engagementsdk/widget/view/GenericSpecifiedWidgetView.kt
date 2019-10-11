@@ -3,10 +3,11 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import com.livelike.engagementsdk.DismissAction
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
@@ -16,7 +17,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.progress
  * Also For now Doing minimal refactor to expedite image slider delivery.
  */
 
-internal abstract class GenericSpecifiedWidgetView<T : WidgetViewModel>(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+internal abstract class GenericSpecifiedWidgetView<T : WidgetViewModel<Resource>>(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
     var viewModel: T? = null
 
@@ -32,12 +33,17 @@ internal abstract class GenericSpecifiedWidgetView<T : WidgetViewModel>(context:
             subscribeCalls()
         }
 
-    fun stateObserver() {
-        TODO("handling states like confirm, results, results + followup etc ")
+    protected open fun stateObserver(widgetState: WidgetState) {
+        when (widgetState) {
+            WidgetState.CONFIRM_INTERACTION -> confirmInteraction()
+            WidgetState.SHOW_GAMIFICATION -> rewardsObserver()
+        }
     }
 
-    protected fun rewardsObserver(gamificationProfile: ProgramGamificationProfile?) {
-        gamificationProfile?.let {
+    protected abstract fun confirmInteraction()
+
+    protected fun rewardsObserver() {
+        viewModel?.gamificationProfile?.latest()?.let {
             if (!shouldShowPointTutorial()) {
                 pointView.startAnimation(it.newPoints, true)
                 wouldShowProgressionMeter(viewModel?.rewardsType, it, progressionMeterView)
@@ -45,9 +51,15 @@ internal abstract class GenericSpecifiedWidgetView<T : WidgetViewModel>(context:
         }
     }
 
-    protected abstract fun subscribeCalls()
+    protected open fun subscribeCalls() {
+        viewModel?.state?.subscribe(javaClass.name) {
+            it?.let { stateObserver(it) }
+        }
+    }
 
-    protected abstract fun unSubscribeCalls()
+    protected open fun unsubscribeCalls() {
+        viewModel?.state?.unsubscribe(javaClass.name)
+    }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -56,6 +68,6 @@ internal abstract class GenericSpecifiedWidgetView<T : WidgetViewModel>(context:
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        unSubscribeCalls()
+        unsubscribeCalls()
     }
 }

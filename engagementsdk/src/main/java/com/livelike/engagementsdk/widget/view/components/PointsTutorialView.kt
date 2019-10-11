@@ -23,7 +23,7 @@ class PointsTutorialView(context: Context, attr: AttributeSet? = null) : Specifi
             field = value
             viewModel = value as PointTutorialWidgetViewModel
             viewModel?.run {
-                startDismissTimeout(5000) {
+                startInteractionTimeout(5000) {
                     removeAllViews()
                 }
                 pointsAnimation.playAnimation()

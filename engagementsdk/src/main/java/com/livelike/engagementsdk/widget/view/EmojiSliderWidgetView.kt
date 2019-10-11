@@ -2,6 +2,8 @@ package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.ColorDrawable
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.ViewGroup
@@ -12,6 +14,9 @@ import com.livelike.engagementsdk.widget.model.ImageSliderEntity
 import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawable
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetState
+import java.math.RoundingMode
+import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -24,35 +29,46 @@ import kotlinx.coroutines.withContext
 internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = null) :
     GenericSpecifiedWidgetView<EmojiSliderWidgetViewModel>(context, attr) {
 
+    override fun confirmInteraction() {
+        image_slider.isUserSeekable = false
+    }
+
     override fun subscribeCalls() {
+        super.subscribeCalls()
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
 //        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
 //        viewModel?.gamificationProfile?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
     }
 
-    override fun unSubscribeCalls() {
+    override fun unsubscribeCalls() {
+        super.unsubscribeCalls()
         viewModel?.data?.unsubscribe(javaClass.simpleName)
         viewModel?.results?.unsubscribe(javaClass.simpleName)
         viewModel?.currentVote?.unsubscribe(javaClass.simpleName)
         viewModel?.gamificationProfile?.unsubscribe(javaClass.simpleName)
     }
 
+    override fun stateObserver(widgetState: WidgetState) {
+        super.stateObserver(widgetState)
+    }
+
     private fun resourceObserver(imageSliderEntity: ImageSliderEntity?) {
         imageSliderEntity?.let { resource ->
-            val optionList = resource.getMergedOptions() ?: return
+            resource.getMergedOptions() ?: return
             if (!isViewInflated) {
                 isViewInflated = true
                 inflate(context, R.layout.widget_emoji_slider, this)
+                titleTextView.background =
+                    ColorDrawable(ContextCompat.getColor(context, R.color.livelike_transparent))
             }
 
             titleView.title = resource.question
-
+            image_slider.progress = imageSliderEntity.initialMagnitude
             val size = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 36f,
                 resources.displayMetrics
             ).toInt()
-
             viewModel?.uiScope?.launch {
                 val list = mutableListOf<Deferred<Bitmap>>()
                 withContext(Dispatchers.IO) {
@@ -61,7 +77,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                             async {
                                 Glide.with(context)
                                     .asBitmap()
-                                    .load(it.image_url).submit(size, size).get()
+                                    .load(it.image_url).centerCrop().submit(size, size).get()
                             }
                         )
                     }
@@ -74,10 +90,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             }
 
             image_slider.positionListener = { magnitude ->
-                viewModel?.currentVote?.onNext("$magnitude")
+                viewModel?.currentVote?.onNext("${magnitude.toBigDecimal().setScale(2,RoundingMode.UP).toFloat()}")
             }
 
-            viewModel?.startDismissTimeout(AndroidResource.parseDuration(resource.timeout), {})
+            viewModel?.startInteractionTimeout(AndroidResource.parseDuration(resource.timeout), {})
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f) {

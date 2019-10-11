@@ -11,13 +11,20 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.domain.GamificationManager
+import com.livelike.engagementsdk.utils.SubscriptionManager
+import com.livelike.engagementsdk.utils.debounce
+import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.model.ImageSliderEntity
+import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 // TODO inherit all widget viewModels from here and  add widget common code here.
-internal abstract class WidgetViewModel(
+internal abstract class WidgetViewModel<T : Resource>(
     private val onDismiss: () -> Unit,
     val analyticsService: AnalyticsService
 ) : ViewModel() {
@@ -44,7 +51,15 @@ internal abstract class WidgetViewModel(
         this.widgetMessagingClient = widgetMessagingClient
     }
 
-    private var timeoutStarted = false
+    var timeoutStarted = false
+
+
+    val data: SubscriptionManager<ImageSliderEntity> = SubscriptionManager()
+    val results: SubscriptionManager<ImageSliderEntity> = SubscriptionManager()
+
+    val state: Stream<WidgetState> = SubscriptionManager()
+    val currentVote: SubscriptionManager<String?> = SubscriptionManager()
+    val debouncer = currentVote.debounce()
 
     val gamificationProfile: Stream<ProgramGamificationProfile>?
         get() = programRepository?.programGamificationProfileStream
@@ -59,21 +74,49 @@ internal abstract class WidgetViewModel(
     val interactionData = AnalyticsWidgetInteractionInfo()
     val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
-    open fun dismissWidget(action: DismissAction) {
-        onDismiss()
-        onClear()
+
+    private fun confirmInteraction() {
+        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
+        uiScope.launch {
+            data.currentData?.rewards_url?.let {
+                userRepository?.getGamificationReward(it, analyticsService)?.let { pts ->
+                    programRepository?.programGamificationProfileStream?.onNext(pts)
+                    widgetMessagingClient?.let {
+                            widgetMessagingClient->GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    }
+                    interactionData.addGamificationAnalyticsData(pts)
+                }
+            }
+            state.onNext(WidgetState.SHOW_GAMIFICATION)
+            delay(6000)
+            state.onNext(WidgetState.DISMISS)
+            dismissWidget(DismissAction.TIMEOUT)
+        }
     }
 
-    fun startDismissTimeout(timeout: Long, function: () -> Unit) {
+
+    fun startInteractionTimeout(timeout: Long, function: (() -> Unit)? = null) {
         if (!timeoutStarted) {
             timeoutStarted = true
             uiScope.launch {
                 delay(timeout)
-                dismissWidget(DismissAction.TIMEOUT)
-                function()
+                if(currentVote.latest() == null){
+                    dismissWidget(DismissAction.TIMEOUT)
+                    function?.invoke()
+                }else{
+                    state.onNext(WidgetState.CONFIRM_INTERACTION)
+                    confirmInteraction()
+                }
                 timeoutStarted = false
             }
         }
+    }
+
+
+
+    open fun dismissWidget(action: DismissAction) {
+        onDismiss()
+        onClear()
     }
 
     open fun onClear() {
@@ -81,3 +124,12 @@ internal abstract class WidgetViewModel(
         timeoutStarted = false
     }
 }
+
+//Help me! Team contribution is important for better namings.
+enum class WidgetState{
+    CONFIRM_INTERACTION, // It is to indicate current interaction is done.
+    SHOW_RESULTS,      // It is to tell view to show results
+    SHOW_GAMIFICATION,
+    DISMISS
+}
+

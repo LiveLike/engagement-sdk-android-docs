@@ -49,7 +49,7 @@ class ImageSlider @JvmOverloads constructor(
     /**
      * If false, user won't be able to move the slider.
      */
-    private var isUserSeekable = true
+    var isUserSeekable = true
 
     /**
      * Initial position of progress in range form `0.0` to `1.0`.

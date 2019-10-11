@@ -5,13 +5,14 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.data.models.Badge
 import com.livelike.engagementsdk.utils.SubscriptionManager
+import com.livelike.engagementsdk.widget.model.Resource
 
 internal class CollectBadgeWidgetViewModel(
     val badge: Badge,
     onDismiss: () -> Unit,
     analyticsService: AnalyticsService,
     val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
-) : WidgetViewModel(onDismiss, analyticsService) {
+) : WidgetViewModel<Resource>(onDismiss, analyticsService) {
 
     override fun dismissWidget(action: DismissAction) {
         animationEventsStream.onNext(ViewAnimationEvents.BADGE_COLLECTED)
