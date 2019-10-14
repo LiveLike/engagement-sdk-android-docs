@@ -51,7 +51,7 @@ internal class ContentSession(
         MockAnalyticsService(programId)
     private val llDataClient = EngagementDataClientImpl()
 
-    val stickerPackRepository = StickerPackRepository(programId)
+    private val stickerPackRepository = StickerPackRepository(programId)
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream, stickerPackRepository) }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null

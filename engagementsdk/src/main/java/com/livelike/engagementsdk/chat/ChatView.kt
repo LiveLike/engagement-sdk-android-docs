@@ -230,26 +230,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 }
             }
 
-            sticker_keyboard.setProgram(stickerPackRepository) {
-                if (it.isNullOrEmpty()) {
-                    button_emoji?.visibility = View.GONE
-                    sticker_keyboard?.visibility = View.GONE
-                } else {
-                    button_emoji?.visibility = View.VISIBLE
-                }
-            }
-            // used to pass the shortcode to the keyboard
-            sticker_keyboard.setOnClickListener(object : FragmentClickListener {
-                override fun onClick(sticker: Sticker) {
-                    val textToInsert = ":${sticker.shortcode}:"
-                    val start = max(edittext_chat_message.selectionStart, 0)
-                    val end = max(edittext_chat_message.selectionEnd, 0)
-                    edittext_chat_message.text.replace( // replace selected text or start where the cursor is
-                        min(start, end), max(start, end),
-                        textToInsert, 0, textToInsert.length
-                    )
-                }
-            })
+            initStickerKeyboard(sticker_keyboard, this)
 
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -277,6 +258,32 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard()
             }
         }
+    }
+
+    private fun initStickerKeyboard(
+        stickerKeyboardView: StickerKeyboardView,
+        chatViewModel: ChatViewModel
+    ) {
+        stickerKeyboardView.setProgram(chatViewModel.stickerPackRepository) {
+            if (it.isNullOrEmpty()) {
+                button_emoji?.visibility = View.GONE
+                sticker_keyboard?.visibility = View.GONE
+            } else {
+                button_emoji?.visibility = View.VISIBLE
+            }
+        }
+        // used to pass the shortcode to the keyboard
+        stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
+            override fun onClick(sticker: Sticker) {
+                val textToInsert = ":${sticker.shortcode}:"
+                val start = max(edittext_chat_message.selectionStart, 0)
+                val end = max(edittext_chat_message.selectionEnd, 0)
+                edittext_chat_message.text.replace( // replace selected text or start where the cursor is
+                    min(start, end), max(start, end),
+                    textToInsert, 0, textToInsert.length
+                )
+            }
+        })
     }
 
     private fun wouldShowBadge(programRank: ProgramGamificationProfile, animate: Boolean = false) {

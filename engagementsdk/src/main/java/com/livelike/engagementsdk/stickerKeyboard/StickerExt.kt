@@ -134,6 +134,7 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
             Glide.with(context)
                 .`as`(ByteArray::class.java)
                 .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(object : CustomTarget<ByteArray>(size, size) {
                     override fun onLoadCleared(placeholder: Drawable?) {
                     }
@@ -175,6 +176,7 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
         }else{
             Glide.with(context)
                 .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(object : CustomTarget<Drawable>(size, size) {
                     override fun onLoadCleared(placeholder: Drawable?) {
                     }

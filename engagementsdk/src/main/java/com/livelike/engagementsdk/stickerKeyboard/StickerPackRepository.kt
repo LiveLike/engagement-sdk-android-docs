@@ -3,13 +3,14 @@ package com.livelike.engagementsdk.stickerKeyboard
 import android.content.Context
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
+import com.livelike.engagementsdk.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
 
 
 class StickerPackRepository(programId: String) {
-    private val endpoint = "https://cf-blast-staging.livelikecdn.com/api/v1/sticker-packs/?program_id=$programId"
+    private val endpoint = BuildConfig.CONFIG_URL+ "sticker-packs/?program_id=$programId"
     private var stickerPackList : List<StickerPack>? = null
 
     suspend fun getStickerPacks() : List<StickerPack>{

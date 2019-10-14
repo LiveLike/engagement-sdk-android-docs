@@ -14,12 +14,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.utils.AndroidResource
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
 
 class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : ConstraintLayout(context, attributes){
     private lateinit var viewModel : StickerKeyboardViewModel
-    private lateinit var stickerCollectionPagerAdapter: StickerCollectionPagerAdapter
 
     init {
         LayoutInflater.from(context).inflate(R.layout.livelike_sticker_keyboard_pager, this, true)
@@ -31,18 +31,15 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : C
             val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(changedView.windowToken, 0)
         }
-        // TODO: Need to hide the StickerKeyboard when softinput is openning..
-        // TODO: Click back button close the StickerKeyboard
-        // TODO: Recent stickers must be program-scoped
         super.onVisibilityChanged(changedView, visibility)
     }
 
-    private fun createTabItemView(imgUri: String): View {
+    private fun createTabItemView(imgUri: String? = null): View {
         val imageView = ImageView(context)
         imageView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT)
-        Glide.with(this).load(imgUri).into(imageView)
+            AndroidResource.dpToPx(24),
+            AndroidResource.dpToPx(24))
+        Glide.with(this).load(imgUri ?: R.drawable.keyboard_ic_recent).into(imageView)
 
         return imageView
     }
@@ -52,10 +49,10 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : C
         viewModel.stickerPacks.subscribe(javaClass){
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
-                stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context as AppCompatActivity).supportFragmentManager, stickerPacks){ s-> listener?.onClick(s)}
+                val stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context as AppCompatActivity).supportFragmentManager, stickerPacks){ s-> listener?.onClick(s)}
                 pager.adapter = stickerCollectionPagerAdapter
                 pager_tab.setupWithViewPager(pager)
-                pager_tab.getTabAt(0)?.customView = createTabItemView("")
+                pager_tab.getTabAt(0)?.customView = createTabItemView()
                 for (i in 0 until pager_tab.tabCount) {
                     pager_tab.getTabAt(i+1)?.customView = createTabItemView(stickerPacks[i].file)
                 }

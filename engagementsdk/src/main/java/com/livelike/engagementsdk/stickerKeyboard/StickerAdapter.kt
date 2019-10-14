@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.GridLayoutManager
@@ -12,10 +13,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addRecentSticker
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getRecentStickers
+import com.livelike.engagementsdk.utils.logError
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_item.view.itemImage
+import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.empty_recent_text
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.rvStickers
 
 // Since this is an object collection, use a FragmentStatePagerAdapter,
@@ -24,7 +29,7 @@ class StickerCollectionPagerAdapter(
     fm: FragmentManager,
     private val stickerPacks: List<StickerPack>,
     val onClickCallback: (Sticker) -> Unit
-) : FragmentPagerAdapter(fm) {
+) : FragmentStatePagerAdapter(fm) {
 
     private val RECENT_STICKERS_POSITION = 0
     private var recentStickerView : RecentStickerFragment? = null
@@ -87,15 +92,23 @@ class RecentStickerFragment : Fragment() {
         rvStickers.layoutManager = GridLayoutManager(context, 6)
         rvStickers.adapter = adapter
         super.onViewCreated(view, savedInstanceState)
+        updateRecentStickers()
     }
 
     fun updateRecentStickers() {
-        adapter.submitList(getRecentStickers())
+        val stickers = getRecentStickers()
+        empty_recent_text?.visibility = if(stickers.isEmpty()){
+                View.VISIBLE
+            }else{
+                View.GONE
+            }
+        adapter.submitList(stickers)
     }
 }
 
 class StickerObjectFragment : Fragment() {
     private var listener: FragmentClickListener? = null
+    private var stickers : Array<Sticker>? = null
 
     fun setOnClickListener(listener: FragmentClickListener) {
         this.listener = listener
@@ -108,13 +121,22 @@ class StickerObjectFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        arguments?.takeIf { it.containsKey(ARG_OBJECT) }?.apply {
-            val stickers = getParcelableArray(ARG_OBJECT) as Array<Sticker>
-            rvStickers.layoutManager = GridLayoutManager(context, 6)
-            val adapter = StickerAdapter{sticker -> listener?.onClick(sticker) }
-            rvStickers.adapter = adapter
-            adapter.submitList(stickers.toList())
+        stickers = arguments?.takeIf { it.containsKey(ARG_OBJECT) }?.let {
+            it.getParcelableArray(ARG_OBJECT) as Array<Sticker>
         }
+
+        if(stickers.isNullOrEmpty() && savedInstanceState != null){
+            stickers = savedInstanceState.getParcelableArray(ARG_OBJECT) as Array<Sticker>
+        }
+
+        rvStickers.layoutManager = GridLayoutManager(context, 6)
+        val adapter = StickerAdapter{sticker -> listener?.onClick(sticker) }
+        rvStickers.adapter = adapter
+        adapter.submitList(stickers?.toList())
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putParcelableArray(ARG_OBJECT, stickers)
     }
 }
 
@@ -140,7 +162,7 @@ class StickerAdapter(private val onClick: (Sticker) -> Unit) : ListAdapter<Stick
 
     class StickerViewHolder(private val view: View) : RecyclerView.ViewHolder(view){
         fun onBind(sticker: Sticker, onClick: (Sticker) -> Unit){
-            Glide.with(view).load(sticker.file).into(view.itemImage)
+            Glide.with(view).load(sticker.file).diskCacheStrategy(DiskCacheStrategy.ALL).into(view.itemImage)
             view.itemImage.setOnClickListener {
                 onClick(sticker)
                 addRecentSticker(sticker)
