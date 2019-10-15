@@ -15,7 +15,6 @@ import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClien
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
@@ -34,7 +33,6 @@ internal class EmojiSliderWidgetViewModel(
     widgetMessagingClient: WidgetManager
 ) : WidgetViewModel<Resource>(widgetInfos, sdkConfiguration, userRepository, programRepository, widgetMessagingClient, onDismiss, analyticsService) {
 
-
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
 
     private var pubnub: PubnubMessagingClient? = null
@@ -44,8 +42,6 @@ internal class EmojiSliderWidgetViewModel(
             pubnub = PubnubMessagingClient(it)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-                    val widgetType = event.message.get("event").asString ?: ""
-                    logDebug { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
                     uiScope.launch {
                         results.onNext(gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null)
@@ -82,7 +78,6 @@ internal class EmojiSliderWidgetViewModel(
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
     }
-
 
     override fun dismissWidget(action: DismissAction) {
         super.dismissWidget(action)

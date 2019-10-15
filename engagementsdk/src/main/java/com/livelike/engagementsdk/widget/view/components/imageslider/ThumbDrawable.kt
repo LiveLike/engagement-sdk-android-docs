@@ -3,7 +3,7 @@ package com.livelike.engagementsdk.widget.view.components.imageslider
 import android.graphics.Canvas
 import android.graphics.Rect
 
-class ThumbDrawable(private val drawableList: List<ScaleDrawable>, val initialMagnitude: Float = .5f) : GenericDrawableCallback() {
+internal class ThumbDrawable(private val drawableList: List<ScaleDrawable>, val initialMagnitude: Float = .5f) : GenericDrawableCallback() {
 
     private lateinit var drawable: ScaleDrawable
 

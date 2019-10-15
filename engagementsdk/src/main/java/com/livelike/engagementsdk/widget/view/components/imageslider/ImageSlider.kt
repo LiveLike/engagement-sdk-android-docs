@@ -21,7 +21,11 @@ import kotlin.math.roundToInt
  * Inspired by android.widget.AbsSeekBar and https://github.com/bernaferrari/EmojiSlider
  * This widget supports only touch motion.
  */
-class ImageSlider @JvmOverloads constructor(
+
+const val DEFAULT_WIDTH_DP : Int = 263
+const val DEFAULT_HEIGHT_DP : Int = 54
+
+internal class ImageSlider @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -102,7 +106,6 @@ class ImageSlider @JvmOverloads constructor(
         field = value
         thumbDrawable?.callback = this
         visibility = VISIBLE
-        invalidate()
     }
 
     /**
@@ -116,13 +119,14 @@ class ImageSlider @JvmOverloads constructor(
      */
     var positionListener: ((Float) -> Unit)? = null
 
+
     init {
 
         val density = context.resources.displayMetrics.density
 
-        desiredWidth = (263 * density).toInt()
+        desiredWidth = (DEFAULT_WIDTH_DP * density).toInt()
         desiredHeight =
-                (density * 54).roundToInt()
+                (density * DEFAULT_HEIGHT_DP).roundToInt()
         mThumbOffset = desiredHeight / 2
 
         this.trackDrawable.callback = this

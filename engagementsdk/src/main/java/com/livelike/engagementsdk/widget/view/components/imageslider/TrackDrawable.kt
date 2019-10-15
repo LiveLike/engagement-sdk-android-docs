@@ -12,7 +12,7 @@ import android.graphics.Shader.TileMode
  * This contains the track, track background, progress and respective colors.
  * Most of the other components and drawables are dependent on [TrackDrawable]'s dimensions.
  */
-class TrackDrawable : GenericDrawableCallback() {
+internal class TrackDrawable : GenericDrawableCallback() {
 
     internal val trackColor = Paint(1)
     private val progressGradient = Paint(1)

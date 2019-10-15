@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable
  * Inspired by android.graphics.drawable.ScaleDrawable, Backported to API level 16
  * */
 
-class ScaleDrawable(private val bitmap: Bitmap, scale: Float = 1f) : Drawable() {
+internal class ScaleDrawable(private val bitmap: Bitmap, scale: Float = 1f) : Drawable() {
 
     var scale = scale
     set(value) {

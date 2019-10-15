@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable.Callback
 /**
  * Small experiment to make other drawables less bloated.
  */
-open class GenericDrawableCallback : Drawable(), Callback {
+internal open class GenericDrawableCallback : Drawable(), Callback {
 
     override fun draw(canvas: Canvas) = Unit
 
