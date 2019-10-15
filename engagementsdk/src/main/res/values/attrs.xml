@@ -34,6 +34,8 @@
         <attr name="progress_value" format="float" />
         <attr name="bar_progress_color_start" format="color" />
         <attr name="bar_progress_color_end" format="color" />
+        <attr name="bar_result_color_center" format="color" />
+        <attr name="bar_result_color_end" format="color" />
         <attr name="bar_track_color" />
         <attr name="allow_reselection" format="boolean" />
         <attr name="is_touch_disabled" format="boolean" />

@@ -281,10 +281,10 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
             if (voteUrl.isEmpty()) {
                 voteUrl = postAsync(widgetVotingUrl, accessToken, body).extractStringOrEmpty("url")
             } else {
-                putAsync(voteUrl, FormBody.Builder()
+                putAsync(voteUrl, (body ?: FormBody.Builder()
                     .add("option_id", voteId)
                     .add("choice_id", voteId)
-                    .build(), accessToken)
+                    .build()), accessToken)
             }
         }
     }
@@ -319,7 +319,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         })
     }
 
-    private suspend fun putAsync(url: String, body: FormBody, accessToken: String?) = suspendCoroutine<JsonObject> {
+    private suspend fun putAsync(url: String, body: RequestBody, accessToken: String?) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
             .put(body)

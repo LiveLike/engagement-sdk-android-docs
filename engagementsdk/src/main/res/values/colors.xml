@@ -85,4 +85,7 @@
     <color name="livelike_image_slider_gradient_end">#a0ff28</color>
     <color name="livelike_image_slider_bg">#ffffff</color>
     <color name="livelike_image_slider_widget_bg">#cc000000</color>
+
+    <color name="livelike_image_slider_widget_result_end_color">#3C1EFF</color>
+    <color name="livelike_image_slider_widget_result_center_color">#FF2D2D</color>
 </resources>

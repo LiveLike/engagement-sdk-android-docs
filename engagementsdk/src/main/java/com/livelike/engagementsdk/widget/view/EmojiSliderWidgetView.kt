@@ -29,27 +29,28 @@ import kotlinx.coroutines.withContext
 internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = null) :
     GenericSpecifiedWidgetView<EmojiSliderWidgetViewModel>(context, attr) {
 
-    override fun confirmInteraction() {
-        image_slider.isUserSeekable = false
-    }
-
     override fun subscribeCalls() {
         super.subscribeCalls()
-        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-//        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
-//        viewModel?.gamificationProfile?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
+        viewModel.data.subscribe(javaClass.simpleName) { resourceObserver(it) }
     }
 
     override fun unsubscribeCalls() {
         super.unsubscribeCalls()
-        viewModel?.data?.unsubscribe(javaClass.simpleName)
-        viewModel?.results?.unsubscribe(javaClass.simpleName)
-        viewModel?.currentVote?.unsubscribe(javaClass.simpleName)
-        viewModel?.gamificationProfile?.unsubscribe(javaClass.simpleName)
+        viewModel.data.unsubscribe(javaClass.simpleName)
     }
 
     override fun stateObserver(widgetState: WidgetState) {
         super.stateObserver(widgetState)
+    }
+
+    override fun confirmInteraction() {
+        image_slider.isUserSeekable = false
+    }
+
+    override fun showResults() {
+        val result = viewModel.results.latest()
+        val averageMagnitude = result?.averageMagnitude ?: image_slider.progress
+        image_slider.averageProgress = averageMagnitude
     }
 
     private fun resourceObserver(imageSliderEntity: ImageSliderEntity?) {
@@ -69,7 +70,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                 36f,
                 resources.displayMetrics
             ).toInt()
-            viewModel?.uiScope?.launch {
+            viewModel.uiScope.launch {
                 val list = mutableListOf<Deferred<Bitmap>>()
                 withContext(Dispatchers.IO) {
                     resource.options?.forEach {
@@ -90,19 +91,19 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             }
 
             image_slider.positionListener = { magnitude ->
-                viewModel?.currentVote?.onNext("${magnitude.toBigDecimal().setScale(2,RoundingMode.UP).toFloat()}")
+                viewModel.currentVote.onNext("${magnitude.toBigDecimal().setScale(2,RoundingMode.UP).toFloat()}")
             }
 
-            viewModel?.startInteractionTimeout(AndroidResource.parseDuration(resource.timeout), {})
+            viewModel.startInteractionTimeout(AndroidResource.parseDuration(resource.timeout), {})
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
-            if (viewModel?.animationEggTimerProgress!! < 1f) {
+            if (viewModel.animationEggTimerProgress!! < 1f) {
                 listOf(textEggTimer).forEach { v ->
-                    viewModel?.animationEggTimerProgress?.let {
+                    viewModel.animationEggTimerProgress?.let {
                         v?.startAnimationFrom(it, animationLength, {
-                            viewModel?.animationEggTimerProgress = it
+                            viewModel.animationEggTimerProgress = it
                         }, {
-                            viewModel?.dismissWidget(it)
+                            viewModel.dismissWidget(it)
                         })
                     }
                 }

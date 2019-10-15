@@ -22,8 +22,8 @@ import kotlin.math.roundToInt
  * This widget supports only touch motion.
  */
 
-const val DEFAULT_WIDTH_DP : Int = 263
-const val DEFAULT_HEIGHT_DP : Int = 54
+const val DEFAULT_WIDTH_DP: Int = 263
+const val DEFAULT_HEIGHT_DP: Int = 54
 
 internal class ImageSlider @JvmOverloads constructor(
     context: Context,
@@ -61,9 +61,7 @@ internal class ImageSlider @JvmOverloads constructor(
     var progress: Float = INITIAL_POSITION
         set(value) {
             field = value.limitToRange()
-
             trackDrawable.percentProgress = field
-            trackDrawable.invalidateSelf()
             invalidate()
         }
 
@@ -94,6 +92,9 @@ internal class ImageSlider @JvmOverloads constructor(
             trackDrawable.colorEnd = value
         }
 
+    private val resultGradientCenterColor: Int
+    private val resultGradientEndColor: Int
+
     // ////////////////////////////////////////
     // Drawables
     // ////////////////////////////////////////
@@ -114,11 +115,24 @@ internal class ImageSlider @JvmOverloads constructor(
      */
     private val trackDrawable: TrackDrawable = TrackDrawable()
 
+    var resultDrawable: ResultDrawable? = null
+
+    var averageProgress: Float? = null
+        set(value) {
+            field = value
+            resultDrawable = ResultDrawable(context, resultGradientCenterColor, resultGradientEndColor)
+            resultDrawable?.bounds = trackDrawable.bounds
+            resultDrawable?.totalHeight = trackDrawable.totalHeight
+            resultDrawable?.trackHeight = trackDrawable.trackHeight
+            resultDrawable?.callback = this
+            resultDrawable?.mAverageProgress = value
+            resultDrawable?.startLottieAnimation(this)
+        }
+
     /**
      * Current position tracker. Receive current position, in range from `0.0f` to `1.0f`.
      */
     var positionListener: ((Float) -> Unit)? = null
-
 
     init {
 
@@ -145,8 +159,14 @@ internal class ImageSlider @JvmOverloads constructor(
                 colorEnd = array.getProgressGradientEnd()
                 colorTrack = array.getSliderTrackColor()
 
-                colorStart = array.getProgressGradientStart()
-                colorEnd = array.getProgressGradientEnd()
+                resultGradientCenterColor = array.getColor(
+                    R.styleable.ImageSlider_bar_result_color_center,
+                    context.getColorCompat(R.color.livelike_image_slider_widget_result_center_color)
+                )
+                resultGradientEndColor = array.getColor(
+                    R.styleable.ImageSlider_bar_result_color_end,
+                    context.getColorCompat(R.color.livelike_image_slider_widget_result_end_color)
+                )
 
                 registerTouchOnTrack = array.getThumbAllowScrollAnywhere()
                 isUserSeekable = array.getIsTouchDisabled()
@@ -159,6 +179,8 @@ internal class ImageSlider @JvmOverloads constructor(
             colorStart = context.getColorCompat(R.color.livelike_image_slider_gradient_start)
             colorEnd = context.getColorCompat(R.color.livelike_image_slider_gradient_end)
             colorTrack = context.getColorCompat(R.color.livelike_image_slider_bg)
+            resultGradientCenterColor = context.getColorCompat(R.color.livelike_image_slider_widget_result_center_color)
+            resultGradientEndColor = context.getColorCompat(R.color.livelike_image_slider_widget_result_end_color)
         }
 
         mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
@@ -179,6 +201,15 @@ internal class ImageSlider @JvmOverloads constructor(
                 w - Math.max(paddingRight, mThumbOffset),
                 h / 2 + trackDrawable.intrinsicHeight / 2
         )
+    }
+
+    override fun invalidateDrawable(drawable: Drawable) {
+        super.invalidateDrawable(drawable)
+        invalidate()
+    }
+
+    override fun verifyDrawable(who: Drawable): Boolean {
+        return who is ResultDrawable || super.verifyDrawable(who)
     }
 
     /**
@@ -232,7 +263,13 @@ internal class ImageSlider @JvmOverloads constructor(
         super.onDraw(canvas)
 
         trackDrawable.draw(canvas)
+        resultDrawable?.draw(canvas)
         drawThumb(canvas)
+        resultDrawable?.let {
+//            canvas.translate((averageProgress?:0f) * trackDrawable!!.bounds.width(), -30f)
+            canvas.translate((((averageProgress ?: 0f) * trackDrawable.bounds.width()) + trackDrawable.bounds.left), (-AndroidResource.dpToPx(10)).toFloat())
+            it.mLottieDrawable.draw(canvas)
+        }
     }
 
     private fun drawThumb(canvas: Canvas) {

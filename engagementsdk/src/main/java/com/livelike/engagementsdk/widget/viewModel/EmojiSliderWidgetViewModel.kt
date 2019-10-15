@@ -95,5 +95,7 @@ internal class EmojiSliderWidgetViewModel(
     override fun onClear() {
         super.onClear()
         pubnub?.unsubscribeAll()
+        debouncer.clear()
+
     }
 }
