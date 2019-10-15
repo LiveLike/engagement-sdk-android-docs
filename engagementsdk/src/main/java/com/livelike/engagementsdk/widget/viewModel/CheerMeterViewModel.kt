@@ -2,19 +2,14 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import android.os.Handler
 import android.os.Looper
-import android.support.v7.widget.RecyclerView
+import android.util.Log
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
-import com.livelike.engagementsdk.AnalyticsWidgetSpecificInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.domain.GamificationManager
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -25,25 +20,25 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
-import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-internal class PollWidget(
+
+internal class CheerMeterWidget(
     val type: WidgetType,
     val resource: Resource
 )
 
-internal class PollViewModel(
+internal class CheerMeterViewModel(
     widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
@@ -52,36 +47,28 @@ internal class PollViewModel(
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
-    //    TODO remove points for all view models and make it follow dry, move it to gamification stream
-    var points: SubscriptionManager<Int?> = SubscriptionManager(false)
-    val gamificationProfile: Stream<ProgramGamificationProfile>
-        get() = programRepository.programGamificationProfileStream
-    val rewardsType: RewardsType
-        get() = programRepository.rewardType
-    val data: SubscriptionManager<PollWidget> = SubscriptionManager()
-    val results: SubscriptionManager<Resource> = SubscriptionManager()
-    val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
-    private val debouncer = currentVoteId.debounce()
-    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
 
-    var adapter: WidgetOptionsViewAdapter? = null
-    var timeoutStarted = false
-    var animationResultsProgress = 0f
-    private var animationPath = ""
-    var voteUrl: String? = null
+    var localVoteCount = 0
+    private var debounceJob: Job? = null
+    private var voteUrl: String? = null
+    private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
-    var animationEggTimerProgress = 0f
+    val results: SubscriptionManager<Resource> = SubscriptionManager()
+    val data: SubscriptionManager<CheerMeterWidget> = SubscriptionManager()
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
-
     private val interactionData = AnalyticsWidgetInteractionInfo()
-    private val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
+    var timeoutStarted = false
+    var animationEggTimerProgress = 0f
+    var animationProgress = 0f
+    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
 
     init {
         sdkConfiguration.pubNubKey.let {
             pubnub = PubnubMessagingClient(it)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+                    println("Client MESsage-> ")
                     val widgetType = event.message.get("event").asString ?: ""
                     logDebug { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
@@ -100,44 +87,64 @@ internal class PollViewModel(
                 }
             })
         }
-
-        debouncer.subscribe(javaClass.simpleName) {
-            if (it != null) vote()
-        }
-
         widgetObserver(widgetInfos)
     }
 
-    private fun vote() {
-        if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
+    private var voteCount = 0
 
-        uiScope.launch {
-            adapter?.apply {
-                val url = myDataset[selectedPosition].getMergedVoteUrl()
-                url?.let {
-                    dataClient.voteAsync(
-                        it,
-                        myDataset[selectedPosition].id,
-                        userRepository.userAccessToken
-                    )
+    fun sendVote(url: String) {
+        if (voteUrl == null) {
+            if (url.isNotEmpty())
+                initVote(url)
+            else
+                Log.e("Error", "Unable to initiate voting : $url")
+        } else {
+            localVoteCount++
+            voteCount++
+            if (voteCount > VOTE_THRASHHOLD) {
+                //api call
+                pushVoteData(voteCount)
+                voteCount = 0
+            } else {
+                uiScope.launch {
+                    if (debounceJob == null || debounceJob?.isCompleted != false) {
+                        debounceJob = CoroutineScope(coroutineContext).launch {
+                            delay(1000L)
+                            pushVoteData(voteCount)
+                            voteCount = 0
+                        }
+                    }
                 }
             }
-            adapter?.showPercentage = true
-            adapter?.notifyDataSetChanged()
+        }
+    }
+
+    private fun pushVoteData(voteCount: Int) {
+        println("VOTE-> $voteUrl , Count->$voteCount")
+        voteUrl?.let {
+            uiScope.launch {
+                if (voteCount > 0)
+                    dataClient.voteAsync(it, voteCount, "", true)
+            }
+        }
+    }
+
+
+    private fun initVote(url: String) {
+        println("INIT VOTE")
+        uiScope.launch {
+            voteUrl = dataClient.voteAsync(url, 0, "", false)
         }
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
-        if (widgetInfos != null &&
-            (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL ||
-                    WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL)
-        ) {
+        if (widgetInfos != null) {
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
-                    PollWidget(
+                    CheerMeterWidget(
                         it,
                         resource
                     )
@@ -154,7 +161,7 @@ internal class PollViewModel(
             timeoutStarted = true
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                confirmationState()
+//                confirmationState()
             }
         }
     }
@@ -165,7 +172,7 @@ internal class PollViewModel(
                 it.toAnalyticsString(),
                 currentWidgetId,
                 interactionData,
-                adapter?.selectionLocked,
+                false,
                 action
             )
         }
@@ -173,67 +180,22 @@ internal class PollViewModel(
         cleanUp()
     }
 
-    private fun confirmationState() {
-        if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
-            // If the user never selected an option dismiss the widget with no confirmation
-            dismissWidget(DismissAction.TIMEOUT)
-            return
-        }
-
-        adapter?.selectionLocked = true
-
-        uiScope.launch {
-            data.currentData?.resource?.rewards_url?.let {
-                userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
-                    programRepository.programGamificationProfileStream.onNext(pts)
-                    publishPoints(pts.newPoints)
-                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
-                    interactionData.addGamificationAnalyticsData(pts)
-                }
-            }
-
-            currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
-            }
-            delay(6000)
-            dismissWidget(DismissAction.TIMEOUT)
-        }
-    }
-
-    private fun publishPoints(pts: Int) {
-        this.points.onNext(pts)
-    }
-
     private fun cleanUp() {
-        vote() // Vote on dismiss
         pubnub?.unsubscribeAll()
         timeoutStarted = false
-        adapter = null
-        animationResultsProgress = 0f
-        animationPath = ""
-        voteUrl = null
+//        animationResultsProgress = 0f
+//        animationPath = ""
+//        voteUrl = null
         data.onNext(null)
         results.onNext(null)
         animationEggTimerProgress = 0f
-        currentVoteId.onNext(null)
+//        currentVoteId.onNext(null)
 
         interactionData.reset()
-        widgetSpecificInfo.reset()
         currentWidgetId = ""
         currentWidgetType = null
         viewModelJob.cancel("Widget Cleanup")
     }
 
-    var firstClick = true
 
-    fun onOptionClicked() {
-        if (firstClick) {
-            firstClick = false
-        }
-        interactionData.incrementInteraction()
-    }
 }

@@ -15,5 +15,6 @@ fun WidgetType.toAnalyticsString(): String {
         WidgetType.ALERT -> "Alert"
         WidgetType.POINTS_TUTORIAL -> "Points Tutorial"
         WidgetType.COLLECT_BADGE -> "Collect Badge"
+        WidgetType.CHEER_METER -> "Cheer Meter"
     }
 }

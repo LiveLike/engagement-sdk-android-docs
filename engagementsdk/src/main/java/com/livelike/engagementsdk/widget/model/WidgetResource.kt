@@ -20,8 +20,12 @@ internal data class Resource(
     val testTag: String = "",
     val choices: List<Option>? = listOf(),
     val options: List<Option>? = listOf(),
-    val impression_url: String = ""
-) {
+    val impression_url: String = "",
+    val impression_count: String = "",
+    val unique_impression_count:String="",
+    val engagement_count:String="",
+    val engagement_precent:String=""
+    ) {
     fun getMergedOptions(): List<Option>? {
         return if (choices != null && choices.isNotEmpty()) {
             choices
