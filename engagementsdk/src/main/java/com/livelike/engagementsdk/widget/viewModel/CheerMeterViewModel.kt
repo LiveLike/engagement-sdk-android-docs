@@ -99,6 +99,7 @@ internal class CheerMeterViewModel(
             else
                 Log.e("Error", "Unable to initiate voting : $url")
         } else {
+            interactionData.incrementInteraction()
             localVoteCount++
             voteCount++
             if (voteCount > VOTE_THRASHHOLD) {
@@ -120,7 +121,6 @@ internal class CheerMeterViewModel(
     }
 
     private fun pushVoteData(voteCount: Int) {
-        println("VOTE-> $voteUrl , Count->$voteCount")
         voteUrl?.let {
             uiScope.launch {
                 if (voteCount > 0)
@@ -134,6 +134,16 @@ internal class CheerMeterViewModel(
         println("INIT VOTE")
         uiScope.launch {
             voteUrl = dataClient.voteAsync(url, 0, "", false)
+        }
+    }
+
+    fun voteEnd() {
+        currentWidgetType?.let {
+            analyticsService.trackWidgetInteraction(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                interactionData
+            )
         }
     }
 
@@ -153,6 +163,14 @@ internal class CheerMeterViewModel(
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
+
+            currentWidgetType?.let {
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    interactionData
+                )
+            }
         }
     }
 

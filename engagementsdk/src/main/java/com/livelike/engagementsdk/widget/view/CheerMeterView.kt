@@ -467,6 +467,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     )
                 }
 
+                viewModel?.voteEnd()
                 fl_result_team.visibility = View.VISIBLE
 
                 fl_result_team.postDelayed({
