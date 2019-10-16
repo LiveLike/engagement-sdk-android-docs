@@ -123,7 +123,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         }
 
                         else -> {
-                            val parsedObject = gson.fromJson(response.body()?.string(), ProgramModel::class.java)
+                            val programJsonString = response.body()?.string()
+                            val parsedObject = gson.fromJson(programJsonString, ProgramModel::class.java)
                                 ?: error("Program data was null")
 
                             if (parsedObject.programUrl == null) {

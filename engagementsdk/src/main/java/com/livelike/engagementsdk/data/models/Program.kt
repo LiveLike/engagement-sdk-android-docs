@@ -13,7 +13,10 @@ internal data class Program(
     val subscribeChannel: String,
     val chatChannel: String,
     val analyticsProps: Map<String, String>,
-    val rewardsType: String
+    val rewardsType: String,
+    val leaderboardUrl: String,
+    val stickerPacksUrl: String,
+    val reactionPacksUrl: String
 )
 
 internal data class ProgramModel(
@@ -38,7 +41,10 @@ internal data class ProgramModel(
     @SerializedName("analytics_properties")
     val analyticsProps: Map<String, String>?,
     @SerializedName("rewards_type")
-    val rewardsType: String? // none, points, bagdes
+    val rewardsType: String?, // none, points, bagdes
+    val leaderboard_url: String?,
+    val sticker_packs_url: String?,
+    val reaction_packs_url: String?
 )
 
 internal fun ProgramModel.toProgram() : Program {
@@ -52,7 +58,10 @@ internal fun ProgramModel.toProgram() : Program {
         subscribeChannel ?: "",
         chatChannel ?: "",
         analyticsProps ?: mapOf(),
-        rewardsType ?: ""
+        rewardsType ?: "",
+        leaderboard_url ?: "",
+        sticker_packs_url ?: "",
+        reaction_packs_url ?:""
     )
 }
 
