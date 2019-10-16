@@ -18,7 +18,7 @@ internal class PointTutorialWidgetViewModel(
         analyticsService.trackPointTutorialSeen(action.name, 5000L)
     }
 
+//     Actually for this we need to have layers of WidgetViewModel one with interaction and one without interaction. This tutorial and gamification will not call this ideally, we can move this in later tech debt tickets.
     override fun vote(value: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

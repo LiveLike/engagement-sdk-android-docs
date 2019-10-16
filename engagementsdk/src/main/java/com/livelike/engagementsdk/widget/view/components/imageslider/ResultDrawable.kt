@@ -25,7 +25,7 @@ internal class ResultDrawable(
     private val FRAME_DELAY = (1000 / 60).toLong() // 60 fps
     private var mRunning = false
     private var mStartTime: Long = 0
-    private val mDuration = 1000 // in ms
+    private val mDurationMs = 1000 // in ms
 
     val mLottieDrawable: LottieDrawable = LottieDrawable()
 
@@ -71,7 +71,7 @@ internal class ResultDrawable(
             )
             if (isRunning) {
                 val elapsed = (SystemClock.uptimeMillis() - mStartTime).toFloat()
-                val rawProgress = elapsed / mDuration
+                val rawProgress = elapsed / mDurationMs
                 val progress = mInterpolator.getInterpolation(rawProgress)
 
                 alpha = (progress * 255).toInt()
@@ -122,7 +122,7 @@ internal class ResultDrawable(
     override fun run() {
         invalidateSelf()
         val uptimeMillis = SystemClock.uptimeMillis()
-        if (uptimeMillis + FRAME_DELAY < mStartTime + mDuration) {
+        if (uptimeMillis + FRAME_DELAY < mStartTime + mDurationMs) {
             scheduleSelf(this, uptimeMillis + FRAME_DELAY)
         } else {
             mRunning = false

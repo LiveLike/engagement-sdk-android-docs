@@ -20,6 +20,5 @@ internal class CollectBadgeWidgetViewModel(
     }
 
     override fun vote(value: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
