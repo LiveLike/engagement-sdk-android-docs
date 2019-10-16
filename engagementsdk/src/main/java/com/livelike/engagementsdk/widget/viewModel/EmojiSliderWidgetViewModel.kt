@@ -19,7 +19,6 @@ import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
-import com.livelike.engagementsdk.widget.model.Resource
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
 
@@ -31,7 +30,7 @@ internal class EmojiSliderWidgetViewModel(
     userRepository: UserRepository,
     programRepository: ProgramRepository,
     widgetMessagingClient: WidgetManager
-) : WidgetViewModel<Resource>(widgetInfos, sdkConfiguration, userRepository, programRepository, widgetMessagingClient, onDismiss, analyticsService) {
+) : WidgetViewModel<ImageSliderEntity>(widgetInfos, sdkConfiguration, userRepository, programRepository, widgetMessagingClient, onDismiss, analyticsService) {
 
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
 
@@ -59,7 +58,7 @@ internal class EmojiSliderWidgetViewModel(
         widgetObserver(widgetInfos)
     }
 
-    private fun vote(value: String) {
+    override fun vote(value: String) {
         uiScope.launch {
             data.latest()?.voteUrl?.let {
                 dataClient.voteAsync(it, "", userRepository?.userAccessToken, FormBody.Builder()
@@ -96,6 +95,5 @@ internal class EmojiSliderWidgetViewModel(
         super.onClear()
         pubnub?.unsubscribeAll()
         debouncer.clear()
-
     }
 }

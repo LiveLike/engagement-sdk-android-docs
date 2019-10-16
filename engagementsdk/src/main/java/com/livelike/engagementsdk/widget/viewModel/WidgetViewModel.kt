@@ -17,7 +17,6 @@ import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
-import com.livelike.engagementsdk.widget.model.ImageSliderEntity
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
@@ -54,8 +53,8 @@ internal abstract class WidgetViewModel<T : Resource>(
     var timeoutStarted = false
 
 
-    val data: SubscriptionManager<ImageSliderEntity> = SubscriptionManager()
-    val results: SubscriptionManager<ImageSliderEntity> = SubscriptionManager()
+    val data: SubscriptionManager<T> = SubscriptionManager()
+    val results: SubscriptionManager<T> = SubscriptionManager()
 
     val state: Stream<WidgetState> = SubscriptionManager()
     val currentVote: SubscriptionManager<String?> = SubscriptionManager()
@@ -75,7 +74,7 @@ internal abstract class WidgetViewModel<T : Resource>(
     val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
 
-    private fun confirmInteraction() {
+    protected open fun confirmInteraction() {
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
         uiScope.launch {
             data.currentData?.rewards_url?.let {
@@ -87,15 +86,21 @@ internal abstract class WidgetViewModel<T : Resource>(
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
+            if (debouncer.currentData != currentVote.currentData) {
+                debouncer.clear()
+                currentVote.currentData?.let { value ->
+                    vote(value)
+                }
+            }
             state.onNext(WidgetState.SHOW_RESULTS)
             delay(1000)
             state.onNext(WidgetState.SHOW_GAMIFICATION)
             delay(3000)
-            state.onNext(WidgetState.DISMISS)
             dismissWidget(DismissAction.TIMEOUT)
         }
     }
 
+    abstract fun vote(value: String)
 
     fun startInteractionTimeout(timeout: Long, function: (() -> Unit)? = null) {
         if (!timeoutStarted) {
@@ -114,9 +119,9 @@ internal abstract class WidgetViewModel<T : Resource>(
         }
     }
 
-
-
+    // FYI Right now this Widgetmodel is inherited by tutorial and gamification widgets, so dismiss analytics should be added in more concrete class.
     open fun dismissWidget(action: DismissAction) {
+        state.onNext(WidgetState.DISMISS)
         onDismiss()
         onClear()
     }

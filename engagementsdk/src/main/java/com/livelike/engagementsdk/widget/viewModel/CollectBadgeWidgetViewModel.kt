@@ -18,4 +18,8 @@ internal class CollectBadgeWidgetViewModel(
         animationEventsStream.onNext(ViewAnimationEvents.BADGE_COLLECTED)
         super.dismissWidget(action)
     }
+
+    override fun vote(value: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

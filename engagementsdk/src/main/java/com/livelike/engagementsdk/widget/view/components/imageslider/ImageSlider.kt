@@ -31,7 +31,7 @@ internal class ImageSlider @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private companion object {
+    companion object {
         const val INITIAL_POSITION = 0.25f
     }
 

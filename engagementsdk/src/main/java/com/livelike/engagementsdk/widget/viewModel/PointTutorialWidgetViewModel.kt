@@ -17,4 +17,8 @@ internal class PointTutorialWidgetViewModel(
         super.dismissWidget(action)
         analyticsService.trackPointTutorialSeen(action.name, 5000L)
     }
+
+    override fun vote(value: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
