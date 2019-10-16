@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:text="message"
+        android:text=""
         android:textAlignment="viewStart"
         android:textColor="@color/livelike_default_chat_cell_message_color"
         android:textSize="@dimen/livelike_default_chat_cell_text_size"
