@@ -143,12 +143,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                         return true
                     }
                 }
-                if (event?.action == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (sticker_keyboard.visibility == View.VISIBLE) {
-                        sticker_keyboard.visibility = View.GONE
-                        return true
-                    }
-                }
                 return false
             }
         })

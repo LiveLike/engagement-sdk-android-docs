@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
+import android.util.Log
 import android.widget.EditText
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -28,6 +29,13 @@ fun String.findIsOnlyStickers() : Matcher
     val regex = "(:[^ :\\s]*:)+"
     val pattern = Pattern.compile (regex)
     return pattern.matcher (this)
+}
+
+fun Matcher.countMatches(): Int {
+    var counter = 0
+    while (this.find())
+        counter++
+    return counter
 }
 
 fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, size : Int = 50, onComplete: (()->Unit)? = null) {
@@ -66,7 +74,7 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
                     ) {
                         try {
                             val drawable = GifDrawable(resource)
-                            setupBounds(drawable, edittext_chat_message)
+                            setupBounds(drawable, edittext_chat_message, size)
                             drawable.start()
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -92,7 +100,7 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
                         transition: Transition<in Drawable>?
                     ) {
                         try {
-                            setupBounds(drawable, edittext_chat_message)
+                            setupBounds(drawable, edittext_chat_message, size)
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onComplete?.invoke()
@@ -113,11 +121,12 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
 
 private fun setupBounds(
     drawable: Drawable,
-    edittext_chat_message: EditText?
+    edittext_chat_message: EditText?,
+    overrideSize : Int
 ) {
-    if (edittext_chat_message != null && drawable.intrinsicWidth > edittext_chat_message.width) {
+    if (edittext_chat_message != null && overrideSize > edittext_chat_message.width) {
         val aspectRatio =
-            drawable.intrinsicHeight.toFloat() / drawable.intrinsicWidth.toFloat()
+            overrideSize.toFloat() / overrideSize.toFloat()
         drawable.setBounds(
             0,
             0,
@@ -128,8 +137,8 @@ private fun setupBounds(
         drawable.setBounds(
             0,
             0,
-            drawable.intrinsicWidth,
-            drawable.intrinsicHeight
+            overrideSize,
+            overrideSize
         )
     }
 }

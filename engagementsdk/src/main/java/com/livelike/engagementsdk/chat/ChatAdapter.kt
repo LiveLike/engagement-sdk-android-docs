@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
@@ -136,11 +137,12 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
                     }
                     val spaceRemover = Pattern.compile("[\\s]")
                     val inputNoString = spaceRemover.matcher(message.message).replaceAll(Matcher.quoteReplacement(""))
-                    val onlyEmoji = inputNoString.findIsOnlyStickers().matches()
-                    val atLeastOneEmoji = inputNoString.findStickers().find()
+                    val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()
+                    val atLeastOneSticker = inputNoString.findStickers().find()
+                    val numberOfStickers = message.message.findStickers().countMatches()
 
                     when {
-                        onlyEmoji -> {
+                        (isOnlyStickers && numberOfStickers == 1) -> {
                             val s = SpannableString(message.message)
                             val tag = "contains_only_emoji_"+message.id
                             chatMessage.tag = tag
@@ -150,7 +152,7 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
                                 }
                             }
                         }
-                        atLeastOneEmoji -> {
+                        atLeastOneSticker -> {
                             val tag = "contains_emoji_"+message.id
                             chatMessage.tag = tag
                             val s = SpannableString(message.message)
