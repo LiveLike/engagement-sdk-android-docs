@@ -269,15 +269,15 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     var voteUrl = ""
     private val singleRunner = SingleRunner()
 
-    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?) {
+    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?, body: RequestBody?) {
         singleRunner.afterPrevious {
             if (voteUrl.isEmpty()) {
-                voteUrl = postAsync(widgetVotingUrl, accessToken).extractStringOrEmpty("url")
+                voteUrl = postAsync(widgetVotingUrl, accessToken, body).extractStringOrEmpty("url")
             } else {
-                putAsync(voteUrl, FormBody.Builder()
+                putAsync(voteUrl, (body ?: FormBody.Builder()
                     .add("option_id", voteId)
                     .add("choice_id", voteId)
-                    .build(), accessToken)
+                    .build()), accessToken)
             }
         }
     }
@@ -289,10 +289,10 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
     }
 
-    private suspend fun postAsync(url: String, accessToken: String?) = suspendCoroutine<JsonObject> {
+    private suspend fun postAsync(url: String, accessToken: String?, body: RequestBody? = null) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
-            .post(RequestBody.create(null, ByteString.EMPTY))
+            .post(body ?: RequestBody.create(null, ByteString.EMPTY))
             .addUserAgent()
             .addAuthorizationBearer(accessToken)
             .build()
@@ -312,7 +312,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         })
     }
 
-    private suspend fun putAsync(url: String, body: FormBody, accessToken: String?) = suspendCoroutine<JsonObject> {
+    private suspend fun putAsync(url: String, body: RequestBody, accessToken: String?) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
             .put(body)

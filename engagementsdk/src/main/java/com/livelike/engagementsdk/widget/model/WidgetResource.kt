@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.widget.model
 
-internal data class Resource(
+internal open class Resource(
     val id: String = "",
     val url: String = "",
     val kind: String = "",
@@ -11,7 +11,7 @@ internal data class Resource(
     val created_at: String = "",
     val published_at: String = "",
     val follow_up_url: String = "",
-    val rewards_url: String?,
+    val rewards_url: String? = null,
     val text_prediction_id: String = "",
     val image_prediction_id: String = "",
     val text_prediction_url: String = "",
@@ -22,6 +22,7 @@ internal data class Resource(
     val options: List<Option>? = listOf(),
     val impression_url: String = ""
 ) {
+
     fun getMergedOptions(): List<Option>? {
         return if (choices != null && choices.isNotEmpty()) {
             choices

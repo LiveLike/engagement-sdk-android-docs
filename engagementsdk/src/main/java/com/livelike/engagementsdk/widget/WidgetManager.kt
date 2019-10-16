@@ -191,7 +191,8 @@ enum class WidgetType(val event: String) {
     IMAGE_POLL("image-poll-created"),
     POINTS_TUTORIAL("points-tutorial"),
     COLLECT_BADGE("collect-badge"),
-    ALERT("alert-created");
+    ALERT("alert-created"),
+    IMAGE_SLIDER("emoji-slider-created");
 
     companion object {
         private val map = values().associateBy(WidgetType::event)
