@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.livelike.engagementsdk.utils.AndroidResource
 import pl.droidsonroids.gif.GifDrawable
 import java.io.IOException
 import java.util.regex.Matcher
@@ -124,21 +125,20 @@ private fun setupBounds(
     edittext_chat_message: EditText?,
     overrideSize : Int
 ) {
+    val padding = AndroidResource.dpToPx(8)
     if (edittext_chat_message != null && overrideSize > edittext_chat_message.width) {
-        val aspectRatio =
-            overrideSize.toFloat() / overrideSize.toFloat()
         drawable.setBounds(
             0,
-            0,
+            padding,
             edittext_chat_message.width,
-            (aspectRatio * edittext_chat_message.width).toInt()
+            edittext_chat_message.width+padding
         )
     } else {
         drawable.setBounds(
             0,
-            0,
+            padding,
             overrideSize,
-            overrideSize
+            overrideSize+padding
         )
     }
 }
