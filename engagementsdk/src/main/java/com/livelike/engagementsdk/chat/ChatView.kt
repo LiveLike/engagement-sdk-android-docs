@@ -34,7 +34,6 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
@@ -52,6 +51,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -101,7 +101,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.ChatView,
-            0, 0).apply {
+            0, 0
+        ).apply {
             try {
                 displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
             } finally {
@@ -157,30 +158,34 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                         wouldShowBadge(programRank)
                         showUserRank(programRank)
                     } else if (programRank.points == programRank.newPoints) {
-                            pointView.apply {
-                                postDelayed(
-                                    {
-                                        startAnimationFromTop(programRank.points)
-                                        showUserRank(programRank)
-                                    },
-                                    6300)
-                            }
-                        } else {
-                            pointView.apply {
-                                postDelayed(
-                                    {
-                                        startAnimationFromTop(programRank.points)
-                                        showUserRank(programRank)
-                                    },
-                                    1000)
-                            }
+                        pointView.apply {
+                            postDelayed(
+                                {
+                                    startAnimationFromTop(programRank.points)
+                                    showUserRank(programRank)
+                                },
+                                6300
+                            )
                         }
+                    } else {
+                        pointView.apply {
+                            postDelayed(
+                                {
+                                    startAnimationFromTop(programRank.points)
+                                    showUserRank(programRank)
+                                },
+                                1000
+                            )
+                        }
+                    }
                 }
             }
             animationEventsStream.subscribe(javaClass.simpleName) {
                 if (it == ViewAnimationEvents.BADGE_COLLECTED) {
-                    programRepository.programGamificationProfileStream.latest()?.let { programGamificationProfile ->
-                        wouldShowBadge(programGamificationProfile, true) }
+                    programRepository.programGamificationProfileStream.latest()
+                        ?.let { programGamificationProfile ->
+                            wouldShowBadge(programGamificationProfile, true)
+                        }
                 }
             }
         }
@@ -301,9 +306,21 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
             edittext_chat_message.apply {
                 addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                    override fun beforeTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                    }
 
-                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                    override fun onTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                    }
 
                     override fun afterTextChanged(s: Editable) {
                         if (s.isNotEmpty()) {
@@ -409,10 +426,11 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         val translateAnimation = ObjectAnimator.ofFloat(
             snap_live,
             "translationY",
-            if (showingSnapToLive) 0f else dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION).toFloat()
+            if (showingSnapToLive) 0f else dpToPx(if (displayUserProfile) SNAP_TO_LIVE_ANIMATION_DESTINATION else 10).toFloat()
         )
         translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
-        val alphaAnimation = ObjectAnimator.ofFloat(snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
+        val alphaAnimation =
+            ObjectAnimator.ofFloat(snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
         alphaAnimation.duration = (SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION).toLong()
         alphaAnimation.addListener(object : Animator.AnimatorListener {
             override fun onAnimationEnd(animation: Animator) {
@@ -426,6 +444,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             override fun onAnimationCancel(animation: Animator) {}
             override fun onAnimationRepeat(animation: Animator) {}
         })
+
+        snap_live.animate().start()
 
         snapToLiveAnimation = AnimatorSet()
         snapToLiveAnimation?.play(translateAnimation)?.with(alphaAnimation)
