@@ -12,7 +12,16 @@ import java.util.Date
 import java.util.Locale
 import org.json.JSONObject
 
+/**
+ * The base interface for the analytics. This will log events to any remote analytics provider.
+ *
+ */
 interface AnalyticsService {
+    /**
+     * Set an analytics event observer {eventObserver}. It will intercept analytics events.
+     *
+     * @param eventObserver
+     */
     fun setEventObserver(eventObserver: (String, JSONObject) -> Unit)
 
     fun registerSuperProperty(analyticsSuperProperties: AnalyticsSuperProperties, value: Any?)
