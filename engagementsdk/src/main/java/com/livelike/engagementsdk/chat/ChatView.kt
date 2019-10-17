@@ -435,7 +435,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private fun showStickerKeyboard(){
         uiScope.launch {
-            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+            session?.analyticService?.trackKeyboardOpen(KeyboardType.STICKER)
             delay(200) // delay to make sure the keyboard is hidden
             findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
         }
