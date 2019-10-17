@@ -477,6 +477,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+        hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(

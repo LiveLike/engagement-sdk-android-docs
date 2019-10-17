@@ -5,6 +5,8 @@ import android.util.Log
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
 import java.text.SimpleDateFormat
@@ -34,7 +36,7 @@ interface AnalyticsService {
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
     fun trackSessionStarted()
-    fun trackMessageSent(msgId: String, msgLength: Int)
+    fun trackMessageSent(msgId: String, msg : String)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
@@ -127,7 +129,7 @@ class MockAnalyticsService(private val programId: String = "") : AnalyticsServic
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
 
-    override fun trackMessageSent(msgId: String, msgLength: Int) {
+    override fun trackMessageSent(msgId: String, msg : String) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
@@ -467,10 +469,11 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         }
     }
 
-    override fun trackMessageSent(msgId: String, msgLength: Int) {
+    override fun trackMessageSent(msgId: String, msg : String) {
         val properties = JSONObject()
         properties.put("Chat Message ID", msgId)
-        properties.put("Character Length", msgLength)
+        properties.put("Character Length", msg.length)
+        properties.put("Sticker Count", msgId.findStickers().countMatches())
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
         eventObservers[programId]?.invoke(KEY_CHAT_MESSAGE_SENT, properties)
 
