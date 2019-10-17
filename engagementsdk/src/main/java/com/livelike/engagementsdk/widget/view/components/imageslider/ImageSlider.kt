@@ -266,8 +266,7 @@ internal class ImageSlider @JvmOverloads constructor(
         resultDrawable?.draw(canvas)
         drawThumb(canvas)
         resultDrawable?.let {
-//            canvas.translate((averageProgress?:0f) * trackDrawable!!.bounds.width(), -30f)
-            canvas.translate((((averageProgress ?: 0f) * trackDrawable.bounds.width()) + trackDrawable.bounds.left), (-AndroidResource.dpToPx(10)).toFloat())
+            canvas.translate((((averageProgress ?: 0f) * trackDrawable.bounds.width()) + trackDrawable.bounds.left), 0f)
             it.mLottieDrawable.draw(canvas)
         }
     }

@@ -14,6 +14,7 @@ import android.os.SystemClock
 import android.view.animation.DecelerateInterpolator
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
+import kotlin.math.max
 
 internal class ResultDrawable(
     val context: Context,
@@ -32,6 +33,10 @@ internal class ResultDrawable(
     val mInterpolator = DecelerateInterpolator()
 
     var mAverageProgress: Float? = null
+        set(value) {
+            field = value
+            value?.let { updateShader(bounds, value) }
+        }
 
     private val resultGradient = Paint(1)
     internal var totalHeight: Int = 0
@@ -73,35 +78,31 @@ internal class ResultDrawable(
                 val elapsed = (SystemClock.uptimeMillis() - mStartTime).toFloat()
                 val rawProgress = elapsed / mDurationMs
                 val progress = mInterpolator.getInterpolation(rawProgress)
-
                 alpha = (progress * 255).toInt()
-                canvas.drawRoundRect(barRect, trackHeight / 2, trackHeight / 2, resultGradient)
             } else {
                 alpha = 255
-                canvas.drawRoundRect(barRect, trackHeight / 2, trackHeight / 2, resultGradient)
             }
+            canvas.drawRoundRect(barRect, trackHeight / 2, trackHeight / 2, resultGradient)
             canvas.restore()
         }
     }
 
-    private fun updateShader(rect: Rect) {
+    private fun updateShader(rect: Rect, value: Float) {
+        val left = max(value - .3f, 0f)
+        val right = max(value + .3f, 0f)
         resultGradient.shader = LinearGradient(
             0.0f,
-            rect.bottom.toFloat(),
             0.0f,
+            rect.right.toFloat(),
             rect.top.toFloat(),
-            sideColor,
-            centerColor,
+            intArrayOf(sideColor, sideColor, centerColor, sideColor, sideColor),
+            floatArrayOf(0f, left, value, right, 1f),
             Shader.TileMode.CLAMP
         )
     }
 
     override fun setAlpha(alpha: Int) {
         this.resultGradient.alpha = alpha
-    }
-
-    override fun onBoundsChange(bounds: Rect?) {
-        bounds?.let { updateShader(bounds) }
     }
 
     override fun start() {
