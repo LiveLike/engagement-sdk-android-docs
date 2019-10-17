@@ -79,7 +79,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
 
     private fun rewardsObserver() {
         viewModel.gamificationProfile?.latest()?.let {
-            if (!shouldShowPointTutorial()) {
+            if (!shouldShowPointTutorial() && it.newPoints > 0) {
                 pointView.startAnimation(it.newPoints, true)
                 wouldShowProgressionMeter(viewModel?.rewardsType, it, progressionMeterView)
             }

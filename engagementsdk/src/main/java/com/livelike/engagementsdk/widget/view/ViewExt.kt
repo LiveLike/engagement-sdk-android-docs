@@ -11,6 +11,10 @@ import com.bumptech.glide.request.RequestOptions
 
 fun View.clipParents(isClip: Boolean) {
     var view = this
+    if (view is ViewGroup) {
+        view.clipChildren = isClip
+        view.clipToPadding = isClip
+    }
     while (view.parent != null && view.parent is ViewGroup) {
         val viewGroup = view.parent as ViewGroup
         viewGroup.clipChildren = isClip
