@@ -25,21 +25,33 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
-
+    /** Intercepts the widgets and hold them until show() or dismiss() is being called */
     var widgetInterceptor: WidgetInterceptor?
 }
 
+/** A simple representation of an observable stream.
+ * Subscription will requires a key to avoid multiple subscription of the same observable.
+ */
 interface Stream<T>{
 // TODO remove nullable event in stream
+    /** Post data to the stream */
     fun onNext(data1: T?)
+    /** Add an observable to receive future values of the stream */
     fun subscribe(key: Any, observer: (T?) -> Unit)
+    /** Stop the observable at {key} from receiving events */
     fun unsubscribe(key: Any)
+    /** Remove all the observable from this stream */
     fun clear()
+    /** Get the latest value of the stream */
     fun latest(): T?
 }
 
+/** A representation of a widget */
 class WidgetInfos(
+    /** The type of the widget */
     val type: String,
+    /** The data used to define the widget */
     val payload: JsonObject,
+    /** The id of the widget */
     val widgetId: String
 )

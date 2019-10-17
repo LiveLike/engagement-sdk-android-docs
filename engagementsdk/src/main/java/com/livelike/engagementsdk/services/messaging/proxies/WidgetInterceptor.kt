@@ -8,14 +8,15 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
  * SDK will call widgetWantsToShow() and in same sequence/order sdk will listen on events stream for the decision on that widget.
  */
 abstract class WidgetInterceptor {
+    /** Called when a widget is received from the CMS */
     abstract fun widgetWantsToShow()
-    internal val events: Stream<Decision> =
-        SubscriptionManager(false)
 
+    /** Unlock the widget and show it on screen */
     fun showWidget() {
         events.onNext(Decision.Show)
     }
 
+    /** Dismiss the widget and won't show it on screen */
     fun dismissWidget() {
         events.onNext(Decision.Dismiss)
     }
@@ -24,4 +25,8 @@ abstract class WidgetInterceptor {
         Show,
         Dismiss
     }
+
+    internal val events: Stream<Decision> =
+        SubscriptionManager(false)
+
 }

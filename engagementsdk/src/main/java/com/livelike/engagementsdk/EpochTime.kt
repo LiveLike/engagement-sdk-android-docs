@@ -15,21 +15,36 @@ import org.threeten.bp.format.DateTimeFormatter
  * @property timeSinceEpochInMs Number of milliseconds that have elapsed since 00:00:00, 1 January 1970 UTC
  */
 class EpochTime(val timeSinceEpochInMs: Long) : Comparable<EpochTime> {
+    /**
+     * Compare two EpochTime objects
+     */
     override fun compareTo(other: EpochTime): Int {
         return timeSinceEpochInMs.compareTo(other.timeSinceEpochInMs)
     }
 
+    /**
+     * Subtracts two EpochTime objects
+     */
     operator fun minus(et: EpochTime) =
         EpochTime(timeSinceEpochInMs - et.timeSinceEpochInMs)
 
-    operator fun minus(timeStamp: Long) =
-        EpochTime(timeSinceEpochInMs - timeStamp)
+    /**
+     * Subtracts an EpochTime object with a timeStamp in Ms
+     */
+    operator fun minus(timeStampMs: Long) =
+        EpochTime(timeSinceEpochInMs - timeStampMs)
 
+    /**
+     * Adds two EpochTime objects
+     */
     operator fun plus(et: EpochTime) =
         EpochTime(timeSinceEpochInMs + et.timeSinceEpochInMs)
 
-    operator fun plus(timeStamp: Long) =
-        EpochTime(timeSinceEpochInMs + timeStamp)
+    /**
+     * Adds an EpochTime objects with a timeStamp in Ms
+     */
+    operator fun plus(timeStampMs: Long) =
+        EpochTime(timeSinceEpochInMs + timeStampMs)
 }
 
 @Deprecated("Use {@link #parseISODateTime()} instead")

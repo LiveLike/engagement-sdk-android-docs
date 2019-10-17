@@ -41,6 +41,9 @@ class EngagementSDK(
     // by default sdk calls will run on Default pool and further data layer calls will run o
     private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
+    /**
+     * SDK Initialization logic.
+     */
     init {
         EnagagementSdkUncaughtExceptionHandler
         BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
@@ -77,6 +80,10 @@ class EngagementSDK(
             programId) { EpochTime(0) }.safeProxyForEmptyReturnCalls()
     }
 
+    /**
+     * Use to retrieve the current timecode from the videoplayer to enable Spoiler-Free Sync.
+     *
+     */
     interface TimecodeGetter {
         fun getTimecode(): EpochTime
     }
@@ -94,7 +101,7 @@ class EngagementSDK(
             programId) { timecodeGetter.getTimecode() }.safeProxyForEmptyReturnCalls()
     }
 
-    data class SdkConfiguration(
+    internal data class SdkConfiguration(
         val url: String,
         val name: String?,
         @SerializedName("client_id")
