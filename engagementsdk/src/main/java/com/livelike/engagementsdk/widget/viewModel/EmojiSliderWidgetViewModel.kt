@@ -52,9 +52,6 @@ internal class EmojiSliderWidgetViewModel(
             })
         }
 
-        debouncer.subscribe(javaClass.simpleName) {
-            if (it != null) vote(it)
-        }
         widgetObserver(widgetInfos)
     }
 
