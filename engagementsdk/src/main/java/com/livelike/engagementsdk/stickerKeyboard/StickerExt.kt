@@ -57,6 +57,7 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
         if (url.isNullOrEmpty() // No url for this shortcode
             || existingSpanPositions.contains(startIndex) // The shortcode has already been replaced by an image
         ) {
+            onComplete?.invoke()
             continue
         }
 
