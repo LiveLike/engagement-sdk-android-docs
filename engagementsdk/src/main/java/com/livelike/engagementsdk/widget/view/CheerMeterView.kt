@@ -57,6 +57,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             viewModel = value as CheerMeterViewModel
             viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
             viewModel?.results?.subscribe(javaClass.simpleName) { resultObserver(it) }
+            viewModel?.voteEnd?.subscribe(javaClass.simpleName) { endObserver(it) }
         }
 
     // Refresh the view when re-attached to the activity
@@ -64,6 +65,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
         viewModel?.results?.subscribe(javaClass.simpleName) { resultObserver(it) }
+        viewModel?.voteEnd?.subscribe(javaClass.simpleName) { endObserver(it) }
     }
 
     private fun resultObserver(resource: Resource?) {
@@ -76,7 +78,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 val team2 = options[1]
                 var totalCount = (team1.vote_count ?: 1) + (team2.vote_count ?: 1)
                 if (totalCount == 0) totalCount = 1
-                println("Total-> $totalCount --> T1-> ${team1.vote_count} ,T2-> ${team2.vote_count}")
                 ll_cheer_meter_teams.weightSum = totalCount.toFloat()
                 ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
 
@@ -136,11 +137,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             }
 
                             override fun onAnimationStart(animation: Animation?) {
-
+                                if (viewModel?.teamSelected == 1) {
+                                    img_logo_team_1.clearAnimation()
+                                }
                             }
 
                             override fun onAnimationEnd(animation: Animation?) {
-                                if (img_logo_team_1.tag == true) {
+                                if (viewModel?.teamSelected == 1) {
                                     img_logo_team_1.postDelayed({
                                         lottie_vs_animation.visibility = View.INVISIBLE
                                         collapse(lottie_vs_animation, 500, 0)
@@ -173,11 +176,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             }
 
                             override fun onAnimationStart(animation: Animation?) {
-
+                                if (viewModel?.teamSelected == 2) {
+                                    img_logo_team_2.clearAnimation()
+                                }
                             }
 
                             override fun onAnimationEnd(animation: Animation?) {
-                                if (img_logo_team_2.tag == true) {
+                                if (viewModel?.teamSelected == 2) {
                                     img_logo_team_2.postDelayed({
                                         lottie_vs_animation.visibility = View.INVISIBLE
                                         collapse(lottie_vs_animation, 500, 0)
@@ -198,18 +203,17 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 )
 
                 view_ripple.setOnTouchListener { v, event ->
-                    println("Action -> ${event.action}")
                     when (event.action) {
                         MotionEvent.ACTION_UP -> {
                             if (v.isClickable) {
                                 if (angle) {
                                     angle = false
-                                    if (img_logo_team_1.tag == true) {
+                                    if (viewModel?.teamSelected == 1) {
                                         img_logo_team_1.animate().rotation(0F).setDuration(50)
                                             .start()
 
                                     }
-                                    if (img_logo_team_2.tag == true) {
+                                    if (viewModel?.teamSelected == 2) {
                                         img_logo_team_2.animate().rotation(0F).setDuration(50)
                                             .start()
                                         txt_cheer_meter_team_2.animate().alpha(1F).setDuration(30)
@@ -223,7 +227,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             if (v.isClickable) {
                                 if (!angle) {
                                     angle = true
-                                    if (img_logo_team_1.tag == true) {
+                                    if (viewModel?.teamSelected == 1) {
                                         img_logo_team_1.animate().rotation(35F).setDuration(50)
                                             .start()
                                         val listener = object : Animator.AnimatorListener {
@@ -246,7 +250,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                             .setListener(listener)
                                             .start()
                                     }
-                                    if (img_logo_team_2.tag == true) {
+                                    if (viewModel?.teamSelected == 2) {
                                         img_logo_team_2.animate().rotation(35F).setDuration(50)
                                             .start()
                                         val listener = object : Animator.AnimatorListener {
@@ -280,16 +284,14 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 }
 
                 img_logo_team_1.setOnClickListener {
-                    img_logo_team_1.tag = true
-                    img_logo_team_2.tag = false
+                    viewModel?.teamSelected = 1
                     //We are the clearing the animation which trigger the animaition end listener and there all further processing is implemented
                     img_logo_team_1.clearAnimation()
                     img_logo_team_2.clearAnimation()
 
                 }
                 img_logo_team_2.setOnClickListener {
-                    img_logo_team_1.tag = false
-                    img_logo_team_2.tag = true
+                    viewModel?.teamSelected = 2
                     img_logo_team_1.clearAnimation()
                     img_logo_team_2.clearAnimation()
                 }
@@ -298,16 +300,12 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             lottie_vs_animation.apply {
                 setAnimation("vs_animation.json")
                 progress = viewModel?.animationProgress ?: 0f
-//                logDebug { "Animation: ${viewModel?.animationPath}" }
                 repeatCount = 0
                 playAnimation()
             }
 
 
-            viewModel?.startDismissTimout(resource.timeout)
-
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
-            println("Time-> $animationLength")
             showEggerView(animationLength)
         }
 
@@ -340,9 +338,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         view_ripple_demo.isClickable = true
         view_ripple_demo.post {
             view_ripple_demo.setBackgroundResource(
-                when {
-                    img_logo_team_1.tag == true -> R.drawable.ripple_effect_team_1
-                    img_logo_team_2.tag == true -> R.drawable.ripple_effect_team_2
+                when (viewModel?.teamSelected) {
+                    1 -> R.drawable.ripple_effect_team_1
+                    2 -> R.drawable.ripple_effect_team_2
                     else -> android.R.color.transparent
                 }
             )
@@ -352,44 +350,35 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             val listener = object : Animator.AnimatorListener {
                 private lateinit var runnable: Runnable
 
-                private var timer = 3
 
                 override fun onAnimationRepeat(animation: Animator?) {
-                    println("Repeat")
+
                 }
 
                 override fun onAnimationEnd(animation: Animator?) {
-                    println("Anim End")
-                    timer = 0
+                    viewModel?.timer = 0
                 }
 
                 override fun onAnimationCancel(animation: Animator?) {
-                    println("Anim Cancel")
+
                 }
 
                 override fun onAnimationStart(animation: Animator?) {
-                    println("Anim Start")
-                    txt_cheer_meter_timer_demo.text = "$timer"
+                    txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
                     view_ripple_demo.isPressed = true
                     view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
                     runnable = Runnable {
-                        timer -= 1
-                        if (timer > 0) {
+                        viewModel?.timer = viewModel?.timer ?: 0 - 1
+                        if (viewModel?.timer ?: 0 > 0) {
                             view_ripple_demo.isPressed = true
                             view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
-                            txt_cheer_meter_timer_demo.text = "$timer"
+                            txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
                             view_ripple_demo.postDelayed(runnable, 1000L)
                         } else {
                             txt_cheer_meter_timer_demo.text = "GO!"
                             //Finish with Demo
                             //Start Voting
                             view_ripple_demo.postDelayed({
-                                img_tap_demo.visibility = View.GONE
-                                view_ripple_demo.isClickable = false
-                                view_ripple_demo.visibility = View.GONE
-                                ll_my_score.visibility = View.VISIBLE
-                                txt_my_score.visibility = View.VISIBLE
-                                view_ripple.isClickable = true
                                 startVoting(voteUrl, option)
                             }, 700)
                         }
@@ -398,20 +387,33 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     view_ripple_demo.postDelayed(runnable, 1000L)
                 }
             }
-
-            img_tap_demo.animate()
-                .setStartDelay(300L)
-                .setDuration(durationMs.toLong())
-                .scaleX(0.5F).scaleY(0.5F)
-                .setInterpolator(CycleInterpolator(durationMs / cycleDurationMs))
-                .setListener(listener)
-                .withLayer()
-                .start()
+            if (viewModel?.timer ?: 0 > 0) {
+                img_tap_demo.animate()
+                    .setStartDelay(300L)
+                    .setDuration(durationMs.toLong())
+                    .scaleX(0.5F).scaleY(0.5F)
+                    .setInterpolator(CycleInterpolator(durationMs / cycleDurationMs))
+                    .setListener(listener)
+                    .withLayer()
+                    .start()
+            } else {
+                view_ripple_demo.postDelayed({
+                    startVoting(voteUrl, option)
+                }, 700)
+            }
 
         }
     }
 
     private fun startVoting(voteUrl: String, id: Option) {
+        img_tap_demo.visibility = View.GONE
+        view_ripple_demo.isClickable = false
+        view_ripple_demo.visibility = View.GONE
+        ll_my_score.visibility = View.VISIBLE
+        txt_my_score.visibility = View.VISIBLE
+        view_ripple.isClickable = true
+
+
         viewModel?.animationEggTimerProgress = 0f
         selectedTeam = id
         txt_my_score.text = "0"
@@ -420,10 +422,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 viewModel?.animationEggTimerProgress?.let {
                     v?.startAnimationFrom(it, 10000F, { t ->
                         viewModel?.animationEggTimerProgress = t
-                        println("ANIM-> $t")
-                        if (t > 0.9) {
-                            stopVoting()
-                        }
                     }, {
                         //stop voting
                         stopVoting()
@@ -431,8 +429,15 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     })
                 }
             }
+            viewModel?.startDismissTimout(10000.toString())
         }
         viewModel?.sendVote(voteUrl)
+    }
+
+    private fun endObserver(it: Boolean?) {
+        if (it == true) {
+            stopVoting()
+        }
     }
 
     private fun stopVoting() {
@@ -612,9 +617,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         val valueAnimator = ValueAnimator.ofInt(prevHeight, targetHeight)
         valueAnimator.interpolator = DecelerateInterpolator()
         valueAnimator.addUpdateListener { animation ->
-            //            v.layoutParams.width = animation.animatedValue as Int
             v.layoutParams = LinearLayout.LayoutParams(animation.animatedValue as Int, v.height)
-//            v.requestLayout()
         }
         valueAnimator.interpolator = DecelerateInterpolator()
         valueAnimator.duration = duration.toLong()

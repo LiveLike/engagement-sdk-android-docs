@@ -48,12 +48,16 @@ internal class CheerMeterViewModel(
     val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
 
+
+    var teamSelected = 0
     var localVoteCount = 0
+    var timer = 3
     private var debounceJob: Job? = null
     private var voteUrl: String? = null
     private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
     val results: SubscriptionManager<Resource> = SubscriptionManager()
+    val voteEnd: SubscriptionManager<Boolean> = SubscriptionManager()
     val data: SubscriptionManager<CheerMeterWidget> = SubscriptionManager()
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
@@ -68,7 +72,6 @@ internal class CheerMeterViewModel(
             pubnub = PubnubMessagingClient(it)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-                    println("Client MESsage-> ")
                     val widgetType = event.message.get("event").asString ?: ""
                     logDebug { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
@@ -131,7 +134,6 @@ internal class CheerMeterViewModel(
 
 
     private fun initVote(url: String) {
-        println("INIT VOTE")
         uiScope.launch {
             voteUrl = dataClient.voteAsync(url, 0, "", false)
         }
@@ -179,7 +181,8 @@ internal class CheerMeterViewModel(
             timeoutStarted = true
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-//                confirmationState()
+                voteEnd.onNext(true)
+                voteEnd()
             }
         }
     }
@@ -201,14 +204,10 @@ internal class CheerMeterViewModel(
     private fun cleanUp() {
         pubnub?.unsubscribeAll()
         timeoutStarted = false
-//        animationResultsProgress = 0f
-//        animationPath = ""
-//        voteUrl = null
+        voteUrl = null
         data.onNext(null)
         results.onNext(null)
         animationEggTimerProgress = 0f
-//        currentVoteId.onNext(null)
-
         interactionData.reset()
         currentWidgetId = ""
         currentWidgetType = null
