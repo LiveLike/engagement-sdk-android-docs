@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="50dp"
+    android:layout_height="50dp"
+    android:id="@+id/list_item">
+
+    <ImageView android:id="@+id/itemImage"
+        android:layout_width="50dp" android:layout_height="50dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:clickable="true"
+        style="@style/SelectableItemBackground"
+        android:contentDescription="sticker"
+        android:focusable="true" />
+
+</LinearLayout>

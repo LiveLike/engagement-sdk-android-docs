@@ -120,7 +120,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         when (state) {
             "results" -> {
                 viewModel?.points?.let {
-                    if (!shouldShowPointTutorial()) {
+                    if (!shouldShowPointTutorial() && it > 0) {
                         pointView.startAnimation(it, true)
                         wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
                     }

@@ -9,6 +9,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
+import android.text.Spannable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.KeyEvent
@@ -29,13 +30,20 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
+import com.livelike.engagementsdk.stickerKeyboard.Sticker
+import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
+import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
+import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.gamification_badge_iv
@@ -47,6 +55,7 @@ import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
+import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -112,6 +121,22 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         initView(context)
     }
 
+    private fun setBackButtonInterceptor(v: View) {
+        v.isFocusableInTouchMode = true
+        v.requestFocus()
+        v.setOnKeyListener(object : OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+                if (event?.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
+                    if (sticker_keyboard.visibility == View.VISIBLE) {
+                        sticker_keyboard.visibility = View.GONE
+                        return true
+                    }
+                }
+                return false
+            }
+        })
+    }
+
     private fun initView(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.chat_view, this, true)
         user_profile_display_LL.visibility = if (displayUserProfile) View.VISIBLE else View.GONE
@@ -157,33 +182,94 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                         wouldShowBadge(programRank)
                         showUserRank(programRank)
                     } else if (programRank.points == programRank.newPoints) {
-                            pointView.apply {
-                                postDelayed(
-                                    {
-                                        startAnimationFromTop(programRank.points)
-                                        showUserRank(programRank)
-                                    },
-                                    6300)
-                            }
-                        } else {
-                            pointView.apply {
-                                postDelayed(
-                                    {
-                                        startAnimationFromTop(programRank.points)
-                                        showUserRank(programRank)
-                                    },
-                                    1000)
-                            }
+                        pointView.apply {
+                            postDelayed(
+                                {
+                                    startAnimationFromTop(programRank.points)
+                                    showUserRank(programRank)
+                                },
+                                6300
+                            )
                         }
+                    } else {
+                        pointView.apply {
+                            postDelayed(
+                                {
+                                    startAnimationFromTop(programRank.points)
+                                    showUserRank(programRank)
+                                },
+                                1000
+                            )
+                        }
+                    }
                 }
             }
             animationEventsStream.subscribe(javaClass.simpleName) {
                 if (it == ViewAnimationEvents.BADGE_COLLECTED) {
-                    programRepository.programGamificationProfileStream.latest()?.let { programGamificationProfile ->
-                        wouldShowBadge(programGamificationProfile, true) }
+                    programRepository.programGamificationProfileStream.latest()
+                        ?.let { programGamificationProfile ->
+                            wouldShowBadge(programGamificationProfile, true)
+                        }
                 }
             }
+
+            initStickerKeyboard(sticker_keyboard, this)
+
+            edittext_chat_message.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    replaceWithStickers(
+                        s as Spannable,
+                        this@ChatView.context,
+                        stickerPackRepository,
+                        edittext_chat_message
+                    )
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+            })
+
+            button_emoji.setOnClickListener {
+                if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard()
+            }
         }
+    }
+
+    private fun initStickerKeyboard(
+        stickerKeyboardView: StickerKeyboardView,
+        chatViewModel: ChatViewModel
+    ) {
+        stickerKeyboardView.setProgram(chatViewModel.stickerPackRepository) {
+            if (it.isNullOrEmpty()) {
+                button_emoji?.visibility = View.GONE
+                sticker_keyboard?.visibility = View.GONE
+            } else {
+                button_emoji?.visibility = View.VISIBLE
+            }
+        }
+        // used to pass the shortcode to the keyboard
+        stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
+            override fun onClick(sticker: Sticker) {
+                val textToInsert = ":${sticker.shortcode}:"
+                val start = max(edittext_chat_message.selectionStart, 0)
+                val end = max(edittext_chat_message.selectionEnd, 0)
+                if (edittext_chat_message.text.length + textToInsert.length < 150) {
+                    // replace selected text or start where the cursor is
+                    edittext_chat_message.text.replace(
+                        min(start, end), max(start, end),
+                        textToInsert, 0, textToInsert.length
+                    )
+                }
+            }
+        })
     }
 
     private fun wouldShowBadge(programRank: ProgramGamificationProfile, animate: Boolean = false) {
@@ -201,10 +287,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private fun hideGamification() {
-        pointView.visibility = View.GONE
-        rank_label.visibility = View.GONE
-        rank_value.visibility = View.GONE
-        gamification_badge_iv.visibility = View.GONE
+        pointView?.visibility = View.GONE
+        rank_label?.visibility = View.GONE
+        rank_value?.visibility = View.GONE
+        gamification_badge_iv?.visibility = View.GONE
     }
 
     private fun showUserRank(programGamificationProfile: ProgramGamificationProfile) {
@@ -250,8 +336,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
 
-            if (x < v.left || x > v.right || y < v.top || y > v.bottom)
+            if (x < v.left || x > v.right || y < v.top || y > v.bottom) {
+                sticker_keyboard?.visibility = View.GONE
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            }
         }
         return super.dispatchTouchEvent(ev)
     }
@@ -319,6 +407,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
                         session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
+                        hideStickerKeyboard()
+                    }
+                    if (!hasFocus) {
+                        hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     }
                 }
 
@@ -332,6 +424,18 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     false
                 }
             }
+        }
+    }
+
+    private fun hideStickerKeyboard() {
+        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
+    }
+
+    private fun showStickerKeyboard() {
+        uiScope.launch {
+            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            delay(200) // delay to make sure the keyboard is hidden
+            findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
         }
     }
 
@@ -359,6 +463,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         if (reason != KeyboardHideReason.MESSAGE_SENT) {
             session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
         }
+
+        setBackButtonInterceptor(this)
     }
 
     private fun sendMessageNow() {

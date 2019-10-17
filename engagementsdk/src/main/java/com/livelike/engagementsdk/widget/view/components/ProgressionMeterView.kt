@@ -13,7 +13,6 @@ import android.widget.FrameLayout
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.animators.buildRotationAnimator
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
-import com.livelike.engagementsdk.widget.view.clipParents
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlin.math.min
 import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.gamification_badge_iv
@@ -38,9 +37,6 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
 
     fun animatePointsBadgeProgression(currentPointsForNextBadge: Int, newPoints: Int, totalPointsNextBadge: Int, badgeIconURL: String) {
         visibility = View.VISIBLE
-        clipChildren = false
-        clipToPadding = false
-        clipParents(false)
 
         gamification_badge_iv.loadImage(badgeIconURL, AndroidResource.dpToPx(30))
         totalPointsToNextbadge = totalPointsNextBadge

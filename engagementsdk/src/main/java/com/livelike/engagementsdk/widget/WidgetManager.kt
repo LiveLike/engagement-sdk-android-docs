@@ -21,12 +21,12 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
+import java.util.PriorityQueue
+import java.util.Queue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.PriorityQueue
-import java.util.Queue
 
 internal class WidgetManager(
     upstream: MessagingClient,
@@ -197,7 +197,8 @@ enum class WidgetType(val event: String) {
     IMAGE_POLL("image-poll-created"),
     POINTS_TUTORIAL("points-tutorial"),
     COLLECT_BADGE("collect-badge"),
-    ALERT("alert-created");
+    ALERT("alert-created"),
+    IMAGE_SLIDER("emoji-slider-created");
 
     companion object {
         private val map = values().associateBy(WidgetType::event)

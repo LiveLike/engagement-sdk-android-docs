@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.animation.Animator
 import android.animation.AnimatorInflater
+import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
@@ -72,8 +73,6 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
     fun startAnimation(newPoint: Int, hideOnEnd: Boolean = false) {
         visibility = View.VISIBLE
-        clipChildren = false
-        clipToPadding = false
         clipParents(false)
         ValueAnimator.ofInt(0, newPoint).apply {
             addUpdateListener {
@@ -96,6 +95,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
             override fun onAnimationEnd(animation: Animator?) {
                 if (hideOnEnd) visibility = View.GONE
+                clipParents(true)
             }
 
             override fun onAnimationCancel(animation: Animator?) {}
@@ -107,8 +107,6 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
     fun startAnimationFromTop(newPoint: Int) {
         visibility = View.VISIBLE
-        clipChildren = false
-        clipToPadding = false
         clipParents(false)
         ValueAnimator.ofInt(0, newPoint).apply {
             addUpdateListener {
@@ -126,6 +124,11 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
         bothAnimatorSet.start()
+        bothAnimatorSet.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                clipParents(true)
+            }
+        })
     }
 
     fun showPoints(points: Int) {

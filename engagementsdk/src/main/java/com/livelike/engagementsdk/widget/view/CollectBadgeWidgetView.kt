@@ -28,7 +28,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
             field = value
             viewModel = value as CollectBadgeWidgetViewModel
             viewModel?.run {
-                startDismissTimeout(5000) {
+                startInteractionTimeout(5000) {
                     removeAllViews()
                 }
                 animateView(badge)
@@ -74,6 +74,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
             startDelay = 500
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(p0: Animator?) {
+                    clipParents(true)
                     dismissFunc?.invoke(DismissAction.TIMEOUT)
                 }
             })

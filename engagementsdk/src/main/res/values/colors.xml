@@ -85,4 +85,12 @@
     <color name="cheer_meter_team2_color2">#fa5064</color>
     <color name="cheer_meter_team1_color">#2828b4</color>
     <color name="cheer_meter_team1_color2">#50a0fa</color>
+<!--Image Slider-->
+    <color name="livelike_image_slider_gradient_start">#fff000</color>
+    <color name="livelike_image_slider_gradient_end">#a0ff28</color>
+    <color name="livelike_image_slider_bg">#ffffff</color>
+    <color name="livelike_image_slider_widget_bg">#cc000000</color>
+
+    <color name="livelike_image_slider_widget_result_end_color">#3C1EFF</color>
+    <color name="livelike_image_slider_widget_result_center_color">#FF2D2D</color>
 </resources>
