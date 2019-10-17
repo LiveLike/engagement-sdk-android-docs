@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.content.Context
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.animation.LinearInterpolator
 import com.livelike.engagementsdk.DismissAction
@@ -21,7 +22,8 @@ import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.bad
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.collect_badge_box
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.collect_badge_button
 
-class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
+    SpecifiedWidgetView(context, attr) {
     private var viewModel: CollectBadgeWidgetViewModel? = null
     override var widgetViewModel: ViewModel? = null
         set(value) {

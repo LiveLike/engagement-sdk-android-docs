@@ -13,10 +13,10 @@ import android.view.View
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.clipParents
-import kotlin.math.roundToInt
 import kotlinx.android.synthetic.main.atom_widget_point.view.coinDroppingView
 import kotlinx.android.synthetic.main.atom_widget_point.view.coinView
 import kotlinx.android.synthetic.main.atom_widget_point.view.pointTextView
+import kotlin.math.roundToInt
 
 class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context, attr) {
 
@@ -37,7 +37,8 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         context.theme.obtainStyledAttributes(
             attr,
             R.styleable.PointView,
-            0, 0).apply {
+            0, 0
+        ).apply {
             try {
                 hidePlus = getBoolean(R.styleable.PointView_hidePlus, false)
                 iconSize = getDimension(R.styleable.PointView_iconSize, 0f).roundToInt()
@@ -79,7 +80,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
             addUpdateListener {
                 point = it.animatedValue as Int
             }
-            duration = 500
+            duration = 1000
             start()
         }
 
@@ -95,7 +96,9 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
             override fun onAnimationRepeat(animation: Animator?) {}
 
             override fun onAnimationEnd(animation: Animator?) {
-                if (hideOnEnd) visibility = View.GONE
+//                if (hideOnEnd) visibility = View.GONE
+                if (hideOnEnd)
+                    animate().translationY(60f).alpha(0f).setStartDelay(800).start()
             }
 
             override fun onAnimationCancel(animation: Animator?) {}
@@ -121,7 +124,8 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         val popping = AnimatorInflater.loadAnimator(context, R.animator.popping) as AnimatorSet
         popping.setTarget(coinView)
 
-        val dropping = AnimatorInflater.loadAnimator(context, R.animator.dropping_from_top) as AnimatorSet
+        val dropping =
+            AnimatorInflater.loadAnimator(context, R.animator.dropping_from_top) as AnimatorSet
         dropping.setTarget(coinDroppingView)
         val bothAnimatorSet = AnimatorSet()
         bothAnimatorSet.playTogether(popping, dropping)
