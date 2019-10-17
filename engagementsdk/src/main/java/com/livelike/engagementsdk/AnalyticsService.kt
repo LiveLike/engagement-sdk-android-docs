@@ -362,7 +362,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
     private fun getKeyboardType(kType: KeyboardType): String {
         return when (kType) {
             KeyboardType.STANDARD -> "Standard"
-            KeyboardType.EMOJI -> "Emoji"
+            KeyboardType.STICKER -> "Sticker"
         }
     }
 
@@ -373,6 +373,8 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         val hideReason = when (hideMethod) {
             KeyboardHideReason.TAP_OUTSIDE -> "Dismissed Via Tap Outside"
             KeyboardHideReason.MESSAGE_SENT -> "Sent Message"
+            KeyboardHideReason.CHANGING_KEYBOARD_TYPE -> "Dismissed Via Changing Keyboard Type"
+            KeyboardHideReason.BACK_BUTTON ->"Dismissed Via Back Button"
         }
         properties.put("Keyboard Hide Method", hideReason)
         chatMessageId?.apply {
@@ -588,12 +590,14 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
 
 enum class KeyboardHideReason {
     MESSAGE_SENT,
-    TAP_OUTSIDE
+    CHANGING_KEYBOARD_TYPE,
+    TAP_OUTSIDE,
+    BACK_BUTTON
 }
 
 enum class KeyboardType {
     STANDARD,
-    EMOJI
+    STICKER
 }
 
 enum class DismissAction {
