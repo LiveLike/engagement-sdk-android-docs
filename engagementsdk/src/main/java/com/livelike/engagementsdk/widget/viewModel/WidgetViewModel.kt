@@ -52,7 +52,6 @@ internal abstract class WidgetViewModel<T : Resource>(
 
     var timeoutStarted = false
 
-
     val data: SubscriptionManager<T> = SubscriptionManager()
     val results: SubscriptionManager<T> = SubscriptionManager()
 
@@ -73,7 +72,6 @@ internal abstract class WidgetViewModel<T : Resource>(
     val interactionData = AnalyticsWidgetInteractionInfo()
     val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
-
     protected open fun confirmInteraction() {
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
         uiScope.launch {
@@ -81,7 +79,7 @@ internal abstract class WidgetViewModel<T : Resource>(
                 userRepository?.getGamificationReward(it, analyticsService)?.let { pts ->
                     programRepository?.programGamificationProfileStream?.onNext(pts)
                     widgetMessagingClient?.let {
-                            widgetMessagingClient->GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                            widgetMessagingClient -> GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     }
                     interactionData.addGamificationAnalyticsData(pts)
                 }
@@ -107,10 +105,10 @@ internal abstract class WidgetViewModel<T : Resource>(
             timeoutStarted = true
             uiScope.launch {
                 delay(timeout)
-                if(currentVote.latest() == null){
+                if (currentVote.latest() == null) {
                     dismissWidget(DismissAction.TIMEOUT)
                     function?.invoke()
-                }else{
+                } else {
                     state.onNext(WidgetState.CONFIRM_INTERACTION)
                     confirmInteraction()
                 }
@@ -132,11 +130,10 @@ internal abstract class WidgetViewModel<T : Resource>(
     }
 }
 
-//Help me! Team contribution is important for better namings.
-enum class WidgetState{
+// Help me! Team contribution is important for better namings.
+enum class WidgetState {
     CONFIRM_INTERACTION, // It is to indicate current interaction is done.
-    SHOW_RESULTS,      // It is to tell view to show results
+    SHOW_RESULTS, // It is to tell view to show results
     SHOW_GAMIFICATION,
     DISMISS
 }
-

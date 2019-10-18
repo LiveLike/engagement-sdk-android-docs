@@ -18,11 +18,11 @@ import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -144,20 +144,20 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
                     when {
                         (isOnlyStickers && numberOfStickers == 1) -> {
                             val s = SpannableString(message.message)
-                            val tag = "contains_only_emoji_"+message.id
+                            val tag = "contains_only_emoji_" + message.id
                             chatMessage.tag = tag
-                            replaceWithStickers(s, context, stickerPackRepository, null, 200){
-                                if(chatMessage.tag == tag){
+                            replaceWithStickers(s, context, stickerPackRepository, null, 200) {
+                                if (chatMessage.tag == tag) {
                                     chatMessage.text = s
                                 }
                             }
                         }
                         atLeastOneSticker -> {
-                            val tag = "contains_emoji_"+message.id
+                            val tag = "contains_emoji_" + message.id
                             chatMessage.tag = tag
                             val s = SpannableString(message.message)
-                            replaceWithStickers(s, context, stickerPackRepository, null){
-                                if(chatMessage.tag == tag){
+                            replaceWithStickers(s, context, stickerPackRepository, null) {
+                                if (chatMessage.tag == tag) {
                                     chatMessage.text = s
                                 }
                             }

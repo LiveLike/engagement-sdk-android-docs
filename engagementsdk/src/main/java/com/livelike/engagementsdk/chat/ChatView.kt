@@ -39,6 +39,9 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
@@ -58,10 +61,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.system.exitProcess
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -122,7 +121,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         initView(context)
     }
 
-    private fun setBackButtonInterceptor(v : View) {
+    private fun setBackButtonInterceptor(v: View) {
         v.isFocusableInTouchMode = true
         v.requestFocus()
         v.setOnKeyListener(object : OnKeyListener {
@@ -262,13 +261,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 val textToInsert = ":${sticker.shortcode}:"
                 val start = max(edittext_chat_message.selectionStart, 0)
                 val end = max(edittext_chat_message.selectionEnd, 0)
-                if(edittext_chat_message.text.length + textToInsert.length < 150){
-                    edittext_chat_message.text.replace( // replace selected text or start where the cursor is
+                if (edittext_chat_message.text.length + textToInsert.length < 150) {
+                    // replace selected text or start where the cursor is
+                    edittext_chat_message.text.replace(
                         min(start, end), max(start, end),
                         textToInsert, 0, textToInsert.length
                     )
                 }
-
             }
         })
     }
@@ -337,7 +336,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
 
-            if (x < v.left || x > v.right || y < v.top || y > v.bottom){
+            if (x < v.left || x > v.right || y < v.top || y > v.bottom) {
                 sticker_keyboard?.visibility = View.GONE
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
@@ -410,7 +409,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                         session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard()
                     }
-                    if(!hasFocus){
+                    if (!hasFocus) {
                         hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     }
                 }
@@ -428,11 +427,11 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
     }
 
-    private fun hideStickerKeyboard(){
+    private fun hideStickerKeyboard() {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
     }
 
-    private fun showStickerKeyboard(){
+    private fun showStickerKeyboard() {
         uiScope.launch {
             hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             delay(200) // delay to make sure the keyboard is hidden

@@ -28,5 +28,4 @@ abstract class WidgetInterceptor {
 
     internal val events: Stream<Decision> =
         SubscriptionManager(false)
-
 }
