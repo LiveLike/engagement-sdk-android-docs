@@ -35,5 +35,7 @@
 
 <!--    Gamification-->
     <dimen name="livelike_rank_label_text_size">10sp</dimen>
+    <dimen name="livelike_cheer_meter_corner_radius">8dp</dimen>
+    <dimen name="livelike_cheer_meter_padding">10dp</dimen>
 
 </resources>

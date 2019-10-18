@@ -32,7 +32,7 @@ interface LiveLikeContentSession {
 /** A simple representation of an observable stream.
  * Subscription will requires a key to avoid multiple subscription of the same observable.
  */
-interface Stream<T>{
+interface Stream<T> {
 // TODO remove nullable event in stream
     /** Post data to the stream */
     fun onNext(data1: T?)
