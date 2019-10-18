@@ -34,10 +34,11 @@ internal class EmojiSliderWidgetViewModel(
 
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
 
-    private var pubnub: PubnubMessagingClient? = null
+    private var pubnub: MessagingClient? = null
 
     init {
         sdkConfiguration.pubNubKey.let {
+//            pubnub = PubnubMessagingClient(it).asBehaviourSubject()
             pubnub = PubnubMessagingClient(it)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
@@ -53,6 +54,13 @@ internal class EmojiSliderWidgetViewModel(
         }
 
         widgetObserver(widgetInfos)
+    }
+
+    override fun confirmInteraction() {
+        currentVote.currentData?.let {
+            vote(it)
+        }
+        super.confirmInteraction()
     }
 
     override fun vote(value: String) {
@@ -91,6 +99,5 @@ internal class EmojiSliderWidgetViewModel(
     override fun onClear() {
         super.onClear()
         pubnub?.unsubscribeAll()
-        debouncer.clear()
     }
 }

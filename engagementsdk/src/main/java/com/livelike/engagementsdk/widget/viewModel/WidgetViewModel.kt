@@ -13,7 +13,6 @@ import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.domain.GamificationManager
 import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
@@ -52,13 +51,11 @@ internal abstract class WidgetViewModel<T : Resource>(
 
     var timeoutStarted = false
 
-
     val data: SubscriptionManager<T> = SubscriptionManager()
     val results: SubscriptionManager<T> = SubscriptionManager()
 
     val state: Stream<WidgetState> = SubscriptionManager()
     val currentVote: SubscriptionManager<String?> = SubscriptionManager()
-    val debouncer = currentVote.debounce()
 
     val gamificationProfile: Stream<ProgramGamificationProfile>?
         get() = programRepository?.programGamificationProfileStream
@@ -73,7 +70,6 @@ internal abstract class WidgetViewModel<T : Resource>(
     val interactionData = AnalyticsWidgetInteractionInfo()
     val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
-
     protected open fun confirmInteraction() {
         currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
         uiScope.launch {
@@ -81,17 +77,12 @@ internal abstract class WidgetViewModel<T : Resource>(
                 userRepository?.getGamificationReward(it, analyticsService)?.let { pts ->
                     programRepository?.programGamificationProfileStream?.onNext(pts)
                     widgetMessagingClient?.let {
-                            widgetMessagingClient->GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                            widgetMessagingClient -> GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     }
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
-            if (debouncer.currentData != currentVote.currentData) {
-                debouncer.clear()
-                currentVote.currentData?.let { value ->
-                    vote(value)
-                }
-            }
+            delay(1000)
             state.onNext(WidgetState.SHOW_RESULTS)
             delay(1000)
             state.onNext(WidgetState.SHOW_GAMIFICATION)
@@ -107,10 +98,10 @@ internal abstract class WidgetViewModel<T : Resource>(
             timeoutStarted = true
             uiScope.launch {
                 delay(timeout)
-                if(currentVote.latest() == null){
+                if (currentVote.latest() == null) {
                     dismissWidget(DismissAction.TIMEOUT)
                     function?.invoke()
-                }else{
+                } else {
                     state.onNext(WidgetState.CONFIRM_INTERACTION)
                     confirmInteraction()
                 }
@@ -132,11 +123,10 @@ internal abstract class WidgetViewModel<T : Resource>(
     }
 }
 
-//Help me! Team contribution is important for better namings.
-enum class WidgetState{
+// Help me! Team contribution is important for better namings.
+enum class WidgetState {
     CONFIRM_INTERACTION, // It is to indicate current interaction is done.
-    SHOW_RESULTS,      // It is to tell view to show results
+    SHOW_RESULTS, // It is to tell view to show results
     SHOW_GAMIFICATION,
     DISMISS
 }
-
