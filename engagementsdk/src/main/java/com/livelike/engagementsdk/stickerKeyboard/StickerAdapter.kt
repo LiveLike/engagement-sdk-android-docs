@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.rvStickers
 class StickerCollectionPagerAdapter(
     fm: FragmentManager,
     private val stickerPacks: List<StickerPack>,
+    val programId : String,
     val onClickCallback: (Sticker) -> Unit
 ) : FragmentStatePagerAdapter(fm) {
 
@@ -43,7 +44,10 @@ class StickerCollectionPagerAdapter(
                         onClickCallback(sticker)
                     }
                 })
-                updateRecentStickers()
+                arguments = Bundle().apply {
+                    putString(ARG_PROGRAM_ID, programId)
+                }
+                updateRecentStickers(programId)
             }
             return recentStickerView as Fragment
         } else {
@@ -61,11 +65,12 @@ class StickerCollectionPagerAdapter(
     }
 
     fun refreshRecents() {
-        recentStickerView?.updateRecentStickers()
+        recentStickerView?.updateRecentStickers(programId)
     }
 }
 
 private const val ARG_OBJECT = "stickerList"
+private const val ARG_PROGRAM_ID = "programID"
 
 interface FragmentClickListener {
     fun onClick(sticker: Sticker)
@@ -89,14 +94,16 @@ class RecentStickerFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val programId = arguments?.takeIf { it.containsKey(ARG_PROGRAM_ID) }?.getString(ARG_PROGRAM_ID)
+            ?: ""
         rvStickers.layoutManager = GridLayoutManager(context, 6)
         rvStickers.adapter = adapter
         super.onViewCreated(view, savedInstanceState)
-        updateRecentStickers()
+        updateRecentStickers(programId)
     }
 
-    fun updateRecentStickers() {
-        val stickers = getRecentStickers()
+    fun updateRecentStickers(programId : String) {
+        val stickers = getRecentStickers(programId)
         empty_recent_text?.visibility = if (stickers.isEmpty()) {
                 View.VISIBLE
             } else {

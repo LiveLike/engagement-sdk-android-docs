@@ -8,7 +8,7 @@ import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class StickerPackRepository(programId: String) {
+class StickerPackRepository(val programId: String) {
     private val endpoint = BuildConfig.CONFIG_URL + "sticker-packs/?program_id=$programId"
     private var stickerPackList: List<StickerPack>? = null
 
@@ -18,7 +18,10 @@ class StickerPackRepository(programId: String) {
                 stickerPackList = try {
                     val response = URL(endpoint).readText()
                     val stickerRes = Gson().fromJson(response, StickerPackResults::class.java)
-                    stickerRes.results
+                    stickerRes.results.apply {
+                        // Set the Current Program Id to all the stickers.
+                        forEach { it.stickers.forEach { st -> st.programId = programId } }
+                    }
                 } catch (e: Exception) {
                     listOf()
                 }
