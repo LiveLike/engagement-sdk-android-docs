@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.core.exceptionhelpers
 import com.livelike.engagementsdk.services.network.Result
 import java.io.IOException
 
+@Suppress("UNUSED_PARAMETER")
 internal fun safeCodeBlockCall(call: () -> Unit, errorMessage: String? = null) {
 
     return try {

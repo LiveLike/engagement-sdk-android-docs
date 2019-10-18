@@ -44,6 +44,7 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
 
+@Suppress("USELESS_ELVIS")
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     WidgetDataClient, ChatDataClient {
 
@@ -348,7 +349,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         )?.also {
             addPoints(it.newPoints ?: 0)
             analyticsService.registerSuperAndPeopleProperty(
-                "Lifetime Points" to (it.points?.toString() ?: "0")
+                "Lifetime Points" to (it.points.toString() ?: "0")
             )
         }
     }

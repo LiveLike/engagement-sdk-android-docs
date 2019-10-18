@@ -1,3 +1,5 @@
+@file:Suppress("UselessCallOnNotNull", "USELESS_ELVIS")
+
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context

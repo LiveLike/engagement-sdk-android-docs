@@ -1,4 +1,4 @@
-image: openjdk:11
+image: javiersantos/android-ci:latest
 
 clone:
   depth: full              # SonarCloud scanner needs the full history to assign issues properly
@@ -21,6 +21,18 @@ pipelines:                 # More info here: https://confluence.atlassian.com/bi
   branches:
     master:
       - step: *build-test-sonarcloud
+      - step:
+          script:
+            - pipe: bugsnag-integrations/bugsnag-build-report:0.2.2
+              variables:
+                API_KEY: 'abb12b7b7d7868c07733e3e3808656c8'
+    develop:
+      - step: *build-test-sonarcloud
+      - step:
+          script:
+            - pipe: bugsnag-integrations/bugsnag-build-report:0.2.2
+              variables:
+                API_KEY: 'abb12b7b7d7868c07733e3e3808656c8'
   pull-requests:
     '**':
       - step: *build-test-sonarcloud

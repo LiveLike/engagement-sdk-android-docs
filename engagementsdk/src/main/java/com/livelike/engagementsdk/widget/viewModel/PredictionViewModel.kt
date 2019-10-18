@@ -210,6 +210,7 @@ internal class PredictionViewModel(
         interactionData.reset()
     }
 
+    @Suppress("USELESS_ELVIS")
     private suspend fun vote() {
         data.currentData?.let {
             adapter?.apply {

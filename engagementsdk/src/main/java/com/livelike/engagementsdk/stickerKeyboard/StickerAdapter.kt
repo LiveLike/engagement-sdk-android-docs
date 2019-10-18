@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.livelike.engagementsdk.stickerKeyboard
 
 import android.os.Bundle
