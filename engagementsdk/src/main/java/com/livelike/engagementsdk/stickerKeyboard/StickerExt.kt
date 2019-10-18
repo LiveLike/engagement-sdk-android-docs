@@ -36,7 +36,7 @@ fun Matcher.countMatches(): Int {
     return counter
 }
 
-fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, size: Int = 50, onComplete: (() -> Unit)? = null) {
+fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, size: Int = 50, onMatch: (() -> Unit)? = null) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
     existingSpans?.forEach { imageSpan ->
@@ -54,7 +54,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
         if (url.isNullOrEmpty() || // No url for this shortcode
             existingSpanPositions.contains(startIndex) // The shortcode has already been replaced by an image
         ) {
-            onComplete?.invoke()
+            onMatch?.invoke()
             continue
         }
 
@@ -77,7 +77,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
                             drawable.start()
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            onComplete?.invoke()
+                            onMatch?.invoke()
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }
@@ -99,7 +99,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
                             setupBounds(drawable, edittext_chat_message, size)
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            onComplete?.invoke()
+                            onMatch?.invoke()
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }
