@@ -49,7 +49,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
         viewModel.stickerPacks.subscribe(javaClass) {
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
-                val stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context as AppCompatActivity).supportFragmentManager, stickerPacks) { s -> listener?.onClick(s) }
+                val stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context as AppCompatActivity).supportFragmentManager, stickerPacks, stickerPackRepository.programId) { s -> listener?.onClick(s) }
                 pager.adapter = stickerCollectionPagerAdapter
                 pager_tab.setupWithViewPager(pager)
                 pager_tab.getTabAt(0)?.customView = createTabItemView()

@@ -73,7 +73,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
         val client = OkHttpClient()
         val formBody = FormBody.Builder()
-            .add("session_id", getSessionId())
+            .add("session_id", getSessionId()) // TODO: The session id should come from the parameters
             .build()
         try {
             val request = Request.Builder()
