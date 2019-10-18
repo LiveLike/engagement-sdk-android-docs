@@ -47,7 +47,7 @@ internal data class ProgramModel(
     val reaction_packs_url: String?
 )
 
-internal fun ProgramModel.toProgram() : Program {
+internal fun ProgramModel.toProgram(): Program {
     return Program(programUrl ?: "",
         timelineUrl ?: "",
         rankUrl ?: "",
@@ -61,7 +61,7 @@ internal fun ProgramModel.toProgram() : Program {
         rewardsType ?: "",
         leaderboard_url ?: "",
         sticker_packs_url ?: "",
-        reaction_packs_url ?:""
+        reaction_packs_url ?: ""
     )
 }
 

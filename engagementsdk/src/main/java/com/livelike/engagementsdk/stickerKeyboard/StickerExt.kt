@@ -5,32 +5,28 @@ import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
-import android.util.Log
 import android.widget.EditText
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.utils.AndroidResource
-import pl.droidsonroids.gif.GifDrawable
 import java.io.IOException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
+import pl.droidsonroids.gif.GifDrawable
 
-
-fun String.findStickers() : Matcher
-{
+fun String.findStickers(): Matcher {
     val regex = ":[^ :\\s]*:"
-    val pattern = Pattern.compile (regex)
-    return pattern.matcher (this)
+    val pattern = Pattern.compile(regex)
+    return pattern.matcher(this)
 }
 
-fun String.findIsOnlyStickers() : Matcher
-{
+fun String.findIsOnlyStickers(): Matcher {
     val regex = "(:[^ :\\s]*:)+"
-    val pattern = Pattern.compile (regex)
-    return pattern.matcher (this)
+    val pattern = Pattern.compile(regex)
+    return pattern.matcher(this)
 }
 
 fun Matcher.countMatches(): Int {
@@ -40,7 +36,7 @@ fun Matcher.countMatches(): Int {
     return counter
 }
 
-fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, size : Int = 50, onComplete: (()->Unit)? = null) {
+fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, size: Int = 50, onComplete: (() -> Unit)? = null) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
     existingSpans?.forEach { imageSpan ->
@@ -55,14 +51,14 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
         val startIndex = matcher.start()
         val end = matcher.end()
 
-        if (url.isNullOrEmpty() // No url for this shortcode
-            || existingSpanPositions.contains(startIndex) // The shortcode has already been replaced by an image
+        if (url.isNullOrEmpty() || // No url for this shortcode
+            existingSpanPositions.contains(startIndex) // The shortcode has already been replaced by an image
         ) {
             onComplete?.invoke()
             continue
         }
 
-        if(url.contains(".gif")){
+        if (url.contains(".gif")) {
             Glide.with(context)
                 .`as`(ByteArray::class.java)
                 .load(url)
@@ -82,15 +78,12 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onComplete?.invoke()
-
-                        } catch (e : IOException) {
+                        } catch (e: IOException) {
                             e.printStackTrace()
                         }
-
-
                     }
                 })
-        }else{
+        } else {
             Glide.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -107,25 +100,19 @@ fun replaceWithStickers(s: Spannable?, context : Context, stickerPackRepository:
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onComplete?.invoke()
-                        } catch (e : IOException) {
+                        } catch (e: IOException) {
                             e.printStackTrace()
                         }
-
-
                     }
                 })
         }
-
-
     }
-
-
 }
 
 private fun setupBounds(
     drawable: Drawable,
     edittext_chat_message: EditText?,
-    overrideSize : Int
+    overrideSize: Int
 ) {
     val padding = AndroidResource.dpToPx(8)
     val ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()

@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.data.models.RewardsType
@@ -32,6 +33,7 @@ class PointsTutorialView(context: Context, attr: AttributeSet? = null) : Specifi
                 if (rewardType == RewardsType.BADGES) {
                     postDelayed({
                         points_progression_meter_switcher.showNext()
+                        progressionMeterView.visibility = View.GONE
                         wouldShowProgressionMeter(
                             rewardType,
                             programGamificationProfile,
