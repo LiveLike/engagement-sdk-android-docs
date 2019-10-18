@@ -16,6 +16,7 @@ import pl.droidsonroids.gif.GifDrawable
 import java.io.IOException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.math.roundToInt
 
 
 fun String.findStickers() : Matcher
@@ -127,19 +128,21 @@ private fun setupBounds(
     overrideSize : Int
 ) {
     val padding = AndroidResource.dpToPx(8)
+    val ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()
+    val ratioHeight = drawable.intrinsicHeight.toFloat()/overrideSize.toFloat()
     if (edittext_chat_message != null && overrideSize > edittext_chat_message.width) {
         drawable.setBounds(
             0,
             padding,
-            edittext_chat_message.width,
+            (edittext_chat_message.width*ratioWidth).roundToInt(),
             edittext_chat_message.width+padding
         )
     } else {
         drawable.setBounds(
             0,
             padding,
-            overrideSize,
-            overrideSize+padding
+            (overrideSize*ratioWidth).roundToInt(),
+            (overrideSize*ratioHeight).roundToInt()+padding
         )
     }
 }
