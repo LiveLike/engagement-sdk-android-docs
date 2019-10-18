@@ -79,6 +79,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
         const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
         private const val CHAT_MINIMUM_SIZE_DP = 292
+        private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 
     private val uiScope = CoroutineScope(Dispatchers.Main)
@@ -541,7 +542,13 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     private fun snapToLive() {
         chatdisplay?.let { rv ->
             viewModel?.chatAdapter?.itemCount?.let {
-                rv.smoothScrollToPosition(it)
+                val lm = rv.layoutManager as LinearLayoutManager
+                val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
+                if(lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT){
+                    rv.smoothScrollToPosition(it)
+                }else{
+                    rv.scrollToPosition(it-1)
+                }
             }
         }
     }
