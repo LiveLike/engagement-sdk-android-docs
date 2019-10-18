@@ -26,7 +26,7 @@ internal class ResultDrawable(
     private val FRAME_DELAY = (1000 / 60).toLong() // 60 fps
     private var mRunning = false
     private var mStartTime: Long = 0
-    private val mDurationMs = 1000 // in ms
+    private val mDurationMs = 500 // in ms
 
     val mLottieDrawable: LottieDrawable = LottieDrawable()
 
@@ -68,19 +68,25 @@ internal class ResultDrawable(
             canvas.save()
             canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
             val barRect = RectF()
-            barRect.set(
-                0f,
-                bounds.height() / 2f - trackHeight / 2,
-                bounds.width().toFloat(),
-                bounds.height() / 2f + trackHeight / 2
-            )
             if (isRunning) {
                 val elapsed = (SystemClock.uptimeMillis() - mStartTime).toFloat()
                 val rawProgress = elapsed / mDurationMs
                 val progress = mInterpolator.getInterpolation(rawProgress)
                 alpha = (progress * 255).toInt()
+                barRect.set(
+                    0f,
+                    bounds.height() / 2f - trackHeight / 2,
+                    bounds.width().toFloat() * progress,
+                    bounds.height() / 2f + trackHeight / 2
+                )
             } else {
                 alpha = 255
+                barRect.set(
+                    0f,
+                    bounds.height() / 2f - trackHeight / 2,
+                    bounds.width().toFloat(),
+                    bounds.height() / 2f + trackHeight / 2
+                )
             }
             canvas.drawRoundRect(barRect, trackHeight / 2, trackHeight / 2, resultGradient)
             canvas.restore()
