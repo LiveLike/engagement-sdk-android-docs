@@ -89,7 +89,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     vote1.toFloat()
                 )
 
-
                 var vote2 = (team2.vote_count ?: 1)
                 if (vote2 == 0) vote2 = 1
                 txt_cheer_meter_team_2.layoutParams = LinearLayout.LayoutParams(
@@ -133,7 +132,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         repeatCount = Animation.INFINITE
                         setAnimationListener(object : Animation.AnimationListener {
                             override fun onAnimationRepeat(animation: Animation?) {
-
                             }
 
                             override fun onAnimationStart(animation: Animation?) {
@@ -156,7 +154,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                         optionList[0].vote_url?.let { url ->
                                             startDemo(url, optionList[0])
                                         }
-
                                     }, 400)
                                 }
                             }
@@ -172,7 +169,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         repeatCount = Animation.INFINITE
                         setAnimationListener(object : Animation.AnimationListener {
                             override fun onAnimationRepeat(animation: Animation?) {
-
                             }
 
                             override fun onAnimationStart(animation: Animation?) {
@@ -211,7 +207,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                     if (viewModel?.teamSelected == 1) {
                                         img_logo_team_1.animate().rotation(0F).setDuration(50)
                                             .start()
-
                                     }
                                     if (viewModel?.teamSelected == 2) {
                                         img_logo_team_2.animate().rotation(0F).setDuration(50)
@@ -285,10 +280,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                 img_logo_team_1.setOnClickListener {
                     viewModel?.teamSelected = 1
-                    //We are the clearing the animation which trigger the animaition end listener and there all further processing is implemented
+                    // We are the clearing the animation which trigger the animaition end listener and there all further processing is implemented
                     img_logo_team_1.clearAnimation()
                     img_logo_team_2.clearAnimation()
-
                 }
                 img_logo_team_2.setOnClickListener {
                     viewModel?.teamSelected = 2
@@ -303,7 +297,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 repeatCount = 0
                 playAnimation()
             }
-
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             showEggerView(animationLength)
@@ -350,9 +343,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             val listener = object : Animator.AnimatorListener {
                 private lateinit var runnable: Runnable
 
-
                 override fun onAnimationRepeat(animation: Animator?) {
-
                 }
 
                 override fun onAnimationEnd(animation: Animator?) {
@@ -360,7 +351,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 }
 
                 override fun onAnimationCancel(animation: Animator?) {
-
                 }
 
                 override fun onAnimationStart(animation: Animator?) {
@@ -376,8 +366,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             view_ripple_demo.postDelayed(runnable, 1000L)
                         } else {
                             txt_cheer_meter_timer_demo.text = "GO!"
-                            //Finish with Demo
-                            //Start Voting
+                            // Finish with Demo
+                            // Start Voting
                             view_ripple_demo.postDelayed({
                                 startVoting(voteUrl, option)
                             }, 700)
@@ -401,7 +391,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     startVoting(voteUrl, option)
                 }, 700)
             }
-
         }
     }
 
@@ -413,7 +402,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         txt_my_score.visibility = View.VISIBLE
         view_ripple.isClickable = true
 
-
         viewModel?.animationEggTimerProgress = 0f
         selectedTeam = id
         txt_my_score.text = "0"
@@ -423,7 +411,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     v?.startAnimationFrom(it, 10000F, { t ->
                         viewModel?.animationEggTimerProgress = t
                     }, {
-                        //stop voting
+                        // stop voting
                         stopVoting()
                         viewModel?.dismissWidget(it)
                     })
@@ -487,7 +475,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         team1.id -> when {
                             (team1.vote_count ?: 0) > (team2.vote_count
                                 ?: 0) -> {
-                                //Winner
+                                // Winner
                                 img_winner_team.visibility = View.VISIBLE
                                 Glide.with(context)
                                     .load(selectedTeam.image_url)
@@ -495,7 +483,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                 animation.setAnimationListener(object :
                                     Animation.AnimationListener {
                                     override fun onAnimationRepeat(animation: Animation?) {
-
                                     }
 
                                     override fun onAnimationStart(animation: Animation?) {
@@ -504,31 +491,29 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                     override fun onAnimationEnd(animation: Animation?) {
                                         playWinnerAnimation()
                                     }
-
                                 })
                                 img_winner_team.startAnimation(animation)
-
                             }
                             (team1.vote_count ?: 0) < (team2.vote_count
                                 ?: 0) -> {
-                                //Loser
+                                // Loser
                                 img_winner_team.visibility = View.GONE
                                 playLoserAnimation()
                             }
                             else -> {
-                                //Draw
+                                // Draw
                             }
                         }
                         team2.id -> when {
                             (team1.vote_count ?: 0) > (team2.vote_count
                                 ?: 0) -> {
-                                //Loser
+                                // Loser
                                 img_winner_team.visibility = View.GONE
                                 playLoserAnimation()
                             }
                             (team1.vote_count ?: 0) < (team2.vote_count
                                 ?: 0) -> {
-                                //Winner
+                                // Winner
                                 img_winner_team.visibility = View.VISIBLE
                                 Glide.with(context)
                                     .load(selectedTeam.image_url)
@@ -536,7 +521,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                 animation.setAnimationListener(object :
                                     Animation.AnimationListener {
                                     override fun onAnimationRepeat(animation: Animation?) {
-
                                     }
 
                                     override fun onAnimationStart(animation: Animation?) {
@@ -545,13 +529,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                     override fun onAnimationEnd(animation: Animation?) {
                                         playWinnerAnimation()
                                     }
-
                                 })
                                 img_winner_team.startAnimation(animation)
-
                             }
                             else -> {
-                                //Draw
+                                // Draw
                             }
                         }
                     }
@@ -568,7 +550,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {
                 override fun onAnimationRepeat(animation: Animator?) {
-
                 }
 
                 override fun onAnimationEnd(animation: Animator?) {
@@ -580,7 +561,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                 override fun onAnimationStart(animation: Animator?) {
                 }
-
             })
             playAnimation()
         }
@@ -594,7 +574,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {
                 override fun onAnimationRepeat(animation: Animator?) {
-
                 }
 
                 override fun onAnimationEnd(animation: Animator?) {
@@ -606,7 +585,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                 override fun onAnimationStart(animation: Animator?) {
                 }
-
             })
             playAnimation()
         }

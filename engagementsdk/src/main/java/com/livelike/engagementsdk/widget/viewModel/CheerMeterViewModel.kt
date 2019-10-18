@@ -32,7 +32,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 internal class CheerMeterWidget(
     val type: WidgetType,
     val resource: Resource
@@ -47,7 +46,6 @@ internal class CheerMeterViewModel(
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
-
 
     var teamSelected = 0
     var localVoteCount = 0
@@ -106,7 +104,7 @@ internal class CheerMeterViewModel(
             localVoteCount++
             voteCount++
             if (voteCount > VOTE_THRASHHOLD) {
-                //api call
+                // api call
                 pushVoteData(voteCount)
                 voteCount = 0
             } else {
@@ -131,7 +129,6 @@ internal class CheerMeterViewModel(
             }
         }
     }
-
 
     private fun initVote(url: String) {
         uiScope.launch {
@@ -213,6 +210,4 @@ internal class CheerMeterViewModel(
         currentWidgetType = null
         viewModelJob.cancel("Widget Cleanup")
     }
-
-
 }

@@ -55,7 +55,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             if (!isViewInflated) {
                 inflate(context, R.layout.widget_emoji_slider, this)
                 titleTextView.background =
-                    ColorDrawable(ContextCompat.getColor(context, R.color.livelike_transparent))
+                    ColorDrawable(ContextCompat.getColor(context, R.color.livelike_image_slider_header_bg))
                 titleView.title = resource.question
                 if (image_slider.progress == ImageSlider.INITIAL_POSITION)
                     image_slider.progress = entity.initialMagnitude

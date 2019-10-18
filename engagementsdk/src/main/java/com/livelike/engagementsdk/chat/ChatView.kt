@@ -544,10 +544,10 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             viewModel?.chatAdapter?.itemCount?.let {
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
-                if(lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT){
+                if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
                     rv.smoothScrollToPosition(it)
-                }else{
-                    rv.scrollToPosition(it-1)
+                } else {
+                    rv.scrollToPosition(it - 1)
                 }
             }
         }

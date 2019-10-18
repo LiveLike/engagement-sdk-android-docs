@@ -13,7 +13,6 @@ import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.domain.GamificationManager
 import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
@@ -57,7 +56,6 @@ internal abstract class WidgetViewModel<T : Resource>(
 
     val state: Stream<WidgetState> = SubscriptionManager()
     val currentVote: SubscriptionManager<String?> = SubscriptionManager()
-    val debouncer = currentVote.debounce()
 
     val gamificationProfile: Stream<ProgramGamificationProfile>?
         get() = programRepository?.programGamificationProfileStream
@@ -84,12 +82,7 @@ internal abstract class WidgetViewModel<T : Resource>(
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
-            if (debouncer.currentData != currentVote.currentData) {
-                debouncer.clear()
-                currentVote.currentData?.let { value ->
-                    vote(value)
-                }
-            }
+            delay(1000)
             state.onNext(WidgetState.SHOW_RESULTS)
             delay(1000)
             state.onNext(WidgetState.SHOW_GAMIFICATION)
@@ -109,7 +102,7 @@ internal abstract class WidgetViewModel<T : Resource>(
                     dismissWidget(DismissAction.TIMEOUT)
                     function?.invoke()
                 } else {
-                    state.onNext(WidgetState.CONFIRM_INTERACTION)
+                    state.onNext(WidgetState.LOCK_INTERACTION)
                     confirmInteraction()
                 }
                 timeoutStarted = false
@@ -130,9 +123,8 @@ internal abstract class WidgetViewModel<T : Resource>(
     }
 }
 
-// Help me! Team contribution is important for better namings.
 enum class WidgetState {
-    CONFIRM_INTERACTION, // It is to indicate current interaction is done.
+    LOCK_INTERACTION, // It is to indicate current interaction is done.
     SHOW_RESULTS, // It is to tell view to show results
     SHOW_GAMIFICATION,
     DISMISS
