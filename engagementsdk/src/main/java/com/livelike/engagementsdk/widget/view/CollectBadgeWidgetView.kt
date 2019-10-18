@@ -62,7 +62,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
             badge_iv.translationY + collect_badge_box.height / 2,
             LinearInterpolator()
         )
-        val badgeScaleUp = badge_iv.buildScaleAnimator(1f, 1.5f, 500)
+        val badgeScaleUp = badge_iv.buildScaleAnimator(1f, 1.7f, 1250)
 
         val badgeTranslateDownBox = badge_iv.buildTranslateYAnimator(
             300,
@@ -82,7 +82,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
         }
         animatorSet.play(badgeTranslateDownCenter).with(badgeScaleUp)
             .before(AnimatorSet().apply {
-                startDelay = 500
+                startDelay = 1000
                 playTogether(badgeTranslateDownBox, badgeScaleDown)
             })
         animatorSet.start()
