@@ -102,7 +102,7 @@ internal abstract class WidgetViewModel<T : Resource>(
                     dismissWidget(DismissAction.TIMEOUT)
                     function?.invoke()
                 } else {
-                    state.onNext(WidgetState.CONFIRM_INTERACTION)
+                    state.onNext(WidgetState.LOCK_INTERACTION)
                     confirmInteraction()
                 }
                 timeoutStarted = false
@@ -123,9 +123,8 @@ internal abstract class WidgetViewModel<T : Resource>(
     }
 }
 
-// Help me! Team contribution is important for better namings.
 enum class WidgetState {
-    CONFIRM_INTERACTION, // It is to indicate current interaction is done.
+    LOCK_INTERACTION, // It is to indicate current interaction is done.
     SHOW_RESULTS, // It is to tell view to show results
     SHOW_GAMIFICATION,
     DISMISS

@@ -42,7 +42,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
 
     protected open fun stateObserver(widgetState: WidgetState) {
         when (widgetState) {
-            WidgetState.CONFIRM_INTERACTION -> confirmInteraction()
+            WidgetState.LOCK_INTERACTION -> confirmInteraction()
             WidgetState.SHOW_RESULTS -> showResults()
             WidgetState.SHOW_GAMIFICATION -> rewardsObserver()
         }

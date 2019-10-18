@@ -38,7 +38,6 @@ internal class EmojiSliderWidgetViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-//            pubnub = PubnubMessagingClient(it).asBehaviourSubject()
             pubnub = PubnubMessagingClient(it)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
