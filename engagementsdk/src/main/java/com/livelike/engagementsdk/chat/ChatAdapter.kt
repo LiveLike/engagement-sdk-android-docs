@@ -89,13 +89,13 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
 
         private fun showFloatingUI() {
             v.chatBackground.alpha = 0.5f
-            ChatReactionPopupView(v.context, View.OnClickListener { view ->
+            ChatReactionPopupView(v.context, View.OnClickListener { _ ->
                 analyticsService.trackFlagButtonPressed()
                 hideFloatingUI()
                 v.context?.let { ctx ->
                     AlertDialog.Builder(ctx).apply {
                         setTitle(context.getString(R.string.flag_ui_title))
-                        setItems(dialogOptions.map { it.first }.toTypedArray()) { dialog, which ->
+                        setItems(dialogOptions.map { it.first }.toTypedArray()) { _, which ->
                             message?.let {
                                 dialogOptions[which].second.invoke(it)
                             }

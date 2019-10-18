@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.livelike.engagementsdk.core.exceptionhelpers
 
 import java.lang.reflect.InvocationHandler
@@ -33,6 +35,7 @@ internal fun <T : Any> T.safeProxyForEmptyReturnCalls(): T {
     ) as T
 }
 
+@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 internal fun <T> T.getTargetObject(): Any? {
     val clazz = (this as Object).getClass()
     return if (Proxy.isProxyClass(clazz)) {

@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.utils.animators
 
+@Suppress("unused", "CascadeIf", "NAME_SHADOWING")
 class BounceEaseOut(duration: Float) : BaseEasingMethod(duration) {
 
     override fun calculate(t: Float, b: Float, c: Float, d: Float): Float? {

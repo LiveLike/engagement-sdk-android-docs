@@ -35,12 +35,12 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
             viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
             viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
-            viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver(it) }
+            viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
         }
 
     private var inflated = false
 
-    private fun onClickObserver(it: String?) {
+    private fun onClickObserver() {
         viewModel?.onOptionClicked()
     }
 
@@ -50,7 +50,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
         viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
         viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
-        viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver(it) }
+        viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
     }
 
     private fun resourceObserver(widget: QuizWidget?) {

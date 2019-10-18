@@ -102,7 +102,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 val channels = cm.getChannels()
                 AlertDialog.Builder(this).apply {
                     setTitle("Choose a channel to watch!")
-                    setItems(channels.map { it.name }.toTypedArray()) { dialog, which ->
+                    setItems(channels.map { it.name }.toTypedArray()) { _, which ->
                         cm.selectedChannel = channels[which]
                         selectChannel(channels[which])
                     }

@@ -1,3 +1,5 @@
+@file:Suppress("UNNECESSARY_SAFE_CALL")
+
 package com.livelike.engagementsdk.widget.view
 
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
@@ -24,12 +26,12 @@ internal fun SpecifiedWidgetView.wouldShowProgressionMeter(
             } else {
                 it.newBadges?.max()!!
             }
-            nextBadgeToDisplay?.let { nextBadgeToDisplay ->
+            nextBadgeToDisplay?.let { nextBadge ->
                 progressionMeterView.animatePointsBadgeProgression(
                     it.points - it.newPoints,
                     it.newPoints,
-                    nextBadgeToDisplay.points,
-                    nextBadgeToDisplay.imageFile
+                    nextBadge.points,
+                    nextBadge.imageFile
                 )
             }
         }

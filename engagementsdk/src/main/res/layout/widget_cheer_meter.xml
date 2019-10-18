@@ -146,12 +146,11 @@
             <ImageView
                 android:id="@+id/img_tap_demo"
                 android:layout_width="50dp"
-                app:srcCompat="@drawable/ic_cheermeter_tapping"
                 android:layout_gravity="right|bottom|end"
                 android:layout_marginRight="45dp"
                 android:layout_marginBottom="25dp"
                 android:visibility="gone"
-                android:src="@drawable/ic_cheermeter_tapping"
+                app:srcCompat="@drawable/ic_cheermeter_tapping"
                 android:layout_height="50dp" />
 
             <LinearLayout

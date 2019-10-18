@@ -59,7 +59,7 @@ class LiveLikeApplication : Application() {
     fun createSession(sessionId: String, widgetInterceptor: WidgetInterceptor): LiveLikeContentSession {
         if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
-            session = sdk?.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {
+            session = sdk.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {
                 override fun getTimecode(): EpochTime {
                     return EpochTime(player.getPDT())
                 }

@@ -384,6 +384,7 @@ internal class ImageSlider @JvmOverloads constructor(
         }
     }
 
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     override fun onSaveInstanceState(): Parcelable? {
         // Force our ancestor class to save its state
         val superState = super.onSaveInstanceState()
@@ -396,7 +397,7 @@ internal class ImageSlider @JvmOverloads constructor(
         progress = ss.progress
     }
 
-    internal class SavedState : View.BaseSavedState {
+    internal class SavedState : BaseSavedState {
         var progress: Float = 0f
 
         /**

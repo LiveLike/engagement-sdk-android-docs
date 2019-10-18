@@ -1,3 +1,5 @@
+@file:Suppress("UNNECESSARY_SAFE_CALL", "UNCHECKED_CAST")
+
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
@@ -45,6 +47,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             WidgetState.CONFIRM_INTERACTION -> confirmInteraction()
             WidgetState.SHOW_RESULTS -> showResults()
             WidgetState.SHOW_GAMIFICATION -> rewardsObserver()
+            WidgetState.DISMISS -> {}
         }
     }
 
