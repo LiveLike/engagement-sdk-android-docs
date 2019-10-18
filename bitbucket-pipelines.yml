@@ -1,4 +1,4 @@
-image: uber/android-build-environment:latest
+image: javiersantos/android-ci:latest
 
 clone:
   depth: full              # SonarCloud scanner needs the full history to assign issues properly
