@@ -129,7 +129,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
                 if (event?.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK) {
                     if (sticker_keyboard.visibility == View.VISIBLE) {
-                        sticker_keyboard.visibility = View.GONE
+                        hideStickerKeyboard(KeyboardHideReason.BACK_BUTTON)
                         return true
                     }
                 }
@@ -239,7 +239,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             })
 
             button_emoji.setOnClickListener {
-                if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard()
+                if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
             }
         }
     }
@@ -337,8 +337,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
 
-            if (x < v.left || x > v.right || y < v.top || y > v.bottom) {
-                sticker_keyboard?.visibility = View.GONE
+            if (x < v.left || x > v.right || y < v.top || y > v.bottom){
+                hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
         }
@@ -408,7 +408,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                 setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
                         session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
-                        hideStickerKeyboard()
+                        hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
                     if (!hasFocus) {
                         hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
@@ -428,13 +428,15 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
     }
 
-    private fun hideStickerKeyboard() {
+    private fun hideStickerKeyboard(reason : KeyboardHideReason){
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
+        session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
     }
 
     private fun showStickerKeyboard() {
         uiScope.launch {
-            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+            session?.analyticService?.trackKeyboardOpen(KeyboardType.STICKER)
             delay(200) // delay to make sure the keyboard is hidden
             findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
         }
@@ -475,6 +477,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+        hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(

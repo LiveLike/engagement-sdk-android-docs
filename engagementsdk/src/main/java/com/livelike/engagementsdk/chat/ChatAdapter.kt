@@ -144,22 +144,16 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
                     when {
                         (isOnlyStickers && numberOfStickers == 1) -> {
                             val s = SpannableString(message.message)
-                            val tag = "contains_only_emoji_" + message.id
-                            chatMessage.tag = tag
-                            replaceWithStickers(s, context, stickerPackRepository, null, 200) {
-                                if (chatMessage.tag == tag) {
+                            replaceWithStickers(s, context, stickerPackRepository, null, 200){
+                                    // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
-                                }
                             }
                         }
                         atLeastOneSticker -> {
-                            val tag = "contains_emoji_" + message.id
-                            chatMessage.tag = tag
                             val s = SpannableString(message.message)
-                            replaceWithStickers(s, context, stickerPackRepository, null) {
-                                if (chatMessage.tag == tag) {
+                            replaceWithStickers(s, context, stickerPackRepository, null){
+                                    // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
-                                }
                             }
                         }
                         else -> chatMessage.text = message.message

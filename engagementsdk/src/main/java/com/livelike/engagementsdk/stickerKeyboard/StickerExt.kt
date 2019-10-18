@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import java.io.IOException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.math.roundToInt
 import pl.droidsonroids.gif.GifDrawable
 
 fun String.findStickers(): Matcher {
@@ -35,7 +36,7 @@ fun Matcher.countMatches(): Int {
     return counter
 }
 
-fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, size: Int = 50, onComplete: (() -> Unit)? = null) {
+fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, size: Int = 50, onMatch: (() -> Unit)? = null) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
     existingSpans?.forEach { imageSpan ->
@@ -53,6 +54,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
         if (url.isNullOrEmpty() || // No url for this shortcode
             existingSpanPositions.contains(startIndex) // The shortcode has already been replaced by an image
         ) {
+            onMatch?.invoke()
             continue
         }
 
@@ -75,7 +77,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
                             drawable.start()
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            onComplete?.invoke()
+                            onMatch?.invoke()
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }
@@ -97,7 +99,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
                             setupBounds(drawable, edittext_chat_message, size)
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            onComplete?.invoke()
+                            onMatch?.invoke()
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }
@@ -113,19 +115,21 @@ private fun setupBounds(
     overrideSize: Int
 ) {
     val padding = AndroidResource.dpToPx(8)
+    val ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()
+    val ratioHeight = drawable.intrinsicHeight.toFloat()/overrideSize.toFloat()
     if (edittext_chat_message != null && overrideSize > edittext_chat_message.width) {
         drawable.setBounds(
             0,
             padding,
-            edittext_chat_message.width,
-            edittext_chat_message.width + padding
+            (edittext_chat_message.width*ratioWidth).roundToInt(),
+            edittext_chat_message.width+padding
         )
     } else {
         drawable.setBounds(
             0,
             padding,
-            overrideSize,
-            overrideSize + padding
+            (overrideSize*ratioWidth).roundToInt(),
+            (overrideSize*ratioHeight).roundToInt()+padding
         )
     }
 }
