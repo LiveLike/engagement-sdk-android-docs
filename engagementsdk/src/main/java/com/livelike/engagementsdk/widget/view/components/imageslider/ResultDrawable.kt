@@ -14,6 +14,7 @@ import android.os.SystemClock
 import android.view.animation.DecelerateInterpolator
 import com.airbnb.lottie.LottieCompositionFactory
 import com.airbnb.lottie.LottieDrawable
+import kotlin.math.max
 
 internal class ResultDrawable(
     val context: Context,
@@ -25,13 +26,17 @@ internal class ResultDrawable(
     private val FRAME_DELAY = (1000 / 60).toLong() // 60 fps
     private var mRunning = false
     private var mStartTime: Long = 0
-    private val mDurationMs = 1000 // in ms
+    private val mDurationMs = 500 // in ms
 
     val mLottieDrawable: LottieDrawable = LottieDrawable()
 
     val mInterpolator = DecelerateInterpolator()
 
     var mAverageProgress: Float? = null
+        set(value) {
+            field = value
+            value?.let { updateShader(bounds, value) }
+        }
 
     private val resultGradient = Paint(1)
     internal var totalHeight: Int = 0
@@ -63,45 +68,47 @@ internal class ResultDrawable(
             canvas.save()
             canvas.translate(bounds.left.toFloat(), bounds.top.toFloat())
             val barRect = RectF()
-            barRect.set(
-                0f,
-                bounds.height() / 2f - trackHeight / 2,
-                bounds.width().toFloat(),
-                bounds.height() / 2f + trackHeight / 2
-            )
             if (isRunning) {
                 val elapsed = (SystemClock.uptimeMillis() - mStartTime).toFloat()
                 val rawProgress = elapsed / mDurationMs
                 val progress = mInterpolator.getInterpolation(rawProgress)
-
                 alpha = (progress * 255).toInt()
-                canvas.drawRoundRect(barRect, trackHeight / 2, trackHeight / 2, resultGradient)
+                barRect.set(
+                    0f,
+                    bounds.height() / 2f - trackHeight / 2,
+                    bounds.width().toFloat() * progress,
+                    bounds.height() / 2f + trackHeight / 2
+                )
             } else {
                 alpha = 255
-                canvas.drawRoundRect(barRect, trackHeight / 2, trackHeight / 2, resultGradient)
+                barRect.set(
+                    0f,
+                    bounds.height() / 2f - trackHeight / 2,
+                    bounds.width().toFloat(),
+                    bounds.height() / 2f + trackHeight / 2
+                )
             }
+            canvas.drawRoundRect(barRect, trackHeight / 2, trackHeight / 2, resultGradient)
             canvas.restore()
         }
     }
 
-    private fun updateShader(rect: Rect) {
+    private fun updateShader(rect: Rect, value: Float) {
+        val left = max(value - .3f, 0f)
+        val right = max(value + .3f, 0f)
         resultGradient.shader = LinearGradient(
             0.0f,
-            rect.bottom.toFloat(),
             0.0f,
+            rect.right.toFloat(),
             rect.top.toFloat(),
-            sideColor,
-            centerColor,
+            intArrayOf(sideColor, sideColor, centerColor, sideColor, sideColor),
+            floatArrayOf(0f, left, value, right, 1f),
             Shader.TileMode.CLAMP
         )
     }
 
     override fun setAlpha(alpha: Int) {
         this.resultGradient.alpha = alpha
-    }
-
-    override fun onBoundsChange(bounds: Rect?) {
-        bounds?.let { updateShader(bounds) }
     }
 
     override fun start() {

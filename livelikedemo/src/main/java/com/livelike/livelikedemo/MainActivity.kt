@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             val channels = channelManager.getChannels()
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a channel to watch!")
-                setItems(channels.map { it.name }.toTypedArray()) { dialog, which ->
+                setItems(channels.map { it.name }.toTypedArray()) { _, which ->
                     channelManager.selectedChannel = channels[which]
                     events_label.text = channelManager.selectedChannel.name
                 }

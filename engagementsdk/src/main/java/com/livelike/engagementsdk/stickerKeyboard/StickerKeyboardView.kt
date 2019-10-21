@@ -18,8 +18,8 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
 
-class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : ConstraintLayout(context, attributes){
-    private lateinit var viewModel : StickerKeyboardViewModel
+class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) : ConstraintLayout(context, attributes) {
+    private lateinit var viewModel: StickerKeyboardViewModel
 
     init {
         LayoutInflater.from(context).inflate(R.layout.livelike_sticker_keyboard_pager, this, true)
@@ -27,7 +27,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : C
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
-        if(visibility == View.VISIBLE){
+        if (visibility == View.VISIBLE) {
             val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(changedView.windowToken, 0)
         }
@@ -44,19 +44,19 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : C
         return imageView
     }
 
-    fun setProgram(stickerPackRepository: StickerPackRepository, onLoaded: ((List<StickerPack>?)->Unit)? = null) {
+    fun setProgram(stickerPackRepository: StickerPackRepository, onLoaded: ((List<StickerPack>?) -> Unit)? = null) {
         viewModel = StickerKeyboardViewModel(stickerPackRepository)
-        viewModel.stickerPacks.subscribe(javaClass){
+        viewModel.stickerPacks.subscribe(javaClass) {
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
-                val stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context as AppCompatActivity).supportFragmentManager, stickerPacks){ s-> listener?.onClick(s)}
+                val stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context as AppCompatActivity).supportFragmentManager, stickerPacks, stickerPackRepository.programId) { s -> listener?.onClick(s) }
                 pager.adapter = stickerCollectionPagerAdapter
                 pager_tab.setupWithViewPager(pager)
                 pager_tab.getTabAt(0)?.customView = createTabItemView()
                 for (i in 0 until pager_tab.tabCount) {
-                    pager_tab.getTabAt(i+1)?.customView = createTabItemView(stickerPacks[i].file)
+                    pager_tab.getTabAt(i + 1)?.customView = createTabItemView(stickerPacks[i].file)
                 }
-                pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+                pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
                     override fun onPageScrollStateChanged(state: Int) {
                     }
 
@@ -67,11 +67,10 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet?=null) : C
                     ) {}
 
                     override fun onPageSelected(position: Int) {
-                        if(position == 0){
+                        if (position == 0) {
                             stickerCollectionPagerAdapter.refreshRecents()
                         }
                     }
-
                 })
             }
             viewModel.preload(context)

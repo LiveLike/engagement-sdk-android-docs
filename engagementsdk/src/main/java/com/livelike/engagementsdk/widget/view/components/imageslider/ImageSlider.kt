@@ -266,8 +266,7 @@ internal class ImageSlider @JvmOverloads constructor(
         resultDrawable?.draw(canvas)
         drawThumb(canvas)
         resultDrawable?.let {
-//            canvas.translate((averageProgress?:0f) * trackDrawable!!.bounds.width(), -30f)
-            canvas.translate((((averageProgress ?: 0f) * trackDrawable.bounds.width()) + trackDrawable.bounds.left), (-AndroidResource.dpToPx(10)).toFloat())
+            canvas.translate((((averageProgress ?: 0f) * trackDrawable.bounds.width()) + trackDrawable.bounds.left), 0f)
             it.mLottieDrawable.draw(canvas)
         }
     }
@@ -385,6 +384,7 @@ internal class ImageSlider @JvmOverloads constructor(
         }
     }
 
+    @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     override fun onSaveInstanceState(): Parcelable? {
         // Force our ancestor class to save its state
         val superState = super.onSaveInstanceState()
@@ -397,7 +397,7 @@ internal class ImageSlider @JvmOverloads constructor(
         progress = ss.progress
     }
 
-    internal class SavedState : View.BaseSavedState {
+    internal class SavedState : BaseSavedState {
         var progress: Float = 0f
 
         /**

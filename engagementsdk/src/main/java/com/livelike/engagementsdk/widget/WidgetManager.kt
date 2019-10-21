@@ -42,7 +42,10 @@ internal class WidgetManager(
 ) :
     MessagingClientProxy(upstream) {
 
-    data class MessageHolder(val messagingClient: MessagingClient, val clientMessage: ClientMessage) : Comparable<MessageHolder> {
+    data class MessageHolder(
+        val messagingClient: MessagingClient,
+        val clientMessage: ClientMessage
+    ) : Comparable<MessageHolder> {
         override fun compareTo(other: MessageHolder): Int {
             val thisRank = this.clientMessage.message.get("priority")?.asInt ?: 0
             val otherRank = other.clientMessage.message.get("priority")?.asInt ?: 0
@@ -57,13 +60,13 @@ internal class WidgetManager(
     init {
         // TODO BUG : unsubscribe old widget interceptor events. ANDSDK-468
         widgetInterceptorStream.subscribe(javaClass) { wi ->
-                wi?.events?.subscribe(javaClass.simpleName) {
+            wi?.events?.subscribe(javaClass.simpleName) {
                 when (it) {
                     WidgetInterceptor.Decision.Show -> showPendingMessage()
                     WidgetInterceptor.Decision.Dismiss -> dismissPendingMessage()
-                    }
                 }
             }
+        }
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -109,7 +112,8 @@ internal class WidgetManager(
     }
 
     private fun notifyIntegrator(message: MessageHolder) {
-        val widgetType = WidgetType.fromString(message.clientMessage.message.get("event").asString ?: "")
+        val widgetType =
+            WidgetType.fromString(message.clientMessage.message.get("event").asString ?: "")
         if (widgetInterceptorStream.latest() == null || widgetType == WidgetType.POINTS_TUTORIAL || widgetType == WidgetType.COLLECT_BADGE) {
             showWidgetOnScreen(message)
         } else {
@@ -149,7 +153,8 @@ internal class WidgetManager(
                     },
                     userRepository,
                     programRepository,
-                    animationEventsStream)
+                    animationEventsStream
+                )
             )
         }
 
@@ -181,6 +186,7 @@ internal class WidgetManager(
 }
 
 enum class WidgetType(val event: String) {
+    CHEER_METER("cheer-meter-created"),
     TEXT_PREDICTION("text-prediction-created"),
     TEXT_PREDICTION_FOLLOW_UP("text-prediction-follow-up-updated"),
     IMAGE_PREDICTION("image-prediction-created"),
@@ -211,5 +217,16 @@ internal fun MessagingClient.asWidgetManager(
     programRepository: ProgramRepository,
     animationEventsStream: SubscriptionManager<ViewAnimationEvents>
 ): WidgetManager {
-    return WidgetManager(this, dataClient, widgetInfosStream, context, widgetInterceptorStream, analyticsService, sdkConfiguration, userRepository, programRepository, animationEventsStream)
+    return WidgetManager(
+        this,
+        dataClient,
+        widgetInfosStream,
+        context,
+        widgetInterceptorStream,
+        analyticsService,
+        sdkConfiguration,
+        userRepository,
+        programRepository,
+        animationEventsStream
+    )
 }

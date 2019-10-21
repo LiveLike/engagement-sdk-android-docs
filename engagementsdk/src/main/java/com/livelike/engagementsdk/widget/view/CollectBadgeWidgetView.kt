@@ -76,6 +76,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
             startDelay = 500
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(p0: Animator?) {
+                    clipParents(true)
                     dismissFunc?.invoke(DismissAction.TIMEOUT)
                 }
             })

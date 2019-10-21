@@ -1,3 +1,5 @@
+@file:Suppress("UselessCallOnNotNull", "USELESS_ELVIS")
+
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
@@ -112,7 +114,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     viewModel?.dismissWidget(it)
                 } }
                 viewModel?.points?.let {
-                    if (!shouldShowPointTutorial()) {
+                    if (!shouldShowPointTutorial() && it > 0) {
                         pointView.startAnimation(it, true)
                         wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
                     }
@@ -135,7 +137,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 } }
 
                 viewModel?.points?.let {
-                    if (!shouldShowPointTutorial()) {
+                    if (!shouldShowPointTutorial() && it > 0) {
                         pointView.startAnimation(it, true)
                         wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
                     }

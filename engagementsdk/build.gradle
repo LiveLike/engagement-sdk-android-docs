@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'com.livelike'
@@ -41,7 +41,13 @@ android {
 
     dokka {
         outputFormat = 'html'
-        outputDirectory = "$buildDir/javadoc"
+        outputDirectory = "$buildDir/dokka"
+        configuration {
+            skipEmptyPackages = true
+            skipDeprecated = true
+            includeNonPublic = false
+            reportUndocumented = true
+        }
     }
 
     configurations {
@@ -86,7 +92,6 @@ dependencies {
     implementation "com.mixpanel.android:mixpanel-android:$mixpanelVersion"
 
     implementation "com.bugsnag:bugsnag-android:$bugsnagVersion"
-
 }
 
 repositories {

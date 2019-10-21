@@ -3,16 +3,23 @@ package com.livelike.engagementsdk.utils
 import android.util.Log
 import java.io.IOException
 
+/** The different verbosity types */
 enum class LogLevel(
     val code: Int,
     val logger: (String, String) -> Int,
     val exceptionLogger: (String, String, Throwable) -> Int
 ) {
+    /** Highly detailed level of logging, best used when trying to understand the working of a specific section/feature of the Engagement SDK. */
     Verbose(Log.VERBOSE, Log::v, Log::v),
+    /** Information that is diagnostically helpful to integrators and Engagement SDK developers. */
     Debug(Log.DEBUG, Log::d, Log::d),
+    /** Information that is always useful to have, but not vital. */
     Info(Log.INFO, Log::i, Log::i),
+    /** Information related to events that could potentially cause oddities, but the Engagement SDK will continue working as expected. */
     Warn(Log.WARN, Log::w, Log::w),
+    /** An error occurred that is fatal to a specific operation/component, but not the overall Engagement SDK. */
     Error(Log.ERROR, Log::e, Log::e),
+    /** No logging enabled. */
     None(Log.ASSERT + 1, { _, _ -> 0 }, { _, _, _ -> 0 })
 }
 
