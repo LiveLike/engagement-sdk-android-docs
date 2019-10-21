@@ -14,6 +14,7 @@ import android.view.animation.RotateAnimation
  * https://developer.android.com/guide/topics/graphics/prop-animation, https://www.programcreek.com/java-api-examples/index.php?api=android.animation.PropertyValuesHolder
  */
 
+@Suppress("UNUSED_PARAMETER")
 internal fun View.buildScaleAnimator(fromScale: Float, toScale: Float, duration: Long, interpolator: TimeInterpolator = BounceEaseOutInterpolator()): ObjectAnimator {
 
     val kf0 = Keyframe.ofFloat(0f, fromScale)

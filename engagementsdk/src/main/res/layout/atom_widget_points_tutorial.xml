@@ -68,11 +68,13 @@
         <com.livelike.engagementsdk.widget.view.components.PointView
             android:id="@+id/pointsTutoView"
             android:layout_width="wrap_content"
+            android:layout_gravity="center"
             android:layout_height="wrap_content" />
 
         <com.livelike.engagementsdk.widget.view.components.ProgressionMeterView
             android:id="@+id/progressionMeterView"
             android:layout_width="wrap_content"
+            android:layout_gravity="center"
             android:layout_height="wrap_content" />
 
     </ViewSwitcher>

@@ -52,7 +52,7 @@ internal class PollViewModel(
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
-//    TODO remove points for all view models and make it follow dry, move it to gamification stream
+    //    TODO remove points for all view models and make it follow dry, move it to gamification stream
     var points: SubscriptionManager<Int?> = SubscriptionManager(false)
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository.programGamificationProfileStream
@@ -86,12 +86,18 @@ internal class PollViewModel(
                     logDebug { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
                     Handler(Looper.getMainLooper()).post {
-                        results.onNext(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
+                        results.onNext(
+                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
+                        )
                     }
                 }
 
                 override fun onClientMessageError(client: MessagingClient, error: Error) {}
-                override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
+                override fun onClientMessageStatus(
+                    client: MessagingClient,
+                    status: ConnectionStatus
+                ) {
+                }
             })
         }
 
@@ -106,12 +112,18 @@ internal class PollViewModel(
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
 
         uiScope.launch {
-                adapter?.apply {
-                    val url = myDataset[selectedPosition].getMergedVoteUrl()
-                    url?.let { dataClient.voteAsync(it, myDataset[selectedPosition].id, userRepository.userAccessToken) }
+            adapter?.apply {
+                val url = myDataset[selectedPosition].getMergedVoteUrl()
+                url?.let {
+                    dataClient.voteAsync(
+                        it,
+                        myDataset[selectedPosition].id,
+                        userRepository.userAccessToken
+                    )
                 }
-                adapter?.showPercentage = true
-                adapter?.notifyDataSetChanged()
+            }
+            adapter?.showPercentage = true
+            adapter?.notifyDataSetChanged()
         }
     }
 
@@ -120,10 +132,16 @@ internal class PollViewModel(
             (WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_POLL ||
                     WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_POLL)
         ) {
-            val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
+            val resource =
+                gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.onNext(WidgetType.fromString(widgetInfos.type)?.let { PollWidget(it, resource) })
+                data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
+                    PollWidget(
+                        it,
+                        resource
+                    )
+                })
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -174,7 +192,13 @@ internal class PollViewModel(
                 }
             }
 
-            currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
+            currentWidgetType?.let {
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    interactionData
+                )
+            }
             delay(6000)
             dismissWidget(DismissAction.TIMEOUT)
         }

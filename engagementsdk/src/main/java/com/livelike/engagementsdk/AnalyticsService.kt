@@ -5,6 +5,8 @@ import android.util.Log
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
 import java.text.SimpleDateFormat
@@ -12,7 +14,16 @@ import java.util.Date
 import java.util.Locale
 import org.json.JSONObject
 
+/**
+ * The base interface for the analytics. This will log events to any remote analytics provider.
+ *
+ */
 interface AnalyticsService {
+    /**
+     * Set an analytics event observer {eventObserver}. It will intercept analytics events.
+     *
+     * @param eventObserver
+     */
     fun setEventObserver(eventObserver: (String, JSONObject) -> Unit)
 
     fun registerSuperProperty(analyticsSuperProperties: AnalyticsSuperProperties, value: Any?)
@@ -25,7 +36,7 @@ interface AnalyticsService {
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
     fun trackSessionStarted()
-    fun trackMessageSent(msgId: String, msgLength: Int)
+    fun trackMessageSent(msgId: String, msg : String)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
@@ -118,7 +129,7 @@ class MockAnalyticsService(private val programId: String = "") : AnalyticsServic
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
 
-    override fun trackMessageSent(msgId: String, msgLength: Int) {
+    override fun trackMessageSent(msgId: String, msg : String) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
@@ -353,7 +364,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
     private fun getKeyboardType(kType: KeyboardType): String {
         return when (kType) {
             KeyboardType.STANDARD -> "Standard"
-            KeyboardType.EMOJI -> "Emoji"
+            KeyboardType.STICKER -> "Sticker"
         }
     }
 
@@ -364,6 +375,8 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         val hideReason = when (hideMethod) {
             KeyboardHideReason.TAP_OUTSIDE -> "Dismissed Via Tap Outside"
             KeyboardHideReason.MESSAGE_SENT -> "Sent Message"
+            KeyboardHideReason.CHANGING_KEYBOARD_TYPE -> "Dismissed Via Changing Keyboard Type"
+            KeyboardHideReason.BACK_BUTTON ->"Dismissed Via Back Button"
         }
         properties.put("Keyboard Hide Method", hideReason)
         chatMessageId?.apply {
@@ -456,10 +469,11 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         }
     }
 
-    override fun trackMessageSent(msgId: String, msgLength: Int) {
+    override fun trackMessageSent(msgId: String, msg : String) {
         val properties = JSONObject()
         properties.put("Chat Message ID", msgId)
-        properties.put("Character Length", msgLength)
+        properties.put("Character Length", msg.length)
+        properties.put("Sticker Count", msgId.findStickers().countMatches())
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
         eventObservers[programId]?.invoke(KEY_CHAT_MESSAGE_SENT, properties)
 
@@ -579,12 +593,14 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
 
 enum class KeyboardHideReason {
     MESSAGE_SENT,
-    TAP_OUTSIDE
+    CHANGING_KEYBOARD_TYPE,
+    TAP_OUTSIDE,
+    BACK_BUTTON
 }
 
 enum class KeyboardType {
     STANDARD,
-    EMOJI
+    STICKER
 }
 
 enum class DismissAction {

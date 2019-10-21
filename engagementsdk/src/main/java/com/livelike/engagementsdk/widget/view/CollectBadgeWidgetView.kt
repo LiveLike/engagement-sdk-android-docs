@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.content.Context
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.animation.LinearInterpolator
 import com.livelike.engagementsdk.DismissAction
@@ -21,14 +22,15 @@ import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.bad
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.collect_badge_box
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.collect_badge_button
 
-class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
+    SpecifiedWidgetView(context, attr) {
     private var viewModel: CollectBadgeWidgetViewModel? = null
     override var widgetViewModel: ViewModel? = null
         set(value) {
             field = value
             viewModel = value as CollectBadgeWidgetViewModel
             viewModel?.run {
-                startDismissTimeout(5000) {
+                startInteractionTimeout(5000) {
                     removeAllViews()
                 }
                 animateView(badge)
@@ -60,7 +62,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
             badge_iv.translationY + collect_badge_box.height / 2,
             LinearInterpolator()
         )
-        val badgeScaleUp = badge_iv.buildScaleAnimator(1f, 1.5f, 500)
+        val badgeScaleUp = badge_iv.buildScaleAnimator(1f, 1.5f, 1200)
 
         val badgeTranslateDownBox = badge_iv.buildTranslateYAnimator(
             300,
@@ -74,13 +76,14 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) : Spe
             startDelay = 500
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(p0: Animator?) {
+                    clipParents(true)
                     dismissFunc?.invoke(DismissAction.TIMEOUT)
                 }
             })
         }
         animatorSet.play(badgeTranslateDownCenter).with(badgeScaleUp)
             .before(AnimatorSet().apply {
-                startDelay = 500
+                startDelay = 1000
                 playTogether(badgeTranslateDownBox, badgeScaleDown)
             })
         animatorSet.start()

@@ -6,7 +6,6 @@ import android.webkit.URLUtil
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.google.gson.stream.MalformedJsonException
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
@@ -45,11 +44,23 @@ import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
 
+@Suppress("USELESS_ELVIS")
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     WidgetDataClient, ChatDataClient {
-    override suspend fun reportMessage(programId: String, message: ChatMessage, accessToken: String?) {
-        remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("programs/$programId/report/"), RequestType.POST, RequestBody.create(
-            MediaType.parse("application/json; charset=utf-8"), message.toReportMessageJson()), accessToken)
+
+    override suspend fun reportMessage(
+        programId: String,
+        message: ChatMessage,
+        accessToken: String?
+    ) {
+        remoteCall<LiveLikeUser>(
+            BuildConfig.CONFIG_URL.plus("programs/$programId/report/"),
+            RequestType.POST,
+            RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"), message.toReportMessageJson()
+            ),
+            accessToken
+        )
     }
 
     private val MAX_PROGRAM_DATA_REQUESTS = 13
@@ -62,7 +73,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
         val client = OkHttpClient()
         val formBody = FormBody.Builder()
-            .add("session_id", getSessionId())
+            .add("session_id", getSessionId()) // TODO: The session id should come from the parameters
             .build()
         try {
             val request = Request.Builder()
@@ -123,7 +134,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         }
 
                         else -> {
-                            val parsedObject = gson.fromJson(response.body()?.string(), ProgramModel::class.java)
+                            val programJsonString = response.body()?.string()
+                            val parsedObject = gson.fromJson(programJsonString, ProgramModel::class.java)
                                 ?: error("Program data was null")
 
                             if (parsedObject.programUrl == null) {
@@ -140,12 +152,16 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
     }
 
-    override fun getEngagementSdkConfig(url: String, responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit) {
+    override fun getEngagementSdkConfig(
+        url: String,
+        responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit
+    ) {
         GlobalScope.launch {
-            val result = remoteCall<EngagementSDK.SdkConfiguration>(url, RequestType.GET, null, null)
-            if(result is Result.Success){
+            val result =
+                remoteCall<EngagementSDK.SdkConfiguration>(url, RequestType.GET, null, null)
+            if (result is Result.Success) {
                 responseCallback.invoke(result.data)
-            }else{
+            } else {
                 logError { "The client id is incorrect. Check your configuration." }
             }
         }
@@ -168,13 +184,18 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         )
     }
 
-    override fun createUserData(clientId: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit) {
+    override fun createUserData(
+        clientId: String,
+        responseCallback: (livelikeUser: LiveLikeUser) -> Unit
+    ) {
         client.newCall(
             Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/")).addUserAgent()
-                .post(RequestBody.create(
-                    null,
-                    ByteArray(0)
-                ))
+                .post(
+                    RequestBody.create(
+                        null,
+                        ByteArray(0)
+                    )
+                )
                 .build()
         ).enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
@@ -200,7 +221,11 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         })
     }
 
-    override fun getUserData(clientId: String, accessToken: String, responseCallback: (livelikeUser: LiveLikeUser?) -> Unit) {
+    override fun getUserData(
+        clientId: String,
+        accessToken: String,
+        responseCallback: (livelikeUser: LiveLikeUser?) -> Unit
+    ) {
         client.newCall(
             Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"))
                 .addUserAgent()
@@ -209,20 +234,20 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                 .build()
         ).enqueue(object : Callback {
             override fun onResponse(call: Call?, response: Response) {
-                    try {
-                        val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
-                        val user = LiveLikeUser(
-                            responseData.extractStringOrEmpty("id"),
-                            responseData.extractStringOrEmpty("nickname"),
-                            accessToken,
-                            responseData.extractBoolean("widgets_enabled"),
-                            responseData.extractBoolean("chat_enabled")
-                        )
-                        logVerbose { user }
-                        mainHandler.post { responseCallback.invoke(user) }
-                    } catch (e: java.lang.Exception) {
-                        logError { e }
-                    }
+                try {
+                    val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                    val user = LiveLikeUser(
+                        responseData.extractStringOrEmpty("id"),
+                        responseData.extractStringOrEmpty("nickname"),
+                        accessToken,
+                        responseData.extractBoolean("widgets_enabled"),
+                        responseData.extractBoolean("chat_enabled")
+                    )
+                    logVerbose { user }
+                    mainHandler.post { responseCallback.invoke(user) }
+                } catch (e: java.lang.Exception) {
+                    logError { e }
+                }
             }
 
             override fun onFailure(call: Call?, e: IOException?) {
@@ -232,11 +257,22 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     }
 
     override suspend fun patchUser(clientId: String, userJson: JsonObject, accessToken: String?) {
-        remoteCall<LiveLikeUser>(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"), RequestType.PATCH, RequestBody.create(
-            MediaType.parse("application/json; charset=utf-8"), userJson.toString()), accessToken)
+        remoteCall<LiveLikeUser>(
+            BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"),
+            RequestType.PATCH,
+            RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"), userJson.toString()
+            ),
+            accessToken
+        )
     }
 
-    internal suspend inline fun <reified T : Any> remoteCall(url: String, requestType: RequestType, requestBody: RequestBody? = null, accessToken: String?): Result<T> {
+    internal suspend inline fun <reified T : Any> remoteCall(
+        url: String,
+        requestType: RequestType,
+        requestBody: RequestBody? = null,
+        accessToken: String?
+    ): Result<T> {
         return safeRemoteApiCall({
             withContext(Dispatchers.IO) {
                 logDebug { "url : $url" }
@@ -249,16 +285,16 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                 val call = client.newCall(request)
                 val execute = call.execute()
 //               TODO add more network handling cases and remove !!, generic exception
-                    if (execute.isSuccessful) {
-                        val responseString = execute.body()?.string()
-                        val data: T = gson.fromJson<T>(
-                            responseString,
-                            T::class.java
-                        )
-                        Result.Success(data)
-                    } else {
-                        Result.Error(IOException("response code : {$execute.code()} - ${execute.message()}"))
-                    }
+                if (execute.isSuccessful) {
+                    val responseString = execute.body()?.string()
+                    val data: T = gson.fromJson<T>(
+                        responseString,
+                        T::class.java
+                    )
+                    Result.Success(data)
+                } else {
+                    Result.Error(IOException("response code : {$execute.code()} - ${execute.message()}"))
+                }
             }
         })
     }
@@ -268,30 +304,60 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     var voteUrl = ""
     private val singleRunner = SingleRunner()
 
-    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?) {
+    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?, body: RequestBody?) {
         singleRunner.afterPrevious {
             if (voteUrl.isEmpty()) {
-                voteUrl = postAsync(widgetVotingUrl, accessToken).extractStringOrEmpty("url")
+                voteUrl = postAsync(widgetVotingUrl, accessToken, body).extractStringOrEmpty("url")
             } else {
-                putAsync(voteUrl, FormBody.Builder()
+                putAsync(voteUrl, (body ?: FormBody.Builder()
                     .add("option_id", voteId)
                     .add("choice_id", voteId)
-                    .build(), accessToken)
+                    .build()), accessToken)
             }
         }
     }
 
-    override suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile? {
-        return gson.fromJson(postAsync(rewardUrl, accessToken), ProgramGamificationProfile::class.java)?.also {
-            addPoints(it.newPoints ?: 0)
-            analyticsService.registerSuperAndPeopleProperty("Lifetime Points" to (it.points?.toString() ?: "0"))
+    override suspend fun voteAsync(
+        widgetVotingUrl: String,
+        voteCount: Int,
+        accessToken: String?,
+        isUpdate: Boolean
+    ): String {
+        if (isUpdate) {
+            return singleRunner.afterPrevious {
+                return@afterPrevious patchWithBodyAsync(
+                    widgetVotingUrl, "{\"vote_count\":$voteCount}", accessToken
+                ).extractStringOrEmpty("url")
+            }
+        } else {
+            return singleRunner.afterPrevious {
+                return@afterPrevious postWithBodyAsync(
+                    widgetVotingUrl, "{\"vote_count\":$voteCount}", accessToken
+                ).extractStringOrEmpty("url")
+            }
         }
     }
 
-    private suspend fun postAsync(url: String, accessToken: String?) = suspendCoroutine<JsonObject> {
+    override suspend fun rewardAsync(
+        rewardUrl: String,
+        analyticsService: AnalyticsService,
+        accessToken: String?
+    ): ProgramGamificationProfile? {
+        return gson.fromJson(
+            postAsync(rewardUrl, accessToken),
+            ProgramGamificationProfile::class.java
+        )?.also {
+            addPoints(it.newPoints ?: 0)
+            analyticsService.registerSuperAndPeopleProperty(
+                "Lifetime Points" to (it.points.toString() ?: "0")
+            )
+        }
+    }
+
+    private suspend fun postAsync(url: String, accessToken: String?, body: RequestBody? = null) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
-            .post(RequestBody.create(null, ByteString.EMPTY))
+            .post(body ?: RequestBody.create(null, ByteString.EMPTY))
             .addUserAgent()
             .addAuthorizationBearer(accessToken)
             .build()
@@ -311,7 +377,32 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         })
     }
 
-    private suspend fun putAsync(url: String, body: FormBody, accessToken: String?) = suspendCoroutine<JsonObject> {
+    private suspend fun postWithBodyAsync(url: String, json: String, accessToken: String?) =
+        suspendCoroutine<JsonObject> {
+            val request = Request.Builder()
+                .url(url)
+                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json))
+                .addUserAgent()
+                .addAuthorizationBearer(accessToken)
+                .build()
+            val call = client.newCall(request)
+            call.enqueue(object : Callback {
+                override fun onResponse(call: Call?, response: Response) {
+                    try {
+                        it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
+                    } catch (e: Exception) {
+                        logError { e }
+                        it.resume(JsonObject())
+                    }
+                }
+
+                override fun onFailure(call: Call?, e: IOException?) {
+                    logError { e }
+                }
+            })
+        }
+
+    private suspend fun putAsync(url: String, body: RequestBody, accessToken: String?) = suspendCoroutine<JsonObject> {
         val request = Request.Builder()
             .url(url)
             .put(body)
@@ -334,4 +425,29 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
             }
         })
     }
+
+    private suspend fun patchWithBodyAsync(url: String, json: String, accessToken: String?) =
+        suspendCoroutine<JsonObject> {
+            val request = Request.Builder()
+                .url(url)
+                .patch(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json))
+                .addUserAgent()
+                .addAuthorizationBearer(accessToken)
+                .build()
+            val call = client.newCall(request)
+            call.enqueue(object : Callback {
+                override fun onResponse(call: Call?, response: Response) {
+                    try {
+                        it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
+                    } catch (e: Exception) {
+                        logError { e }
+                        it.resume(JsonObject())
+                    }
+                }
+
+                override fun onFailure(call: Call?, e: IOException?) {
+                    logError { e }
+                }
+            })
+        }
 }
