@@ -13,6 +13,7 @@ import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.PNCallback
 import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.history.PNHistoryResult
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Can Replay messages by the no of counts provided if available in history, u can think of it as a Rx replay subject.
@@ -32,7 +33,7 @@ internal class PubnubMessagingClientReplay(
     private var pubnub: PubNub = upstream.pubnub
 
     private var channelLastMessageMap = mutableMapOf<String, ClientMessage>()
-    private val pendingChannelsForAddingReplay = mutableListOf<String>()
+    private val pendingChannelsForAddingReplay = CopyOnWriteArrayList<String>()
 
     override fun subscribe(channels: List<String>) {
         super.subscribe(channels)
