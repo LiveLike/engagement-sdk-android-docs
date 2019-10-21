@@ -111,7 +111,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.ChatView,
-            0, 0).apply {
+            0, 0
+        ).apply {
             try {
                 displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
             } finally {
@@ -390,9 +391,21 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
             edittext_chat_message.apply {
                 addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                    override fun beforeTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                    }
 
-                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                    override fun onTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                    }
 
                     override fun afterTextChanged(s: Editable) {
                         if (s.isNotEmpty()) {
@@ -519,10 +532,11 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         val translateAnimation = ObjectAnimator.ofFloat(
             snap_live,
             "translationY",
-            if (showingSnapToLive) 0f else dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION).toFloat()
+            if (showingSnapToLive) 0f else dpToPx(if (displayUserProfile) SNAP_TO_LIVE_ANIMATION_DESTINATION else 10).toFloat()
         )
         translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
-        val alphaAnimation = ObjectAnimator.ofFloat(snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
+        val alphaAnimation =
+            ObjectAnimator.ofFloat(snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
         alphaAnimation.duration = (SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION).toLong()
         alphaAnimation.addListener(object : Animator.AnimatorListener {
             override fun onAnimationEnd(animation: Animator) {
@@ -536,6 +550,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             override fun onAnimationCancel(animation: Animator) {}
             override fun onAnimationRepeat(animation: Animator) {}
         })
+
 
         snapToLiveAnimation = AnimatorSet()
         snapToLiveAnimation?.play(translateAnimation)?.with(alphaAnimation)
