@@ -14,11 +14,11 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.animators.buildRotationAnimator
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlin.math.min
 import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.gamification_badge_iv
 import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.new_badge_label
 import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.progression_meter_progress_view
 import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.progression_meter_text
+import kotlin.math.min
 
 class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
 
@@ -31,11 +31,20 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
     private var totalPointsToNextbadge: Int = 0
 
     init {
-        ConstraintLayout.inflate(context, com.livelike.engagementsdk.R.layout.atom_gamification_progression_meter, this)
+        ConstraintLayout.inflate(
+            context,
+            com.livelike.engagementsdk.R.layout.atom_gamification_progression_meter,
+            this
+        )
         visibility = View.GONE
     }
 
-    fun animatePointsBadgeProgression(currentPointsForNextBadge: Int, newPoints: Int, totalPointsNextBadge: Int, badgeIconURL: String) {
+    fun animatePointsBadgeProgression(
+        currentPointsForNextBadge: Int,
+        newPoints: Int,
+        totalPointsNextBadge: Int,
+        badgeIconURL: String
+    ) {
         visibility = View.VISIBLE
 
         gamification_badge_iv.loadImage(badgeIconURL, AndroidResource.dpToPx(30))
@@ -53,12 +62,30 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
                 colorMatrix.setSaturation(1f)
                 filter = ColorMatrixColorFilter(colorMatrix)
                 gamification_badge_iv.colorFilter = filter
-                gamification_badge_iv.buildRotationAnimator(500).apply {
+                gamification_badge_iv.buildRotationAnimator(2000).apply {
                     addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator?) {
                             super.onAnimationEnd(animation)
                             new_badge_label.visibility = View.VISIBLE
-                            new_badge_label.buildScaleAnimator(0f, 1f, 300).start()
+                            val listener = object : Animator.AnimatorListener {
+                                override fun onAnimationRepeat(animation: Animator?) {
+
+                                }
+
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    animate().translationY(60f).alpha(0f).setStartDelay(600).start()
+                                }
+
+                                override fun onAnimationCancel(animation: Animator?) {
+                                }
+
+                                override fun onAnimationStart(animation: Animator?) {
+                                }
+
+                            }
+                            val animator = new_badge_label.buildScaleAnimator(0f, 1f, 300)
+                            animator.addListener(listener)
+                            animator.start()
                         }
                     })
                 }.start()
@@ -66,15 +93,19 @@ class ProgressionMeterView(context: Context, attr: AttributeSet) : FrameLayout(c
         } else {
             new_badge_label.visibility = View.GONE
         }
-        ValueAnimator.ofInt(currentPointsForNextBadge, currentPointsForNextBadge + newPoints).apply {
-            addUpdateListener {
-                progression = it.animatedValue as Int
+        ValueAnimator.ofInt(currentPointsForNextBadge, currentPointsForNextBadge + newPoints)
+            .apply {
+                addUpdateListener {
+                    progression = it.animatedValue as Int
+                }
+                duration = 1000
+                start()
             }
-            duration = 1000
-            start()
-        }
         val startPercentage = (currentPointsForNextBadge / totalPointsToNextbadge.toFloat()) * 100
-        val endPercentage = min(100f, ((currentPointsForNextBadge + newPoints) / totalPointsToNextbadge.toFloat()) *100)
+        val endPercentage = min(
+            100f,
+            ((currentPointsForNextBadge + newPoints) / totalPointsToNextbadge.toFloat()) * 100
+        )
         ValueAnimator.ofInt(
             ((startPercentage * AndroidResource.dpToPx(100)) / 100).toInt(),
             (endPercentage.toInt() * AndroidResource.dpToPx(100) / 100).toInt()
