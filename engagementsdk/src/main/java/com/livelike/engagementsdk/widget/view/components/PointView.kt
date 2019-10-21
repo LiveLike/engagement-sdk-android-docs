@@ -96,7 +96,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
             override fun onAnimationRepeat(animation: Animator?) {}
 
             override fun onAnimationEnd(animation: Animator?) {
-//                if (hideOnEnd) visibility = View.GONE
+                clipParents(true)
                 if (hideOnEnd)
                     animate().translationY(60f).alpha(0f).setStartDelay(800).start()
             }

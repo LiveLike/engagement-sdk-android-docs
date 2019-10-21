@@ -62,7 +62,7 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
             badge_iv.translationY + collect_badge_box.height / 2,
             LinearInterpolator()
         )
-        val badgeScaleUp = badge_iv.buildScaleAnimator(1f, 1.7f, 1250)
+        val badgeScaleUp = badge_iv.buildScaleAnimator(1f, 1.5f, 1200)
 
         val badgeTranslateDownBox = badge_iv.buildTranslateYAnimator(
             300,

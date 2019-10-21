@@ -282,7 +282,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             gamification_badge_iv.visibility = View.VISIBLE
             gamification_badge_iv.loadImage(it.imageFile, dpToPx(14))
             if (animate) {
-                gamification_badge_iv.buildScaleAnimator(0f, 1f, 800).start()
+                gamification_badge_iv.buildScaleAnimator(0f, 1f, 1000).start()
             }
         }
     }
