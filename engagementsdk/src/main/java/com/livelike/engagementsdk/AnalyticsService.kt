@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import org.json.JSONObject
+import java.util.regex.Matcher
 
 /**
  * The base interface for the analytics. This will log events to any remote analytics provider.
@@ -245,7 +246,11 @@ internal var eventObservers: MutableMap<String, ((String, JSONObject) -> Unit)?>
 class MixpanelAnalytics(val context: Context, token: String?, private val programId: String) :
     AnalyticsService {
 
-    private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(context, token ?: "5c82369365be76b28b3716f260fbd2f5", programId)
+    private var mixpanel: MixpanelAPI = MixpanelExtension.getUniqueInstance(
+        context,
+        token ?: "5c82369365be76b28b3716f260fbd2f5",
+        programId
+    )
 
     companion object {
         const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
@@ -332,7 +337,9 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
     private fun getApplicationName(context: Context): String {
         val applicationInfo = context.applicationInfo
         val stringId = applicationInfo.labelRes
-        return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(stringId)
+        return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(
+            stringId
+        )
     }
 
     override fun trackLastChatStatus(status: Boolean) {
@@ -368,7 +375,11 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         }
     }
 
-    override fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String?) {
+    override fun trackKeyboardClose(
+        keyboardType: KeyboardType,
+        hideMethod: KeyboardHideReason,
+        chatMessageId: String?
+    ) {
         val properties = JSONObject()
         properties.put("Keyboard Type", getKeyboardType(keyboardType))
 
@@ -376,7 +387,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
             KeyboardHideReason.TAP_OUTSIDE -> "Dismissed Via Tap Outside"
             KeyboardHideReason.MESSAGE_SENT -> "Sent Message"
             KeyboardHideReason.CHANGING_KEYBOARD_TYPE -> "Dismissed Via Changing Keyboard Type"
-            KeyboardHideReason.BACK_BUTTON ->"Dismissed Via Back Button"
+            KeyboardHideReason.BACK_BUTTON -> "Dismissed Via Back Button"
         }
         properties.put("Keyboard Hide Method", hideReason)
         chatMessageId?.apply {
@@ -402,7 +413,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         val timeOfLastInteraction = parser.format(Date(interactionInfo.timeOfLastInteraction))
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
-        properties.put("First Tap Time", parser.format(Date(interactionInfo.timeOfFirstInteraction)))
+        properties.put(
+            "First Tap Time",
+            parser.format(Date(interactionInfo.timeOfFirstInteraction))
+        )
         properties.put("Last Tap Time", timeOfLastInteraction)
         properties.put("No of Taps", interactionInfo.interactionCount)
         properties.put("Points Earned", interactionInfo.pointEarned)
@@ -446,7 +460,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         JSONObject().apply {
             put(AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key, points)
             mixpanel.registerSuperProperties(this)
-            eventObservers[programId]?.invoke(AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key, this)
+            eventObservers[programId]?.invoke(
+                AnalyticsSuperProperties.POINTS_THIS_PROGRAM.key,
+                this
+            )
         }
     }
 
@@ -458,7 +475,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         eventObservers[programId]?.invoke(KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED, properties)
     }
 
-    override fun registerSuperProperty(analyticsSuperProperties: AnalyticsSuperProperties, value: Any?) {
+    override fun registerSuperProperty(
+        analyticsSuperProperties: AnalyticsSuperProperties,
+        value: Any?
+    ) {
         JSONObject().apply {
             put(analyticsSuperProperties.key, value ?: JsonNull.INSTANCE)
             mixpanel.registerSuperProperties(this)
@@ -469,11 +489,12 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         }
     }
 
-    override fun trackMessageSent(msgId: String, msg : String) {
+    override fun trackMessageSent(msgId: String, msg: String) {
         val properties = JSONObject()
         properties.put("Chat Message ID", msgId)
         properties.put("Character Length", msg.length)
-        properties.put("Sticker Count", msgId.findStickers().countMatches())
+        properties.put("Sticker Count", msg.findStickers().countMatches())
+        properties.put("Sticker Id", msg.findStickers().allMatches())
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
         eventObservers[programId]?.invoke(KEY_CHAT_MESSAGE_SENT, properties)
 
@@ -481,6 +502,14 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         val timeNow = parser.format(Date(System.currentTimeMillis()))
         superProp.put("Time of Last Chat Message", timeNow)
         mixpanel.registerSuperProperties(superProp)
+    }
+
+    private fun Matcher.allMatches() : List<String>{
+        val allMatches = mutableListOf<String>()
+        while (find()){
+            allMatches.add(group())
+        }
+        return allMatches
     }
 
     override fun trackWidgetDisplayed(kind: String, id: String) {
