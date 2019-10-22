@@ -313,7 +313,6 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         voteId: String?,
         accessToken: String?,
         body: RequestBody?,
-        voteCount: Int,
         ispatch: Boolean,
         ispost: Boolean
     ): String? {
