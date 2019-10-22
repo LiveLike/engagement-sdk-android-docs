@@ -125,14 +125,14 @@ internal class CheerMeterViewModel(
         voteUrl?.let {
             uiScope.launch {
                 if (voteCount > 0)
-                    dataClient.voteAsync(it, voteCount, "", true)
+                    dataClient.voteAsync(it, voteCount = voteCount, ispatch = true)
             }
         }
     }
 
     private fun initVote(url: String) {
         uiScope.launch {
-            voteUrl = dataClient.voteAsync(url, 0, "", false)
+            voteUrl = dataClient.voteAsync(url, voteCount = 0, ispost = true)
         }
     }
 
