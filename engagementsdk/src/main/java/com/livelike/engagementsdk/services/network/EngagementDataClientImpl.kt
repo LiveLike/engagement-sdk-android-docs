@@ -318,8 +318,14 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         ispost: Boolean
     ): String? {
         return singleRunner.afterPrevious {
-            if (body != null) {
-                if (voteUrl.isEmpty()) {
+            when {
+                ispatch -> return@afterPrevious patchWithBodyAsync(
+                    widgetVotingUrl, body, accessToken
+                ).extractStringOrEmpty("url")
+                ispost -> return@afterPrevious postWithBodyAsync(
+                    widgetVotingUrl, body, accessToken
+                ).extractStringOrEmpty("url")
+                body != null -> if (voteUrl.isEmpty()) {
                     voteUrl =
                         postAsync(widgetVotingUrl, accessToken, body).extractStringOrEmpty("url")
                 } else {
@@ -330,16 +336,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                             .build()), accessToken
                     )
                 }
-            } else {
-                when {
-                    ispatch -> return@afterPrevious patchWithBodyAsync(
-                        widgetVotingUrl, "{\"vote_count\":$voteCount}", accessToken
-                    ).extractStringOrEmpty("url")
-                    ispost -> return@afterPrevious postWithBodyAsync(
-                        widgetVotingUrl, "{\"vote_count\":$voteCount}", accessToken
-                    ).extractStringOrEmpty("url")
-                    else -> return@afterPrevious null
-                }
+                else -> return@afterPrevious null
             }
             return@afterPrevious null
         }
@@ -386,11 +383,11 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
             })
         }
 
-    private suspend fun postWithBodyAsync(url: String, json: String, accessToken: String?) =
+    private suspend fun postWithBodyAsync(url: String, body: RequestBody?, accessToken: String?) =
         suspendCoroutine<JsonObject> {
             val request = Request.Builder()
                 .url(url)
-                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json))
+                .post(body)
                 .addUserAgent()
                 .addAuthorizationBearer(accessToken)
                 .build()
@@ -436,11 +433,11 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
             })
         }
 
-    private suspend fun patchWithBodyAsync(url: String, json: String, accessToken: String?) =
+    private suspend fun patchWithBodyAsync(url: String, body: RequestBody?, accessToken: String?) =
         suspendCoroutine<JsonObject> {
             val request = Request.Builder()
                 .url(url)
-                .patch(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json))
+                .patch(body)
                 .addUserAgent()
                 .addAuthorizationBearer(accessToken)
                 .build()

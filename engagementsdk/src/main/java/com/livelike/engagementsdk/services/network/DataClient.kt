@@ -21,7 +21,7 @@ internal interface EngagementSdkDataClient {
 }
 
 internal interface WidgetDataClient {
-    suspend fun voteAsync(widgetVotingUrl: String, voteId: String?=null, accessToken: String?=null, body: RequestBody? = null, voteCount: Int=0, ispatch: Boolean=false, ispost: Boolean=false):String?
+    suspend fun voteAsync(widgetVotingUrl: String, voteId: String?=null, accessToken: String?=null, body: RequestBody? = null, ispatch: Boolean=false, ispost: Boolean=false):String?
     fun registerImpression(impressionUrl: String)
     suspend fun rewardAsync(rewardUrl: String, analyticsService: AnalyticsService, accessToken: String?): ProgramGamificationProfile?
 }

@@ -31,6 +31,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.RequestBody
 
 internal class CheerMeterWidget(
     val type: WidgetType,
@@ -125,14 +127,14 @@ internal class CheerMeterViewModel(
         voteUrl?.let {
             uiScope.launch {
                 if (voteCount > 0)
-                    dataClient.voteAsync(it, voteCount = voteCount, ispatch = true)
+                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"),"{\"vote_count\":$voteCount}"), ispatch = true)
             }
         }
     }
 
     private fun initVote(url: String) {
         uiScope.launch {
-            voteUrl = dataClient.voteAsync(url, voteCount = 0, ispost = true)
+            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"),"{\"vote_count\":0}"), ispost = true)
         }
     }
 
