@@ -78,9 +78,7 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(p0: View?): Boolean {
-            if (p0?.chat_nickname?.text?.contains("(Me)") == false) {
-                showFloatingUI()
-            }
+            showFloatingUI(p0?.chat_nickname?.text?.contains("(Me)") ?: false)
             return true
         }
         override fun onClick(p0: View?) {
@@ -97,7 +95,7 @@ internal class ChatRecyclerAdapter(
             hideFloatingUI()
         }
 
-        private fun showFloatingUI() {
+        private fun showFloatingUI(isOwnMessage: Boolean) {
             v.chatBackground.alpha = 0.5f
             val locationOnScreen = v.getLocationOnScreen()
             ChatReactionPopupView(
@@ -119,8 +117,9 @@ internal class ChatRecyclerAdapter(
                         }.show()
                     }
                 },
-                ::hideFloatingUI
-            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x, locationOnScreen.y - AndroidResource.dpToPx(8))
+                ::hideFloatingUI,
+                isOwnMessage
+            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + AndroidResource.dpToPx(8), locationOnScreen.y - AndroidResource.dpToPx(40))
         }
 
         private fun hideFloatingUI() {

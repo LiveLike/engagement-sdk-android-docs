@@ -20,19 +20,23 @@ internal class ChatReactionPopupView(
     val context: Context,
     val chatReactionRepository: ChatReactionRepository,
     flagClick: View.OnClickListener,
-    hideFloatinUi: () -> Unit
+    hideFloatinUi: () -> Unit,
+    isOwnMessage: Boolean
 ) : PopupWindow(context) {
 
     init {
         contentView = LayoutInflater.from(context).inflate(R.layout.popup_chat_reaction, null)
-        contentView.findViewById<ImageView>(R.id.moderation_flag).setOnClickListener {
-            dismiss()
-            flagClick.onClick(it)
+        if (!isOwnMessage) {
+        val moderationFlagView = contentView.findViewById<ImageView>(R.id.moderation_flag)
+            moderationFlagView.visibility = View.VISIBLE
+            moderationFlagView.setOnClickListener {
+                dismiss()
+                flagClick.onClick(it)
+            }
         }
         setOnDismissListener(hideFloatinUi)
         isOutsideTouchable = true
         setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
         initReactions()
     }
 
