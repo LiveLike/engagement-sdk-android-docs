@@ -14,9 +14,9 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 
 /**
- * Chat reactions view that will popup when use long press chat
+ * Chat reactions and Chat moderation actions view that will popup when use long press chat
  */
-internal class ChatReactionPopupView(
+internal class ChatActionsPopupView(
     val context: Context,
     val chatReactionRepository: ChatReactionRepository,
     flagClick: View.OnClickListener,

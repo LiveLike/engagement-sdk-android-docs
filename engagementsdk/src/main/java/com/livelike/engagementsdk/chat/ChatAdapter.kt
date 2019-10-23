@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.chat.chatreaction.ChatReactionPopupView
+import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
@@ -78,9 +78,10 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(p0: View?): Boolean {
-            showFloatingUI(p0?.chat_nickname?.text?.contains("(Me)") ?: false)
+            showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false)
             return true
         }
+
         override fun onClick(p0: View?) {
             hideFloatingUI()
         }
@@ -91,6 +92,7 @@ internal class ChatRecyclerAdapter(
         }
 
         fun bindTo(item: ChatMessage?) {
+            v.tag = item
             setMessage(item)
             hideFloatingUI()
         }
@@ -98,7 +100,7 @@ internal class ChatRecyclerAdapter(
         private fun showFloatingUI(isOwnMessage: Boolean) {
             v.chatBackground.alpha = 0.5f
             val locationOnScreen = v.getLocationOnScreen()
-            ChatReactionPopupView(
+            ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
                 View.OnClickListener { _ ->
