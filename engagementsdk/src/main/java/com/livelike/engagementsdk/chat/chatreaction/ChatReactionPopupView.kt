@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -14,7 +15,6 @@ import com.livelike.engagementsdk.widget.view.loadImage
 
 /**
  * Chat reactions view that will popup when use long press chat
- * Add future chat reactions support here
  */
 internal class ChatReactionPopupView(
     val context: Context,
@@ -43,8 +43,13 @@ internal class ChatReactionPopupView(
     private fun initReactions() {
         val reactionsBox = contentView.findViewById<ImageView>(R.id.reaction_panel_interaction_box) as ViewGroup
         reactionsBox.removeAllViews()
+        val threeDp = AndroidResource.dpToPx(3)
         chatReactionRepository.reactionList?.forEach { reaction ->
             val imageView = ImageView(context)
+            imageView.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(threeDp, 0, threeDp, 0)
+            }
             imageView.loadImage(reaction.file, AndroidResource.dpToPx(24))
             reactionsBox.addView(imageView)
         }
