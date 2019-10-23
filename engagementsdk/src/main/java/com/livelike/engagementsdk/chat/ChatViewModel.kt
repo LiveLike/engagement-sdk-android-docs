@@ -4,6 +4,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
+import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.services.network.ChatDataClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
@@ -20,8 +21,9 @@ internal class ChatViewModel(
     val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     val stickerPackRepository: StickerPackRepository
 ) : ChatRenderer, ViewModel() {
+
     var chatListener: ChatEventListener? = null
-    var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository)
+    var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository, ChatReactionRepository(programRepository.programId))
     private val messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(false)
     private var chatLoaded = false

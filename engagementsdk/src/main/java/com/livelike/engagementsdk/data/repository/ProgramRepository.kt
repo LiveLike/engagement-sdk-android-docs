@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
  * Program is an event in CMS App.
  */
 internal class ProgramRepository(
-    private val programId: String,
+    val programId: String,
     private val userRepository: UserRepository
 ) : BaseRepository() {
 

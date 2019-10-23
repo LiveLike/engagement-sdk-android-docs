@@ -1,18 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@color/livelike_black">
 
 
+    <LinearLayout
+        android:id="@+id/reaction_panel_interaction_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:padding="6dp"
+        android:background="@drawable/ic_chat_floating_ui"
+        android:orientation="horizontal"/>
 
     <ImageView
-        android:id="@+id/floatingUi"
+        android:id="@+id/moderation_flag"
         android:layout_width="46dp"
-        android:layout_height="30dp"
-        android:visibility="visible"
+        android:layout_height="36dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintLeft_toRightOf="@id/reaction_panel_interaction_box"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="8dp"
         android:src="@drawable/chat_ic_flag"
         android:background="@drawable/ic_chat_floating_ui"
         android:layout_gravity="bottom"/>
 
 
-</FrameLayout>
+
+</android.support.constraint.ConstraintLayout>
