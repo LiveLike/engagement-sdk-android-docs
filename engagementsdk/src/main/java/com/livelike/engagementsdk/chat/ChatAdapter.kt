@@ -6,11 +6,14 @@ import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.chat.chatreaction.ChatReactionPopupView
+import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
@@ -18,6 +21,7 @@ import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
+import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -34,7 +38,13 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffU
     }
 }
 
-class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, private val reporter: (ChatMessage) -> Unit, private val stickerPackRepository: StickerPackRepository) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+internal class ChatRecyclerAdapter(
+    private val analyticsService: AnalyticsService,
+    private val reporter: (ChatMessage) -> Unit,
+    private val stickerPackRepository: StickerPackRepository,
+    val chatReactionRepository: ChatReactionRepository
+) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -89,21 +99,28 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
 
         private fun showFloatingUI() {
             v.chatBackground.alpha = 0.5f
-            ChatReactionPopupView(v.context, View.OnClickListener { _ ->
-                analyticsService.trackFlagButtonPressed()
-                hideFloatingUI()
-                v.context?.let { ctx ->
-                    AlertDialog.Builder(ctx).apply {
-                        setTitle(context.getString(R.string.flag_ui_title))
-                        setItems(dialogOptions.map { it.first }.toTypedArray()) { _, which ->
-                            message?.let {
-                                dialogOptions[which].second.invoke(it)
+            val locationOnScreen = v.getLocationOnScreen()
+            ChatReactionPopupView(
+                v.context,
+                chatReactionRepository,
+                View.OnClickListener { _ ->
+                    analyticsService.trackFlagButtonPressed()
+                    hideFloatingUI()
+                    v.context?.let { ctx ->
+                        AlertDialog.Builder(ctx).apply {
+                            setTitle(context.getString(R.string.flag_ui_title))
+                            setItems(dialogOptions.map { it.first }.toTypedArray()) { _, which ->
+                                message?.let {
+                                    dialogOptions[which].second.invoke(it)
+                                }
                             }
-                        }
-                        setOnCancelListener { analyticsService.trackCancelFlagUi() }
-                        create()
-                    }.show()
-                } }, ::hideFloatingUI).showAsDropDown(v, 0, -AndroidResource.dpToPx(8))
+                            setOnCancelListener { analyticsService.trackCancelFlagUi() }
+                            create()
+                        }.show()
+                    }
+                },
+                ::hideFloatingUI
+            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x, locationOnScreen.y - AndroidResource.dpToPx(8))
         }
 
         private fun hideFloatingUI() {
@@ -144,14 +161,14 @@ class ChatRecyclerAdapter(private val analyticsService: AnalyticsService, privat
                     when {
                         (isOnlyStickers && numberOfStickers == 1) -> {
                             val s = SpannableString(message.message)
-                            replaceWithStickers(s, context, stickerPackRepository, null, 200){
+                            replaceWithStickers(s, context, stickerPackRepository, null, 200) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                             }
                         }
                         atLeastOneSticker -> {
                             val s = SpannableString(message.message)
-                            replaceWithStickers(s, context, stickerPackRepository, null){
+                            replaceWithStickers(s, context, stickerPackRepository, null) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                             }

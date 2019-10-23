@@ -151,6 +151,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         viewModel?.apply {
+            uiScope.launch { chatAdapter.chatReactionRepository.preloadImages(context) }
             setDataSource(chatAdapter)
             eventStream.subscribe(javaClass.simpleName) {
                 when (it) {
@@ -338,7 +339,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
 
-            if (x < v.left || x > v.right || y < v.top || y > v.bottom){
+            if (x < v.left || x > v.right || y < v.top || y > v.bottom) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
@@ -441,7 +442,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
     }
 
-    private fun hideStickerKeyboard(reason : KeyboardHideReason){
+    private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
         session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
     }
@@ -550,7 +551,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             override fun onAnimationCancel(animation: Animator) {}
             override fun onAnimationRepeat(animation: Animator) {}
         })
-
 
         snapToLiveAnimation = AnimatorSet()
         snapToLiveAnimation?.play(translateAnimation)?.with(alphaAnimation)
