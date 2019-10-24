@@ -39,9 +39,6 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
@@ -61,6 +58,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -151,6 +151,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
 
         viewModel?.apply {
+            uiScope.launch { chatAdapter.chatReactionRepository.preloadImages(context) }
             setDataSource(chatAdapter)
             eventStream.subscribe(javaClass.simpleName) {
                 when (it) {
@@ -240,7 +241,9 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             })
 
             button_emoji.setOnClickListener {
-                if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
+                if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard(
+                    KeyboardHideReason.CHANGING_KEYBOARD_TYPE
+                )
             }
         }
     }
@@ -338,7 +341,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
 
-            if (x < v.left || x > v.right || y < v.top || y > v.bottom){
+            if (x < v.left || x > v.right || y < v.top || y > v.bottom) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
@@ -347,6 +350,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
     }
 
     private var isLastItemVisible = false
+    private var autoScroll = false
     /**
      *  Sets the data source for this view.
      *  @param chatAdapter ChatAdapter used for creating this view.
@@ -369,18 +373,24 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
                     val lastVisible = lm.findLastVisibleItemPosition()
 
                     val endHasBeenReached = lastVisible + 5 >= totalItemCount
-                    isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
-                        hideSnapToLive()
-                        true
-                    } else {
-                        showSnapToLive()
-                        false
+                    if (!autoScroll)
+                        isLastItemVisible = if (totalItemCount > 0 && endHasBeenReached) {
+                            hideSnapToLive()
+                            true
+                        } else {
+                            showSnapToLive()
+                            false
+                        }
+                    if (endHasBeenReached) {
+                        autoScroll = false
                     }
+
                 }
             })
         }
 
         snap_live.setOnClickListener {
+            autoScroll = true
             snapToLive()
         }
 
@@ -441,7 +451,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         }
     }
 
-    private fun hideStickerKeyboard(reason : KeyboardHideReason){
+    private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
         session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
     }
@@ -551,7 +561,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             override fun onAnimationRepeat(animation: Animator) {}
         })
 
-
         snapToLiveAnimation = AnimatorSet()
         snapToLiveAnimation?.play(translateAnimation)?.with(alphaAnimation)
         snapToLiveAnimation?.start()
@@ -559,6 +568,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
 
     private fun snapToLive() {
         chatdisplay?.let { rv ->
+            hideSnapToLive()
             viewModel?.chatAdapter?.itemCount?.let {
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
