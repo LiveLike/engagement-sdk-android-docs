@@ -27,6 +27,9 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
 import com.livelike.engagementsdk.widget.util.SingleRunner
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,9 +43,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @Suppress("USELESS_ELVIS")
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
@@ -316,28 +316,17 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         type: RequestType?
     ): String? {
         return singleRunner.afterPrevious {
-            when {
-                type == RequestType.PATCH -> return@afterPrevious patchWithBodyAsync(
-                    widgetVotingUrl, body, accessToken
-                ).extractStringOrEmpty("url")
-                type == RequestType.POST -> return@afterPrevious postWithBodyAsync(
-                    widgetVotingUrl, body, accessToken
-                ).extractStringOrEmpty("url")
-                body != null -> if (voteUrl.isEmpty()) {
+            if (voteUrl.isEmpty()) {
                     voteUrl =
-                        postAsync(widgetVotingUrl, accessToken, body).extractStringOrEmpty("url")
+                        postAsync(widgetVotingUrl, accessToken, body, type ?: RequestType.POST).extractStringOrEmpty("url")
                 } else {
-                    putAsync(
-                        voteUrl, (body ?: FormBody.Builder()
+                postAsync(voteUrl, accessToken, (body ?: FormBody.Builder()
                             .add("option_id", voteId)
                             .add("choice_id", voteId)
-                            .build()), accessToken
-                    )
+                            .build()), type ?: RequestType.PUT)
                 }
-                else -> return@afterPrevious null
+            return@afterPrevious voteUrl
             }
-            return@afterPrevious null
-        }
     }
 
     override suspend fun rewardAsync(
@@ -356,11 +345,11 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
     }
 
-    private suspend fun postAsync(url: String, accessToken: String?, body: RequestBody? = null) =
+    private suspend fun postAsync(url: String, accessToken: String?, body: RequestBody? = null, requestType: RequestType = RequestType.POST) =
         suspendCoroutine<JsonObject> {
             val request = Request.Builder()
                 .url(url)
-                .post(body ?: RequestBody.create(null, ByteString.EMPTY))
+                .method(requestType.name, body ?: RequestBody.create(null, ByteString.EMPTY))
                 .addUserAgent()
                 .addAuthorizationBearer(accessToken)
                 .build()
@@ -376,81 +365,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                 }
 
                 override fun onFailure(call: Call?, e: IOException?) {
-                    logError { e }
-                }
-            })
-        }
-
-    private suspend fun postWithBodyAsync(url: String, body: RequestBody?, accessToken: String?) =
-        suspendCoroutine<JsonObject> {
-            val request = Request.Builder()
-                .url(url)
-                .post(body)
-                .addUserAgent()
-                .addAuthorizationBearer(accessToken)
-                .build()
-            val call = client.newCall(request)
-            call.enqueue(object : Callback {
-                override fun onResponse(call: Call?, response: Response) {
-                    try {
-                        it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
-                    } catch (e: Exception) {
-                        logError { e }
-                        it.resume(JsonObject())
-                    }
-                }
-
-                override fun onFailure(call: Call?, e: IOException?) {
-                    logError { e }
-                }
-            })
-        }
-
-    private suspend fun putAsync(url: String, body: RequestBody, accessToken: String?) =
-        suspendCoroutine<JsonObject> {
-            val request = Request.Builder()
-                .url(url)
-                .put(body)
-                .addUserAgent()
-                .addAuthorizationBearer(accessToken)
-                .build()
-            val call = client.newCall(request)
-            call.enqueue(object : Callback {
-                override fun onResponse(call: Call?, response: Response) {
-                    try {
-                        it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
-                    } catch (e: Exception) {
-                        logError { e }
-                        it.resume(JsonObject())
-                    }
-                }
-
-                override fun onFailure(call: Call?, e: IOException?) {
-                    logError { e }
-                }
-            })
-        }
-
-    private suspend fun patchWithBodyAsync(url: String, body: RequestBody?, accessToken: String?) =
-        suspendCoroutine<JsonObject> {
-            val request = Request.Builder()
-                .url(url)
-                .patch(body)
-                .addUserAgent()
-                .addAuthorizationBearer(accessToken)
-                .build()
-            val call = client.newCall(request)
-            call.enqueue(object : Callback {
-                override fun onResponse(call: Call?, response: Response) {
-                    try {
-                        it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
-                    } catch (e: Exception) {
-                        logError { e }
-                        it.resume(JsonObject())
-                    }
-                }
-
-                override fun onFailure(call: Call?, e: IOException?) {
+                    it.resume(JsonObject())
                     logError { e }
                 }
             })
