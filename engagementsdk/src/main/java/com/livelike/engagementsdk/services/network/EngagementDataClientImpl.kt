@@ -313,15 +313,14 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         voteId: String?,
         accessToken: String?,
         body: RequestBody?,
-        ispatch: Boolean,
-        ispost: Boolean
+        type: RequestType?
     ): String? {
         return singleRunner.afterPrevious {
             when {
-                ispatch -> return@afterPrevious patchWithBodyAsync(
+                type == RequestType.PATCH -> return@afterPrevious patchWithBodyAsync(
                     widgetVotingUrl, body, accessToken
                 ).extractStringOrEmpty("url")
-                ispost -> return@afterPrevious postWithBodyAsync(
+                type == RequestType.POST -> return@afterPrevious postWithBodyAsync(
                     widgetVotingUrl, body, accessToken
                 ).extractStringOrEmpty("url")
                 body != null -> if (voteUrl.isEmpty()) {

@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.RequestType
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
@@ -127,14 +128,14 @@ internal class CheerMeterViewModel(
         voteUrl?.let {
             uiScope.launch {
                 if (voteCount > 0)
-                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"),"{\"vote_count\":$voteCount}"), ispatch = true)
+                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"),"{\"vote_count\":$voteCount}"), type = RequestType.PATCH)
             }
         }
     }
 
     private fun initVote(url: String) {
         uiScope.launch {
-            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"),"{\"vote_count\":0}"), ispost = true)
+            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"),"{\"vote_count\":0}"), type = RequestType.POST)
         }
     }
 
