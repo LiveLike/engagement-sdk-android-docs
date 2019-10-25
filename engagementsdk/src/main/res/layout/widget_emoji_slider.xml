@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@color/livelike_image_slider_widget_bg">
+        android:background="@drawable/rounded_corner_with_background">
 
         <com.livelike.engagementsdk.widget.view.components.TitleView
             android:layout_width="match_parent"
@@ -19,7 +19,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@color/livelike_transparent"
             android:id="@+id/titleView"/>
 
         <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
