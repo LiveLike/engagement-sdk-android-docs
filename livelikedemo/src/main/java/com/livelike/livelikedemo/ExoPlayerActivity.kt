@@ -17,6 +17,7 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import kotlinx.android.synthetic.main.activity_exo_player.button3
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
@@ -109,6 +110,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                     create()
                 }.show()
             }
+        }
+        button3.setOnClickListener {
+            session!!.setChatChanne("Custom Room Id Android")
         }
     }
 

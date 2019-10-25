@@ -21,6 +21,7 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
+import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.asWidgetManager
@@ -29,6 +30,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 
@@ -39,6 +45,8 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
+
+
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -64,6 +72,13 @@ internal class ContentSession(
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
+    private val configurationFlow = flow {
+        while (sdkConfiguration.latest() == null){
+            delay(1000)
+        }
+        emit(sdkConfiguration.latest()!!)
+    }
+    private var customChatChannel = ""
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -88,10 +103,11 @@ internal class ContentSession(
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
+
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
-                            initializeChatMessaging(program.chatChannel, configuration)
+                            if(customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -106,6 +122,22 @@ internal class ContentSession(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    override fun setChatChanne(chatChannel: String) {
+        if(customChatChannel == chatChannel) return
+        customChatChannel = chatChannel
+        contentSessionScope.launch {
+            chatClient?.apply {
+                unsubscribeAll()
+                stop()
+            }
+            chatViewModel.flushMessages()
+            val validateChannelName = chatChannel.toLowerCase().replace(" ","")
+            configurationFlow.collect {
+                initializeChatMessaging(validateChannelName, it)
             }
         }
     }
@@ -194,6 +226,7 @@ internal class ContentSession(
                     subscribe(listOf(chatChannel))
                     this.renderer = chatViewModel
                     chatViewModel.chatListener = this
+                    logError{"INITIALIZED TO $chatChannel"}
                 }
     }
 
