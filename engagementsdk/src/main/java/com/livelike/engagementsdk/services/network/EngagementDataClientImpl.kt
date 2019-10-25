@@ -73,7 +73,10 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
         val client = OkHttpClient()
         val formBody = FormBody.Builder()
-            .add("session_id", getSessionId()) // TODO: The session id should come from the parameters
+            .add(
+                "session_id",
+                getSessionId()
+            ) // TODO: The session id should come from the parameters
             .build()
         try {
             val request = Request.Builder()
@@ -135,8 +138,9 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
 
                         else -> {
                             val programJsonString = response.body()?.string()
-                            val parsedObject = gson.fromJson(programJsonString, ProgramModel::class.java)
-                                ?: error("Program data was null")
+                            val parsedObject =
+                                gson.fromJson(programJsonString, ProgramModel::class.java)
+                                    ?: error("Program data was null")
 
                             if (parsedObject.programUrl == null) {
                                 // Program Url is the only required field
@@ -304,38 +308,25 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     var voteUrl = ""
     private val singleRunner = SingleRunner()
 
-    override suspend fun voteAsync(widgetVotingUrl: String, voteId: String, accessToken: String?, body: RequestBody?) {
-        singleRunner.afterPrevious {
-            if (voteUrl.isEmpty()) {
-                voteUrl = postAsync(widgetVotingUrl, accessToken, body).extractStringOrEmpty("url")
-            } else {
-                putAsync(voteUrl, (body ?: FormBody.Builder()
-                    .add("option_id", voteId)
-                    .add("choice_id", voteId)
-                    .build()), accessToken)
-            }
-        }
-    }
-
     override suspend fun voteAsync(
         widgetVotingUrl: String,
-        voteCount: Int,
+        voteId: String?,
         accessToken: String?,
-        isUpdate: Boolean
-    ): String {
-        if (isUpdate) {
-            return singleRunner.afterPrevious {
-                return@afterPrevious patchWithBodyAsync(
-                    widgetVotingUrl, "{\"vote_count\":$voteCount}", accessToken
-                ).extractStringOrEmpty("url")
+        body: RequestBody?,
+        type: RequestType?
+    ): String? {
+        return singleRunner.afterPrevious {
+            if (voteUrl.isEmpty()) {
+                    voteUrl =
+                        postAsync(widgetVotingUrl, accessToken, body, type ?: RequestType.POST).extractStringOrEmpty("url")
+                } else {
+                postAsync(voteUrl, accessToken, (body ?: FormBody.Builder()
+                            .add("option_id", voteId)
+                            .add("choice_id", voteId)
+                            .build()), type ?: RequestType.PUT)
+                }
+            return@afterPrevious voteUrl
             }
-        } else {
-            return singleRunner.afterPrevious {
-                return@afterPrevious postWithBodyAsync(
-                    widgetVotingUrl, "{\"vote_count\":$voteCount}", accessToken
-                ).extractStringOrEmpty("url")
-            }
-        }
     }
 
     override suspend fun rewardAsync(
@@ -354,34 +345,11 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
     }
 
-    private suspend fun postAsync(url: String, accessToken: String?, body: RequestBody? = null) = suspendCoroutine<JsonObject> {
-        val request = Request.Builder()
-            .url(url)
-            .post(body ?: RequestBody.create(null, ByteString.EMPTY))
-            .addUserAgent()
-            .addAuthorizationBearer(accessToken)
-            .build()
-        val call = client.newCall(request)
-        call.enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
-                try {
-                    it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
-                } catch (e: Exception) {
-                    logError { e }
-                    it.resume(JsonObject())
-                }
-            }
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
-        })
-    }
-
-    private suspend fun postWithBodyAsync(url: String, json: String, accessToken: String?) =
+    private suspend fun postAsync(url: String, accessToken: String?, body: RequestBody? = null, requestType: RequestType = RequestType.POST) =
         suspendCoroutine<JsonObject> {
             val request = Request.Builder()
                 .url(url)
-                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json))
+                .method(requestType.name, body ?: RequestBody.create(null, ByteString.EMPTY))
                 .addUserAgent()
                 .addAuthorizationBearer(accessToken)
                 .build()
@@ -397,55 +365,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                 }
 
                 override fun onFailure(call: Call?, e: IOException?) {
-                    logError { e }
-                }
-            })
-        }
-
-    private suspend fun putAsync(url: String, body: RequestBody, accessToken: String?) = suspendCoroutine<JsonObject> {
-        val request = Request.Builder()
-            .url(url)
-            .put(body)
-            .addUserAgent()
-            .addAuthorizationBearer(accessToken)
-            .build()
-        val call = client.newCall(request)
-        call.enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
-                try {
-                    it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
-                } catch (e: Exception) {
-                    logError { e }
                     it.resume(JsonObject())
-                }
-            }
-
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
-        })
-    }
-
-    private suspend fun patchWithBodyAsync(url: String, json: String, accessToken: String?) =
-        suspendCoroutine<JsonObject> {
-            val request = Request.Builder()
-                .url(url)
-                .patch(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json))
-                .addUserAgent()
-                .addAuthorizationBearer(accessToken)
-                .build()
-            val call = client.newCall(request)
-            call.enqueue(object : Callback {
-                override fun onResponse(call: Call?, response: Response) {
-                    try {
-                        it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
-                    } catch (e: Exception) {
-                        logError { e }
-                        it.resume(JsonObject())
-                    }
-                }
-
-                override fun onFailure(call: Call?, e: IOException?) {
                     logError { e }
                 }
             })
