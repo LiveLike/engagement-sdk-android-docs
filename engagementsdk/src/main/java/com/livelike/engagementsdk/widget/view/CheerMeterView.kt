@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_cheer_meter_tea
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.lottie_vs_animation
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer
+import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_2
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_timer_demo
@@ -358,7 +359,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     view_ripple_demo.isPressed = true
                     view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
                     runnable = Runnable {
-                        viewModel?.timer = viewModel?.timer ?: 0 - 1
+                        viewModel?.timer = (viewModel?.timer ?: 0) - 1
                         if (viewModel?.timer ?: 0 > 0) {
                             view_ripple_demo.isPressed = true
                             view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
@@ -401,17 +402,20 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         ll_my_score.visibility = View.VISIBLE
         txt_my_score.visibility = View.VISIBLE
         view_ripple.isClickable = true
+        textEggTimer.visibility=View.GONE
+        textEggTimer1.visibility=View.VISIBLE
 
-        viewModel?.animationEggTimerProgress = 0f
+        viewModel?.animationEggTimerProgress = 0.1f
         selectedTeam = id
         txt_my_score.text = "0"
         if (viewModel?.animationEggTimerProgress!! < 1f) {
-            listOf(textEggTimer).forEach { v ->
+            listOf(textEggTimer1).forEach { v ->
                 viewModel?.animationEggTimerProgress?.let {
                     v?.startAnimationFrom(it, 10000F, { t ->
                         viewModel?.animationEggTimerProgress = t
                     }, {
                         // stop voting
+                        println("Stop Voting")
                         stopVoting()
                         viewModel?.dismissWidget(it)
                     })

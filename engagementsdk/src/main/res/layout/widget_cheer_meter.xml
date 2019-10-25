@@ -34,6 +34,9 @@
                 android:textColor="@color/livelike_cheer_meter_title_color"
                 android:textStyle="bold" />
 
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
             <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
                 android:id="@+id/textEggTimer"
                 android:layout_width="wrap_content"
@@ -41,6 +44,15 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
                 android:visibility="visible" />
+                <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
+                android:id="@+id/textEggTimer1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:visibility="gone" />
+
+            </FrameLayout>
         </LinearLayout>
 
         <FrameLayout
@@ -192,6 +204,8 @@
             android:id="@+id/img_winner_team"
             android:layout_width="match_parent"
             android:layout_gravity="center"
+            android:layout_marginLeft="70dp"
+            android:layout_marginRight="70dp"
             android:layout_height="175dp" />
 
         <com.airbnb.lottie.LottieAnimationView
