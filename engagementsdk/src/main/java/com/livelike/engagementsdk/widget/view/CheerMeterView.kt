@@ -76,21 +76,28 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             if (options.size == 2) {
                 val team1 = options[0]
                 val team2 = options[1]
-                var totalCount = (team1.vote_count ?: 1) + (team2.vote_count ?: 1)
-                if (totalCount == 0) totalCount = 1
-                ll_cheer_meter_teams.weightSum = totalCount.toFloat()
-                ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
 
                 var vote1 = (team1.vote_count ?: 1)
                 if (vote1 == 0) vote1 = 1
+
+                var vote2 = (team2.vote_count ?: 1)
+                if (vote2 == 0) vote2 = 1
+
+                var totalCount = vote1 + vote2
+                if (totalCount == 0) totalCount = 1
+
+
+                println("SD1-> $vote1--$vote2--$totalCount ")
+
+                ll_cheer_meter_teams.weightSum = totalCount.toFloat()
+                ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
+
                 txt_cheer_meter_team_1.layoutParams = LinearLayout.LayoutParams(
                     0,
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     vote1.toFloat()
                 )
 
-                var vote2 = (team2.vote_count ?: 1)
-                if (vote2 == 0) vote2 = 1
                 txt_cheer_meter_team_2.layoutParams = LinearLayout.LayoutParams(
                     0,
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -412,12 +419,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         viewModel?.animationEggTimerProgress = t
                     }, {
                         // stop voting
+                        println("Stop Voting")
                         stopVoting()
                         viewModel?.dismissWidget(it)
                     })
                 }
             }
-            viewModel?.startDismissTimout(10000.toString())
+            viewModel?.startDismissTimout(15000.toString())
         }
         viewModel?.sendVote(voteUrl)
     }
@@ -435,24 +443,34 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         lastResult?.let {
             val options = it.options ?: return
             if (options.size == 2) {
+
                 val team1 = options[0]
                 val team2 = options[1]
-                var totalCount = (team1.vote_count ?: 1) + (team2.vote_count ?: 1)
+
+                var vote1 = (team1.vote_count ?: 1)
+                if (vote1 == 0) vote1 = 1
+
+                var vote2 = (team2.vote_count ?: 1)
+                if (vote2 == 0) vote2 = 1
+
+                var totalCount = vote1 + vote2
                 if (totalCount == 0) totalCount = 1
+
+
+                println("SD2-> $vote1--$vote2--$totalCount ")
+
+
+
                 ll_cheer_meter_teams.weightSum = totalCount.toFloat()
                 ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
 
                 ll_cheer_meter_teams.post {
-                    var vote1 = (team1.vote_count ?: 1)
-                    if (vote1 == 0) vote1 = 1
                     txt_cheer_meter_team_1.layoutParams = LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         vote1.toFloat()
                     )
 
-                    var vote2 = (team2.vote_count ?: 1)
-                    if (vote2 == 0) vote2 = 1
                     txt_cheer_meter_team_2.layoutParams = LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -502,6 +520,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             }
                             else -> {
                                 // Draw
+                                img_winner_team.visibility = View.GONE
+                                playDrawAnimation()
                             }
                         }
                         team2.id -> when {
@@ -534,6 +554,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             }
                             else -> {
                                 // Draw
+                                img_winner_team.visibility = View.GONE
+                                playDrawAnimation()
                             }
                         }
                     }
@@ -570,6 +592,30 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
             setAnimation("winner_animation.json")
+            progress = viewModel?.animationProgress ?: 0f
+            repeatCount = 0
+            addAnimatorListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    viewModel?.dismissWidget(DismissAction.TAP_X)
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                }
+            })
+            playAnimation()
+        }
+    }
+
+    private fun playDrawAnimation() {
+        viewModel?.animationProgress = 0f
+        img_winner_anim.apply {
+            setAnimation("draw_animation.json")
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {
