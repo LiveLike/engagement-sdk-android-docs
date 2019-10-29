@@ -35,7 +35,7 @@ interface LiveLikeContentSession {
  * Subscription will requires a key to avoid multiple subscription of the same observable.
  */
 interface Stream<T> {
-// TODO remove nullable event in stream
+// TODO replace all usage of Stream by Flow
     /** Post data to the stream */
     fun onNext(data1: T?)
     /** Add an observable to receive future values of the stream */
