@@ -112,7 +112,15 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         }
         button3.setOnClickListener {
-            session!!.joinChatRoom("Custom Room Id Android")
+            val chatChannelNames = listOf("first-chat-channel", "second-chat-channel", "another-chat-channel")
+            AlertDialog.Builder(baseContext).apply {
+                setMessage("Choose a custom Chat Room to join")
+                setItems(chatChannelNames.toTypedArray()){ _, which ->
+                    session!!.joinChatRoom(chatChannelNames[which])
+                }
+                create()
+            }.show()
+
         }
     }
 
