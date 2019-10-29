@@ -112,7 +112,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         }
         button3.setOnClickListener {
-            session!!.setChatChanne("Custom Room Id Android")
+            session!!.joinChatRoom("Custom Room Id Android")
         }
     }
 

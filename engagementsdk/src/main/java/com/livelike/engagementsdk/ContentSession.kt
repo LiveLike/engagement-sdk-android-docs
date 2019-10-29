@@ -21,7 +21,6 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
-import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.asWidgetManager
@@ -31,10 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 
@@ -126,16 +123,16 @@ internal class ContentSession(
         }
     }
 
-    override fun setChatChanne(chatChannel: String) {
-        if(customChatChannel == chatChannel) return
-        customChatChannel = chatChannel
+    override fun joinChatRoom(chatRoom: String) {
+        if(customChatChannel == chatRoom) return
+        customChatChannel = chatRoom
         contentSessionScope.launch {
             chatClient?.apply {
                 unsubscribeAll()
                 stop()
             }
             chatViewModel.flushMessages()
-            val validateChannelName = chatChannel.toLowerCase().replace(" ","")
+            val validateChannelName = chatRoom.toLowerCase().replace(" ","")
             configurationFlow.collect {
                 initializeChatMessaging(validateChannelName, it)
             }
@@ -226,7 +223,6 @@ internal class ContentSession(
                     subscribe(listOf(chatChannel))
                     this.renderer = chatViewModel
                     chatViewModel.chatListener = this
-                    logError{"INITIALIZED TO $chatChannel"}
                 }
     }
 
