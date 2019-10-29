@@ -69,6 +69,7 @@ internal class ContentSession(
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
+    // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
     private val configurationFlow = flow {
         while (sdkConfiguration.latest() == null){
             delay(1000)
@@ -132,9 +133,9 @@ internal class ContentSession(
                 stop()
             }
             chatViewModel.flushMessages()
-            val validateChannelName = chatRoom.toLowerCase().replace(" ","")
+            val validChatChannelName = chatRoom.toLowerCase().replace(" ","")
             configurationFlow.collect {
-                initializeChatMessaging(validateChannelName, it)
+                initializeChatMessaging(validChatChannelName, it)
             }
         }
     }
