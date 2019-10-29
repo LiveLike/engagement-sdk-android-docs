@@ -133,7 +133,7 @@ internal class ContentSession(
                 stop()
             }
             chatViewModel.flushMessages()
-            val validChatChannelName = chatRoom.toLowerCase().replace(" ","")
+            val validChatChannelName = chatRoom.toLowerCase().replace(" ","").replace("-","")
             configurationFlow.collect {
                 initializeChatMessaging(validChatChannelName, it)
             }

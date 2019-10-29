@@ -59,6 +59,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
     }
     val timer = Timer()
+    val chatChannelNames = listOf("first-chat-channel", "second-chat-channel", "another-chat-channel")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,15 +113,14 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         }
         button3.setOnClickListener {
-            val chatChannelNames = listOf("first-chat-channel", "second-chat-channel", "another-chat-channel")
-            AlertDialog.Builder(baseContext).apply {
-                setMessage("Choose a custom Chat Room to join")
+
+            AlertDialog.Builder(this).apply {
+                setTitle("Choose a custom Chat Room to join")
                 setItems(chatChannelNames.toTypedArray()){ _, which ->
                     session!!.joinChatRoom(chatChannelNames[which])
                 }
                 create()
             }.show()
-
         }
     }
 

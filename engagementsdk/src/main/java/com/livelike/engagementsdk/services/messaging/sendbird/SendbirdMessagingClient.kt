@@ -60,6 +60,7 @@ internal class SendbirdMessagingClient(
     }
 
     private fun connectToSendbird(livelikeUser: LiveLikeUser, resubscribe: Boolean = false) {
+        SendBird.setLoggerLevel(98765)
         SendBird.init(subscribeKey, context)
         SendBird.connect(livelikeUser.id, object : SendBird.ConnectHandler {
             override fun onConnected(user: User?, e: SendBirdException?) {
@@ -136,7 +137,9 @@ internal class SendbirdMessagingClient(
                 OpenChannel.OpenChannelGetHandler { openChannel, e ->
                     if (e != null) { // Error, if the channel doesn't exist.
                         logError { e }
-                        createAndJoinChannel(channelUrl)
+                        if(e.code == 400201) { // Code for channel not found, we will create a new channel
+                            createAndJoinChannel(channelUrl)
+                        }
                         return@OpenChannelGetHandler
                     }
 
