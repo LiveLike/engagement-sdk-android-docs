@@ -77,19 +77,17 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         try {
             val request = Request.Builder()
                 .url(impressionUrl)
-                .header("Authorization", "Bearer $accessToken")
+                .addAuthorizationBearer(accessToken)
                 .post(formBody)
                 .addUserAgent()
                 .build()
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    println("failed to register impression")
                     logError { "failed to register impression" }
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     logVerbose { "impression registered " + response.message() }
-                    println( "impression registered " + response.message())
                 }
             })
         } catch (e: Exception) {
