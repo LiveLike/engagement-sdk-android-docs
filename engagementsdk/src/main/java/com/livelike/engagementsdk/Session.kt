@@ -25,6 +25,8 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
+    /** Join a new Chat Room */
+    fun joinChatRoom(chatRoom: String)
     /** Intercepts the widgets and hold them until show() or dismiss() is being called */
     var widgetInterceptor: WidgetInterceptor?
 }
@@ -33,7 +35,7 @@ interface LiveLikeContentSession {
  * Subscription will requires a key to avoid multiple subscription of the same observable.
  */
 interface Stream<T> {
-// TODO remove nullable event in stream
+// TODO replace all usage of Stream by Flow
     /** Post data to the stream */
     fun onNext(data1: T?)
     /** Add an observable to receive future values of the stream */

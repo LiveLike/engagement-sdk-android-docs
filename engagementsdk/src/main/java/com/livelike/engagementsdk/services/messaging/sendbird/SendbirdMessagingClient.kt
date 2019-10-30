@@ -19,6 +19,7 @@ import com.sendbird.android.BaseMessage
 import com.sendbird.android.OpenChannel
 import com.sendbird.android.PreviousMessageListQuery
 import com.sendbird.android.SendBird
+import com.sendbird.android.SendBird.LOGGER_INFO
 import com.sendbird.android.SendBird.UserInfoUpdateHandler
 import com.sendbird.android.SendBirdException
 import com.sendbird.android.User
@@ -130,75 +131,119 @@ internal class SendbirdMessagingClient(
     )
 
     override fun subscribe(channels: List<String>) {
-        channels.forEach {
-            OpenChannel.getChannel(it,
+        channels.forEach {channelUrl ->
+            OpenChannel.getChannel(channelUrl,
                 OpenChannel.OpenChannelGetHandler { openChannel, e ->
-                    if (e != null) { // Error.
+                    if (e != null) { // Error, if the channel doesn't exist.
+                        logError { e }
+                        if(e.code == 400201) { // Code for channel not found, we will create a new channel
+                            createAndJoinChannel(channelUrl)
+                        }
                         return@OpenChannelGetHandler
                     }
 
-                    openChannel.enter(OpenChannel.OpenChannelEnterHandler { exception ->
-                        if (exception != null) { // Error.
-                            return@OpenChannelEnterHandler
-                        }
-                        connectedChannels.add(openChannel)
-
-                        SendBird.addChannelHandler(openChannel.url, object : SendBird.ChannelHandler() {
-                            override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
-                                if (message != null && channel != null && openChannel.url == message.channelUrl) {
-                                    message as UserMessage
-                                    val clientMessage = SendBirdUtils.clientMessageFromBaseMessage(message, channel)
-                                    if (!messageIdList.contains(message.messageId)) {
-                                        logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
-                                        lastChatMessage = Pair(clientMessage.message.get("id").asString, clientMessage.channel)
-                                        listener?.onClientMessageEvent(this@SendbirdMessagingClient, clientMessage)
-                                        messageIdList.add(message.messageId)
-                                    }
-                                }
-                            }
-
-                            override fun onMessageDeleted(channel: BaseChannel?, msgId: Long) {
-                                if (channel != null) {
-                                    val msg = JsonObject().apply {
-                                        addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
-                                        addProperty("id", "$msgId")
-                                    }
-                                    listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(msg, channel.url,
-                                        EpochTime(0)
-                                    ))
-                                }
-                                super.onMessageDeleted(channel, msgId)
-                            }
-                        })
-                    })
-
-                    val prevMessageListQuery = openChannel.createPreviousMessageListQuery()
-                    prevMessageListQuery.load(
-                        CHAT_HISTORY_LIMIT,
-                        true,
-                        PreviousMessageListQuery.MessageListQueryResult { messages, err ->
-                            if (err != null) {
-                                logError { err }
-                                return@MessageListQueryResult
-                            }
-                            for (message: BaseMessage in messages.reversed()) {
-                                if (!messageIdList.contains(message.messageId)) {
-                                    listener?.onClientMessageEvent(
-                                        this@SendbirdMessagingClient,
-                                        SendBirdUtils.clientMessageFromBaseMessage(message as UserMessage, openChannel)
-                                    )
-                                    messageIdList.add(message.messageId)
-                                }
-                            }
-                            val msg = JsonObject().apply {
-                                addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
-                            }
-                            listener?.onClientMessageEvent(this@SendbirdMessagingClient, ClientMessage(msg, openChannel.url,
-                                EpochTime(0)
-                            ))
-                        })
+                    enterChannel(openChannel)
+                    loadMessageHistory(openChannel)
                 })
         }
+    }
+
+    private fun createAndJoinChannel(channelUrl: String) {
+        OpenChannel.createChannelWithOperatorUserIds(
+            channelUrl,
+            channelUrl,
+            "",
+            "",
+            "",
+            listOf<String>()
+        ) { openChannel: OpenChannel?, sendBirdException: SendBirdException? ->
+            if (openChannel == null || sendBirdException != null) {
+                return@createChannelWithOperatorUserIds
+            }
+            enterChannel(openChannel)
+            loadMessageHistory(openChannel)
+        }
+    }
+
+    private fun loadMessageHistory(openChannel: OpenChannel) {
+        val prevMessageListQuery = openChannel.createPreviousMessageListQuery()
+        prevMessageListQuery.load(
+            CHAT_HISTORY_LIMIT,
+            true,
+            PreviousMessageListQuery.MessageListQueryResult { messages, err ->
+                if (err != null) {
+                    logError { err }
+                    return@MessageListQueryResult
+                }
+                for (message: BaseMessage in messages.reversed()) {
+                    if (!messageIdList.contains(message.messageId)) {
+                        listener?.onClientMessageEvent(
+                            this@SendbirdMessagingClient,
+                            SendBirdUtils.clientMessageFromBaseMessage(
+                                message as UserMessage,
+                                openChannel
+                            )
+                        )
+                        messageIdList.add(message.messageId)
+                    }
+                }
+                val msg = JsonObject().apply {
+                    addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
+                }
+                listener?.onClientMessageEvent(
+                    this@SendbirdMessagingClient, ClientMessage(
+                        msg, openChannel.url,
+                        EpochTime(0)
+                    )
+                )
+            })
+    }
+
+    private fun enterChannel(openChannel: OpenChannel) {
+        openChannel.enter(OpenChannel.OpenChannelEnterHandler { exception ->
+            if (exception != null) { // Error.
+                return@OpenChannelEnterHandler
+            }
+            connectedChannels.add(openChannel)
+
+            SendBird.addChannelHandler(openChannel.url, object : SendBird.ChannelHandler() {
+                override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
+                    if (message != null && channel != null && openChannel.url == message.channelUrl) {
+                        message as UserMessage
+                        val clientMessage =
+                            SendBirdUtils.clientMessageFromBaseMessage(message, channel)
+                        if (!messageIdList.contains(message.messageId)) {
+                            logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
+                            lastChatMessage = Pair(
+                                clientMessage.message.get("id").asString,
+                                clientMessage.channel
+                            )
+                            listener?.onClientMessageEvent(
+                                this@SendbirdMessagingClient,
+                                clientMessage
+                            )
+                            messageIdList.add(message.messageId)
+                        }
+                    }
+                }
+
+                override fun onMessageDeleted(channel: BaseChannel?, msgId: Long) {
+                    if (channel != null) {
+                        val msg = JsonObject().apply {
+                            addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
+                            addProperty("id", "$msgId")
+                        }
+                        listener?.onClientMessageEvent(
+                            this@SendbirdMessagingClient, ClientMessage(
+                                msg, channel.url,
+                                EpochTime(0)
+                            )
+                        )
+                    }
+                    super.onMessageDeleted(channel, msgId)
+                }
+            })
+        })
     }
 
     override fun unsubscribe(channels: List<String>) {
