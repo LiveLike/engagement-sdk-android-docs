@@ -27,9 +27,6 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
 import com.livelike.engagementsdk.widget.util.SingleRunner
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -43,6 +40,9 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Suppress("USELESS_ELVIS")
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
@@ -67,30 +67,29 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
 
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor
 
-    override fun registerImpression(impressionUrl: String) {
+    override fun registerImpression(impressionUrl: String, accessToken: String?) {
         if (impressionUrl.isNullOrEmpty()) {
             return
         }
         val client = OkHttpClient()
         val formBody = FormBody.Builder()
-            .add(
-                "session_id",
-                getSessionId()
-            ) // TODO: The session id should come from the parameters
             .build()
         try {
             val request = Request.Builder()
                 .url(impressionUrl)
+                .header("Authorization", "Bearer $accessToken")
                 .post(formBody)
                 .addUserAgent()
                 .build()
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
+                    println("failed to register impression")
                     logError { "failed to register impression" }
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     logVerbose { "impression registered " + response.message() }
+                    println( "impression registered " + response.message())
                 }
             })
         } catch (e: Exception) {
@@ -317,16 +316,23 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     ): String? {
         return singleRunner.afterPrevious {
             if (voteUrl.isEmpty()) {
-                    voteUrl =
-                        postAsync(widgetVotingUrl, accessToken, body, type ?: RequestType.POST).extractStringOrEmpty("url")
-                } else {
-                postAsync(voteUrl, accessToken, (body ?: FormBody.Builder()
-                            .add("option_id", voteId)
-                            .add("choice_id", voteId)
-                            .build()), type ?: RequestType.PUT)
-                }
-            return@afterPrevious voteUrl
+                voteUrl =
+                    postAsync(
+                        widgetVotingUrl,
+                        accessToken,
+                        body,
+                        type ?: RequestType.POST
+                    ).extractStringOrEmpty("url")
+            } else {
+                postAsync(
+                    voteUrl, accessToken, (body ?: FormBody.Builder()
+                        .add("option_id", voteId)
+                        .add("choice_id", voteId)
+                        .build()), type ?: RequestType.PUT
+                )
             }
+            return@afterPrevious voteUrl
+        }
     }
 
     override suspend fun rewardAsync(
@@ -345,7 +351,12 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
     }
 
-    private suspend fun postAsync(url: String, accessToken: String?, body: RequestBody? = null, requestType: RequestType = RequestType.POST) =
+    private suspend fun postAsync(
+        url: String,
+        accessToken: String?,
+        body: RequestBody? = null,
+        requestType: RequestType = RequestType.POST
+    ) =
         suspendCoroutine<JsonObject> {
             val request = Request.Builder()
                 .url(url)
