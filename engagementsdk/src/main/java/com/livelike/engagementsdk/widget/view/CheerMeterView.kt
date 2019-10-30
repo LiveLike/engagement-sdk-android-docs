@@ -69,10 +69,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun resultObserver(resource: Resource?) {
-        lastResult = resource
         resource?.let {
             lastResult = it
-            val options = resource.options ?: return
+            val options = it.options ?: return
             if (options.size == 2) {
                 val team1 = options[0]
                 val team2 = options[1]
@@ -86,8 +85,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 var totalCount = vote1 + vote2
                 if (totalCount == 0) totalCount = 1
 
-
-                println("SD1-> $vote1--$vote2--$totalCount ")
 
                 ll_cheer_meter_teams.weightSum = totalCount.toFloat()
                 ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
@@ -446,37 +443,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                 val team1 = options[0]
                 val team2 = options[1]
-
-                var vote1 = (team1.vote_count ?: 1)
-                if (vote1 == 0) vote1 = 1
-
-                var vote2 = (team2.vote_count ?: 1)
-                if (vote2 == 0) vote2 = 1
-
-                var totalCount = vote1 + vote2
-                if (totalCount == 0) totalCount = 1
-
-
-                println("SD2-> $vote1--$vote2--$totalCount ")
-
-
-
-                ll_cheer_meter_teams.weightSum = totalCount.toFloat()
-                ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
-
-                ll_cheer_meter_teams.post {
-                    txt_cheer_meter_team_1.layoutParams = LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        vote1.toFloat()
-                    )
-
-                    txt_cheer_meter_team_2.layoutParams = LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        vote2.toFloat()
-                    )
-                }
+                resultObserver(it)
 
                 viewModel?.voteEnd()
                 fl_result_team.visibility = View.VISIBLE
