@@ -60,7 +60,6 @@ internal class CheerMeterViewModel(
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
-    var timeoutStarted = false
     var animationEggTimerProgress = 0f
     var animationProgress = 0f
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
@@ -173,13 +172,18 @@ internal class CheerMeterViewModel(
         }
     }
 
-    fun startDismissTimout(timeout: String) {
-        if (!timeoutStarted && timeout.isNotEmpty()) {
-            timeoutStarted = true
+    fun startDismissTimout(timeout: String, isVotingStarted: Boolean = false) {
+        if (timeout.isNotEmpty()) {
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                voteEnd.onNext(true)
-                voteEnd()
+                if (isVotingStarted) {
+                    voteEnd.onNext(true)
+                    voteEnd()
+                } else {
+                    if (teamSelected == 0) {
+                        dismissWidget(DismissAction.TIMEOUT)
+                    }
+                }
             }
         }
     }
@@ -200,7 +204,6 @@ internal class CheerMeterViewModel(
 
     private fun cleanUp() {
         pubnub?.unsubscribeAll()
-        timeoutStarted = false
         voteUrl = null
         data.onNext(null)
         results.onNext(null)

@@ -300,6 +300,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             showEggerView(animationLength)
+            viewModel?.startDismissTimout(resource.timeout)
         }
 
         if (widget == null) {
@@ -417,7 +418,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     })
                 }
             }
-            viewModel?.startDismissTimout(10000.toString())
+            viewModel?.startDismissTimout(10000.toString(),isVotingStarted = true)
         }
         viewModel?.sendVote(voteUrl)
     }
