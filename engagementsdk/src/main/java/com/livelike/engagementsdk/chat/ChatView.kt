@@ -80,7 +80,6 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
         private const val CHAT_MINIMUM_SIZE_DP = 292
         private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
-        private const val KEYBOARD_BOTTOM_LIMIT = 500
     }
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
@@ -340,8 +339,8 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
             v.getLocationOnScreen(scrcoords)
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
-
-            if (x < v.left || x > v.right || y < v.top || y > v.bottom || y < KEYBOARD_BOTTOM_LIMIT) {
+            val outsideStickerKeyboardBound =  (v.bottom - sticker_keyboard.height)
+            if (y < v.top || y > v.bottom || y < outsideStickerKeyboardBound) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
