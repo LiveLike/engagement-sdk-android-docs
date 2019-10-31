@@ -38,7 +38,7 @@ internal class EmojiSliderWidgetViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient(it)
+            pubnub = PubnubMessagingClient(it, userRepository.currentUserStream.latest()?.id ?: "")
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val payload = event.message["payload"].asJsonObject

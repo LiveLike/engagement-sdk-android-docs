@@ -5,6 +5,8 @@ import android.widget.FrameLayout
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
+import com.livelike.engagementsdk.core.ServerDataValidationException
+import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
@@ -21,7 +23,9 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
+import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
+import com.livelike.engagementsdk.utils.validateUuid
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
@@ -42,7 +46,6 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
-
 
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
@@ -71,7 +74,7 @@ internal class ContentSession(
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
     // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
     private val configurationFlow = flow {
-        while (sdkConfiguration.latest() == null){
+        while (sdkConfiguration.latest() == null) {
             delay(1000)
         }
         emit(sdkConfiguration.latest()!!)
@@ -104,8 +107,8 @@ internal class ContentSession(
 
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
-                            initializeWidgetMessaging(program.subscribeChannel, configuration)
-                            if(customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
+                            initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
+                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -125,7 +128,7 @@ internal class ContentSession(
     }
 
     override fun joinChatRoom(chatRoom: String) {
-        if(customChatChannel == chatRoom) return
+        if (customChatChannel == chatRoom) return
         customChatChannel = chatRoom
         contentSessionScope.launch {
             chatClient?.apply {
@@ -133,7 +136,7 @@ internal class ContentSession(
                 stop()
             }
             chatViewModel.flushMessages()
-            val validChatChannelName = chatRoom.toLowerCase().replace(" ","").replace("-","")
+            val validChatChannelName = chatRoom.toLowerCase().replace(" ", "").replace("-", "")
             configurationFlow.collect {
                 initializeChatMessaging(validChatChannelName, it)
             }
@@ -189,11 +192,18 @@ internal class ContentSession(
 
     private fun initializeWidgetMessaging(
         subscribeChannel: String,
-        config: EngagementSDK.SdkConfiguration
+        config: EngagementSDK.SdkConfiguration,
+        uuid: String
     ) {
+        if (!validateUuid(uuid)) {
+            logError { "Widget Initialization Failed due no uuid complaint user id received for user" }
+            // Check with ben should we assume user id will always be uuid
+            BugsnagClient.client?.notify(ServerDataValidationException("User id not complaint to uuid"))
+            return
+        }
         analyticService.trackLastWidgetStatus(true)
         widgetClient =
-            PubnubMessagingClient(config.pubNubKey)
+            PubnubMessagingClient(config.pubNubKey, uuid)
                 .filter()
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
