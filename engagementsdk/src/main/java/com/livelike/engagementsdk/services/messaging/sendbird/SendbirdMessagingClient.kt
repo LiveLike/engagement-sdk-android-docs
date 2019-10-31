@@ -249,12 +249,17 @@ internal class SendbirdMessagingClient(
     override fun unsubscribe(channels: List<String>) {
         channels.forEach {
             SendBird.removeChannelHandler(it)
-            connectedChannels.remove(connectedChannels.find { openChannel -> openChannel.url == it })
+            connectedChannels.remove(connectedChannels.find { openChannel -> openChannel.url == it }.apply {
+                this?.exit {  }
+            })
         }
     }
 
     override fun unsubscribeAll() {
         SendBird.removeAllChannelHandlers()
+        connectedChannels.forEach {
+            it.exit {  }
+        }
         connectedChannels.clear()
     }
 
