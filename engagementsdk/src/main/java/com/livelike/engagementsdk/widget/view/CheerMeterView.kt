@@ -405,7 +405,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         textEggTimer.visibility=View.GONE
         textEggTimer1.visibility=View.VISIBLE
 
-        viewModel?.animationEggTimerProgress = 0.1f
+        viewModel?.animationEggTimerProgress = 0f
         selectedTeam = id
         txt_my_score.text = "0"
         if (viewModel?.animationEggTimerProgress!! < 1f) {
@@ -415,7 +415,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         viewModel?.animationEggTimerProgress = t
                     }, {
                         // stop voting
-                        println("Stop Voting")
                         stopVoting()
                         viewModel?.dismissWidget(it)
                     })
