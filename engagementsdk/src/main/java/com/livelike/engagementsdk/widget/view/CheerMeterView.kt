@@ -39,6 +39,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_ti
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple_demo
+import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
@@ -76,15 +77,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 val team1 = options[0]
                 val team2 = options[1]
 
-                var vote1 = (team1.vote_count ?: 1)
-                if (vote1 == 0) vote1 = 1
+                val vote1 = max(team1.vote_count ?: 0, 1)
 
-                var vote2 = (team2.vote_count ?: 1)
-                if (vote2 == 0) vote2 = 1
+                val vote2 = max(team2.vote_count ?: 0, 1)
 
-                var totalCount = vote1 + vote2
-                if (totalCount == 0) totalCount = 1
-
+                val totalCount = max(vote1 + vote2, 1)
 
                 ll_cheer_meter_teams.weightSum = totalCount.toFloat()
                 ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
@@ -416,7 +413,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         viewModel?.animationEggTimerProgress = t
                     }, {
                         // stop voting
-                        println("Stop Voting")
                         stopVoting()
                         viewModel?.dismissWidget(it)
                     })
