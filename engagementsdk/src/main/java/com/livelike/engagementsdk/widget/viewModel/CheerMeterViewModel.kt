@@ -70,7 +70,7 @@ internal class CheerMeterViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient(it, userRepository.currentUserStream.latest()?.id ?: "")
+            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""

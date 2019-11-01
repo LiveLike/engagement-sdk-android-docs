@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logVerbose
+import com.livelike.engagementsdk.utils.validateUuid
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -141,5 +142,16 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
     override fun addMessagingEventListener(listener: MessagingEventListener) {
         // More than one triggerListener?
         this.listener = listener
+    }
+
+    companion object {
+        fun getInstance(subscriberKey: String, uuid: String?): PubnubMessagingClient? {
+            uuid?.let {
+                if (validateUuid(uuid)) {
+                    return PubnubMessagingClient(subscriberKey, uuid)
+                }
+            }
+            return null
+        }
     }
 }
