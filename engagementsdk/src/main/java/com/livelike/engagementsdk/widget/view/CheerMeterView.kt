@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_cheer_meter_tea
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.lottie_vs_animation
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer
+import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_2
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_timer_demo
@@ -39,6 +40,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_ti
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple_demo
+import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
@@ -69,28 +71,28 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun resultObserver(resource: Resource?) {
-        lastResult = resource
         resource?.let {
             lastResult = it
-            val options = resource.options ?: return
+            val options = it.options ?: return
             if (options.size == 2) {
                 val team1 = options[0]
                 val team2 = options[1]
-                var totalCount = (team1.vote_count ?: 1) + (team2.vote_count ?: 1)
-                if (totalCount == 0) totalCount = 1
+
+                val vote1 = max(team1.vote_count ?: 0, 1)
+
+                val vote2 = max(team2.vote_count ?: 0, 1)
+
+                val totalCount = max(vote1 + vote2, 1)
+
                 ll_cheer_meter_teams.weightSum = totalCount.toFloat()
                 ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
 
-                var vote1 = (team1.vote_count ?: 1)
-                if (vote1 == 0) vote1 = 1
                 txt_cheer_meter_team_1.layoutParams = LinearLayout.LayoutParams(
                     0,
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     vote1.toFloat()
                 )
 
-                var vote2 = (team2.vote_count ?: 1)
-                if (vote2 == 0) vote2 = 1
                 txt_cheer_meter_team_2.layoutParams = LinearLayout.LayoutParams(
                     0,
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -359,7 +361,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     view_ripple_demo.isPressed = true
                     view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
                     runnable = Runnable {
-                        viewModel?.timer = viewModel?.timer ?: 0 - 1
+                        viewModel?.timer = (viewModel?.timer ?: 0) - 1
                         if (viewModel?.timer ?: 0 > 0) {
                             view_ripple_demo.isPressed = true
                             view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
@@ -402,12 +404,14 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         ll_my_score.visibility = View.VISIBLE
         txt_my_score.visibility = View.VISIBLE
         view_ripple.isClickable = true
+        textEggTimer.visibility=View.GONE
+        textEggTimer1.visibility=View.VISIBLE
 
         viewModel?.animationEggTimerProgress = 0f
         selectedTeam = id
         txt_my_score.text = "0"
         if (viewModel?.animationEggTimerProgress!! < 1f) {
-            listOf(textEggTimer).forEach { v ->
+            listOf(textEggTimer1).forEach { v ->
                 viewModel?.animationEggTimerProgress?.let {
                     v?.startAnimationFrom(it, 10000F, { t ->
                         viewModel?.animationEggTimerProgress = t
@@ -436,30 +440,10 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         lastResult?.let {
             val options = it.options ?: return
             if (options.size == 2) {
+
                 val team1 = options[0]
                 val team2 = options[1]
-                var totalCount = (team1.vote_count ?: 1) + (team2.vote_count ?: 1)
-                if (totalCount == 0) totalCount = 1
-                ll_cheer_meter_teams.weightSum = totalCount.toFloat()
-                ll_cheer_meter_teams.orientation = LinearLayout.HORIZONTAL
-
-                ll_cheer_meter_teams.post {
-                    var vote1 = (team1.vote_count ?: 1)
-                    if (vote1 == 0) vote1 = 1
-                    txt_cheer_meter_team_1.layoutParams = LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        vote1.toFloat()
-                    )
-
-                    var vote2 = (team2.vote_count ?: 1)
-                    if (vote2 == 0) vote2 = 1
-                    txt_cheer_meter_team_2.layoutParams = LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        vote2.toFloat()
-                    )
-                }
+                resultObserver(it)
 
                 viewModel?.voteEnd()
                 fl_result_team.visibility = View.VISIBLE
@@ -503,6 +487,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             }
                             else -> {
                                 // Draw
+                                img_winner_team.visibility = View.GONE
+                                playDrawAnimation()
                             }
                         }
                         team2.id -> when {
@@ -535,6 +521,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             }
                             else -> {
                                 // Draw
+                                img_winner_team.visibility = View.GONE
+                                playDrawAnimation()
                             }
                         }
                     }
@@ -571,6 +559,30 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
             setAnimation("winner_animation.json")
+            progress = viewModel?.animationProgress ?: 0f
+            repeatCount = 0
+            addAnimatorListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    viewModel?.dismissWidget(DismissAction.TAP_X)
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                }
+            })
+            playAnimation()
+        }
+    }
+
+    private fun playDrawAnimation() {
+        viewModel?.animationProgress = 0f
+        img_winner_anim.apply {
+            setAnimation("draw_animation.json")
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {

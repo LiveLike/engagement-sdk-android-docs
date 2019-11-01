@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="match_parent">
 
     <!--suppress AndroidDomInspection -->
     <TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/titleTextView"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/header_rounded_corner_default"
-        android:gravity="start|center"
+        android:gravity="center"
         android:paddingStart="16dp"
         android:paddingLeft="16dp"
         android:paddingEnd="16dp"
         android:paddingRight="16dp"
-        android:textAlignment="textStart"
         android:textAllCaps="true"
         android:textColor="@color/livelike_header_text_color"
         android:textSize="@dimen/livelike_header_text_size"
@@ -26,5 +23,3 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Question-Text-goes-here" />
-
-</android.support.constraint.ConstraintLayout>

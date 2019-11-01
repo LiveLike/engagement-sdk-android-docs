@@ -28,10 +28,10 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) : Co
         onUpdate: (Float) -> Unit,
         dismissAction: (action: DismissAction) -> Unit
     ) {
+        showEggTimer()
         eggTimer.speed = ANIMATION_BASE_TIME / duration
         eggTimer.progress = progress
         eggTimer.resumeAnimation()
-        showEggTimer()
         eggTimer.addAnimatorUpdateListener {
             if (it.animatedFraction < 1) {
                 showEggTimer()
