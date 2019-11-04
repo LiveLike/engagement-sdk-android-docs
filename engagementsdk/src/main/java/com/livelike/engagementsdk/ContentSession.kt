@@ -174,7 +174,7 @@ internal class ContentSession(
                 }
     }
 
-    // ///// Chat ///////
+    // ///// Chat. ///////
 
     private fun initializeChatMessaging(
         chatChannel: String,
