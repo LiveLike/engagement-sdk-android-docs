@@ -1,9 +1,7 @@
 package com.livelike.engagementsdk.services.messaging.proxies
 
-import android.os.Handler
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.logVerbose
@@ -35,15 +33,19 @@ internal class SynchronizedMessagingClient(
     }
 
     private val queue = Queue<ClientMessage>()
-    private var coroutineTimer : Job? = null
+    private var coroutineTimer: Job? = null
 
     override fun subscribe(channels: List<String>) {
         coroutineTimer = GlobalScope.launch {
-            delay(SYNC_TIME_FIDELITY)
-            processQueueForScheduledEvent()
+            publishTimeSynchronizedMessageFromQueue()
         }
-
         super.subscribe(channels)
+    }
+
+    private suspend fun publishTimeSynchronizedMessageFromQueue() {
+        processQueueForScheduledEvent()
+        delay(SYNC_TIME_FIDELITY)
+        publishTimeSynchronizedMessageFromQueue()
     }
 
     override fun unsubscribeAll() {
