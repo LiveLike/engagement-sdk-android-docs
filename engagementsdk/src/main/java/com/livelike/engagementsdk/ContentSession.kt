@@ -196,9 +196,9 @@ internal class ContentSession(
         uuid: String
     ) {
         if (!validateUuid(uuid)) {
-            logError { "Widget Initialization Failed due no uuid complaint user id received for user" }
+            logError { "Widget Initialization Failed due no uuid compliant user id received for user" }
             // Check with ben should we assume user id will always be uuid
-            BugsnagClient.client?.notify(ServerDataValidationException("User id not complaint to uuid"))
+            BugsnagClient.client?.notify(ServerDataValidationException("User id not compliant to uuid"))
             return
         }
         analyticService.trackLastWidgetStatus(true)
