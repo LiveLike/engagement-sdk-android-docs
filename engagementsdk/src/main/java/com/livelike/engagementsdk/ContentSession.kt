@@ -29,6 +29,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 
@@ -39,6 +42,8 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
+
+
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -64,6 +69,14 @@ internal class ContentSession(
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
+    // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
+    private val configurationFlow = flow {
+        while (sdkConfiguration.latest() == null){
+            delay(1000)
+        }
+        emit(sdkConfiguration.latest()!!)
+    }
+    private var customChatChannel = ""
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -88,10 +101,11 @@ internal class ContentSession(
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
+
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration)
-                            initializeChatMessaging(program.chatChannel, configuration)
+                            if(customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -106,6 +120,22 @@ internal class ContentSession(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    override fun joinChatRoom(chatRoom: String) {
+        if(customChatChannel == chatRoom) return
+        customChatChannel = chatRoom
+        contentSessionScope.launch {
+            chatClient?.apply {
+                unsubscribeAll()
+                stop()
+            }
+            chatViewModel.flushMessages()
+            val validChatChannelName = chatRoom.toLowerCase().replace(" ","").replace("-","")
+            configurationFlow.collect {
+                initializeChatMessaging(validChatChannelName, it)
             }
         }
     }

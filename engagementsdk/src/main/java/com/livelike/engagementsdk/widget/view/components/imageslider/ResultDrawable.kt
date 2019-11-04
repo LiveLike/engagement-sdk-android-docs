@@ -1,7 +1,5 @@
 package com.livelike.engagementsdk.widget.view.components.imageslider
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.LinearGradient
@@ -43,13 +41,6 @@ internal class ResultDrawable(
     internal var trackHeight: Float = 0f
 
     init {
-        mLottieDrawable.addAnimatorListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                super.onAnimationEnd(animation)
-                isDrawResultGradient = true
-                start()
-            }
-        })
         LottieCompositionFactory.fromAsset(context, "image_slider_result.json")
             .addListener { composition ->
                 mLottieDrawable.composition = composition
@@ -61,6 +52,12 @@ internal class ResultDrawable(
     fun startLottieAnimation(callback: Callback) {
         mLottieDrawable.callback = callback
         mLottieDrawable.start()
+    }
+
+    fun startGradientAnimation(callback: Callback) {
+        this.callback = callback
+        isDrawResultGradient = true
+        start()
     }
 
     override fun draw(canvas: Canvas) {

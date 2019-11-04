@@ -127,6 +127,7 @@ internal class ImageSlider @JvmOverloads constructor(
             resultDrawable?.callback = this
             resultDrawable?.mAverageProgress = value
             resultDrawable?.startLottieAnimation(this)
+            resultDrawable?.startGradientAnimation(this)
         }
 
     /**
