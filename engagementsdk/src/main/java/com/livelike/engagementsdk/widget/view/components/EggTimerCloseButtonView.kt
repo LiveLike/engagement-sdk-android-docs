@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.widget.view.components
 
+import android.animation.Animator
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
@@ -9,7 +10,8 @@ import com.livelike.engagementsdk.R
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.closeButton
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.eggTimer
 
-class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
+class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
+    ConstraintLayout(context, attr) {
     private val ANIMATION_BASE_TIME =
         5000f // This value need to be updated if the animation is changed to a different one
 
@@ -32,13 +34,28 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) : Co
         eggTimer.progress = progress
         eggTimer.resumeAnimation()
         showEggTimer()
+        eggTimer.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationRepeat(animation: Animator?) {
+
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {
+            }
+
+            override fun onAnimationStart(animation: Animator?) {
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                eggTimer.removeAllUpdateListeners()
+                eggTimer.removeAllAnimatorListeners()
+                showCloseButton(dismissAction)
+            }
+
+        })
         eggTimer.addAnimatorUpdateListener {
             if (it.animatedFraction < 1) {
                 showEggTimer()
                 onUpdate(it.animatedFraction)
-            } else {
-                eggTimer.removeAllUpdateListeners()
-                showCloseButton(dismissAction)
             }
         }
     }
