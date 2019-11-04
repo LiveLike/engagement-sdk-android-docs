@@ -188,7 +188,7 @@ internal class PredictionViewModel(
             }
             state.onNext("confirmation")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
-            delay(6000)
+            delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
         }
     }

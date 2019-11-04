@@ -199,7 +199,7 @@ internal class PollViewModel(
                     interactionData
                 )
             }
-            delay(6000)
+            delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
         }
     }
