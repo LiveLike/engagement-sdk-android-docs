@@ -70,7 +70,7 @@ internal class CheerMeterViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient(it)
+            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""
@@ -128,14 +128,14 @@ internal class CheerMeterViewModel(
         voteUrl?.let {
             uiScope.launch {
                 if (voteCount > 0)
-                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"),"{\"vote_count\":$voteCount}"), type = RequestType.PATCH)
+                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":$voteCount}"), type = RequestType.PATCH)
             }
         }
     }
 
     private fun initVote(url: String) {
         uiScope.launch {
-            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"),"{\"vote_count\":0}"), type = RequestType.POST)
+            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":0}"), type = RequestType.POST)
         }
     }
 
