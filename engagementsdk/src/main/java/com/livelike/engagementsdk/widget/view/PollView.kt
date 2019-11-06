@@ -50,6 +50,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                             opt.percentage = 100
                         }
                     }
+                    viewModel?.adapter?.showPercentage = true
                     viewModel?.adapter?.myDataset = options
                     textRecyclerView.swapAdapter(viewModel?.adapter, false)
                 }
