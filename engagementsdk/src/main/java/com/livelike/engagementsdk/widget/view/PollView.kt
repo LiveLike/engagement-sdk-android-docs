@@ -67,8 +67,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun rewardsObserver(points: Int?) {
         points?.let {
-            if (!shouldShowPointTutorial()) {
-                pointView.startAnimation(it)
+            if (!shouldShowPointTutorial() && it > 0) {
+                pointView.startAnimation(it, true)
                 wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
             }
         }

@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
  * Program is an event in CMS App.
  */
 internal class ProgramRepository(
-    private val programId: String,
+    val programId: String,
     private val userRepository: UserRepository
 ) : BaseRepository() {
 
@@ -42,7 +42,7 @@ internal class ProgramRepository(
         )
         if (result is Result.Success) {
             withContext(Dispatchers.Main) {
-                val programGamification = result.data as ProgramGamificationProfile
+                val programGamification = result.data
                 logDebug { "points update : ${programGamification.points}, rank update: ${programGamification.rank}" }
                 programGamificationProfileStream.onNext(programGamification)
             }

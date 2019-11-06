@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.bugsnag.android.gradle'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.bugsnag.android.gradle'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -11,7 +11,7 @@ android {
         targetSdkVersion rootProject.targetSdkVersion
         multiDexEnabled true
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

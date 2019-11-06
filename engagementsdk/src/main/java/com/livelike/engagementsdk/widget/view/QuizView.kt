@@ -35,12 +35,12 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
             viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
             viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
-            viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver(it) }
+            viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
         }
 
     private var inflated = false
 
-    private fun onClickObserver(it: String?) {
+    private fun onClickObserver() {
         viewModel?.onOptionClicked()
     }
 
@@ -50,7 +50,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
         viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
         viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
-        viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver(it) }
+        viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
     }
 
     private fun resourceObserver(widget: QuizWidget?) {
@@ -120,8 +120,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         when (state) {
             "results" -> {
                 viewModel?.points?.let {
-                    if (!shouldShowPointTutorial()) {
-                        pointView.startAnimation(it)
+                    if (!shouldShowPointTutorial() && it > 0) {
+                        pointView.startAnimation(it, true)
                         wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
                     }
                 }

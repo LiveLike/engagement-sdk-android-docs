@@ -14,24 +14,30 @@ import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.widget.WidgetType.ALERT
+import com.livelike.engagementsdk.widget.WidgetType.CHEER_METER
 import com.livelike.engagementsdk.widget.WidgetType.COLLECT_BADGE
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_POLL
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_QUIZ
+import com.livelike.engagementsdk.widget.WidgetType.IMAGE_SLIDER
 import com.livelike.engagementsdk.widget.WidgetType.POINTS_TUTORIAL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_QUIZ
 import com.livelike.engagementsdk.widget.view.AlertWidgetView
+import com.livelike.engagementsdk.widget.view.CheerMeterView
 import com.livelike.engagementsdk.widget.view.CollectBadgeWidgetView
+import com.livelike.engagementsdk.widget.view.EmojiSliderWidgetView
 import com.livelike.engagementsdk.widget.view.PollView
 import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
@@ -55,20 +61,70 @@ internal class WidgetProvider {
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
-                widgetViewModel = QuizViewModel(widgetInfos, analyticsService, sdkConfiguration, context, onDismiss, userRepository, programRepository, widgetMessagingClient)
+                widgetViewModel = QuizViewModel(
+                    widgetInfos,
+                    analyticsService,
+                    sdkConfiguration,
+                    context,
+                    onDismiss,
+                    userRepository,
+                    programRepository,
+                    widgetMessagingClient
+                )
             }
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
-                widgetViewModel = PredictionViewModel(widgetInfos, context, analyticsService, onDismiss, userRepository, programRepository, widgetMessagingClient)
+                widgetViewModel = PredictionViewModel(
+                    widgetInfos,
+                    context,
+                    analyticsService,
+                    onDismiss,
+                    userRepository,
+                    programRepository,
+                    widgetMessagingClient
+                )
             }
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
-                widgetViewModel = PollViewModel(widgetInfos, analyticsService, sdkConfiguration, onDismiss, userRepository, programRepository, widgetMessagingClient)
+                widgetViewModel = PollViewModel(
+                    widgetInfos,
+                    analyticsService,
+                    sdkConfiguration,
+                    onDismiss,
+                    userRepository,
+                    programRepository,
+                    widgetMessagingClient
+                )
             }
             POINTS_TUTORIAL -> PointsTutorialView(context).apply {
-                widgetViewModel = PointTutorialWidgetViewModel(onDismiss, analyticsService, programRepository.rewardType, programRepository.programGamificationProfileStream.latest())
+                widgetViewModel = PointTutorialWidgetViewModel(
+                    onDismiss,
+                    analyticsService,
+                    programRepository.rewardType,
+                    programRepository.programGamificationProfileStream.latest()
+                )
             }
             COLLECT_BADGE -> CollectBadgeWidgetView(context).apply {
-                widgetViewModel = CollectBadgeWidgetViewModel(gson.fromJson(widgetInfos.payload, Badge::class.java), onDismiss, analyticsService, animationEventsStream)
+                widgetViewModel = CollectBadgeWidgetViewModel(
+                    gson.fromJson(
+                        widgetInfos.payload,
+                        Badge::class.java
+                    ), onDismiss, analyticsService, animationEventsStream
+                )
+            }
+            CHEER_METER -> CheerMeterView(context).apply {
+                widgetViewModel = CheerMeterViewModel(
+                    widgetInfos,
+                    analyticsService,
+                    sdkConfiguration,
+                    onDismiss,
+                    userRepository,
+                    programRepository,
+                    widgetMessagingClient
+                )
+            }
+            IMAGE_SLIDER -> EmojiSliderWidgetView(context).apply {
+                widgetViewModel = EmojiSliderWidgetViewModel(widgetInfos, analyticsService, sdkConfiguration, onDismiss,
+                    userRepository, programRepository, widgetMessagingClient)
             }
             else -> null
         }

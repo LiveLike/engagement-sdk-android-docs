@@ -3,6 +3,9 @@ package com.livelike.engagementsdk
 import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
+import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
+import com.livelike.engagementsdk.core.exceptionhelpers.safeProxyForEmptyReturnCalls
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
@@ -38,7 +41,12 @@ class EngagementSDK(
     // by default sdk calls will run on Default pool and further data layer calls will run o
     private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
+    /**
+     * SDK Initialization logic.
+     */
     init {
+        EnagagementSdkUncaughtExceptionHandler
+        BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
         dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
@@ -69,9 +77,13 @@ class EngagementSDK(
             configurationStream,
             userRepository,
             applicationContext,
-            programId) { EpochTime(0) }
+            programId) { EpochTime(0) }.safeProxyForEmptyReturnCalls()
     }
 
+    /**
+     * Use to retrieve the current timecode from the videoplayer to enable Spoiler-Free Sync.
+     *
+     */
     interface TimecodeGetter {
         fun getTimecode(): EpochTime
     }
@@ -86,10 +98,10 @@ class EngagementSDK(
             configurationStream,
             userRepository,
             applicationContext,
-            programId) { timecodeGetter.getTimecode() }
+            programId) { timecodeGetter.getTimecode() }.safeProxyForEmptyReturnCalls()
     }
 
-    data class SdkConfiguration(
+    internal data class SdkConfiguration(
         val url: String,
         val name: String?,
         @SerializedName("client_id")

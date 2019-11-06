@@ -33,7 +33,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     }
 
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
-    private var pubnub: PubNub
+    var pubnub: PubNub
     private var listener: MessagingEventListener? = null
 
     init {

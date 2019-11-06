@@ -18,6 +18,7 @@ import com.livelike.engagementsdk.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
 import com.livelike.engagementsdk.utils.logVerbose
@@ -50,7 +51,8 @@ internal class ContentSession(
         MockAnalyticsService(programId)
     private val llDataClient = EngagementDataClientImpl()
 
-    val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream) }
+    private val stickerPackRepository = StickerPackRepository(programId)
+    val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream, stickerPackRepository) }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
@@ -58,7 +60,7 @@ internal class ContentSession(
 
     private val programRepository = ProgramRepository(programId, userRepository)
 
-    private val animationEventsStream = SubscriptionManager<ViewAnimationEvents>()
+    private val animationEventsStream = SubscriptionManager<ViewAnimationEvents>(false)
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
@@ -172,7 +174,7 @@ internal class ContentSession(
                 }
     }
 
-    // ///// Chat ///////
+    // ///// Chat. ///////
 
     private fun initializeChatMessaging(
         chatChannel: String,

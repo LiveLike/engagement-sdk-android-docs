@@ -17,7 +17,6 @@ class LiveLikeApplication : Application() {
     companion object {
         const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
 //            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
-
     }
 
     lateinit var channelManager: ChannelManager
@@ -59,7 +58,7 @@ class LiveLikeApplication : Application() {
     fun createSession(sessionId: String, widgetInterceptor: WidgetInterceptor): LiveLikeContentSession {
         if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
-            session = sdk?.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {
+            session = sdk.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {
                 override fun getTimecode(): EpochTime {
                     return EpochTime(player.getPDT())
                 }

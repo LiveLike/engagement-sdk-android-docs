@@ -4,13 +4,13 @@ buildscript {
     ext {
         // Sdk and tools
         compileSdkVersion = 28
-        minSdkVersion = 16
+        minSdkVersion = 17
         targetSdkVersion = 28
 
         // App dependencies
         bugsnagVersion = "4+"
         constraintLayoutVersion = "1.1.3"
-        dokkaVersion = "0.9.17"
+        dokkaVersion = "0.10.0"
         expressoVersion = "3.0.2"
         exoplayerVersion = "2.9.3"
         coroutinesVersion = "1.3.0-RC"
@@ -37,15 +37,18 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$gradleVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:$dokkaVersion"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion"
         classpath "com.github.dcendents:android-maven-gradle-plugin:$mavenPluginVersion"
         classpath "com.bugsnag:bugsnag-android-gradle-plugin:$bugsnagVersion"
     }
+}
+
+plugins {
+    id "org.sonarqube" version "2.7.1"
 }
 
 allprojects {
@@ -54,5 +57,3 @@ allprojects {
         jcenter()
     }
 }
-
-

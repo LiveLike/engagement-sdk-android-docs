@@ -101,7 +101,7 @@ internal class SendbirdMessagingClient(
                 e?.also {
                     logError { "Error sending the message: ${it.stackTrace}" }
                 }
-                analyticsService.trackMessageSent(msg.messageId.toString(), msg.message.length)
+                analyticsService.trackMessageSent(msg.messageId.toString(), msg.message)
                 lastChatMessage = Pair(msg.messageId.toString(), channel)
                 messageIdList.add(msg.messageId)
 

@@ -10,8 +10,9 @@
     <string name="flag_ui_reporting_title">Report message</string>
     <string name="chat_pre_nickname_me">(Me) %s</string>
     <string name="chat_deleted_message_redacted">Redacted</string>
-    <string name="livelike_rank_label">Rank</string>
+    <string name="livelike_rank_label">RANK</string>
     <string name="badge_earned_congrats_message">Congrats! You just earn a new badge!</string>
     <string name="new_badge">NEW BADGE!!!</string>
     <string name="collect">Collect</string>
+    <string name="minigame_pick_a_side">MINIGAME-PICK A SIDE!</string>
 </resources>
