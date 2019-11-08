@@ -78,7 +78,7 @@ internal class QuizViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient(it)
+            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""
@@ -142,7 +142,7 @@ internal class QuizViewModel(
                 debouncedVoteId.unsubscribe(javaClass)
                 adapter?.selectionLocked = true
                 vote()
-                delay(2000)
+                delay(500)
                 resultsState()
             }
         }
@@ -187,7 +187,7 @@ internal class QuizViewModel(
             }
             state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
-            delay(6000)
+            delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
         }
     }

@@ -76,4 +76,9 @@ internal class ChatViewModel(
             dataClient.reportMessage(programRepository.program.id, message, userStream.latest()?.accessToken)
         }
     }
+
+    fun flushMessages() {
+        messageList.clear()
+        chatAdapter.submitList(ArrayList(messageList))
+    }
 }

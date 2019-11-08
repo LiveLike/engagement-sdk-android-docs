@@ -141,7 +141,8 @@ internal class WidgetManager(
 
         handler.post {
             currentWidgetViewStream.onNext(
-                WidgetProvider().get(
+                WidgetProvider()
+                    .get(
                     this,
                     WidgetInfos(widgetType, payload, widgetId),
                     context,
@@ -160,7 +161,7 @@ internal class WidgetManager(
 
         // Register the impression on the backend
         payload.get("impression_url")?.asString?.let {
-            dataClient.registerImpression(it)
+            dataClient.registerImpression(it, userRepository.userAccessToken)
         }
 
         super.onClientMessageEvent(msgHolder.messagingClient, msgHolder.clientMessage)
