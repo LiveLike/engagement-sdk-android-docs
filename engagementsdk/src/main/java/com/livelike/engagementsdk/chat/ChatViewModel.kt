@@ -77,7 +77,7 @@ internal class ChatViewModel(
         }
     }
 
-    fun flushMessages(){
+    fun flushMessages() {
         messageList.clear()
         chatAdapter.submitList(ArrayList(messageList))
     }

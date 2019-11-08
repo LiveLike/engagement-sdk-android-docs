@@ -37,7 +37,6 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
         showEggTimer()
         eggTimer.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {
-
             }
 
             override fun onAnimationCancel(animation: Animator?) {
@@ -51,7 +50,6 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
                 eggTimer.removeAllAnimatorListeners()
                 showCloseButton(dismissAction)
             }
-
         })
         eggTimer.addAnimatorUpdateListener {
             if (it.animatedFraction < 1) {
