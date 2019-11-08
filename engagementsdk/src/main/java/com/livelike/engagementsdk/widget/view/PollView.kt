@@ -41,20 +41,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun clickedOptionObserver(id: String?) {
         id?.let {
-            if (viewModel?.firstClick != null && viewModel?.firstClick!!) {
-                val options = viewModel?.data?.currentData?.resource?.getMergedOptions()
-                options?.apply {
-                    forEach { opt ->
-                        if (opt.id == id) {
-                            opt.vote_count = 1
-                            opt.percentage = 100
-                        }
-                    }
-                    viewModel?.adapter?.showPercentage = true
-                    viewModel?.adapter?.myDataset = options
-                    textRecyclerView.swapAdapter(viewModel?.adapter, false)
-                }
-            }
+            viewModel?.adapter?.showPercentage = true
+            viewModel?.adapter?.notifyDataSetChanged()
             viewModel?.onOptionClicked()
         }
     }
