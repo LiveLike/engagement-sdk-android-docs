@@ -94,10 +94,9 @@ internal class PubnubMessagingClientReplay(
         super.onClientMessageStatus(client, status)
         isConnected = status == ConnectionStatus.CONNECTED
         if (isConnected) {
-            val iterator = pendingChannelsForAddingReplay.iterator()
-            for (i in iterator) {
-                fetchLastMessageFromHistoryToReplay(i)
-                iterator.remove()
+            pendingChannelsForAddingReplay.forEach { channel ->
+                fetchLastMessageFromHistoryToReplay(channel)
+                pendingChannelsForAddingReplay.remove(channel)
             }
         }
     }

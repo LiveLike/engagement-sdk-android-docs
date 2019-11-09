@@ -21,6 +21,8 @@ import com.livelike.engagementsdk.services.messaging.Error
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClientReplay
+import com.livelike.engagementsdk.services.messaging.pubnub.asBehaviourSubject
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -69,7 +71,7 @@ internal class PollViewModel(
     var animationResultsProgress = 0f
     private var animationPath = ""
     var voteUrl: String? = null
-    private var pubnub: PubnubMessagingClient? = null
+    private var pubnub: PubnubMessagingClientReplay? = null
     var animationEggTimerProgress = 0f
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
@@ -79,7 +81,7 @@ internal class PollViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
+            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)?.asBehaviourSubject()
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""
@@ -112,7 +114,7 @@ internal class PollViewModel(
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
 
         uiScope.launch {
-            adapter?.apply {
+            adapter?.run {
                 val url = myDataset[selectedPosition].getMergedVoteUrl()
                 url?.let {
                     dataClient.voteAsync(
@@ -122,8 +124,6 @@ internal class PollViewModel(
                     )
                 }
             }
-            adapter?.showPercentage = true
-            adapter?.notifyDataSetChanged()
         }
     }
 
