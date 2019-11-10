@@ -47,6 +47,7 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
+
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -141,6 +142,18 @@ internal class ContentSession(
                 initializeChatMessaging(validChatChannelName, it)
             }
         }
+    }
+
+    override fun exitChatRoom() {
+        chatClient?.unsubscribeAll()
+    }
+
+    override fun registerMessageCountListener(
+        chatRoom: String,
+        userId: String,
+        messageCountListener: MessageCountListener
+    ) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun startObservingForGamificationAnalytics(
