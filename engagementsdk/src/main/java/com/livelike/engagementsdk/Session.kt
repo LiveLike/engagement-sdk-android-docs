@@ -27,8 +27,20 @@ interface LiveLikeContentSession {
     fun setWidgetContainer(widgetView: FrameLayout)
     /** Join a new Chat Room */
     fun joinChatRoom(chatRoom: String)
+    /** Exit the current active Chat Room */
+    fun exitChatRoom()
+    /** Register a message count listner for the specified Chat Room */
+    fun registerMessageCountListener(chatRoom: String, userId: String, messageCountListener : MessageCountListener)
     /** Intercepts the widgets and hold them until show() or dismiss() is being called */
     var widgetInterceptor: WidgetInterceptor?
+}
+
+/**
+ * Returns the new message count whenever a unread message is being posted
+ *
+ */
+interface MessageCountListener {
+    fun messageCountUpdated(chatRoom: String, messageCount: Int)
 }
 
 /** A simple representation of an observable stream.
