@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
-import android.support.v4.content.ContextCompat
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
@@ -10,6 +11,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
@@ -28,6 +30,7 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 
+
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
         return p0.id == p1.id
@@ -45,6 +48,27 @@ internal class ChatRecyclerAdapter(
     val chatReactionRepository: ChatReactionRepository
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    var chatPaddingLeft: Int=0
+    var chatPaddingRight:Int=0
+    var chatPaddingTop:Int=0
+    var chatPaddingBottom:Int=0
+    var chatMarginLeft: Int=0
+    var chatMarginRight:Int=0
+    var chatMarginTop:Int=0
+    var chatMarginBottom:Int=0
+    var chatWidth: Int=FrameLayout.LayoutParams.WRAP_CONTENT
+    var chatBubbleBackgroundRes: Drawable?=null
+    var chatReactionBackgroundRes: Drawable?=null
+    var chatMessageColor: Int= Color.WHITE
+    var chatOtherNickNameColor: Int=Color.WHITE
+    var chatNickNameColor: Int=Color.WHITE
+    var chatReactionBackgroundColor: Int=Color.TRANSPARENT
+    var chatReactionX:Int=0
+    var chatReactionY:Int=0
+    var chatReactionElevation:Float=0f
+    var chatReactionRadius:Float=0f
+    var chatReactionPadding:Int=0
+
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -52,6 +76,8 @@ internal class ChatRecyclerAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindTo(getItem(position))
     }
+
+
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
@@ -87,6 +113,14 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
+            v.chatMessage.setTextColor(chatMessageColor)
+            val layoutParam=FrameLayout.LayoutParams(chatWidth,FrameLayout.LayoutParams.WRAP_CONTENT)
+            layoutParam.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
+            v.chatBackground.layoutParams = layoutParam
+
+            v.chatBackground.background=chatBubbleBackgroundRes
+            v.chatBackground.setPadding(chatPaddingLeft,chatPaddingTop,chatPaddingRight,chatPaddingBottom)
+
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
         }
@@ -120,15 +154,20 @@ internal class ChatRecyclerAdapter(
                     }
                 },
                 ::hideFloatingUI,
-                isOwnMessage
-            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + AndroidResource.dpToPx(8), locationOnScreen.y - AndroidResource.dpToPx(40))
+                isOwnMessage,
+                chatReactionBackground = chatReactionBackgroundRes,
+                chatReactionElevation = chatReactionElevation,
+                chatReactionRadius = chatReactionRadius,
+                chatReactionBackgroundColor=chatReactionBackgroundColor,
+                        chatReactionPadding=chatReactionPadding
+            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatReactionX, locationOnScreen.y - chatReactionY)
         }
 
         private fun hideFloatingUI() {
             v.apply {
                 chatBackground.alpha = 1f
             }
-    }
+        }
 
         private fun setMessage(
             message: ChatMessage?
@@ -136,21 +175,12 @@ internal class ChatRecyclerAdapter(
             v.apply {
                 this@ViewHolder.message = message
                 message?.apply {
+
                     if (message.isFromMe) {
-                        chat_nickname.setTextColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.livelike_openChatNicknameMe
-                            )
-                        )
+                        chat_nickname.setTextColor(chatNickNameColor)
                         chat_nickname.text = context.getString(R.string.chat_pre_nickname_me, message.senderDisplayName)
                     } else {
-                        chat_nickname.setTextColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.livelike_openChatNicknameOther
-                            )
-                        )
+                        chat_nickname.setTextColor(chatOtherNickNameColor)
                         chat_nickname.text = message.senderDisplayName
                     }
                     val spaceRemover = Pattern.compile("[\\s]")

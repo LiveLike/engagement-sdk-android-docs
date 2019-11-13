@@ -15,19 +15,21 @@ import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.nicknameText
+import kotlinx.android.synthetic.main.activity_main.themes_button
+import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
 class MainActivity : AppCompatActivity() {
 
-    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>)
+    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>,var theme:Int)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val channelManager = (application as LiveLikeApplication).channelManager
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class)
-        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class)
+        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class,R.style.AppTheme)
+        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class,R.style.AppTheme)
 
         layout_side_panel.setOnClickListener {
             startActivity(playerDetailIntent(player))
@@ -44,6 +46,21 @@ class MainActivity : AppCompatActivity() {
                 setItems(channels.map { it.name }.toTypedArray()) { _, which ->
                     channelManager.selectedChannel = channels[which]
                     events_label.text = channelManager.selectedChannel.name
+                }
+                create()
+            }.show()
+        }
+        themes_button.setOnClickListener {
+            val channels = arrayListOf("Default","Turner")
+            AlertDialog.Builder(this).apply {
+                setTitle("Choose a theme!")
+                setItems(channels.toTypedArray()) { _, which ->
+                    themes_label.text = channels[which]
+                    player.theme=when(which){
+                        0-> R.style.AppTheme_NoActionBar
+                        1-> R.style.TurnerChatTheme
+                        else -> R.style.AppTheme_NoActionBar
+                    }
                 }
                 create()
             }.show()
@@ -76,5 +93,7 @@ class MainActivity : AppCompatActivity() {
 }
 
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
-    return Intent(this, player.cls.java)
+    val intent= Intent(this, player.cls.java)
+    intent.putExtra("theme",player.theme)
+    return intent
 }

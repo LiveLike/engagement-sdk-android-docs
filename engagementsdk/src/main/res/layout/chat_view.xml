@@ -5,6 +5,7 @@
                                              android:layout_width="match_parent"
                                              android:animateLayoutChanges="true"
                                              android:layout_height="match_parent"
+    android:id="@+id/chat_view"
 
 >
 
@@ -24,8 +25,6 @@
             android:id="@+id/chatdisplay"
             app:stackFromEnd="true"
             android:layout_width="0dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginLeft="8dp"
             android:layout_height="0dp"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/default_chat_cell"

@@ -64,8 +64,8 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        this.setTheme(intent.getIntExtra("theme",R.style.AppTheme))
         setContentView(R.layout.activity_exo_player)
-
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
         player = (application as LiveLikeApplication).createPlayer(playerView)
