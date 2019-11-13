@@ -611,15 +611,15 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         if (v != null &&
             (ev?.action == MotionEvent.ACTION_UP || ev?.action == MotionEvent.ACTION_MOVE) &&
-            v is EditText &&
+            (v is EditText || v is ChatView) &&
             !v.javaClass.name.startsWith("android.webkit.")
         ) {
             val scrcoords = IntArray(2)
             v.getLocationOnScreen(scrcoords)
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
-
-            if (x < v.left || x > v.right || y < v.top || y > v.bottom) {
+            val outsideStickerKeyboardBound =  (v.bottom - sticker_keyboard.height)
+            if (y < v.top || y > v.bottom || y < outsideStickerKeyboardBound) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }

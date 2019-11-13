@@ -19,7 +19,6 @@ import com.sendbird.android.BaseMessage
 import com.sendbird.android.OpenChannel
 import com.sendbird.android.PreviousMessageListQuery
 import com.sendbird.android.SendBird
-import com.sendbird.android.SendBird.LOGGER_INFO
 import com.sendbird.android.SendBird.UserInfoUpdateHandler
 import com.sendbird.android.SendBirdException
 import com.sendbird.android.User
@@ -131,12 +130,12 @@ internal class SendbirdMessagingClient(
     )
 
     override fun subscribe(channels: List<String>) {
-        channels.forEach {channelUrl ->
+        channels.forEach { channelUrl ->
             OpenChannel.getChannel(channelUrl,
                 OpenChannel.OpenChannelGetHandler { openChannel, e ->
                     if (e != null) { // Error, if the channel doesn't exist.
                         logError { e }
-                        if(e.code == 400201) { // Code for channel not found, we will create a new channel
+                        if (e.code == 400201) { // Code for channel not found, we will create a new channel
                             createAndJoinChannel(channelUrl)
                         }
                         return@OpenChannelGetHandler
@@ -250,7 +249,7 @@ internal class SendbirdMessagingClient(
         channels.forEach {
             SendBird.removeChannelHandler(it)
             connectedChannels.remove(connectedChannels.find { openChannel -> openChannel.url == it }.apply {
-                this?.exit {  }
+                this?.exit { }
             })
         }
     }
@@ -258,7 +257,7 @@ internal class SendbirdMessagingClient(
     override fun unsubscribeAll() {
         SendBird.removeAllChannelHandlers()
         connectedChannels.forEach {
-            it.exit {  }
+            it.exit { }
         }
         connectedChannels.clear()
     }

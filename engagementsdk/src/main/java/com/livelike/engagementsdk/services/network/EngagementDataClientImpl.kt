@@ -21,12 +21,14 @@ import com.livelike.engagementsdk.utils.addUserAgent
 import com.livelike.engagementsdk.utils.extractBoolean
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addPoints
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSessionId
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
 import com.livelike.engagementsdk.widget.util.SingleRunner
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,9 +42,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @Suppress("USELESS_ELVIS")
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
