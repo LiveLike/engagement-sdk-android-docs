@@ -25,8 +25,8 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
-    /** Join a new Chat Room */
-    fun joinChatRoom(chatRoom: String)
+    /** Enter a Chat Room */
+    fun enterChatRoom(chatRoom: String)
     /** Exit the current active Chat Room */
     fun exitChatRoom()
     /** Register a message count listner for the specified Chat Room */

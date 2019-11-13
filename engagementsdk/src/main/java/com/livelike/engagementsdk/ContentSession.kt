@@ -128,7 +128,7 @@ internal class ContentSession(
         }
     }
 
-    override fun joinChatRoom(chatRoom: String) {
+    override fun enterChatRoom(chatRoom: String) {
         if (customChatChannel == chatRoom) return
         customChatChannel = chatRoom
         contentSessionScope.launch {

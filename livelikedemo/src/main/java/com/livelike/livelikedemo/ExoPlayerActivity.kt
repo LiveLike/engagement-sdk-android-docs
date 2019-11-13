@@ -20,16 +20,6 @@ import com.livelike.livelikedemo.video.VideoPlayer
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
-import kotlinx.android.synthetic.main.activity_exo_player.button3
-import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
-import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
-import kotlinx.android.synthetic.main.activity_exo_player.openLogs
-import kotlinx.android.synthetic.main.activity_exo_player.playerView
-import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
-import kotlinx.android.synthetic.main.activity_exo_player.startAd
-import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
-import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
-import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -117,7 +107,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a custom Chat Room to join")
                 setItems(chatChannelNames.toTypedArray()) { _, which ->
-                    session!!.joinChatRoom(chatChannelNames[which])
+                    session!!.enterChatRoom(chatChannelNames[which])
                 }
                 create()
             }.show()
