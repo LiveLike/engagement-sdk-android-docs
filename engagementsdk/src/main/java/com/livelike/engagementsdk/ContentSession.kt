@@ -1,8 +1,11 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
+import android.util.Log
 import android.widget.FrameLayout
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -11,26 +14,38 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.services.messaging.ClientMessage
+import com.livelike.engagementsdk.services.messaging.ConnectionStatus
+import com.livelike.engagementsdk.services.messaging.Error
 import com.livelike.engagementsdk.services.messaging.MessagingClient
+import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.services.messaging.proxies.filter
 import com.livelike.engagementsdk.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.services.messaging.sendbird.SendBirdUtils
 import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
+import com.sendbird.android.BaseChannel
+import com.sendbird.android.BaseMessage
+import com.sendbird.android.OpenChannel
+import com.sendbird.android.SendBird
+import com.sendbird.android.UserMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -38,6 +53,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
+import java.util.Date
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
@@ -46,8 +62,6 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
-
-
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -62,6 +76,7 @@ internal class ContentSession(
 
     private val stickerPackRepository = StickerPackRepository(programId)
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream, stickerPackRepository) }
+    override var getActiveChatRoom: () -> String = {chatViewModel.currentChatRoom}
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
@@ -81,6 +96,11 @@ internal class ContentSession(
         emit(sdkConfiguration.latest()!!)
     }
     private var customChatChannel = ""
+
+    private var msgListener : MessageListener = object : MessageListener{
+        override fun onNewMessage(chatRoom: String, message: String) {
+            Log.e("OOOOHHHH", message)
+        }}
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -105,10 +125,10 @@ internal class ContentSession(
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
-
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
+                            chatViewModel.currentChatRoom = program.subscribeChannel
                             if (customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
@@ -132,28 +152,27 @@ internal class ContentSession(
         if (customChatChannel == chatRoom) return
         customChatChannel = chatRoom
         contentSessionScope.launch {
-            chatClient?.apply {
-                unsubscribeAll()
-                stop()
-            }
             chatViewModel.flushMessages()
             val validChatChannelName = chatRoom.toLowerCase().replace(" ", "").replace("-", "")
+            chatViewModel.currentChatRoom = validChatChannelName
             configurationFlow.collect {
                 initializeChatMessaging(validChatChannelName, it)
             }
         }
     }
 
-    override fun exitChatRoom() {
+    override fun exitChatRoom(chatRoom: String) {
+        chatClient?.unsubscribe(listOf(chatRoom))
+    }
+
+    override fun exitAllConnectedChatRooms() {
         chatClient?.unsubscribeAll()
     }
 
-    override fun registerMessageCountListener(
-        chatRoom: String,
-        userId: String,
-        messageCountListener: MessageCountListener
+    override fun setMessageListener(
+        messageListener: MessageListener
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        msgListener = messageListener
     }
 
     private fun startObservingForGamificationAnalytics(
@@ -239,7 +258,8 @@ internal class ContentSession(
                 config.sendBirdAppId,
                 applicationContext,
                 analyticService,
-                userRepository
+                userRepository,
+                msgListener
             )
                 .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
                 .toChatQueue()

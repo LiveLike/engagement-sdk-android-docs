@@ -8,9 +8,11 @@ import android.support.constraint.Constraints
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.utils.registerLogsHandler
 import com.livelike.livelikedemo.channel.Channel
@@ -162,6 +164,8 @@ class ExoPlayerActivity : AppCompatActivity() {
         }.show()
     }
 
+    val messageCount : MutableMap<String, MutableList<String>> = mutableMapOf()
+
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object : (String) -> Unit {
             override fun invoke(text: String) {
@@ -176,6 +180,25 @@ class ExoPlayerActivity : AppCompatActivity() {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
                 dialog)
 
+            session.setMessageListener(object:MessageListener{
+                override fun onNewMessage(chatRoom: String, message: String) {
+                    if(chatRoom == session.getActiveChatRoom()){
+                        messageCount[chatRoom] = mutableListOf() // reset unread message count
+                    }else{
+                        if(messageCount[chatRoom] == null){
+                            messageCount[chatRoom] = mutableListOf(message)
+                        }else{
+                            messageCount[chatRoom]?.add(message)
+                        }
+                    }
+                    messageCount.forEach {
+                        logsPreview.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${logsPreview.text}"
+                        fullLogs.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${fullLogs.text}"
+                        Log.e("Here","channel : ${it.key}, unread : ${it.value.size}")
+                    }
+                }
+            })
+
             chat_view.setSession(session)
             widget_view.setSession(session)
             getSharedPreferences("test-app", Context.MODE_PRIVATE)
@@ -187,6 +210,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
 
             this.session = session
+
+
 
             player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }

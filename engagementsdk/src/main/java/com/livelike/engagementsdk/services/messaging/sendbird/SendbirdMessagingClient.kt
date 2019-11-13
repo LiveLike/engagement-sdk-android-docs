@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeUser
+import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.data.repository.UserRepository
@@ -32,7 +33,8 @@ internal class SendbirdMessagingClient(
     private val subscribeKey: String,
     val context: Context,
     private val analyticsService: AnalyticsService,
-    private val liveLikeUser: UserRepository
+    private val liveLikeUser: UserRepository,
+    private val messageListener: MessageListener
 ) :
     MessagingClient, ChatClient {
     private val zoneUTC = ZoneId.of("UTC")
@@ -140,7 +142,6 @@ internal class SendbirdMessagingClient(
                         }
                         return@OpenChannelGetHandler
                     }
-
                     enterChannel(openChannel)
                     loadMessageHistory(openChannel)
                 })
@@ -209,6 +210,7 @@ internal class SendbirdMessagingClient(
                 override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
                     if (message != null && channel != null && openChannel.url == message.channelUrl) {
                         message as UserMessage
+                        messageListener.onNewMessage(message.channelUrl, message.message)
                         val clientMessage =
                             SendBirdUtils.clientMessageFromBaseMessage(message, channel)
                         if (!messageIdList.contains(message.messageId)) {
@@ -221,6 +223,7 @@ internal class SendbirdMessagingClient(
                                 this@SendbirdMessagingClient,
                                 clientMessage
                             )
+
                             messageIdList.add(message.messageId)
                         }
                     }
@@ -255,11 +258,7 @@ internal class SendbirdMessagingClient(
     }
 
     override fun unsubscribeAll() {
-        SendBird.removeAllChannelHandlers()
-        connectedChannels.forEach {
-            it.exit { }
-        }
-        connectedChannels.clear()
+        unsubscribe(connectedChannels.map { it.url })
     }
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {

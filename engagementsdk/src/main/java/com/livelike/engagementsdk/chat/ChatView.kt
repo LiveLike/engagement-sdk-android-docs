@@ -503,7 +503,7 @@ class ChatView(context: Context, attrs: AttributeSet?) : ConstraintLayout(contex
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(
-            viewModel?.programRepository?.program?.chatChannel ?: "",
+            viewModel?.currentChatRoom ?: "",
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
