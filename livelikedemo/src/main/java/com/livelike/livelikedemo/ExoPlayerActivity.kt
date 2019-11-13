@@ -17,6 +17,16 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import kotlinx.android.synthetic.main.activity_exo_player.button3
+import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
+import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
+import kotlinx.android.synthetic.main.activity_exo_player.openLogs
+import kotlinx.android.synthetic.main.activity_exo_player.playerView
+import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
+import kotlinx.android.synthetic.main.activity_exo_player.startAd
+import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
+import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
+import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
