@@ -12,6 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.LinearLayout
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
@@ -26,9 +29,13 @@ import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
+import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
+import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -58,6 +65,7 @@ internal class ChatRecyclerAdapter(
     var chatMarginBottom:Int=0
     var chatWidth: Int=FrameLayout.LayoutParams.WRAP_CONTENT
     var chatBubbleBackgroundRes: Drawable?=null
+    var chatBackgroundRes: Drawable?=null
     var chatReactionBackgroundRes: Drawable?=null
     var chatMessageColor: Int= Color.WHITE
     var chatOtherNickNameColor: Int=Color.WHITE
@@ -68,6 +76,16 @@ internal class ChatRecyclerAdapter(
     var chatReactionElevation:Float=0f
     var chatReactionRadius:Float=0f
     var chatReactionPadding:Int=0
+    var showChatAvatarLogo:Boolean=false
+    var chatAvatarMarginRight:Int=AndroidResource.dpToPx(3)
+    var chatAvatarMarginBottom:Int=AndroidResource.dpToPx(5)
+    var chatAvatarMarginLeft:Int=AndroidResource.dpToPx(5)
+    var chatAvatarMarginTop:Int=AndroidResource.dpToPx(0)
+    var chatAvatarRadius:Int=AndroidResource.dpToPx(0)
+    var chatAvatarCircle:Boolean=false
+    var chatAvatarWidth:Int=AndroidResource.dpToPx(50)
+    var chatAvatarHeight:Int=AndroidResource.dpToPx(50)
+    var chatAvatarGravity:Int=Gravity.NO_GRAVITY
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
@@ -114,12 +132,29 @@ internal class ChatRecyclerAdapter(
 
         init {
             v.chatMessage.setTextColor(chatMessageColor)
-            val layoutParam=FrameLayout.LayoutParams(chatWidth,FrameLayout.LayoutParams.WRAP_CONTENT)
+
+            val layoutParam=FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT)
             layoutParam.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
             v.chatBackground.layoutParams = layoutParam
 
-            v.chatBackground.background=chatBubbleBackgroundRes
-            v.chatBackground.setPadding(chatPaddingLeft,chatPaddingTop,chatPaddingRight,chatPaddingBottom)
+            val layoutParam1=LinearLayout.LayoutParams(chatWidth,LinearLayout.LayoutParams.WRAP_CONTENT)
+//            layoutParam1.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
+            v.chatBubbleBackground.layoutParams = layoutParam1
+
+
+            v.img_chat_avatar.visibility=when(showChatAvatarLogo){
+                true -> View.VISIBLE
+                else -> View.GONE
+            }
+            val layoutParamAvatar=LinearLayout.LayoutParams(chatAvatarWidth,chatAvatarHeight)
+            layoutParamAvatar.setMargins(chatAvatarMarginLeft,chatAvatarMarginTop,chatAvatarMarginRight,chatAvatarMarginBottom)
+            layoutParamAvatar.gravity=chatAvatarGravity
+            v.img_chat_avatar.layoutParams=layoutParamAvatar
+
+            v.chatBackground.background=chatBackgroundRes
+
+            v.chatBubbleBackground.background=chatBubbleBackgroundRes
+            v.chatBubbleBackground.setPadding(chatPaddingLeft,chatPaddingTop,chatPaddingRight,chatPaddingBottom)
 
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
@@ -183,6 +218,18 @@ internal class ChatRecyclerAdapter(
                         chat_nickname.setTextColor(chatOtherNickNameColor)
                         chat_nickname.text = message.senderDisplayName
                     }
+
+                    val options = RequestOptions()
+                    if(chatAvatarCircle){
+                     options.optionalCircleCrop()
+                    }
+                    if(chatAvatarRadius>0){
+                        options.transform(CenterCrop(), RoundedCorners(chatAvatarRadius))
+                    }
+                    Glide.with(context).load("http://lorempixel.com/200/200/?${message.id}")
+                        .apply(options)
+                        .into(img_chat_avatar)
+
                     val spaceRemover = Pattern.compile("[\\s]")
                     val inputNoString = spaceRemover.matcher(message.message).replaceAll(Matcher.quoteReplacement(""))
                     val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()

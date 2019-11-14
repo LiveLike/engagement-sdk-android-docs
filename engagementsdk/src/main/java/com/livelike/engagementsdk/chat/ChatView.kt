@@ -20,6 +20,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -106,6 +107,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var chatWidth: Int
     private var chatInputTextSize: Int
     private var chatBubbleBackgroundRes: Drawable?
+    private var chatBackgroundRes: Drawable?
     private var chatViewBackgroundRes: Drawable?
     private var chatReactionBackgroundRes: Drawable?
     private var chatInputBackgroundRes: Drawable?
@@ -123,6 +125,18 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var chatReactionElevation:Float=0f
     private var chatReactionRadius:Float=0f
     private var chatReactionPadding:Int=0
+    private var showChatAvatarLogo:Boolean=false
+    private var chatAvatarMarginRight:Int=dpToPx(3)
+    private var chatAvatarMarginBottom:Int=dpToPx(5)
+    private var chatAvatarMarginLeft:Int=dpToPx(5)
+    private var chatAvatarMarginTop:Int=dpToPx(0)
+    private var chatAvatarRadius:Int=dpToPx(20)
+    private var chatAvatarCircle:Boolean=false
+    private var chatAvatarWidth:Int=dpToPx(50)
+    private var chatAvatarHeight:Int=dpToPx(50)
+    private var chatAvatarGravity:Int=Gravity.NO_GRAVITY
+
+
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
     private var session: LiveLikeContentSession? = null
@@ -156,6 +170,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         ).apply {
             try {
                 displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
+                showChatAvatarLogo=getBoolean(R.styleable.ChatView_showChatAvatarLogo,false)
+                chatAvatarCircle=getBoolean(R.styleable.ChatView_chatAvatarCircle,false)
                 chatNickNameColor = getColor(
                     R.styleable.ChatView_usernameColor,
                     ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
@@ -171,6 +187,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         R.color.livelike_default_chat_cell_message_color
                     )
                 )
+                chatAvatarGravity=getInt(R.styleable.ChatView_chatAvatarGravity,Gravity.NO_GRAVITY)
 
                 val colorBubbleValue = TypedValue()
                 getValue(R.styleable.ChatView_chatBubbleBackground, colorBubbleValue)
@@ -188,6 +205,24 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         R.drawable.ic_chat_message_bubble_rounded_rectangle
                     )
                     else -> ColorDrawable(colorBubbleValue.data)
+                }
+
+                val colorBackValue = TypedValue()
+                getValue(R.styleable.ChatView_chatBackground, colorBackValue)
+
+                chatBackgroundRes = when {
+                    colorBackValue.type == TypedValue.TYPE_REFERENCE || colorBackValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                        context,
+                        getResourceId(
+                            R.styleable.ChatView_chatBackground,
+                            android.R.color.transparent
+                        )
+                    )
+                    colorBackValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                        context,
+                        android.R.color.transparent
+                    )
+                    else -> ColorDrawable(colorBackValue.data)
                 }
 
 
@@ -316,6 +351,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 chatReactionElevation = getDimensionPixelSize(R.styleable.ChatView_chatReactionElevation,dpToPx(0)).toFloat()
                 chatReactionRadius = getDimensionPixelSize(R.styleable.ChatView_chatReactionRadius,dpToPx(0)).toFloat()
                 chatReactionPadding = getDimensionPixelSize(R.styleable.ChatView_chatReactionPadding,dpToPx(6))
+                chatAvatarHeight = getDimensionPixelSize(R.styleable.ChatView_chatAvatarHeight,dpToPx(50))
+                chatAvatarWidth = getDimensionPixelSize(R.styleable.ChatView_chatAvatarWidth,dpToPx(50))
+                chatAvatarRadius= getDimensionPixelSize(R.styleable.ChatView_chatAvatarRadius,dpToPx(0))
+                chatAvatarMarginLeft= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginLeft,dpToPx(5))
+                chatAvatarMarginRight= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginRight,dpToPx(3))
+                chatAvatarMarginBottom= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginBottom,dpToPx(5))
+                chatAvatarMarginTop= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginTop,dpToPx(0))
+
 
                 chatReactionBackgroundColor = getColor(
                     R.styleable.ChatView_chatReactionBackgroundColor,
@@ -412,6 +455,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatAdapter.chatNickNameColor = chatNickNameColor
             chatAdapter.chatWidth = chatWidth
             chatAdapter.chatBubbleBackgroundRes = chatBubbleBackgroundRes
+            chatAdapter.chatBackgroundRes = chatBackgroundRes
             chatAdapter.chatMarginBottom = chatMarginBottom
             chatAdapter.chatMarginLeft = chatMarginLeft
             chatAdapter.chatMarginRight = chatMarginRight
@@ -429,6 +473,16 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatAdapter.chatReactionElevation=chatReactionElevation
             chatAdapter.chatReactionBackgroundColor=chatReactionBackgroundColor
             chatAdapter.chatReactionPadding=chatReactionPadding
+            chatAdapter.chatAvatarWidth=chatAvatarWidth
+            chatAdapter.chatAvatarHeight=chatAvatarHeight
+            chatAdapter.showChatAvatarLogo=showChatAvatarLogo
+            chatAdapter.chatAvatarCircle=chatAvatarCircle
+            chatAdapter.chatAvatarMarginBottom=chatAvatarMarginBottom
+            chatAdapter.chatAvatarMarginLeft=chatAvatarMarginLeft
+            chatAdapter.chatAvatarMarginRight=chatAvatarMarginRight
+            chatAdapter.chatAvatarMarginTop=chatAvatarMarginTop
+            chatAdapter.chatAvatarRadius=chatAvatarRadius
+            chatAdapter.chatAvatarGravity=chatAvatarGravity
 
             setDataSource(chatAdapter)
             eventStream.subscribe(javaClass.simpleName) {

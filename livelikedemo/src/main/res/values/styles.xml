@@ -19,6 +19,7 @@
         <item name="displayUserProfile">false</item>
         <item name="chatWidth">match_parent</item>
         <item name="chatBubbleBackground">#FFF</item>
+        <item name="chatBackground">#FFF</item>
         <item name="usernameColor">#000</item>
         <item name="otherUsernameColor">#000</item>
         <item name="messageColor">#5f5f5f</item>
@@ -38,6 +39,15 @@
         <item name="chatReactionRadius">20dp</item>
         <item name="chatReactionBackgroundColor">@android:color/white</item>
         <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
+        <item name="showChatAvatarLogo">true</item>
+        <item name="chatAvatarCircle">false</item>
+        <item name="chatAvatarHeight">32dp</item>
+        <item name="chatAvatarWidth">32dp</item>
+        <item name="chatAvatarGravity">top</item>
+        <item name="chatAvatarMarginLeft">10dp</item>
+        <item name="chatAvatarMarginRight">0dp</item>
+        <item name="chatAvatarMarginBottom">0dp</item>
+        <item name="chatAvatarMarginTop">1dp</item>
     </style>
 
     <style name="TestAppLabel" parent="TextAppearance.AppCompat">
