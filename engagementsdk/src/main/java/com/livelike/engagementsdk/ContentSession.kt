@@ -3,9 +3,7 @@ package com.livelike.engagementsdk
 import android.content.Context
 import android.util.Log
 import android.widget.FrameLayout
-import com.google.gson.JsonObject
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
-import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -14,38 +12,27 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.services.messaging.Error
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.services.messaging.proxies.filter
 import com.livelike.engagementsdk.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.messaging.sendbird.SendBirdUtils
 import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
-import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
-import com.sendbird.android.BaseChannel
-import com.sendbird.android.BaseMessage
-import com.sendbird.android.OpenChannel
-import com.sendbird.android.SendBird
-import com.sendbird.android.UserMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -53,7 +40,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
-import java.util.Date
 
 internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
@@ -98,9 +84,7 @@ internal class ContentSession(
     private var customChatChannel = ""
 
     private var msgListener : MessageListener = object : MessageListener{
-        override fun onNewMessage(chatRoom: String, message: String) {
-            Log.e("OOOOHHHH", message)
-        }}
+        override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {}}
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {

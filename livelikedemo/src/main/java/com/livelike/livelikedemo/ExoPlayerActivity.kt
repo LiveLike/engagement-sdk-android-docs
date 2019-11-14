@@ -13,6 +13,7 @@ import android.view.View
 import android.view.WindowManager
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.utils.registerLogsHandler
 import com.livelike.livelikedemo.channel.Channel
@@ -181,14 +182,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                 dialog)
 
             session.setMessageListener(object:MessageListener{
-                override fun onNewMessage(chatRoom: String, message: String) {
+                override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
                     if(chatRoom == session.getActiveChatRoom()){
                         messageCount[chatRoom] = mutableListOf() // reset unread message count
                     }else{
                         if(messageCount[chatRoom] == null){
-                            messageCount[chatRoom] = mutableListOf(message)
+                            messageCount[chatRoom] = mutableListOf(message.id.toString())
                         }else{
-                            messageCount[chatRoom]?.add(message)
+                            messageCount[chatRoom]?.add(message.id.toString())
                         }
                     }
                     messageCount.forEach {

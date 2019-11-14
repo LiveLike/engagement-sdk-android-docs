@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 
 /**
@@ -44,7 +45,7 @@ interface LiveLikeContentSession {
  *
  */
 interface MessageListener {
-    fun onNewMessage(chatRoom: String, message: String)
+    fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage)
 }
 
 /** A simple representation of an observable stream.

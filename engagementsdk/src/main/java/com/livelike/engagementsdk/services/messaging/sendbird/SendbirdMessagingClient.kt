@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
@@ -46,7 +47,7 @@ internal class SendbirdMessagingClient(
 
     private var listener: MessagingEventListener? = null
     private var connectedChannels: MutableList<OpenChannel> = mutableListOf()
-    private val messageIdList = mutableListOf<Long>()
+    private val messageIdMap = mutableMapOf<String, MutableList<Long>>()
 
     init {
         liveLikeUser.currentUserStream.subscribe(javaClass) {
@@ -86,6 +87,14 @@ internal class SendbirdMessagingClient(
             })
     }
 
+    private fun MutableMap<String, MutableList<Long>>.addToMap(channel : String, messageId : Long){
+        if(this[channel] == null){
+            this[channel] = mutableListOf(messageId)
+        }else{
+            this[channel]?.add(messageId)
+        }
+    }
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val messageTimestamp = gson.toJson(
@@ -105,7 +114,8 @@ internal class SendbirdMessagingClient(
                 }
                 analyticsService.trackMessageSent(msg.messageId.toString(), msg.message)
                 lastChatMessage = Pair(msg.messageId.toString(), channel)
-                messageIdList.add(msg.messageId)
+
+                messageIdMap.addToMap(openChannel.url, msg.messageId)
 
                 val newMsg = JsonObject().apply {
                     addProperty("event", ChatViewModel.EVENT_MESSAGE_ID_UPDATED)
@@ -176,7 +186,7 @@ internal class SendbirdMessagingClient(
                     return@MessageListQueryResult
                 }
                 for (message: BaseMessage in messages.reversed()) {
-                    if (!messageIdList.contains(message.messageId)) {
+                    if (messageIdMap[openChannel.url] == null || !messageIdMap[openChannel.url]!!.contains(message.messageId)) {
                         listener?.onClientMessageEvent(
                             this@SendbirdMessagingClient,
                             SendBirdUtils.clientMessageFromBaseMessage(
@@ -184,7 +194,9 @@ internal class SendbirdMessagingClient(
                                 openChannel
                             )
                         )
-                        messageIdList.add(message.messageId)
+                        message as UserMessage
+                        messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname, message.message, message.data, message.messageId))
+                        messageIdMap.addToMap(openChannel.url, message.messageId)
                     }
                 }
                 val msg = JsonObject().apply {
@@ -210,10 +222,10 @@ internal class SendbirdMessagingClient(
                 override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
                     if (message != null && channel != null && openChannel.url == message.channelUrl) {
                         message as UserMessage
-                        messageListener.onNewMessage(message.channelUrl, message.message)
+
                         val clientMessage =
                             SendBirdUtils.clientMessageFromBaseMessage(message, channel)
-                        if (!messageIdList.contains(message.messageId)) {
+                        if  (messageIdMap[openChannel.url] == null || !messageIdMap[openChannel.url]!!.contains(message.messageId)) {
                             logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
                             lastChatMessage = Pair(
                                 clientMessage.message.get("id").asString,
@@ -224,7 +236,8 @@ internal class SendbirdMessagingClient(
                                 clientMessage
                             )
 
-                            messageIdList.add(message.messageId)
+                            messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname, message.message, message.data, message.messageId))
+                            messageIdMap.addToMap(openChannel.url, message.messageId)
                         }
                     }
                 }
