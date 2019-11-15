@@ -44,6 +44,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     private lateinit var player: VideoPlayer
     private var session: LiveLikeContentSession? = null
+    private var privateGroupChatsession: LiveLikeContentSession? = null
     private var startingState: PlayerState? = null
     private var channelManager: ChannelManager? = null
 
@@ -120,7 +121,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a custom Chat Room to join")
                 setItems(chatChannelNames.toTypedArray()) { _, which ->
-                    session!!.enterChatRoom(chatChannelNames[which])
+                    privateGroupChatsession!!.enterChatRoom(chatChannelNames[which])
+                    chat_view.setSession(privateGroupChatsession!!)
                 }
                 create()
             }.show()
@@ -180,8 +182,9 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
                 dialog)
+            privateGroupChatsession = (application as LiveLikeApplication).createSession("50feace1-37d0-4bbb-afbb-3c3799188520")
 
-            session.setMessageListener(object : MessageListener {
+            privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
                     if (chatRoom == session.getActiveChatRoom()) {
                         messageCount[chatRoom] = mutableListOf() // reset unread message count
