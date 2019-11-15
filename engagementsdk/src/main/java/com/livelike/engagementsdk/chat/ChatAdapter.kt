@@ -53,39 +53,10 @@ internal class ChatRecyclerAdapter(
     private val reporter: (ChatMessage) -> Unit,
     private val stickerPackRepository: StickerPackRepository,
     val chatReactionRepository: ChatReactionRepository
+
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
-    var chatPaddingLeft: Int=0
-    var chatPaddingRight:Int=0
-    var chatPaddingTop:Int=0
-    var chatPaddingBottom:Int=0
-    var chatMarginLeft: Int=0
-    var chatMarginRight:Int=0
-    var chatMarginTop:Int=0
-    var chatMarginBottom:Int=0
-    var chatWidth: Int=FrameLayout.LayoutParams.WRAP_CONTENT
-    var chatBubbleBackgroundRes: Drawable?=null
-    var chatBackgroundRes: Drawable?=null
-    var chatReactionBackgroundRes: Drawable?=null
-    var chatMessageColor: Int= Color.WHITE
-    var chatOtherNickNameColor: Int=Color.WHITE
-    var chatNickNameColor: Int=Color.WHITE
-    var chatReactionBackgroundColor: Int=Color.TRANSPARENT
-    var chatReactionX:Int=0
-    var chatReactionY:Int=0
-    var chatReactionElevation:Float=0f
-    var chatReactionRadius:Float=0f
-    var chatReactionPadding:Int=0
-    var showChatAvatarLogo:Boolean=false
-    var chatAvatarMarginRight:Int=AndroidResource.dpToPx(3)
-    var chatAvatarMarginBottom:Int=AndroidResource.dpToPx(5)
-    var chatAvatarMarginLeft:Int=AndroidResource.dpToPx(5)
-    var chatAvatarMarginTop:Int=AndroidResource.dpToPx(0)
-    var chatAvatarRadius:Int=AndroidResource.dpToPx(0)
-    var chatAvatarCircle:Boolean=false
-    var chatAvatarWidth:Int=AndroidResource.dpToPx(32)
-    var chatAvatarHeight:Int=AndroidResource.dpToPx(32)
-    var chatAvatarGravity:Int=Gravity.NO_GRAVITY
+    lateinit var chatAttribute:ChatAttributes
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
@@ -131,30 +102,30 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
-            v.chatMessage.setTextColor(chatMessageColor)
+            v.chatMessage.setTextColor(chatAttribute.chatMessageColor)
 
             val layoutParam=FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT)
-            layoutParam.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
+            layoutParam.setMargins(chatAttribute.chatMarginLeft,chatAttribute.chatMarginTop,chatAttribute.chatMarginRight,chatAttribute.chatMarginBottom)
             v.chatBackground.layoutParams = layoutParam
 
-            val layoutParam1=LinearLayout.LayoutParams(chatWidth,LinearLayout.LayoutParams.WRAP_CONTENT)
+            val layoutParam1=LinearLayout.LayoutParams(chatAttribute.chatWidth,LinearLayout.LayoutParams.WRAP_CONTENT)
 //            layoutParam1.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
             v.chatBubbleBackground.layoutParams = layoutParam1
 
 
-            v.img_chat_avatar.visibility=when(showChatAvatarLogo){
+            v.img_chat_avatar.visibility=when(chatAttribute.showChatAvatarLogo){
                 true -> View.VISIBLE
                 else -> View.GONE
             }
-            val layoutParamAvatar=LinearLayout.LayoutParams(chatAvatarWidth,chatAvatarHeight)
-            layoutParamAvatar.setMargins(chatAvatarMarginLeft,chatAvatarMarginTop,chatAvatarMarginRight,chatAvatarMarginBottom)
-            layoutParamAvatar.gravity=chatAvatarGravity
+            val layoutParamAvatar=LinearLayout.LayoutParams(chatAttribute.chatAvatarWidth,chatAttribute.chatAvatarHeight)
+            layoutParamAvatar.setMargins(chatAttribute.chatAvatarMarginLeft,chatAttribute.chatAvatarMarginTop,chatAttribute.chatAvatarMarginRight,chatAttribute.chatAvatarMarginBottom)
+            layoutParamAvatar.gravity=chatAttribute.chatAvatarGravity
             v.img_chat_avatar.layoutParams=layoutParamAvatar
 
-            v.chatBackground.background=chatBackgroundRes
+            v.chatBackground.background=chatAttribute.chatBackgroundRes
 
-            v.chatBubbleBackground.background=chatBubbleBackgroundRes
-            v.chatBubbleBackground.setPadding(chatPaddingLeft,chatPaddingTop,chatPaddingRight,chatPaddingBottom)
+            v.chatBubbleBackground.background=chatAttribute.chatBubbleBackgroundRes
+            v.chatBubbleBackground.setPadding(chatAttribute.chatPaddingLeft,chatAttribute.chatPaddingTop,chatAttribute.chatPaddingRight,chatAttribute.chatPaddingBottom)
 
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
@@ -190,12 +161,12 @@ internal class ChatRecyclerAdapter(
                 },
                 ::hideFloatingUI,
                 isOwnMessage,
-                chatReactionBackground = chatReactionBackgroundRes,
-                chatReactionElevation = chatReactionElevation,
-                chatReactionRadius = chatReactionRadius,
-                chatReactionBackgroundColor=chatReactionBackgroundColor,
-                        chatReactionPadding=chatReactionPadding
-            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatReactionX, locationOnScreen.y - chatReactionY)
+                chatReactionBackground = chatAttribute.chatReactionBackgroundRes,
+                chatReactionElevation = chatAttribute.chatReactionElevation,
+                chatReactionRadius = chatAttribute.chatReactionRadius,
+                chatReactionBackgroundColor=chatAttribute.chatReactionBackgroundColor,
+                        chatReactionPadding=chatAttribute.chatReactionPadding
+            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatAttribute.chatReactionX, locationOnScreen.y - chatAttribute.chatReactionY)
         }
 
         private fun hideFloatingUI() {
@@ -212,19 +183,19 @@ internal class ChatRecyclerAdapter(
                 message?.apply {
 
                     if (message.isFromMe) {
-                        chat_nickname.setTextColor(chatNickNameColor)
+                        chat_nickname.setTextColor(chatAttribute.chatNickNameColor)
                         chat_nickname.text = context.getString(R.string.chat_pre_nickname_me, message.senderDisplayName)
                     } else {
-                        chat_nickname.setTextColor(chatOtherNickNameColor)
+                        chat_nickname.setTextColor(chatAttribute.chatOtherNickNameColor)
                         chat_nickname.text = message.senderDisplayName
                     }
 
                     val options = RequestOptions()
-                    if(chatAvatarCircle){
+                    if(chatAttribute.chatAvatarCircle){
                      options.optionalCircleCrop()
                     }
-                    if(chatAvatarRadius>0){
-                        options.transform(CenterCrop(), RoundedCorners(chatAvatarRadius))
+                    if(chatAttribute.chatAvatarRadius>0){
+                        options.transform(CenterCrop(), RoundedCorners(chatAttribute.chatAvatarRadius))
                     }
                     Glide.with(context).load("http://lorempixel.com/200/200/?${message.id}")
                         .apply(options)

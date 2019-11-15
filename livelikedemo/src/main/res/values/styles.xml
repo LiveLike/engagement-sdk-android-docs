@@ -13,6 +13,9 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
+        <item name="displayUserProfile">true</item>
+        <item name="showChatAvatarLogo">true</item>
+        <item name="chatAvatarCircle">true</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">

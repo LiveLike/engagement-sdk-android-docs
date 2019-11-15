@@ -25,6 +25,8 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
+    /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
+    fun setProfilePicUrl(url:String)
     /** Enter a Chat Room */
     fun enterChatRoom(chatRoom: String)
     /** Exit the current active Chat Room */
