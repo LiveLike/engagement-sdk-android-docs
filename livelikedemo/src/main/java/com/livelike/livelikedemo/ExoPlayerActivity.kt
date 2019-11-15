@@ -184,7 +184,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
                 dialog)
-            privateGroupChatsession = (application as LiveLikeApplication).createSession("50feace1-37d0-4bbb-afbb-3c3799188520")
+            privateGroupChatsession = (application as LiveLikeApplication).sdk.createContentSession("50feace1-37d0-4bbb-afbb-3c3799188520")
 
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
