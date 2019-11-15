@@ -109,6 +109,7 @@ internal class ContentSession(
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
+                            programRepository.program = program
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
@@ -120,7 +121,6 @@ internal class ContentSession(
                             configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
-                            programRepository.program = program
                             contentSessionScope.launch {
                                 if (isGamificationEnabled) programRepository.fetchProgramRank()
                             }
