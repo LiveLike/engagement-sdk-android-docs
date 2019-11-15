@@ -20,6 +20,9 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.button3
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -30,9 +33,6 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -62,7 +62,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
     }
     val timer = Timer()
-    val chatChannelNames = listOf("first-chat-channel", "second-chat-channel", "another-chat-channel")
+    val chatChannelNames = listOf("qatest1", "qatest3", "test2")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -165,7 +165,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }.show()
     }
 
-    val messageCount : MutableMap<String, MutableList<String>> = mutableMapOf()
+    val messageCount: MutableMap<String, MutableList<String>> = mutableMapOf()
 
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object : (String) -> Unit {
@@ -181,21 +181,21 @@ class ExoPlayerActivity : AppCompatActivity() {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
                 dialog)
 
-            session.setMessageListener(object:MessageListener{
+            session.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
-                    if(chatRoom == session.getActiveChatRoom()){
+                    if (chatRoom == session.getActiveChatRoom()) {
                         messageCount[chatRoom] = mutableListOf() // reset unread message count
-                    }else{
-                        if(messageCount[chatRoom] == null){
+                    } else {
+                        if (messageCount[chatRoom] == null) {
                             messageCount[chatRoom] = mutableListOf(message.id.toString())
-                        }else{
+                        } else {
                             messageCount[chatRoom]?.add(message.id.toString())
                         }
                     }
                     messageCount.forEach {
                         logsPreview.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${logsPreview.text}"
                         fullLogs.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${fullLogs.text}"
-                        Log.e("Here","channel : ${it.key}, unread : ${it.value.size}")
+                        Log.e("Here", "channel : ${it.key}, unread : ${it.value.size}")
                     }
                 }
             })
@@ -211,8 +211,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
 
             this.session = session
-
-
 
             player.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }

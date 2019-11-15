@@ -26,16 +26,20 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
+    /** Join a Chat Room, membership will be created for this room */
+    fun joinChatRoom(chatRoom: String)
+    /** Leave a Chat Room, membership will be cancelled with this room */
+    fun leaveChatRoom(chatRoom: String)
     /** Enter a Chat Room, the last entered Chat Room will be the active one */
     fun enterChatRoom(chatRoom: String)
     /** The current active chat room, it is the last entered chat room */
-    var getActiveChatRoom : () -> String
+    var getActiveChatRoom: () -> String
     /** Exit the specified Chat Room */
     fun exitChatRoom(chatRoom: String)
     /** Exit all the Connected Chat Rooms */
     fun exitAllConnectedChatRooms()
     /** Register a message count listner for the specified Chat Room */
-    fun setMessageListener(messageListener : MessageListener)
+    fun setMessageListener(messageListener: MessageListener)
     /** Intercepts the widgets and hold them until show() or dismiss() is being called */
     var widgetInterceptor: WidgetInterceptor?
 }

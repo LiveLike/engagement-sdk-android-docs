@@ -1,8 +1,8 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
-import android.util.Log
 import android.widget.FrameLayout
+import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
@@ -25,6 +25,9 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
+import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.PREFERENCE_CHAT_ROOM_MEMBERSHIP
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSharedPreferences
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
@@ -48,6 +51,7 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
+
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -62,7 +66,7 @@ internal class ContentSession(
 
     private val stickerPackRepository = StickerPackRepository(programId)
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream, stickerPackRepository) }
-    override var getActiveChatRoom: () -> String = {chatViewModel.currentChatRoom}
+    override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
@@ -83,8 +87,10 @@ internal class ContentSession(
     }
     private var customChatChannel = ""
 
-    private var msgListener : MessageListener = object : MessageListener{
-        override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {}}
+    private var chatRoomMemberships: HashSet<String>
+
+    private var msgListener: MessageListener = object : MessageListener {
+        override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {} }
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -130,20 +136,44 @@ internal class ContentSession(
                 }
             }
         }
+        chatRoomMemberships = gson.fromJson(getSharedPreferences().getString(
+            PREFERENCE_CHAT_ROOM_MEMBERSHIP, ""), object : TypeToken<HashSet<String>>() {}.type) ?: HashSet<String>()
+    }
+
+    override fun joinChatRoom(chatRoom: String) {
+        if (chatRoomMemberships.size > 10) {
+            return logError {
+                "Membership count cannot be greater than 10"
+            }
+        }
+        val validChatChannelName = validChatChannelName(chatRoom)
+        chatRoomMemberships.add(validChatChannelName)
+        getSharedPreferences().edit().putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships)).apply()
+        chatClient?.subscribe(listOf(validChatChannelName))
+    }
+
+    override fun leaveChatRoom(chatRoom: String) {
+        val validChatChannelName = validChatChannelName(chatRoom)
+        chatRoomMemberships.remove(validChatChannelName)
+        chatClient?.unsubscribe(listOf(validChatChannelName))
     }
 
     override fun enterChatRoom(chatRoom: String) {
+        joinChatRoom(chatRoom)
         if (customChatChannel == chatRoom) return
         customChatChannel = chatRoom
         contentSessionScope.launch {
             chatViewModel.flushMessages()
-            val validChatChannelName = chatRoom.toLowerCase().replace(" ", "").replace("-", "")
+            val validChatChannelName = validChatChannelName(chatRoom)
             chatViewModel.currentChatRoom = validChatChannelName
             configurationFlow.collect {
                 initializeChatMessaging(validChatChannelName, it, false)
             }
         }
     }
+
+    private fun validChatChannelName(chatRoom: String) =
+        chatRoom.toLowerCase().replace(" ", "").replace("-", "")
 
     override fun exitChatRoom(chatRoom: String) {
         chatClient?.unsubscribe(listOf(chatRoom))
@@ -235,7 +265,7 @@ internal class ContentSession(
     private fun initializeChatMessaging(
         chatChannel: String,
         config: EngagementSDK.SdkConfiguration,
-        syncEnabled:Boolean = true
+        syncEnabled: Boolean = true
     ) {
         analyticService.trackLastChatStatus(true)
         chatClient =
@@ -246,14 +276,15 @@ internal class ContentSession(
                 userRepository,
                 msgListener
             )
-         if(syncEnabled)
-            chatClient = chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
+        if (syncEnabled)
+            chatClient =
+                chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
         chatClient = chatClient?.toChatQueue()
-                ?.apply {
-                    subscribe(listOf(chatChannel))
-                    this.renderer = chatViewModel
-                    chatViewModel.chatListener = this
-                }
+            ?.apply {
+                subscribe(listOf(chatChannel))
+                this.renderer = chatViewModel
+                chatViewModel.chatListener = this
+            }
     }
 
     // ////// Global Session Controls ////////

@@ -87,10 +87,10 @@ internal class SendbirdMessagingClient(
             })
     }
 
-    private fun MutableMap<String, MutableList<Long>>.addToMap(channel : String, messageId : Long){
-        if(this[channel] == null){
+    private fun MutableMap<String, MutableList<Long>>.addToMap(channel: String, messageId: Long) {
+        if (this[channel] == null) {
             this[channel] = mutableListOf(messageId)
-        }else{
+        } else {
             this[channel]?.add(messageId)
         }
     }
@@ -143,6 +143,7 @@ internal class SendbirdMessagingClient(
 
     override fun subscribe(channels: List<String>) {
         channels.forEach { channelUrl ->
+            if (!connectedChannels.map { it.url }.contains(channelUrl)) {
             OpenChannel.getChannel(channelUrl,
                 OpenChannel.OpenChannelGetHandler { openChannel, e ->
                     if (e != null) { // Error, if the channel doesn't exist.
@@ -155,6 +156,7 @@ internal class SendbirdMessagingClient(
                     enterChannel(openChannel)
                     loadMessageHistory(openChannel)
                 })
+        }
         }
     }
 
@@ -225,7 +227,7 @@ internal class SendbirdMessagingClient(
 
                         val clientMessage =
                             SendBirdUtils.clientMessageFromBaseMessage(message, channel)
-                        if  (messageIdMap[openChannel.url] == null || !messageIdMap[openChannel.url]!!.contains(message.messageId)) {
+                        if (messageIdMap[openChannel.url] == null || !messageIdMap[openChannel.url]!!.contains(message.messageId)) {
                             logDebug { "${Date(SendBirdUtils.getTimeMsFromMessageData(message.data))} - Received message from SendBird: $clientMessage" }
                             lastChatMessage = Pair(
                                 clientMessage.message.get("id").asString,
