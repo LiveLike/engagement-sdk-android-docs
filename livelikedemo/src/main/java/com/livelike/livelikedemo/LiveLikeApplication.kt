@@ -55,7 +55,7 @@ class LiveLikeApplication : Application() {
         return player
     }
 
-    fun createSession(sessionId: String, widgetInterceptor: WidgetInterceptor): LiveLikeContentSession {
+    fun createSession(sessionId: String, widgetInterceptor: WidgetInterceptor? = null): LiveLikeContentSession {
         if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
             session = sdk.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {

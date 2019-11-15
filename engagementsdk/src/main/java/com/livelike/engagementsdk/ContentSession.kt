@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
@@ -11,6 +12,7 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.services.messaging.proxies.filter
@@ -23,6 +25,9 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
+import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.PREFERENCE_CHAT_ROOM_MEMBERSHIP
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSharedPreferences
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
@@ -66,6 +71,7 @@ internal class ContentSession(
 
     private val stickerPackRepository = StickerPackRepository(programId)
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream, stickerPackRepository) }
+    override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
@@ -85,6 +91,11 @@ internal class ContentSession(
         emit(sdkConfiguration.latest()!!)
     }
     private var customChatChannel = ""
+
+    private var chatRoomMemberships: HashSet<String>
+
+    private var msgListener: MessageListener = object : MessageListener {
+        override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {} }
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -109,10 +120,11 @@ internal class ContentSession(
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
                         if (program !== null) {
-
+                            programRepository.program = program
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
+                            chatViewModel.currentChatRoom = program.subscribeChannel
                             if (customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
@@ -120,7 +132,6 @@ internal class ContentSession(
                             configuration.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
-                            programRepository.program = program
                             contentSessionScope.launch {
                                 if (isGamificationEnabled) programRepository.fetchProgramRank()
                             }
@@ -130,34 +141,57 @@ internal class ContentSession(
                 }
             }
         }
+        chatRoomMemberships = gson.fromJson(getSharedPreferences().getString(
+            PREFERENCE_CHAT_ROOM_MEMBERSHIP, ""), object : TypeToken<HashSet<String>>() {}.type) ?: HashSet<String>()
+    }
+
+    override fun joinChatRoom(chatRoom: String) {
+        if (chatRoomMemberships.size > 10) {
+            return logError {
+                "Membership count cannot be greater than 10"
+            }
+        }
+        val validChatChannelName = validChatChannelName(chatRoom)
+        chatRoomMemberships.add(validChatChannelName)
+        getSharedPreferences().edit().putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships)).apply()
+        chatClient?.subscribe(listOf(validChatChannelName))
+    }
+
+    override fun leaveChatRoom(chatRoom: String) {
+        val validChatChannelName = validChatChannelName(chatRoom)
+        chatRoomMemberships.remove(validChatChannelName)
+        chatClient?.unsubscribe(listOf(validChatChannelName))
     }
 
     override fun enterChatRoom(chatRoom: String) {
+        joinChatRoom(chatRoom)
         if (customChatChannel == chatRoom) return
         customChatChannel = chatRoom
         contentSessionScope.launch {
-            chatClient?.apply {
-                unsubscribeAll()
-                stop()
-            }
             chatViewModel.flushMessages()
-            val validChatChannelName = chatRoom.toLowerCase().replace(" ", "").replace("-", "")
+            val validChatChannelName = validChatChannelName(chatRoom)
+            chatViewModel.currentChatRoom = validChatChannelName
             configurationFlow.collect {
-                initializeChatMessaging(validChatChannelName, it)
+                initializeChatMessaging(validChatChannelName, it, false)
             }
         }
     }
 
-    override fun exitChatRoom() {
+    private fun validChatChannelName(chatRoom: String) =
+        chatRoom.toLowerCase().replace(" ", "").replace("-", "")
+
+    override fun exitChatRoom(chatRoom: String) {
+        chatClient?.unsubscribe(listOf(chatRoom))
+    }
+
+    override fun exitAllConnectedChatRooms() {
         chatClient?.unsubscribeAll()
     }
 
-    override fun registerMessageCountListener(
-        chatRoom: String,
-        userId: String,
-        messageCountListener: MessageCountListener
+    override fun setMessageListener(
+        messageListener: MessageListener
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        msgListener = messageListener
     }
 
     private fun startObservingForGamificationAnalytics(
@@ -235,7 +269,8 @@ internal class ContentSession(
 
     private fun initializeChatMessaging(
         chatChannel: String,
-        config: EngagementSDK.SdkConfiguration
+        config: EngagementSDK.SdkConfiguration,
+        syncEnabled: Boolean = true
     ) {
         analyticService.trackLastChatStatus(true)
         chatClient =
@@ -243,15 +278,18 @@ internal class ContentSession(
                 config.sendBirdAppId,
                 applicationContext,
                 analyticService,
-                userRepository
+                userRepository,
+                msgListener
             )
-                .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
-                .toChatQueue()
-                .apply {
-                    subscribe(listOf(chatChannel))
-                    this.renderer = chatViewModel
-                    chatViewModel.chatListener = this
-                }
+        if (syncEnabled)
+            chatClient =
+                chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
+        chatClient = chatClient?.toChatQueue()
+            ?.apply {
+                subscribe(listOf(chatChannel))
+                this.renderer = chatViewModel
+                chatViewModel.chatListener = this
+            }
     }
 
     // ////// Global Session Controls ////////

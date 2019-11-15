@@ -7,3 +7,5 @@ data class LiveLikeUserApi(
     var nickname: String,
     val accessToken: String
 )
+
+data class LiveLikeChatMessage(val nickname: String, val message: String, val timestamp: String, val id : Long)

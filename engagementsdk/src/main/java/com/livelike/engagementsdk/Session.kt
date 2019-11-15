@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 
 /**
@@ -25,14 +26,23 @@ interface LiveLikeContentSession {
     fun contentSessionId(): String
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
-    /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
+    /** Set the user profile pic. Recommended to use widgetView.SetSession(session) instead.*/
     fun setProfilePicUrl(url:String)
     /** Enter a Chat Room */
+    /** Join a Chat Room, membership will be created for this room */
+    fun joinChatRoom(chatRoom: String)
+    /** Leave a Chat Room, membership will be cancelled with this room */
+    fun leaveChatRoom(chatRoom: String)
+    /** Enter a Chat Room, the last entered Chat Room will be the active one */
     fun enterChatRoom(chatRoom: String)
-    /** Exit the current active Chat Room */
-    fun exitChatRoom()
+    /** The current active chat room, it is the last entered chat room */
+    var getActiveChatRoom: () -> String
+    /** Exit the specified Chat Room */
+    fun exitChatRoom(chatRoom: String)
+    /** Exit all the Connected Chat Rooms */
+    fun exitAllConnectedChatRooms()
     /** Register a message count listner for the specified Chat Room */
-    fun registerMessageCountListener(chatRoom: String, userId: String, messageCountListener : MessageCountListener)
+    fun setMessageListener(messageListener: MessageListener)
     /** Intercepts the widgets and hold them until show() or dismiss() is being called */
     var widgetInterceptor: WidgetInterceptor?
 }
@@ -41,8 +51,8 @@ interface LiveLikeContentSession {
  * Returns the new message count whenever a unread message is being posted
  *
  */
-interface MessageCountListener {
-    fun messageCountUpdated(chatRoom: String, messageCount: Int)
+interface MessageListener {
+    fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage)
 }
 
 /** A simple representation of an observable stream.

@@ -26,6 +26,11 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository, ChatReactionRepository(programRepository.programId))
     private val messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(false)
+    var currentChatRoom: String = ""
+    set(value) {
+        field = value
+        chatAdapter.isPublicChat = currentChatRoom == programRepository.program.chatChannel
+    }
     private var chatLoaded = false
     private val dataClient: ChatDataClient = EngagementDataClientImpl()
 
@@ -37,6 +42,7 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
+        if (message.channel != currentChatRoom) return
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
