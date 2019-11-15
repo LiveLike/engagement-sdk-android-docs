@@ -14,13 +14,13 @@
             android:id="@+id/img_chat_avatar"
             android:layout_width="50dp"
             android:layout_gravity="bottom"
-            android:layout_marginRight="2dp"
+            android:layout_marginRight="10dp"
             android:layout_marginBottom="6dp"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="13dp"
             android:visibility="gone"
             android:layout_height="50dp" />
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:id="@+id/chatBubbleBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,6 +31,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
+            android:orientation="vertical"
             android:background="@drawable/ic_chat_message_bubble_rounded_rectangle">
 
 
@@ -64,7 +65,7 @@
                 tools:ignore="HardcodedText"
                 tools:text="@tools:sample/lorem[30]" />
 
-        </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
 
 
     </LinearLayout>

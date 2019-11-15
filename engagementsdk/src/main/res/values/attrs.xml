@@ -2,21 +2,21 @@
 <resources>
     <!--Widgets-->
     <item name="livelike_option_font"
-          type="font">@font/roboto_regular</item>
+        type="font">@font/roboto_regular</item>
     <item name="livelike_header_font"
-          type="font">@font/roboto_bold</item>
+        type="font">@font/roboto_bold</item>
     <item name="livelike_alert_body_font"
-          type="font">@font/roboto_regular</item>
+        type="font">@font/roboto_regular</item>
     <item name="livelike_alert_link_font"
-          type="font">@font/roboto_bold</item>
+        type="font">@font/roboto_bold</item>
     <item name="livelike_alert_label_font"
-          type="font">@font/roboto_bold</item>
+        type="font">@font/roboto_bold</item>
 
     <!--Chat-->
     <item name="livelike_chat_message_font"
-          type="font">@font/roboto_regular</item>
+        type="font">@font/roboto_regular</item>
     <item name="livelike_chat_nickname_font"
-          type="font">@font/roboto_bold</item>
+        type="font">@font/roboto_bold</item>
 
 
     <declare-styleable name="ChatView">
@@ -31,10 +31,24 @@
             <enum name="match_parent" value="-1" />
             <enum name="wrap_content" value="-2" />
         </attr>
+        <attr name="sendButtonWidth" format="dimension">
+            <enum name="fill_parent" value="-1" />
+            <enum name="match_parent" value="-1" />
+            <enum name="wrap_content" value="-2" />
+        </attr>
+        <attr name="sendButtonHeight" format="dimension">
+            <enum name="fill_parent" value="-1" />
+            <enum name="match_parent" value="-1" />
+            <enum name="wrap_content" value="-2" />
+        </attr>
         <attr name="chatPaddingLeft" format="dimension"/>
         <attr name="chatPaddingRight" format="dimension"/>
         <attr name="chatPaddingTop" format="dimension"/>
         <attr name="chatPaddingBottom" format="dimension"/>
+        <attr name="chatSendButtonPaddingLeft" format="dimension"/>
+        <attr name="chatSendButtonPaddingRight" format="dimension"/>
+        <attr name="chatSendButtonPaddingTop" format="dimension"/>
+        <attr name="chatSendButtonPaddingBottom" format="dimension"/>
         <attr name="chatMarginLeft" format="dimension"/>
         <attr name="chatMarginRight" format="dimension"/>
         <attr name="chatMarginTop" format="dimension"/>
@@ -54,6 +68,8 @@
         <attr name="chatReactionBackgroundColor" format="color" />
         <attr name="chatReactionPadding" format="dimension" />
         <attr name="chatInputDrawableRight" format="reference"/>
+        <attr name="chatSendDrawable" format="reference"/>
+        <attr name="chatSendBackground" format="reference|color"/>
         <attr name="showChatAvatarLogo" format="boolean"/>
         <attr name="chatAvatarCircle" format="boolean"/>
         <attr name="chatAvatarMarginRight" format="dimension"/>

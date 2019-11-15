@@ -83,8 +83,8 @@ internal class ChatRecyclerAdapter(
     var chatAvatarMarginTop:Int=AndroidResource.dpToPx(0)
     var chatAvatarRadius:Int=AndroidResource.dpToPx(0)
     var chatAvatarCircle:Boolean=false
-    var chatAvatarWidth:Int=AndroidResource.dpToPx(50)
-    var chatAvatarHeight:Int=AndroidResource.dpToPx(50)
+    var chatAvatarWidth:Int=AndroidResource.dpToPx(32)
+    var chatAvatarHeight:Int=AndroidResource.dpToPx(32)
     var chatAvatarGravity:Int=Gravity.NO_GRAVITY
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {

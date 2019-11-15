@@ -33,7 +33,7 @@
         <item name="chatMarginTop">0dp</item>
         <item name="chatMarginLeft">0dp</item>
         <item name="chatMarginRight">0dp</item>
-        <item name="chatReactionXPosition">15dp</item>
+        <item name="chatReactionXPosition">120dp</item>
         <item name="chatReactionYPosition">25dp</item>
         <item name="chatReactionElevation">6dp</item>
         <item name="chatReactionRadius">20dp</item>
@@ -48,6 +48,14 @@
         <item name="chatAvatarMarginRight">0dp</item>
         <item name="chatAvatarMarginBottom">0dp</item>
         <item name="chatAvatarMarginTop">1dp</item>
+        <item name="sendButtonHeight">38dp</item>
+        <item name="sendButtonWidth">38dp</item>
+        <item name="chatSendButtonPaddingLeft">2dp</item>
+        <item name="chatSendButtonPaddingRight">2dp</item>
+        <item name="chatSendButtonPaddingTop">0dp</item>
+        <item name="chatSendButtonPaddingBottom">0dp</item>
+        <item name="chatSendDrawable">@drawable/ic_send_turner</item>
+        <item name="chatSendBackground">@drawable/send_chat_blue_circle_back</item>
     </style>
 
     <style name="TestAppLabel" parent="TextAppearance.AppCompat">

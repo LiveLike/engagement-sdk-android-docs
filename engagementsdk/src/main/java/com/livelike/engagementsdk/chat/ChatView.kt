@@ -100,11 +100,17 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var chatPaddingRight: Int
     private var chatPaddingTop: Int
     private var chatPaddingBottom: Int
+    private var chatSendPaddingLeft: Int
+    private var chatSendPaddingRight: Int
+    private var chatSendPaddingTop: Int
+    private var chatSendPaddingBottom: Int
     private var chatMarginLeft: Int
     private var chatMarginRight: Int
     private var chatMarginTop: Int
     private var chatMarginBottom: Int
     private var chatWidth: Int
+    private var sendIconWidth: Int
+    private var sendIconHeight: Int
     private var chatInputTextSize: Int
     private var chatBubbleBackgroundRes: Drawable?
     private var chatBackgroundRes: Drawable?
@@ -114,6 +120,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var chatInputViewBackgroundRes: Drawable?
     private var chatDisplayBackgroundRes: Drawable?
     private var chatInputDrawableRight: Drawable?
+    private var chatSendDrawable: Drawable?
+    private var chatSendBackgroundDrawable: Drawable?
     private var chatMessageColor: Int
     private var chatReactionBackgroundColor: Int
     private var chatInputTextColor: Int
@@ -132,8 +140,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var chatAvatarMarginTop:Int=dpToPx(0)
     private var chatAvatarRadius:Int=dpToPx(20)
     private var chatAvatarCircle:Boolean=false
-    private var chatAvatarWidth:Int=dpToPx(50)
-    private var chatAvatarHeight:Int=dpToPx(50)
+    private var chatAvatarWidth:Int=dpToPx(32)
+    private var chatAvatarHeight:Int=dpToPx(32)
     private var chatAvatarGravity:Int=Gravity.NO_GRAVITY
 
 
@@ -244,6 +252,42 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
 
 
+                val sendDrawable = TypedValue()
+                getValue(R.styleable.ChatView_chatSendDrawable, sendDrawable)
+
+                chatSendDrawable = when {
+                    sendDrawable.type == TypedValue.TYPE_REFERENCE || sendDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                        context,
+                        getResourceId(
+                            R.styleable.ChatView_chatSendDrawable,
+                            R.drawable.ic_chat_send
+                        )
+                    )
+                    else -> ContextCompat.getDrawable(
+                        context,
+                        R.drawable.ic_chat_send
+                    )
+                }
+
+                val chatSendBackValue = TypedValue()
+                getValue(R.styleable.ChatView_chatSendBackground, chatSendBackValue)
+
+                chatSendBackgroundDrawable = when {
+                    chatSendBackValue.type == TypedValue.TYPE_REFERENCE || chatSendBackValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                        context,
+                        getResourceId(
+                            R.styleable.ChatView_chatSendBackground,
+                            android.R.color.transparent
+                        )
+                    )
+                    chatSendBackValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                        context,
+                        android.R.color.transparent
+                    )
+                    else -> ColorDrawable(chatSendBackValue.data)
+                }
+
+
                 val colorReactionValue = TypedValue()
                 getValue(R.styleable.ChatView_chatReactionBackground, colorReactionValue)
 
@@ -345,14 +389,23 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     FrameLayout.LayoutParams.WRAP_CONTENT
                 )
 
+                sendIconHeight = getLayoutDimension(
+                    R.styleable.ChatView_sendButtonHeight,
+                    dpToPx(40)
+                )
+                sendIconWidth = getLayoutDimension(
+                    R.styleable.ChatView_sendButtonWidth,
+                    dpToPx(56)
+                )
+
                 chatInputTextSize = getDimensionPixelSize(R.styleable.ChatView_chatInputTextSize,resources.getDimensionPixelSize(R.dimen.livelike_default_chat_input_text_size))
                 chatReactionX = getDimensionPixelSize(R.styleable.ChatView_chatReactionXPosition,dpToPx(8))
                 chatReactionY = getDimensionPixelSize(R.styleable.ChatView_chatReactionYPosition,dpToPx(40))
                 chatReactionElevation = getDimensionPixelSize(R.styleable.ChatView_chatReactionElevation,dpToPx(0)).toFloat()
                 chatReactionRadius = getDimensionPixelSize(R.styleable.ChatView_chatReactionRadius,dpToPx(0)).toFloat()
                 chatReactionPadding = getDimensionPixelSize(R.styleable.ChatView_chatReactionPadding,dpToPx(6))
-                chatAvatarHeight = getDimensionPixelSize(R.styleable.ChatView_chatAvatarHeight,dpToPx(50))
-                chatAvatarWidth = getDimensionPixelSize(R.styleable.ChatView_chatAvatarWidth,dpToPx(50))
+                chatAvatarHeight = getDimensionPixelSize(R.styleable.ChatView_chatAvatarHeight,dpToPx(32))
+                chatAvatarWidth = getDimensionPixelSize(R.styleable.ChatView_chatAvatarWidth,dpToPx(32))
                 chatAvatarRadius= getDimensionPixelSize(R.styleable.ChatView_chatAvatarRadius,dpToPx(0))
                 chatAvatarMarginLeft= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginLeft,dpToPx(5))
                 chatAvatarMarginRight= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginRight,dpToPx(3))
@@ -380,6 +433,23 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 chatPaddingBottom = getDimensionPixelOffset(
                     R.styleable.ChatView_chatPaddingBottom,
                     resources.getDimension(R.dimen.livelike_default_chat_cell_padding_bottom).toInt()
+                )
+
+                chatSendPaddingLeft = getDimensionPixelOffset(
+                    R.styleable.ChatView_chatSendButtonPaddingLeft,
+                    dpToPx(13)
+                )
+                chatSendPaddingRight = getDimensionPixelOffset(
+                    R.styleable.ChatView_chatSendButtonPaddingRight,
+                    dpToPx(13)
+                )
+                chatSendPaddingTop = getDimensionPixelOffset(
+                    R.styleable.ChatView_chatSendButtonPaddingTop,
+                    dpToPx(0)
+                )
+                chatSendPaddingBottom = getDimensionPixelOffset(
+                    R.styleable.ChatView_chatSendButtonPaddingBottom,
+                    dpToPx(0)
                 )
 
                 chatMarginLeft = getDimensionPixelOffset(
@@ -442,6 +512,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         edittext_chat_message.setHintTextColor(chatInputHintTextColor)
         edittext_chat_message.setTextSize(TypedValue.COMPLEX_UNIT_PX,chatInputTextSize.toFloat())
         button_emoji.setImageDrawable(chatInputDrawableRight)
+
+        val layoutParams=button_chat_send.layoutParams
+        layoutParams.width=sendIconWidth
+        layoutParams.height=sendIconHeight
+        button_chat_send.layoutParams=layoutParams
+        button_chat_send.setImageDrawable(chatSendDrawable)
+        button_chat_send.background=chatSendBackgroundDrawable
+        button_chat_send.setPadding(chatSendPaddingLeft,chatSendPaddingTop,chatSendPaddingRight,chatSendPaddingBottom)
     }
 
     fun setSession(session: LiveLikeContentSession) {
