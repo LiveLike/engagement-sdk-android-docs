@@ -140,7 +140,7 @@ internal class ContentSession(
             val validChatChannelName = chatRoom.toLowerCase().replace(" ", "").replace("-", "")
             chatViewModel.currentChatRoom = validChatChannelName
             configurationFlow.collect {
-                initializeChatMessaging(validChatChannelName, it)
+                initializeChatMessaging(validChatChannelName, it, false)
             }
         }
     }
@@ -234,7 +234,8 @@ internal class ContentSession(
 
     private fun initializeChatMessaging(
         chatChannel: String,
-        config: EngagementSDK.SdkConfiguration
+        config: EngagementSDK.SdkConfiguration,
+        syncEnabled:Boolean = true
     ) {
         analyticService.trackLastChatStatus(true)
         chatClient =
@@ -245,9 +246,10 @@ internal class ContentSession(
                 userRepository,
                 msgListener
             )
-                .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
-                .toChatQueue()
-                .apply {
+         if(syncEnabled)
+            chatClient = chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
+        chatClient = chatClient?.toChatQueue()
+                ?.apply {
                     subscribe(listOf(chatChannel))
                     this.renderer = chatViewModel
                     chatViewModel.chatListener = this
