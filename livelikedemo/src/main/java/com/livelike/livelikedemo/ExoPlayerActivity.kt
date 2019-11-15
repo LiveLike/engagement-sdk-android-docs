@@ -23,7 +23,7 @@ import com.livelike.livelikedemo.video.VideoPlayer
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
-import kotlinx.android.synthetic.main.activity_exo_player.button3
+import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
 import kotlinx.android.synthetic.main.activity_exo_player.openLogs
@@ -116,11 +116,13 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.show()
             }
         }
-        button3.setOnClickListener {
+        chat_room_button.setOnClickListener {
 
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a custom Chat Room to join")
-                setItems(chatChannelNames.toTypedArray()) { _, which ->
+                setItems(chatChannelNames.map {
+                    "$it[${messageCount[it]?.size ?: 0}]"
+                }.toTypedArray()) { _, which ->
                     privateGroupChatsession!!.enterChatRoom(chatChannelNames[which])
                     chat_view.setSession(privateGroupChatsession!!)
                 }
@@ -186,7 +188,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
-                    if (chatRoom == session.getActiveChatRoom()) {
+                    if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = mutableListOf() // reset unread message count
                     } else {
                         if (messageCount[chatRoom] == null) {
