@@ -45,6 +45,8 @@ internal class ChatRecyclerAdapter(
     val chatReactionRepository: ChatReactionRepository
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    internal var isPublicChat: Boolean = true
+
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -78,7 +80,8 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(p0: View?): Boolean {
-            showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false)
+            if (isPublicChat)
+                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false)
             return true
         }
 

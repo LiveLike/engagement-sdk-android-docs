@@ -23,7 +23,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         upstream.resume()
     }
 
-    private val connectedChannels: MutableList<String> = mutableListOf()
+    private val connectedChannels: MutableSet<String> = mutableSetOf()
 
     var renderer: ChatRenderer? = null
 
