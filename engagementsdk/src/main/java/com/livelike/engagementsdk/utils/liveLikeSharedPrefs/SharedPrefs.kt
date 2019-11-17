@@ -38,14 +38,6 @@ internal fun getNickename(): String {
     return getSharedPreferences().getString(PREFERENCE_KEY_USER_PIC, "") ?: ""
 }
 
-internal fun setUserPic(url: String) {
-    val editor = getSharedPreferences().edit()
-    editor.putString(PREFERENCE_KEY_NICKNAME, url).apply()
-}
-
-internal fun getUserPic(): String {
-    return getSharedPreferences().getString(PREFERENCE_KEY_USER_PIC, "") ?: ""
-}
 
 internal fun addWidgetPredictionVoted(id: String, optionId: String) {
     val editor = getSharedPreferences().edit()

@@ -38,7 +38,6 @@ data class ChatMessage(
                     "channel": "$channel",
                     "user_id": "$senderId",
                     "nickname": "$senderDisplayName",
-                    "pic": "$senderDisplayPic",
                     "message_id": "$id",
                     "message": "$message"
                 }""".trimIndent()

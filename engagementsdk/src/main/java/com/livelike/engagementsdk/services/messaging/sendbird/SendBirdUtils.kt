@@ -16,6 +16,7 @@ internal class SendBirdUtils {
             messageJson.addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
             messageJson.addProperty("message", message.message)
             messageJson.addProperty("sender", message.sender.nickname)
+            messageJson.addProperty("sender_img", message.sender.profileUrl)
             messageJson.addProperty("sender_id", message.sender.userId)
             messageJson.addProperty("id", message.messageId)
 
