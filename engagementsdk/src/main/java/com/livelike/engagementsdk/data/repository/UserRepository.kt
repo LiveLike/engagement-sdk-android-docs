@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.setNickname
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.setUserPic
 import com.livelike.engagementsdk.utils.logError
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -92,5 +93,14 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
         lifetimePoints.onNext(reward?.points)
         rank.onNext(reward?.rank)
         return reward
+    }
+
+    fun setProfilePicUrl(url: String) {
+        setUserPic(url)
+        currentUserStream.latest()?.apply {
+            this.userPic = url
+            currentUserStream.onNext(this)
+//            patchNickNameOnRemote(this)
+        }
     }
 }

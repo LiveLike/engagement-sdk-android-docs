@@ -16,6 +16,10 @@
         <item name="displayUserProfile">true</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">true</item>
+        <item name="chatSendButtonPaddingLeft">5dp</item>
+        <item name="chatSendButtonPaddingRight">5dp</item>
+        <item name="chatSendButtonPaddingTop">0dp</item>
+        <item name="chatSendButtonPaddingBottom">0dp</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">

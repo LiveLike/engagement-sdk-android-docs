@@ -50,6 +50,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         messageJson.addProperty("sender_id", message.senderId)
         messageJson.addProperty("id", message.id)
         messageJson.addProperty("channel", message.channel)
+        messageJson.addProperty("sender_img",message.senderDisplayPic)
         // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
             publishMessage(gson.toJson(message), it, timeData)
@@ -64,6 +65,7 @@ internal class ChatQueue(upstream: MessagingClient) :
                     event.message.get("message").asString,
                     event.message.get("sender_id").asString,
                     event.message.get("sender").asString,
+                    event.message.get("sender_img")?.asString?:"",
                     event.message.get("id").asString,
                     Date(event.timeStamp.timeSinceEpochInMs).toString()
                 )

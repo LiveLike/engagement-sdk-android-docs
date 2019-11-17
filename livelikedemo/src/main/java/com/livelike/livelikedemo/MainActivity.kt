@@ -67,11 +67,23 @@ class MainActivity : AppCompatActivity() {
         }
         events_label.text = channelManager.selectedChannel.name
 
-        getSharedPreferences("test-app", Context.MODE_PRIVATE)
-            .getString("UserNickname", "")
+        getSharedPreferences("test-app", Context.MODE_PRIVATE).apply {
+            getString("UserNickname", "")
             .let {
                 nicknameText.setText(it)
+                edit().putString("userPic","http://lorempixel.com/200/200/?$it").apply()
             }
+            getString("userPic","").let {
+                if(it.isNullOrEmpty()){
+                    edit().putString("userPic","http://lorempixel.com/200/200/?${java.util.UUID.randomUUID()}").apply()
+                } else {
+                    edit().putString("userPic","http://lorempixel.com/200/200/?$it").apply()
+                }
+            }
+        }
+
+
+
 
         nicknameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {

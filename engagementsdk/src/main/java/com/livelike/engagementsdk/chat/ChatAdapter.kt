@@ -107,28 +107,6 @@ internal class ChatRecyclerAdapter(
         init {
             v.chatMessage.setTextColor(chatAttribute.chatMessageColor)
 
-            val layoutParam=FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT)
-            layoutParam.setMargins(chatAttribute.chatMarginLeft,chatAttribute.chatMarginTop,chatAttribute.chatMarginRight,chatAttribute.chatMarginBottom)
-            v.chatBackground.layoutParams = layoutParam
-
-            val layoutParam1=LinearLayout.LayoutParams(chatAttribute.chatWidth,LinearLayout.LayoutParams.WRAP_CONTENT)
-//            layoutParam1.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
-            v.chatBubbleBackground.layoutParams = layoutParam1
-
-
-            v.img_chat_avatar.visibility=when(chatAttribute.showChatAvatarLogo){
-                true -> View.VISIBLE
-                else -> View.GONE
-            }
-            val layoutParamAvatar=LinearLayout.LayoutParams(chatAttribute.chatAvatarWidth,chatAttribute.chatAvatarHeight)
-            layoutParamAvatar.setMargins(chatAttribute.chatAvatarMarginLeft,chatAttribute.chatAvatarMarginTop,chatAttribute.chatAvatarMarginRight,chatAttribute.chatAvatarMarginBottom)
-            layoutParamAvatar.gravity=chatAttribute.chatAvatarGravity
-            v.img_chat_avatar.layoutParams=layoutParamAvatar
-
-            v.chatBackground.background=chatAttribute.chatBackgroundRes
-
-            v.chatBubbleBackground.background=chatAttribute.chatBubbleBackgroundRes
-            v.chatBubbleBackground.setPadding(chatAttribute.chatPaddingLeft,chatAttribute.chatPaddingTop,chatAttribute.chatPaddingRight,chatAttribute.chatPaddingBottom)
 
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
@@ -193,6 +171,30 @@ internal class ChatRecyclerAdapter(
                         chat_nickname.text = message.senderDisplayName
                     }
 
+                    val layoutParam=FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT)
+                    layoutParam.setMargins(chatAttribute.chatMarginLeft,chatAttribute.chatMarginTop,chatAttribute.chatMarginRight,chatAttribute.chatMarginBottom)
+                    v.chatBackground.layoutParams = layoutParam
+
+                    val layoutParam1=LinearLayout.LayoutParams(chatAttribute.chatWidth,LinearLayout.LayoutParams.WRAP_CONTENT)
+                    // layoutParam1.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
+                    v.chatBubbleBackground.layoutParams = layoutParam1
+
+
+                    v.img_chat_avatar.visibility=when(chatAttribute.showChatAvatarLogo){
+                        true -> View.VISIBLE
+                        else -> View.GONE
+                    }
+                    val layoutParamAvatar=LinearLayout.LayoutParams(chatAttribute.chatAvatarWidth,chatAttribute.chatAvatarHeight)
+                    layoutParamAvatar.setMargins(chatAttribute.chatAvatarMarginLeft,chatAttribute.chatAvatarMarginTop,chatAttribute.chatAvatarMarginRight,chatAttribute.chatAvatarMarginBottom)
+                    layoutParamAvatar.gravity=chatAttribute.chatAvatarGravity
+                    v.img_chat_avatar.layoutParams=layoutParamAvatar
+
+                    v.chatBackground.background=chatAttribute.chatBackgroundRes
+
+                    v.chatBubbleBackground.background=chatAttribute.chatBubbleBackgroundRes
+                    v.chatBubbleBackground.setPadding(chatAttribute.chatPaddingLeft,chatAttribute.chatPaddingTop,chatAttribute.chatPaddingRight,chatAttribute.chatPaddingBottom)
+
+
                     val options = RequestOptions()
                     if(chatAttribute.chatAvatarCircle){
                      options.optionalCircleCrop()
@@ -200,9 +202,13 @@ internal class ChatRecyclerAdapter(
                     if(chatAttribute.chatAvatarRadius>0){
                         options.transform(CenterCrop(), RoundedCorners(chatAttribute.chatAvatarRadius))
                     }
-                    Glide.with(context).load("http://lorempixel.com/200/200/?${message.id}")
-                        .apply(options)
-                        .into(img_chat_avatar)
+//                    Glide.with(context).load("http://lorempixel.com/200/200/?${message.id}")
+                    message.senderDisplayPic.let {
+                        if(it.isNotEmpty())
+                        Glide.with(context).load(it)
+                            .apply(options)
+                            .into(img_chat_avatar)
+                    }
 
                     val spaceRemover = Pattern.compile("[\\s]")
                     val inputNoString = spaceRemover.matcher(message.message).replaceAll(Matcher.quoteReplacement(""))

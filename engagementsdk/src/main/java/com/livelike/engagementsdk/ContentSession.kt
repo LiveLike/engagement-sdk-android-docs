@@ -53,9 +53,8 @@ internal class ContentSession(
 ) : LiveLikeContentSession {
 
     override fun setProfilePicUrl(url: String) {
-
+        userRepository.setProfilePicUrl(url)
     }
-
 
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
