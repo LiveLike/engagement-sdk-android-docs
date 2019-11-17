@@ -13,8 +13,8 @@ internal class LogAnalyticsMessagingClient(
     val analyticsService: AnalyticsService
 ) :
     MessagingClientProxy(upstream) {
-    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-        upstream.publishMessage(message, channel, timeSinceEpoch)
+    override fun publishMessage(message: String,imageUrl:String, channel: String, timeSinceEpoch: EpochTime) {
+        upstream.publishMessage(message,imageUrl ,channel, timeSinceEpoch)
     }
 
     override fun stop() {

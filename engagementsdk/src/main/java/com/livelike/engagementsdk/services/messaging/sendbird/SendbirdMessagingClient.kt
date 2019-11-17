@@ -95,13 +95,14 @@ internal class SendbirdMessagingClient(
         }
     }
 
-    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+    override fun publishMessage(message: String,imageUrl: String ,channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val messageTimestamp = gson.toJson(
             MessageData(
                 ZonedDateTime.ofInstant(
                     Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs), zoneUTC
-                )
+                ),
+                imageUrl
             )
         )
         OpenChannel.getChannel(channel) { openChannel, _ ->
@@ -138,7 +139,8 @@ internal class SendbirdMessagingClient(
     }
 
     data class MessageData(
-        val program_date_time: ZonedDateTime
+        val program_date_time: ZonedDateTime,
+        val imageUrl:String
     )
 
     override fun subscribe(channels: List<String>) {

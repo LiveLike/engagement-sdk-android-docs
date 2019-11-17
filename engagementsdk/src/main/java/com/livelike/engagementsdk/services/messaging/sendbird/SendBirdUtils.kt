@@ -16,9 +16,12 @@ internal class SendBirdUtils {
             messageJson.addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
             messageJson.addProperty("message", message.message)
             messageJson.addProperty("sender", message.sender.nickname)
-            messageJson.addProperty("sender_img", message.sender.profileUrl)
             messageJson.addProperty("sender_id", message.sender.userId)
             messageJson.addProperty("id", message.messageId)
+
+            val imageUrl= getImageUrlFromMessageData(message.data)
+            messageJson.addProperty("imageUrl", imageUrl)
+
 
             val timeMs = getTimeMsFromMessageData(message.data)
             val timeData = EpochTime(timeMs)
@@ -38,6 +41,20 @@ internal class SendBirdUtils {
                 logWarn { messageDataJson + "error: " + e }
             }
             return 0
+        }
+        fun getImageUrlFromMessageData(messageDataJson: String): String {
+            try {
+                return if (gson.fromJson(messageDataJson, SendbirdMessagingClient.MessageData::class.java) == null) {
+                    ""
+                } else {
+                    val messageData = gson.fromJson(messageDataJson, SendbirdMessagingClient.MessageData::class.java)
+                    messageData?.imageUrl?:""
+                }
+            } catch (e: Exception) {
+                // This is here because on some channels historic messages may have Date/Time format is not correct, or Json is off
+                logWarn { messageDataJson + "error: " + e }
+            }
+            return ""
         }
     }
 }

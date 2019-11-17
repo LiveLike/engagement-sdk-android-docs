@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             }
             getString("userPic","").let {
                 if(it.isNullOrEmpty()){
-                    edit().putString("userPic","http://lorempixel.com/200/200/?${java.util.UUID.randomUUID()}").apply()
+                    edit().putString("userPic","https://loremflickr.com/200/200?lock=${java.util.UUID.randomUUID()}").apply()
                 } else {
                     edit().putString("userPic",it).apply()
                 }
