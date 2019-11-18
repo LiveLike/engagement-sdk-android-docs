@@ -89,7 +89,9 @@ internal class SendbirdMessagingClient(
                 }
                 updateNicknameAndProfilePic(livelikeUser.nickname,livelikeUser.userPic) {
                     if (resubscribe) {
-                        subscribe(connectedChannels.map { it.url })
+                        val channels = connectedChannels.map { it.url }
+                        connectedChannels.clear() //as reconnecting all of them will add again in list
+                        subscribe(channels)
                     }
                 }
             }
