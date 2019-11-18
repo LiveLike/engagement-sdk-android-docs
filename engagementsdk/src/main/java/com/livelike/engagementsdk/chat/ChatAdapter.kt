@@ -200,7 +200,7 @@ internal class ChatRecyclerAdapter(
                         options.transform(CenterCrop(), RoundedCorners(chatViewThemeAttribute.chatAvatarRadius))
                     }
                     message.senderDisplayPic.let {
-                        if(it.isNotEmpty())
+                        if(!it.isNullOrEmpty())
                         Glide.with(context).load(it)
                             .apply(options)
                             .placeholder(chatViewThemeAttribute.chatUserPicDrawable)

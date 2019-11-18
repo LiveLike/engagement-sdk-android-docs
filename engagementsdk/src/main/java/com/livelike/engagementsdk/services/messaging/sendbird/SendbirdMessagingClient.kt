@@ -103,10 +103,9 @@ internal class SendbirdMessagingClient(
                 ZonedDateTime.ofInstant(
                     Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs), zoneUTC
                 ),
-                URLEncoder.encode(clientMessage.senderDisplayPic, "utf-8")
+                clientMessage.senderDisplayPic
             )
         )
-        logError { messageMetadata }
         OpenChannel.getChannel(channel) { openChannel, _ ->
             openChannel?.sendUserMessage(
                 clientMessage.message,
@@ -142,8 +141,8 @@ internal class SendbirdMessagingClient(
 
     data class MessageData(
         val program_date_time: ZonedDateTime,
-        val image_url:String,
-        val badge_image_url:String = ""
+        val image_url:String? = null,
+        val badge_image_url:String? = null
     )
 
     override fun subscribe(channels: List<String>) {
@@ -229,7 +228,6 @@ internal class SendbirdMessagingClient(
                 override fun onMessageReceived(channel: BaseChannel?, message: BaseMessage?) {
                     if (message != null && channel != null && openChannel.url == message.channelUrl) {
                         message as UserMessage
-
                         val clientMessage =
                             SendBirdUtils.clientMessageFromBaseMessage(message, channel)
                         if (messageIdMap[openChannel.url] == null || !messageIdMap[openChannel.url]!!.contains(message.messageId)) {
