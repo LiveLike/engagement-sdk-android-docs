@@ -3,6 +3,7 @@ package com.livelike.engagementsdk
 import android.content.Context
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.chat.ChatRepository
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -18,7 +19,6 @@ import com.livelike.engagementsdk.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
@@ -46,7 +46,6 @@ internal class ContentSession(
     private val programId: String,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
-
 
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
@@ -109,7 +108,7 @@ internal class ContentSession(
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
+                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration, pair.first.id)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -139,7 +138,7 @@ internal class ContentSession(
             chatViewModel.flushMessages()
             val validChatChannelName = chatRoom.toLowerCase().replace(" ", "").replace("-", "")
             configurationFlow.collect {
-                initializeChatMessaging(validChatChannelName, it)
+                initializeChatMessaging(validChatChannelName, it, userRepository.currentUserStream.latest()?.id ?: "")
             }
         }
     }
@@ -153,7 +152,7 @@ internal class ContentSession(
         userId: String,
         messageCountListener: MessageCountListener
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     private fun startObservingForGamificationAnalytics(
@@ -231,16 +230,13 @@ internal class ContentSession(
 
     private fun initializeChatMessaging(
         chatChannel: String,
-        config: EngagementSDK.SdkConfiguration
+        config: EngagementSDK.SdkConfiguration,
+        uuid: String
     ) {
         analyticService.trackLastChatStatus(true)
+//        SendbirdMessagingClient
         chatClient =
-            SendbirdMessagingClient(
-                config.sendBirdAppId,
-                applicationContext,
-                analyticService,
-                userRepository
-            )
+            ChatRepository(",", config.pubNubKey, uuid, analyticService).establishChatMessagingConnection()
                 .syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
                 .toChatQueue()
                 .apply {
