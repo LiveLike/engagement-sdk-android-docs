@@ -31,7 +31,15 @@ internal class ChatViewModel(
         field = value
         chatAdapter.isPublicChat = currentChatRoom == programRepository.program.chatChannel
     }
-    private var chatLoaded = false
+    internal var chatLoaded = false
+        set(value) {
+            field = value
+            if (field) {
+                eventStream.onNext(EVENT_LOADING_COMPLETE)
+            } else {
+                eventStream.onNext(EVENT_LOADING_COMPLETE)
+            }
+        }
     private val dataClient: ChatDataClient = EngagementDataClientImpl()
 
     companion object {
@@ -39,6 +47,7 @@ internal class ChatViewModel(
         const val EVENT_MESSAGE_DELETED = "deletion"
         const val EVENT_MESSAGE_ID_UPDATED = "id-updated"
         const val EVENT_LOADING_COMPLETE = "loading-complete"
+        const val EVENT_LOADING_STARTED = "loading-started"
     }
 
     override fun displayChatMessage(message: ChatMessage) {
@@ -50,6 +59,7 @@ internal class ChatViewModel(
             isFromMe = userStream.latest()?.id == senderId
         })
         chatAdapter.submitList(ArrayList(messageList))
+        chatAdapter.notifyDataSetChanged()
         eventStream.onNext(EVENT_NEW_MESSAGE)
     }
 
@@ -73,7 +83,6 @@ internal class ChatViewModel(
     override fun loadingCompleted() {
         if (!chatLoaded) {
             chatLoaded = true
-            eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
     }
 
@@ -85,6 +94,6 @@ internal class ChatViewModel(
 
     fun flushMessages() {
         messageList.clear()
-        chatAdapter.submitList(ArrayList(messageList))
+        chatAdapter.submitList(messageList)
     }
 }
