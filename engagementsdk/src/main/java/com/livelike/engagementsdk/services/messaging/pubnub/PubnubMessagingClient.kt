@@ -22,7 +22,7 @@ import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
 internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : MessagingClient {
-    override fun publishMessage(message: String,imageUrl:String, channel: String, timeSinceEpoch: EpochTime) {
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
     }
 
     override fun stop() {

@@ -1,7 +1,5 @@
 package com.livelike.engagementsdk.chat
 
-import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
@@ -24,7 +22,6 @@ import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
-import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import java.util.regex.Matcher
@@ -56,7 +53,7 @@ internal class ChatRecyclerAdapter(
 
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
-    lateinit var chatAttribute:ChatAttributes
+    lateinit var chatViewThemeAttribute:ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
 
@@ -105,7 +102,7 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
-            v.chatMessage.setTextColor(chatAttribute.chatMessageColor)
+            v.chatMessage.setTextColor(chatViewThemeAttribute.chatMessageColor)
 
 
             v.setOnLongClickListener(this)
@@ -142,12 +139,12 @@ internal class ChatRecyclerAdapter(
                 },
                 ::hideFloatingUI,
                 isOwnMessage,
-                chatReactionBackground = chatAttribute.chatReactionBackgroundRes,
-                chatReactionElevation = chatAttribute.chatReactionElevation,
-                chatReactionRadius = chatAttribute.chatReactionRadius,
-                chatReactionBackgroundColor=chatAttribute.chatReactionBackgroundColor,
-                        chatReactionPadding=chatAttribute.chatReactionPadding
-            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatAttribute.chatReactionX, locationOnScreen.y - chatAttribute.chatReactionY)
+                chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
+                chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
+                chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
+                chatReactionBackgroundColor=chatViewThemeAttribute.chatReactionBackgroundColor,
+                        chatReactionPadding=chatViewThemeAttribute.chatReactionPadding
+            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatViewThemeAttribute.chatReactionX, locationOnScreen.y - chatViewThemeAttribute.chatReactionY)
         }
 
         private fun hideFloatingUI() {
@@ -164,50 +161,52 @@ internal class ChatRecyclerAdapter(
                 message?.apply {
 
                     if (message.isFromMe) {
-                        chat_nickname.setTextColor(chatAttribute.chatNickNameColor)
+                        chat_nickname.setTextColor(chatViewThemeAttribute.chatNickNameColor)
                         chat_nickname.text = context.getString(R.string.chat_pre_nickname_me, message.senderDisplayName)
                     } else {
-                        chat_nickname.setTextColor(chatAttribute.chatOtherNickNameColor)
+                        chat_nickname.setTextColor(chatViewThemeAttribute.chatOtherNickNameColor)
                         chat_nickname.text = message.senderDisplayName
                     }
 
                     val layoutParam=FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.WRAP_CONTENT)
-                    layoutParam.setMargins(chatAttribute.chatMarginLeft,chatAttribute.chatMarginTop,chatAttribute.chatMarginRight,chatAttribute.chatMarginBottom)
+                    layoutParam.setMargins(chatViewThemeAttribute.chatMarginLeft,chatViewThemeAttribute.chatMarginTop,chatViewThemeAttribute.chatMarginRight,chatViewThemeAttribute.chatMarginBottom)
                     v.chatBackground.layoutParams = layoutParam
 
-                    val layoutParam1=LinearLayout.LayoutParams(chatAttribute.chatWidth,LinearLayout.LayoutParams.WRAP_CONTENT)
+                    val layoutParam1=LinearLayout.LayoutParams(chatViewThemeAttribute.chatWidth,LinearLayout.LayoutParams.WRAP_CONTENT)
                     // layoutParam1.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
                     v.chatBubbleBackground.layoutParams = layoutParam1
 
 
-                    v.img_chat_avatar.visibility=when(chatAttribute.showChatAvatarLogo){
+                    v.img_chat_avatar.visibility=when(chatViewThemeAttribute.showChatAvatarLogo){
                         true -> View.VISIBLE
                         else -> View.GONE
                     }
-                    val layoutParamAvatar=LinearLayout.LayoutParams(chatAttribute.chatAvatarWidth,chatAttribute.chatAvatarHeight)
-                    layoutParamAvatar.setMargins(chatAttribute.chatAvatarMarginLeft,chatAttribute.chatAvatarMarginTop,chatAttribute.chatAvatarMarginRight,chatAttribute.chatAvatarMarginBottom)
-                    layoutParamAvatar.gravity=chatAttribute.chatAvatarGravity
+                    val layoutParamAvatar=LinearLayout.LayoutParams(chatViewThemeAttribute.chatAvatarWidth,chatViewThemeAttribute.chatAvatarHeight)
+                    layoutParamAvatar.setMargins(chatViewThemeAttribute.chatAvatarMarginLeft,chatViewThemeAttribute.chatAvatarMarginTop,chatViewThemeAttribute.chatAvatarMarginRight,chatViewThemeAttribute.chatAvatarMarginBottom)
+                    layoutParamAvatar.gravity=chatViewThemeAttribute.chatAvatarGravity
                     v.img_chat_avatar.layoutParams=layoutParamAvatar
 
-                    v.chatBackground.background=chatAttribute.chatBackgroundRes
+                    v.chatBackground.background=chatViewThemeAttribute.chatBackgroundRes
 
-                    v.chatBubbleBackground.background=chatAttribute.chatBubbleBackgroundRes
-                    v.chatBubbleBackground.setPadding(chatAttribute.chatPaddingLeft,chatAttribute.chatPaddingTop,chatAttribute.chatPaddingRight,chatAttribute.chatPaddingBottom)
+                    v.chatBubbleBackground.background=chatViewThemeAttribute.chatBubbleBackgroundRes
+                    v.chatBubbleBackground.setPadding(chatViewThemeAttribute.chatPaddingLeft,chatViewThemeAttribute.chatPaddingTop,chatViewThemeAttribute.chatPaddingRight,chatViewThemeAttribute.chatPaddingBottom)
 
 
                     val options = RequestOptions()
-                    if(chatAttribute.chatAvatarCircle){
+                    if(chatViewThemeAttribute.chatAvatarCircle){
                      options.optionalCircleCrop()
                     }
-                    if(chatAttribute.chatAvatarRadius>0){
-                        options.transform(CenterCrop(), RoundedCorners(chatAttribute.chatAvatarRadius))
+                    if(chatViewThemeAttribute.chatAvatarRadius>0){
+                        options.transform(CenterCrop(), RoundedCorners(chatViewThemeAttribute.chatAvatarRadius))
                     }
-//                    Glide.with(context).load("http://lorempixel.com/200/200/?${message.id}")
                     message.senderDisplayPic.let {
                         if(it.isNotEmpty())
                         Glide.with(context).load(it)
                             .apply(options)
+                            .placeholder(chatViewThemeAttribute.chatUserPicDrawable)
                             .into(img_chat_avatar)
+                        else
+                            img_chat_avatar.setImageDrawable(chatViewThemeAttribute.chatUserPicDrawable)
                     }
 
                     val spaceRemover = Pattern.compile("[\\s]")

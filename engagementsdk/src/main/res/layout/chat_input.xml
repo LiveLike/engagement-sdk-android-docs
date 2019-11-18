@@ -91,6 +91,7 @@
             app:srcCompat="@drawable/ic_chat_emoji_ios_category_smileysandpeople"
             tools:ignore="ContentDescription"
             android:layout_marginRight="8dp"/>
+
     <ImageButton
             android:id="@+id/button_chat_send"
             android:layout_width="56dp"

@@ -16,10 +16,12 @@
         <item name="displayUserProfile">true</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">true</item>
-        <item name="chatSendButtonPaddingLeft">5dp</item>
-        <item name="chatSendButtonPaddingRight">5dp</item>
-        <item name="chatSendButtonPaddingTop">0dp</item>
-        <item name="chatSendButtonPaddingBottom">0dp</item>
+        <item name="chatSendButtonPaddingLeft">10dp</item>
+        <item name="chatSendButtonPaddingRight">10dp</item>
+        <item name="chatSendButtonPaddingTop">6dp</item>
+        <item name="chatSendButtonPaddingBottom">6dp</item>
+        <item name="sendIconTintColor">#45AA45</item>
+        <item name="stickerIconTintColor">#A12A45</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">
@@ -48,10 +50,10 @@
         <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">false</item>
-        <item name="chatAvatarHeight">32dp</item>
+        <item name="chatAvatarHeight">36dp</item>
         <item name="chatAvatarWidth">32dp</item>
         <item name="chatAvatarGravity">top</item>
-        <item name="chatAvatarMarginLeft">10dp</item>
+        <item name="chatAvatarMarginLeft">16dp</item>
         <item name="chatAvatarMarginRight">0dp</item>
         <item name="chatAvatarMarginBottom">0dp</item>
         <item name="chatAvatarMarginTop">1dp</item>

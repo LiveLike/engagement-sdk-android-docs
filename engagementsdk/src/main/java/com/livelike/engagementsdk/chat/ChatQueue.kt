@@ -11,8 +11,8 @@ import java.util.Date
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
     ChatEventListener {
-    override fun publishMessage(message: String,imageUrl:String ,channel: String, timeSinceEpoch: EpochTime) {
-        upstream.publishMessage(message, imageUrl,channel, timeSinceEpoch)
+    override fun publishMessage(message: String,channel: String, timeSinceEpoch: EpochTime) {
+        upstream.publishMessage(message, channel, timeSinceEpoch)
     }
 
     override fun stop() {
@@ -53,7 +53,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         messageJson.addProperty("imageUrl",message.senderDisplayPic)
         // send on all connected channels for now, implement channel selection down the road
         connectedChannels.forEach {
-            publishMessage(gson.toJson(message),message.senderDisplayPic, it, timeData)
+            publishMessage(gson.toJson(message), it, timeData)
         }
     }
 

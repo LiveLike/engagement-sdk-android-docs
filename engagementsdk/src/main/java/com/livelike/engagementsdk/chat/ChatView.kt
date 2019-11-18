@@ -5,13 +5,10 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -97,7 +94,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
 
-    private val chatAttribute=ChatAttributes()
+    private val chatAttribute=ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
     private var session: LiveLikeContentSession? = null
@@ -130,298 +127,332 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         ).apply {
             try {
                 displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
-                chatAttribute.showChatAvatarLogo=getBoolean(R.styleable.ChatView_showChatAvatarLogo,false)
-                chatAttribute.chatAvatarCircle=getBoolean(R.styleable.ChatView_chatAvatarCircle,false)
-                chatAttribute.chatNickNameColor = getColor(
-                    R.styleable.ChatView_usernameColor,
-                    ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
-                )
-                chatAttribute.chatOtherNickNameColor = getColor(
-                    R.styleable.ChatView_otherUsernameColor,
-                    ContextCompat.getColor(context, R.color.livelike_openChatNicknameOther)
-                )
-                chatAttribute.chatMessageColor = getColor(
-                    R.styleable.ChatView_messageColor,
-                    ContextCompat.getColor(
-                        context,
-                        R.color.livelike_default_chat_cell_message_color
+
+               chatAttribute. apply {
+                    showChatAvatarLogo=getBoolean(R.styleable.ChatView_showChatAvatarLogo,false)
+                    chatAvatarCircle=getBoolean(R.styleable.ChatView_chatAvatarCircle,false)
+                    showStickerSend=getBoolean(R.styleable.ChatView_showStickerSend,true)
+                    chatNickNameColor = getColor(
+                        R.styleable.ChatView_usernameColor,
+                        ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
                     )
-                )
-                chatAttribute.chatAvatarGravity=getInt(R.styleable.ChatView_chatAvatarGravity,Gravity.NO_GRAVITY)
+                    chatOtherNickNameColor = getColor(
+                        R.styleable.ChatView_otherUsernameColor,
+                        ContextCompat.getColor(context, R.color.livelike_openChatNicknameOther)
+                    )
+                    chatMessageColor = getColor(
+                        R.styleable.ChatView_messageColor,
+                        ContextCompat.getColor(
+                            context,
+                            R.color.livelike_default_chat_cell_message_color
+                        )
+                    )
 
-                val colorBubbleValue = TypedValue()
-                getValue(R.styleable.ChatView_chatBubbleBackground, colorBubbleValue)
+                   sendImageTintColor = getColor(
+                       R.styleable.ChatView_sendIconTintColor,
+                       ContextCompat.getColor(context, android.R.color.white)
+                   )
+                   sendStickerTintColor = getColor(
+                       R.styleable.ChatView_stickerIconTintColor,
+                       ContextCompat.getColor(context, android.R.color.white)
+                   )
 
-                chatAttribute.chatBubbleBackgroundRes = when {
-                    colorBubbleValue.type == TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatBubbleBackground,
+                    chatAvatarGravity=getInt(R.styleable.ChatView_chatAvatarGravity,Gravity.NO_GRAVITY)
+
+                    val colorBubbleValue = TypedValue()
+                    getValue(R.styleable.ChatView_chatBubbleBackground, colorBubbleValue)
+
+                    chatBubbleBackgroundRes = when {
+                        colorBubbleValue.type == TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatBubbleBackground,
+                                R.drawable.ic_chat_message_bubble_rounded_rectangle
+                            )
+                        )
+                        colorBubbleValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                            context,
                             R.drawable.ic_chat_message_bubble_rounded_rectangle
                         )
-                    )
-                    colorBubbleValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_chat_message_bubble_rounded_rectangle
-                    )
-                    else -> ColorDrawable(colorBubbleValue.data)
-                }
+                        else -> ColorDrawable(colorBubbleValue.data)
+                    }
 
-                val colorBackValue = TypedValue()
-                getValue(R.styleable.ChatView_chatBackground, colorBackValue)
+                    val colorBackValue = TypedValue()
+                    getValue(R.styleable.ChatView_chatBackground, colorBackValue)
 
-                chatAttribute.chatBackgroundRes = when {
-                    colorBackValue.type == TypedValue.TYPE_REFERENCE || colorBackValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatBackground,
+                    chatBackgroundRes = when {
+                        colorBackValue.type == TypedValue.TYPE_REFERENCE || colorBackValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatBackground,
+                                android.R.color.transparent
+                            )
+                        )
+                        colorBackValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                            context,
                             android.R.color.transparent
                         )
-                    )
-                    colorBackValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
-                        context,
-                        android.R.color.transparent
-                    )
-                    else -> ColorDrawable(colorBackValue.data)
-                }
+                        else -> ColorDrawable(colorBackValue.data)
+                    }
 
 
-                val inputDrawableRight = TypedValue()
-                getValue(R.styleable.ChatView_chatInputDrawableRight, inputDrawableRight)
 
-                chatAttribute.chatInputDrawableRight = when {
-                    inputDrawableRight.type == TypedValue.TYPE_REFERENCE || inputDrawableRight.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatInputDrawableRight,
-                            R.drawable.ic_chat_emoji_ios_category_smileysandpeople
+                    val sendDrawable = TypedValue()
+                    getValue(R.styleable.ChatView_chatSendDrawable, sendDrawable)
+
+                    chatSendDrawable = when {
+                        sendDrawable.type == TypedValue.TYPE_REFERENCE || sendDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatSendDrawable,
+                                R.drawable.ic_chat_send
+                            )
                         )
-                    )
-                    else -> ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_chat_emoji_ios_category_smileysandpeople
-                    )
-                }
-
-
-                val sendDrawable = TypedValue()
-                getValue(R.styleable.ChatView_chatSendDrawable, sendDrawable)
-
-                chatAttribute.chatSendDrawable = when {
-                    sendDrawable.type == TypedValue.TYPE_REFERENCE || sendDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatSendDrawable,
+                        else -> ContextCompat.getDrawable(
+                            context,
                             R.drawable.ic_chat_send
                         )
-                    )
-                    else -> ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_chat_send
-                    )
-                }
+                    }
 
-                val chatSendBackValue = TypedValue()
-                getValue(R.styleable.ChatView_chatSendBackground, chatSendBackValue)
+                   val sendStickerDrawable = TypedValue()
+                   getValue(R.styleable.ChatView_chatStickerSendDrawable, sendDrawable)
 
-                chatAttribute.chatSendBackgroundDrawable = when {
-                    chatSendBackValue.type == TypedValue.TYPE_REFERENCE || chatSendBackValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatSendBackground,
+                   chatStickerSendDrawable = when {
+                       sendStickerDrawable.type == TypedValue.TYPE_REFERENCE || sendStickerDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                           context,
+                           getResourceId(
+                               R.styleable.ChatView_chatStickerSendDrawable,
+                               R.drawable.ic_chat_emoji_ios_category_smileysandpeople
+                           )
+                       )
+                       else -> ContextCompat.getDrawable(
+                           context,
+                           R.drawable.ic_chat_emoji_ios_category_smileysandpeople
+                       )
+                   }
+
+
+                   val userPicDrawable = TypedValue()
+                   getValue(R.styleable.ChatView_userPicDrawable, sendDrawable)
+
+                   chatUserPicDrawable = when {
+                       userPicDrawable.type == TypedValue.TYPE_REFERENCE || userPicDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                           context,
+                           getResourceId(
+                               R.styleable.ChatView_userPicDrawable,
+                               R.drawable.ic_user_pic
+                           )
+                       )
+                       else -> ContextCompat.getDrawable(
+                           context,
+                           R.drawable.ic_user_pic
+                       )
+                   }
+
+                    val chatSendBackValue = TypedValue()
+                    getValue(R.styleable.ChatView_chatSendBackground, chatSendBackValue)
+
+                    chatSendBackgroundDrawable = when {
+                        chatSendBackValue.type == TypedValue.TYPE_REFERENCE || chatSendBackValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatSendBackground,
+                                android.R.color.transparent
+                            )
+                        )
+                        chatSendBackValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                            context,
                             android.R.color.transparent
                         )
-                    )
-                    chatSendBackValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
-                        context,
-                        android.R.color.transparent
-                    )
-                    else -> ColorDrawable(chatSendBackValue.data)
-                }
+                        else -> ColorDrawable(chatSendBackValue.data)
+                    }
 
 
-                val colorReactionValue = TypedValue()
-                getValue(R.styleable.ChatView_chatReactionBackground, colorReactionValue)
+                    val colorReactionValue = TypedValue()
+                    getValue(R.styleable.ChatView_chatReactionBackground, colorReactionValue)
 
-                chatAttribute.chatReactionBackgroundRes = when {
-                    colorReactionValue.type == TypedValue.TYPE_REFERENCE || colorReactionValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatReactionBackground,
+                    chatReactionBackgroundRes = when {
+                        colorReactionValue.type == TypedValue.TYPE_REFERENCE || colorReactionValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatReactionBackground,
+                                android.R.color.transparent
+                            )
+                        )
+                        colorReactionValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                            context,
                             android.R.color.transparent
                         )
-                    )
-                    colorReactionValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
-                        context,
-                        android.R.color.transparent
-                    )
-                    else -> ColorDrawable(colorReactionValue.data)
-                }
+                        else -> ColorDrawable(colorReactionValue.data)
+                    }
 
 
-                val colorViewValue = TypedValue()
-                getValue(R.styleable.ChatView_chatViewBackground, colorViewValue)
+                    val colorViewValue = TypedValue()
+                    getValue(R.styleable.ChatView_chatViewBackground, colorViewValue)
 
-                chatAttribute.chatViewBackgroundRes = when {
-                    colorViewValue.type == TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatViewBackground,
-                            android.R.color.transparent
+                    chatViewBackgroundRes = when {
+                        colorViewValue.type == TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatViewBackground,
+                                android.R.color.transparent
+                            )
                         )
-                    )
-                    colorViewValue.type == TypedValue.TYPE_NULL -> ColorDrawable(Color.TRANSPARENT)
-                    else -> ColorDrawable(colorViewValue.data)
-                }
+                        colorViewValue.type == TypedValue.TYPE_NULL -> ColorDrawable(Color.TRANSPARENT)
+                        else -> ColorDrawable(colorViewValue.data)
+                    }
 
-                val colorChatDisplayValue = TypedValue()
-                getValue(R.styleable.ChatView_chatDisplayBackground, colorChatDisplayValue)
+                    val colorChatDisplayValue = TypedValue()
+                    getValue(R.styleable.ChatView_chatDisplayBackground, colorChatDisplayValue)
 
-                chatAttribute.chatDisplayBackgroundRes = when {
-                    colorChatDisplayValue.type == TypedValue.TYPE_REFERENCE || colorChatDisplayValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatDisplayBackground,
-                            android.R.color.transparent
+                    chatDisplayBackgroundRes = when {
+                        colorChatDisplayValue.type == TypedValue.TYPE_REFERENCE || colorChatDisplayValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatDisplayBackground,
+                                android.R.color.transparent
+                            )
                         )
-                    )
-                    colorChatDisplayValue.type == TypedValue.TYPE_NULL -> ColorDrawable(Color.TRANSPARENT)
-                    else -> ColorDrawable(colorChatDisplayValue.data)
-                }
+                        colorChatDisplayValue.type == TypedValue.TYPE_NULL -> ColorDrawable(Color.TRANSPARENT)
+                        else -> ColorDrawable(colorChatDisplayValue.data)
+                    }
 
-                val colorInputBackgroundValue = TypedValue()
-                getValue(R.styleable.ChatView_chatInputBackground, colorInputBackgroundValue)
+                    val colorInputBackgroundValue = TypedValue()
+                    getValue(R.styleable.ChatView_chatInputBackground, colorInputBackgroundValue)
 
-                chatAttribute.chatInputBackgroundRes = when {
-                    colorInputBackgroundValue.type == TypedValue.TYPE_REFERENCE || colorInputBackgroundValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatInputBackground,
+                    chatInputBackgroundRes = when {
+                        colorInputBackgroundValue.type == TypedValue.TYPE_REFERENCE || colorInputBackgroundValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatInputBackground,
+                                R.drawable.ic_chat_input
+                            )
+                        )
+                        colorInputBackgroundValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                            context,
                             R.drawable.ic_chat_input
                         )
-                    )
-                    colorInputBackgroundValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_chat_input
-                    )
-                    else -> ColorDrawable(colorInputBackgroundValue.data)
-                }
+                        else -> ColorDrawable(colorInputBackgroundValue.data)
+                    }
 
-                val colorInputViewBackgroundValue = TypedValue()
-                getValue(
-                    R.styleable.ChatView_chatInputViewBackground,
-                    colorInputViewBackgroundValue
-                )
+                    val colorInputViewBackgroundValue = TypedValue()
+                    getValue(
+                        R.styleable.ChatView_chatInputViewBackground,
+                        colorInputViewBackgroundValue
+                    )
 
-                chatAttribute.chatInputViewBackgroundRes = when {
-                    colorInputViewBackgroundValue.type == TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
-                        context,
-                        getResourceId(
-                            R.styleable.ChatView_chatInputViewBackground,
-                            android.R.color.transparent
+                    chatInputViewBackgroundRes = when {
+                        colorInputViewBackgroundValue.type == TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatInputViewBackground,
+                                android.R.color.transparent
+                            )
                         )
+                        colorInputViewBackgroundValue.type == TypedValue.TYPE_NULL -> ColorDrawable(
+                            ContextCompat.getColor(context, android.R.color.transparent)
+                        )
+                        else -> ColorDrawable(colorInputViewBackgroundValue.data)
+                    }
+
+                    chatInputTextColor = getColor(
+                        R.styleable.ChatView_chatInputTextColor,
+                        ContextCompat.getColor(context, R.color.livelike_chat_input_text_color)
                     )
-                    colorInputViewBackgroundValue.type == TypedValue.TYPE_NULL -> ColorDrawable(
+                    chatInputHintTextColor = getColor(
+                        R.styleable.ChatView_chatInputTextHintColor,
+                        ContextCompat.getColor(context, R.color.livelike_chat_input_text_color)
+                    )
+
+                    chatWidth = getLayoutDimension(
+                        R.styleable.ChatView_chatWidth,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                    )
+
+                    sendIconHeight = getLayoutDimension(
+                        R.styleable.ChatView_sendButtonHeight,
+                        dpToPx(40)
+                    )
+                    sendIconWidth = getLayoutDimension(
+                        R.styleable.ChatView_sendButtonWidth,
+                        dpToPx(56)
+                    )
+
+                    chatInputTextSize = getDimensionPixelSize(R.styleable.ChatView_chatInputTextSize,resources.getDimensionPixelSize(R.dimen.livelike_default_chat_input_text_size))
+                    chatReactionX = getDimensionPixelSize(R.styleable.ChatView_chatReactionXPosition,dpToPx(8))
+                    chatReactionY = getDimensionPixelSize(R.styleable.ChatView_chatReactionYPosition,dpToPx(40))
+                    chatReactionElevation = getDimensionPixelSize(R.styleable.ChatView_chatReactionElevation,dpToPx(0)).toFloat()
+                    chatReactionRadius = getDimensionPixelSize(R.styleable.ChatView_chatReactionRadius,dpToPx(0)).toFloat()
+                    chatReactionPadding = getDimensionPixelSize(R.styleable.ChatView_chatReactionPadding,dpToPx(6))
+                    chatAvatarHeight = getDimensionPixelSize(R.styleable.ChatView_chatAvatarHeight,dpToPx(32))
+                    chatAvatarWidth = getDimensionPixelSize(R.styleable.ChatView_chatAvatarWidth,dpToPx(32))
+                    chatAvatarRadius= getDimensionPixelSize(R.styleable.ChatView_chatAvatarRadius,dpToPx(0))
+                    chatAvatarMarginLeft= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginLeft,dpToPx(5))
+                    chatAvatarMarginRight= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginRight,dpToPx(3))
+                    chatAvatarMarginBottom= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginBottom,dpToPx(5))
+                    chatAvatarMarginTop= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginTop,dpToPx(0))
+
+
+                    chatReactionBackgroundColor = getColor(
+                        R.styleable.ChatView_chatReactionBackgroundColor,
                         ContextCompat.getColor(context, android.R.color.transparent)
                     )
-                    else -> ColorDrawable(colorInputViewBackgroundValue.data)
+
+                    chatPaddingLeft = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatPaddingLeft,
+                        resources.getDimension(R.dimen.livelike_default_chat_cell_padding_left).toInt()
+                    )
+                    chatPaddingRight = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatPaddingRight,
+                        resources.getDimension(R.dimen.livelike_default_chat_cell_padding_right).toInt()
+                    )
+                    chatPaddingTop = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatPaddingTop,
+                        resources.getDimension(R.dimen.livelike_default_chat_cell_padding_top).toInt()
+                    )
+                    chatPaddingBottom = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatPaddingBottom,
+                        resources.getDimension(R.dimen.livelike_default_chat_cell_padding_bottom).toInt()
+                    )
+
+                    chatSendPaddingLeft = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatSendButtonPaddingLeft,
+                        dpToPx(13)
+                    )
+                    chatSendPaddingRight = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatSendButtonPaddingRight,
+                        dpToPx(13)
+                    )
+                    chatSendPaddingTop = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatSendButtonPaddingTop,
+                        dpToPx(0)
+                    )
+                    chatSendPaddingBottom = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatSendButtonPaddingBottom,
+                        dpToPx(0)
+                    )
+
+                    chatMarginLeft = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatMarginLeft,
+                        convertDpToPixel(8)
+                    )
+                    chatMarginRight = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatMarginRight,
+                        convertDpToPixel(8)
+                    )
+                    chatMarginTop =
+                        getDimensionPixelOffset(R.styleable.ChatView_chatMarginTop, convertDpToPixel(4))
+                    chatMarginBottom = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatMarginBottom,
+                        convertDpToPixel(4)
+                    )
+                    chatMarginBottom = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatMarginBottom,
+                        convertDpToPixel(4)
+                    )
                 }
 
-                chatAttribute.chatInputTextColor = getColor(
-                    R.styleable.ChatView_chatInputTextColor,
-                    ContextCompat.getColor(context, R.color.livelike_chat_input_text_color)
-                )
-                chatAttribute.chatInputHintTextColor = getColor(
-                    R.styleable.ChatView_chatInputTextHintColor,
-                    ContextCompat.getColor(context, R.color.livelike_chat_input_text_color)
-                )
 
-                chatAttribute.chatWidth = getLayoutDimension(
-                    R.styleable.ChatView_chatWidth,
-                    FrameLayout.LayoutParams.WRAP_CONTENT
-                )
-
-                chatAttribute.sendIconHeight = getLayoutDimension(
-                    R.styleable.ChatView_sendButtonHeight,
-                    dpToPx(40)
-                )
-                chatAttribute.sendIconWidth = getLayoutDimension(
-                    R.styleable.ChatView_sendButtonWidth,
-                    dpToPx(56)
-                )
-
-                chatAttribute.chatInputTextSize = getDimensionPixelSize(R.styleable.ChatView_chatInputTextSize,resources.getDimensionPixelSize(R.dimen.livelike_default_chat_input_text_size))
-                chatAttribute.chatReactionX = getDimensionPixelSize(R.styleable.ChatView_chatReactionXPosition,dpToPx(8))
-                chatAttribute.chatReactionY = getDimensionPixelSize(R.styleable.ChatView_chatReactionYPosition,dpToPx(40))
-                chatAttribute.chatReactionElevation = getDimensionPixelSize(R.styleable.ChatView_chatReactionElevation,dpToPx(0)).toFloat()
-                chatAttribute.chatReactionRadius = getDimensionPixelSize(R.styleable.ChatView_chatReactionRadius,dpToPx(0)).toFloat()
-                chatAttribute.chatReactionPadding = getDimensionPixelSize(R.styleable.ChatView_chatReactionPadding,dpToPx(6))
-                chatAttribute.chatAvatarHeight = getDimensionPixelSize(R.styleable.ChatView_chatAvatarHeight,dpToPx(32))
-                chatAttribute.chatAvatarWidth = getDimensionPixelSize(R.styleable.ChatView_chatAvatarWidth,dpToPx(32))
-                chatAttribute.chatAvatarRadius= getDimensionPixelSize(R.styleable.ChatView_chatAvatarRadius,dpToPx(0))
-                chatAttribute.chatAvatarMarginLeft= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginLeft,dpToPx(5))
-                chatAttribute.chatAvatarMarginRight= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginRight,dpToPx(3))
-                chatAttribute.chatAvatarMarginBottom= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginBottom,dpToPx(5))
-                chatAttribute.chatAvatarMarginTop= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginTop,dpToPx(0))
-
-
-                chatAttribute.chatReactionBackgroundColor = getColor(
-                    R.styleable.ChatView_chatReactionBackgroundColor,
-                    ContextCompat.getColor(context, android.R.color.transparent)
-                )
-
-                chatAttribute.chatPaddingLeft = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatPaddingLeft,
-                    resources.getDimension(R.dimen.livelike_default_chat_cell_padding_left).toInt()
-                )
-                chatAttribute.chatPaddingRight = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatPaddingRight,
-                    resources.getDimension(R.dimen.livelike_default_chat_cell_padding_right).toInt()
-                )
-                chatAttribute.chatPaddingTop = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatPaddingTop,
-                    resources.getDimension(R.dimen.livelike_default_chat_cell_padding_top).toInt()
-                )
-                chatAttribute.chatPaddingBottom = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatPaddingBottom,
-                    resources.getDimension(R.dimen.livelike_default_chat_cell_padding_bottom).toInt()
-                )
-
-                chatAttribute.chatSendPaddingLeft = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatSendButtonPaddingLeft,
-                    dpToPx(13)
-                )
-                chatAttribute.chatSendPaddingRight = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatSendButtonPaddingRight,
-                    dpToPx(13)
-                )
-                chatAttribute.chatSendPaddingTop = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatSendButtonPaddingTop,
-                    dpToPx(0)
-                )
-                chatAttribute.chatSendPaddingBottom = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatSendButtonPaddingBottom,
-                    dpToPx(0)
-                )
-
-                chatAttribute.chatMarginLeft = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatMarginLeft,
-                    convertDpToPixel(8)
-                )
-                chatAttribute.chatMarginRight = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatMarginRight,
-                    convertDpToPixel(8)
-                )
-                chatAttribute.chatMarginTop =
-                    getDimensionPixelOffset(R.styleable.ChatView_chatMarginTop, convertDpToPixel(4))
-                chatAttribute.chatMarginBottom = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatMarginBottom,
-                    convertDpToPixel(4)
-                )
-                chatAttribute.chatMarginBottom = getDimensionPixelOffset(
-                    R.styleable.ChatView_chatMarginBottom,
-                    convertDpToPixel(4)
-                )
 
             } finally {
                 recycle()
@@ -454,24 +485,34 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private fun initView(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.chat_view, this, true)
         user_profile_display_LL.visibility = if (displayUserProfile) View.VISIBLE else View.GONE
-        chat_view.background = chatAttribute.chatViewBackgroundRes
-        chatAttribute.chatDisplayBackgroundRes?.let {
-            chatdisplay.background = it
-        }
-        chat_input_background.background = chatAttribute.chatInputViewBackgroundRes
-        chat_input_border.background = chatAttribute.chatInputBackgroundRes
-        edittext_chat_message.setTextColor(chatAttribute.chatInputTextColor)
-        edittext_chat_message.setHintTextColor(chatAttribute.chatInputHintTextColor)
-        edittext_chat_message.setTextSize(TypedValue.COMPLEX_UNIT_PX,chatAttribute.chatInputTextSize.toFloat())
-        button_emoji.setImageDrawable(chatAttribute.chatInputDrawableRight)
+        chatAttribute.apply {
+            chat_view.background = chatViewBackgroundRes
+            chatDisplayBackgroundRes?.let {
+                chatdisplay.background = it
+            }
+            chat_input_background.background = chatInputViewBackgroundRes
+            chat_input_border.background = chatInputBackgroundRes
+            edittext_chat_message.setTextColor(chatInputTextColor)
+            edittext_chat_message.setHintTextColor(chatInputHintTextColor)
+            edittext_chat_message.setTextSize(TypedValue.COMPLEX_UNIT_PX,chatInputTextSize.toFloat())
+            button_emoji.setImageDrawable(chatStickerSendDrawable)
+            button_emoji.setColorFilter(sendStickerTintColor, android.graphics.PorterDuff.Mode.MULTIPLY)
+            button_emoji.visibility = when {
+                showStickerSend -> View.VISIBLE
+                else ->  View.GONE
+            }
 
-        val layoutParams=button_chat_send.layoutParams
-        layoutParams.width=chatAttribute.sendIconWidth
-        layoutParams.height=chatAttribute.sendIconHeight
-        button_chat_send.layoutParams=layoutParams
-        button_chat_send.setImageDrawable(chatAttribute.chatSendDrawable)
-        button_chat_send.background=chatAttribute.chatSendBackgroundDrawable
-        button_chat_send.setPadding(chatAttribute.chatSendPaddingLeft,chatAttribute.chatSendPaddingTop,chatAttribute.chatSendPaddingRight,chatAttribute.chatSendPaddingBottom)
+            val layoutParams=button_chat_send.layoutParams
+            layoutParams.width=sendIconWidth
+            layoutParams.height=sendIconHeight
+            button_chat_send.layoutParams=layoutParams
+            button_chat_send.setImageDrawable(chatSendDrawable)
+            button_chat_send.background=chatSendBackgroundDrawable
+            button_chat_send.setPadding(chatSendPaddingLeft,chatSendPaddingTop,chatSendPaddingRight,chatSendPaddingBottom)
+            button_chat_send.setColorFilter(sendImageTintColor, android.graphics.PorterDuff.Mode.MULTIPLY)
+
+
+        }
     }
 
     fun setSession(session: LiveLikeContentSession) {
@@ -482,7 +523,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         viewModel?.apply {
             uiScope.launch { chatAdapter.chatReactionRepository.preloadImages(context) }
-            chatAdapter.chatAttribute=chatAttribute
+            chatAdapter.chatViewThemeAttribute=chatAttribute
 
             setDataSource(chatAdapter)
             eventStream.subscribe(javaClass.simpleName) {

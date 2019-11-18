@@ -21,8 +21,11 @@
 
     <declare-styleable name="ChatView">
         <attr name="displayUserProfile" format="boolean" />
+        <attr name="showStickerSend" format="boolean" />
         <attr name="usernameColor" format="color"/>
         <attr name="otherUsernameColor" format="color"/>
+        <attr name="sendIconTintColor" format="color"/>
+        <attr name="stickerIconTintColor" format="color"/>
         <attr name="messageColor" format="color"/>
         <attr name="chatBubbleBackground" format="reference|color"/>
         <attr name="chatBackground" format="reference|color"/>
@@ -67,8 +70,9 @@
         <attr name="chatReactionRadius" format="dimension"/>
         <attr name="chatReactionBackgroundColor" format="color" />
         <attr name="chatReactionPadding" format="dimension" />
-        <attr name="chatInputDrawableRight" format="reference"/>
         <attr name="chatSendDrawable" format="reference"/>
+        <attr name="chatStickerSendDrawable" format="reference"/>
+        <attr name="userPicDrawable" format="reference"/>
         <attr name="chatSendBackground" format="reference|color"/>
         <attr name="showChatAvatarLogo" format="boolean"/>
         <attr name="chatAvatarCircle" format="boolean"/>

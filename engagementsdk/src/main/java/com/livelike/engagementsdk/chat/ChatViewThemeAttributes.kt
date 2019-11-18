@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import android.view.Gravity
 import com.livelike.engagementsdk.utils.AndroidResource
 
-class ChatAttributes {
+class ChatViewThemeAttributes {
      var chatPaddingLeft: Int=0
      var chatPaddingRight: Int=0
      var chatPaddingTop: Int=0
@@ -29,10 +29,13 @@ class ChatAttributes {
      var chatInputBackgroundRes: Drawable?=null
      var chatInputViewBackgroundRes: Drawable?=null
      var chatDisplayBackgroundRes: Drawable?=null
-     var chatInputDrawableRight: Drawable?=null
      var chatSendDrawable: Drawable?=null
+     var chatStickerSendDrawable: Drawable?=null
+     var chatUserPicDrawable: Drawable?=null
      var chatSendBackgroundDrawable: Drawable?=null
      var chatMessageColor: Int= Color.TRANSPARENT
+     var sendImageTintColor: Int= Color.WHITE
+     var sendStickerTintColor: Int= Color.WHITE
      var chatReactionBackgroundColor: Int=Color.TRANSPARENT
      var chatInputTextColor: Int=Color.TRANSPARENT
      var chatInputHintTextColor: Int=Color.TRANSPARENT
@@ -50,6 +53,7 @@ class ChatAttributes {
      var chatAvatarMarginTop:Int= AndroidResource.dpToPx(0)
      var chatAvatarRadius:Int= AndroidResource.dpToPx(20)
      var chatAvatarCircle:Boolean=false
+     var showStickerSend:Boolean=true
      var chatAvatarWidth:Int= AndroidResource.dpToPx(32)
      var chatAvatarHeight:Int= AndroidResource.dpToPx(32)
      var chatAvatarGravity:Int= Gravity.NO_GRAVITY
