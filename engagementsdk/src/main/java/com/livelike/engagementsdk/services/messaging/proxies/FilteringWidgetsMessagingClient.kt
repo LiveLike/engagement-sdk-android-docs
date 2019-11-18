@@ -15,7 +15,7 @@ internal class FilteringWidgetsMessagingClient(
 ) :
     MessagingClientProxy(upstream) {
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-        upstream.publishMessage(message, channel, timeSinceEpoch)
+        upstream.publishMessage(message,channel, timeSinceEpoch)
     }
 
     override fun stop() {

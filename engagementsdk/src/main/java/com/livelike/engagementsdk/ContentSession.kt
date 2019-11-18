@@ -52,6 +52,10 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
+    override fun setProfilePicUrl(url: String) {
+        userRepository.setProfilePicUrl(url)
+    }
+
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {

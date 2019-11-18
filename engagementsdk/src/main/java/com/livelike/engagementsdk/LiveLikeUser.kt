@@ -14,5 +14,6 @@ data class LiveLikeUser(
     var nickname: String,
     val accessToken: String,
     var isWidgetEnabled: Boolean,
-    var isChatEnabled: Boolean
+    var isChatEnabled: Boolean,
+    var userPic:String
 )

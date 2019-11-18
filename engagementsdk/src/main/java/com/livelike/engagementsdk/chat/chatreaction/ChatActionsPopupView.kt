@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.chat.chatreaction
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,8 @@ import android.widget.PopupWindow
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
+import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
+import kotlinx.android.synthetic.main.popup_chat_reaction.view.reaction_panel_interaction_box
 
 /**
  * Chat reactions and Chat moderation actions view that will popup when use long press chat
@@ -21,11 +24,22 @@ internal class ChatActionsPopupView(
     val chatReactionRepository: ChatReactionRepository,
     flagClick: View.OnClickListener,
     hideFloatinUi: () -> Unit,
-    isOwnMessage: Boolean
+    isOwnMessage: Boolean,
+    chatReactionBackground:Drawable?=ColorDrawable(Color.TRANSPARENT),
+    chatReactionElevation:Float=0f,
+    chatReactionRadius:Float=0f,
+    chatReactionBackgroundColor:Int=Color.TRANSPARENT,
+    chatReactionPadding:Int= AndroidResource.dpToPx(6)
 ) : PopupWindow(context) {
 
     init {
         contentView = LayoutInflater.from(context).inflate(R.layout.popup_chat_reaction, null)
+        contentView.chat_reaction_background_card.apply {
+            setCardBackgroundColor(chatReactionBackgroundColor)
+            cardElevation=chatReactionElevation
+            radius=chatReactionRadius
+        }
+        contentView.reaction_panel_interaction_box.setPadding(chatReactionPadding,chatReactionPadding,chatReactionPadding,chatReactionPadding)
         if (!isOwnMessage) {
         val moderationFlagView = contentView.findViewById<ImageView>(R.id.moderation_flag)
             moderationFlagView.visibility = View.VISIBLE

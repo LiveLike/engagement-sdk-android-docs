@@ -15,19 +15,21 @@ import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.nicknameText
+import kotlinx.android.synthetic.main.activity_main.themes_button
+import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
 class MainActivity : AppCompatActivity() {
 
-    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>)
+    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>,var theme:Int)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val channelManager = (application as LiveLikeApplication).channelManager
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class)
-        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class)
+        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class,R.style.AppTheme_NoActionBar)
+        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class,R.style.AppTheme_NoActionBar)
 
         layout_side_panel.setOnClickListener {
             startActivity(playerDetailIntent(player))
@@ -48,13 +50,40 @@ class MainActivity : AppCompatActivity() {
                 create()
             }.show()
         }
+        themes_button.setOnClickListener {
+            val channels = arrayListOf("Default","Turner")
+            AlertDialog.Builder(this).apply {
+                setTitle("Choose a theme!")
+                setItems(channels.toTypedArray()) { _, which ->
+                    themes_label.text = channels[which]
+                    player.theme=when(which){
+                        0-> R.style.AppTheme_NoActionBar
+                        1-> R.style.TurnerChatTheme
+                        else -> R.style.AppTheme_NoActionBar
+                    }
+                }
+                create()
+            }.show()
+        }
         events_label.text = channelManager.selectedChannel.name
 
-        getSharedPreferences("test-app", Context.MODE_PRIVATE)
-            .getString("UserNickname", "")
+        getSharedPreferences("test-app", Context.MODE_PRIVATE).apply {
+            getString("UserNickname", "")
             .let {
                 nicknameText.setText(it)
+//                edit().putString("userPic","http://lorempixel.com/200/200/?$it").apply()
             }
+            getString("userPic","").let {
+                if(it.isNullOrEmpty()){
+                    edit().putString("userPic","https://loremflickr.com/200/200?lock=${java.util.UUID.randomUUID()}").apply()
+                } else {
+                    edit().putString("userPic",it).apply()
+                }
+            }
+        }
+
+
+
 
         nicknameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -76,5 +105,7 @@ class MainActivity : AppCompatActivity() {
 }
 
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
-    return Intent(this, player.cls.java)
+    val intent= Intent(this, player.cls.java)
+    intent.putExtra("theme",player.theme)
+    return intent
 }

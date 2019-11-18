@@ -54,7 +54,7 @@ internal class SendbirdMessagingClient(
             it?.let { u ->
                 when (SendBird.getConnectionState()) {
                     SendBird.ConnectionState.CLOSED -> connectToSendbird(u)
-                    SendBird.ConnectionState.OPEN -> updateNickname(u.nickname) {}
+                    SendBird.ConnectionState.OPEN -> updateNicknameAndProfilePic(u.nickname,u.userPic) {}
                     else -> {}
                 }
             }
@@ -68,7 +68,7 @@ internal class SendbirdMessagingClient(
                 if (e != null || user == null) { // Error.
                     return
                 }
-                updateNickname(livelikeUser.nickname) {
+                updateNicknameAndProfilePic(livelikeUser.nickname,livelikeUser.userPic) {
                     if (resubscribe) {
                         subscribe(connectedChannels.map { it.url })
                     }
@@ -77,8 +77,8 @@ internal class SendbirdMessagingClient(
         })
     }
 
-    private fun updateNickname(nickname: String, callback: () -> Unit) {
-        SendBird.updateCurrentUserInfo(nickname, null,
+    private fun updateNicknameAndProfilePic(nickname: String, profileUrl:String, callback: () -> Unit) {
+        SendBird.updateCurrentUserInfo(nickname, profileUrl,
             UserInfoUpdateHandler { exception ->
                 if (exception != null) { // Error.
                     return@UserInfoUpdateHandler
@@ -95,13 +95,14 @@ internal class SendbirdMessagingClient(
         }
     }
 
-    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+    override fun publishMessage(message: String ,channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val messageTimestamp = gson.toJson(
             MessageData(
                 ZonedDateTime.ofInstant(
                     Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs), zoneUTC
-                )
+                ),
+                clientMessage.senderDisplayPic
             )
         )
         OpenChannel.getChannel(channel) { openChannel, _ ->
@@ -138,7 +139,8 @@ internal class SendbirdMessagingClient(
     }
 
     data class MessageData(
-        val program_date_time: ZonedDateTime
+        val program_date_time: ZonedDateTime,
+        val imageUrl:String
     )
 
     override fun subscribe(channels: List<String>) {
@@ -197,7 +199,7 @@ internal class SendbirdMessagingClient(
                             )
                         )
                         message as UserMessage
-                        messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname, message.message, message.data, message.messageId))
+                        messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname,message.sender.profileUrl ,message.message, message.data, message.messageId))
                         messageIdMap.addToMap(openChannel.url, message.messageId)
                     }
                 }
@@ -238,7 +240,7 @@ internal class SendbirdMessagingClient(
                                 clientMessage
                             )
 
-                            messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname, message.message, message.data, message.messageId))
+                            messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname,message.sender.profileUrl ,message.message, message.data, message.messageId))
                             messageIdMap.addToMap(openChannel.url, message.messageId)
                         }
                     }

@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.utils.gson
 
 private const val PREFERENCE_KEY_SESSION_ID = "SessionId"
 private const val PREFERENCE_KEY_NICKNAME = "Username"
+private const val PREFERENCE_KEY_USER_PIC = "Userpic"
 private const val PREFERENCE_KEY_POINTS_TUTORIAL = "PointsTutorial"
 private const val PREFERENCE_KEY_POINTS_TOTAL = "PointsTotal"
 private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
@@ -34,8 +35,9 @@ internal fun setNickname(nickname: String) {
 }
 
 internal fun getNickename(): String {
-    return getSharedPreferences().getString(PREFERENCE_KEY_NICKNAME, "") ?: ""
+    return getSharedPreferences().getString(PREFERENCE_KEY_USER_PIC, "") ?: ""
 }
+
 
 internal fun addWidgetPredictionVoted(id: String, optionId: String) {
     val editor = getSharedPreferences().edit()

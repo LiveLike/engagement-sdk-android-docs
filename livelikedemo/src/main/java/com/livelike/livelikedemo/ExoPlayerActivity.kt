@@ -68,8 +68,8 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        this.setTheme(intent.getIntExtra("theme",R.style.AppTheme_NoActionBar))
         setContentView(R.layout.activity_exo_player)
-
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
         player = (application as LiveLikeApplication).createPlayer(playerView)
@@ -207,13 +207,18 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             chat_view.setSession(session)
             widget_view.setSession(session)
-            getSharedPreferences("test-app", Context.MODE_PRIVATE)
-                .getString("UserNickname", "")
-                .let {
+            getSharedPreferences("test-app", Context.MODE_PRIVATE).apply {
+                getString("UserNickname", "").let {
                     if (!it.isNullOrEmpty()) {
                         (application as LiveLikeApplication).sdk.updateChatNickname(it)
                     }
                 }
+                getString("userPic","").let {
+                        if(it.isNotEmpty()){
+                            (application as LiveLikeApplication).sdk.updateChatUserPic(it)
+                        }
+                    }
+            }
 
             this.session = session
 

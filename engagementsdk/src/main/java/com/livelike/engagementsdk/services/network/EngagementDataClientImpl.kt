@@ -206,7 +206,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         responseData.extractStringOrEmpty("nickname"),
                         responseData.extractStringOrEmpty("access_token"),
                         responseData.extractBoolean("widgets_enabled"),
-                        responseData.extractBoolean("chat_enabled")
+                        responseData.extractBoolean("chat_enabled"),
+                        ""
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -241,7 +242,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         responseData.extractStringOrEmpty("nickname"),
                         accessToken,
                         responseData.extractBoolean("widgets_enabled"),
-                        responseData.extractBoolean("chat_enabled")
+                        responseData.extractBoolean("chat_enabled"),
+                        ""
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
