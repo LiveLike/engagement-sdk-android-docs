@@ -29,6 +29,7 @@ import java.util.Date
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
+import java.net.URLEncoder
 
 internal class SendbirdMessagingClient(
     private val subscribeKey: String,
@@ -97,18 +98,19 @@ internal class SendbirdMessagingClient(
 
     override fun publishMessage(message: String ,channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
-        val messageTimestamp = gson.toJson(
+        val messageMetadata = gson.toJson(
             MessageData(
                 ZonedDateTime.ofInstant(
                     Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs), zoneUTC
                 ),
-                clientMessage.senderDisplayPic
+                URLEncoder.encode(clientMessage.senderDisplayPic, "utf-8")
             )
         )
+        logError { messageMetadata }
         OpenChannel.getChannel(channel) { openChannel, _ ->
             openChannel?.sendUserMessage(
                 clientMessage.message,
-                messageTimestamp, null, null
+                messageMetadata, null, null
             ) { msg, e ->
                 e?.also {
                     logError { "Error sending the message: ${it.stackTrace}" }
@@ -140,7 +142,8 @@ internal class SendbirdMessagingClient(
 
     data class MessageData(
         val program_date_time: ZonedDateTime,
-        val imageUrl:String
+        val image_url:String,
+        val badge_image_url:String = ""
     )
 
     override fun subscribe(channels: List<String>) {

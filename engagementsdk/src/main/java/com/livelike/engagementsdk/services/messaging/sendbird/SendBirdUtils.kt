@@ -5,6 +5,7 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logWarn
 import com.sendbird.android.BaseChannel
 import com.sendbird.android.UserMessage
@@ -20,7 +21,7 @@ internal class SendBirdUtils {
             messageJson.addProperty("id", message.messageId)
 
             val imageUrl= getImageUrlFromMessageData(message.data)
-            messageJson.addProperty("imageUrl", imageUrl)
+            messageJson.addProperty("image_url", imageUrl)
 
 
             val timeMs = getTimeMsFromMessageData(message.data)
@@ -42,13 +43,13 @@ internal class SendBirdUtils {
             }
             return 0
         }
-        fun getImageUrlFromMessageData(messageDataJson: String): String {
+        private fun getImageUrlFromMessageData(messageDataJson: String): String {
             try {
                 return if (gson.fromJson(messageDataJson, SendbirdMessagingClient.MessageData::class.java) == null) {
                     ""
                 } else {
                     val messageData = gson.fromJson(messageDataJson, SendbirdMessagingClient.MessageData::class.java)
-                    messageData?.imageUrl?:""
+                    messageData?.image_url?:""
                 }
             } catch (e: Exception) {
                 // This is here because on some channels historic messages may have Date/Time format is not correct, or Json is off
