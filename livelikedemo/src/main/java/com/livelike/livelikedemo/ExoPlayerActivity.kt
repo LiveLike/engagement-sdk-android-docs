@@ -65,12 +65,12 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
     }
     val timer = Timer()
-    val chatChannelNames = listOf("qatest1", "qatest3", "test2")
+    val chatChannelNames = listOf("qatest1", "qatest3", "test2", "newRoom")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         messageCount = GsonBuilder().create().fromJson(
-            getSharedPreferences("test-app", Context.MODE_PRIVATE).getString("unread_count", null),
+            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString("unread_count", null),
             object : TypeToken<MutableMap<String, MutableSet<String>>>() {}.type) ?: mutableMapOf()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         this.setTheme(intent.getIntExtra("theme", R.style.AppTheme_NoActionBar))
@@ -191,7 +191,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 dialog)
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
-                    (application as LiveLikeApplication).sdk.createContentSession("50feace1-37d0-4bbb-afbb-3c3799188520")
+                    (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString())
             }
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
@@ -204,7 +204,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             messageCount[chatRoom]?.add(message.id.toString())
                         }
                     }
-                    getSharedPreferences("test-app", Context.MODE_PRIVATE).edit().putString("unread_count", GsonBuilder().create().toJson(messageCount)).apply()
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString("unread_count", GsonBuilder().create().toJson(messageCount)).apply()
                     messageCount.forEach {
                         logsPreview.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${logsPreview.text}"
                         fullLogs.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${fullLogs.text}"
@@ -215,7 +215,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             chat_view.setSession(session)
             widget_view.setSession(session)
-            getSharedPreferences("test-app", Context.MODE_PRIVATE).apply {
+            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
                 getString("UserNickname", "").let {
                     if (!it.isNullOrEmpty()) {
                         (application as LiveLikeApplication).sdk.updateChatNickname(it)

@@ -217,7 +217,6 @@ internal class SendbirdMessagingClient(
                 logError { err }
                 return@getPreviousAndNextMessagesByTimestamp
             }
-            Log.d("god1", chatRoomMemberships.toString())
             for (message: BaseMessage in messages.reversed()) {
                 if (messageIdMap[openChannel.url] == null || !messageIdMap[openChannel.url]!!.contains(
                         message.messageId
@@ -248,16 +247,20 @@ internal class SendbirdMessagingClient(
                         .apply()
                 }
             }
-            val msg = JsonObject().apply {
-                addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
-            }
-            listener?.onClientMessageEvent(
-                this@SendbirdMessagingClient, ClientMessage(
-                    msg, openChannel.url,
-                    EpochTime(0)
-                )
-            )
+            sendLoadingCompletedEvent(openChannel)
         }
+    }
+
+    private fun sendLoadingCompletedEvent(openChannel: OpenChannel) {
+        val msg = JsonObject().apply {
+            addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
+        }
+        listener?.onClientMessageEvent(
+            this@SendbirdMessagingClient, ClientMessage(
+                msg, openChannel.url,
+                EpochTime(0)
+            )
+        )
     }
 
     @Deprecated("use loadMessageHistoryByTimestamp()")

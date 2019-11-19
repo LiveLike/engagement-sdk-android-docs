@@ -282,7 +282,9 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
             mixpanel.registerSuperProperties(this)
             mixpanel.people.set(this)
         }
-        context.getSharedPreferences("analytics", Context.MODE_PRIVATE).apply {
+        val packageName = context.packageName ?: ""
+
+        context.getSharedPreferences("$packageName-analytics", Context.MODE_PRIVATE).apply {
             if (getBoolean("firstSdkOpen", true)) {
                 edit().putBoolean("firstSdkOpen", false).apply()
                 JSONObject().apply {
@@ -553,8 +555,8 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
 
         val interactionState =
             if (interactable != null && interactable) "Open To Interaction" else "Closed To Interaction"
-
-        context.getSharedPreferences("analytics", Context.MODE_PRIVATE).apply {
+        val packageName = context.packageName ?: ""
+        context.getSharedPreferences("$packageName-analytics", Context.MODE_PRIVATE).apply {
             val properties = JSONObject()
             properties.put("Widget Type", kind)
             properties.put("Widget ID", id)

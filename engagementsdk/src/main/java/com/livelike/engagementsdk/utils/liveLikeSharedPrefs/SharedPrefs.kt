@@ -22,7 +22,8 @@ internal fun initLiveLikeSharedPrefs(appContext: Context) {
 }
 
 internal fun getSharedPreferences(): SharedPreferences {
-    return mAppContext!!.getSharedPreferences("livelike-sdk", Context.MODE_PRIVATE)
+    val packageName = mAppContext?.packageName ?: ""
+    return mAppContext!!.getSharedPreferences("${packageName}-livelike-sdk", Context.MODE_PRIVATE)
 }
 
 internal fun getSessionId(): String {

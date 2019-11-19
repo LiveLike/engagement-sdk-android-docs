@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         }
         events_label.text = channelManager.selectedChannel.name
 
-        getSharedPreferences("test-app", Context.MODE_PRIVATE).apply {
+        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
             getString("UserNickname", "")
             .let {
                 nicknameText.setText(it)
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
 
         nicknameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                getSharedPreferences("test-app", Context.MODE_PRIVATE).edit().apply {
+                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().apply {
                     putString("UserNickname", p0?.trim().toString())
                 }.apply()
             }
