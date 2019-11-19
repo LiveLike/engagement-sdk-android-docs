@@ -68,7 +68,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        this.setTheme(intent.getIntExtra("theme",R.style.AppTheme_NoActionBar))
+        this.setTheme(intent.getIntExtra("theme", R.style.AppTheme_NoActionBar))
         setContentView(R.layout.activity_exo_player)
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
@@ -184,8 +184,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
                 dialog)
-            privateGroupChatsession = (application as LiveLikeApplication).sdk.createContentSession("50feace1-37d0-4bbb-afbb-3c3799188520")
-
+            if (privateGroupChatsession == null) {
+                privateGroupChatsession =
+                    (application as LiveLikeApplication).sdk.createContentSession("50feace1-37d0-4bbb-afbb-3c3799188520")
+            }
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
@@ -213,8 +215,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                         (application as LiveLikeApplication).sdk.updateChatNickname(it)
                     }
                 }
-                getString("userPic","").let {
-                        if(it.isNotEmpty()){
+                getString("userPic", "").let {
+                        if (it.isNotEmpty()) {
                             (application as LiveLikeApplication).sdk.updateChatUserPic(it)
                         }
                     }
@@ -248,6 +250,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         session?.widgetInterceptor = null
+        privateGroupChatsession?.pause()
         super.onPause()
     }
 
@@ -255,6 +258,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         channelManager?.let {
             selectChannel(it.selectedChannel)
         }
+        privateGroupChatsession?.resume()
         super.onResume()
     }
 
