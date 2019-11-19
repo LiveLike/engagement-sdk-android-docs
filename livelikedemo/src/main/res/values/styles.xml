@@ -22,6 +22,7 @@
         <item name="chatSendButtonPaddingBottom">6dp</item>
         <item name="sendIconTintColor">#45AA45</item>
         <item name="stickerIconTintColor">#A12A45</item>
+        <item name="chatBubbleMarginLeft">5dp</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">
@@ -54,17 +55,26 @@
         <item name="chatAvatarWidth">32dp</item>
         <item name="chatAvatarGravity">top</item>
         <item name="chatAvatarMarginLeft">16dp</item>
-        <item name="chatAvatarMarginRight">0dp</item>
+        <item name="chatAvatarMarginRight">5dp</item>
         <item name="chatAvatarMarginBottom">0dp</item>
         <item name="chatAvatarMarginTop">1dp</item>
         <item name="sendButtonHeight">38dp</item>
         <item name="sendButtonWidth">38dp</item>
+
         <item name="chatSendButtonPaddingLeft">2dp</item>
         <item name="chatSendButtonPaddingRight">2dp</item>
         <item name="chatSendButtonPaddingTop">0dp</item>
         <item name="chatSendButtonPaddingBottom">0dp</item>
+        <item name="userPicDrawable">@drawable/ic_user_pic</item>
         <item name="chatSendDrawable">@drawable/ic_send_turner</item>
         <item name="chatSendBackground">@drawable/send_chat_blue_circle_back</item>
+        <item name="chatBubblePaddingLeft">8dp</item>
+        <item name="chatBubblePaddingRight">8dp</item>
+        <item name="chatBubblePaddingTop">8dp</item>
+        <item name="chatBubblePaddingBottom">8dp</item>
+        <item name="chatReactionPadding">8dp</item>
+
+
     </style>
 
     <style name="TestAppLabel" parent="TextAppearance.AppCompat">

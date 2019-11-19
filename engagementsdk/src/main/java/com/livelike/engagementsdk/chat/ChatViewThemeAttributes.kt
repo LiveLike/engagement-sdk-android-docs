@@ -6,10 +6,10 @@ import android.view.Gravity
 import com.livelike.engagementsdk.utils.AndroidResource
 
 class ChatViewThemeAttributes {
-     var chatPaddingLeft: Int=0
-     var chatPaddingRight: Int=0
-     var chatPaddingTop: Int=0
-     var chatPaddingBottom: Int=0
+     var chatBubblePaddingLeft: Int=0
+     var chatBubblePaddingRight: Int=0
+     var chatBubblePaddingTop: Int=0
+     var chatBubblePaddingBottom: Int=0
      var chatSendPaddingLeft: Int=0
      var chatSendPaddingRight: Int=0
      var chatSendPaddingTop: Int=0
@@ -18,6 +18,10 @@ class ChatViewThemeAttributes {
      var chatMarginRight: Int=0
      var chatMarginTop: Int=0
      var chatMarginBottom: Int=0
+     var chatBubbleMarginLeft: Int=0
+     var chatBubbleMarginRight: Int=0
+     var chatBubbleMarginTop: Int=0
+     var chatBubbleMarginBottom: Int=0
      var chatWidth: Int=0
      var sendIconWidth: Int=0
      var sendIconHeight: Int=0
