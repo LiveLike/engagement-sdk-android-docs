@@ -11,6 +11,8 @@ import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -67,6 +69,9 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        messageCount = GsonBuilder().create().fromJson(
+            getSharedPreferences("test-app", Context.MODE_PRIVATE).getString("unread_count", null),
+            object : TypeToken<MutableMap<String, MutableList<String>>>() {}.type) ?: mutableMapOf()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         this.setTheme(intent.getIntExtra("theme", R.style.AppTheme_NoActionBar))
         setContentView(R.layout.activity_exo_player)
@@ -169,7 +174,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }.show()
     }
 
-    val messageCount: MutableMap<String, MutableList<String>> = mutableMapOf()
+    lateinit var messageCount: MutableMap<String, MutableList<String>>
 
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object : (String) -> Unit {
@@ -199,6 +204,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             messageCount[chatRoom]?.add(message.id.toString())
                         }
                     }
+                    getSharedPreferences("test-app", Context.MODE_PRIVATE).edit().putString("unread_count", GsonBuilder().create().toJson(messageCount)).apply()
                     messageCount.forEach {
                         logsPreview.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${logsPreview.text}"
                         fullLogs.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${fullLogs.text}"
