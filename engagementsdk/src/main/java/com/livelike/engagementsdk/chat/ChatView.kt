@@ -46,6 +46,9 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -68,9 +71,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -93,8 +93,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 
-
-    private val chatAttribute=ChatViewThemeAttributes()
+    private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
     private var session: LiveLikeContentSession? = null
@@ -128,10 +127,10 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             try {
                 displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
 
-               chatAttribute. apply {
-                    showChatAvatarLogo=getBoolean(R.styleable.ChatView_showChatAvatarLogo,false)
-                    chatAvatarCircle=getBoolean(R.styleable.ChatView_chatAvatarCircle,false)
-                    showStickerSend=getBoolean(R.styleable.ChatView_showStickerSend,true)
+                chatAttribute.apply {
+                    showChatAvatarLogo = getBoolean(R.styleable.ChatView_showChatAvatarLogo, false)
+                    chatAvatarCircle = getBoolean(R.styleable.ChatView_chatAvatarCircle, false)
+                    showStickerSend = getBoolean(R.styleable.ChatView_showStickerSend, true)
                     chatNickNameColor = getColor(
                         R.styleable.ChatView_usernameColor,
                         ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
@@ -148,16 +147,17 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         )
                     )
 
-                   sendImageTintColor = getColor(
-                       R.styleable.ChatView_sendIconTintColor,
-                       ContextCompat.getColor(context, android.R.color.white)
-                   )
-                   sendStickerTintColor = getColor(
-                       R.styleable.ChatView_stickerIconTintColor,
-                       ContextCompat.getColor(context, android.R.color.white)
-                   )
+                    sendImageTintColor = getColor(
+                        R.styleable.ChatView_sendIconTintColor,
+                        ContextCompat.getColor(context, android.R.color.white)
+                    )
+                    sendStickerTintColor = getColor(
+                        R.styleable.ChatView_stickerIconTintColor,
+                        ContextCompat.getColor(context, android.R.color.white)
+                    )
 
-                    chatAvatarGravity=getInt(R.styleable.ChatView_chatAvatarGravity,Gravity.NO_GRAVITY)
+                    chatAvatarGravity =
+                        getInt(R.styleable.ChatView_chatAvatarGravity, Gravity.NO_GRAVITY)
 
                     val colorBubbleValue = TypedValue()
                     getValue(R.styleable.ChatView_chatBubbleBackground, colorBubbleValue)
@@ -195,8 +195,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         else -> ColorDrawable(colorBackValue.data)
                     }
 
-
-
                     val sendDrawable = TypedValue()
                     getValue(R.styleable.ChatView_chatSendDrawable, sendDrawable)
 
@@ -214,40 +212,39 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         )
                     }
 
-                   val sendStickerDrawable = TypedValue()
-                   getValue(R.styleable.ChatView_chatStickerSendDrawable, sendDrawable)
+                    val sendStickerDrawable = TypedValue()
+                    getValue(R.styleable.ChatView_chatStickerSendDrawable, sendDrawable)
 
-                   chatStickerSendDrawable = when {
-                       sendStickerDrawable.type == TypedValue.TYPE_REFERENCE || sendStickerDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                           context,
-                           getResourceId(
-                               R.styleable.ChatView_chatStickerSendDrawable,
-                               R.drawable.ic_chat_emoji_ios_category_smileysandpeople
-                           )
-                       )
-                       else -> ContextCompat.getDrawable(
-                           context,
-                           R.drawable.ic_chat_emoji_ios_category_smileysandpeople
-                       )
-                   }
+                    chatStickerSendDrawable = when {
+                        sendStickerDrawable.type == TypedValue.TYPE_REFERENCE || sendStickerDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_chatStickerSendDrawable,
+                                R.drawable.ic_chat_emoji_ios_category_smileysandpeople
+                            )
+                        )
+                        else -> ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_chat_emoji_ios_category_smileysandpeople
+                        )
+                    }
 
+                    val userPicDrawable = TypedValue()
+                    getValue(R.styleable.ChatView_userPicDrawable, sendDrawable)
 
-                   val userPicDrawable = TypedValue()
-                   getValue(R.styleable.ChatView_userPicDrawable, sendDrawable)
-
-                   chatUserPicDrawable = when {
-                       userPicDrawable.type == TypedValue.TYPE_REFERENCE || userPicDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                           context,
-                           getResourceId(
-                               R.styleable.ChatView_userPicDrawable,
-                               R.drawable.ic_user_pic
-                           )
-                       )
-                       else -> ContextCompat.getDrawable(
-                           context,
-                           R.drawable.ic_user_pic
-                       )
-                   }
+                    chatUserPicDrawable = when {
+                        userPicDrawable.type == TypedValue.TYPE_REFERENCE || userPicDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_userPicDrawable,
+                                R.drawable.ic_user_pic
+                            )
+                        )
+                        else -> ContextCompat.getDrawable(
+                            context,
+                            R.drawable.ic_user_pic
+                        )
+                    }
 
                     val chatSendBackValue = TypedValue()
                     getValue(R.styleable.ChatView_chatSendBackground, chatSendBackValue)
@@ -267,7 +264,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         else -> ColorDrawable(chatSendBackValue.data)
                     }
 
-
                     val colorReactionValue = TypedValue()
                     getValue(R.styleable.ChatView_chatReactionBackground, colorReactionValue)
 
@@ -285,7 +281,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         )
                         else -> ColorDrawable(colorReactionValue.data)
                     }
-
 
                     val colorViewValue = TypedValue()
                     getValue(R.styleable.ChatView_chatViewBackground, colorViewValue)
@@ -378,20 +373,42 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         dpToPx(56)
                     )
 
-                    chatInputTextSize = getDimensionPixelSize(R.styleable.ChatView_chatInputTextSize,resources.getDimensionPixelSize(R.dimen.livelike_default_chat_input_text_size))
-                    chatReactionX = getDimensionPixelSize(R.styleable.ChatView_chatReactionXPosition,dpToPx(8))
-                    chatReactionY = getDimensionPixelSize(R.styleable.ChatView_chatReactionYPosition,dpToPx(40))
-                    chatReactionElevation = getDimensionPixelSize(R.styleable.ChatView_chatReactionElevation,dpToPx(0)).toFloat()
-                    chatReactionRadius = getDimensionPixelSize(R.styleable.ChatView_chatReactionRadius,dpToPx(0)).toFloat()
-                    chatReactionPadding = getDimensionPixelSize(R.styleable.ChatView_chatReactionPadding,dpToPx(6))
-                    chatAvatarHeight = getDimensionPixelSize(R.styleable.ChatView_chatAvatarHeight,dpToPx(32))
-                    chatAvatarWidth = getDimensionPixelSize(R.styleable.ChatView_chatAvatarWidth,dpToPx(32))
-                    chatAvatarRadius= getDimensionPixelSize(R.styleable.ChatView_chatAvatarRadius,dpToPx(0))
-                    chatAvatarMarginLeft= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginLeft,dpToPx(5))
-                    chatAvatarMarginRight= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginRight,dpToPx(3))
-                    chatAvatarMarginBottom= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginBottom,dpToPx(5))
-                    chatAvatarMarginTop= getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginTop,dpToPx(0))
-
+                    chatInputTextSize = getDimensionPixelSize(
+                        R.styleable.ChatView_chatInputTextSize,
+                        resources.getDimensionPixelSize(R.dimen.livelike_default_chat_input_text_size)
+                    )
+                    chatReactionX =
+                        getDimensionPixelSize(R.styleable.ChatView_chatReactionXPosition, dpToPx(8))
+                    chatReactionY = getDimensionPixelSize(
+                        R.styleable.ChatView_chatReactionYPosition,
+                        dpToPx(40)
+                    )
+                    chatReactionElevation = getDimensionPixelSize(
+                        R.styleable.ChatView_chatReactionElevation,
+                        dpToPx(0)
+                    ).toFloat()
+                    chatReactionRadius = getDimensionPixelSize(
+                        R.styleable.ChatView_chatReactionRadius,
+                        dpToPx(0)
+                    ).toFloat()
+                    chatReactionPadding =
+                        getDimensionPixelSize(R.styleable.ChatView_chatReactionPadding, dpToPx(6))
+                    chatAvatarHeight =
+                        getDimensionPixelSize(R.styleable.ChatView_chatAvatarHeight, dpToPx(32))
+                    chatAvatarWidth =
+                        getDimensionPixelSize(R.styleable.ChatView_chatAvatarWidth, dpToPx(32))
+                    chatAvatarRadius =
+                        getDimensionPixelSize(R.styleable.ChatView_chatAvatarRadius, dpToPx(0))
+                    chatAvatarMarginLeft =
+                        getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginLeft, dpToPx(5))
+                    chatAvatarMarginRight =
+                        getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginRight, dpToPx(3))
+                    chatAvatarMarginBottom = getDimensionPixelSize(
+                        R.styleable.ChatView_chatAvatarMarginBottom,
+                        dpToPx(5)
+                    )
+                    chatAvatarMarginTop =
+                        getDimensionPixelSize(R.styleable.ChatView_chatAvatarMarginTop, dpToPx(0))
 
                     chatReactionBackgroundColor = getColor(
                         R.styleable.ChatView_chatReactionBackgroundColor,
@@ -415,15 +432,18 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         resources.getDimension(R.dimen.livelike_default_chat_cell_padding_bottom).toInt()
                     )
 
-
-                   chatBubbleMarginLeft = getDimensionPixelOffset(
-                       R.styleable.ChatView_chatBubbleMarginLeft,0)
-                   chatBubbleMarginRight = getDimensionPixelOffset(
-                       R.styleable.ChatView_chatBubbleMarginRight,0)
-                   chatBubbleMarginTop = getDimensionPixelOffset(
-                       R.styleable.ChatView_chatBubbleMarginTop,0)
-                   chatBubbleMarginBottom = getDimensionPixelOffset(
-                       R.styleable.ChatView_chatBubbleMarginBottom,0)
+                    chatBubbleMarginLeft = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubbleMarginLeft, 0
+                    )
+                    chatBubbleMarginRight = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubbleMarginRight, 0
+                    )
+                    chatBubbleMarginTop = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubbleMarginTop, 0
+                    )
+                    chatBubbleMarginBottom = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubbleMarginBottom, 0
+                    )
 
                     chatSendPaddingLeft = getDimensionPixelOffset(
                         R.styleable.ChatView_chatSendButtonPaddingLeft,
@@ -451,7 +471,10 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         convertDpToPixel(8)
                     )
                     chatMarginTop =
-                        getDimensionPixelOffset(R.styleable.ChatView_chatMarginTop, convertDpToPixel(4))
+                        getDimensionPixelOffset(
+                            R.styleable.ChatView_chatMarginTop,
+                            convertDpToPixel(4)
+                        )
                     chatMarginBottom = getDimensionPixelOffset(
                         R.styleable.ChatView_chatMarginBottom,
                         convertDpToPixel(4)
@@ -461,9 +484,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         convertDpToPixel(4)
                     )
                 }
-
-
-
             } finally {
                 recycle()
             }
@@ -504,28 +524,41 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             chat_input_border.background = chatInputBackgroundRes
             edittext_chat_message.setTextColor(chatInputTextColor)
             edittext_chat_message.setHintTextColor(chatInputHintTextColor)
-            edittext_chat_message.setTextSize(TypedValue.COMPLEX_UNIT_PX,chatInputTextSize.toFloat())
+            edittext_chat_message.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX,
+                chatInputTextSize.toFloat()
+            )
             button_emoji.setImageDrawable(chatStickerSendDrawable)
-            button_emoji.setColorFilter(sendStickerTintColor, android.graphics.PorterDuff.Mode.MULTIPLY)
+            button_emoji.setColorFilter(
+                sendStickerTintColor,
+                android.graphics.PorterDuff.Mode.MULTIPLY
+            )
             button_emoji.visibility = when {
                 showStickerSend -> View.VISIBLE
-                else ->  View.GONE
+                else -> View.GONE
             }
 
-            val layoutParams=button_chat_send.layoutParams
-            layoutParams.width=sendIconWidth
-            layoutParams.height=sendIconHeight
-            button_chat_send.layoutParams=layoutParams
+            val layoutParams = button_chat_send.layoutParams
+            layoutParams.width = sendIconWidth
+            layoutParams.height = sendIconHeight
+            button_chat_send.layoutParams = layoutParams
             button_chat_send.setImageDrawable(chatSendDrawable)
-            button_chat_send.background=chatSendBackgroundDrawable
-            button_chat_send.setPadding(chatSendPaddingLeft,chatSendPaddingTop,chatSendPaddingRight,chatSendPaddingBottom)
-            button_chat_send.setColorFilter(sendImageTintColor, android.graphics.PorterDuff.Mode.MULTIPLY)
-
-
+            button_chat_send.background = chatSendBackgroundDrawable
+            button_chat_send.setPadding(
+                chatSendPaddingLeft,
+                chatSendPaddingTop,
+                chatSendPaddingRight,
+                chatSendPaddingBottom
+            )
+            button_chat_send.setColorFilter(
+                sendImageTintColor,
+                android.graphics.PorterDuff.Mode.MULTIPLY
+            )
         }
     }
 
     fun setSession(session: LiveLikeContentSession) {
+        if (this.session === session) return // setting it multiple times same view with same session have a weird behaviour will debug later.
         hideGamification()
         this.session = session.apply {
             analyticService.trackOrientationChange(resources.configuration.orientation == 1)
@@ -533,7 +566,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         viewModel?.apply {
             uiScope.launch { chatAdapter.chatReactionRepository.preloadImages(context) }
-            chatAdapter.chatViewThemeAttribute=chatAttribute
+            chatAdapter.chatViewThemeAttribute = chatAttribute
 
             setDataSource(chatAdapter)
             eventStream.subscribe(javaClass.simpleName) {
@@ -549,6 +582,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                             hideLoadingSpinner()
                             delay(100)
                             snapToLive()
+                        }
+                    }
+                    ChatViewModel.EVENT_LOADING_STARTED -> {
+                        uiScope.launch {
+                            showLoadingSpinner()
                         }
                     }
                 }
@@ -723,7 +761,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             v.getLocationOnScreen(scrcoords)
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
-            val outsideStickerKeyboardBound =  (v.bottom - sticker_keyboard.height)
+            val outsideStickerKeyboardBound = (v.bottom - sticker_keyboard.height)
             if (y < v.top || y > v.bottom || y < outsideStickerKeyboardBound) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
@@ -767,7 +805,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     if (endHasBeenReached) {
                         autoScroll = false
                     }
-
                 }
             })
         }

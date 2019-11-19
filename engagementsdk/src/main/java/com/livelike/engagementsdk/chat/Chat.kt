@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
-import okhttp3.MediaType
 import java.util.UUID
 
 interface ChatEventListener {

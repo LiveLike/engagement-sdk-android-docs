@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.services.messaging.sendbird
 
 import android.content.Context
+import android.util.Log
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
@@ -14,6 +15,8 @@ import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.PREFERENCE_CHAT_ROOM_MEMBERSHIP
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSharedPreferences
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.sendbird.android.BaseChannel
@@ -25,18 +28,19 @@ import com.sendbird.android.SendBird.UserInfoUpdateHandler
 import com.sendbird.android.SendBirdException
 import com.sendbird.android.User
 import com.sendbird.android.UserMessage
+import java.util.Calendar
 import java.util.Date
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
-import java.net.URLEncoder
 
 internal class SendbirdMessagingClient(
     private val subscribeKey: String,
     val context: Context,
     private val analyticsService: AnalyticsService,
     private val liveLikeUser: UserRepository,
-    private val messageListener: MessageListener
+    private val messageListener: MessageListener,
+    private val chatRoomMemberships: HashMap<String, Long?>? = null
 ) :
     MessagingClient, ChatClient {
     private val zoneUTC = ZoneId.of("UTC")
@@ -50,12 +54,26 @@ internal class SendbirdMessagingClient(
     private var connectedChannels: MutableList<OpenChannel> = mutableListOf()
     private val messageIdMap = mutableMapOf<String, MutableList<Long>>()
 
+    internal var activeChannelRoom: String? = null
+        set(value) {
+            field = value
+            value?.let {
+                val openChannel = connectedChannels.find { it.url == value }
+                if (openChannel != null) {
+                    loadMessageHistoryByTimestamp(openChannel)
+                    messageIdMap[field]?.clear()
+                } else {
+                    subscribe(listOf(value))
+                }
+            }
+        }
+
     init {
         liveLikeUser.currentUserStream.subscribe(javaClass) {
             it?.let { u ->
                 when (SendBird.getConnectionState()) {
                     SendBird.ConnectionState.CLOSED -> connectToSendbird(u)
-                    SendBird.ConnectionState.OPEN -> updateNicknameAndProfilePic(u.nickname,u.userPic) {}
+                    SendBird.ConnectionState.OPEN -> updateNicknameAndProfilePic(u.nickname, u.userPic) {}
                     else -> {}
                 }
             }
@@ -69,16 +87,18 @@ internal class SendbirdMessagingClient(
                 if (e != null || user == null) { // Error.
                     return
                 }
-                updateNicknameAndProfilePic(livelikeUser.nickname,livelikeUser.userPic) {
+                updateNicknameAndProfilePic(livelikeUser.nickname, livelikeUser.userPic) {
                     if (resubscribe) {
-                        subscribe(connectedChannels.map { it.url })
+                        val channels = connectedChannels.map { it.url }
+                        connectedChannels.clear() // as reconnecting all of them will add again in list
+                        subscribe(channels)
                     }
                 }
             }
         })
     }
 
-    private fun updateNicknameAndProfilePic(nickname: String, profileUrl:String, callback: () -> Unit) {
+    private fun updateNicknameAndProfilePic(nickname: String, profileUrl: String, callback: () -> Unit) {
         SendBird.updateCurrentUserInfo(nickname, profileUrl,
             UserInfoUpdateHandler { exception ->
                 if (exception != null) { // Error.
@@ -96,7 +116,7 @@ internal class SendbirdMessagingClient(
         }
     }
 
-    override fun publishMessage(message: String ,channel: String, timeSinceEpoch: EpochTime) {
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val messageMetadata = gson.toJson(
             MessageData(
@@ -141,8 +161,8 @@ internal class SendbirdMessagingClient(
 
     data class MessageData(
         val program_date_time: ZonedDateTime,
-        val image_url:String? = null,
-        val badge_image_url:String? = null
+        val image_url: String? = null,
+        val badge_image_url: String? = null
     )
 
     override fun subscribe(channels: List<String>) {
@@ -158,7 +178,7 @@ internal class SendbirdMessagingClient(
                         return@OpenChannelGetHandler
                     }
                     enterChannel(openChannel)
-                    loadMessageHistory(openChannel)
+                    loadMessageHistoryByTimestamp(openChannel)
                 })
         }
         }
@@ -177,10 +197,70 @@ internal class SendbirdMessagingClient(
                 return@createChannelWithOperatorUserIds
             }
             enterChannel(openChannel)
-            loadMessageHistory(openChannel)
+            loadMessageHistoryByTimestamp(openChannel)
         }
     }
 
+    private fun loadMessageHistoryByTimestamp(openChannel: OpenChannel) {
+
+        val isDisplayingChatForThisRoom = activeChannelRoom == null || activeChannelRoom == openChannel.url
+        val previousMessageCount = if (isDisplayingChatForThisRoom) CHAT_HISTORY_LIMIT else 0
+        openChannel.getPreviousAndNextMessagesByTimestamp(
+            chatRoomMemberships?.get(openChannel.url) ?: Calendar.getInstance().timeInMillis,
+            previousMessageCount,
+            CHAT_HISTORY_LIMIT,
+            true,
+            BaseChannel.MessageTypeFilter.ALL,
+            null) { messages, err ->
+
+            if (err != null) {
+                logError { err }
+                return@getPreviousAndNextMessagesByTimestamp
+            }
+            Log.d("god1", chatRoomMemberships.toString())
+            for (message: BaseMessage in messages.reversed()) {
+                if (messageIdMap[openChannel.url] == null || !messageIdMap[openChannel.url]!!.contains(
+                        message.messageId
+                    )
+                ) {
+                    listener?.onClientMessageEvent(
+                        this@SendbirdMessagingClient,
+                        SendBirdUtils.clientMessageFromBaseMessage(
+                            message as UserMessage,
+                            openChannel
+                        )
+                    )
+                    message as UserMessage
+                    messageListener.onNewMessage(
+                        message.channelUrl,
+                        LiveLikeChatMessage(
+                            message.sender.nickname,
+                            message.sender.profileUrl,
+                            message.message,
+                            message.data,
+                            message.messageId
+                        )
+                    )
+                    messageIdMap.addToMap(openChannel.url, message.messageId)
+                    chatRoomMemberships?.put(openChannel.url, Calendar.getInstance().timeInMillis)
+                    getSharedPreferences().edit()
+                        .putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships))
+                        .apply()
+                }
+            }
+            val msg = JsonObject().apply {
+                addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
+            }
+            listener?.onClientMessageEvent(
+                this@SendbirdMessagingClient, ClientMessage(
+                    msg, openChannel.url,
+                    EpochTime(0)
+                )
+            )
+        }
+    }
+
+    @Deprecated("use loadMessageHistoryByTimestamp()")
     private fun loadMessageHistory(openChannel: OpenChannel) {
         val prevMessageListQuery = openChannel.createPreviousMessageListQuery()
         prevMessageListQuery.load(
@@ -201,7 +281,7 @@ internal class SendbirdMessagingClient(
                             )
                         )
                         message as UserMessage
-                        messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname,message.sender.profileUrl ,message.message, message.data, message.messageId))
+                        messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname, message.sender.profileUrl, message.message, message.data, message.messageId))
                         messageIdMap.addToMap(openChannel.url, message.messageId)
                     }
                 }
@@ -241,7 +321,7 @@ internal class SendbirdMessagingClient(
                                 clientMessage
                             )
 
-                            messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname,message.sender.profileUrl ,message.message, message.data, message.messageId))
+                            messageListener.onNewMessage(message.channelUrl, LiveLikeChatMessage(message.sender.nickname, message.sender.profileUrl, message.message, message.data, message.messageId))
                             messageIdMap.addToMap(openChannel.url, message.messageId)
                         }
                     }

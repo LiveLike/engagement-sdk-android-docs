@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
@@ -26,14 +28,11 @@ import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
-
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -53,7 +52,7 @@ internal class ChatRecyclerAdapter(
 
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
-    lateinit var chatViewThemeAttribute:ChatViewThemeAttributes
+    lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
 
@@ -64,8 +63,6 @@ internal class ChatRecyclerAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindTo(getItem(position))
     }
-
-
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
@@ -104,7 +101,6 @@ internal class ChatRecyclerAdapter(
         init {
             v.chatMessage.setTextColor(chatViewThemeAttribute.chatMessageColor)
 
-
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
         }
@@ -142,8 +138,8 @@ internal class ChatRecyclerAdapter(
                 chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
                 chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
                 chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
-                chatReactionBackgroundColor=chatViewThemeAttribute.chatReactionBackgroundColor,
-                        chatReactionPadding=chatViewThemeAttribute.chatReactionPadding
+                chatReactionBackgroundColor = chatViewThemeAttribute.chatReactionBackgroundColor,
+                        chatReactionPadding = chatViewThemeAttribute.chatReactionPadding
             ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatViewThemeAttribute.chatReactionX, locationOnScreen.y - chatViewThemeAttribute.chatReactionY)
         }
 
@@ -195,7 +191,6 @@ internal class ChatRecyclerAdapter(
                         )
                         v.chatBubbleBackground.layoutParams = layoutParam1
 
-
                         v.img_chat_avatar.visibility =
                             when (showChatAvatarLogo) {
                                 true -> View.VISIBLE
@@ -224,7 +219,6 @@ internal class ChatRecyclerAdapter(
                             chatBubblePaddingRight,
                             chatBubblePaddingBottom
                         )
-
 
                         val options = RequestOptions()
                         if (chatAvatarCircle) {

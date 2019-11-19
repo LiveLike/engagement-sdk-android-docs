@@ -7,7 +7,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import com.livelike.engagementsdk.formatIso8601
 import com.livelike.engagementsdk.parseISODateTime
 import java.lang.reflect.Type
 import org.threeten.bp.ZoneId

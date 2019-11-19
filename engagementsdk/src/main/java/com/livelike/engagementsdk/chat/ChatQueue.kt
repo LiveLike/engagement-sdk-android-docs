@@ -6,16 +6,12 @@ import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logError
-import java.net.URL
-import java.net.URLDecoder
-import java.net.URLEncoder
 import java.util.Date
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
     ChatEventListener {
-    override fun publishMessage(message: String,channel: String, timeSinceEpoch: EpochTime) {
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
 
@@ -27,24 +23,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         upstream.resume()
     }
 
-    private val connectedChannels: MutableSet<String> = mutableSetOf()
-
     var renderer: ChatRenderer? = null
-
-    override fun subscribe(channels: List<String>) {
-        connectedChannels.addAll(channels)
-        upstream.subscribe(channels)
-    }
-
-    override fun unsubscribe(channels: List<String>) {
-        channels.forEach { connectedChannels.remove(it) }
-        super.unsubscribe(channels)
-    }
-
-    override fun unsubscribeAll() {
-        connectedChannels.clear()
-        super.unsubscribeAll()
-    }
 
     override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
         // If chat is paused we can queue here
@@ -55,10 +34,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         messageJson.addProperty("id", message.id)
         messageJson.addProperty("channel", message.channel)
         messageJson.addProperty("image_url", message.senderDisplayPic)
-        // send on all connected channels for now, implement channel selection down the road
-        connectedChannels.forEach {
-            publishMessage(gson.toJson(message), it, timeData)
-        }
+        publishMessage(gson.toJson(message), message.channel, timeData)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
