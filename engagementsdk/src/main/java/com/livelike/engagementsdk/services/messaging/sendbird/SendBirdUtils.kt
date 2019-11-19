@@ -19,9 +19,8 @@ internal class SendBirdUtils {
             messageJson.addProperty("sender_id", message.sender.userId)
             messageJson.addProperty("id", message.messageId)
 
-            val imageUrl= getImageUrlFromMessageData(message.data)
-            messageJson.addProperty("imageUrl", imageUrl)
-
+            val imageUrl = getImageUrlFromMessageData(message.data)
+            messageJson.addProperty("image_url", imageUrl)
 
             val timeMs = getTimeMsFromMessageData(message.data)
             val timeData = EpochTime(timeMs)
@@ -42,13 +41,13 @@ internal class SendBirdUtils {
             }
             return 0
         }
-        fun getImageUrlFromMessageData(messageDataJson: String): String {
+        private fun getImageUrlFromMessageData(messageDataJson: String): String {
             try {
                 return if (gson.fromJson(messageDataJson, SendbirdMessagingClient.MessageData::class.java) == null) {
                     ""
                 } else {
                     val messageData = gson.fromJson(messageDataJson, SendbirdMessagingClient.MessageData::class.java)
-                    messageData?.imageUrl?:""
+                    messageData?.image_url ?: ""
                 }
             } catch (e: Exception) {
                 // This is here because on some channels historic messages may have Date/Time format is not correct, or Json is off

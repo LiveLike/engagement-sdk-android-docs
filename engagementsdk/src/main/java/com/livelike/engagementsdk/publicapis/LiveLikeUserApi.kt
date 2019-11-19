@@ -8,4 +8,4 @@ data class LiveLikeUserApi(
     val accessToken: String
 )
 
-data class LiveLikeChatMessage(val nickname: String,val userPic:String, val message: String, val timestamp: String, val id : Long)
+data class LiveLikeChatMessage(val nickname: String, val userPic: String?, val message: String, val timestamp: String, val id: Long)

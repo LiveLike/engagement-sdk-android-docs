@@ -915,7 +915,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
-            currentUser?.userPic ?: "",
+            currentUser?.userPic,
             Date(timeData.timeSinceEpochInMs).toString(),
             isFromMe = true
         ).let {

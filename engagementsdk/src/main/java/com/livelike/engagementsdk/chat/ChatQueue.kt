@@ -33,7 +33,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         messageJson.addProperty("sender_id", message.senderId)
         messageJson.addProperty("id", message.id)
         messageJson.addProperty("channel", message.channel)
-        messageJson.addProperty("imageUrl", message.senderDisplayPic)
+        messageJson.addProperty("image_url", message.senderDisplayPic)
         publishMessage(gson.toJson(message), message.channel, timeData)
     }
 
@@ -45,7 +45,7 @@ internal class ChatQueue(upstream: MessagingClient) :
                     event.message.get("message").asString,
                     event.message.get("sender_id").asString,
                     event.message.get("sender").asString,
-                    event.message.get("imageUrl")?.asString ?: "",
+                    event.message.get("image_url")?.asString,
                     event.message.get("id").asString,
                     Date(event.timeStamp.timeSinceEpochInMs).toString()
                 )
