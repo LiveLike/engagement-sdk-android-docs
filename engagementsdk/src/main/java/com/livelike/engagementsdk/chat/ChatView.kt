@@ -415,21 +415,34 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         ContextCompat.getColor(context, android.R.color.transparent)
                     )
 
-                    chatPaddingLeft = getDimensionPixelOffset(
-                        R.styleable.ChatView_chatPaddingLeft,
+                    chatBubblePaddingLeft = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubblePaddingLeft,
                         resources.getDimension(R.dimen.livelike_default_chat_cell_padding_left).toInt()
                     )
-                    chatPaddingRight = getDimensionPixelOffset(
-                        R.styleable.ChatView_chatPaddingRight,
+                    chatBubblePaddingRight = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubblePaddingRight,
                         resources.getDimension(R.dimen.livelike_default_chat_cell_padding_right).toInt()
                     )
-                    chatPaddingTop = getDimensionPixelOffset(
-                        R.styleable.ChatView_chatPaddingTop,
+                    chatBubblePaddingTop = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubblePaddingTop,
                         resources.getDimension(R.dimen.livelike_default_chat_cell_padding_top).toInt()
                     )
-                    chatPaddingBottom = getDimensionPixelOffset(
-                        R.styleable.ChatView_chatPaddingBottom,
+                    chatBubblePaddingBottom = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubblePaddingBottom,
                         resources.getDimension(R.dimen.livelike_default_chat_cell_padding_bottom).toInt()
+                    )
+
+                    chatBubbleMarginLeft = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubbleMarginLeft, 0
+                    )
+                    chatBubbleMarginRight = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubbleMarginRight, 0
+                    )
+                    chatBubbleMarginTop = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubbleMarginTop, 0
+                    )
+                    chatBubbleMarginBottom = getDimensionPixelOffset(
+                        R.styleable.ChatView_chatBubbleMarginBottom, 0
                     )
 
                     chatSendPaddingLeft = getDimensionPixelOffset(

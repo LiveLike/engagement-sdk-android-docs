@@ -44,10 +44,10 @@
             <enum name="match_parent" value="-1" />
             <enum name="wrap_content" value="-2" />
         </attr>
-        <attr name="chatPaddingLeft" format="dimension"/>
-        <attr name="chatPaddingRight" format="dimension"/>
-        <attr name="chatPaddingTop" format="dimension"/>
-        <attr name="chatPaddingBottom" format="dimension"/>
+        <attr name="chatBubblePaddingLeft" format="dimension"/>
+        <attr name="chatBubblePaddingRight" format="dimension"/>
+        <attr name="chatBubblePaddingTop" format="dimension"/>
+        <attr name="chatBubblePaddingBottom" format="dimension"/>
         <attr name="chatSendButtonPaddingLeft" format="dimension"/>
         <attr name="chatSendButtonPaddingRight" format="dimension"/>
         <attr name="chatSendButtonPaddingTop" format="dimension"/>
@@ -56,6 +56,10 @@
         <attr name="chatMarginRight" format="dimension"/>
         <attr name="chatMarginTop" format="dimension"/>
         <attr name="chatMarginBottom" format="dimension"/>
+        <attr name="chatBubbleMarginLeft" format="dimension"/>
+        <attr name="chatBubbleMarginRight" format="dimension"/>
+        <attr name="chatBubbleMarginTop" format="dimension"/>
+        <attr name="chatBubbleMarginBottom" format="dimension"/>
         <attr name="chatInputBackground" format="reference|color" />
         <attr name="chatReactionBackground" format="reference|color" />
         <attr name="chatInputTextColor" format="color" />

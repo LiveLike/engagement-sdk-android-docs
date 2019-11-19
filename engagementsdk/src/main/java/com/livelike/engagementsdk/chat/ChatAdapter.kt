@@ -155,76 +155,115 @@ internal class ChatRecyclerAdapter(
             v.apply {
                 this@ViewHolder.message = message
                 message?.apply {
+                    chatViewThemeAttribute.apply {
+                        if (message.isFromMe) {
+                            chat_nickname.setTextColor(chatNickNameColor)
+                            chat_nickname.text = context.getString(
+                                R.string.chat_pre_nickname_me,
+                                message.senderDisplayName
+                            )
+                        } else {
+                            chat_nickname.setTextColor(chatOtherNickNameColor)
+                            chat_nickname.text = message.senderDisplayName
+                        }
 
-                    if (message.isFromMe) {
-                        chat_nickname.setTextColor(chatViewThemeAttribute.chatNickNameColor)
-                        chat_nickname.text = context.getString(R.string.chat_pre_nickname_me, message.senderDisplayName)
-                    } else {
-                        chat_nickname.setTextColor(chatViewThemeAttribute.chatOtherNickNameColor)
-                        chat_nickname.text = message.senderDisplayName
-                    }
+                        val layoutParam = FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        layoutParam.setMargins(
+                            chatMarginLeft,
+                            chatMarginTop,
+                            chatMarginRight,
+                            chatMarginBottom
+                        )
+                        v.chatBackground.layoutParams = layoutParam
 
-                    val layoutParam = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
-                    layoutParam.setMargins(chatViewThemeAttribute.chatMarginLeft, chatViewThemeAttribute.chatMarginTop, chatViewThemeAttribute.chatMarginRight, chatViewThemeAttribute.chatMarginBottom)
-                    v.chatBackground.layoutParams = layoutParam
+                        val layoutParam1 = LinearLayout.LayoutParams(
+                            chatWidth,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        layoutParam1.setMargins(
+                            chatBubbleMarginLeft,
+                            chatBubbleMarginTop,
+                            chatBubbleMarginRight,
+                            chatBubbleMarginBottom
+                        )
+                        v.chatBubbleBackground.layoutParams = layoutParam1
 
-                    val layoutParam1 = LinearLayout.LayoutParams(chatViewThemeAttribute.chatWidth, LinearLayout.LayoutParams.WRAP_CONTENT)
-                    // layoutParam1.setMargins(chatMarginLeft,chatMarginTop,chatMarginRight,chatMarginBottom)
-                    v.chatBubbleBackground.layoutParams = layoutParam1
+                        v.img_chat_avatar.visibility =
+                            when (showChatAvatarLogo) {
+                                true -> View.VISIBLE
+                                else -> View.GONE
+                            }
+                        val layoutParamAvatar = LinearLayout.LayoutParams(
+                            chatAvatarWidth,
+                            chatAvatarHeight
+                        )
+                        layoutParamAvatar.setMargins(
+                            chatAvatarMarginLeft,
+                            chatAvatarMarginTop,
+                            chatAvatarMarginRight,
+                            chatAvatarMarginBottom
+                        )
+                        layoutParamAvatar.gravity = chatAvatarGravity
+                        v.img_chat_avatar.layoutParams = layoutParamAvatar
 
-                    v.img_chat_avatar.visibility = when (chatViewThemeAttribute.showChatAvatarLogo) {
-                        true -> View.VISIBLE
-                        else -> View.GONE
-                    }
-                    val layoutParamAvatar = LinearLayout.LayoutParams(chatViewThemeAttribute.chatAvatarWidth, chatViewThemeAttribute.chatAvatarHeight)
-                    layoutParamAvatar.setMargins(chatViewThemeAttribute.chatAvatarMarginLeft, chatViewThemeAttribute.chatAvatarMarginTop, chatViewThemeAttribute.chatAvatarMarginRight, chatViewThemeAttribute.chatAvatarMarginBottom)
-                    layoutParamAvatar.gravity = chatViewThemeAttribute.chatAvatarGravity
-                    v.img_chat_avatar.layoutParams = layoutParamAvatar
+                        v.chatBackground.background = chatBackgroundRes
 
-                    v.chatBackground.background = chatViewThemeAttribute.chatBackgroundRes
+                        v.chatBubbleBackground.background =
+                            chatBubbleBackgroundRes
+                        v.chatBubbleBackground.setPadding(
+                            chatBubblePaddingLeft,
+                            chatBubblePaddingTop,
+                            chatBubblePaddingRight,
+                            chatBubblePaddingBottom
+                        )
 
-                    v.chatBubbleBackground.background = chatViewThemeAttribute.chatBubbleBackgroundRes
-                    v.chatBubbleBackground.setPadding(chatViewThemeAttribute.chatPaddingLeft, chatViewThemeAttribute.chatPaddingTop, chatViewThemeAttribute.chatPaddingRight, chatViewThemeAttribute.chatPaddingBottom)
+                        val options = RequestOptions()
+                        if (chatAvatarCircle) {
+                            options.optionalCircleCrop()
+                        }
+                        if (chatAvatarRadius > 0) {
+                            options.transform(
+                                CenterCrop(),
+                                RoundedCorners(chatAvatarRadius)
+                            )
+                        }
+                        message.senderDisplayPic.let {
+                            if (!it.isNullOrEmpty())
+                                Glide.with(context).load(it)
+                                    .apply(options)
+                                    .placeholder(chatUserPicDrawable)
+                                    .into(img_chat_avatar)
+                            else
+                                img_chat_avatar.setImageDrawable(chatUserPicDrawable)
+                        }
 
-                    val options = RequestOptions()
-                    if (chatViewThemeAttribute.chatAvatarCircle) {
-                        options.optionalCircleCrop()
-                    }
-                    if (chatViewThemeAttribute.chatAvatarRadius> 0) {
-                        options.transform(CenterCrop(), RoundedCorners(chatViewThemeAttribute.chatAvatarRadius))
-                    }
-                    message.senderDisplayPic.let {
-                        if (!it.isNullOrEmpty())
-                            Glide.with(context).load(it)
-                            .apply(options)
-                            .placeholder(chatViewThemeAttribute.chatUserPicDrawable)
-                            .into(img_chat_avatar)
-                        else
-                            img_chat_avatar.setImageDrawable(chatViewThemeAttribute.chatUserPicDrawable)
-                    }
+                        val spaceRemover = Pattern.compile("[\\s]")
+                        val inputNoString = spaceRemover.matcher(message.message)
+                            .replaceAll(Matcher.quoteReplacement(""))
+                        val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()
+                        val atLeastOneSticker = inputNoString.findStickers().find()
+                        val numberOfStickers = message.message.findStickers().countMatches()
 
-                    val spaceRemover = Pattern.compile("[\\s]")
-                    val inputNoString = spaceRemover.matcher(message.message).replaceAll(Matcher.quoteReplacement(""))
-                    val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()
-                    val atLeastOneSticker = inputNoString.findStickers().find()
-                    val numberOfStickers = message.message.findStickers().countMatches()
-
-                    when {
-                        (isOnlyStickers && numberOfStickers == 1) -> {
-                            val s = SpannableString(message.message)
-                            replaceWithStickers(s, context, stickerPackRepository, null, 200) {
+                        when {
+                            (isOnlyStickers && numberOfStickers == 1) -> {
+                                val s = SpannableString(message.message)
+                                replaceWithStickers(s, context, stickerPackRepository, null, 200) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
+                                }
                             }
-                        }
-                        atLeastOneSticker -> {
-                            val s = SpannableString(message.message)
-                            replaceWithStickers(s, context, stickerPackRepository, null) {
+                            atLeastOneSticker -> {
+                                val s = SpannableString(message.message)
+                                replaceWithStickers(s, context, stickerPackRepository, null) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
+                                }
                             }
+                            else -> chatMessage.text = message.message
                         }
-                        else -> chatMessage.text = message.message
                     }
                 }
             }
