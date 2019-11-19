@@ -71,7 +71,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         messageCount = GsonBuilder().create().fromJson(
             getSharedPreferences("test-app", Context.MODE_PRIVATE).getString("unread_count", null),
-            object : TypeToken<MutableMap<String, MutableList<String>>>() {}.type) ?: mutableMapOf()
+            object : TypeToken<MutableMap<String, MutableSet<String>>>() {}.type) ?: mutableMapOf()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         this.setTheme(intent.getIntExtra("theme", R.style.AppTheme_NoActionBar))
         setContentView(R.layout.activity_exo_player)
@@ -174,7 +174,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }.show()
     }
 
-    lateinit var messageCount: MutableMap<String, MutableList<String>>
+    lateinit var messageCount: MutableMap<String, MutableSet<String>>
 
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object : (String) -> Unit {
@@ -196,10 +196,10 @@ class ExoPlayerActivity : AppCompatActivity() {
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
-                        messageCount[chatRoom] = mutableListOf() // reset unread message count
+                        messageCount[chatRoom] = mutableSetOf() // reset unread message count
                     } else {
                         if (messageCount[chatRoom] == null) {
-                            messageCount[chatRoom] = mutableListOf(message.id.toString())
+                            messageCount[chatRoom] = mutableSetOf(message.id.toString())
                         } else {
                             messageCount[chatRoom]?.add(message.id.toString())
                         }
