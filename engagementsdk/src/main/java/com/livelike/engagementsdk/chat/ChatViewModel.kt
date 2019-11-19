@@ -37,7 +37,7 @@ internal class ChatViewModel(
             if (field) {
                 eventStream.onNext(EVENT_LOADING_COMPLETE)
             } else {
-                eventStream.onNext(EVENT_LOADING_COMPLETE)
+                eventStream.onNext(EVENT_LOADING_STARTED)
             }
         }
     private val dataClient: ChatDataClient = EngagementDataClientImpl()

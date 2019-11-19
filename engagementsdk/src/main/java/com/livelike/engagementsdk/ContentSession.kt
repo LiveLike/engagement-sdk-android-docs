@@ -159,7 +159,6 @@ internal class ContentSession(
             getSharedPreferences().edit()
                 .putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships))
                 .apply()
-//            chatClient?.subscribe(listOf(validChatChannelName))
         }
     }
 
