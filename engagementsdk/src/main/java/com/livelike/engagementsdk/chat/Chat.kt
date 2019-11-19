@@ -28,7 +28,7 @@ data class ChatMessage(
     var message: String,
     val senderId: String,
     val senderDisplayName: String,
-    val senderDisplayPic: String,
+    val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
     val timeStamp: String = "",
     var isFromMe: Boolean = false

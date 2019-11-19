@@ -51,7 +51,7 @@ internal class DateDeserializer : JsonDeserializer<ZonedDateTime> {
 internal class DateSerializer : JsonSerializer<ZonedDateTime> {
     override fun serialize(src: ZonedDateTime?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
         val obj = JsonObject()
-        obj.addProperty("program_date_time", src?.formatIso8601())
+        obj.addProperty("program_date_time", isoUTCDateTimeFormatter.format(src).toString())
         return obj.get("program_date_time")
     }
 }
