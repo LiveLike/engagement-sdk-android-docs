@@ -287,18 +287,17 @@ internal class ContentSession(
         privateGroupsChat: Boolean = false
     ) {
         analyticService.trackLastChatStatus(true)
+        chatClient = SendbirdMessagingClient(
+            config.sendBirdAppId,
+            applicationContext,
+            analyticService,
+            userRepository,
+            msgListener,
+            chatRoomMemberships
+        )
         if (privateGroupsChat) {
-            sendbirdMessagingClient = SendbirdMessagingClient(
-                config.sendBirdAppId,
-                applicationContext,
-                analyticService,
-                userRepository,
-                msgListener,
-                chatRoomMemberships
-            )
+            sendbirdMessagingClient = chatClient as SendbirdMessagingClient
         }
-        chatClient =
-            sendbirdMessagingClient
         if (syncEnabled)
             chatClient =
                 chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
