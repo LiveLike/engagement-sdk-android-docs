@@ -93,6 +93,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 
+    var closeKeyboardOnSend: Boolean = true
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
@@ -899,18 +900,21 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
-        val inputManager =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputManager.hideSoftInputFromWindow(
-            edittext_chat_message.windowToken,
-            0
-        )
+        if(closeKeyboardOnSend) {
+            val inputManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(
+                edittext_chat_message.windowToken,
+                0
+            )
 
-        if (reason != KeyboardHideReason.MESSAGE_SENT) {
-            session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
+
+            if (reason != KeyboardHideReason.MESSAGE_SENT) {
+                session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
+            }
+
+            setBackButtonInterceptor(this)
         }
-
-        setBackButtonInterceptor(this)
     }
 
     private fun sendMessageNow() {
