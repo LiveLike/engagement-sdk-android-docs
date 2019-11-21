@@ -358,6 +358,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 }
 
                 override fun onAnimationStart(animation: Animator?) {
+                    //Init Vote to get Vote Url
+                    viewModel?.sendVote(voteUrl)
                     txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
                     view_ripple_demo.isPressed = true
                     view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
@@ -416,6 +418,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         viewModel?.animationEggTimerProgress = t
                     }, {
                         // stop voting
+                        //Added in order to get the updated voteCount at the voting end
+                        viewModel?.pushVoteData(0)
                         stopVoting()
                         viewModel?.dismissWidget(it)
                     })
