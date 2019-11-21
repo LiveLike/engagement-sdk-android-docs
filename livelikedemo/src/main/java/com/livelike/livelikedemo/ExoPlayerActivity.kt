@@ -121,7 +121,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.show()
             }
         }
-        chat_view.closeKeyboardOnSend=false
+        chat_view.closeKeyboardOnSend(false)
         chat_room_button.setOnClickListener {
 
             AlertDialog.Builder(this).apply {

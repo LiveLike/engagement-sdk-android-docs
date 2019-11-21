@@ -80,6 +80,7 @@
         <attr name="chatSendBackground" format="reference|color"/>
         <attr name="showChatAvatarLogo" format="boolean"/>
         <attr name="chatAvatarCircle" format="boolean"/>
+        <attr name="closeKeyboardOnSend" format="boolean"/>
         <attr name="chatAvatarMarginRight" format="dimension"/>
         <attr name="chatAvatarMarginBottom" format="dimension"/>
         <attr name="chatAvatarMarginLeft" format="dimension"/>

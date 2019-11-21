@@ -93,9 +93,13 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 
-    var closeKeyboardOnSend: Boolean = true
+
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
+
+    fun closeKeyboardOnSend(closeKeyboardOnSend: Boolean) {
+        chatAttribute.closeKeyboardOnSend=closeKeyboardOnSend
+    }
 
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
@@ -132,6 +136,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     showChatAvatarLogo = getBoolean(R.styleable.ChatView_showChatAvatarLogo, false)
                     chatAvatarCircle = getBoolean(R.styleable.ChatView_chatAvatarCircle, false)
                     showStickerSend = getBoolean(R.styleable.ChatView_showStickerSend, true)
+                    closeKeyboardOnSend = getBoolean(R.styleable.ChatView_closeKeyboardOnSend, true)
                     chatNickNameColor = getColor(
                         R.styleable.ChatView_usernameColor,
                         ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
@@ -900,7 +905,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
-        if(closeKeyboardOnSend) {
+        if(chatAttribute.closeKeyboardOnSend) {
             val inputManager =
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputManager.hideSoftInputFromWindow(
