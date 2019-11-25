@@ -884,7 +884,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun showStickerKeyboard() {
         uiScope.launch {
-            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+            if(chatAttribute.closeKeyboardOnSend)
+                hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
             session?.analyticService?.trackKeyboardOpen(KeyboardType.STICKER)
             delay(200) // delay to make sure the keyboard is hidden
             findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
@@ -905,7 +906,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
-        if(chatAttribute.closeKeyboardOnSend) {
             val inputManager =
                 context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputManager.hideSoftInputFromWindow(
@@ -913,13 +913,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 0
             )
 
-
             if (reason != KeyboardHideReason.MESSAGE_SENT) {
                 session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
             }
 
             setBackButtonInterceptor(this)
-        }
     }
 
     private fun sendMessageNow() {
@@ -927,8 +925,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             // Do nothing if the message is blank or empty
             return
         }
-
-        hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+        if(chatAttribute.closeKeyboardOnSend)
+            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
         hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
