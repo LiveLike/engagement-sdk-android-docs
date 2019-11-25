@@ -21,22 +21,34 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 
-    <android.support.v7.widget.RecyclerView
-            android:id="@+id/chatdisplay"
-            app:stackFromEnd="true"
+    <FrameLayout
+            android:id="@+id/chatdisplayBack"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/chatInput"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="8dp">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/chatdisplay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:stackFromEnd="true"
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             tools:listitem="@layout/default_chat_cell"
             android:stackFromBottom="true"
             android:transcriptMode="normal"
             android:divider="@null"
-            android:dividerHeight="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/chatInput"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="8dp"/>
+            android:dividerHeight="0dp" />
+
+        <ImageView
+            android:id="@+id/chatdisplay_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <ProgressBar
             android:id="@+id/loadingSpinner"
@@ -62,7 +74,7 @@
         android:translationY="50dp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@id/chatInput"
-        app:layout_constraintEnd_toEndOf="@id/chatdisplay"
+        app:layout_constraintEnd_toEndOf="@id/chatdisplayBack"
         app:srcCompat="@drawable/ic_chat_ic_live"
         tools:alpha="1"
         android:scaleType="fitXY"

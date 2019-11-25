@@ -63,6 +63,7 @@ import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chat_view
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
@@ -483,6 +484,23 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         R.styleable.ChatView_chatMarginBottom,
                         convertDpToPixel(4)
                     )
+
+                    val chatEmptyBackgroundImageDrawable = TypedValue()
+                    getValue(R.styleable.ChatView_emptyChatBackgroundImage, chatEmptyBackgroundImageDrawable)
+
+                    chatEmptyBackgroundImage = when {
+                        chatEmptyBackgroundImageDrawable.type == TypedValue.TYPE_REFERENCE || chatEmptyBackgroundImageDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                            context,
+                            getResourceId(
+                                R.styleable.ChatView_emptyChatBackgroundImage,
+                                android.R.color.transparent
+                            )
+                        )
+                        else -> ContextCompat.getDrawable(
+                            context,
+                            android.R.color.transparent
+                        )
+                    }
                 }
             } finally {
                 recycle()
@@ -582,6 +600,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                             hideLoadingSpinner()
                             delay(100)
                             snapToLive()
+                            checkEmptyChat()
                         }
                     }
                     ChatViewModel.EVENT_LOADING_STARTED -> {
@@ -666,6 +685,17 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     KeyboardHideReason.CHANGING_KEYBOARD_TYPE
                 )
             }
+        }
+    }
+
+    private fun checkEmptyChat() {
+        chatdisplay_empty.visibility = View.GONE
+        chatAttribute.chatEmptyBackgroundImage?.let {
+            chatdisplay_empty.setImageDrawable(it)
+            if(viewModel?.chatAdapter?.itemCount==0)
+                chatdisplay_empty.visibility = View.VISIBLE
+            else
+                chatdisplay_empty.visibility = View.GONE
         }
     }
 

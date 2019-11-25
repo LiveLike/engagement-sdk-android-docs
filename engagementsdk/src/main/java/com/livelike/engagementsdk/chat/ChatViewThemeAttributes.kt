@@ -61,4 +61,5 @@ class ChatViewThemeAttributes {
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
+    var chatEmptyBackgroundImage:Drawable?=null
 }

@@ -73,7 +73,7 @@
         <item name="chatBubblePaddingTop">8dp</item>
         <item name="chatBubblePaddingBottom">8dp</item>
         <item name="chatReactionPadding">8dp</item>
-
+        <item name="emptyChatBackgroundImage">@drawable/ic_user_pic</item>
 
     </style>
 
