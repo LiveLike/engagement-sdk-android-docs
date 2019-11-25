@@ -31,6 +31,7 @@ import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
@@ -134,7 +135,10 @@ internal class QuizViewModel(
         }
     }
 
-    fun startDismissTimout(timeout: String) {
+    fun startDismissTimout(
+        timeout: String,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes
+    ) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
             uiScope.launch {
@@ -143,7 +147,7 @@ internal class QuizViewModel(
                 adapter?.selectionLocked = true
                 vote()
                 delay(500)
-                resultsState()
+                resultsState(widgetViewThemeAttributes)
             }
         }
     }
@@ -163,7 +167,7 @@ internal class QuizViewModel(
         viewModelJob.cancel()
     }
 
-    private fun resultsState() {
+    private fun resultsState(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
@@ -171,7 +175,7 @@ internal class QuizViewModel(
         }
 
         val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
-        val rootPath = if (isUserCorrect) "correctAnswer" else "wrongAnswer"
+        val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetQuizCorrectAnimation else widgetViewThemeAttributes.widgetQuizInCorrectAnimation
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
 
         adapter?.selectionLocked = true

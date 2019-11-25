@@ -18,6 +18,10 @@
     <item name="livelike_chat_nickname_font"
         type="font">@font/roboto_bold</item>
 
+    <declare-styleable name="WidgetView">
+        <attr name="quizCorrect" format="string"/>
+        <attr name="quizInCorrect" format="string"/>
+    </declare-styleable>
 
     <declare-styleable name="ChatView">
         <attr name="displayUserProfile" format="boolean" />
