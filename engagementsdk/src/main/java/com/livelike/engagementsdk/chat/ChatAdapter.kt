@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat
 
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
@@ -10,6 +9,12 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
@@ -19,14 +24,15 @@ import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
-import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
+import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
+import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -43,7 +49,12 @@ internal class ChatRecyclerAdapter(
     private val reporter: (ChatMessage) -> Unit,
     private val stickerPackRepository: StickerPackRepository,
     val chatReactionRepository: ChatReactionRepository
+
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
+
+    lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
+
+    internal var isPublicChat: Boolean = true
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
@@ -78,7 +89,8 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(p0: View?): Boolean {
-            showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false)
+            if (isPublicChat)
+                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false)
             return true
         }
 
@@ -87,6 +99,8 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
+            v.chatMessage.setTextColor(chatViewThemeAttribute.chatMessageColor)
+
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
         }
@@ -120,15 +134,20 @@ internal class ChatRecyclerAdapter(
                     }
                 },
                 ::hideFloatingUI,
-                isOwnMessage
-            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + AndroidResource.dpToPx(8), locationOnScreen.y - AndroidResource.dpToPx(40))
+                isOwnMessage,
+                chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
+                chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
+                chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
+                chatReactionBackgroundColor = chatViewThemeAttribute.chatReactionBackgroundColor,
+                        chatReactionPadding = chatViewThemeAttribute.chatReactionPadding
+            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatViewThemeAttribute.chatReactionX, locationOnScreen.y - chatViewThemeAttribute.chatReactionY)
         }
 
         private fun hideFloatingUI() {
             v.apply {
                 chatBackground.alpha = 1f
             }
-    }
+        }
 
         private fun setMessage(
             message: ChatMessage?
@@ -136,45 +155,115 @@ internal class ChatRecyclerAdapter(
             v.apply {
                 this@ViewHolder.message = message
                 message?.apply {
-                    if (message.isFromMe) {
-                        chat_nickname.setTextColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.livelike_openChatNicknameMe
+                    chatViewThemeAttribute.apply {
+                        if (message.isFromMe) {
+                            chat_nickname.setTextColor(chatNickNameColor)
+                            chat_nickname.text = context.getString(
+                                R.string.chat_pre_nickname_me,
+                                message.senderDisplayName
                             )
-                        )
-                        chat_nickname.text = context.getString(R.string.chat_pre_nickname_me, message.senderDisplayName)
-                    } else {
-                        chat_nickname.setTextColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.livelike_openChatNicknameOther
-                            )
-                        )
-                        chat_nickname.text = message.senderDisplayName
-                    }
-                    val spaceRemover = Pattern.compile("[\\s]")
-                    val inputNoString = spaceRemover.matcher(message.message).replaceAll(Matcher.quoteReplacement(""))
-                    val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()
-                    val atLeastOneSticker = inputNoString.findStickers().find()
-                    val numberOfStickers = message.message.findStickers().countMatches()
+                        } else {
+                            chat_nickname.setTextColor(chatOtherNickNameColor)
+                            chat_nickname.text = message.senderDisplayName
+                        }
 
-                    when {
-                        (isOnlyStickers && numberOfStickers == 1) -> {
-                            val s = SpannableString(message.message)
-                            replaceWithStickers(s, context, stickerPackRepository, null, 200) {
+                        val layoutParam = FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        layoutParam.setMargins(
+                            chatMarginLeft,
+                            chatMarginTop,
+                            chatMarginRight,
+                            chatMarginBottom
+                        )
+                        v.chatBackground.layoutParams = layoutParam
+
+                        val layoutParam1 = LinearLayout.LayoutParams(
+                            chatWidth,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        layoutParam1.setMargins(
+                            chatBubbleMarginLeft,
+                            chatBubbleMarginTop,
+                            chatBubbleMarginRight,
+                            chatBubbleMarginBottom
+                        )
+                        v.chatBubbleBackground.layoutParams = layoutParam1
+
+                        v.img_chat_avatar.visibility =
+                            when (showChatAvatarLogo) {
+                                true -> View.VISIBLE
+                                else -> View.GONE
+                            }
+                        val layoutParamAvatar = LinearLayout.LayoutParams(
+                            chatAvatarWidth,
+                            chatAvatarHeight
+                        )
+                        layoutParamAvatar.setMargins(
+                            chatAvatarMarginLeft,
+                            chatAvatarMarginTop,
+                            chatAvatarMarginRight,
+                            chatAvatarMarginBottom
+                        )
+                        layoutParamAvatar.gravity = chatAvatarGravity
+                        v.img_chat_avatar.layoutParams = layoutParamAvatar
+
+                        v.chatBackground.background = chatBackgroundRes
+
+                        v.chatBubbleBackground.background =
+                            chatBubbleBackgroundRes
+                        v.chatBubbleBackground.setPadding(
+                            chatBubblePaddingLeft,
+                            chatBubblePaddingTop,
+                            chatBubblePaddingRight,
+                            chatBubblePaddingBottom
+                        )
+
+                        val options = RequestOptions()
+                        if (chatAvatarCircle) {
+                            options.optionalCircleCrop()
+                        }
+                        if (chatAvatarRadius > 0) {
+                            options.transform(
+                                CenterCrop(),
+                                RoundedCorners(chatAvatarRadius)
+                            )
+                        }
+                        message.senderDisplayPic.let {
+                            if (!it.isNullOrEmpty())
+                                Glide.with(context).load(it)
+                                    .apply(options)
+                                    .placeholder(chatUserPicDrawable)
+                                    .into(img_chat_avatar)
+                            else
+                                img_chat_avatar.setImageDrawable(chatUserPicDrawable)
+                        }
+
+                        val spaceRemover = Pattern.compile("[\\s]")
+                        val inputNoString = spaceRemover.matcher(message.message)
+                            .replaceAll(Matcher.quoteReplacement(""))
+                        val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()
+                        val atLeastOneSticker = inputNoString.findStickers().find()
+                        val numberOfStickers = message.message.findStickers().countMatches()
+
+                        when {
+                            (isOnlyStickers && numberOfStickers == 1) -> {
+                                val s = SpannableString(message.message)
+                                replaceWithStickers(s, context, stickerPackRepository, null, 200) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
+                                }
                             }
-                        }
-                        atLeastOneSticker -> {
-                            val s = SpannableString(message.message)
-                            replaceWithStickers(s, context, stickerPackRepository, null) {
+                            atLeastOneSticker -> {
+                                val s = SpannableString(message.message)
+                                replaceWithStickers(s, context, stickerPackRepository, null) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
+                                }
                             }
+                            else -> chatMessage.text = message.message
                         }
-                        else -> chatMessage.text = message.message
                     }
                 }
             }

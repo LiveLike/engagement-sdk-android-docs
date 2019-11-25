@@ -7,20 +7,23 @@ import com.livelike.engagementsdk.utils.gson
 
 private const val PREFERENCE_KEY_SESSION_ID = "SessionId"
 private const val PREFERENCE_KEY_NICKNAME = "Username"
+private const val PREFERENCE_KEY_USER_PIC = "Userpic"
 private const val PREFERENCE_KEY_POINTS_TUTORIAL = "PointsTutorial"
 private const val PREFERENCE_KEY_POINTS_TOTAL = "PointsTotal"
 private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
 private const val BLOCKED_USERS = "blocked-users"
 private const val RECENT_STICKERS = "recent-stickers"
 private const val RECENT_STICKERS_DELIMITER = "~~~~"
+internal const val PREFERENCE_CHAT_ROOM_MEMBERSHIP = "chat-room-membership"
 private var mAppContext: Context? = null
 
 internal fun initLiveLikeSharedPrefs(appContext: Context) {
     mAppContext = appContext
 }
 
-private fun getSharedPreferences(): SharedPreferences {
-    return mAppContext!!.getSharedPreferences("livelike-sdk", Context.MODE_PRIVATE)
+internal fun getSharedPreferences(): SharedPreferences {
+    val packageName = mAppContext?.packageName ?: ""
+    return mAppContext!!.getSharedPreferences("$packageName-livelike-sdk", Context.MODE_PRIVATE)
 }
 
 internal fun getSessionId(): String {
@@ -33,7 +36,7 @@ internal fun setNickname(nickname: String) {
 }
 
 internal fun getNickename(): String {
-    return getSharedPreferences().getString(PREFERENCE_KEY_NICKNAME, "") ?: ""
+    return getSharedPreferences().getString(PREFERENCE_KEY_USER_PIC, "") ?: ""
 }
 
 internal fun addWidgetPredictionVoted(id: String, optionId: String) {
@@ -93,12 +96,12 @@ internal fun pointTutorialSeen() {
 
 internal fun addRecentSticker(sticker: Sticker) {
     val editor = getSharedPreferences().edit()
-    val stickerSet: MutableSet<String> = HashSet(getSharedPreferences().getStringSet(RECENT_STICKERS+sticker.programId, setOf()) ?: setOf()).toMutableSet() // The data must be copied to a new array, see doc https://developer.android.com/reference/android/content/SharedPreferences.html#getStringSet(java.lang.String,%20java.util.Set%3Cjava.lang.String%3E)
+    val stickerSet: MutableSet<String> = HashSet(getSharedPreferences().getStringSet(RECENT_STICKERS + sticker.programId, setOf()) ?: setOf()).toMutableSet() // The data must be copied to a new array, see doc https://developer.android.com/reference/android/content/SharedPreferences.html#getStringSet(java.lang.String,%20java.util.Set%3Cjava.lang.String%3E)
     stickerSet.add(sticker.file + RECENT_STICKERS_DELIMITER + sticker.shortcode)
-    editor.putStringSet(RECENT_STICKERS+sticker.programId, stickerSet)?.apply()
+    editor.putStringSet(RECENT_STICKERS + sticker.programId, stickerSet)?.apply()
 }
 
 internal fun getRecentStickers(programId: String): List<Sticker> {
-    val stickerSet: Set<String> = getSharedPreferences().getStringSet(RECENT_STICKERS+programId, setOf()) ?: setOf()
+    val stickerSet: Set<String> = getSharedPreferences().getStringSet(RECENT_STICKERS + programId, setOf()) ?: setOf()
     return stickerSet.map { Sticker(it.split(RECENT_STICKERS_DELIMITER)[0], it.split(RECENT_STICKERS_DELIMITER)[1]) }
 }

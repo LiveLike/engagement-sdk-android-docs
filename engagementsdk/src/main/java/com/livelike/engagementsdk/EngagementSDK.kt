@@ -68,6 +68,12 @@ class EngagementSDK(
         }
     }
 
+    override fun updateChatUserPic(url: String) {
+        sdkScope.launch {
+            userRepository.setProfilePicUrl(url)
+        }
+    }
+
     /**
      *  Creates a content session without sync.
      *  @param programId Backend generated unique identifier for current program

@@ -12,6 +12,7 @@
     <string name="events_btn_label">Events</string>
     <string name="layout_label">LAYOUT</string>
     <string name="default_channel_label">No Event Channel Selected</string>
+    <string name="default_theme_label">Default Theme</string>
     <string name="layout_side_content_description">layout side</string>
     <string name="layout_overlay_content_description">layout overlay</string>
     <string name="select_event">SELECT EVENT</string>
@@ -45,4 +46,5 @@
     <string name="longChatMessage">This is a very long message which demonstrates that chat views will handle
         150 characters. The number of characters in this message are 150.
     </string>
+    <string name="theme_btn_label">Themes</string>
 </resources>

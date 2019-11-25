@@ -23,24 +23,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         upstream.resume()
     }
 
-    private val connectedChannels: MutableList<String> = mutableListOf()
-
     var renderer: ChatRenderer? = null
-
-    override fun subscribe(channels: List<String>) {
-        connectedChannels.addAll(channels)
-        upstream.subscribe(channels)
-    }
-
-    override fun unsubscribe(channels: List<String>) {
-        channels.forEach { connectedChannels.remove(it) }
-        super.unsubscribe(channels)
-    }
-
-    override fun unsubscribeAll() {
-        connectedChannels.clear()
-        super.unsubscribeAll()
-    }
 
     override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
         // If chat is paused we can queue here
@@ -50,10 +33,8 @@ internal class ChatQueue(upstream: MessagingClient) :
         messageJson.addProperty("sender_id", message.senderId)
         messageJson.addProperty("id", message.id)
         messageJson.addProperty("channel", message.channel)
-        // send on all connected channels for now, implement channel selection down the road
-        connectedChannels.forEach {
-            publishMessage(gson.toJson(message), it, timeData)
-        }
+        messageJson.addProperty("image_url", message.senderDisplayPic)
+        publishMessage(gson.toJson(message), message.channel, timeData)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
@@ -64,6 +45,7 @@ internal class ChatQueue(upstream: MessagingClient) :
                     event.message.get("message").asString,
                     event.message.get("sender_id").asString,
                     event.message.get("sender").asString,
+                    event.message.get("image_url")?.asString,
                     event.message.get("id").asString,
                     Date(event.timeStamp.timeSinceEpochInMs).toString()
                 )

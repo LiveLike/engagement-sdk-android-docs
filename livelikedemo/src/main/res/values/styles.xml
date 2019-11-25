@@ -6,12 +6,75 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="displayUserProfile">true</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
+        <item name="displayUserProfile">true</item>
+        <item name="showChatAvatarLogo">true</item>
+        <item name="chatAvatarCircle">true</item>
+        <item name="chatSendButtonPaddingLeft">10dp</item>
+        <item name="chatSendButtonPaddingRight">10dp</item>
+        <item name="chatSendButtonPaddingTop">6dp</item>
+        <item name="chatSendButtonPaddingBottom">6dp</item>
+        <item name="sendIconTintColor">#45AA45</item>
+        <item name="stickerIconTintColor">#A12A45</item>
+        <item name="chatBubbleMarginLeft">5dp</item>
+    </style>
+
+    <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">
+        <item name="displayUserProfile">true</item>
+        <item name="chatWidth">match_parent</item>
+        <item name="chatBubbleBackground">#FFF</item>
+        <item name="chatBackground">#FFF</item>
+        <item name="usernameColor">#000</item>
+        <item name="otherUsernameColor">#000</item>
+        <item name="messageColor">#5f5f5f</item>
+        <item name="chatInputViewBackground">#FFF</item>
+        <item name="chatDisplayBackground">#efeff4</item>
+        <item name="chatViewBackground">#FFF</item>
+        <item name="chatInputTextColor">#8e8e93</item>
+        <item name="chatInputTextSize">15sp</item>
+        <item name="chatInputTextHintColor">#8e8e93</item>
+        <item name="chatMarginBottom">3dp</item>
+        <item name="chatMarginTop">0dp</item>
+        <item name="chatMarginLeft">0dp</item>
+        <item name="chatMarginRight">0dp</item>
+        <item name="chatReactionXPosition">120dp</item>
+        <item name="chatReactionYPosition">25dp</item>
+        <item name="chatReactionElevation">6dp</item>
+        <item name="chatReactionRadius">20dp</item>
+        <item name="chatReactionBackgroundColor">@android:color/white</item>
+        <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
+        <item name="showChatAvatarLogo">true</item>
+        <item name="chatAvatarCircle">false</item>
+        <item name="chatAvatarHeight">36dp</item>
+        <item name="chatAvatarWidth">32dp</item>
+        <item name="chatAvatarGravity">top</item>
+        <item name="chatAvatarMarginLeft">16dp</item>
+        <item name="chatAvatarMarginRight">5dp</item>
+        <item name="chatAvatarMarginBottom">0dp</item>
+        <item name="chatAvatarMarginTop">1dp</item>
+        <item name="sendButtonHeight">38dp</item>
+        <item name="sendButtonWidth">38dp</item>
+
+        <item name="chatSendButtonPaddingLeft">2dp</item>
+        <item name="chatSendButtonPaddingRight">2dp</item>
+        <item name="chatSendButtonPaddingTop">0dp</item>
+        <item name="chatSendButtonPaddingBottom">0dp</item>
+        <item name="userPicDrawable">@drawable/ic_user_pic</item>
+        <item name="chatSendDrawable">@drawable/ic_send_turner</item>
+        <item name="chatSendBackground">@drawable/send_chat_blue_circle_back</item>
+        <item name="chatBubblePaddingLeft">8dp</item>
+        <item name="chatBubblePaddingRight">8dp</item>
+        <item name="chatBubblePaddingTop">8dp</item>
+        <item name="chatBubblePaddingBottom">8dp</item>
+        <item name="chatReactionPadding">8dp</item>
+
+
     </style>
 
     <style name="TestAppLabel" parent="TextAppearance.AppCompat">

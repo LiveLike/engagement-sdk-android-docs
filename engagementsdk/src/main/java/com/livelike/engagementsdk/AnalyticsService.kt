@@ -12,8 +12,8 @@ import com.mixpanel.android.mpmetrics.MixpanelExtension
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import org.json.JSONObject
 import java.util.regex.Matcher
+import org.json.JSONObject
 
 /**
  * The base interface for the analytics. This will log events to any remote analytics provider.
@@ -37,7 +37,7 @@ interface AnalyticsService {
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
     fun trackSessionStarted()
-    fun trackMessageSent(msgId: String, msg : String)
+    fun trackMessageSent(msgId: String, msg: String)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
@@ -130,7 +130,7 @@ class MockAnalyticsService(private val programId: String = "") : AnalyticsServic
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
 
-    override fun trackMessageSent(msgId: String, msg : String) {
+    override fun trackMessageSent(msgId: String, msg: String) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
@@ -282,7 +282,9 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
             mixpanel.registerSuperProperties(this)
             mixpanel.people.set(this)
         }
-        context.getSharedPreferences("analytics", Context.MODE_PRIVATE).apply {
+        val packageName = context.packageName ?: ""
+
+        context.getSharedPreferences("$packageName-analytics", Context.MODE_PRIVATE).apply {
             if (getBoolean("firstSdkOpen", true)) {
                 edit().putBoolean("firstSdkOpen", false).apply()
                 JSONObject().apply {
@@ -504,9 +506,9 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         mixpanel.registerSuperProperties(superProp)
     }
 
-    private fun Matcher.allMatches() : List<String>{
+    private fun Matcher.allMatches(): List<String> {
         val allMatches = mutableListOf<String>()
-        while (find()){
+        while (find()) {
             allMatches.add(group())
         }
         return allMatches
@@ -553,8 +555,8 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
 
         val interactionState =
             if (interactable != null && interactable) "Open To Interaction" else "Closed To Interaction"
-
-        context.getSharedPreferences("analytics", Context.MODE_PRIVATE).apply {
+        val packageName = context.packageName ?: ""
+        context.getSharedPreferences("$packageName-analytics", Context.MODE_PRIVATE).apply {
             val properties = JSONObject()
             properties.put("Widget Type", kind)
             properties.put("Widget ID", id)

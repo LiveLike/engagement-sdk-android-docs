@@ -51,7 +51,7 @@
             android:textSize="13sp"/>
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/chat_room_button"
         android:layout_width="100dp"
         android:layout_height="35dp"
         android:layout_marginStart="8dp"

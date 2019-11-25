@@ -26,7 +26,20 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository, ChatReactionRepository(programRepository.programId))
     private val messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(false)
-    private var chatLoaded = false
+    var currentChatRoom: String = ""
+    set(value) {
+        field = value
+        chatAdapter.isPublicChat = currentChatRoom == programRepository.program.chatChannel
+    }
+    internal var chatLoaded = false
+        set(value) {
+            field = value
+            if (field) {
+                eventStream.onNext(EVENT_LOADING_COMPLETE)
+            } else {
+                eventStream.onNext(EVENT_LOADING_STARTED)
+            }
+        }
     private val dataClient: ChatDataClient = EngagementDataClientImpl()
 
     companion object {
@@ -34,9 +47,11 @@ internal class ChatViewModel(
         const val EVENT_MESSAGE_DELETED = "deletion"
         const val EVENT_MESSAGE_ID_UPDATED = "id-updated"
         const val EVENT_LOADING_COMPLETE = "loading-complete"
+        const val EVENT_LOADING_STARTED = "loading-started"
     }
 
     override fun displayChatMessage(message: ChatMessage) {
+        if (message.channel != currentChatRoom) return
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
@@ -44,6 +59,7 @@ internal class ChatViewModel(
             isFromMe = userStream.latest()?.id == senderId
         })
         chatAdapter.submitList(ArrayList(messageList))
+        chatAdapter.notifyDataSetChanged()
         eventStream.onNext(EVENT_NEW_MESSAGE)
     }
 
@@ -67,7 +83,6 @@ internal class ChatViewModel(
     override fun loadingCompleted() {
         if (!chatLoaded) {
             chatLoaded = true
-            eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
     }
 
@@ -79,6 +94,6 @@ internal class ChatViewModel(
 
     fun flushMessages() {
         messageList.clear()
-        chatAdapter.submitList(ArrayList(messageList))
+        chatAdapter.submitList(messageList)
     }
 }
