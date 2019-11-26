@@ -72,7 +72,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun resultObserver(resource: Resource?) {
-        lastResult = resource
         resource?.let {
             lastResult = it
             val options = resource.options ?: return
@@ -537,7 +536,10 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playLoserAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            setAnimation("loser_animation.json")
+            val rootPath = widgetViewThemeAttributes!!.widgetCheerMeterLoserAnimation
+            val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+            println("LOSERPATH -> $animationPath")
+            setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {
@@ -561,7 +563,10 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playWinnerAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            setAnimation("winner_animation.json")
+            val rootPath = widgetViewThemeAttributes!!.widgetCheerMeterWinnerAnimation
+            val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+            println("WINNERPATH -> $animationPath")
+            setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {
@@ -585,7 +590,10 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playDrawAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            setAnimation("draw_animation.json")
+            val rootPath = widgetViewThemeAttributes!!.widgetCheerMeterDrawAnimation
+            val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+            println("DRAWPATH -> $animationPath")
+            setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {

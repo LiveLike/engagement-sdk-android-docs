@@ -202,15 +202,15 @@
 
         <ImageView
             android:id="@+id/img_winner_team"
-            android:layout_width="260dp"
+            android:layout_width="125dp"
             android:layout_gravity="center"
-            android:layout_height="175dp" />
+            android:layout_height="125dp" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/img_winner_anim"
-            android:layout_width="260dp"
+            android:layout_width="300dp"
             android:layout_gravity="center"
-            android:layout_height="260dp" />
+            android:layout_height="200dp" />
     </FrameLayout>
 
 </FrameLayout>

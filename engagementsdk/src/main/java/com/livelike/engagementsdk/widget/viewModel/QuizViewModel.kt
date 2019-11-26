@@ -177,7 +177,7 @@ internal class QuizViewModel(
         val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
         val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetQuizCorrectAnimation else widgetViewThemeAttributes.widgetQuizInCorrectAnimation
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
-
+        println("QUIZPATH -> $animationPath")
         adapter?.selectionLocked = true
 
         uiScope.launch {
@@ -191,8 +191,8 @@ internal class QuizViewModel(
             }
             state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
-            delay(3000)
-            dismissWidget(DismissAction.TIMEOUT)
+//            delay(3000)
+//            dismissWidget(DismissAction.TIMEOUT)
         }
     }
 

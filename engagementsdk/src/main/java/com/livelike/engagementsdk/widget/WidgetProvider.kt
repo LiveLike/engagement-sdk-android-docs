@@ -55,13 +55,15 @@ internal class WidgetProvider {
         onDismiss: () -> Unit,
         userRepository: UserRepository,
         programRepository: ProgramRepository,
-        animationEventsStream: SubscriptionManager<ViewAnimationEvents>
+        animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+        widgetThemeAttributes: WidgetViewThemeAttributes
     ): SpecifiedWidgetView? {
         return when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
+                widgetViewThemeAttributes = widgetThemeAttributes
                 widgetViewModel = QuizViewModel(
                     widgetInfos,
                     analyticsService,
@@ -75,6 +77,7 @@ internal class WidgetProvider {
             }
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
+                widgetViewThemeAttributes = widgetThemeAttributes
                 widgetViewModel = PredictionViewModel(
                     widgetInfos,
                     context,
@@ -86,6 +89,7 @@ internal class WidgetProvider {
                 )
             }
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
+                widgetViewThemeAttributes = widgetThemeAttributes
                 widgetViewModel = PollViewModel(
                     widgetInfos,
                     analyticsService,
@@ -113,6 +117,7 @@ internal class WidgetProvider {
                 )
             }
             CHEER_METER -> CheerMeterView(context).apply {
+                widgetViewThemeAttributes = widgetThemeAttributes
                 widgetViewModel = CheerMeterViewModel(
                     widgetInfos,
                     analyticsService,
@@ -139,18 +144,6 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     open var widgetViewModel: ViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
-    open val widgetViewThemeAttributes = WidgetViewThemeAttributes()
-    init {
-        context.obtainStyledAttributes(
-            attrs,
-            R.styleable.WidgetView,
-            0, 0
-        ).apply {
-            try{
-                widgetViewThemeAttributes.init(context,this)
-            } finally {
-                recycle()
-            }
-        }
-    }
+    open var widgetViewThemeAttributes : WidgetViewThemeAttributes = WidgetViewThemeAttributes()
+
 }
