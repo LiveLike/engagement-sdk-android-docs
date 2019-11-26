@@ -13,6 +13,7 @@ internal interface MessagingClient {
     fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime)
     fun stop()
     fun start()
+    fun destroy()
     fun addMessagingEventListener(listener: MessagingEventListener)
 }
 

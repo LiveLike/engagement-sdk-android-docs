@@ -343,14 +343,16 @@ internal class ContentSession(
     override fun close() {
         logVerbose { "Closing the Session" }
         contentSessionScope.cancel()
-        chatClient?.apply {
+        chatClient?.run {
             unsubscribeAll()
+            stop()
+            destroy()
         }
-        widgetClient?.apply {
+        widgetClient?.run {
             unsubscribeAll()
+            stop()
+            destroy()
         }
-        widgetClient?.stop()
-        chatClient?.stop()
         currentWidgetViewStream.clear()
         analyticService.trackLastChatStatus(false)
         analyticService.trackLastWidgetStatus(false)

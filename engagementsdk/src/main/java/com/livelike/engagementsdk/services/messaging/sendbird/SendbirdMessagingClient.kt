@@ -370,6 +370,9 @@ internal class SendbirdMessagingClient(
             listener?.onClientMessageEvent(this, it)
         }
     }
+
+    override fun destroy() {
+    }
 }
 
 internal interface ChatClient {

@@ -168,4 +168,9 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
         // More than one triggerListener?
         this.listener = listener
     }
+
+    override fun destroy() {
+        unsubscribeAll()
+        pubnub.destroy()
+    }
 }

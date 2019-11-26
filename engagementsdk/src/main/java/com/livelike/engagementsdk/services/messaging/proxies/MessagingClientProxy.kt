@@ -41,4 +41,8 @@ internal abstract class MessagingClientProxy(val upstream: MessagingClient) : Me
     override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
         listener?.onClientMessageStatus(client, status)
     }
+
+    override fun destroy() {
+        upstream.destroy()
+    }
 }

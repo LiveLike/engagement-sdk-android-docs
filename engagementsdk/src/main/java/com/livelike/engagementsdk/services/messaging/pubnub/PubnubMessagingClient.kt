@@ -154,4 +154,9 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
             return null
         }
     }
+
+    override fun destroy() {
+        unsubscribeAll()
+        pubnub.destroy()
+    }
 }
