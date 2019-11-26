@@ -19,7 +19,7 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
 
     override fun uncaughtException(p0: Thread?, p1: Throwable?) {
 
-//        TODO: commenting swallow code untill identified even after filtering host exception are logged.
+//        TODO: commenting swallow code untill identified why after filtering host exception are logged.
 //        var swallow = true // should swallow the exception inorder to prevent the crash
         var record = false // should record exception if it possibility is due to SDK.
 
