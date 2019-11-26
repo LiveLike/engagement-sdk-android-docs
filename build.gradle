@@ -26,7 +26,7 @@ buildscript {
         mixpanelVersion = '5.5.2'
         mockitoVersion = '2.18.3'
         okhttpVersion = '3.11.0'
-        pubnubVersion = '4.21.0'
+        pubnubVersion = '4.29.1'
         supportTestVersion = '1.0.2'
         supportLibraryVersion = '28.0.0'
         sendbirdVersion = '3.0.106'
