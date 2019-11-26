@@ -29,7 +29,7 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
         pubnub.disconnect()
     }
 
-    override fun resume() {
+    override fun start() {
         pubnub.reconnect()
     }
 

@@ -154,7 +154,7 @@ internal class SendbirdMessagingClient(
         SendBird.disconnect {}
     }
 
-    override fun resume() {
+    override fun start() {
         liveLikeUser.currentUserStream.latest()?.let { connectToSendbird(it, true) }
     }
 

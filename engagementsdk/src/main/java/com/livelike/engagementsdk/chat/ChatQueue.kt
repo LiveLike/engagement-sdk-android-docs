@@ -19,8 +19,8 @@ internal class ChatQueue(upstream: MessagingClient) :
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 
     var renderer: ChatRenderer? = null

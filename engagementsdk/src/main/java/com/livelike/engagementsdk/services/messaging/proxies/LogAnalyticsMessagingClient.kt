@@ -21,8 +21,8 @@ internal class LogAnalyticsMessagingClient(
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

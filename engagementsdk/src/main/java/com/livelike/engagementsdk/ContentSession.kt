@@ -333,8 +333,8 @@ internal class ContentSession(
 
     override fun resume() {
         logVerbose { "Resuming the Session" }
-        widgetClient?.resume()
-        chatClient?.resume()
+        widgetClient?.start()
+        chatClient?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticService.trackLastChatStatus(true)
         analyticService.trackLastWidgetStatus(true)

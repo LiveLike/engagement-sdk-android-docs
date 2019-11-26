@@ -109,8 +109,8 @@ internal class PubnubMessagingClientReplay(
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 }
 

@@ -54,7 +54,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
         pubnub.disconnect()
     }
 
-    override fun resume() {
+    override fun start() {
         pubnub.reconnect()
     }
 
