@@ -6,7 +6,7 @@ import com.livelike.engagementsdk.services.messaging.pubnub.PubnubChatMessagingC
 
 internal class ChatRepository(
     private val subscribeKey: String,
-    private val publishKey: String,
+    private val authKey: String,
     private val uuid: String,
     private val analyticsService: AnalyticsService
 ) {

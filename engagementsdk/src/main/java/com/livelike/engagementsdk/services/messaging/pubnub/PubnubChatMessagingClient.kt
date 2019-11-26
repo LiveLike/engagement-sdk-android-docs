@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.ChatMessage
@@ -31,6 +32,10 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         pubnub.publish()
             .message(clientMessage)
+            .meta(JsonObject().apply {
+                addProperty("sender_id", clientMessage.senderId)
+                addProperty("language", "en-us")
+            })
             .channel(channel)
             .async(object : PNCallback<PNPublishResult>() {
                 override fun onResponse(result: PNPublishResult, status: PNStatus) {
