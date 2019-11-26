@@ -6,6 +6,7 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
@@ -23,6 +24,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
 
     /** icon size is used to define the size of coin icon */
     private var iconSize: Int
+    private var textColor: Int
     private var textSize: Float
     /** will hide/show plus before points number adjacent to coin */
     private var hidePlus: Boolean
@@ -44,6 +46,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
                 hidePlus = getBoolean(R.styleable.PointView_hidePlus, false)
                 iconSize = getDimension(R.styleable.PointView_iconSize, 0f).roundToInt()
                 textSize = getDimension(R.styleable.PointView_textSize, 0f)
+                textColor = getColor(R.styleable.PointView_textColor, Color.WHITE)
             } finally {
                 recycle()
             }
@@ -70,6 +73,7 @@ class PointView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         if (textSize != 0f) {
             pointTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
         }
+        pointTextView.setTextColor(textColor)
     }
 
     fun startAnimation(newPoint: Int, hideOnEnd: Boolean = false) {
