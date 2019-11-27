@@ -103,6 +103,7 @@
             <flag name="start" value="8388611" />
             <flag name="top" value="48" />
         </attr>
+        <attr name="rankValueTextColor" format="color"/>
         <attr name="emptyChatBackgroundImage" format="reference"/>
     </declare-styleable>
 
@@ -110,6 +111,7 @@
         <attr name="hidePlus" format="boolean" />
         <attr name="iconSize" format="dimension" />
         <attr name="textSize" format="dimension" />
+        <attr name="textColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="ImageSlider">
