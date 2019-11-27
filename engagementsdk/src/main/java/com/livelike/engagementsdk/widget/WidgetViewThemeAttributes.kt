@@ -14,16 +14,15 @@ class WidgetViewThemeAttributes {
     fun init(typedArray: TypedArray?) {
         typedArray?.apply {
             widgetQuizCorrectAnimation =
-                getString(R.styleable.WidgetView_quizCorrect) ?: "correctAnswer"
+                getString(R.styleable.WidgetView_winAnimation) ?: "correctAnswer"
             widgetQuizInCorrectAnimation =
-                getString(R.styleable.WidgetView_quizInCorrect) ?: "wrongAnswer"
+                getString(R.styleable.WidgetView_loseAnimation) ?: "wrongAnswer"
             widgetCheerMeterDrawAnimation =
-                getString(R.styleable.WidgetView_cheerMeterDrawAnimation) ?: "drawAnimation"
+                getString(R.styleable.WidgetView_drawAnimation) ?: "drawAnimation"
             widgetCheerMeterLoserAnimation =
-                getString(R.styleable.WidgetView_cheerMeterLoserAnimation) ?: "loserAnimation"
+                getString(R.styleable.WidgetView_loseAnimation) ?: "loserAnimation"
             widgetCheerMeterWinnerAnimation =
-                getString(R.styleable.WidgetView_cheerMeterWinnerAnimation) ?: "winnerAnimation"
-            println("SD--> $widgetCheerMeterWinnerAnimation -- $widgetCheerMeterLoserAnimation -- $widgetCheerMeterDrawAnimation -- $widgetQuizCorrectAnimation -- $widgetQuizInCorrectAnimation")
+                getString(R.styleable.WidgetView_winAnimation) ?: "winnerAnimation"
         }
     }
 

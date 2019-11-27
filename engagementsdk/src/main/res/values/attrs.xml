@@ -19,11 +19,9 @@
         type="font">@font/roboto_bold</item>
 
     <declare-styleable name="WidgetView">
-        <attr name="quizCorrect" format="string"/>
-        <attr name="quizInCorrect" format="string"/>
-        <attr name="cheerMeterWinnerAnimation" format="string"/>
-        <attr name="cheerMeterLoserAnimation" format="string"/>
-        <attr name="cheerMeterDrawAnimation" format="string"/>
+        <attr name="winAnimation" format="string"/>
+        <attr name="loseAnimation" format="string"/>
+        <attr name="drawAnimation" format="string"/>
     </declare-styleable>
 
     <declare-styleable name="ChatView">
