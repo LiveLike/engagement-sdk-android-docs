@@ -99,8 +99,41 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
-            v.chatMessage.setTextColor(chatViewThemeAttribute.chatMessageColor)
+            chatViewThemeAttribute.apply {
+                v.chatMessage.setTextColor(chatMessageColor)
+                val layoutParam = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                )
+                layoutParam.setMargins(
+                    chatMarginLeft,
+                    chatMarginTop,
+                    chatMarginRight,
+                    chatMarginBottom
+                )
+                v.chatBackground.layoutParams = layoutParam
 
+                val layoutParam1 = LinearLayout.LayoutParams(
+                    chatWidth,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                layoutParam1.setMargins(
+                    chatBubbleMarginLeft,
+                    chatBubbleMarginTop,
+                    chatBubbleMarginRight,
+                    chatBubbleMarginBottom
+                )
+                v.chatBubbleBackground.layoutParams = layoutParam1
+
+                v.chatBubbleBackground.background =
+                    chatBubbleBackgroundRes
+                v.chatBubbleBackground.setPadding(
+                    chatBubblePaddingLeft,
+                    chatBubblePaddingTop,
+                    chatBubblePaddingRight,
+                    chatBubblePaddingBottom
+                )
+            }
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
         }
@@ -167,30 +200,6 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.text = message.senderDisplayName
                         }
 
-                        val layoutParam = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT
-                        )
-                        layoutParam.setMargins(
-                            chatMarginLeft,
-                            chatMarginTop,
-                            chatMarginRight,
-                            chatMarginBottom
-                        )
-                        v.chatBackground.layoutParams = layoutParam
-
-                        val layoutParam1 = LinearLayout.LayoutParams(
-                            chatWidth,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-                        layoutParam1.setMargins(
-                            chatBubbleMarginLeft,
-                            chatBubbleMarginTop,
-                            chatBubbleMarginRight,
-                            chatBubbleMarginBottom
-                        )
-                        v.chatBubbleBackground.layoutParams = layoutParam1
-
                         v.img_chat_avatar.visibility =
                             when (showChatAvatarLogo) {
                                 true -> View.VISIBLE
@@ -211,15 +220,6 @@ internal class ChatRecyclerAdapter(
 
                         v.chatBackground.background = chatBackgroundRes
 
-                        v.chatBubbleBackground.background =
-                            chatBubbleBackgroundRes
-                        v.chatBubbleBackground.setPadding(
-                            chatBubblePaddingLeft,
-                            chatBubblePaddingTop,
-                            chatBubblePaddingRight,
-                            chatBubblePaddingBottom
-                        )
-
                         val options = RequestOptions()
                         if (chatAvatarCircle) {
                             options.optionalCircleCrop()
@@ -233,11 +233,11 @@ internal class ChatRecyclerAdapter(
                         message.senderDisplayPic.let {
                             if (!it.isNullOrEmpty())
                                 Glide.with(context).load(it)
-                                    .apply(options)
                                     .placeholder(chatUserPicDrawable)
-                                    .into(img_chat_avatar)
+                                    .apply(options)
+                                    .into(v.img_chat_avatar)
                             else
-                                img_chat_avatar.setImageDrawable(chatUserPicDrawable)
+                                v.img_chat_avatar.setImageDrawable(chatUserPicDrawable)
                         }
 
                         val spaceRemover = Pattern.compile("[\\s]")
@@ -246,23 +246,25 @@ internal class ChatRecyclerAdapter(
                         val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()
                         val atLeastOneSticker = inputNoString.findStickers().find()
                         val numberOfStickers = message.message.findStickers().countMatches()
-
+                        v.chatMessage.text = message.message
                         when {
                             (isOnlyStickers && numberOfStickers == 1) -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(s, context, stickerPackRepository, null, 200) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    chatMessage.text = s
+                                    v.chatMessage.text = s
                                 }
                             }
                             atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(s, context, stickerPackRepository, null) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    chatMessage.text = s
+                                    v.chatMessage.text = s
                                 }
                             }
-                            else -> chatMessage.text = message.message
+                            else -> {
+                                v.chatMessage.text = message.message
+                            }
                         }
                     }
                 }
