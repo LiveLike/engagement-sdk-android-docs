@@ -74,6 +74,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             object : TypeToken<MutableMap<String, MutableSet<String>>>() {}.type) ?: mutableMapOf()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         this.setTheme(intent.getIntExtra("theme", R.style.AppTheme_NoActionBar))
+
         setContentView(R.layout.activity_exo_player)
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
@@ -121,7 +122,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.show()
             }
         }
-        chat_view.closeKeyboardOnSend(false)
+        chat_view.closeKeyboardOnSend(intent.getBooleanExtra("keyboardClose", false))
         chat_room_button.setOnClickListener {
 
             AlertDialog.Builder(this).apply {

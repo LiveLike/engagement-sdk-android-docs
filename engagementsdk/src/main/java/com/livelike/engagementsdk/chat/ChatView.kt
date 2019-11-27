@@ -768,7 +768,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
             val outsideStickerKeyboardBound = (v.bottom - sticker_keyboard.height)
-            if (y < v.top || y > v.bottom || y < outsideStickerKeyboardBound) {
+            if (y < v.top || y > v.bottom || (sticker_keyboard.height>0 && y < outsideStickerKeyboardBound)) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
@@ -860,7 +860,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
                     if (!hasFocus) {
-                        hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                        if(chatAttribute.closeKeyboardOnSend)
+                            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     }
                 }
 
@@ -870,6 +871,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         (actionId == EditorInfo.IME_ACTION_SEND)
                     ) {
                         sendMessageNow()
+                        true
                     }
                     false
                 }
@@ -884,8 +886,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun showStickerKeyboard() {
         uiScope.launch {
-            if(chatAttribute.closeKeyboardOnSend)
-                hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
             session?.analyticService?.trackKeyboardOpen(KeyboardType.STICKER)
             delay(200) // delay to make sure the keyboard is hidden
             findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
@@ -925,8 +926,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             // Do nothing if the message is blank or empty
             return
         }
-        if(chatAttribute.closeKeyboardOnSend)
+        if(chatAttribute.closeKeyboardOnSend) {
             hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+        }
         hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
