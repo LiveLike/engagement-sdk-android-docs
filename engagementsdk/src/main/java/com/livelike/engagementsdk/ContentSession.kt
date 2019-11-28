@@ -302,7 +302,7 @@ internal class ContentSession(
             )
         } else {
             chatClient =
-                ChatRepository(",", config.pubNubKey, uuid, analyticService).establishChatMessagingConnection()
+                ChatRepository(config.pubNubKey, "", uuid, analyticService).establishChatMessagingConnection()
         }
 
         if (syncEnabled)

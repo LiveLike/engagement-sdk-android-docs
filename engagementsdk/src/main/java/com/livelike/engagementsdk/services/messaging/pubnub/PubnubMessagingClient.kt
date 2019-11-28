@@ -126,7 +126,6 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
             }
         })
     }
-
     override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
     }

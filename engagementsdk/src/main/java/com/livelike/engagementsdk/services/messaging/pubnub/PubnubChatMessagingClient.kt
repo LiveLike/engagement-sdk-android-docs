@@ -1,16 +1,20 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
 import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.ChatMessage
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingClient.Companion.CHAT_HISTORY_LIMIT
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
@@ -23,10 +27,15 @@ import com.pubnub.api.enums.PNOperationType
 import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
+import com.pubnub.api.models.consumer.history.PNHistoryResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import java.util.Calendar
 
 internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, private val analyticsService: AnalyticsService) : MessagingClient {
+
+    private var connectedChannels: MutableSet<String> = mutableSetOf()
+
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
@@ -120,24 +129,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
 
             override fun message(pubnub: PubNub, message: PNMessageResult) {
                 logMessage(message)
-                val payload = message.message.asJsonObject.getAsJsonObject("payload")
-                val timeoutReceived = payload.extractStringOrEmpty("timeout")
-                val pdtString = payload.extractStringOrEmpty("program_date_time")
-                var epochTimeMs = 0L
-                pdtString.parseISODateTime()?.let {
-                    epochTimeMs = it.toInstant().toEpochMilli()
-                }
-                val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
-                message.message.asJsonObject.addProperty("priority", 1)
-
-                val clientMessage = ClientMessage(
-                    message.message.asJsonObject,
-                    message.channel,
-                    EpochTime(epochTimeMs),
-                    timeoutMs
-                )
-                logDebug { "$pdtString - Received message from pubnub: $clientMessage" }
-                listener?.onClientMessageEvent(client, clientMessage)
+                processPubnubChatEvent(message.message.asJsonObject, message.channel, client)
             }
 
             override fun presence(pubnub: PubNub, presence: PNPresenceEventResult) {}
@@ -152,12 +144,45 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
         })
     }
 
+    private fun processPubnubChatEvent(
+        jsonObject: JsonObject,
+        channel: String,
+        client: PubnubChatMessagingClient
+    ) {
+        val event = jsonObject.extractStringOrEmpty("event")
+        if(event == PubnubChatEventType.MESSAGE_CREATED.key) {
+            val pubnubChatEvent :PubnubChatEvent<PubnubChatMessage>  = gson.fromJson(jsonObject,
+                object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
+
+            val pdtString = pubnubChatEvent.payload.programDateTime
+            var epochTimeMs = 0L
+            pdtString.parseISODateTime()?.let {
+                epochTimeMs = it.toInstant().toEpochMilli()
+            }
+            val clientMessage = ClientMessage(
+                jsonObject,
+                channel,
+                EpochTime(epochTimeMs)
+            )
+            logDebug { "$pdtString - Received message from pubnub: $clientMessage" }
+            listener?.onClientMessageEvent(client, clientMessage)
+        }
+    }
+
+
+
     override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
+        channels.forEach {
+            connectedChannels.add(it)
+        }
     }
 
     override fun unsubscribe(channels: List<String>) {
         pubnub.unsubscribe().channels(channels).execute()
+        channels.forEach{
+            connectedChannels.remove(it)
+        }
     }
 
     override fun unsubscribeAll() {
