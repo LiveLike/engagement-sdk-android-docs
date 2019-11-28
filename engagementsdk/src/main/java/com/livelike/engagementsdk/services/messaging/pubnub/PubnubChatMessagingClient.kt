@@ -46,7 +46,16 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         pubnub.publish()
-            .message(clientMessage)
+            .message(
+                PubnubChatEvent(
+                    PubnubChatEventType.MESSAGE_CREATED.key, clientMessage.toPubnubChatMessage(
+                        ZonedDateTime.ofInstant(
+                            Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
+                            org.threeten.bp.ZoneId.of("UTC")
+                        ).formatIsoLocal8601()
+                    )
+                )
+            )
             .meta(JsonObject().apply {
                 addProperty("sender_id", clientMessage.senderId)
                 addProperty("language", "en-us")
