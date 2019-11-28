@@ -36,7 +36,6 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
 
     private var connectedChannels: MutableSet<String> = mutableSetOf()
 
-
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         pubnub.publish()
@@ -65,6 +64,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
 
     override fun start() {
         pubnub.reconnect()
+        connectedChannels.forEach { loadMessageHistoryByTimestamp(channel = it) }
     }
 
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
@@ -150,8 +150,8 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
         client: PubnubChatMessagingClient
     ) {
         val event = jsonObject.extractStringOrEmpty("event")
-        if(event == PubnubChatEventType.MESSAGE_CREATED.key) {
-            val pubnubChatEvent :PubnubChatEvent<PubnubChatMessage>  = gson.fromJson(jsonObject,
+        if (event == PubnubChatEventType.MESSAGE_CREATED.key) {
+            val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
 
             val pdtString = pubnubChatEvent.payload.programDateTime
@@ -169,18 +169,38 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
         }
     }
 
-
+    private fun loadMessageHistoryByTimestamp(
+        channel: String,
+        timestamp: Long = Calendar.getInstance().timeInMillis,
+        chatHistoyLimit: Int = CHAT_HISTORY_LIMIT
+    ) {
+        pubnub.history()
+            .channel(channel)
+            .count(chatHistoyLimit)
+            .end(timestamp)
+            .includeTimetoken(true)
+            .async(object : PNCallback<PNHistoryResult>() {
+                override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
+                    result?.let {
+                        result.messages.reversed().forEach {
+                            processPubnubChatEvent(it.entry.asJsonObject, channel, this@PubnubChatMessagingClient)
+                        }
+                    }
+                }
+            })
+    }
 
     override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
         channels.forEach {
             connectedChannels.add(it)
+            loadMessageHistoryByTimestamp(channel = it)
         }
     }
 
     override fun unsubscribe(channels: List<String>) {
         pubnub.unsubscribe().channels(channels).execute()
-        channels.forEach{
+        channels.forEach {
             connectedChannels.remove(it)
         }
     }
