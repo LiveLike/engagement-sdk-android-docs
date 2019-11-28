@@ -19,7 +19,8 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
 
     override fun uncaughtException(p0: Thread?, p1: Throwable?) {
 
-        var swallow = true // should swallow the exception inorder to prevent the crash
+//        TODO: commenting swallow code untill identified why after filtering host exception are logged.
+//        var swallow = true // should swallow the exception inorder to prevent the crash
         var record = false // should record exception if it possibility is due to SDK.
 
         p1?.let { throwable ->
@@ -30,14 +31,10 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
                 }
             }
 
-            if (p0?.name == "main" || throwable is ClassNotFoundException) {
-                swallow = false
-                return@let
-            }
-        }
-
-        if (!swallow) {
-            defaultHandler.uncaughtException(p0, p1)
+//            if (p0?.name == "main" || !record) {
+//                swallow = false
+//                return@let
+//            }
         }
 
         if (record) {
@@ -46,5 +43,9 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
                 p1.printStackTrace()
             }
         }
+
+        //        if (!swallow) {
+        defaultHandler.uncaughtException(p0, p1)
+//        }
     }
 }
