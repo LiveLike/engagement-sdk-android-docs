@@ -14,6 +14,7 @@ internal class ChatRepository(
     fun establishChatMessagingConnection(): MessagingClient {
         return PubnubChatMessagingClient(
             subscribeKey,
+            authKey,
             uuid,
             analyticsService
         )

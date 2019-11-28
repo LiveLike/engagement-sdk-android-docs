@@ -39,7 +39,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
 import java.util.Calendar
 
-internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, private val analyticsService: AnalyticsService) : MessagingClient {
+internal class PubnubChatMessagingClient(subscriberKey: String, private val authKey: String, uuid: String, private val analyticsService: AnalyticsService) : MessagingClient {
 
     private var connectedChannels: MutableSet<String> = mutableSetOf()
 
@@ -89,6 +89,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
 
     init {
         pubnubConfiguration.subscribeKey = subscriberKey
+        pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnub = PubNub(pubnubConfiguration)
         val client = this

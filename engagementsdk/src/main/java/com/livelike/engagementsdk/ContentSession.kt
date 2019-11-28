@@ -128,7 +128,7 @@ internal class ContentSession(
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
                             chatViewModel.currentChatRoom = program.defaultChatRoom?.channels?.chat?.get("pubnub") ?: ""
-                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"), configuration, pair.first.id)
+                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"), configuration, pair.first)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -183,7 +183,9 @@ internal class ContentSession(
             chatViewModel.chatLoaded = false
             if (sendbirdMessagingClient == null) {
                 configurationFlow.collect {
-                    initializeChatMessaging(chatRoom, it, userRepository.currentUserStream.latest()?.id ?: "", syncEnabled = false, privateGroupsChat = true)
+                    userRepository.currentUserStream.latest()?.let { user ->
+                        initializeChatMessaging(chatRoom, it, user, syncEnabled = false, privateGroupsChat = true)
+                    }
                 }
             } else {
                 sendbirdMessagingClient?.activeChannelRoom = chatRoom
@@ -284,7 +286,7 @@ internal class ContentSession(
     private fun initializeChatMessaging(
         chatChannel: String?,
         config: EngagementSDK.SdkConfiguration,
-        uuid: String,
+        user: LiveLikeUser,
         syncEnabled: Boolean = true,
         privateGroupsChat: Boolean = false
     ) {
@@ -305,7 +307,7 @@ internal class ContentSession(
             )
         } else {
             chatClient =
-                ChatRepository(config.pubNubKey, "", uuid, analyticService).establishChatMessagingConnection()
+                ChatRepository(config.pubNubKey, user.accessToken, user.id, analyticService).establishChatMessagingConnection()
         }
 
         if (syncEnabled)
