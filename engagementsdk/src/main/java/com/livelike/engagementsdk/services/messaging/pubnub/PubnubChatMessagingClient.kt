@@ -1,13 +1,18 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
+import android.util.Log
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.ChatMessage
+import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
+import com.livelike.engagementsdk.chat.data.toChatMessage
+import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
+import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
@@ -30,6 +35,8 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.history.PNHistoryResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import org.threeten.bp.Instant
+import org.threeten.bp.ZonedDateTime
 import java.util.Calendar
 
 internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, private val analyticsService: AnalyticsService) : MessagingClient {
@@ -160,7 +167,9 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
                 epochTimeMs = it.toInstant().toEpochMilli()
             }
             val clientMessage = ClientMessage(
-                jsonObject,
+                gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
+                    addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
+                },
                 channel,
                 EpochTime(epochTimeMs)
             )
@@ -177,13 +186,19 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
         pubnub.history()
             .channel(channel)
             .count(chatHistoyLimit)
-            .end(timestamp)
+            .start(timestamp)
+            .reverse(true)
             .includeTimetoken(true)
             .async(object : PNCallback<PNHistoryResult>() {
                 override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
-                    result?.let {
+                    sendLoadingCompletedEvent(channel)
+                    if (status?.isError == false && result?.messages?.isEmpty() == false) {
                         result.messages.reversed().forEach {
-                            processPubnubChatEvent(it.entry.asJsonObject, channel, this@PubnubChatMessagingClient)
+                            processPubnubChatEvent(
+                                it.entry.asJsonObject,
+                                channel,
+                                this@PubnubChatMessagingClient
+                            )
                         }
                     }
                 }
@@ -208,6 +223,20 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
     override fun unsubscribeAll() {
         pubnub.unsubscribeAll()
     }
+
+
+    private fun sendLoadingCompletedEvent(channel: String) {
+        val msg = JsonObject().apply {
+            addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
+        }
+        listener?.onClientMessageEvent(
+            this, ClientMessage(
+                msg, channel,
+                EpochTime(0)
+            )
+        )
+    }
+
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {
         // More than one triggerListener?

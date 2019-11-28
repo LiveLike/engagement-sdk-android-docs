@@ -15,3 +15,16 @@ internal fun ChatMessage.toPubnubChatMessage(programDateTime: String): PubnubCha
         programDateTime
     )
 }
+
+internal fun PubnubChatMessage.toChatMessage(channel: String): ChatMessage {
+
+    return ChatMessage(
+        channel,
+        message,
+        senderId,
+        senderNickname,
+        senderImageUrl,
+        messageId,
+        createdAt
+    )
+}

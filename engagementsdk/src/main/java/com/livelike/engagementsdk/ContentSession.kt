@@ -127,7 +127,7 @@ internal class ContentSession(
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            chatViewModel.currentChatRoom = program.subscribeChannel
+                            chatViewModel.currentChatRoom = program.defaultChatRoom?.channels?.chat?.get("pubnub") ?: ""
                             if (customChatChannel.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"), configuration, pair.first.id)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
