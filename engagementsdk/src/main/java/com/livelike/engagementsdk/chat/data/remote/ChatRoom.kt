@@ -2,7 +2,10 @@ package com.livelike.engagementsdk.chat.data.remote
 
 import com.google.gson.annotations.SerializedName
 
-data class ChatRoom(
+/**
+ * Chat Rooms are abstraction over the chat providers in our infra
+ **/
+internal data class ChatRoom(
     @SerializedName("channels")
     val channels: Channels,
     @SerializedName("client_id")
@@ -15,7 +18,7 @@ data class ChatRoom(
     val url: String
 )
 
-data class Channels(
+internal data class Channels(
     @SerializedName("chat")
     val chat: Map<String, String>,
     @SerializedName("reactions")

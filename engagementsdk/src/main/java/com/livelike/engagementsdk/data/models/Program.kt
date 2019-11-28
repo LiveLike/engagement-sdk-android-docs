@@ -18,8 +18,8 @@ internal data class Program(
     val leaderboardUrl: String,
     val stickerPacksUrl: String,
     val reactionPacksUrl: String,
-    val chatRooms: List<ChatRoom>,
-    val defaultChatRoom: ChatRoom
+    val chatRooms: List<ChatRoom>?,
+    val defaultChatRoom: ChatRoom?
 )
 
 internal data class ProgramModel(
@@ -49,9 +49,9 @@ internal data class ProgramModel(
     val sticker_packs_url: String?,
     val reaction_packs_url: String?,
     @SerializedName("chat_rooms")
-    val chatRooms: List<ChatRoom>,
+    val chatRooms: List<ChatRoom>?,
     @SerializedName("default_chat_room")
-    val defaultChatRoom: ChatRoom
+    val defaultChatRoom: ChatRoom?
 )
 
 internal fun ProgramModel.toProgram(): Program {

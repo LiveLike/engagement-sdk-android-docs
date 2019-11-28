@@ -2,7 +2,7 @@ package com.livelike.engagementsdk.chat.data.remote
 
 import com.google.gson.annotations.SerializedName
 
-data class PubnubChatMessage(
+internal data class PubnubChatMessage(
 
     @SerializedName("message_id")
     val messageId: String,
