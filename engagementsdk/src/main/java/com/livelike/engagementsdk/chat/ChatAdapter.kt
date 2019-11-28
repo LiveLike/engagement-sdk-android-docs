@@ -1,10 +1,12 @@
 package com.livelike.engagementsdk.chat
 
+import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -26,13 +28,14 @@ import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -62,6 +65,7 @@ internal class ChatRecyclerAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindTo(getItem(position))
+        holder.itemView.requestLayout()
     }
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
@@ -99,41 +103,27 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
-            chatViewThemeAttribute.apply {
-                v.chatMessage.setTextColor(chatMessageColor)
-                val layoutParam = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT
-                )
-                layoutParam.setMargins(
-                    chatMarginLeft,
-                    chatMarginTop,
-                    chatMarginRight,
-                    chatMarginBottom
-                )
-                v.chatBackground.layoutParams = layoutParam
-
-                val layoutParam1 = LinearLayout.LayoutParams(
-                    chatWidth,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                layoutParam1.setMargins(
-                    chatBubbleMarginLeft,
-                    chatBubbleMarginTop,
-                    chatBubbleMarginRight,
-                    chatBubbleMarginBottom
-                )
-                v.chatBubbleBackground.layoutParams = layoutParam1
-
-                v.chatBubbleBackground.background =
-                    chatBubbleBackgroundRes
-                v.chatBubbleBackground.setPadding(
-                    chatBubblePaddingLeft,
-                    chatBubblePaddingTop,
-                    chatBubblePaddingRight,
-                    chatBubblePaddingBottom
-                )
+            chatViewThemeAttribute.chatBubbleBackgroundRes?.let {
+                if(it<0){
+                    v.chatBubbleBackground.setBackgroundColor(it)
+                }else {
+                    val value = TypedValue()
+                    v.context.resources.getValue(it, value, true)
+                    when {
+                        value.type == TypedValue.TYPE_REFERENCE -> v.chatBubbleBackground.setBackgroundResource(
+                            it
+                        )
+                        value.type == TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
+                            R.drawable.ic_chat_message_bubble_rounded_rectangle
+                        )
+                        value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT -> ColorDrawable(
+                            value.data
+                        )
+                        else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
+                    }
+                }
             }
+
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
         }
@@ -189,6 +179,8 @@ internal class ChatRecyclerAdapter(
                 this@ViewHolder.message = message
                 message?.apply {
                     chatViewThemeAttribute.apply {
+                        v.chatMessage.setTextColor(chatMessageColor)
+
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text = context.getString(
@@ -199,6 +191,35 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
                         }
+
+                        val layoutParam = FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        layoutParam.setMargins(
+                            chatMarginLeft,
+                            chatMarginTop,
+                            chatMarginRight,
+                            chatMarginBottom
+                        )
+                        v.chatBackground.layoutParams = layoutParam
+
+                        v.chatBubbleBackground.setPadding(
+                            chatBubblePaddingLeft,
+                            chatBubblePaddingTop,
+                            chatBubblePaddingRight,
+                            chatBubblePaddingBottom
+                        )
+                        val layoutParam1: LinearLayout.LayoutParams =
+                            v.chatBubbleBackground.layoutParams as LinearLayout.LayoutParams
+                        layoutParam1.setMargins(
+                            chatBubbleMarginLeft,
+                            chatBubbleMarginTop,
+                            chatBubbleMarginRight,
+                            chatBubbleMarginBottom
+                        )
+                        layoutParam1.width = chatWidth
+                        v.chatBubbleBackground.layoutParams = layoutParam1
 
                         v.img_chat_avatar.visibility =
                             when (showChatAvatarLogo) {
@@ -233,11 +254,11 @@ internal class ChatRecyclerAdapter(
                         message.senderDisplayPic.let {
                             if (!it.isNullOrEmpty())
                                 Glide.with(context).load(it)
-                                    .placeholder(chatUserPicDrawable)
                                     .apply(options)
-                                    .into(v.img_chat_avatar)
+                                    .placeholder(chatUserPicDrawable)
+                                    .into(img_chat_avatar)
                             else
-                                v.img_chat_avatar.setImageDrawable(chatUserPicDrawable)
+                                img_chat_avatar.setImageDrawable(chatUserPicDrawable)
                         }
 
                         val spaceRemover = Pattern.compile("[\\s]")
@@ -246,25 +267,23 @@ internal class ChatRecyclerAdapter(
                         val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()
                         val atLeastOneSticker = inputNoString.findStickers().find()
                         val numberOfStickers = message.message.findStickers().countMatches()
-                        v.chatMessage.text = message.message
+
                         when {
                             (isOnlyStickers && numberOfStickers == 1) -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(s, context, stickerPackRepository, null, 200) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    v.chatMessage.text = s
+                                    chatMessage.text = s
                                 }
                             }
                             atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(s, context, stickerPackRepository, null) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    v.chatMessage.text = s
+                                    chatMessage.text = s
                                 }
                             }
-                            else -> {
-                                v.chatMessage.text = message.message
-                            }
+                            else -> chatMessage.text = message.message
                         }
                     }
                 }
