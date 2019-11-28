@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.data.models
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 
 internal data class Program(
     val programUrl: String,
@@ -16,7 +17,9 @@ internal data class Program(
     val rewardsType: String,
     val leaderboardUrl: String,
     val stickerPacksUrl: String,
-    val reactionPacksUrl: String
+    val reactionPacksUrl: String,
+    val chatRooms: List<ChatRoom>,
+    val defaultChatRoom: ChatRoom
 )
 
 internal data class ProgramModel(
@@ -44,7 +47,11 @@ internal data class ProgramModel(
     val rewardsType: String?, // none, points, bagdes
     val leaderboard_url: String?,
     val sticker_packs_url: String?,
-    val reaction_packs_url: String?
+    val reaction_packs_url: String?,
+    @SerializedName("chat_rooms")
+    val chatRooms: List<ChatRoom>,
+    @SerializedName("default_chat_room")
+    val defaultChatRoom: ChatRoom
 )
 
 internal fun ProgramModel.toProgram(): Program {
@@ -61,7 +68,9 @@ internal fun ProgramModel.toProgram(): Program {
         rewardsType ?: "",
         leaderboard_url ?: "",
         sticker_packs_url ?: "",
-        reaction_packs_url ?: ""
+        reaction_packs_url ?: "",
+        chatRooms,
+        defaultChatRoom
     )
 }
 

@@ -164,7 +164,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, uuid: String, pr
                 channel,
                 EpochTime(epochTimeMs)
             )
-            logDebug { "$pdtString - Received message from pubnub: $clientMessage" }
+            logDebug { "Received message from pubnub: $clientMessage" }
             listener?.onClientMessageEvent(client, clientMessage)
         }
     }
