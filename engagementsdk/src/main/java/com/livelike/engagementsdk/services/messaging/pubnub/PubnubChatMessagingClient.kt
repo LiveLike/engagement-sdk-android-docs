@@ -23,12 +23,12 @@ import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingC
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.logVerbose
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.PNCallback
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.enums.PNOperationType
+import com.pubnub.api.enums.PNReconnectionPolicy
 import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
@@ -91,6 +91,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, private val auth
         pubnubConfiguration.subscribeKey = subscriberKey
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
+        pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this
 
@@ -145,19 +146,11 @@ internal class PubnubChatMessagingClient(subscriberKey: String, private val auth
             }
 
             override fun message(pubnub: PubNub, message: PNMessageResult) {
-                logMessage(message)
                 processPubnubChatEvent(message.message.asJsonObject, message.channel, client)
             }
 
             override fun presence(pubnub: PubNub, presence: PNPresenceEventResult) {}
 
-            fun logMessage(message: PNMessageResult) {
-                logVerbose { "Message publisher: " + message.publisher }
-                logVerbose { "Message Payload: " + message.message }
-                logVerbose { "Message Subscription: " + message.subscription }
-                logVerbose { "Message Channel: " + message.channel }
-                logVerbose { "Message timetoken: " + message.timetoken!! }
-            }
         })
     }
 
@@ -203,7 +196,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, private val auth
                 override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
                     sendLoadingCompletedEvent(channel)
                     if (status?.isError == false && result?.messages?.isEmpty() == false) {
-                        result.messages.reversed().forEach {
+                        result.messages.forEach {
                             processPubnubChatEvent(
                                 it.entry.asJsonObject,
                                 channel,
