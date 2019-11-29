@@ -104,14 +104,14 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
             })
             .channel(channel)
             .async(object : PNCallback<PNPublishResult>() {
-                override fun onResponse(result: PNPublishResult, status: PNStatus) {
-                    logDebug { "pub status code: " + status.statusCode }
-                    if (!status.isError) {
+                override fun onResponse(result: PNPublishResult?, status: PNStatus?) {
+                    logDebug { "pub status code: " + status?.statusCode }
+                    if (status?.isError == false) {
                         analyticsService.trackMessageSent(
                             pubnubChatEvent.payload.messageId,
                             pubnubChatEvent.payload.message
                         )
-                        logDebug { "pub timetoken: " + result.timetoken!! }
+                        logDebug { "pub timetoken: " + result?.timetoken!! }
                         it.resume(true)
                     }else{
                         it.resume(false)
