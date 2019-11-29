@@ -159,7 +159,7 @@ internal class PredictionViewModel(
         })
 
         val isUserCorrect = adapter?.myDataset?.find { it.id == selectedPredictionId }?.is_correct ?: false
-        val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetQuizCorrectAnimation else widgetViewThemeAttributes.widgetQuizInCorrectAnimation
+        val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
 
         uiScope.launch {

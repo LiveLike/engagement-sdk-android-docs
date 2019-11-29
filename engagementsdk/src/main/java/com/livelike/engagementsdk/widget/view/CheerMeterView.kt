@@ -536,9 +536,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playLoserAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            val rootPath = widgetViewThemeAttributes!!.widgetCheerMeterLoserAnimation
+            val rootPath = widgetViewThemeAttributes.widgetLoseAnimation
             val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
-            println("LOSERPATH -> $animationPath")
             setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
@@ -563,9 +562,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playWinnerAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            val rootPath = widgetViewThemeAttributes!!.widgetCheerMeterWinnerAnimation
+            val rootPath = widgetViewThemeAttributes.widgetWinAnimation
             val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
-            println("WINNERPATH -> $animationPath")
             setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
@@ -590,9 +588,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playDrawAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            val rootPath = widgetViewThemeAttributes!!.widgetCheerMeterDrawAnimation
+            val rootPath = widgetViewThemeAttributes.widgetDrawAnimation
             val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
-            println("DRAWPATH -> $animationPath")
             setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
