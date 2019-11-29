@@ -20,6 +20,7 @@ import com.livelike.engagementsdk.services.messaging.Error
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingClient.Companion.CHAT_HISTORY_LIMIT
+import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
@@ -35,44 +36,90 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.history.PNHistoryResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
 import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
-internal class PubnubChatMessagingClient(subscriberKey: String, private val authKey: String, uuid: String, private val analyticsService: AnalyticsService) : MessagingClient {
+internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String, uuid: String, private val analyticsService: AnalyticsService) : MessagingClient {
 
     private var connectedChannels: MutableSet<String> = mutableSetOf()
 
+    private val publishQueue  = Queue<Pair<String,PubnubChatEvent<PubnubChatMessage>>>()
+    private val coroutineScope = MainScope()
+    private var isPublishRunning = false
+
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
+        val pubnubChatEvent = PubnubChatEvent(
+            PubnubChatEventType.MESSAGE_CREATED.key, clientMessage.toPubnubChatMessage(
+                ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
+                    org.threeten.bp.ZoneId.of("UTC")
+                ).formatIsoLocal8601()
+            )
+        )
+        publishQueue.enqueue(Pair(channel, pubnubChatEvent))
+        if(!isPublishRunning){
+            startPublishingFromQueue()
+        }
+    }
+
+
+    private fun startPublishingFromQueue() {
+        isPublishRunning = true
+        coroutineScope.async {
+            while (!publishQueue.isEmpty()){
+             publishQueue.peek()?.let {messageChannelPair ->
+                    if(publishMessageToPubnub(messageChannelPair.second,messageChannelPair.first)){
+                        publishQueue.dequeue()
+                        delay(100) // ensure messages not more than 5 per second as 100ms is pubnub latency
+                    }else{
+                        delay(2000) // Linear back-off strategy.
+                    }
+                }
+            }
+            isPublishRunning = false
+        }
+
+    }
+
+    private suspend fun publishMessageToPubnub(
+        pubnubChatEvent: PubnubChatEvent<PubnubChatMessage>,
+        channel: String
+    ) = suspendCoroutine<Boolean>{
         pubnub.publish()
             .message(
-                PubnubChatEvent(
-                    PubnubChatEventType.MESSAGE_CREATED.key, clientMessage.toPubnubChatMessage(
-                        ZonedDateTime.ofInstant(
-                            Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
-                            org.threeten.bp.ZoneId.of("UTC")
-                        ).formatIsoLocal8601()
-                    )
-                )
+                pubnubChatEvent
             )
             .meta(JsonObject().apply {
-                addProperty("sender_id", clientMessage.senderId)
+                addProperty("sender_id", pubnubChatEvent.payload.senderId)
                 addProperty("language", "en-us")
             })
             .channel(channel)
             .async(object : PNCallback<PNPublishResult>() {
                 override fun onResponse(result: PNPublishResult, status: PNStatus) {
-                    // handle publish result, status always present, result if successful
-                    // status.isError() to see if error happened
+                    logDebug { "pub status code: " + status.statusCode }
                     if (!status.isError) {
-                        analyticsService.trackMessageSent(clientMessage.id, clientMessage.message)
-                        println("pub timetoken: " + result.timetoken!!)
+                        analyticsService.trackMessageSent(
+                            pubnubChatEvent.payload.messageId,
+                            pubnubChatEvent.payload.message
+                        )
+                        logDebug { "pub timetoken: " + result.timetoken!! }
+                        it.resume(true)
+                    }else{
+                        it.resume(false)
                     }
-                    println("pub status code: " + status.statusCode)
                 }
             })
     }
+
 
     override fun stop() {
         pubnub.disconnect()
@@ -176,7 +223,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, private val auth
                 channel,
                 EpochTime(epochTimeMs)
             )
-            logDebug { "Received message from pubnub: $clientMessage" }
+            logDebug { "Received message on ${Thread.currentThread().name} from pubnub: $clientMessage" }
             listener?.onClientMessageEvent(client, clientMessage)
         }
     }
@@ -247,6 +294,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, private val auth
     }
 
     override fun destroy() {
+        coroutineScope.cancel()
         unsubscribeAll()
         pubnub.destroy()
     }
