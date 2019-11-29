@@ -103,15 +103,15 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
-            chatViewThemeAttribute.chatBubbleBackgroundRes?.let {
-                if(it<0){
-                    v.chatBubbleBackground.setBackgroundColor(it)
+            chatViewThemeAttribute.chatBubbleBackgroundRes?.let {res->
+                if(res<0){
+                    v.chatBubbleBackground.setBackgroundColor(res)
                 }else {
                     val value = TypedValue()
-                    v.context.resources.getValue(it, value, true)
+                    v.context.resources.getValue(res, value, true)
                     when {
                         value.type == TypedValue.TYPE_REFERENCE -> v.chatBubbleBackground.setBackgroundResource(
-                            it
+                            res
                         )
                         value.type == TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
                             R.drawable.ic_chat_message_bubble_rounded_rectangle
