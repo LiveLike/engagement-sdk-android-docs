@@ -17,5 +17,5 @@ internal data class PubnubChatMessage(
     @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("program_date_time")
-    val programDateTime: String
+    val programDateTime: String?
 )

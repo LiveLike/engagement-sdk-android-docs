@@ -207,22 +207,32 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
         client: PubnubChatMessagingClient
     ) {
         val event = jsonObject.extractStringOrEmpty("event")
-        if (event == PubnubChatEventType.MESSAGE_CREATED.key) {
+        if (event == PubnubChatEventType.MESSAGE_CREATED.key || event == PubnubChatEventType.MESSAGE_DELETED.key) {
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
-
-            val pdtString = pubnubChatEvent.payload.programDateTime
-            var epochTimeMs = 0L
-            pdtString.parseISODateTime()?.let {
-                epochTimeMs = it.toInstant().toEpochMilli()
+            var clientMessage: ClientMessage
+            if(event == PubnubChatEventType.MESSAGE_CREATED.key) {
+                val pdtString = pubnubChatEvent.payload.programDateTime
+                var epochTimeMs = 0L
+                pdtString?.parseISODateTime()?.let {
+                    epochTimeMs = it.toInstant().toEpochMilli()
+                }
+                 clientMessage = ClientMessage(
+                    gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
+                        addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
+                    },
+                    channel,
+                    EpochTime(epochTimeMs)
+                )
+            }else{
+                clientMessage = ClientMessage(JsonObject().apply {
+                        addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
+                        addProperty("id", pubnubChatEvent.payload.messageId)
+                    },
+                    channel,
+                    EpochTime(0)
+                )
             }
-            val clientMessage = ClientMessage(
-                gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
-                    addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
-                },
-                channel,
-                EpochTime(epochTimeMs)
-            )
             logDebug { "Received message on ${Thread.currentThread().name} from pubnub: $clientMessage" }
             listener?.onClientMessageEvent(client, clientMessage)
         }
