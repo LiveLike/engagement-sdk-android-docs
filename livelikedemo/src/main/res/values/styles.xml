@@ -23,7 +23,6 @@
         <item name="sendIconTintColor">#45AA45</item>
         <item name="stickerIconTintColor">#A12A45</item>
         <item name="chatBubbleMarginLeft">5dp</item>
-        <item name="emptyChatBackgroundImage">@drawable/ic_user_pic</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">
