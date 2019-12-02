@@ -190,8 +190,6 @@ internal class QuizViewModel(
             }
             state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
-//            delay(3000)
-//            dismissWidget(DismissAction.TIMEOUT)
         }
     }
 
