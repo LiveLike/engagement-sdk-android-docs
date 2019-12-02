@@ -26,7 +26,8 @@
         </activity>
         <activity android:name=".WidgetStandaloneActivity">
         </activity>
-        <activity android:name=".ExoPlayerActivity">
+        <activity android:name=".ExoPlayerActivity"
+            android:configChanges="orientation">
         </activity>
         <activity android:name=".TwoSessionActivity">
         </activity>

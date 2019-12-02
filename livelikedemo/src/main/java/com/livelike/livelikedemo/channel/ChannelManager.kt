@@ -54,7 +54,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                     try {
                         val json = JSONObject(responseData)
                         val results = json.getJSONArray("results")
-                        for (i in 0..(results.length() - 1)) {
+                        for (i in 0 until results.length()) {
                             val channel = getChannelFor(results.getJSONObject(i))
                             channel?.let {
                                 channelList.add(channel)
