@@ -145,6 +145,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
         pubnubConfiguration.subscribeKey = subscriberKey
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
+        pubnubConfiguration.publishKey = "pub-c-4376f77e-1ffd-46e5-aa29-15de54aac409"
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this
