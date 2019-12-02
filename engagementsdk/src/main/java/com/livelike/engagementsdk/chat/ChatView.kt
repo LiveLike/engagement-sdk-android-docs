@@ -5,19 +5,14 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -26,7 +21,6 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.FrameLayout
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.KeyboardHideReason
@@ -63,6 +57,7 @@ import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chat_view
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
@@ -217,6 +212,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
+                        checkEmptyChat()
                         if (isLastItemVisible) {
                             snapToLive()
                         }
@@ -224,6 +220,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
                         uiScope.launch {
                             hideLoadingSpinner()
+                            checkEmptyChat()
                             delay(100)
                             snapToLive()
                         }
@@ -310,6 +307,18 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     KeyboardHideReason.CHANGING_KEYBOARD_TYPE
                 )
             }
+        }
+    }
+
+    private fun checkEmptyChat() {
+        chatdisplay_empty.visibility = View.GONE
+
+        chatAttribute.chatEmptyBackgroundImage?.let {
+            chatdisplay_empty.setImageDrawable(it)
+            if(viewModel?.chatAdapter?.itemCount==0)
+                chatdisplay_empty.visibility = View.VISIBLE
+            else
+                chatdisplay_empty.visibility = View.GONE
         }
     }
 
