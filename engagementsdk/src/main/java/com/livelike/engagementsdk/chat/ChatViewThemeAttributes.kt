@@ -70,19 +70,14 @@ class ChatViewThemeAttributes {
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.ChatView_chatBubbleBackground, colorBubbleValue)
 
-            chatBubbleBackgroundRes = when (colorBubbleValue.type) {
-                TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
-                    context,
-                    getResourceId(
-                        R.styleable.ChatView_chatBubbleBackground,
-                        R.drawable.ic_chat_message_bubble_rounded_rectangle
-                    )
-                )
-                TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
-                    context,
+            chatBubbleBackgroundRes = when  {
+                colorBubbleValue.type==TypedValue.TYPE_REFERENCE -> getResourceId(
+                    R.styleable.ChatView_chatBubbleBackground,
                     R.drawable.ic_chat_message_bubble_rounded_rectangle
                 )
-                else -> ColorDrawable(colorBubbleValue.data)
+                colorBubbleValue.type==TypedValue.TYPE_NULL -> R.drawable.ic_chat_message_bubble_rounded_rectangle
+                colorBubbleValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorBubbleValue.type <= TypedValue.TYPE_LAST_COLOR_INT ->colorBubbleValue.data
+                else -> R.drawable.ic_chat_message_bubble_rounded_rectangle
             }
 
             val colorBackValue = TypedValue()
@@ -438,7 +433,7 @@ class ChatViewThemeAttributes {
     var sendIconWidth: Int = 0
     var sendIconHeight: Int = 0
     var chatInputTextSize: Int = 0
-    var chatBubbleBackgroundRes: Drawable? = null
+    var chatBubbleBackgroundRes: Int? = null
     var chatBackgroundRes: Drawable? = null
     var chatViewBackgroundRes: Drawable? = null
     var chatReactionBackgroundRes: Drawable? = null
