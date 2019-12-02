@@ -15,7 +15,7 @@ import com.livelike.livelikedemo.video.VideoPlayer
 class LiveLikeApplication : Application() {
 
     companion object {
-        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
+        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL+"&ordering=-scheduled_at"
 //            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
     }
 

@@ -526,8 +526,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
-        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
-        session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
+        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
+            if(visibility==View.VISIBLE){
+                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
+            }
+            visibility = View.GONE
+        }
     }
 
     private fun showStickerKeyboard() {
@@ -560,10 +564,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 0
             )
 
-            if (reason != KeyboardHideReason.MESSAGE_SENT) {
-                session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
-            }
-
+            session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
             setBackButtonInterceptor(this)
     }
 
@@ -574,8 +575,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
         if(chatAttribute.closeKeyboardOnSend) {
             hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+            hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         }
-        hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(
