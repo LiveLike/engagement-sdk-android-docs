@@ -46,11 +46,15 @@ import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String, uuid: String, private val analyticsService: AnalyticsService) : MessagingClient {
+internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String, uuid: String,
+                                         private val analyticsService: AnalyticsService,
+                                         val isDiscardOwnPublishInSubcription: Boolean = true) : MessagingClient {
 
     private var connectedChannels: MutableSet<String> = mutableSetOf()
 
     private val publishQueue  = Queue<Pair<String,PubnubChatEvent<PubnubChatMessage>>>()
+    private val publishedMessageIdList  = mutableListOf<String>() // Use to discard subscribe updates by own publish
+
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
 
@@ -107,6 +111,9 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
                 override fun onResponse(result: PNPublishResult?, status: PNStatus?) {
                     logDebug { "pub status code: " + status?.statusCode }
                     if (status?.isError == false) {
+                        if(isDiscardOwnPublishInSubcription) {
+                            publishedMessageIdList.add(pubnubChatEvent.payload.messageId)
+                        }
                         analyticsService.trackMessageSent(
                             pubnubChatEvent.payload.messageId,
                             pubnubChatEvent.payload.message
@@ -212,6 +219,9 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
             var clientMessage: ClientMessage
             if(event == PubnubChatEventType.MESSAGE_CREATED.key) {
+                if(isDiscardOwnPublishInSubcription && publishedMessageIdList.contains(pubnubChatEvent.payload.messageId)){
+                    return@processPubnubChatEvent // discarding as its own recently published message which is broadcasted by pubnub on that channel.
+                }
                 val pdtString = pubnubChatEvent.payload.programDateTime
                 var epochTimeMs = 0L
                 pdtString?.parseISODateTime()?.let {

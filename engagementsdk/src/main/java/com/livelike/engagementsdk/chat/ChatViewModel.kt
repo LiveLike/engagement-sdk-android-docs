@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 internal class ChatViewModel(
@@ -58,9 +59,10 @@ internal class ChatViewModel(
         messageList.add(message.apply {
             isFromMe = userStream.latest()?.id == senderId
         })
-        chatAdapter.submitList(ArrayList(messageList))
-        chatAdapter.notifyDataSetChanged()
-        eventStream.onNext(EVENT_NEW_MESSAGE)
+        uiScope.async {
+            chatAdapter.submitList(ArrayList(messageList))
+            eventStream.onNext(EVENT_NEW_MESSAGE)
+        }
     }
 
     override fun deleteChatMessage(messageId: String) {
