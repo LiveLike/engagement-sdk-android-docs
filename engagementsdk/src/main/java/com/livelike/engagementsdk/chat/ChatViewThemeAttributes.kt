@@ -50,6 +50,23 @@ class ChatViewThemeAttributes {
             chatAvatarGravity =
                 getInt(R.styleable.ChatView_chatAvatarGravity, Gravity.NO_GRAVITY)
 
+            val emptyBackValue=TypedValue()
+            getValue(R.styleable.ChatView_emptyChatBackgroundImage,emptyBackValue)
+
+            chatEmptyBackgroundImage = when(emptyBackValue.type){
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                    context,
+                    getResourceId(
+                        R.styleable.ChatView_emptyChatBackgroundImage,
+                        android.R.color.transparent
+                    )
+                )
+                else -> ContextCompat.getDrawable(
+                    context,
+                    android.R.color.transparent
+                )
+            }
+
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.ChatView_chatBubbleBackground, colorBubbleValue)
 
@@ -84,8 +101,8 @@ class ChatViewThemeAttributes {
             val sendDrawable = TypedValue()
             getValue(R.styleable.ChatView_chatSendDrawable, sendDrawable)
 
-            chatSendDrawable = when {
-                sendDrawable.type == TypedValue.TYPE_REFERENCE || sendDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+            chatSendDrawable = when (sendDrawable.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_chatSendDrawable,
@@ -101,8 +118,8 @@ class ChatViewThemeAttributes {
             val sendStickerDrawable = TypedValue()
             getValue(R.styleable.ChatView_chatStickerSendDrawable, sendDrawable)
 
-            chatStickerSendDrawable = when {
-                sendStickerDrawable.type == TypedValue.TYPE_REFERENCE || sendStickerDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+            chatStickerSendDrawable = when (sendStickerDrawable.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_chatStickerSendDrawable,
@@ -118,8 +135,8 @@ class ChatViewThemeAttributes {
             val userPicDrawable = TypedValue()
             getValue(R.styleable.ChatView_userPicDrawable, sendDrawable)
 
-            chatUserPicDrawable = when {
-                userPicDrawable.type == TypedValue.TYPE_REFERENCE || userPicDrawable.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+            chatUserPicDrawable = when (userPicDrawable.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_userPicDrawable,
@@ -135,15 +152,15 @@ class ChatViewThemeAttributes {
             val chatSendBackValue = TypedValue()
             getValue(R.styleable.ChatView_chatSendBackground, chatSendBackValue)
 
-            chatSendBackgroundDrawable = when {
-                chatSendBackValue.type == TypedValue.TYPE_REFERENCE || chatSendBackValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+            chatSendBackgroundDrawable = when (chatSendBackValue.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_chatSendBackground,
                         android.R.color.transparent
                     )
                 )
-                chatSendBackValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
                     context,
                     android.R.color.transparent
                 )
@@ -153,15 +170,15 @@ class ChatViewThemeAttributes {
             val colorReactionValue = TypedValue()
             getValue(R.styleable.ChatView_chatReactionBackground, colorReactionValue)
 
-            chatReactionBackgroundRes = when {
-                colorReactionValue.type == TypedValue.TYPE_REFERENCE || colorReactionValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+            chatReactionBackgroundRes = when (colorReactionValue.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_chatReactionBackground,
                         android.R.color.transparent
                     )
                 )
-                colorReactionValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
                     context,
                     android.R.color.transparent
                 )
@@ -171,45 +188,45 @@ class ChatViewThemeAttributes {
             val colorViewValue = TypedValue()
             getValue(R.styleable.ChatView_chatViewBackground, colorViewValue)
 
-            chatViewBackgroundRes = when {
-                colorViewValue.type == TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
+            chatViewBackgroundRes = when (colorViewValue.type) {
+                TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_chatViewBackground,
                         android.R.color.transparent
                     )
                 )
-                colorViewValue.type == TypedValue.TYPE_NULL -> ColorDrawable(Color.TRANSPARENT)
+                TypedValue.TYPE_NULL -> ColorDrawable(Color.TRANSPARENT)
                 else -> ColorDrawable(colorViewValue.data)
             }
 
             val colorChatDisplayValue = TypedValue()
             getValue(R.styleable.ChatView_chatDisplayBackground, colorChatDisplayValue)
 
-            chatDisplayBackgroundRes = when {
-                colorChatDisplayValue.type == TypedValue.TYPE_REFERENCE || colorChatDisplayValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+            chatDisplayBackgroundRes = when (colorChatDisplayValue.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_chatDisplayBackground,
                         android.R.color.transparent
                     )
                 )
-                colorChatDisplayValue.type == TypedValue.TYPE_NULL -> ColorDrawable(Color.TRANSPARENT)
+                TypedValue.TYPE_NULL -> ColorDrawable(Color.TRANSPARENT)
                 else -> ColorDrawable(colorChatDisplayValue.data)
             }
 
             val colorInputBackgroundValue = TypedValue()
             getValue(R.styleable.ChatView_chatInputBackground, colorInputBackgroundValue)
 
-            chatInputBackgroundRes = when {
-                colorInputBackgroundValue.type == TypedValue.TYPE_REFERENCE || colorInputBackgroundValue.type == TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+            chatInputBackgroundRes = when (colorInputBackgroundValue.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_chatInputBackground,
                         R.drawable.ic_chat_input
                     )
                 )
-                colorInputBackgroundValue.type == TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
                     context,
                     R.drawable.ic_chat_input
                 )
@@ -222,15 +239,15 @@ class ChatViewThemeAttributes {
                 colorInputViewBackgroundValue
             )
 
-            chatInputViewBackgroundRes = when {
-                colorInputViewBackgroundValue.type == TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
+            chatInputViewBackgroundRes = when (colorInputViewBackgroundValue.type) {
+                TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.ChatView_chatInputViewBackground,
                         android.R.color.transparent
                     )
                 )
-                colorInputViewBackgroundValue.type == TypedValue.TYPE_NULL -> ColorDrawable(
+                TypedValue.TYPE_NULL -> ColorDrawable(
                     ContextCompat.getColor(context, android.R.color.transparent)
                 )
                 else -> ColorDrawable(colorInputViewBackgroundValue.data)
@@ -452,4 +469,5 @@ class ChatViewThemeAttributes {
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
+    var chatEmptyBackgroundImage:Drawable?=null
 }
