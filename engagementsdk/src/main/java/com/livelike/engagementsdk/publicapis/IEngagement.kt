@@ -23,5 +23,4 @@ interface IEngagement {
 
     /** Override the default auto-generated chat userpic **/
     fun updateChatUserPic(url: String)
-
 }

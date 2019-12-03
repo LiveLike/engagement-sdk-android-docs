@@ -23,7 +23,7 @@ internal fun initLiveLikeSharedPrefs(appContext: Context) {
 
 internal fun getSharedPreferences(): SharedPreferences {
     val packageName = mAppContext?.packageName ?: ""
-    return mAppContext!!.getSharedPreferences("${packageName}-livelike-sdk", Context.MODE_PRIVATE)
+    return mAppContext!!.getSharedPreferences("$packageName-livelike-sdk", Context.MODE_PRIVATE)
 }
 
 internal fun getSessionId(): String {
@@ -38,7 +38,6 @@ internal fun setNickname(nickname: String) {
 internal fun getNickename(): String {
     return getSharedPreferences().getString(PREFERENCE_KEY_USER_PIC, "") ?: ""
 }
-
 
 internal fun addWidgetPredictionVoted(id: String, optionId: String) {
     val editor = getSharedPreferences().edit()

@@ -37,6 +37,7 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
@@ -46,7 +47,6 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
@@ -71,6 +71,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.threeten.bp.ZonedDateTime
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -568,7 +569,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
-            Date(timeData.timeSinceEpochInMs).toString(),
+            timeStamp = ZonedDateTime.now().formatIsoLocal8601(),
             isFromMe = true
         ).let {
             viewModel?.apply {

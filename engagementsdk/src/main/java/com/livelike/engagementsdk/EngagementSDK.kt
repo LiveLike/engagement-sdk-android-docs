@@ -30,7 +30,6 @@ class EngagementSDK(
     accessToken: String? = null
 ) : IEngagement {
 
-
 //    We should add errorDelegate as parameter of SDK init, on this error delegate we can propogate the events of network failures or any other. Based on it integrator can re-init sdk
 
     private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()

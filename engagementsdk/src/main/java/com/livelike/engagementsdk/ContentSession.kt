@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.FrameLayout
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.chat.ChatRepository
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.toChatQueue
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -87,7 +88,7 @@ internal class ContentSession(
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
     // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
     private val configurationFlow = flow {
-        while (sdkConfiguration.latest() == null) {
+        while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
             delay(1000)
         }
         emit(sdkConfiguration.latest()!!)
@@ -126,8 +127,8 @@ internal class ContentSession(
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            chatViewModel.currentChatRoom = program.subscribeChannel
-                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
+                            chatViewModel.currentChatRoom = program.defaultChatRoom?.channels?.chat?.get("pubnub") ?: ""
+                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"), configuration, pair.first)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -182,7 +183,9 @@ internal class ContentSession(
             chatViewModel.chatLoaded = false
             if (sendbirdMessagingClient == null) {
                 configurationFlow.collect {
-                    initializeChatMessaging(chatRoom, it, syncEnabled = false, privateGroupsChat = true)
+                    userRepository.currentUserStream.latest()?.let { user ->
+                        initializeChatMessaging(chatRoom, it, user, syncEnabled = false, privateGroupsChat = true)
+                    }
                 }
             } else {
                 sendbirdMessagingClient?.activeChannelRoom = chatRoom
@@ -281,23 +284,32 @@ internal class ContentSession(
     // ///// Chat. ///////
 
     private fun initializeChatMessaging(
-        chatChannel: String,
+        chatChannel: String?,
         config: EngagementSDK.SdkConfiguration,
+        user: LiveLikeUser,
         syncEnabled: Boolean = true,
         privateGroupsChat: Boolean = false
     ) {
+        if (chatChannel == null)
+            return
+
         analyticService.trackLastChatStatus(true)
-        chatClient = SendbirdMessagingClient(
-            config.sendBirdAppId,
-            applicationContext,
-            analyticService,
-            userRepository,
-            msgListener,
-            chatRoomMemberships
-        )
+
         if (privateGroupsChat) {
             sendbirdMessagingClient = chatClient as SendbirdMessagingClient
+            chatClient = SendbirdMessagingClient(
+                config.sendBirdAppId,
+                applicationContext,
+                analyticService,
+                userRepository,
+                msgListener,
+                chatRoomMemberships
+            )
+        } else {
+            chatClient =
+                ChatRepository(config.pubNubKey, user.accessToken, user.id, analyticService).establishChatMessagingConnection()
         }
+
         if (syncEnabled)
             chatClient =
                 chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
@@ -326,8 +338,8 @@ internal class ContentSession(
 
     override fun resume() {
         logVerbose { "Resuming the Session" }
-        widgetClient?.resume()
-        chatClient?.resume()
+        widgetClient?.start()
+        chatClient?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticService.trackLastChatStatus(true)
         analyticService.trackLastWidgetStatus(true)
@@ -336,14 +348,16 @@ internal class ContentSession(
     override fun close() {
         logVerbose { "Closing the Session" }
         contentSessionScope.cancel()
-        chatClient?.apply {
+        chatClient?.run {
             unsubscribeAll()
+            stop()
+            destroy()
         }
-        widgetClient?.apply {
+        widgetClient?.run {
             unsubscribeAll()
+            stop()
+            destroy()
         }
-        widgetClient?.stop()
-        chatClient?.stop()
         currentWidgetViewStream.clear()
         analyticService.trackLastChatStatus(false)
         analyticService.trackLastWidgetStatus(false)

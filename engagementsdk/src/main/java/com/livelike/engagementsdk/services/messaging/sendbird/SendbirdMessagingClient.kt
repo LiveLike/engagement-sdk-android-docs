@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.services.messaging.sendbird
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
@@ -155,7 +154,7 @@ internal class SendbirdMessagingClient(
         SendBird.disconnect {}
     }
 
-    override fun resume() {
+    override fun start() {
         liveLikeUser.currentUserStream.latest()?.let { connectToSendbird(it, true) }
     }
 
@@ -370,6 +369,9 @@ internal class SendbirdMessagingClient(
         messages.forEach {
             listener?.onClientMessageEvent(this, it)
         }
+    }
+
+    override fun destroy() {
     }
 }
 

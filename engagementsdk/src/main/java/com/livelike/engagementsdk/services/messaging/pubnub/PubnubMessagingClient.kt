@@ -29,7 +29,7 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
         pubnub.disconnect()
     }
 
-    override fun resume() {
+    override fun start() {
         pubnub.reconnect()
     }
 
@@ -126,7 +126,6 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
             }
         })
     }
-
     override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
     }
@@ -153,5 +152,10 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
             }
             return null
         }
+    }
+
+    override fun destroy() {
+        unsubscribeAll()
+        pubnub.destroy()
     }
 }

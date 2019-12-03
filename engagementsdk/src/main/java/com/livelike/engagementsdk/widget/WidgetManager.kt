@@ -78,8 +78,8 @@ internal class WidgetManager(
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 
     private val handler = Handler(Looper.getMainLooper())

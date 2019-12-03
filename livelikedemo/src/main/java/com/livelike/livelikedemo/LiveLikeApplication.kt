@@ -69,4 +69,4 @@ class LiveLikeApplication : Application() {
     }
 }
 
-const val PREFERENCES_APP_ID = BuildConfig.APP_CLIENT_ID+"Test_Demo"
+const val PREFERENCES_APP_ID = BuildConfig.APP_CLIENT_ID + "Test_Demo"

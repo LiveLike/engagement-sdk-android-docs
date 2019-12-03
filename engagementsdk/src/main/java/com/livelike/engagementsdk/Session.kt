@@ -27,7 +27,7 @@ interface LiveLikeContentSession {
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(widgetView: FrameLayout)
     /** Set the user profile pic. to be shown in chatting*/
-    fun setProfilePicUrl(url:String)
+    fun setProfilePicUrl(url: String)
     /** Enter a Chat Room */
     /** Join a Chat Room, membership will be created for this room */
     fun joinChatRoom(chatRoom: String)

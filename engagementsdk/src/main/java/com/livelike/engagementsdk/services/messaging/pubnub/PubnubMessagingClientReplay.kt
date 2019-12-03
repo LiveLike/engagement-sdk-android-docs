@@ -102,15 +102,15 @@ internal class PubnubMessagingClientReplay(
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-        upstream.publishMessage(message ,channel, timeSinceEpoch)
+        upstream.publishMessage(message, channel, timeSinceEpoch)
     }
 
     override fun stop() {
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 }
 
