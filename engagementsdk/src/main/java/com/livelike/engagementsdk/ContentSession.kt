@@ -90,7 +90,7 @@ internal class ContentSession(
         }
         emit(sdkConfiguration.latest()!!)
     }
-    private var customChatChannel = ""
+    private var privateChatRoom = ""
 
     private var chatRoomMemberships: HashMap<String, Long?>
 
@@ -125,7 +125,7 @@ internal class ContentSession(
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
                             chatViewModel.currentChatRoom = program.defaultChatRoom?.channels?.chat?.get("pubnub") ?: ""
-                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"), configuration, pair.first)
+                            if (privateChatRoom.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"), configuration, pair.first)
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -169,8 +169,8 @@ internal class ContentSession(
             joinChatRoom(chatRoom)
         }
         logDebug{chatRoomMemberships.toString()}
-        if (customChatChannel == chatRoom) return // Already in the room
-        customChatChannel = chatRoom
+        if (privateChatRoom == chatRoom) return // Already in the room
+        privateChatRoom = chatRoom
         contentSessionScope.launch {
             chatViewModel.apply {
                 flushMessages()
