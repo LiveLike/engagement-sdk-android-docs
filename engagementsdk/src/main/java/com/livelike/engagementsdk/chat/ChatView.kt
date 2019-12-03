@@ -93,7 +93,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
     fun closeKeyboardOnSend(closeKeyboardOnSend: Boolean) {
-        chatAttribute.closeKeyboardOnSend=closeKeyboardOnSend
+        chatAttribute.closeKeyboardOnSend = closeKeyboardOnSend
+        edittext_chat_message.imeOptions = when(chatAttribute.closeKeyboardOnSend) {
+            true -> EditorInfo.IME_ACTION_SEND
+            else -> EditorInfo.IME_ACTION_NONE
+        }
+
     }
 
     private var session: LiveLikeContentSession? = null
