@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
@@ -13,6 +14,7 @@ import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.parseISODateTime
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -49,7 +51,8 @@ internal class PubnubChatMessagingClient(
     authKey: String,
     uuid: String,
     private val analyticsService: AnalyticsService,
-    val isDiscardOwnPublishInSubcription: Boolean = true
+    val isDiscardOwnPublishInSubcription: Boolean = true,
+    val msgListener: MessageListener? = null
 ) : MessagingClient {
 
     private var connectedChannels: MutableSet<String> = mutableSetOf()
@@ -59,6 +62,20 @@ internal class PubnubChatMessagingClient(
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
+
+
+    var activeChatRoom = ""
+        set(value) {
+            field = value
+            value.let {
+                val channel = connectedChannels.find { it == value }
+                if (channel != null) {
+                    loadMessageHistoryByTimestamp(channel)
+                } else {
+                    subscribe(listOf(value))
+                }
+            }
+        }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
@@ -236,6 +253,8 @@ internal class PubnubChatMessagingClient(
                     channel,
                     EpochTime(epochTimeMs)
                 )
+
+                msgListener?.onNewMessage(clientMessage.channel, LiveLikeChatMessage(message = clientMessage.message.toString()))
             } else {
                 clientMessage = ClientMessage(JsonObject().apply {
                         addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
@@ -255,9 +274,11 @@ internal class PubnubChatMessagingClient(
         timeToken: Long = Calendar.getInstance().timeInMillis * 100000,
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
+        val isDisplayingChatForThisRoom = activeChatRoom.isEmpty() || activeChatRoom == channel
+        val previousMessageCount = if (isDisplayingChatForThisRoom) chatHistoyLimit else 0
         pubnub.history()
             .channel(channel)
-            .count(chatHistoyLimit)
+            .count(previousMessageCount)
             .start(timeToken)
             .reverse(false)
             .async(object : PNCallback<PNHistoryResult>() {
@@ -268,6 +289,13 @@ internal class PubnubChatMessagingClient(
                                 it.entry.asJsonObject,
                                 channel,
                                 this@PubnubChatMessagingClient
+                            )
+
+                            msgListener?.onNewMessage(
+                                channel,
+                                LiveLikeChatMessage(
+                                    message = it.entry.toString()
+                                )
                             )
                         }
                     }

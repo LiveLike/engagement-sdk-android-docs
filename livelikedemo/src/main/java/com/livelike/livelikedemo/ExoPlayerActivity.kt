@@ -65,7 +65,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
     }
     val timer = Timer()
-    val chatChannelNames = listOf("qatest1", "qatest3", "test2", "newRoom")
+    val chatChannelNames = listOf("chat_20679243_9338_4d1c_bdd3_4223bb401aaa")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

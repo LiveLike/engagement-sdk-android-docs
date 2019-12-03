@@ -4,6 +4,7 @@ import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import java.util.Calendar
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -30,7 +31,7 @@ interface LiveLikeContentSession {
     fun setProfilePicUrl(url: String)
     /** Enter a Chat Room */
     /** Join a Chat Room, membership will be created for this room */
-    fun joinChatRoom(chatRoom: String)
+    fun joinChatRoom(chatRoom: String, timestamp : Long = Calendar.getInstance().timeInMillis)
     /** Leave a Chat Room, membership will be cancelled with this room */
     fun leaveChatRoom(chatRoom: String)
     /** Enter a Chat Room, the last entered Chat Room will be the active one */
