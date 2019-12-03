@@ -25,7 +25,7 @@ internal class ChatViewModel(
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository, ChatReactionRepository(programRepository.programId))
     private val messageList = mutableListOf<ChatMessage>()
-    internal val eventStream: Stream<String> = SubscriptionManager(false)
+    internal val eventStream: Stream<String> = SubscriptionManager(true)
     var currentChatRoom: String = ""
     set(value) {
         field = value
