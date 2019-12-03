@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
-import android.util.Log
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
@@ -133,7 +132,6 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
 
     override fun start() {
         pubnub.reconnect()
-        connectedChannels.forEach { loadMessageHistoryByTimestamp(channel = it) }
     }
 
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
@@ -250,18 +248,16 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
 
     private fun loadMessageHistoryByTimestamp(
         channel: String,
-        timestamp: Long = Calendar.getInstance().timeInMillis,
+        timeToken: Long = Calendar.getInstance().timeInMillis * 100000,
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
         pubnub.history()
             .channel(channel)
             .count(chatHistoyLimit)
-            .start(timestamp)
-            .reverse(true)
-            .includeTimetoken(true)
+            .start(timeToken)
+            .reverse(false)
             .async(object : PNCallback<PNHistoryResult>() {
                 override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
-                    sendLoadingCompletedEvent(channel)
                     if (status?.isError == false && result?.messages?.isEmpty() == false) {
                         result.messages.forEach {
                             processPubnubChatEvent(
@@ -271,6 +267,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
                             )
                         }
                     }
+                    sendLoadingCompletedEvent(channel)
                 }
             })
     }
