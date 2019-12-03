@@ -252,7 +252,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
     private fun loadMessageHistoryByTimestamp(
         channel: String,
         timestamp: Long = Calendar.getInstance().timeInMillis,
-        chatHistoyLimit: Int = CHAT_HISTORY_LIMIT
+        chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
         pubnub.history()
             .channel(channel)
