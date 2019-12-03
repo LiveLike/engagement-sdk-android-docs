@@ -189,29 +189,29 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
                 dialog)
-//            if (privateGroupChatsession == null) {
-//                privateGroupChatsession =
-//                    (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString())
-//            }
-//            privateGroupChatsession?.setMessageListener(object : MessageListener {
-//                override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
-//                    if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
-//                        messageCount[chatRoom] = mutableSetOf() // reset unread message count
-//                    } else {
-//                        if (messageCount[chatRoom] == null) {
-//                            messageCount[chatRoom] = mutableSetOf(message.id.toString())
-//                        } else {
-//                            messageCount[chatRoom]?.add(message.id.toString())
-//                        }
-//                    }
-//                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString("unread_count", GsonBuilder().create().toJson(messageCount)).apply()
-//                    messageCount.forEach {
-//                        logsPreview.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${logsPreview.text}"
-//                        fullLogs.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${fullLogs.text}"
-//                        Log.e("Here", "channel : ${it.key}, unread : ${it.value.size}")
-//                    }
-//                }
-//            })
+            if (privateGroupChatsession == null) {
+                privateGroupChatsession =
+                    (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString())
+            }
+            privateGroupChatsession?.setMessageListener(object : MessageListener {
+                override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
+                    if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
+                        messageCount[chatRoom] = mutableSetOf() // reset unread message count
+                    } else {
+                        if (messageCount[chatRoom] == null) {
+                            messageCount[chatRoom] = mutableSetOf(message.id.toString())
+                        } else {
+                            messageCount[chatRoom]?.add(message.id.toString())
+                        }
+                    }
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString("unread_count", GsonBuilder().create().toJson(messageCount)).apply()
+                    messageCount.forEach {
+                        logsPreview.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${logsPreview.text}"
+                        fullLogs.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${fullLogs.text}"
+                        Log.e("Here", "channel : ${it.key}, unread : ${it.value.size}")
+                    }
+                }
+            })
 
             chat_view.setSession(session)
             widget_view.setSession(session)
