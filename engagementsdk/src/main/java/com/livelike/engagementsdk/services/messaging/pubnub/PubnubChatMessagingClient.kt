@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
-import android.util.Log
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
@@ -19,7 +18,6 @@ import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingClient.Companion.CHAT_HISTORY_LIMIT
 import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
@@ -36,28 +34,31 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.history.PNHistoryResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
-internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String, uuid: String,
-                                         private val analyticsService: AnalyticsService,
-                                         val isDiscardOwnPublishInSubcription: Boolean = true) : MessagingClient {
+internal class PubnubChatMessagingClient(
+    subscriberKey: String,
+    authKey: String,
+    uuid: String,
+    private val analyticsService: AnalyticsService,
+    val isDiscardOwnPublishInSubcription: Boolean = true
+) : MessagingClient {
 
     private var connectedChannels: MutableSet<String> = mutableSetOf()
 
-    private val publishQueue  = Queue<Pair<String,PubnubChatEvent<PubnubChatMessage>>>()
-    private val publishedMessageIdList  = mutableListOf<String>() // Use to discard subscribe updates by own publish
+    private val publishQueue = Queue<Pair<String, PubnubChatEvent<PubnubChatMessage>>>()
+    private val publishMessageIdList = mutableListOf<String>() // Use to discard subscribe updates by own publish
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
-
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
@@ -70,34 +71,39 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
             )
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
-        if(!isPublishRunning){
+        if (isDiscardOwnPublishInSubcription) {
+            publishMessageIdList.add(pubnubChatEvent.payload.messageId)
+        }
+        if (!isPublishRunning) {
             startPublishingFromQueue()
         }
     }
 
-
     private fun startPublishingFromQueue() {
         isPublishRunning = true
         coroutineScope.async {
-            while (!publishQueue.isEmpty()){
-             publishQueue.peek()?.let {messageChannelPair ->
-                    if(publishMessageToPubnub(messageChannelPair.second,messageChannelPair.first)){
+            while (!publishQueue.isEmpty()) {
+                publishQueue.peek()?.let { messageChannelPair ->
+                    if (publishMessageToPubnub(
+                            messageChannelPair.second,
+                            messageChannelPair.first
+                        )
+                    ) {
                         publishQueue.dequeue()
                         delay(100) // ensure messages not more than 5 per second as 100ms is pubnub latency
-                    }else{
+                    } else {
                         delay(2000) // Linear back-off strategy.
                     }
                 }
             }
             isPublishRunning = false
         }
-
     }
 
     private suspend fun publishMessageToPubnub(
         pubnubChatEvent: PubnubChatEvent<PubnubChatMessage>,
         channel: String
-    ) = suspendCoroutine<Boolean>{
+    ) = suspendCoroutine<Boolean> {
         pubnub.publish()
             .message(
                 pubnubChatEvent
@@ -111,22 +117,18 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
                 override fun onResponse(result: PNPublishResult?, status: PNStatus?) {
                     logDebug { "pub status code: " + status?.statusCode }
                     if (status?.isError == false) {
-                        if(isDiscardOwnPublishInSubcription) {
-                            publishedMessageIdList.add(pubnubChatEvent.payload.messageId)
-                        }
                         analyticsService.trackMessageSent(
                             pubnubChatEvent.payload.messageId,
                             pubnubChatEvent.payload.message
                         )
                         logDebug { "pub timetoken: " + result?.timetoken!! }
                         it.resume(true)
-                    }else{
+                    } else {
                         it.resume(false)
                     }
                 }
             })
     }
-
 
     override fun stop() {
         pubnub.disconnect()
@@ -134,7 +136,6 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
 
     override fun start() {
         pubnub.reconnect()
-        connectedChannels.forEach { loadMessageHistoryByTimestamp(channel = it) }
     }
 
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
@@ -205,7 +206,6 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
             }
 
             override fun presence(pubnub: PubNub, presence: PNPresenceEventResult) {}
-
         })
     }
 
@@ -219,8 +219,9 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
             var clientMessage: ClientMessage
-            if(event == PubnubChatEventType.MESSAGE_CREATED.key) {
-                if(isDiscardOwnPublishInSubcription && publishedMessageIdList.contains(pubnubChatEvent.payload.messageId)){
+            if (event == PubnubChatEventType.MESSAGE_CREATED.key) {
+                if (isDiscardOwnPublishInSubcription && publishMessageIdList.contains(pubnubChatEvent.payload.messageId)) {
+                    publishMessageIdList.remove(pubnubChatEvent.payload.messageId)
                     return@processPubnubChatEvent // discarding as its own recently published message which is broadcasted by pubnub on that channel.
                 }
                 val pdtString = pubnubChatEvent.payload.programDateTime
@@ -228,14 +229,14 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
                 pdtString?.parseISODateTime()?.let {
                     epochTimeMs = it.toInstant().toEpochMilli()
                 }
-                 clientMessage = ClientMessage(
+                clientMessage = ClientMessage(
                     gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
                         addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
                     },
                     channel,
                     EpochTime(epochTimeMs)
                 )
-            }else{
+            } else {
                 clientMessage = ClientMessage(JsonObject().apply {
                         addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
                         addProperty("id", pubnubChatEvent.payload.messageId)
@@ -251,18 +252,16 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
 
     private fun loadMessageHistoryByTimestamp(
         channel: String,
-        timestamp: Long = Calendar.getInstance().timeInMillis,
-        chatHistoyLimit: Int = CHAT_HISTORY_LIMIT
+        timeToken: Long = Calendar.getInstance().timeInMillis * 100000,
+        chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
         pubnub.history()
             .channel(channel)
             .count(chatHistoyLimit)
-            .start(timestamp)
-            .reverse(true)
-            .includeTimetoken(true)
+            .start(timeToken)
+            .reverse(false)
             .async(object : PNCallback<PNHistoryResult>() {
                 override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
-                    sendLoadingCompletedEvent(channel)
                     if (status?.isError == false && result?.messages?.isEmpty() == false) {
                         result.messages.forEach {
                             processPubnubChatEvent(
@@ -272,6 +271,7 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
                             )
                         }
                     }
+                    sendLoadingCompletedEvent(channel)
                 }
             })
     }
@@ -295,7 +295,6 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
         pubnub.unsubscribeAll()
     }
 
-
     private fun sendLoadingCompletedEvent(channel: String) {
         val msg = JsonObject().apply {
             addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
@@ -307,7 +306,6 @@ internal class PubnubChatMessagingClient(subscriberKey: String, authKey: String,
             )
         )
     }
-
 
     override fun addMessagingEventListener(listener: MessagingEventListener) {
         // More than one triggerListener?
