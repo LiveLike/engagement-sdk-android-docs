@@ -78,8 +78,8 @@
 
         <item name="textColor">#000</item>
         <item name="rankValueTextColor">#000</item>
-        <item name="winAnimation">winAnimationTurner</item>
-        <item name="loseAnimation">loseAnimationTurner</item>
+        <item name="winAnimation">@string/win_animation_turner</item>
+        <item name="loseAnimation">@string/lose_animation_turner</item>
         <item name="emptyChatBackgroundImage">@drawable/ic_empty</item>
 
     </style>
@@ -120,4 +120,5 @@
         <item name="android:gravity">start|center</item>
         <item name="android:lineSpacingExtra">8sp</item>
     </style>
+
 </resources>
