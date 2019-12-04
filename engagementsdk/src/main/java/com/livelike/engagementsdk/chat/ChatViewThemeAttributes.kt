@@ -470,4 +470,5 @@ class ChatViewThemeAttributes {
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
     var chatEmptyBackgroundImage:Drawable?=null
+    var closeKeyboardOnSend: Boolean = true
 }
