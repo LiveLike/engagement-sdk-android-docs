@@ -23,6 +23,9 @@
         <item name="sendIconTintColor">#45AA45</item>
         <item name="stickerIconTintColor">#A12A45</item>
         <item name="chatBubbleMarginLeft">5dp</item>
+        <item name="emptyChatBackgroundText">GET THE CHAT STARTED!</item>
+        <item name="emptyChatBackgroundTextSize">13sp</item>
+        <item name="emptyChatBackgroundTextColor">#50FFFFFF</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">
@@ -78,6 +81,9 @@
         <item name="textColor">#000</item>
         <item name="rankValueTextColor">#000</item>
         <item name="emptyChatBackgroundImage">@drawable/ic_empty</item>
+        <item name="emptyChatBackgroundText">No Chat!!</item>
+        <item name="emptyChatBackgroundTextSize">11sp</item>
+        <item name="emptyChatBackgroundTextColor">#50000000</item>
 
     </style>
 

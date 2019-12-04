@@ -2,9 +2,11 @@ package com.livelike.engagementsdk.utils
 
 import android.content.Context
 import android.content.res.Resources
-import java.util.Random
+import android.util.TypedValue
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
+import java.util.Random
+
 
 fun Any.unit() = Unit
 internal class AndroidResource {
@@ -13,6 +15,14 @@ internal class AndroidResource {
         fun dpToPx(dp: Int): Int {
             val scale = Resources.getSystem().displayMetrics.density
             return (dp * scale + 0.5f).toInt()
+        }
+
+        fun spToPx(sp: Float): Float {
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP,
+                sp,
+                Resources.getSystem().displayMetrics
+            )
         }
 
         fun pxToDp(px: Int): Int {

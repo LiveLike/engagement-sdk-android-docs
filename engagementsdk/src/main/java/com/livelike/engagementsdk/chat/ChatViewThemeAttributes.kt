@@ -58,14 +58,27 @@ class ChatViewThemeAttributes {
                     context,
                     getResourceId(
                         R.styleable.ChatView_emptyChatBackgroundImage,
-                        android.R.color.transparent
+                        R.drawable.placeholder_chat
                     )
                 )
                 else -> ContextCompat.getDrawable(
                     context,
-                    android.R.color.transparent
+                    R.drawable.placeholder_chat
                 )
             }
+
+            chatEmptyBackgroundText =
+                getString(R.styleable.ChatView_emptyChatBackgroundText)
+
+            chatEmptyBackgroundTextColor = getColor(
+                R.styleable.ChatView_emptyChatBackgroundTextColor,
+                Color.WHITE
+            )
+
+            chatEmptyBackgroundTextSize = getDimension(
+                R.styleable.ChatView_emptyChatBackgroundTextSize,
+                17f
+            )
 
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.ChatView_chatBubbleBackground, colorBubbleValue)
@@ -470,4 +483,7 @@ class ChatViewThemeAttributes {
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
     var chatEmptyBackgroundImage:Drawable?=null
+    var chatEmptyBackgroundText:String?=null
+    var chatEmptyBackgroundTextColor:Int=Color.WHITE
+    var chatEmptyBackgroundTextSize:Float=AndroidResource.spToPx(17f)
 }
