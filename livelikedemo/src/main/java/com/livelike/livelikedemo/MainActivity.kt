@@ -17,19 +17,20 @@ import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_label
+import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
 class MainActivity : AppCompatActivity() {
 
-    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>,var theme:Int)
+    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>,var theme:Int,var keyboardClose:Boolean=true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val channelManager = (application as LiveLikeApplication).channelManager
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class,R.style.AppTheme_NoActionBar)
-        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class,R.style.AppTheme_NoActionBar)
+        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class,R.style.AppTheme_NoActionBar,true)
+        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class,R.style.AppTheme_NoActionBar,false)
 
         layout_side_panel.setOnClickListener {
             startActivity(playerDetailIntent(player))
@@ -82,6 +83,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        toggle_auto_keyboard_hide.setOnCheckedChangeListener { buttonView, isChecked ->
+            player.keyboardClose = isChecked
+        }
+        toggle_auto_keyboard_hide.isChecked=player.keyboardClose
 
 
 
@@ -107,5 +112,10 @@ class MainActivity : AppCompatActivity() {
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent= Intent(this, player.cls.java)
     intent.putExtra("theme",player.theme)
+    intent.putExtra("keyboardClose", when (player.theme) {
+        R.style.TurnerChatTheme -> player.keyboardClose
+        else -> true
+    }
+    )
     return intent
 }
