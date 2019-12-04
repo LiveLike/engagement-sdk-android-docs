@@ -322,18 +322,18 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         chatAttribute.chatEmptyBackgroundImage?.let {
             chatdisplay_empty_img.setImageDrawable(it)
-            updateEmptyLay()
+            toggleVisibilityEmptyChat()
         }
 
         chatAttribute.chatEmptyBackgroundText?.let {
             chatdisplay_empty_txt.text = it
             chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_SP,chatAttribute.chatEmptyBackgroundTextSize)
             chatdisplay_empty_txt.setTextColor(chatAttribute.chatEmptyBackgroundTextColor)
-            updateEmptyLay()
+            toggleVisibilityEmptyChat()
         }
     }
 
-    private fun updateEmptyLay() {
+    private fun toggleVisibilityEmptyChat() {
         if(viewModel?.chatAdapter?.itemCount==0)
             chatdisplay_empty_lay.visibility = View.VISIBLE
         else

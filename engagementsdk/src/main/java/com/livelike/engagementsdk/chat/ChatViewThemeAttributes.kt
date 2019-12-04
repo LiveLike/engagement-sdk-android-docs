@@ -485,6 +485,6 @@ class ChatViewThemeAttributes {
     var chatEmptyBackgroundImage:Drawable?=null
     var chatEmptyBackgroundText:String?=null
     var chatEmptyBackgroundTextColor:Int=Color.WHITE
-    var chatEmptyBackgroundTextSize:Float = 17f
+    var chatEmptyBackgroundTextSize:FloaChatt = 17f
     var closeKeyboardOnSend: Boolean = true
 }
