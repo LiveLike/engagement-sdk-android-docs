@@ -77,9 +77,10 @@
 
         <item name="textColor">#000</item>
         <item name="rankValueTextColor">#000</item>
-        <item name="emptyChatBackgroundImage">@drawable/ic_user_pic</item>
         <item name="winAnimation">winAnimationTurner</item>
         <item name="loseAnimation">loseAnimationTurner</item>
+        <item name="emptyChatBackgroundImage">@drawable/ic_empty</item>
+
     </style>
 
     <style name="TestAppLabel" parent="TextAppearance.AppCompat">
