@@ -95,10 +95,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     fun closeKeyboardOnSend(closeKeyboardOnSend: Boolean) {
         chatAttribute.closeKeyboardOnSend = closeKeyboardOnSend
         edittext_chat_message.imeOptions = when(chatAttribute.closeKeyboardOnSend) {
-            true -> EditorInfo.IME_ACTION_SEND
-            else -> EditorInfo.IME_ACTION_NONE
+            true -> EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+            else -> EditorInfo.IME_ACTION_NONE or EditorInfo.IME_FLAG_NO_EXTRACT_UI
         }
-
     }
 
     private var session: LiveLikeContentSession? = null
