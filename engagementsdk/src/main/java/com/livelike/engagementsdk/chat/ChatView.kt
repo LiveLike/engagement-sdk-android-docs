@@ -420,7 +420,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
             val outsideStickerKeyboardBound = (v.bottom - sticker_keyboard.height)
-            if (y < v.top || y > v.bottom || (sticker_keyboard.height>0 && y < outsideStickerKeyboardBound)) {
+            //Added check for height greater than 0 so bound position for touch should be above the send icon
+            if (y < v.top || y > v.bottom || (sticker_keyboard.height > 0 && y < outsideStickerKeyboardBound)) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
