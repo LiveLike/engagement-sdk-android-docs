@@ -145,49 +145,49 @@ internal class ContentSession(
             PREFERENCE_CHAT_ROOM_MEMBERSHIP, ""), object : TypeToken<HashMap<String, Long?>>() {}.type) ?: HashMap()
     }
 
-    override fun joinChatRoom(chatRoom: String, timestamp : Long) {
+    override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
         if (chatRoomMemberships.size > 10) {
             return logError {
                 "Membership count cannot be greater than 10"
             }
         }
-        if (!chatRoomMemberships.containsKey(chatRoom)) {
-            chatRoomMemberships[chatRoom] = timestamp
+        if (!chatRoomMemberships.containsKey(chatRoomId)) {
+            chatRoomMemberships[chatRoomId] = timestamp
             getSharedPreferences().edit()
                 .putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships))
                 .apply()
         }
     }
 
-    override fun leaveChatRoom(chatRoom: String) {
-        chatRoomMemberships.remove(chatRoom)
-        chatClient?.unsubscribe(listOf(chatRoom))
+    override fun leaveChatRoom(chatRoomId: String) {
+        chatRoomMemberships.remove(chatRoomId)
+        chatClient?.unsubscribe(listOf(chatRoomId))
     }
 
-    override fun enterChatRoom(chatRoom: String) {
-        if (!chatRoomMemberships.containsKey(chatRoom)) {
-            joinChatRoom(chatRoom)
+    override fun enterChatRoom(chatRoomId: String) {
+        if (!chatRoomMemberships.containsKey(chatRoomId)) {
+            joinChatRoom(chatRoomId)
         }
-        logDebug{chatRoomMemberships.toString()}
-        if (privateChatRoom == chatRoom) return // Already in the room
-        privateChatRoom = chatRoom
+        logDebug { chatRoomMemberships.toString() }
+        if (privateChatRoom == chatRoomId) return // Already in the room
+        privateChatRoom = chatRoomId
         contentSessionScope.launch {
             chatViewModel.apply {
                 flushMessages()
-                currentChatRoom = chatRoom
+                currentChatRoom = chatRoomId
                 chatLoaded = false
             }
 
             configurationFlow.collect {
                 userRepository.currentUserStream.latest()?.let { user ->
-                    initializeChatMessaging(chatRoom, it, user, syncEnabled = false, privateGroupsChat = true)
+                    initializeChatMessaging(chatRoomId, it, user, syncEnabled = false, privateGroupsChat = true)
                 }
             }
         }
     }
 
-    override fun exitChatRoom(chatRoom: String) {
-        chatClient?.unsubscribe(listOf(chatRoom))
+    override fun exitChatRoom(chatRoomId: String) {
+        chatClient?.unsubscribe(listOf(chatRoomId))
     }
 
     override fun exitAllConnectedChatRooms() {
@@ -287,7 +287,7 @@ internal class ContentSession(
 
         chatClient = ChatRepository(config.pubNubKey, user.accessToken, user.id, analyticService, msgListener).establishChatMessagingConnection()
 
-        if (syncEnabled){
+        if (syncEnabled) {
             chatClient =
                 chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
         }
@@ -297,7 +297,7 @@ internal class ContentSession(
                 if (privateGroupsChat) {
                     subscribe(chatRoomMemberships.keys.toList().filter { it != chatChannel })
                     setCurrentChatRoom(chatChannel)
-                }else{
+                } else {
                     subscribe(listOf(chatChannel))
                 }
                 this.renderer = chatViewModel

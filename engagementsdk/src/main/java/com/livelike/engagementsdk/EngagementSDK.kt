@@ -129,6 +129,8 @@ class EngagementSDK(
         @SerializedName("mixpanel_token")
         val mixpanelToken: String,
         @SerializedName("analytics_properties")
-        val analyticsProps: Map<String, String>
+        val analyticsProps: Map<String, String>,
+        @SerializedName("chat_room_detail_url_template")
+        val chatRoomUrlTemplate: String
     )
 }

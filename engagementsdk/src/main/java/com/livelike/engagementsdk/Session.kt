@@ -31,15 +31,15 @@ interface LiveLikeContentSession {
     fun setProfilePicUrl(url: String)
     /** Enter a Chat Room */
     /** Join a Chat Room, membership will be created for this room */
-    fun joinChatRoom(chatRoom: String, timestamp : Long = Calendar.getInstance().timeInMillis)
+    fun joinChatRoom(chatRoomId: String, timestamp: Long = Calendar.getInstance().timeInMillis)
     /** Leave a Chat Room, membership will be cancelled with this room */
-    fun leaveChatRoom(chatRoom: String)
+    fun leaveChatRoom(chatRoomId: String)
     /** Enter a Chat Room, the last entered Chat Room will be the active one */
-    fun enterChatRoom(chatRoom: String)
+    fun enterChatRoom(chatRoomId: String)
     /** The current active chat room, it is the last entered chat room */
     var getActiveChatRoom: () -> String
     /** Exit the specified Chat Room */
-    fun exitChatRoom(chatRoom: String)
+    fun exitChatRoom(chatRoomId: String)
     /** Exit all the Connected Chat Rooms */
     fun exitAllConnectedChatRooms()
     /** Register a message count listner for the specified Chat Room */
