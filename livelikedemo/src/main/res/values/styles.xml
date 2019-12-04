@@ -20,12 +20,13 @@
         <item name="chatSendButtonPaddingRight">10dp</item>
         <item name="chatSendButtonPaddingTop">6dp</item>
         <item name="chatSendButtonPaddingBottom">6dp</item>
-        <item name="sendIconTintColor">#45AA45</item>
-        <item name="stickerIconTintColor">#A12A45</item>
+        <item name="sendIconTintColor">#FFF</item>
+        <item name="stickerIconTintColor">#FFF</item>
         <item name="chatBubbleMarginLeft">5dp</item>
         <item name="emptyChatBackgroundText">GET THE CHAT STARTED!</item>
         <item name="emptyChatBackgroundTextSize">13sp</item>
         <item name="emptyChatBackgroundTextColor">#50FFFFFF</item>
+        <item name="chatAvatarMarginLeft">13dp</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">

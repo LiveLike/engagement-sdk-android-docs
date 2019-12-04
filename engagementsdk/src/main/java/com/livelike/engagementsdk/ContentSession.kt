@@ -33,6 +33,7 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import java.util.Calendar
@@ -65,6 +66,13 @@ internal class ContentSession(
             field = value
             widgetInterceptorStream.onNext(value)
         }
+
+    private var widgetThemeAttributes:WidgetViewThemeAttributes?=null
+
+    override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
+        widgetThemeAttributes = widgetViewThemeAttributes
+    }
+
     private val widgetInterceptorStream:
             Stream<WidgetInterceptor> = SubscriptionManager()
     override var analyticService: AnalyticsService =
@@ -272,7 +280,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream,widgetThemeAttributes)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }

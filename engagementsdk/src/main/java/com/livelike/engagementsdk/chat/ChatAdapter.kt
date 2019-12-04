@@ -51,7 +51,7 @@ internal class ChatRecyclerAdapter(
     private val analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit,
     private val stickerPackRepository: StickerPackRepository,
-    val chatReactionRepository: ChatReactionRepository
+    var chatReactionRepository: ChatReactionRepository
 
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 

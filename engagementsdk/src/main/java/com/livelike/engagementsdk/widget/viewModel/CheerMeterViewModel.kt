@@ -123,7 +123,7 @@ internal class CheerMeterViewModel(
         }
     }
 
-    private fun pushVoteData(voteCount: Int) {
+    fun pushVoteData(voteCount: Int) {
         voteUrl?.let {
             uiScope.launch {
                 if (voteCount > 0)
