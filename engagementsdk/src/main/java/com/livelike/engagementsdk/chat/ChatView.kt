@@ -90,8 +90,18 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 
+
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
+
+    fun closeKeyboardOnSend(closeKeyboardOnSend: Boolean) {
+        chatAttribute.closeKeyboardOnSend = closeKeyboardOnSend
+        edittext_chat_message.imeOptions = when(chatAttribute.closeKeyboardOnSend) {
+            true -> EditorInfo.IME_ACTION_SEND
+            else -> EditorInfo.IME_ACTION_NONE
+        }
+
+    }
 
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
@@ -423,7 +433,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
             val outsideStickerKeyboardBound = (v.bottom - sticker_keyboard.height)
-            if (y < v.top || y > v.bottom || y < outsideStickerKeyboardBound) {
+            //Added check for height greater than 0 so bound position for touch should be above the send icon
+            if (y < v.top || y > v.bottom || (sticker_keyboard.height > 0 && y < outsideStickerKeyboardBound)) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
@@ -515,7 +526,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
                     if (!hasFocus) {
-                        hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                        if(chatAttribute.closeKeyboardOnSend)
+                            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     }
                 }
 
@@ -533,8 +545,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
-        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
-        session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
+        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
+            if(visibility==View.VISIBLE){
+                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
+            }
+            visibility = View.GONE
+        }
     }
 
     private fun showStickerKeyboard() {
@@ -560,18 +576,15 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
-        val inputManager =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputManager.hideSoftInputFromWindow(
-            edittext_chat_message.windowToken,
-            0
-        )
+            val inputManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(
+                edittext_chat_message.windowToken,
+                0
+            )
 
-        if (reason != KeyboardHideReason.MESSAGE_SENT) {
             session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
-        }
-
-        setBackButtonInterceptor(this)
+            setBackButtonInterceptor(this)
     }
 
     private fun sendMessageNow() {
@@ -579,9 +592,10 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             // Do nothing if the message is blank or empty
             return
         }
-
-        hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
-        hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
+        if(chatAttribute.closeKeyboardOnSend) {
+            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+            hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
+        }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(

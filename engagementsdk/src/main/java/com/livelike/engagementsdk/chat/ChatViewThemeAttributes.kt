@@ -486,4 +486,5 @@ class ChatViewThemeAttributes {
     var chatEmptyBackgroundText:String?=null
     var chatEmptyBackgroundTextColor:Int=Color.WHITE
     var chatEmptyBackgroundTextSize:Float=AndroidResource.spToPx(17f)
+    var closeKeyboardOnSend: Boolean = true
 }
