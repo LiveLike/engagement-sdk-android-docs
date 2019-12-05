@@ -40,9 +40,6 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -68,6 +65,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -318,8 +318,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun checkEmptyChat() {
-        chatdisplay_empty_lay.visibility = View.GONE
-
         chatAttribute.chatEmptyBackgroundImage?.let {
             chatdisplay_empty_img.setImageDrawable(it)
             toggleVisibilityEmptyChat()
@@ -334,7 +332,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun toggleVisibilityEmptyChat() {
-        if(viewModel?.chatAdapter?.itemCount==0)
+        if ((viewModel?.chatAdapter?.itemCount ?: 0) == 0)
             chatdisplay_empty_lay.visibility = View.VISIBLE
         else
             chatdisplay_empty_lay.visibility = View.GONE
