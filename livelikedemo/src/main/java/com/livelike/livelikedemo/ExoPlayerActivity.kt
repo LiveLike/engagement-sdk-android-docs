@@ -65,7 +65,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
     }
     val timer = Timer()
-    val chatChannelNames = listOf("chat_20679243_9338_4d1c_bdd3_4223bb401aaa")
+    val chatRoomIds = listOf("88c0e8b9-c218-45e7-8df8-e5f1d5d2ec18", "0c629dea-ed50-45c4-b8fb-02e61127dca1")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,10 +125,10 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a custom Chat Room to join")
-                setItems(chatChannelNames.map {
+                setItems(chatRoomIds.map {
                     "$it[${messageCount[it]?.size ?: 0}]"
                 }.toTypedArray()) { _, which ->
-                    privateGroupChatsession!!.enterChatRoom(chatChannelNames[which])
+                    privateGroupChatsession!!.enterChatRoom(chatRoomIds[which])
                     chat_view.setSession(privateGroupChatsession!!)
                 }
                 create()

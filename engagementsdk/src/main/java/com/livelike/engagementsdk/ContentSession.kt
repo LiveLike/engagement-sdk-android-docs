@@ -2,10 +2,10 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
-import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatRepository
 import com.livelike.engagementsdk.chat.ChatViewModel
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.toChatQueue
 import com.livelike.engagementsdk.core.ServerDataValidationException
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
@@ -20,15 +20,13 @@ import com.livelike.engagementsdk.services.messaging.proxies.filter
 import com.livelike.engagementsdk.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.services.messaging.proxies.withPreloader
+import com.livelike.engagementsdk.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.Result
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.PREFERENCE_CHAT_ROOM_MEMBERSHIP
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSharedPreferences
-import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
@@ -57,6 +55,8 @@ internal class ContentSession(
         userRepository.setProfilePicUrl(url)
     }
 
+    private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
+    private var chatRepository: ChatRepository? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -92,7 +92,7 @@ internal class ContentSession(
     }
     private var privateChatRoom = ""
 
-    private var chatRoomMemberships: HashMap<String, Long?>
+    private var chatRoomMap = mutableMapOf<String, ChatRoom>()
 
     private var msgListener: MessageListener = object : MessageListener {
         override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {} }
@@ -125,7 +125,15 @@ internal class ContentSession(
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
                             chatViewModel.currentChatRoom = program.defaultChatRoom?.channels?.chat?.get("pubnub") ?: ""
-                            if (privateChatRoom.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"), configuration, pair.first)
+                            chatRepository = ChatRepository(
+                                configuration.pubNubKey,
+                                pair.first.accessToken,
+                                pair.first.id,
+                                analyticService,
+                                msgListener,
+                                configuration.pubnubPublishKey
+                            )
+                            if (privateChatRoom.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -141,53 +149,62 @@ internal class ContentSession(
                 }
             }
         }
-        chatRoomMemberships = gson.fromJson(getSharedPreferences().getString(
-            PREFERENCE_CHAT_ROOM_MEMBERSHIP, ""), object : TypeToken<HashMap<String, Long?>>() {}.type) ?: HashMap()
     }
 
     override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
-        if (chatRoomMemberships.size > 10) {
+        if (chatRoomMap.size > 50) {
             return logError {
-                "Membership count cannot be greater than 10"
+                "pubnub channels cannot be greater than 50"
             }
         }
-        if (!chatRoomMemberships.containsKey(chatRoomId)) {
-            chatRoomMemberships[chatRoomId] = timestamp
-            getSharedPreferences().edit()
-                .putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships))
-                .apply()
+        contentSessionScope.launch {
+            chatRepository?.let { chatRepository ->
+                configurationFlow.collect { config ->
+                    val chatRoomResult =
+                        chatRepository.fetchChatRoom(chatRoomId, config.chatRoomUrlTemplate)
+                    if (chatRoomResult is Result.Success) {
+                        chatRoomMap[chatRoomId] = chatRoomResult.data
+                    }
+                }
+            }
         }
     }
 
     override fun leaveChatRoom(chatRoomId: String) {
-        chatRoomMemberships.remove(chatRoomId)
-        chatClient?.unsubscribe(listOf(chatRoomId))
+        chatRoomMap.get(chatRoomId)?.let { chatRoom ->
+            chatRoomMap.remove(chatRoomId)
+            chatClient?.unsubscribe(listOf(chatRoom.channels.chat[CHAT_PROVIDER] ?: ""))
+        }
     }
 
     override fun enterChatRoom(chatRoomId: String) {
-        if (!chatRoomMemberships.containsKey(chatRoomId)) {
-            joinChatRoom(chatRoomId)
-        }
-        logDebug { chatRoomMemberships.toString() }
         if (privateChatRoom == chatRoomId) return // Already in the room
         privateChatRoom = chatRoomId
         contentSessionScope.launch {
-            chatViewModel.apply {
-                flushMessages()
-                currentChatRoom = chatRoomId
-                chatLoaded = false
-            }
-
-            configurationFlow.collect {
-                userRepository.currentUserStream.latest()?.let { user ->
-                    initializeChatMessaging(chatRoomId, it, user, syncEnabled = false, privateGroupsChat = true)
+            chatRepository?.let { chatRepository ->
+                configurationFlow.collect { config ->
+                    val chatRoomResult =
+                        chatRepository.fetchChatRoom(chatRoomId, config.chatRoomUrlTemplate)
+                    if (chatRoomResult is Result.Success) {
+                        chatRoomMap[chatRoomId] = chatRoomResult.data
+                        val channel = chatRoomResult.data.channels.chat[CHAT_PROVIDER]
+                        if (privateGroupPubnubClient == null) {
+                            initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
+                        }
+                        chatViewModel.apply {
+                            flushMessages()
+                            currentChatRoom = channel ?: ""
+                            chatLoaded = false
+                        }
+                    }
                 }
             }
         }
     }
 
     override fun exitChatRoom(chatRoomId: String) {
-        chatClient?.unsubscribe(listOf(chatRoomId))
+        leaveChatRoom(chatRoomId)
+        // reset ui
     }
 
     override fun exitAllConnectedChatRooms() {
@@ -275,8 +292,6 @@ internal class ContentSession(
 
     private fun initializeChatMessaging(
         chatChannel: String?,
-        config: EngagementSDK.SdkConfiguration,
-        user: LiveLikeUser,
         syncEnabled: Boolean = true,
         privateGroupsChat: Boolean = false
     ) {
@@ -285,7 +300,10 @@ internal class ContentSession(
 
         analyticService.trackLastChatStatus(true)
 
-        chatClient = ChatRepository(config.pubNubKey, user.accessToken, user.id, analyticService, msgListener, config.pubnubPublishKey).establishChatMessagingConnection()
+        chatClient = chatRepository?.establishChatMessagingConnection()
+        if (privateGroupsChat) {
+            privateGroupPubnubClient = chatClient as PubnubChatMessagingClient
+        }
 
         if (syncEnabled) {
             chatClient =
@@ -295,8 +313,8 @@ internal class ContentSession(
         chatClient = chatClient?.toChatQueue()
             ?.apply {
                 if (privateGroupsChat) {
-                    subscribe(chatRoomMemberships.keys.toList().filter { it != chatChannel })
-                    setCurrentChatRoom(chatChannel)
+                    subscribe(chatRoomMap.keys.toList().filter { it != chatChannel })
+                    privateGroupPubnubClient?.activeChatRoom = chatChannel
                 } else {
                     subscribe(listOf(chatChannel))
                 }

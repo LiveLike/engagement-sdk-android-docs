@@ -5,16 +5,11 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.utils.gson
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
     ChatEventListener {
-
-    fun setCurrentChatRoom(channel: String){
-        (upstream as PubnubChatMessagingClient).activeChatRoom = channel
-    }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
