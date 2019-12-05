@@ -52,6 +52,7 @@ internal class PubnubChatMessagingClient(
     authKey: String,
     uuid: String,
     private val analyticsService: AnalyticsService,
+    publishKey: String? = null,
     val isDiscardOwnPublishInSubcription: Boolean = true,
     val msgListener: MessageListener? = null
 ) : MessagingClient {
@@ -63,7 +64,6 @@ internal class PubnubChatMessagingClient(
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
-
 
     var activeChatRoom = ""
         set(value) {
@@ -164,7 +164,7 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.subscribeKey = subscriberKey
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
-        pubnubConfiguration.publishKey = "pub-c-4376f77e-1ffd-46e5-aa29-15de54aac409"
+        pubnubConfiguration.publishKey = publishKey
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this
@@ -249,13 +249,18 @@ internal class PubnubChatMessagingClient(
                     pdtString?.parseISODateTime()?.let {
                         epochTimeMs = it.toInstant().toEpochMilli()
                     }
+
+                    try {
                     clientMessage = ClientMessage(
                         gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
                             addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
                         },
                         channel,
                         EpochTime(epochTimeMs)
-                    )
+                    ) } catch (ex: IllegalArgumentException) {
+                        logError { ex.message }
+                        return
+                    }
 
                     msgListener?.onNewMessage(clientMessage.channel, LiveLikeChatMessage(message = clientMessage.message.toString()))
                 }

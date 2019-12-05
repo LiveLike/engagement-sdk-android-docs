@@ -116,6 +116,8 @@ class EngagementSDK(
         val mediaUrl: String,
         @SerializedName("pubnub_subscribe_key")
         val pubNubKey: String,
+        @SerializedName("pubnub_publish_key")
+        val pubnubPublishKey: String?,
         @SerializedName("sendbird_app_id")
         val sendBirdAppId: String,
         @SerializedName("sendbird_api_endpoint")
