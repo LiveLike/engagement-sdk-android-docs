@@ -37,22 +37,22 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.history.PNHistoryResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 internal class PubnubChatMessagingClient(
     subscriberKey: String,
     authKey: String,
     uuid: String,
     private val analyticsService: AnalyticsService,
-    publishKey: String?=null,
+    publishKey: String? = null,
     val isDiscardOwnPublishInSubcription: Boolean = true,
     val msgListener: MessageListener? = null
 ) : MessagingClient {
@@ -64,7 +64,6 @@ internal class PubnubChatMessagingClient(
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
-
 
     var activeChatRoom = ""
         set(value) {
@@ -250,13 +249,18 @@ internal class PubnubChatMessagingClient(
                     pdtString?.parseISODateTime()?.let {
                         epochTimeMs = it.toInstant().toEpochMilli()
                     }
+
+                    try {
                     clientMessage = ClientMessage(
                         gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
                             addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
                         },
                         channel,
                         EpochTime(epochTimeMs)
-                    )
+                    ) } catch (ex: IllegalArgumentException) {
+                        logError { ex.message }
+                        return
+                    }
 
                     msgListener?.onNewMessage(clientMessage.channel, LiveLikeChatMessage(message = clientMessage.message.toString()))
                 }
