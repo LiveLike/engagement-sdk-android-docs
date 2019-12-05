@@ -18,6 +18,7 @@ class ChatViewThemeAttributes {
             showChatAvatarLogo = getBoolean(R.styleable.ChatView_showChatAvatarLogo, false)
             chatAvatarCircle = getBoolean(R.styleable.ChatView_chatAvatarCircle, false)
             showStickerSend = getBoolean(R.styleable.ChatView_showStickerSend, true)
+            closeKeyboardOnSend = getBoolean(R.styleable.ChatView_closeKeyboardOnSend, true)
             chatNickNameColor = getColor(
                 R.styleable.ChatView_usernameColor,
                 ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)

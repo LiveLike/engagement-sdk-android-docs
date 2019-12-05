@@ -79,6 +79,7 @@
         <item name="textColor">#000</item>
         <item name="rankValueTextColor">#000</item>
         <item name="emptyChatBackgroundImage">@drawable/ic_empty</item>
+        <item name="closeKeyboardOnSend">false</item>
 
     </style>
 
