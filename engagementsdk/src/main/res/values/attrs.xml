@@ -18,13 +18,13 @@
     <item name="livelike_chat_nickname_font"
         type="font">@font/roboto_bold</item>
 
-    <declare-styleable name="WidgetView">
+    <declare-styleable name="LiveLike_WidgetView">
         <attr name="winAnimation" format="string"/>
         <attr name="loseAnimation" format="string"/>
         <attr name="drawAnimation" format="string"/>
     </declare-styleable>
 
-    <declare-styleable name="ChatView">
+    <declare-styleable name="LiveLike_ChatView">
         <attr name="displayUserProfile" format="boolean" />
         <attr name="showStickerSend" format="boolean" />
         <attr name="usernameColor" format="color"/>

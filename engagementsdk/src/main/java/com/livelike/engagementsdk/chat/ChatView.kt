@@ -128,11 +128,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
-            R.styleable.ChatView,
+            R.styleable.LiveLike_ChatView,
             0, 0
         ).apply {
             try {
-                displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
+                displayUserProfile = getBoolean(R.styleable.LiveLike_ChatView_displayUserProfile, false)
                 chatAttribute.initAttributes(context,this)
             } finally {
                 recycle()
