@@ -37,21 +37,22 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.history.PNHistoryResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal class PubnubChatMessagingClient(
     subscriberKey: String,
     authKey: String,
     uuid: String,
     private val analyticsService: AnalyticsService,
+    publishKey: String?=null,
     val isDiscardOwnPublishInSubcription: Boolean = true,
     val msgListener: MessageListener? = null
 ) : MessagingClient {
@@ -164,7 +165,7 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.subscribeKey = subscriberKey
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
-        pubnubConfiguration.publishKey = "pub-c-4376f77e-1ffd-46e5-aa29-15de54aac409"
+        pubnubConfiguration.publishKey = publishKey
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this

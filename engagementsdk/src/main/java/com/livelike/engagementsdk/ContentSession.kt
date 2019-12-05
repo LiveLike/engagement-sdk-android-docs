@@ -285,7 +285,7 @@ internal class ContentSession(
 
         analyticService.trackLastChatStatus(true)
 
-        chatClient = ChatRepository(config.pubNubKey, user.accessToken, user.id, analyticService, msgListener).establishChatMessagingConnection()
+        chatClient = ChatRepository(config.pubNubKey, user.accessToken, user.id, analyticService, msgListener, config.pubnubPublishKey).establishChatMessagingConnection()
 
         if (syncEnabled) {
             chatClient =
