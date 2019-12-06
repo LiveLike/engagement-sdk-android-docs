@@ -43,8 +43,6 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlin.math.max
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
@@ -337,7 +335,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun toggleVisibilityEmptyChat() {
-        if ((viewModel?.chatAdapter?.itemCount ?: 0) == 0)
+        if ((viewModel?.messageList?.size ?: 0) == 0)
             chatdisplay_empty_lay.visibility = View.VISIBLE
         else
             chatdisplay_empty_lay.visibility = View.GONE
