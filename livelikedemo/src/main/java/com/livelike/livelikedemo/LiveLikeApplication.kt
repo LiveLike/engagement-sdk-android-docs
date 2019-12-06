@@ -59,7 +59,7 @@ class LiveLikeApplication : Application() {
         return player
     }
 
-    fun deleteSession() {
+    fun setTheme() {
         session?.close()
         session = null
     }
