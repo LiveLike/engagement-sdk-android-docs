@@ -2,8 +2,10 @@ package com.livelike.engagementsdk.chat.chatreaction
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -70,14 +72,20 @@ internal class ChatActionsPopupView(
                 setMargins(threeDp, 0, threeDp, 0)
             }
             imageView.loadImage(reaction.file, AndroidResource.dpToPx(24))
+
             countView.apply {
                 text = "${reaction.reactionsCount}"
+                setTextColor(Color.BLACK)
+                setTypeface(null,Typeface.BOLD)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP,13f)
                 visibility = when(reaction.reactionsCount){
                     0 -> View.GONE
                     else -> View.VISIBLE
                 }
             }
-            frameLayout.addView(imageView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.CENTER))
+            frameLayout.addView(imageView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.CENTER).apply {
+                setMargins(0, 5, 0, 0)
+            })
             frameLayout.addView(countView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.TOP or Gravity.RIGHT))
             reactionsBox.addView(frameLayout)
         }
