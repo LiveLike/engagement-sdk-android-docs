@@ -12,7 +12,6 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
-import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
@@ -23,6 +22,7 @@ import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.isoUTCDateTimeFormatter
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.pubnub.api.PNConfiguration
@@ -93,7 +93,7 @@ internal class PubnubChatMessagingClient(
                 ZonedDateTime.ofInstant(
                     Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
                     org.threeten.bp.ZoneId.of("UTC")
-                ).formatIsoLocal8601()
+                ).format(isoUTCDateTimeFormatter)
             )
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
