@@ -5,19 +5,14 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -26,7 +21,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.FrameLayout
+import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.KeyboardHideReason
@@ -127,7 +122,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         ).apply {
             try {
                 displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
-                chatAttribute.initAttributes(context,this)
+                chatAttribute.initAttributes(context, this)
             } finally {
                 recycle()
             }
@@ -564,7 +559,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(
-            viewModel?.currentChatRoom ?: "",
+            viewModel?.currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",

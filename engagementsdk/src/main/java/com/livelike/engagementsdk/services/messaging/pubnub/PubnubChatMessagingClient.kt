@@ -14,7 +14,7 @@ import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.parseISODateTime
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -47,6 +47,8 @@ import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
 
+const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
+
 internal class PubnubChatMessagingClient(
     subscriberKey: String,
     authKey: String,
@@ -68,15 +70,21 @@ internal class PubnubChatMessagingClient(
     var activeChatRoom = ""
         set(value) {
             field = value
-            value.let {
-                val channel = connectedChannels.find { it == value }
-                if (channel != null) {
-                    loadMessageHistoryByTimestamp(channel)
-                } else {
-                    subscribe(listOf(value))
-                }
-            }
+            subscribe(listOf(value))
         }
+
+    fun addChannelSubscription(channel: String, startTimestamp: Long) {
+        if (!connectedChannels.contains(channel)) {
+            connectedChannels.add(channel)
+            val endTimeStamp = Calendar.getInstance().timeInMillis
+            pubnub.subscribe().channels(listOf(channel)).execute()
+            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
+        }
+    }
+
+    private fun convertToTimeToken(timestamp: Long): Long {
+        return timestamp * 100000
+    }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
@@ -251,18 +259,21 @@ internal class PubnubChatMessagingClient(
                     }
 
                     try {
-                    clientMessage = ClientMessage(
-                        gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
-                            addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
-                        },
-                        channel,
-                        EpochTime(epochTimeMs)
-                    ) } catch (ex: IllegalArgumentException) {
+                        clientMessage = ClientMessage(
+                            gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
+                                addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
+                            },
+                            channel,
+                            EpochTime(epochTimeMs)
+                        )
+                        msgListener?.onNewMessage(
+                            channel,
+                            pubnubChatEvent.payload.toLiveLikeChatMessage()
+                        )
+                    } catch (ex: IllegalArgumentException) {
                         logError { ex.message }
                         return
                     }
-
-                    msgListener?.onNewMessage(clientMessage.channel, LiveLikeChatMessage(message = clientMessage.message.toString()))
                 }
                 PubnubChatEventType.MESSAGE_DELETED.key -> {
                     clientMessage = ClientMessage(JsonObject().apply {
@@ -288,11 +299,9 @@ internal class PubnubChatMessagingClient(
         timeToken: Long = Calendar.getInstance().timeInMillis * 100000,
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
-        val isDisplayingChatForThisRoom = activeChatRoom.isEmpty() || activeChatRoom == channel
-        val previousMessageCount = if (isDisplayingChatForThisRoom) chatHistoyLimit else 0
         pubnub.history()
             .channel(channel)
-            .count(previousMessageCount)
+            .count(chatHistoyLimit)
             .start(timeToken)
             .reverse(false)
             .async(object : PNCallback<PNHistoryResult>() {
@@ -304,13 +313,6 @@ internal class PubnubChatMessagingClient(
                                 channel,
                                 this@PubnubChatMessagingClient
                             )
-
-                            msgListener?.onNewMessage(
-                                channel,
-                                LiveLikeChatMessage(
-                                    message = it.entry.toString()
-                                )
-                            )
                         }
                     }
                     sendLoadingCompletedEvent(channel)
@@ -318,12 +320,42 @@ internal class PubnubChatMessagingClient(
             })
     }
 
+    private fun getAllMessages(
+        channel: String,
+        startTimeToken: Long,
+        endTimeToken: Long
+    ) {
+        pubnub.history()
+            .channel(channel)
+            .start(startTimeToken)
+            .end(endTimeToken)
+            .count(MAX_HISTORY_COUNT_PER_CHANNEL)
+            .includeTimetoken(true)
+            .reverse(false)
+            .async(object : PNCallback<PNHistoryResult>() {
+                override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
+                    if (status?.isError == false && result?.messages?.isEmpty() == false) {
+                        result.messages.forEach {
+                            processPubnubChatEvent(
+                                it.entry.asJsonObject,
+                                channel,
+                                this@PubnubChatMessagingClient
+                            )
+                        }
+                        if (result.messages.size > MAX_HISTORY_COUNT_PER_CHANNEL) {
+                            getAllMessages(channel, result.messages.last().timetoken, endTimeToken)
+                        }
+                    }
+                }
+            })
+    }
+
     override fun subscribe(channels: List<String>) {
-        pubnub.subscribe().channels(channels).execute()
         channels.forEach {
             connectedChannels.add(it)
             loadMessageHistoryByTimestamp(channel = it)
         }
+        pubnub.subscribe().channels(channels).execute()
     }
 
     override fun unsubscribe(channels: List<String>) {
