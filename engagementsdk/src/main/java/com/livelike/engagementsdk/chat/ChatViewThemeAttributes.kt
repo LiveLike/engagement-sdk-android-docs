@@ -75,10 +75,10 @@ class ChatViewThemeAttributes {
                 Color.WHITE
             )
 
-            chatEmptyBackgroundTextSize = getDimension(
+            chatEmptyBackgroundTextSize = getDimensionPixelSize(
                 R.styleable.LiveLike_ChatView_emptyChatBackgroundTextSize,
-                17f
-            )
+                13
+            ).toFloat()
 
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatBubbleBackground, colorBubbleValue)
@@ -485,6 +485,6 @@ class ChatViewThemeAttributes {
     var chatEmptyBackgroundImage:Drawable?=null
     var chatEmptyBackgroundText:String?=null
     var chatEmptyBackgroundTextColor:Int=Color.WHITE
-    var chatEmptyBackgroundTextSize:Float = 17f
+    var chatEmptyBackgroundTextSize:Float = 13f
     var closeKeyboardOnSend: Boolean = true
 }
