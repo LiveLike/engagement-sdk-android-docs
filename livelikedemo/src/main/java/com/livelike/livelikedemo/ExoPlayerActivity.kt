@@ -72,7 +72,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var chatRoomIds: List<String> = if (BuildConfig.DEBUG) {
         listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
     } else {
-        listOf("88c0e8b9-c218-45e7-8df8-e5f1d5d2ec18", "0c629dea-ed50-45c4-b8fb-02e61127dca1")
+        listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
     }
     private lateinit var chatRoomLastTimeStampMap: MutableMap<String, Long>
 
