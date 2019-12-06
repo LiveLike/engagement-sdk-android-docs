@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.parseISODateTime
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
@@ -38,15 +37,17 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.history.PNHistoryResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+
+const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
 
 internal class PubnubChatMessagingClient(
     subscriberKey: String,
@@ -72,6 +73,18 @@ internal class PubnubChatMessagingClient(
             subscribe(listOf(value))
         }
 
+    fun addChannelSubscription(channel: String, startTimestamp: Long) {
+        if (!connectedChannels.contains(channel)) {
+            connectedChannels.add(channel)
+            val endTimeStamp = Calendar.getInstance().timeInMillis
+            pubnub.subscribe().channels(listOf(channel)).execute()
+            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
+        }
+    }
+
+    private fun convertToTimeToken(timestamp: Long): Long {
+        return timestamp * 100000
+    }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
@@ -286,11 +299,9 @@ internal class PubnubChatMessagingClient(
         timeToken: Long = Calendar.getInstance().timeInMillis * 100000,
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
-        val isDisplayingChatForThisRoom = activeChatRoom.isEmpty() || activeChatRoom == channel
-        val previousMessageCount = if (isDisplayingChatForThisRoom) chatHistoyLimit else 0
         pubnub.history()
             .channel(channel)
-            .count(previousMessageCount)
+            .count(chatHistoyLimit)
             .start(timeToken)
             .reverse(false)
             .async(object : PNCallback<PNHistoryResult>() {
@@ -302,16 +313,39 @@ internal class PubnubChatMessagingClient(
                                 channel,
                                 this@PubnubChatMessagingClient
                             )
-
-                            msgListener?.onNewMessage(
-                                channel,
-                                LiveLikeChatMessage(
-                                    message = it.entry.toString()
-                                )
-                            )
                         }
                     }
                     sendLoadingCompletedEvent(channel)
+                }
+            })
+    }
+
+    private fun getAllMessages(
+        channel: String,
+        startTimeToken: Long,
+        endTimeToken: Long
+    ) {
+        pubnub.history()
+            .channel(channel)
+            .start(startTimeToken)
+            .end(endTimeToken)
+            .count(MAX_HISTORY_COUNT_PER_CHANNEL)
+            .includeTimetoken(true)
+            .reverse(false)
+            .async(object : PNCallback<PNHistoryResult>() {
+                override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
+                    if (status?.isError == false && result?.messages?.isEmpty() == false) {
+                        result.messages.forEach {
+                            processPubnubChatEvent(
+                                it.entry.asJsonObject,
+                                channel,
+                                this@PubnubChatMessagingClient
+                            )
+                        }
+                        if (result.messages.size > MAX_HISTORY_COUNT_PER_CHANNEL) {
+                            getAllMessages(channel, result.messages.last().timetoken, endTimeToken)
+                        }
+                    }
                 }
             })
     }

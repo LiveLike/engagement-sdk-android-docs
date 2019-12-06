@@ -22,9 +22,11 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import java.util.Calendar
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
+import kotlin.math.abs
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -66,15 +68,15 @@ class ExoPlayerActivity : AppCompatActivity() {
             privateGroupChatsession?.resume()
         }
     }
-    val timer = Timer()
-    val chatRoomIds = listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
-    val chatRoomLastTimeStampMap = mutableMapOf<String, Long>()
+    private val timer = Timer()
+    private val chatRoomIds = listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+    private lateinit var chatRoomLastTimeStampMap: MutableMap<String, Long>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        messageCount = GsonBuilder().create().fromJson(
-            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString("unread_count", null),
-            object : TypeToken<MutableMap<String, MutableSet<String>>>() {}.type) ?: mutableMapOf()
+        chatRoomLastTimeStampMap = GsonBuilder().create().fromJson(
+            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(PREF_CHAT_ROOM_LAST_TIME, null),
+            object : TypeToken<MutableMap<String, Long>>() {}.type) ?: mutableMapOf()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         this.setTheme(intent.getIntExtra("theme", R.style.AppTheme_NoActionBar))
         setContentView(R.layout.activity_exo_player)
@@ -131,7 +133,15 @@ class ExoPlayerActivity : AppCompatActivity() {
                 setItems(chatRoomIds.map {
                     "$it[${messageCount[it]?.size ?: 0}]"
                 }.toTypedArray()) { _, which ->
-                    privateGroupChatsession!!.enterChatRoom(chatRoomIds[which])
+                    val enteredChatRoomId = chatRoomIds[which]
+                    privateGroupChatsession?.enterChatRoom(enteredChatRoomId)
+                    val anotherChatRoomId = chatRoomIds[abs(which - 1)]
+                    privateGroupChatsession?.joinChatRoom(anotherChatRoomId,
+                        chatRoomLastTimeStampMap.get(anotherChatRoomId)
+                            ?: Calendar.getInstance().timeInMillis
+                    )
+                    chatRoomLastTimeStampMap[enteredChatRoomId] = Calendar.getInstance().timeInMillis
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(PREF_CHAT_ROOM_LAST_TIME, GsonBuilder().create().toJson(chatRoomLastTimeStampMap)).apply()
                     chat_view.setSession(privateGroupChatsession!!)
                 }
                 create()
@@ -177,7 +187,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }.show()
     }
 
-    lateinit var messageCount: MutableMap<String, MutableSet<String>>
+    var messageCount: MutableMap<String, MutableSet<String>> = mutableMapOf()
 
     private fun initializeLiveLikeSDK(channel: Channel) {
         registerLogsHandler(object : (String) -> Unit {
@@ -200,6 +210,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = mutableSetOf() // reset unread message count
+                        chatRoomLastTimeStampMap[chatRoom] = Calendar.getInstance().timeInMillis
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(PREF_CHAT_ROOM_LAST_TIME, GsonBuilder().create().toJson(chatRoomLastTimeStampMap)).apply()
                     } else {
                         if (messageCount[chatRoom] == null) {
                             messageCount[chatRoom] = mutableSetOf(message.id.toString())
@@ -207,7 +219,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                             messageCount[chatRoom]?.add(message.id.toString())
                         }
                     }
-                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString("unread_count", GsonBuilder().create().toJson(messageCount)).apply()
                     messageCount.forEach {
                         logsPreview.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${logsPreview.text}"
                         fullLogs.text = "channel : ${it.key}, unread : ${it.value.size} \n\n ${fullLogs.text}"

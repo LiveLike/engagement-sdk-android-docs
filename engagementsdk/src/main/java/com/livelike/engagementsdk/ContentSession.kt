@@ -161,7 +161,7 @@ internal class ContentSession(
         }
     }
 
-    private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: (chatRoom: ChatRoom) -> Unit) {
+    private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit) {
         contentSessionScope.launch {
             chatRepository?.let { chatRepository ->
                 configurationFlow.collect { config ->
@@ -190,7 +190,13 @@ internal class ContentSession(
         if (chatRoomMap.containsKey(chatRoomId)) {
             return
         }
-        fetchChatRoom(chatRoomId) {}
+        fetchChatRoom(chatRoomId) {
+            val channel = it.channels.chat[CHAT_PROVIDER]
+            delay(5000)
+            channel?.let { channel ->
+                privateGroupPubnubClient?.addChannelSubscription(channel, timestamp)
+            }
+        }
     }
 
     override fun leaveChatRoom(chatRoomId: String) {
@@ -203,20 +209,19 @@ internal class ContentSession(
     override fun enterChatRoom(chatRoomId: String) {
         if (privateChatRoomID == chatRoomId) return // Already in the room
         privateChatRoomID = chatRoomId
-        contentSessionScope.launch {
-                fetchChatRoom(chatRoomId) { chatRoom ->
-                    val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
-                    if (privateGroupPubnubClient == null) {
-                        initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
-                    } else {
-                        privateGroupPubnubClient?.activeChatRoom = channel
-                    }
-                    chatViewModel.apply {
-                        flushMessages()
-                        currentChatRoom = chatRoom
-                        chatLoaded = false
-                    }
-                }
+
+        fetchChatRoom(chatRoomId) { chatRoom ->
+            val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
+            if (privateGroupPubnubClient == null) {
+                initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
+            } else {
+                privateGroupPubnubClient?.activeChatRoom = channel
+            }
+            chatViewModel.apply {
+                flushMessages()
+                currentChatRoom = chatRoom
+                chatLoaded = false
+            }
         }
     }
 
