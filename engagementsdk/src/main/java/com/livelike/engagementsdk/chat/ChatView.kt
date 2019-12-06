@@ -54,7 +54,9 @@ import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chat_view
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_img
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_lay
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_txt
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
@@ -126,11 +128,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
-            R.styleable.ChatView,
+            R.styleable.LiveLike_ChatView,
             0, 0
         ).apply {
             try {
-                displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
+                displayUserProfile = getBoolean(R.styleable.LiveLike_ChatView_displayUserProfile, false)
                 chatAttribute.initAttributes(context,this)
             } finally {
                 recycle()
@@ -317,15 +319,24 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun checkEmptyChat() {
-        chatdisplay_empty.visibility = View.GONE
-
         chatAttribute.chatEmptyBackgroundImage?.let {
-            chatdisplay_empty.setImageDrawable(it)
-            if(viewModel?.chatAdapter?.itemCount==0)
-                chatdisplay_empty.visibility = View.VISIBLE
-            else
-                chatdisplay_empty.visibility = View.GONE
+            chatdisplay_empty_img.setImageDrawable(it)
+            toggleVisibilityEmptyChat()
         }
+
+        chatAttribute.chatEmptyBackgroundText?.let {
+            chatdisplay_empty_txt.text = it
+            chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_SP,chatAttribute.chatEmptyBackgroundTextSize)
+            chatdisplay_empty_txt.setTextColor(chatAttribute.chatEmptyBackgroundTextColor)
+            toggleVisibilityEmptyChat()
+        }
+    }
+
+    private fun toggleVisibilityEmptyChat() {
+        if ((viewModel?.chatAdapter?.itemCount ?: 0) == 0)
+            chatdisplay_empty_lay.visibility = View.VISIBLE
+        else
+            chatdisplay_empty_lay.visibility = View.GONE
     }
 
     private fun initStickerKeyboard(
