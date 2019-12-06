@@ -58,14 +58,17 @@ class ExoPlayerActivity : AppCompatActivity() {
             startAd.text = "Stop Ads"
             player.stop()
             session?.pause()
+            privateGroupChatsession?.pause()
         } else {
             startAd.text = "Start Ads"
             player.start()
             session?.resume()
+            privateGroupChatsession?.resume()
         }
     }
     val timer = Timer()
-    val chatRoomIds = listOf("88c0e8b9-c218-45e7-8df8-e5f1d5d2ec18", "0c629dea-ed50-45c4-b8fb-02e61127dca1")
+    val chatRoomIds = listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+    val chatRoomLastTimeStampMap = mutableMapOf<String, Long>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
