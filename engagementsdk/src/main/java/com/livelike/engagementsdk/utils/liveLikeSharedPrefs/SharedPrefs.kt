@@ -14,7 +14,6 @@ private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
 private const val BLOCKED_USERS = "blocked-users"
 private const val RECENT_STICKERS = "recent-stickers"
 private const val RECENT_STICKERS_DELIMITER = "~~~~"
-internal const val PREFERENCE_CHAT_ROOM_MEMBERSHIP = "chat-room-membership"
 private var mAppContext: Context? = null
 
 internal fun initLiveLikeSharedPrefs(appContext: Context) {

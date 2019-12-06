@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
@@ -13,6 +14,7 @@ import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.parseISODateTime
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -22,6 +24,7 @@ import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
+import com.livelike.engagementsdk.utils.logError
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.PNCallback
@@ -49,7 +52,9 @@ internal class PubnubChatMessagingClient(
     authKey: String,
     uuid: String,
     private val analyticsService: AnalyticsService,
-    val isDiscardOwnPublishInSubcription: Boolean = true
+    publishKey: String? = null,
+    val isDiscardOwnPublishInSubcription: Boolean = true,
+    val msgListener: MessageListener? = null
 ) : MessagingClient {
 
     private var connectedChannels: MutableSet<String> = mutableSetOf()
@@ -59,6 +64,19 @@ internal class PubnubChatMessagingClient(
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
+
+    var activeChatRoom = ""
+        set(value) {
+            field = value
+            value.let {
+                val channel = connectedChannels.find { it == value }
+                if (channel != null) {
+                    loadMessageHistoryByTimestamp(channel)
+                } else {
+                    subscribe(listOf(value))
+                }
+            }
+        }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
@@ -146,7 +164,7 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.subscribeKey = subscriberKey
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
-        pubnubConfiguration.publishKey = "pub-c-4376f77e-1ffd-46e5-aa29-15de54aac409"
+        pubnubConfiguration.publishKey = publishKey
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this
@@ -218,34 +236,49 @@ internal class PubnubChatMessagingClient(
         if (event == PubnubChatEventType.MESSAGE_CREATED.key || event == PubnubChatEventType.MESSAGE_DELETED.key) {
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
-            var clientMessage: ClientMessage
-            if (event == PubnubChatEventType.MESSAGE_CREATED.key) {
-                if (isDiscardOwnPublishInSubcription && publishMessageIdList.contains(pubnubChatEvent.payload.messageId)) {
-                    publishMessageIdList.remove(pubnubChatEvent.payload.messageId)
-                    return@processPubnubChatEvent // discarding as its own recently published message which is broadcasted by pubnub on that channel.
+            val clientMessage: ClientMessage
+            when (event) {
+                PubnubChatEventType.MESSAGE_CREATED.key -> {
+                    if (isDiscardOwnPublishInSubcription && publishMessageIdList.contains(pubnubChatEvent.payload.messageId)) {
+                        publishMessageIdList.remove(pubnubChatEvent.payload.messageId)
+                        logError { "discarding as its own recently published message which is broadcasted by pubnub on that channel." }
+                        return // discarding as its own recently published message which is broadcasted by pubnub on that channel.
+                    }
+                    val pdtString = pubnubChatEvent.payload.programDateTime
+                    var epochTimeMs = 0L
+                    pdtString?.parseISODateTime()?.let {
+                        epochTimeMs = it.toInstant().toEpochMilli()
+                    }
+
+                    try {
+                    clientMessage = ClientMessage(
+                        gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
+                            addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
+                        },
+                        channel,
+                        EpochTime(epochTimeMs)
+                    ) } catch (ex: IllegalArgumentException) {
+                        logError { ex.message }
+                        return
+                    }
+
+                    msgListener?.onNewMessage(clientMessage.channel, LiveLikeChatMessage(message = clientMessage.message.toString()))
                 }
-                val pdtString = pubnubChatEvent.payload.programDateTime
-                var epochTimeMs = 0L
-                pdtString?.parseISODateTime()?.let {
-                    epochTimeMs = it.toInstant().toEpochMilli()
-                }
-                clientMessage = ClientMessage(
-                    gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
-                        addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
-                    },
-                    channel,
-                    EpochTime(epochTimeMs)
-                )
-            } else {
-                clientMessage = ClientMessage(JsonObject().apply {
+                PubnubChatEventType.MESSAGE_DELETED.key -> {
+                    clientMessage = ClientMessage(JsonObject().apply {
                         addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
                         addProperty("id", pubnubChatEvent.payload.messageId)
                     },
-                    channel,
-                    EpochTime(0)
-                )
+                        channel,
+                        EpochTime(0)
+                    )
+                }
+                else -> {
+                    logError { "We don't know how to handle this message" }
+                    clientMessage = ClientMessage(JsonObject())
+                }
             }
-            logDebug { "Received message on ${Thread.currentThread().name} from pubnub: $clientMessage" }
+            logError { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
             listener?.onClientMessageEvent(client, clientMessage)
         }
     }
@@ -255,9 +288,11 @@ internal class PubnubChatMessagingClient(
         timeToken: Long = Calendar.getInstance().timeInMillis * 100000,
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
+        val isDisplayingChatForThisRoom = activeChatRoom.isEmpty() || activeChatRoom == channel
+        val previousMessageCount = if (isDisplayingChatForThisRoom) chatHistoyLimit else 0
         pubnub.history()
             .channel(channel)
-            .count(chatHistoyLimit)
+            .count(previousMessageCount)
             .start(timeToken)
             .reverse(false)
             .async(object : PNCallback<PNHistoryResult>() {
@@ -268,6 +303,13 @@ internal class PubnubChatMessagingClient(
                                 it.entry.asJsonObject,
                                 channel,
                                 this@PubnubChatMessagingClient
+                            )
+
+                            msgListener?.onNewMessage(
+                                channel,
+                                LiveLikeChatMessage(
+                                    message = it.entry.toString()
+                                )
                             )
                         }
                     }

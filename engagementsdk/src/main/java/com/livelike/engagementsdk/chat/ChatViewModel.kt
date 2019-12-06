@@ -59,8 +59,9 @@ internal class ChatViewModel(
         messageList.add(message.apply {
             isFromMe = userStream.latest()?.id == senderId
         })
-        uiScope.async {
+        uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
+            chatAdapter.notifyDataSetChanged()
             eventStream.onNext(EVENT_NEW_MESSAGE)
         }
     }
@@ -85,6 +86,8 @@ internal class ChatViewModel(
     override fun loadingCompleted() {
         if (!chatLoaded) {
             chatLoaded = true
+            chatAdapter.submitList(ArrayList(messageList))
+            chatAdapter.notifyDataSetChanged()
         }
     }
 

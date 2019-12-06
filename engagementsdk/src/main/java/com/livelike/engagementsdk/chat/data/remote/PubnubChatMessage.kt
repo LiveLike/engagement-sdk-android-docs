@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 internal data class PubnubChatMessage(
 
-    @SerializedName("message_id")
+    @SerializedName("id")
     val messageId: String,
     @SerializedName("message")
     val message: String,
@@ -15,7 +15,7 @@ internal data class PubnubChatMessage(
     @SerializedName("sender_nickname")
     val senderNickname: String,
     @SerializedName("created_at")
-    val createdAt: String,
+    val createdAt: String?,
     @SerializedName("program_date_time")
     val programDateTime: String?
 )

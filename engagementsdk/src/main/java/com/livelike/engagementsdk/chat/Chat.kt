@@ -29,7 +29,7 @@ data class ChatMessage(
     val senderDisplayName: String,
     val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
-    val timeStamp: String = "",
+    val timeStamp: String? = null,
     var isFromMe: Boolean = false
 ) {
     fun toReportMessageJson(): String {

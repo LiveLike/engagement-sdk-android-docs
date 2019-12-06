@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.widget_test_view.view.testThird
 
 class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
 
-    private val mockConfig = EngagementSDK.SdkConfiguration("", "", "", "", "sub-c-016db434-d156-11e8-b5de-7a9ddb77e130", "", "", "", "", "", "", mapOf())
+    private val mockConfig = EngagementSDK.SdkConfiguration("", "", "", "", "sub-c-016db434-d156-11e8-b5de-7a9ddb77e130", "", "", "", "", "", "", "", mapOf(), "")
 
     private val textLabels = listOf(
         "NEW RECORD",
