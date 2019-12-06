@@ -342,7 +342,7 @@ internal class PubnubChatMessagingClient(
                                 this@PubnubChatMessagingClient
                             )
                         }
-                        if (result.messages.size > MAX_HISTORY_COUNT_PER_CHANNEL) {
+                        if (result.messages.size >= MAX_HISTORY_COUNT_PER_CHANNEL) {
                             getAllMessages(channel, result.messages.last().timetoken, endTimeToken)
                         }
                     }
