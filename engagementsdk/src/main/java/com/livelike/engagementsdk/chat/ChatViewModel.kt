@@ -62,7 +62,6 @@ internal class ChatViewModel(
         })
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
-            chatAdapter.notifyDataSetChanged()
             eventStream.onNext(EVENT_NEW_MESSAGE)
         }
     }
@@ -72,7 +71,6 @@ internal class ChatViewModel(
             message = "Redacted"
         }
         chatAdapter.submitList(ArrayList(messageList))
-        chatAdapter.notifyDataSetChanged()
         eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 
