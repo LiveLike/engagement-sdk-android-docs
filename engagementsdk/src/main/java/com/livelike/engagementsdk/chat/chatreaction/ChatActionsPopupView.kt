@@ -4,12 +4,15 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import android.widget.TextView
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
@@ -59,13 +62,24 @@ internal class ChatActionsPopupView(
         reactionsBox.removeAllViews()
         val threeDp = AndroidResource.dpToPx(3)
         chatReactionRepository.reactionList?.forEach { reaction ->
+            val frameLayout = FrameLayout(context)
+            val countView = TextView(context)
             val imageView = ImageView(context)
-            imageView.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+            frameLayout.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                 setMargins(threeDp, 0, threeDp, 0)
             }
             imageView.loadImage(reaction.file, AndroidResource.dpToPx(24))
-            reactionsBox.addView(imageView)
+            countView.apply {
+                text = "${reaction.reactionsCount}"
+                visibility = when(reaction.reactionsCount){
+                    0 -> View.GONE
+                    else -> View.VISIBLE
+                }
+            }
+            frameLayout.addView(imageView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.CENTER))
+            frameLayout.addView(countView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.TOP or Gravity.RIGHT))
+            reactionsBox.addView(frameLayout)
         }
     }
 }

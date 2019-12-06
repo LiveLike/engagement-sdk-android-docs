@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.services.network.RequestType
 import com.livelike.engagementsdk.services.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Random
 
 internal class ChatReactionRepository(val programId: String) : BaseRepository() {
 
@@ -42,6 +43,7 @@ internal class ChatReactionRepository(val programId: String) : BaseRepository() 
         withContext(Dispatchers.IO) {
             getReactions()?.forEach {
                 Glide.with(context).load(it.file).preload()
+                it.reactionsCount=Random().nextInt(100)
             }
         }
     }
