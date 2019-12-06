@@ -90,18 +90,18 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 
-
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
-    fun closeKeyboardOnSend(closeKeyboardOnSend: Boolean) {
-        chatAttribute.closeKeyboardOnSend = closeKeyboardOnSend
-        edittext_chat_message.imeOptions = when(chatAttribute.closeKeyboardOnSend) {
-            true -> EditorInfo.IME_ACTION_SEND
-            else -> EditorInfo.IME_ACTION_NONE
+    var closeKeyboardOnSend: Boolean
+        get() = chatAttribute.closeKeyboardOnSend
+        set(value) {
+            chatAttribute.closeKeyboardOnSend = value
+            edittext_chat_message.imeOptions = when (chatAttribute.closeKeyboardOnSend) {
+                true -> EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+                else -> EditorInfo.IME_ACTION_NONE or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+            }
         }
-
-    }
 
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
@@ -166,6 +166,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatDisplayBackgroundRes?.let {
                 chatdisplay.background = it
             }
+            this@ChatView.closeKeyboardOnSend = closeKeyboardOnSend
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
             edittext_chat_message.setTextColor(chatInputTextColor)
