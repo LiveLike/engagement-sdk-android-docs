@@ -71,7 +71,7 @@ internal class ContentSession(
 
     private val stickerPackRepository = StickerPackRepository(programId)
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream, stickerPackRepository) }
-    override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom }
+    override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
@@ -90,12 +90,22 @@ internal class ContentSession(
         }
         emit(sdkConfiguration.latest()!!)
     }
-    private var privateChatRoom = ""
+    private var privateChatRoomID = ""
 
     private var chatRoomMap = mutableMapOf<String, ChatRoom>()
 
-    private var msgListener: MessageListener = object : MessageListener {
-        override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {} }
+    // TODO remove proxy message listener by having pipe in chat data layers/chain that tranforms pubnub channel to room
+    private var proxyMsgListener: MessageListener = object : MessageListener {
+        override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
+            for (chatRoomIdPair in chatRoomMap) {
+                if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
+                    msgListener?.onNewMessage(chatRoomIdPair.key, message)
+                }
+            }
+        }
+    }
+
+    private var msgListener: MessageListener? = null
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -124,16 +134,16 @@ internal class ContentSession(
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            chatViewModel.currentChatRoom = program.defaultChatRoom?.channels?.chat?.get("pubnub") ?: ""
+                            chatViewModel.currentChatRoom = program.defaultChatRoom
                             chatRepository = ChatRepository(
                                 configuration.pubNubKey,
                                 pair.first.accessToken,
                                 pair.first.id,
                                 analyticService,
-                                msgListener,
+                                proxyMsgListener,
                                 configuration.pubnubPublishKey
                             )
-                            if (privateChatRoom.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
+                            if (privateChatRoomID.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -151,12 +161,7 @@ internal class ContentSession(
         }
     }
 
-    override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
-        if (chatRoomMap.size > 50) {
-            return logError {
-                "pubnub channels cannot be greater than 50"
-            }
-        }
+    private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: (chatRoom: ChatRoom) -> Unit) {
         contentSessionScope.launch {
             chatRepository?.let { chatRepository ->
                 configurationFlow.collect { config ->
@@ -164,47 +169,62 @@ internal class ContentSession(
                         chatRepository.fetchChatRoom(chatRoomId, config.chatRoomUrlTemplate)
                     if (chatRoomResult is Result.Success) {
                         chatRoomMap[chatRoomId] = chatRoomResult.data
+                        chatRoomResultCall.invoke(chatRoomResult.data)
+                    } else if (chatRoomResult is Result.Error) {
+                        logError {
+                            chatRoomResult.exception?.message
+                                ?: "error in fetching room id resource"
+                        }
                     }
                 }
             }
         }
     }
 
+    override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
+        if (chatRoomMap.size > 50) {
+            return logError {
+                "subscribing  count for pubnub channels cannot be greater than 50"
+            }
+        }
+        if (chatRoomMap.containsKey(chatRoomId)) {
+            return
+        }
+        fetchChatRoom(chatRoomId) {}
+    }
+
     override fun leaveChatRoom(chatRoomId: String) {
-        chatRoomMap.get(chatRoomId)?.let { chatRoom ->
+        chatRoomMap[chatRoomId]?.let { chatRoom ->
             chatRoomMap.remove(chatRoomId)
             chatClient?.unsubscribe(listOf(chatRoom.channels.chat[CHAT_PROVIDER] ?: ""))
         }
     }
 
     override fun enterChatRoom(chatRoomId: String) {
-        if (privateChatRoom == chatRoomId) return // Already in the room
-        privateChatRoom = chatRoomId
+        if (privateChatRoomID == chatRoomId) return // Already in the room
+        privateChatRoomID = chatRoomId
         contentSessionScope.launch {
-            chatRepository?.let { chatRepository ->
-                configurationFlow.collect { config ->
-                    val chatRoomResult =
-                        chatRepository.fetchChatRoom(chatRoomId, config.chatRoomUrlTemplate)
-                    if (chatRoomResult is Result.Success) {
-                        chatRoomMap[chatRoomId] = chatRoomResult.data
-                        val channel = chatRoomResult.data.channels.chat[CHAT_PROVIDER]
-                        if (privateGroupPubnubClient == null) {
-                            initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
-                        }
-                        chatViewModel.apply {
-                            flushMessages()
-                            currentChatRoom = channel ?: ""
-                            chatLoaded = false
-                        }
+                fetchChatRoom(chatRoomId) { chatRoom ->
+                    val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
+                    if (privateGroupPubnubClient == null) {
+                        initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
+                    } else {
+                        privateGroupPubnubClient?.activeChatRoom = channel
+                    }
+                    chatViewModel.apply {
+                        flushMessages()
+                        currentChatRoom = chatRoom
+                        chatLoaded = false
                     }
                 }
-            }
         }
     }
 
     override fun exitChatRoom(chatRoomId: String) {
         leaveChatRoom(chatRoomId)
-        // reset ui
+        chatViewModel.apply {
+            flushMessages()
+        }
     }
 
     override fun exitAllConnectedChatRooms() {
@@ -299,7 +319,7 @@ internal class ContentSession(
             return
 
         analyticService.trackLastChatStatus(true)
-
+        chatClient?.destroy() // destroying previous client in case of private group chat, will decouple it later from program.
         chatClient = chatRepository?.establishChatMessagingConnection()
         if (privateGroupsChat) {
             privateGroupPubnubClient = chatClient as PubnubChatMessagingClient

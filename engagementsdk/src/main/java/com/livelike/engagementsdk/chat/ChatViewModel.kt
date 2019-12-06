@@ -1,10 +1,12 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.services.network.ChatDataClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
@@ -12,7 +14,6 @@ import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 internal class ChatViewModel(
@@ -27,10 +28,10 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository, ChatReactionRepository(programRepository.programId))
     private val messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(false)
-    var currentChatRoom: String = ""
+    var currentChatRoom: ChatRoom? = null
     set(value) {
         field = value
-        chatAdapter.isPublicChat = currentChatRoom == programRepository.program.chatChannel
+        chatAdapter.isPublicChat = currentChatRoom?.id == programRepository.program.defaultChatRoom?.id
     }
     internal var chatLoaded = false
         set(value) {
@@ -52,7 +53,7 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
-        if (message.channel != currentChatRoom) return
+        if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
