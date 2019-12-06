@@ -56,6 +56,8 @@ class MainActivity : AppCompatActivity() {
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a theme!")
                 setItems(channels.toTypedArray()) { _, which ->
+                    //On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
+                    (application as LiveLikeApplication).setTheme()
                     themes_label.text = channels[which]
                     player.theme=when(which){
                         0-> R.style.AppTheme_NoActionBar

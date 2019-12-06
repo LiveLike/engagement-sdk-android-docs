@@ -431,6 +431,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
     private fun endObserver(it: Boolean?) {
         if (it == true) {
+            // stop voting
+            //Added in order to get the updated voteCount at the voting end
+            viewModel?.pushVoteData(0)
             stopVoting()
         }
     }
