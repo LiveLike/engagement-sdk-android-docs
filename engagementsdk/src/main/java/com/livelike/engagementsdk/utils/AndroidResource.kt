@@ -2,10 +2,9 @@ package com.livelike.engagementsdk.utils
 
 import android.content.Context
 import android.content.res.Resources
+import java.util.Random
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
-import java.util.Random
-
 
 fun Any.unit() = Unit
 internal class AndroidResource {

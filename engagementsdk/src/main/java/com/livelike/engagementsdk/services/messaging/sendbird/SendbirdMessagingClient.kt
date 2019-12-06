@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.services.messaging.sendbird
 
 import android.content.Context
-import android.util.Log
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
@@ -15,8 +14,6 @@ import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.PREFERENCE_CHAT_ROOM_MEMBERSHIP
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSharedPreferences
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.sendbird.android.BaseChannel
@@ -155,7 +152,7 @@ internal class SendbirdMessagingClient(
         SendBird.disconnect {}
     }
 
-    override fun resume() {
+    override fun start() {
         liveLikeUser.currentUserStream.latest()?.let { connectToSendbird(it, true) }
     }
 
@@ -242,9 +239,9 @@ internal class SendbirdMessagingClient(
                     )
                     messageIdMap.addToMap(openChannel.url, message.messageId)
                     chatRoomMemberships?.put(openChannel.url, Calendar.getInstance().timeInMillis)
-                    getSharedPreferences().edit()
-                        .putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships))
-                        .apply()
+//                    getSharedPreferences().edit()
+//                        .putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships))
+//                        .apply()
                 }
             }
             sendLoadingCompletedEvent(openChannel)
@@ -370,6 +367,9 @@ internal class SendbirdMessagingClient(
         messages.forEach {
             listener?.onClientMessageEvent(this, it)
         }
+    }
+
+    override fun destroy() {
     }
 }
 

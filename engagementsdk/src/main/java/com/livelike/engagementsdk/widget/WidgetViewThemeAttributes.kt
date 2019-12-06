@@ -19,5 +19,4 @@ class WidgetViewThemeAttributes {
                 getString(R.styleable.LiveLike_WidgetView_drawAnimation) ?: "drawAnimation"
         }
     }
-
 }
