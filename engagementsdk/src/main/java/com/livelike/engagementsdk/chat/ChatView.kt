@@ -325,7 +325,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         chatAttribute.chatEmptyBackgroundText?.let {
             chatdisplay_empty_txt.text = it
-            chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_SP,chatAttribute.chatEmptyBackgroundTextSize)
+            chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_PX,chatAttribute.chatEmptyBackgroundTextSize)
             chatdisplay_empty_txt.setTextColor(chatAttribute.chatEmptyBackgroundTextColor)
             toggleVisibilityEmptyChat()
         }
