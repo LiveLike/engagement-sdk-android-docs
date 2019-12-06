@@ -27,6 +27,7 @@
         <item name="emptyChatBackgroundTextSize">13sp</item>
         <item name="emptyChatBackgroundTextColor">#50FFFFFF</item>
         <item name="chatAvatarMarginLeft">13dp</item>
+        <item name="closeKeyboardOnSend">true</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">
