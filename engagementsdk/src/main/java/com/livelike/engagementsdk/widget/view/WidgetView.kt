@@ -16,7 +16,7 @@ class WidgetView(context: Context,private val attr: AttributeSet) : FrameLayout(
     fun setSession(session: LiveLikeContentSession) {
         context.obtainStyledAttributes(
             attr,
-            R.styleable.WidgetView,
+            R.styleable.LiveLike_WidgetView,
             0, 0
         ).apply {
             try{

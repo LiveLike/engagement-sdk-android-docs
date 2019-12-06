@@ -23,6 +23,9 @@
         <item name="sendIconTintColor">#FFF</item>
         <item name="stickerIconTintColor">#FFF</item>
         <item name="chatBubbleMarginLeft">5dp</item>
+        <item name="emptyChatBackgroundText">GET THE CHAT STARTED!</item>
+        <item name="emptyChatBackgroundTextSize">13sp</item>
+        <item name="emptyChatBackgroundTextColor">#50FFFFFF</item>
         <item name="chatAvatarMarginLeft">13dp</item>
     </style>
 
@@ -79,6 +82,9 @@
         <item name="textColor">#000</item>
         <item name="rankValueTextColor">#000</item>
         <item name="emptyChatBackgroundImage">@drawable/ic_empty</item>
+        <item name="emptyChatBackgroundText">No Chat!!</item>
+        <item name="emptyChatBackgroundTextSize">11sp</item>
+        <item name="emptyChatBackgroundTextColor">#50000000</item>
 
     </style>
 
