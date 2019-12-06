@@ -47,4 +47,7 @@
         150 characters. The number of characters in this message are 150.
     </string>
     <string name="theme_btn_label">Themes</string>
+
+    <string name="win_animation_turner">winAnimationTurner</string>
+    <string name="lose_animation_turner">loseAnimationTurner</string>
 </resources>

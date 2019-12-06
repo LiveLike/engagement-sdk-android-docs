@@ -38,7 +38,8 @@ internal class WidgetManager(
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
-    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
+    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+    private val widgetThemeAttributes: WidgetViewThemeAttributes?
 ) :
     MessagingClientProxy(upstream) {
 
@@ -154,7 +155,8 @@ internal class WidgetManager(
                     },
                     userRepository,
                     programRepository,
-                    animationEventsStream
+                    animationEventsStream,
+                    widgetThemeAttributes ?: WidgetViewThemeAttributes()
                 )
             )
         }
@@ -216,7 +218,8 @@ internal fun MessagingClient.asWidgetManager(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     userRepository: UserRepository,
     programRepository: ProgramRepository,
-    animationEventsStream: SubscriptionManager<ViewAnimationEvents>
+    animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+    widgetThemeAttributes: WidgetViewThemeAttributes?
 ): WidgetManager {
     return WidgetManager(
         this,
@@ -228,6 +231,7 @@ internal fun MessagingClient.asWidgetManager(
         sdkConfiguration,
         userRepository,
         programRepository,
-        animationEventsStream
+        animationEventsStream,
+        widgetThemeAttributes
     )
 }

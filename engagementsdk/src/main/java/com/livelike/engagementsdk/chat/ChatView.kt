@@ -43,6 +43,8 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlin.math.max
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
@@ -58,6 +60,9 @@ import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chat_view
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_img
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_lay
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_txt
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
@@ -92,6 +97,16 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
+    var closeKeyboardOnSend: Boolean
+        get() = chatAttribute.closeKeyboardOnSend
+        set(value) {
+            chatAttribute.closeKeyboardOnSend = value
+            edittext_chat_message.imeOptions = when (chatAttribute.closeKeyboardOnSend) {
+                true -> EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+                else -> EditorInfo.IME_ACTION_NONE or EditorInfo.IME_FLAG_NO_EXTRACT_UI
+            }
+        }
+
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
@@ -117,11 +132,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
-            R.styleable.ChatView,
+            R.styleable.LiveLike_ChatView,
             0, 0
         ).apply {
             try {
-                displayUserProfile = getBoolean(R.styleable.ChatView_displayUserProfile, false)
+                displayUserProfile = getBoolean(R.styleable.LiveLike_ChatView_displayUserProfile, false)
                 chatAttribute.initAttributes(context, this)
             } finally {
                 recycle()
@@ -155,6 +170,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatDisplayBackgroundRes?.let {
                 chatdisplay.background = it
             }
+            this@ChatView.closeKeyboardOnSend = closeKeyboardOnSend
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
             edittext_chat_message.setTextColor(chatInputTextColor)
@@ -208,6 +224,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
+                        checkEmptyChat()
                         if (isLastItemVisible) {
                             snapToLive()
                         }
@@ -215,6 +232,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
                         uiScope.launch {
                             hideLoadingSpinner()
+                            checkEmptyChat()
                             delay(100)
                             snapToLive()
                         }
@@ -302,6 +320,27 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 )
             }
         }
+    }
+
+    private fun checkEmptyChat() {
+        chatAttribute.chatEmptyBackgroundImage?.let {
+            chatdisplay_empty_img.setImageDrawable(it)
+            toggleVisibilityEmptyChat()
+        }
+
+        chatAttribute.chatEmptyBackgroundText?.let {
+            chatdisplay_empty_txt.text = it
+            chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatAttribute.chatEmptyBackgroundTextSize)
+            chatdisplay_empty_txt.setTextColor(chatAttribute.chatEmptyBackgroundTextColor)
+            toggleVisibilityEmptyChat()
+        }
+    }
+
+    private fun toggleVisibilityEmptyChat() {
+        if ((viewModel?.chatAdapter?.itemCount ?: 0) == 0)
+            chatdisplay_empty_lay.visibility = View.VISIBLE
+        else
+            chatdisplay_empty_lay.visibility = View.GONE
     }
 
     private fun initStickerKeyboard(
@@ -397,7 +436,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
             val outsideStickerKeyboardBound = (v.bottom - sticker_keyboard.height)
-            if (y < v.top || y > v.bottom || y < outsideStickerKeyboardBound) {
+            // Added check for height greater than 0 so bound position for touch should be above the send icon
+            if (y < v.top || y > v.bottom || (sticker_keyboard.height > 0 && y < outsideStickerKeyboardBound)) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
@@ -489,7 +529,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
                     if (!hasFocus) {
-                        hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                        if (chatAttribute.closeKeyboardOnSend)
+                            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     }
                 }
 
@@ -507,8 +548,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
-        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.GONE
-        session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
+        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
+            if (visibility == View.VISIBLE) {
+                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
+            }
+            visibility = View.GONE
+        }
     }
 
     private fun showStickerKeyboard() {
@@ -534,18 +579,15 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
-        val inputManager =
-            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputManager.hideSoftInputFromWindow(
-            edittext_chat_message.windowToken,
-            0
-        )
+            val inputManager =
+                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(
+                edittext_chat_message.windowToken,
+                0
+            )
 
-        if (reason != KeyboardHideReason.MESSAGE_SENT) {
             session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
-        }
-
-        setBackButtonInterceptor(this)
+            setBackButtonInterceptor(this)
     }
 
     private fun sendMessageNow() {
@@ -553,9 +595,10 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             // Do nothing if the message is blank or empty
             return
         }
-
-        hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
-        hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
+        if (chatAttribute.closeKeyboardOnSend) {
+            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
+            hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
+        }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(

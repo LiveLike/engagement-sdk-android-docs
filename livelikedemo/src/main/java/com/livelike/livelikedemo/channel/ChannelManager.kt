@@ -54,7 +54,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                     try {
                         val json = JSONObject(responseData)
                         val results = json.getJSONArray("results")
-                        for (i in 0..(results.length() - 1)) {
+                        for (i in 0 until results.length()) {
                             val channel = getChannelFor(results.getJSONObject(i))
                             channel?.let {
                                 channelList.add(channel)
@@ -76,15 +76,17 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     }
 
     private fun getChannelFor(channelData: JSONObject): Channel? {
-        return if (!channelData.getString("stream_url").equals("null") && channelData.getString("status").equals("live"))
-            Channel(
+        val streamUrl = channelData.getString("stream_url")
+        val url: URL? = when {
+            streamUrl.isNullOrEmpty() || streamUrl.equals("null") -> null
+            else -> URL(streamUrl)
+        }
+        return Channel(
                 channelData.getString("title"),
-                URL(channelData.getString("stream_url")),
+                url,
                 null,
                 channelData.getString("id")
             )
-        else
-            null
     }
 
     private fun persistChannel(channelName: String) {

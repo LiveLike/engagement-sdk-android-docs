@@ -70,7 +70,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun resultObserver(resource: Resource?) {
-        lastResult = resource
         resource?.let {
             lastResult = it
             val options = resource.options ?: return
@@ -356,6 +355,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 }
 
                 override fun onAnimationStart(animation: Animator?) {
+                    // Init Vote to get Vote Url
+                    viewModel?.sendVote(voteUrl)
                     txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
                     view_ripple_demo.isPressed = true
                     view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
@@ -414,6 +415,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         viewModel?.animationEggTimerProgress = t
                     }, {
                         // stop voting
+                        // Added in order to get the updated voteCount at the voting end
+                        viewModel?.pushVoteData(0)
                         stopVoting()
                         viewModel?.dismissWidget(it)
                     })
@@ -426,6 +429,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
     private fun endObserver(it: Boolean?) {
         if (it == true) {
+            // stop voting
+            // Added in order to get the updated voteCount at the voting end
+            viewModel?.pushVoteData(0)
             stopVoting()
         }
     }
@@ -531,7 +537,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playLoserAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            setAnimation("loser_animation.json")
+            val rootPath = widgetViewThemeAttributes.widgetLoseAnimation
+            val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+            setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {
@@ -555,7 +563,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playWinnerAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            setAnimation("winner_animation.json")
+            val rootPath = widgetViewThemeAttributes.widgetWinAnimation
+            val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+            setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {
@@ -579,7 +589,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun playDrawAnimation() {
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
-            setAnimation("draw_animation.json")
+            val rootPath = widgetViewThemeAttributes.widgetDrawAnimation
+            val animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+            setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
             addAnimatorListener(object : Animator.AnimatorListener {

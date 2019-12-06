@@ -30,7 +30,10 @@ class LiveLikeApplication : Application() {
         Bugsnag.init(this)
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
 
-        val accessToken = getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(PREF_USER_ACCESS_TOKEN, null)
+        val accessToken = getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
+            PREF_USER_ACCESS_TOKEN,
+            null
+        )
         sdk = EngagementSDK(BuildConfig.APP_CLIENT_ID, applicationContext, accessToken)
         if (accessToken == null) {
             fetchAndPersisToken(sdk)
@@ -45,7 +48,8 @@ class LiveLikeApplication : Application() {
             it?.let {
                 sdk.userStream.unsubscribe(javaClass.simpleName)
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
-                    PREF_USER_ACCESS_TOKEN, it.accessToken).apply()
+                    PREF_USER_ACCESS_TOKEN, it.accessToken
+                ).apply()
             }
         }
     }
@@ -55,7 +59,15 @@ class LiveLikeApplication : Application() {
         return player
     }
 
-    fun createSession(sessionId: String, widgetInterceptor: WidgetInterceptor? = null): LiveLikeContentSession {
+    fun setTheme() {
+        session?.close()
+        session = null
+    }
+
+    fun createSession(
+        sessionId: String,
+        widgetInterceptor: WidgetInterceptor? = null
+    ): LiveLikeContentSession {
         if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
             session = sdk.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {

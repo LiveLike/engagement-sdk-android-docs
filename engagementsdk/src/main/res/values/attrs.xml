@@ -18,8 +18,13 @@
     <item name="livelike_chat_nickname_font"
         type="font">@font/roboto_bold</item>
 
+    <declare-styleable name="LiveLike_WidgetView">
+        <attr name="winAnimation" format="string"/>
+        <attr name="loseAnimation" format="string"/>
+        <attr name="drawAnimation" format="string"/>
+    </declare-styleable>
 
-    <declare-styleable name="ChatView">
+    <declare-styleable name="LiveLike_ChatView">
         <attr name="displayUserProfile" format="boolean" />
         <attr name="showStickerSend" format="boolean" />
         <attr name="usernameColor" format="color"/>
@@ -80,6 +85,7 @@
         <attr name="chatSendBackground" format="reference|color"/>
         <attr name="showChatAvatarLogo" format="boolean"/>
         <attr name="chatAvatarCircle" format="boolean"/>
+        <attr name="closeKeyboardOnSend" format="boolean"/>
         <attr name="chatAvatarMarginRight" format="dimension"/>
         <attr name="chatAvatarMarginBottom" format="dimension"/>
         <attr name="chatAvatarMarginLeft" format="dimension"/>
@@ -104,6 +110,10 @@
             <flag name="top" value="48" />
         </attr>
         <attr name="rankValueTextColor" format="color"/>
+        <attr name="emptyChatBackgroundImage" format="reference"/>
+        <attr name="emptyChatBackgroundText" format="string"/>
+        <attr name="emptyChatBackgroundTextColor" format="color"/>
+        <attr name="emptyChatBackgroundTextSize" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="PointView">

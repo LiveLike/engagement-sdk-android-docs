@@ -1,10 +1,12 @@
 package com.livelike.engagementsdk.chat
 
+import android.graphics.drawable.ColorDrawable
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -48,7 +50,7 @@ internal class ChatRecyclerAdapter(
     private val analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit,
     private val stickerPackRepository: StickerPackRepository,
-    val chatReactionRepository: ChatReactionRepository
+    var chatReactionRepository: ChatReactionRepository
 
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
@@ -62,6 +64,7 @@ internal class ChatRecyclerAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindTo(getItem(position))
+        holder.itemView.requestLayout()
     }
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
@@ -99,7 +102,26 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
-            v.chatMessage.setTextColor(chatViewThemeAttribute.chatMessageColor)
+            chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
+                if (res <0) {
+                    v.chatBubbleBackground.setBackgroundColor(res)
+                } else {
+                    val value = TypedValue()
+                    v.context.resources.getValue(res, value, true)
+                    when {
+                        value.type == TypedValue.TYPE_REFERENCE -> v.chatBubbleBackground.setBackgroundResource(
+                            res
+                        )
+                        value.type == TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
+                            R.drawable.ic_chat_message_bubble_rounded_rectangle
+                        )
+                        value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT -> ColorDrawable(
+                            value.data
+                        )
+                        else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
+                    }
+                }
+            }
 
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
@@ -156,6 +178,8 @@ internal class ChatRecyclerAdapter(
                 this@ViewHolder.message = message
                 message?.apply {
                     chatViewThemeAttribute.apply {
+                        v.chatMessage.setTextColor(chatMessageColor)
+
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text = context.getString(
@@ -179,16 +203,21 @@ internal class ChatRecyclerAdapter(
                         )
                         v.chatBackground.layoutParams = layoutParam
 
-                        val layoutParam1 = LinearLayout.LayoutParams(
-                            chatWidth,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        v.chatBubbleBackground.setPadding(
+                            chatBubblePaddingLeft,
+                            chatBubblePaddingTop,
+                            chatBubblePaddingRight,
+                            chatBubblePaddingBottom
                         )
+                        val layoutParam1: LinearLayout.LayoutParams =
+                            v.chatBubbleBackground.layoutParams as LinearLayout.LayoutParams
                         layoutParam1.setMargins(
                             chatBubbleMarginLeft,
                             chatBubbleMarginTop,
                             chatBubbleMarginRight,
                             chatBubbleMarginBottom
                         )
+                        layoutParam1.width = chatWidth
                         v.chatBubbleBackground.layoutParams = layoutParam1
 
                         v.img_chat_avatar.visibility =
@@ -210,15 +239,6 @@ internal class ChatRecyclerAdapter(
                         v.img_chat_avatar.layoutParams = layoutParamAvatar
 
                         v.chatBackground.background = chatBackgroundRes
-
-                        v.chatBubbleBackground.background =
-                            chatBubbleBackgroundRes
-                        v.chatBubbleBackground.setPadding(
-                            chatBubblePaddingLeft,
-                            chatBubblePaddingTop,
-                            chatBubblePaddingRight,
-                            chatBubblePaddingBottom
-                        )
 
                         val options = RequestOptions()
                         if (chatAvatarCircle) {

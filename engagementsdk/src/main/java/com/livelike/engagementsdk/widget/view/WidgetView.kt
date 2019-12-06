@@ -4,11 +4,28 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 
-class WidgetView(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
+class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
+
+    private val widgetViewThemeAttributes = WidgetViewThemeAttributes()
+
     fun setSession(session: LiveLikeContentSession) {
+        context.obtainStyledAttributes(
+            attr,
+            R.styleable.LiveLike_WidgetView,
+            0, 0
+        ).apply {
+            try {
+                widgetViewThemeAttributes.init(this)
+                session.setWidgetViewThemeAttribute(widgetViewThemeAttributes)
+            } finally {
+                recycle()
+            }
+        }
         session.setWidgetContainer(this)
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
     }
