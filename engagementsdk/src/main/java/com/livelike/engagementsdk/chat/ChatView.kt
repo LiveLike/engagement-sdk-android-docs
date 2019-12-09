@@ -21,6 +21,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.KeyboardHideReason
@@ -31,6 +32,7 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
@@ -40,6 +42,8 @@ import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.view.loadImage
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -65,9 +69,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
+import org.threeten.bp.ZonedDateTime
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -133,7 +135,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         ).apply {
             try {
                 displayUserProfile = getBoolean(R.styleable.LiveLike_ChatView_displayUserProfile, false)
-                chatAttribute.initAttributes(context,this)
+                chatAttribute.initAttributes(context, this)
             } finally {
                 recycle()
             }
@@ -326,14 +328,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         chatAttribute.chatEmptyBackgroundText?.let {
             chatdisplay_empty_txt.text = it
-            chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_SP,chatAttribute.chatEmptyBackgroundTextSize)
+            chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatAttribute.chatEmptyBackgroundTextSize)
             chatdisplay_empty_txt.setTextColor(chatAttribute.chatEmptyBackgroundTextColor)
             toggleVisibilityEmptyChat()
         }
     }
 
     private fun toggleVisibilityEmptyChat() {
-        if ((viewModel?.chatAdapter?.itemCount ?: 0) == 0)
+        if ((viewModel?.messageList?.size ?: 0) == 0)
             chatdisplay_empty_lay.visibility = View.VISIBLE
         else
             chatdisplay_empty_lay.visibility = View.GONE
@@ -431,9 +433,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             v.getLocationOnScreen(scrcoords)
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
-            val outsideStickerKeyboardBound = (v.bottom - sticker_keyboard.height)
-            //Added check for height greater than 0 so bound position for touch should be above the send icon
-            if (y < v.top || y > v.bottom || (sticker_keyboard.height > 0 && y < outsideStickerKeyboardBound)) {
+            val outsideStickerKeyboardBound = (v.bottom - sticker_keyboard.height - button_chat_send.height)
+            // Added check for height greater than 0 so bound position for touch should be above the send icon
+            if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                 hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
             }
@@ -525,7 +527,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
                     if (!hasFocus) {
-                        if(chatAttribute.closeKeyboardOnSend)
+                        if (chatAttribute.closeKeyboardOnSend)
                             hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
                     }
                 }
@@ -545,7 +547,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
-            if(visibility==View.VISIBLE){
+            if (visibility == View.VISIBLE) {
                 session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
             }
             visibility = View.GONE
@@ -591,19 +593,19 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             // Do nothing if the message is blank or empty
             return
         }
-        if(chatAttribute.closeKeyboardOnSend) {
+        if (chatAttribute.closeKeyboardOnSend) {
             hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
             hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
         ChatMessage(
-            viewModel?.currentChatRoom ?: "",
+            viewModel?.currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
-            Date(timeData.timeSinceEpochInMs).toString(),
+            timeStamp = ZonedDateTime.now().formatIsoLocal8601(),
             isFromMe = true
         ).let {
             viewModel?.apply {

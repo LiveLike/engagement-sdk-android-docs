@@ -167,23 +167,6 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         }
     }
 
-    private fun pareseSdkConfiguration(configData: JsonObject): EngagementSDK.SdkConfiguration {
-        return EngagementSDK.SdkConfiguration(
-            configData.extractStringOrEmpty("url"),
-            configData.extractStringOrEmpty("name"),
-            configData.extractStringOrEmpty("client_id"),
-            configData.extractStringOrEmpty("media_url"),
-            configData.extractStringOrEmpty("pubnub_subscribe_key"),
-            configData.extractStringOrEmpty("sendbird_app_id"),
-            configData.extractStringOrEmpty("sendbird_api_endpoint"),
-            configData.extractStringOrEmpty("programs_url"),
-            configData.extractStringOrEmpty("sessions_url"),
-            configData.extractStringOrEmpty("sticker_packs_url"),
-            configData.extractStringOrEmpty("mixpanel_token"),
-            mapOf()
-        )
-    }
-
     override fun createUserData(
         clientId: String,
         responseCallback: (livelikeUser: LiveLikeUser) -> Unit

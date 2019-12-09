@@ -1,11 +1,11 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
-import android.util.Log
 import android.widget.FrameLayout
-import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.chat.ChatRepository
 import com.livelike.engagementsdk.chat.ChatViewModel
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.toChatQueue
 import com.livelike.engagementsdk.core.ServerDataValidationException
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
@@ -20,15 +20,13 @@ import com.livelike.engagementsdk.services.messaging.proxies.filter
 import com.livelike.engagementsdk.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.services.messaging.proxies.withPreloader
+import com.livelike.engagementsdk.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.messaging.sendbird.SendbirdMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.Result
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.PREFERENCE_CHAT_ROOM_MEMBERSHIP
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSharedPreferences
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
@@ -36,7 +34,6 @@ import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
-import java.util.Calendar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -59,7 +56,8 @@ internal class ContentSession(
         userRepository.setProfilePicUrl(url)
     }
 
-    private var sendbirdMessagingClient: SendbirdMessagingClient? = null
+    private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
+    private var chatRepository: ChatRepository? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -67,7 +65,7 @@ internal class ContentSession(
             widgetInterceptorStream.onNext(value)
         }
 
-    private var widgetThemeAttributes:WidgetViewThemeAttributes?=null
+    private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
 
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
@@ -81,7 +79,7 @@ internal class ContentSession(
 
     private val stickerPackRepository = StickerPackRepository(programId)
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream, stickerPackRepository) }
-    override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom }
+    override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
@@ -95,17 +93,27 @@ internal class ContentSession(
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
     // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
     private val configurationFlow = flow {
-        while (sdkConfiguration.latest() == null) {
+        while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
             delay(1000)
         }
         emit(sdkConfiguration.latest()!!)
     }
-    private var customChatChannel = ""
+    private var privateChatRoomID = ""
 
-    private var chatRoomMemberships: HashMap<String, Long?>
+    private var chatRoomMap = mutableMapOf<String, ChatRoom>()
 
-    private var msgListener: MessageListener = object : MessageListener {
-        override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {} }
+    // TODO remove proxy message listener by having pipe in chat data layers/chain that tranforms pubnub channel to room
+    private var proxyMsgListener: MessageListener = object : MessageListener {
+        override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
+            for (chatRoomIdPair in chatRoomMap) {
+                if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
+                    msgListener?.onNewMessage(chatRoomIdPair.key, message)
+                }
+            }
+        }
+    }
+
+    private var msgListener: MessageListener? = null
 
     init {
         userRepository.currentUserStream.subscribe(javaClass) {
@@ -134,8 +142,16 @@ internal class ContentSession(
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            chatViewModel.currentChatRoom = program.subscribeChannel
-                            if (customChatChannel.isEmpty()) initializeChatMessaging(program.chatChannel, configuration)
+                            chatViewModel.currentChatRoom = program.defaultChatRoom
+                            chatRepository = ChatRepository(
+                                configuration.pubNubKey,
+                                pair.first.accessToken,
+                                pair.first.id,
+                                analyticService,
+                                proxyMsgListener,
+                                configuration.pubnubPublishKey
+                            )
+                            if (privateChatRoomID.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -151,58 +167,77 @@ internal class ContentSession(
                 }
             }
         }
-        chatRoomMemberships = gson.fromJson(getSharedPreferences().getString(
-            PREFERENCE_CHAT_ROOM_MEMBERSHIP, ""), object : TypeToken<HashMap<String, Long?>>() {}.type) ?: HashMap()
     }
 
-    override fun joinChatRoom(chatRoom: String) {
-        if (chatRoomMemberships.size > 10) {
-            return logError {
-                "Membership count cannot be greater than 10"
-            }
-        }
-        val chatRoom = validChatChannelName(chatRoom)
-        if (!chatRoomMemberships.containsKey(chatRoom)) {
-            chatRoomMemberships[chatRoom] = Calendar.getInstance().timeInMillis
-            getSharedPreferences().edit()
-                .putString(PREFERENCE_CHAT_ROOM_MEMBERSHIP, gson.toJson(chatRoomMemberships))
-                .apply()
-        }
-    }
-
-    override fun leaveChatRoom(chatRoom: String) {
-        val validChatChannelName = validChatChannelName(chatRoom)
-        chatRoomMemberships.remove(validChatChannelName)
-        chatClient?.unsubscribe(listOf(validChatChannelName))
-    }
-
-    override fun enterChatRoom(chatRoom: String) {
-        val chatRoom = validChatChannelName(chatRoom)
-        if (chatRoomMemberships.containsKey(chatRoom)) {
-            joinChatRoom(chatRoom)
-        }
-        Log.d("god", chatRoomMemberships.toString())
-        if (customChatChannel == chatRoom) return
-        customChatChannel = chatRoom
+    private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit) {
         contentSessionScope.launch {
-            chatViewModel.flushMessages()
-            chatViewModel.currentChatRoom = chatRoom
-            chatViewModel.chatLoaded = false
-            if (sendbirdMessagingClient == null) {
-                configurationFlow.collect {
-                    initializeChatMessaging(chatRoom, it, syncEnabled = false, privateGroupsChat = true)
+            chatRepository?.let { chatRepository ->
+                configurationFlow.collect { config ->
+                    val chatRoomResult =
+                        chatRepository.fetchChatRoom(chatRoomId, config.chatRoomUrlTemplate)
+                    if (chatRoomResult is Result.Success) {
+                        chatRoomMap[chatRoomId] = chatRoomResult.data
+                        chatRoomResultCall.invoke(chatRoomResult.data)
+                    } else if (chatRoomResult is Result.Error) {
+                        logError {
+                            chatRoomResult.exception?.message
+                                ?: "error in fetching room id resource"
+                        }
+                    }
                 }
-            } else {
-                sendbirdMessagingClient?.activeChannelRoom = chatRoom
             }
         }
     }
 
-    private fun validChatChannelName(chatRoom: String) =
-        chatRoom.toLowerCase().replace(" ", "").replace("-", "")
+    override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
+        if (chatRoomMap.size > 50) {
+            return logError {
+                "subscribing  count for pubnub channels cannot be greater than 50"
+            }
+        }
+        if (chatRoomMap.containsKey(chatRoomId)) {
+            return
+        }
+        fetchChatRoom(chatRoomId) {
+            val channel = it.channels.chat[CHAT_PROVIDER]
+            delay(5000)
+            channel?.let { channel ->
+                privateGroupPubnubClient?.addChannelSubscription(channel, timestamp)
+            }
+        }
+    }
 
-    override fun exitChatRoom(chatRoom: String) {
-        chatClient?.unsubscribe(listOf(chatRoom))
+    override fun leaveChatRoom(chatRoomId: String) {
+        chatRoomMap[chatRoomId]?.let { chatRoom ->
+            chatRoomMap.remove(chatRoomId)
+            chatClient?.unsubscribe(listOf(chatRoom.channels.chat[CHAT_PROVIDER] ?: ""))
+        }
+    }
+
+    override fun enterChatRoom(chatRoomId: String) {
+        if (privateChatRoomID == chatRoomId) return // Already in the room
+        privateChatRoomID = chatRoomId
+
+        fetchChatRoom(chatRoomId) { chatRoom ->
+            val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
+            if (privateGroupPubnubClient == null) {
+                initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
+            } else {
+                privateGroupPubnubClient?.activeChatRoom = channel
+            }
+            chatViewModel.apply {
+                flushMessages()
+                currentChatRoom = chatRoom
+                chatLoaded = false
+            }
+        }
+    }
+
+    override fun exitChatRoom(chatRoomId: String) {
+        leaveChatRoom(chatRoomId)
+        chatViewModel.apply {
+            flushMessages()
+        }
     }
 
     override fun exitAllConnectedChatRooms() {
@@ -280,7 +315,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream,widgetThemeAttributes)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
@@ -289,31 +324,30 @@ internal class ContentSession(
     // ///// Chat. ///////
 
     private fun initializeChatMessaging(
-        chatChannel: String,
-        config: EngagementSDK.SdkConfiguration,
+        chatChannel: String?,
         syncEnabled: Boolean = true,
         privateGroupsChat: Boolean = false
     ) {
+        if (chatChannel == null)
+            return
+
         analyticService.trackLastChatStatus(true)
-        chatClient = SendbirdMessagingClient(
-            config.sendBirdAppId,
-            applicationContext,
-            analyticService,
-            userRepository,
-            msgListener,
-            chatRoomMemberships
-        )
+        chatClient?.destroy() // destroying previous client in case of private group chat, will decouple it later from program.
+        chatClient = chatRepository?.establishChatMessagingConnection()
         if (privateGroupsChat) {
-            sendbirdMessagingClient = chatClient as SendbirdMessagingClient
+            privateGroupPubnubClient = chatClient as PubnubChatMessagingClient
         }
-        if (syncEnabled)
+
+        if (syncEnabled) {
             chatClient =
                 chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
+        }
+
         chatClient = chatClient?.toChatQueue()
             ?.apply {
                 if (privateGroupsChat) {
-                    subscribe(chatRoomMemberships.keys.toList().filter { it != chatChannel })
-                    sendbirdMessagingClient?.activeChannelRoom = chatChannel
+                    subscribe(chatRoomMap.keys.toList().filter { it != chatChannel })
+                    privateGroupPubnubClient?.activeChatRoom = chatChannel
                 } else {
                     subscribe(listOf(chatChannel))
                 }
@@ -334,8 +368,8 @@ internal class ContentSession(
 
     override fun resume() {
         logVerbose { "Resuming the Session" }
-        widgetClient?.resume()
-        chatClient?.resume()
+        widgetClient?.start()
+        chatClient?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticService.trackLastChatStatus(true)
         analyticService.trackLastWidgetStatus(true)
@@ -344,14 +378,16 @@ internal class ContentSession(
     override fun close() {
         logVerbose { "Closing the Session" }
         contentSessionScope.cancel()
-        chatClient?.apply {
+        chatClient?.run {
             unsubscribeAll()
+            stop()
+            destroy()
         }
-        widgetClient?.apply {
+        widgetClient?.run {
             unsubscribeAll()
+            stop()
+            destroy()
         }
-        widgetClient?.stop()
-        chatClient?.stop()
         currentWidgetViewStream.clear()
         analyticService.trackLastChatStatus(false)
         analyticService.trackLastWidgetStatus(false)

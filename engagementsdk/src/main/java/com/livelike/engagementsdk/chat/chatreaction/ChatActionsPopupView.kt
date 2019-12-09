@@ -30,21 +30,21 @@ internal class ChatActionsPopupView(
     flagClick: View.OnClickListener,
     hideFloatinUi: () -> Unit,
     isOwnMessage: Boolean,
-    chatReactionBackground:Drawable?=ColorDrawable(Color.TRANSPARENT),
-    chatReactionElevation:Float=0f,
-    chatReactionRadius:Float=0f,
-    chatReactionBackgroundColor:Int=Color.TRANSPARENT,
-    chatReactionPadding:Int= AndroidResource.dpToPx(6)
+    chatReactionBackground: Drawable? = ColorDrawable(Color.TRANSPARENT),
+    chatReactionElevation: Float = 0f,
+    chatReactionRadius: Float = 0f,
+    chatReactionBackgroundColor: Int = Color.TRANSPARENT,
+    chatReactionPadding: Int = AndroidResource.dpToPx(6)
 ) : PopupWindow(context) {
 
     init {
         contentView = LayoutInflater.from(context).inflate(R.layout.popup_chat_reaction, null)
         contentView.chat_reaction_background_card.apply {
             setCardBackgroundColor(chatReactionBackgroundColor)
-            cardElevation=chatReactionElevation
-            radius=chatReactionRadius
+            cardElevation = chatReactionElevation
+            radius = chatReactionRadius
         }
-        contentView.reaction_panel_interaction_box.setPadding(chatReactionPadding,chatReactionPadding,chatReactionPadding,chatReactionPadding)
+        contentView.reaction_panel_interaction_box.setPadding(chatReactionPadding, chatReactionPadding, chatReactionPadding, chatReactionPadding)
         if (!isOwnMessage) {
         val moderationFlagView = contentView.findViewById<ImageView>(R.id.moderation_flag)
             moderationFlagView.visibility = View.VISIBLE

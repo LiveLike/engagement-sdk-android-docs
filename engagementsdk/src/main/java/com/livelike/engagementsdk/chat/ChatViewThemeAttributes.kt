@@ -18,6 +18,7 @@ class ChatViewThemeAttributes {
             showChatAvatarLogo = getBoolean(R.styleable.LiveLike_ChatView_showChatAvatarLogo, false)
             chatAvatarCircle = getBoolean(R.styleable.LiveLike_ChatView_chatAvatarCircle, false)
             showStickerSend = getBoolean(R.styleable.LiveLike_ChatView_showStickerSend, true)
+            closeKeyboardOnSend = getBoolean(R.styleable.LiveLike_ChatView_closeKeyboardOnSend, true)
             chatNickNameColor = getColor(
                 R.styleable.LiveLike_ChatView_usernameColor,
                 ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
@@ -50,10 +51,10 @@ class ChatViewThemeAttributes {
             chatAvatarGravity =
                 getInt(R.styleable.LiveLike_ChatView_chatAvatarGravity, Gravity.NO_GRAVITY)
 
-            val emptyBackValue=TypedValue()
-            getValue(R.styleable.LiveLike_ChatView_emptyChatBackgroundImage,emptyBackValue)
+            val emptyBackValue = TypedValue()
+            getValue(R.styleable.LiveLike_ChatView_emptyChatBackgroundImage, emptyBackValue)
 
-            chatEmptyBackgroundImage = when(emptyBackValue.type){
+            chatEmptyBackgroundImage = when (emptyBackValue.type) {
                 TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
@@ -75,21 +76,21 @@ class ChatViewThemeAttributes {
                 Color.WHITE
             )
 
-            chatEmptyBackgroundTextSize = getDimension(
+            chatEmptyBackgroundTextSize = getDimensionPixelSize(
                 R.styleable.LiveLike_ChatView_emptyChatBackgroundTextSize,
-                17f
-            )
+                13
+            ).toFloat()
 
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatBubbleBackground, colorBubbleValue)
 
-            chatBubbleBackgroundRes = when  {
-                colorBubbleValue.type==TypedValue.TYPE_REFERENCE -> getResourceId(
+            chatBubbleBackgroundRes = when {
+                colorBubbleValue.type == TypedValue.TYPE_REFERENCE -> getResourceId(
                     R.styleable.LiveLike_ChatView_chatBubbleBackground,
                     R.drawable.ic_chat_message_bubble_rounded_rectangle
                 )
-                colorBubbleValue.type==TypedValue.TYPE_NULL -> R.drawable.ic_chat_message_bubble_rounded_rectangle
-                colorBubbleValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorBubbleValue.type <= TypedValue.TYPE_LAST_COLOR_INT ->colorBubbleValue.data
+                colorBubbleValue.type == TypedValue.TYPE_NULL -> R.drawable.ic_chat_message_bubble_rounded_rectangle
+                colorBubbleValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorBubbleValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorBubbleValue.data
                 else -> R.drawable.ic_chat_message_bubble_rounded_rectangle
             }
 
@@ -482,9 +483,9 @@ class ChatViewThemeAttributes {
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
-    var chatEmptyBackgroundImage:Drawable?=null
-    var chatEmptyBackgroundText:String?=null
-    var chatEmptyBackgroundTextColor:Int=Color.WHITE
-    var chatEmptyBackgroundTextSize:Float = 17f
+    var chatEmptyBackgroundImage: Drawable? = null
+    var chatEmptyBackgroundText: String? = null
+    var chatEmptyBackgroundTextColor: Int = Color.WHITE
+    var chatEmptyBackgroundTextSize: Float = 13f
     var closeKeyboardOnSend: Boolean = true
 }

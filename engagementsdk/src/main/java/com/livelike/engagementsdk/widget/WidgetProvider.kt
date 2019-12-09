@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.data.models.Badge
@@ -144,6 +143,5 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     open var widgetViewModel: ViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
-    open var widgetViewThemeAttributes : WidgetViewThemeAttributes = WidgetViewThemeAttributes()
-
+    open var widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()
 }

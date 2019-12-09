@@ -12,7 +12,6 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
-import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
@@ -80,7 +79,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 setHasFixedSize(true)
             }
 
-            viewModel?.startDismissTimout(resource.timeout,widgetViewThemeAttributes!!)
+            viewModel?.startDismissTimout(resource.timeout, widgetViewThemeAttributes!!)
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f) {

@@ -22,6 +22,7 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlin.math.max
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
@@ -39,9 +40,6 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_ti
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple_demo
-import kotlin.math.max
-
-
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
@@ -357,7 +355,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 }
 
                 override fun onAnimationStart(animation: Animator?) {
-                    //Init Vote to get Vote Url
+                    // Init Vote to get Vote Url
                     viewModel?.sendVote(voteUrl)
                     txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
                     view_ripple_demo.isPressed = true
@@ -417,14 +415,14 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         viewModel?.animationEggTimerProgress = t
                     }, {
                         // stop voting
-                        //Added in order to get the updated voteCount at the voting end
+                        // Added in order to get the updated voteCount at the voting end
                         viewModel?.pushVoteData(0)
                         stopVoting()
                         viewModel?.dismissWidget(it)
                     })
                 }
             }
-            viewModel?.startDismissTimout(10000.toString(),isVotingStarted = true)
+            viewModel?.startDismissTimout(10000.toString(), isVotingStarted = true)
         }
         viewModel?.sendVote(voteUrl)
     }
@@ -432,7 +430,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun endObserver(it: Boolean?) {
         if (it == true) {
             // stop voting
-            //Added in order to get the updated voteCount at the voting end
+            // Added in order to get the updated voteCount at the voting end
             viewModel?.pushVoteData(0)
             stopVoting()
         }

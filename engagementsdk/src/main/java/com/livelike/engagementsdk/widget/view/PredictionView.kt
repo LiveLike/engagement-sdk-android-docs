@@ -76,7 +76,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
 
             val isFollowUp = resource.kind.contains("follow-up")
-            viewModel?.startDismissTimout(resource.timeout, isFollowUp,widgetViewThemeAttributes)
+            viewModel?.startDismissTimout(resource.timeout, isFollowUp, widgetViewThemeAttributes)
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {

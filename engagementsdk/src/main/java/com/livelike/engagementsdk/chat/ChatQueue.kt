@@ -6,11 +6,11 @@ import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.utils.gson
-import java.util.Date
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
     ChatEventListener {
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
@@ -19,8 +19,8 @@ internal class ChatQueue(upstream: MessagingClient) :
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 
     var renderer: ChatRenderer? = null
@@ -40,16 +40,7 @@ internal class ChatQueue(upstream: MessagingClient) :
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         when (event.message.get("event").asString) {
             ChatViewModel.EVENT_NEW_MESSAGE -> {
-                val newMessage = ChatMessage(
-                    event.channel,
-                    event.message.get("message").asString,
-                    event.message.get("sender_id").asString,
-                    event.message.get("sender").asString,
-                    event.message.get("image_url")?.asString,
-                    event.message.get("id").asString,
-                    Date(event.timeStamp.timeSinceEpochInMs).toString()
-                )
-                renderer?.displayChatMessage(newMessage)
+                renderer?.displayChatMessage(gson.fromJson(event.message, ChatMessage::class.java))
             }
             ChatViewModel.EVENT_MESSAGE_DELETED -> {
                 val id = event.message.get("id").asString

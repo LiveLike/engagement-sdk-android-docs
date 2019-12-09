@@ -28,14 +28,13 @@ import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -103,10 +102,10 @@ internal class ChatRecyclerAdapter(
         }
 
         init {
-            chatViewThemeAttribute.chatBubbleBackgroundRes?.let {res->
-                if(res<0){
+            chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
+                if (res <0) {
                     v.chatBubbleBackground.setBackgroundColor(res)
-                }else {
+                } else {
                     val value = TypedValue()
                     v.context.resources.getValue(res, value, true)
                     when {

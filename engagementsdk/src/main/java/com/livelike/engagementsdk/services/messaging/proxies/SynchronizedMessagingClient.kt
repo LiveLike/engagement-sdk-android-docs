@@ -24,8 +24,8 @@ internal class SynchronizedMessagingClient(
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 
     companion object {

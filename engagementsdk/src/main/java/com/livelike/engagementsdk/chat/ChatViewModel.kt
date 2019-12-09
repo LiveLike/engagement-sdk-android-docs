@@ -1,10 +1,12 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.services.network.ChatDataClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
@@ -24,12 +26,12 @@ internal class ChatViewModel(
 
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository, ChatReactionRepository(programRepository.programId))
-    private val messageList = mutableListOf<ChatMessage>()
+    val messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(true)
-    var currentChatRoom: String = ""
+    var currentChatRoom: ChatRoom? = null
     set(value) {
         field = value
-        chatAdapter.isPublicChat = currentChatRoom == programRepository.program.chatChannel
+        chatAdapter.isPublicChat = currentChatRoom?.id == programRepository.program.defaultChatRoom?.id
     }
     internal var chatLoaded = false
         set(value) {
@@ -51,16 +53,17 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
-        if (message.channel != currentChatRoom) return
+        if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
         messageList.add(message.apply {
             isFromMe = userStream.latest()?.id == senderId
         })
-        chatAdapter.submitList(ArrayList(messageList))
-        chatAdapter.notifyDataSetChanged()
-        eventStream.onNext(EVENT_NEW_MESSAGE)
+        uiScope.launch {
+            chatAdapter.submitList(ArrayList(messageList))
+            eventStream.onNext(EVENT_NEW_MESSAGE)
+        }
     }
 
     override fun deleteChatMessage(messageId: String) {
@@ -68,7 +71,6 @@ internal class ChatViewModel(
             message = "Redacted"
         }
         chatAdapter.submitList(ArrayList(messageList))
-        chatAdapter.notifyDataSetChanged()
         eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 
@@ -83,6 +85,8 @@ internal class ChatViewModel(
     override fun loadingCompleted() {
         if (!chatLoaded) {
             chatLoaded = true
+            chatAdapter.submitList(ArrayList(messageList))
+            chatAdapter.notifyDataSetChanged()
         }
     }
 

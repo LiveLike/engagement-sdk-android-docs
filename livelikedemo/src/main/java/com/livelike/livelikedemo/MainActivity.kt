@@ -22,15 +22,15 @@ import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
 class MainActivity : AppCompatActivity() {
 
-    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>,var theme:Int,var keyboardClose:Boolean=true)
+    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>, var theme: Int, var keyboardClose: Boolean = true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val channelManager = (application as LiveLikeApplication).channelManager
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class,R.style.AppTheme_NoActionBar,true)
-        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class,R.style.AppTheme_NoActionBar,false)
+        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class, R.style.AppTheme_NoActionBar, true)
+        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.AppTheme_NoActionBar, false)
 
         layout_side_panel.setOnClickListener {
             startActivity(playerDetailIntent(player))
@@ -52,16 +52,16 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
         themes_button.setOnClickListener {
-            val channels = arrayListOf("Default","Turner")
+            val channels = arrayListOf("Default", "Turner")
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a theme!")
                 setItems(channels.toTypedArray()) { _, which ->
-                    //On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
+                    // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
                     (application as LiveLikeApplication).setTheme()
                     themes_label.text = channels[which]
-                    player.theme=when(which){
-                        0-> R.style.AppTheme_NoActionBar
-                        1-> R.style.TurnerChatTheme
+                    player.theme = when (which) {
+                        0 -> R.style.AppTheme_NoActionBar
+                        1 -> R.style.TurnerChatTheme
                         else -> R.style.AppTheme_NoActionBar
                     }
                 }
@@ -76,11 +76,11 @@ class MainActivity : AppCompatActivity() {
                 nicknameText.setText(it)
 //                edit().putString("userPic","http://lorempixel.com/200/200/?$it").apply()
             }
-            getString("userPic","").let {
-                if(it.isNullOrEmpty()){
-                    edit().putString("userPic","https://loremflickr.com/200/200?lock=${java.util.UUID.randomUUID()}").apply()
+            getString("userPic", "").let {
+                if (it.isNullOrEmpty()) {
+                    edit().putString("userPic", "https://loremflickr.com/200/200?lock=${java.util.UUID.randomUUID()}").apply()
                 } else {
-                    edit().putString("userPic",it).apply()
+                    edit().putString("userPic", it).apply()
                 }
             }
         }
@@ -88,9 +88,7 @@ class MainActivity : AppCompatActivity() {
         toggle_auto_keyboard_hide.setOnCheckedChangeListener { buttonView, isChecked ->
             player.keyboardClose = isChecked
         }
-        toggle_auto_keyboard_hide.isChecked=player.keyboardClose
-
-
+        toggle_auto_keyboard_hide.isChecked = player.keyboardClose
 
         nicknameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -112,8 +110,8 @@ class MainActivity : AppCompatActivity() {
 }
 
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
-    val intent= Intent(this, player.cls.java)
-    intent.putExtra("theme",player.theme)
+    val intent = Intent(this, player.cls.java)
+    intent.putExtra("theme", player.theme)
     intent.putExtra("keyboardClose", when (player.theme) {
         R.style.TurnerChatTheme -> player.keyboardClose
         else -> true

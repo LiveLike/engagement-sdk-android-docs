@@ -30,7 +30,6 @@ class EngagementSDK(
     accessToken: String? = null
 ) : IEngagement {
 
-
 //    We should add errorDelegate as parameter of SDK init, on this error delegate we can propogate the events of network failures or any other. Based on it integrator can re-init sdk
 
     private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
@@ -117,6 +116,8 @@ class EngagementSDK(
         val mediaUrl: String,
         @SerializedName("pubnub_subscribe_key")
         val pubNubKey: String,
+        @SerializedName("pubnub_publish_key")
+        val pubnubPublishKey: String?,
         @SerializedName("sendbird_app_id")
         val sendBirdAppId: String,
         @SerializedName("sendbird_api_endpoint")
@@ -130,6 +131,8 @@ class EngagementSDK(
         @SerializedName("mixpanel_token")
         val mixpanelToken: String,
         @SerializedName("analytics_properties")
-        val analyticsProps: Map<String, String>
+        val analyticsProps: Map<String, String>,
+        @SerializedName("chat_room_detail_url_template")
+        val chatRoomUrlTemplate: String
     )
 }

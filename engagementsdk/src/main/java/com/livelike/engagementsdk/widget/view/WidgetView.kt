@@ -9,7 +9,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 
-class WidgetView(context: Context,private val attr: AttributeSet) : FrameLayout(context, attr) {
+class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
     private val widgetViewThemeAttributes = WidgetViewThemeAttributes()
 
@@ -19,7 +19,7 @@ class WidgetView(context: Context,private val attr: AttributeSet) : FrameLayout(
             R.styleable.LiveLike_WidgetView,
             0, 0
         ).apply {
-            try{
+            try {
                 widgetViewThemeAttributes.init(this)
                 session.setWidgetViewThemeAttribute(widgetViewThemeAttributes)
             } finally {
