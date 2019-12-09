@@ -663,15 +663,13 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private fun snapToLive() {
         chatdisplay?.let { rv ->
             hideSnapToLive()
-            rv.post {
-                viewModel?.messageList?.size?.let {
-                    val lm = rv.layoutManager as LinearLayoutManager
-                    val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
-                    if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
-                        rv.smoothScrollToPosition(it)
-                    } else {
-                        rv.scrollToPosition(it - 1)
-                    }
+            viewModel?.messageList?.size?.let {
+                val lm = rv.layoutManager as LinearLayoutManager
+                val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
+                if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
+                    rv.smoothScrollToPosition(it)
+                } else {
+                    rv.scrollToPosition(it - 1)
                 }
             }
         }
