@@ -83,7 +83,7 @@ internal class PubnubChatMessagingClient(
     }
 
     private fun convertToTimeToken(timestamp: Long): Long {
-        return timestamp * 100000
+        return timestamp * 10000
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -296,7 +296,7 @@ internal class PubnubChatMessagingClient(
 
     private fun loadMessageHistoryByTimestamp(
         channel: String,
-        timeToken: Long = Calendar.getInstance().timeInMillis * 100000,
+        timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
         pubnub.history()

@@ -108,6 +108,7 @@ internal class ContentSession(
             for (chatRoomIdPair in chatRoomMap) {
                 if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
                     msgListener?.onNewMessage(chatRoomIdPair.key, message)
+                    return
                 }
             }
         }
