@@ -608,10 +608,10 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             viewModel?.apply {
                 displayChatMessage(it)
                 chatListener?.onChatMessageSend(it, timeData)
+                edittext_chat_message.setText("")
+                snapToLive()
             }
         }
-        edittext_chat_message.setText("")
-        snapToLive()
     }
 
     private fun hideSnapToLive() {
@@ -663,7 +663,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private fun snapToLive() {
         chatdisplay?.let { rv ->
             hideSnapToLive()
-            viewModel?.chatAdapter?.itemCount?.let {
+            viewModel?.messageList?.size?.let {
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
