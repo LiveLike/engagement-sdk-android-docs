@@ -22,6 +22,7 @@ import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionV
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
@@ -91,7 +92,11 @@ internal class PredictionViewModel(
     private val runnable = Runnable { }
 
     // TODO: need to move the followup logic back to the widget observer instead of there
-    fun startDismissTimout(timeout: String, isFollowup: Boolean) {
+    fun startDismissTimout(
+        timeout: String,
+        isFollowup: Boolean,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes
+    ) {
         if (!timeoutStarted && timeout.isNotEmpty()) {
             timeoutStarted = true
             if (isFollowup) {
@@ -107,7 +112,8 @@ internal class PredictionViewModel(
                     }
                     followupState(
                         selectedPredictionId,
-                        resource.correct_option_id
+                        resource.correct_option_id,
+                        widgetViewThemeAttributes
                     )
                 }
             } else {
@@ -137,7 +143,11 @@ internal class PredictionViewModel(
         interactionData.incrementInteraction()
     }
 
-    private fun followupState(selectedPredictionId: String, correctOptionId: String) {
+    private fun followupState(
+        selectedPredictionId: String,
+        correctOptionId: String,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes
+    ) {
         adapter?.correctOptionId = correctOptionId
         adapter?.userSelectedOptionId = selectedPredictionId
         adapter?.selectionLocked = true
@@ -149,9 +159,8 @@ internal class PredictionViewModel(
         })
 
         val isUserCorrect = adapter?.myDataset?.find { it.id == selectedPredictionId }?.is_correct ?: false
-        val rootPath = if (isUserCorrect) "correctAnswer" else "wrongAnswer"
+        val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
-
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
@@ -188,7 +197,7 @@ internal class PredictionViewModel(
             }
             state.onNext("confirmation")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
-            delay(6000)
+            delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
         }
     }

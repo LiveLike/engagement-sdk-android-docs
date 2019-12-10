@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
-import okhttp3.MediaType
 import java.util.UUID
 
 interface ChatEventListener {
@@ -28,8 +27,9 @@ data class ChatMessage(
     var message: String,
     val senderId: String,
     val senderDisplayName: String,
+    val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
-    val timeStamp: String = "",
+    val timeStamp: String? = null,
     var isFromMe: Boolean = false
 ) {
     fun toReportMessageJson(): String {

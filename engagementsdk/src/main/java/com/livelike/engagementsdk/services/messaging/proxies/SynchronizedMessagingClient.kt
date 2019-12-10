@@ -1,12 +1,14 @@
 package com.livelike.engagementsdk.services.messaging.proxies
 
-import android.os.Handler
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.logVerbose
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 internal class SynchronizedMessagingClient(
     upstream: MessagingClient,
@@ -22,28 +24,32 @@ internal class SynchronizedMessagingClient(
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 
     companion object {
         const val SYNC_TIME_FIDELITY = 100L
     }
 
-    var activeSub = false
     private val queue = Queue<ClientMessage>()
-    private val timerTask = Runnable { processQueueForScheduledEvent() }
-    private val timer = SyncTimer(timerTask, SYNC_TIME_FIDELITY)
+    private var coroutineTimer: Job? = null
 
     override fun subscribe(channels: List<String>) {
-        activeSub = true
-        if (!timer.running)
-            timer.start()
+        coroutineTimer = GlobalScope.launch {
+            publishTimeSynchronizedMessageFromQueue()
+        }
         super.subscribe(channels)
     }
 
+    private suspend fun publishTimeSynchronizedMessageFromQueue() {
+        processQueueForScheduledEvent()
+        delay(SYNC_TIME_FIDELITY)
+        publishTimeSynchronizedMessageFromQueue()
+    }
+
     override fun unsubscribeAll() {
-        activeSub = false
+        coroutineTimer?.cancel()
         super.unsubscribeAll()
     }
 
@@ -55,14 +61,6 @@ internal class SynchronizedMessagingClient(
                 return
             }
             else -> queue.enqueue(event)
-        }
-    }
-
-    override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
-        super.onClientMessageStatus(client, status)
-        when (status) {
-            ConnectionStatus.CONNECTED -> if (activeSub) timer.start()
-            ConnectionStatus.DISCONNECTED -> timer.cancel()
         }
     }
 
@@ -96,32 +94,6 @@ internal class SynchronizedMessagingClient(
                     event.timeStamp.timeSinceEpochInMs +
                     " : timeSourceTime" + timeSource().timeSinceEpochInMs
         }
-}
-
-internal class SyncTimer(val task: Runnable, val period: Long) {
-    var running = false
-    val handler = Handler()
-    private var innerRunnable = Runnable {
-        doTick()
-    }
-
-    fun start() {
-        if (running) return
-        handler.postDelayed(innerRunnable, period)
-        running = true
-    }
-
-    fun cancel() {
-        running = false
-        handler.removeCallbacks(innerRunnable)
-    }
-
-    private fun doTick() {
-        if (running) {
-            handler.post(task)
-            handler.postDelayed(innerRunnable, period)
-        }
-    }
 }
 
 // Extension for MessagingClient to be synced

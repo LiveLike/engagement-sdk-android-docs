@@ -17,13 +17,13 @@ android {
     buildTypes {
 
         debug{
-            buildConfigField "String", "APP_CLIENT_ID", '"l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu"'
+            buildConfigField "String", "APP_CLIENT_ID", '"vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
             applicationIdSuffix ".debug"
         }
         release {
-            buildConfigField "String", "APP_CLIENT_ID", '"mOBYul18quffrBDuq2IACKtVuLbUzXIPye5S3bq5"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=mOBYul18quffrBDuq2IACKtVuLbUzXIPye5S3bq5"'
+            buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

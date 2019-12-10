@@ -1,7 +1,9 @@
 package com.livelike.engagementsdk.widget.view
 
+import android.animation.Animator
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
@@ -15,6 +17,7 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
@@ -63,7 +66,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             titleView.title = resource.question
             titleView.background = R.drawable.header_rounded_corner_quiz
-
+            titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
                 viewModel?.adapter?.apply {
                     val currentSelectionId = myDataset[selectedPosition]
@@ -76,7 +79,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 setHasFixedSize(true)
             }
 
-            viewModel?.startDismissTimout(resource.timeout)
+            viewModel?.startDismissTimout(resource.timeout, widgetViewThemeAttributes!!)
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f) {
@@ -143,6 +146,20 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     addAnimatorUpdateListener { valueAnimator ->
                         viewModel?.animationProgress = valueAnimator.animatedFraction
                     }
+                    addAnimatorListener(object : Animator.AnimatorListener {
+                        override fun onAnimationRepeat(animation: Animator?) {
+                        }
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            viewModel?.dismissWidget(DismissAction.TAP_X)
+                        }
+
+                        override fun onAnimationCancel(animation: Animator?) {
+                        }
+
+                        override fun onAnimationStart(animation: Animator?) {
+                        }
+                    })
                     if (progress != 1f) {
                         resumeAnimation()
                     }

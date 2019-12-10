@@ -31,8 +31,8 @@ internal class ImagePreloaderMessagingClient(
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 
     private val processingList = mutableListOf<ImageMessage>()

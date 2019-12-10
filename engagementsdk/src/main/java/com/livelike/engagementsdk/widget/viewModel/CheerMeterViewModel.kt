@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.RequestType
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
@@ -31,6 +32,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.RequestBody
 
 internal class CheerMeterWidget(
     val type: WidgetType,
@@ -66,7 +69,7 @@ internal class CheerMeterViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient(it)
+            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""
@@ -120,18 +123,18 @@ internal class CheerMeterViewModel(
         }
     }
 
-    private fun pushVoteData(voteCount: Int) {
+    fun pushVoteData(voteCount: Int) {
         voteUrl?.let {
             uiScope.launch {
                 if (voteCount > 0)
-                    dataClient.voteAsync(it, voteCount, "", true)
+                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":$voteCount}"), type = RequestType.PATCH)
             }
         }
     }
 
     private fun initVote(url: String) {
         uiScope.launch {
-            voteUrl = dataClient.voteAsync(url, 0, "", false)
+            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":0}"), type = RequestType.POST)
         }
     }
 

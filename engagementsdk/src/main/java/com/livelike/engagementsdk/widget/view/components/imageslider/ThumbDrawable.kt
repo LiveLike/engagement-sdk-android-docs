@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.view.components.imageslider
 
 import android.graphics.Canvas
 import android.graphics.Rect
+import kotlin.math.pow
 
 internal class ThumbDrawable(private val drawableList: List<ScaleDrawable>, val initialMagnitude: Float = .5f) : GenericDrawableCallback() {
 
@@ -18,10 +19,14 @@ internal class ThumbDrawable(private val drawableList: List<ScaleDrawable>, val 
 
     private fun getScale(progress: Float): Float {
         return if (drawableList.size > 2) {
-            if (progress < .5) {
-                1.5f - progress
+            if (drawableList.size == 4) {
+                2 * (progress - .5f).pow(2f) + 1 // y = 2(x-.5)^2 + 1 is the curve equation for 4
             } else {
-                (progress * 2) - .5f
+                if (progress < .5) {
+                    1.5f - progress
+                } else {
+                    progress + .5f
+                }
             }
         } else {
             1 + progress / 2

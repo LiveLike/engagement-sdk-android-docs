@@ -4,6 +4,7 @@ package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
@@ -15,6 +16,7 @@ import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
@@ -57,7 +59,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
             titleView.title = resource.question
             titleView.background = R.drawable.header_rounded_corner_prediciton
-
+            titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
                 {
@@ -74,7 +76,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
 
             val isFollowUp = resource.kind.contains("follow-up")
-            viewModel?.startDismissTimout(resource.timeout, isFollowUp)
+            viewModel?.startDismissTimout(resource.timeout, isFollowUp, widgetViewThemeAttributes)
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {

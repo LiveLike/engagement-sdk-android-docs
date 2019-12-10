@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logVerbose
+import com.livelike.engagementsdk.utils.validateUuid
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.SubscribeCallback
@@ -20,7 +21,7 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
-internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
+internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : MessagingClient {
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
     }
 
@@ -28,7 +29,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
         pubnub.disconnect()
     }
 
-    override fun resume() {
+    override fun start() {
         pubnub.reconnect()
     }
 
@@ -38,6 +39,7 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
 
     init {
         pubnubConfiguration.subscribeKey = subscriberKey
+        pubnubConfiguration.uuid = uuid
         pubnub = PubNub(pubnubConfiguration)
         val client = this
 
@@ -124,7 +126,6 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
             }
         })
     }
-
     override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
     }
@@ -140,5 +141,21 @@ internal class PubnubMessagingClient(subscriberKey: String) : MessagingClient {
     override fun addMessagingEventListener(listener: MessagingEventListener) {
         // More than one triggerListener?
         this.listener = listener
+    }
+
+    companion object {
+        fun getInstance(subscriberKey: String, uuid: String?): PubnubMessagingClient? {
+            uuid?.let {
+                if (validateUuid(uuid)) {
+                    return PubnubMessagingClient(subscriberKey, uuid)
+                }
+            }
+            return null
+        }
+    }
+
+    override fun destroy() {
+        unsubscribeAll()
+        pubnub.destroy()
     }
 }

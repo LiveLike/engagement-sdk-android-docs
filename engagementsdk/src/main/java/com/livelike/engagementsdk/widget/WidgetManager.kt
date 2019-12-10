@@ -38,7 +38,8 @@ internal class WidgetManager(
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
-    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
+    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+    private val widgetThemeAttributes: WidgetViewThemeAttributes?
 ) :
     MessagingClientProxy(upstream) {
 
@@ -78,8 +79,8 @@ internal class WidgetManager(
         upstream.stop()
     }
 
-    override fun resume() {
-        upstream.resume()
+    override fun start() {
+        upstream.start()
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -141,7 +142,8 @@ internal class WidgetManager(
 
         handler.post {
             currentWidgetViewStream.onNext(
-                WidgetProvider().get(
+                WidgetProvider()
+                    .get(
                     this,
                     WidgetInfos(widgetType, payload, widgetId),
                     context,
@@ -153,14 +155,15 @@ internal class WidgetManager(
                     },
                     userRepository,
                     programRepository,
-                    animationEventsStream
+                    animationEventsStream,
+                    widgetThemeAttributes ?: WidgetViewThemeAttributes()
                 )
             )
         }
 
         // Register the impression on the backend
         payload.get("impression_url")?.asString?.let {
-            dataClient.registerImpression(it)
+            dataClient.registerImpression(it, userRepository.userAccessToken)
         }
 
         super.onClientMessageEvent(msgHolder.messagingClient, msgHolder.clientMessage)
@@ -215,7 +218,8 @@ internal fun MessagingClient.asWidgetManager(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     userRepository: UserRepository,
     programRepository: ProgramRepository,
-    animationEventsStream: SubscriptionManager<ViewAnimationEvents>
+    animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+    widgetThemeAttributes: WidgetViewThemeAttributes?
 ): WidgetManager {
     return WidgetManager(
         this,
@@ -227,6 +231,7 @@ internal fun MessagingClient.asWidgetManager(
         sdkConfiguration,
         userRepository,
         programRepository,
-        animationEventsStream
+        animationEventsStream,
+        widgetThemeAttributes
     )
 }

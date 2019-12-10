@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -13,6 +14,7 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
@@ -39,19 +41,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun clickedOptionObserver(id: String?) {
         id?.let {
-            if (viewModel?.firstClick != null && viewModel?.firstClick!!) {
-                val options = viewModel?.data?.currentData?.resource?.getMergedOptions()
-                options?.apply {
-                    forEach { opt ->
-                        if (opt.id == id) {
-                            opt.vote_count = 1
-                            opt.percentage = 100
-                        }
-                    }
-                    viewModel?.adapter?.myDataset = options
-                    textRecyclerView.swapAdapter(viewModel?.adapter, false)
-                }
-            }
+            viewModel?.adapter?.showPercentage = true
+            viewModel?.adapter?.notifyDataSetChanged()
             viewModel?.onOptionClicked()
         }
     }
@@ -84,6 +75,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
             titleView.title = resource.question
             titleView.background = R.drawable.header_rounded_corner_poll
+            titleTextView.gravity = Gravity.START
 
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
                 val selectedId = viewModel?.adapter?.myDataset?.get(viewModel?.adapter?.selectedPosition ?: -1)?.id ?: ""

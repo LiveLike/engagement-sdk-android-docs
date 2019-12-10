@@ -2,10 +2,10 @@ package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.ColorDrawable
-import android.support.v4.content.ContextCompat
+import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.Gravity
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
@@ -54,8 +54,8 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             resource.getMergedOptions() ?: return
             if (!isViewInflated) {
                 inflate(context, R.layout.widget_emoji_slider, this)
-                titleTextView.background =
-                    ColorDrawable(ContextCompat.getColor(context, R.color.livelike_image_slider_header_bg))
+                titleTextView.background = AppCompatResources.getDrawable(context, R.drawable.image_slider_header_top_rounded_bg)
+                titleTextView.gravity = Gravity.CENTER
                 titleView.title = resource.question
                 if (image_slider.progress == ImageSlider.INITIAL_POSITION)
                     image_slider.progress = entity.initialMagnitude

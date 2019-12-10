@@ -12,7 +12,8 @@ internal interface MessagingClient {
     fun unsubscribeAll()
     fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime)
     fun stop()
-    fun resume()
+    fun start()
+    fun destroy()
     fun addMessagingEventListener(listener: MessagingEventListener)
 }
 

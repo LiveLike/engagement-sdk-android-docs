@@ -74,6 +74,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
                         try {
                             val drawable = GifDrawable(resource)
                             setupBounds(drawable, edittext_chat_message, size)
+                            drawable.reset()
                             drawable.start()
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
