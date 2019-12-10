@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.launch
+import java.util.Random
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -59,6 +60,8 @@ internal class ChatViewModel(
         }
         messageList.add(message.apply {
             isFromMe = userStream.latest()?.id == senderId
+            if(Random().nextBoolean())
+                reactionsList = chatAdapter.chatReactionRepository.reactionList
         })
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))

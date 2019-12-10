@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import java.util.UUID
 
 interface ChatEventListener {
@@ -30,7 +31,8 @@ data class ChatMessage(
     val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
     val timeStamp: String? = null,
-    var isFromMe: Boolean = false
+    var isFromMe: Boolean = false,
+    var reactionsList:List<Reaction>?=null
 ) {
     fun toReportMessageJson(): String {
         return """{

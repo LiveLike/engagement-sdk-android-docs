@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import android.graphics.drawable.ColorDrawable
+import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
@@ -12,7 +13,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -26,15 +29,19 @@ import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
+import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -191,13 +198,10 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.text = message.senderDisplayName
                         }
 
-                        val layoutParam = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT
-                        )
+                        val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
                         layoutParam.setMargins(
                             chatMarginLeft,
-                            chatMarginTop,
+                            chatMarginTop+AndroidResource.dpToPx(6),
                             chatMarginRight,
                             chatMarginBottom
                         )
@@ -283,6 +287,26 @@ internal class ChatRecyclerAdapter(
                                 }
                             }
                             else -> chatMessage.text = message.message
+                        }
+
+                        var imageView: ImageView
+                        val size=AndroidResource.dpToPx(10)
+                        message.reactionsList?.forEachIndexed { index, reaction ->
+                            imageView = ImageView(context)
+                            imageView.loadImage(reaction.file, AndroidResource.dpToPx(10))
+                            val paramsImage: RelativeLayout.LayoutParams =
+                                RelativeLayout.LayoutParams(size, size)
+                            paramsImage.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                            val left=((size / 2) * index)
+                            println("ViewHolder.setMessage-->$left --> $index")
+                            if (index == 0) {
+                                paramsImage.setMargins(0, 0, left, 0)
+                            }
+                            rel_reactions_lay.addView(imageView,paramsImage)
+                        }
+                        for (i in rel_reactions_lay.childCount until 0){
+                            rel_reactions_lay.getChildAt(i).bringToFront()
+                            rel_reactions_lay.getChildAt(i).invalidate()
                         }
                     }
                 }
