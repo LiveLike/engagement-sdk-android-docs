@@ -21,7 +21,6 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:padding="6dp"
                 android:background="@drawable/ic_chat_floating_ui"
                 android:orientation="horizontal"/>
 

@@ -20,6 +20,8 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.reaction_panel_interaction_box
+import kotlin.math.abs
+
 
 /**
  * Chat reactions and Chat moderation actions view that will popup when use long press chat
@@ -32,8 +34,8 @@ internal class ChatActionsPopupView(
     isOwnMessage: Boolean,
     chatReactionBackground: Drawable? = ColorDrawable(Color.TRANSPARENT),
     chatReactionElevation: Float = 0f,
-    chatReactionRadius: Float = 0f,
-    chatReactionBackgroundColor: Int = Color.TRANSPARENT,
+    chatReactionRadius: Float = 4f,
+    chatReactionBackgroundColor: Int = Color.WHITE,
     chatReactionPadding: Int = AndroidResource.dpToPx(6)
 ) : PopupWindow(context) {
 
@@ -59,32 +61,51 @@ internal class ChatActionsPopupView(
         initReactions()
     }
 
+    private fun formattedReactionCount(count: Int): String {
+        return when {
+            abs(count / 1000000) > 1 -> {
+                (count / 1000000).toString() + "m"
+            }
+            abs(count / 1000) > 1 -> {
+                (count / 1000).toString() + "k"
+            }
+            else -> {
+                count.toString()
+            }
+        }
+    }
+
     private fun initReactions() {
         val reactionsBox = contentView.findViewById<ImageView>(R.id.reaction_panel_interaction_box) as ViewGroup
         reactionsBox.removeAllViews()
         val threeDp = AndroidResource.dpToPx(3)
+        val fiveDp = AndroidResource.dpToPx(5)
         chatReactionRepository.reactionList?.forEach { reaction ->
             val frameLayout = FrameLayout(context)
             val countView = TextView(context)
             val imageView = ImageView(context)
             frameLayout.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(threeDp, 0, threeDp, 0)
+                setMargins(2,2,2,2)
             }
-            imageView.loadImage(reaction.file, AndroidResource.dpToPx(24))
+            frameLayout.setPadding(fiveDp, threeDp, fiveDp, threeDp)
+            frameLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background_selector)
+            frameLayout.isClickable=true
+            frameLayout.setOnClickListener {  }
+            imageView.loadImage(reaction.file, AndroidResource.dpToPx(28))
 
             countView.apply {
-                text = "${reaction.reactionsCount}"
+                text = formattedReactionCount(reaction.reactionsCount)
                 setTextColor(Color.BLACK)
                 setTypeface(null,Typeface.BOLD)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP,13f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP,10f)
                 visibility = when(reaction.reactionsCount){
                     0 -> View.GONE
                     else -> View.VISIBLE
                 }
             }
             frameLayout.addView(imageView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.CENTER).apply {
-                setMargins(0, 5, 0, 0)
+                setMargins(0, 7, 3, 0)
             })
             frameLayout.addView(countView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.TOP or Gravity.RIGHT))
             reactionsBox.addView(frameLayout)
