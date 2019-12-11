@@ -20,6 +20,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.reaction_panel_interaction_box
+import java.util.Random
 import kotlin.math.abs
 
 
@@ -90,16 +91,17 @@ internal class ChatActionsPopupView(
             }
             frameLayout.setPadding(fiveDp, threeDp, fiveDp, threeDp)
             frameLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background_selector)
-            frameLayout.isClickable=true
+            frameLayout.isClickable = true
             frameLayout.setOnClickListener {  }
             imageView.loadImage(reaction.file, AndroidResource.dpToPx(28))
 
+            val cnt=Random().nextInt(100000)
             countView.apply {
-                text = formattedReactionCount(reaction.reactionsCount)
+                text = formattedReactionCount(cnt)
                 setTextColor(Color.BLACK)
                 setTypeface(null,Typeface.BOLD)
                 setTextSize(TypedValue.COMPLEX_UNIT_SP,10f)
-                visibility = when(reaction.reactionsCount){
+                visibility = when(cnt){
                     0 -> View.GONE
                     else -> View.VISIBLE
                 }

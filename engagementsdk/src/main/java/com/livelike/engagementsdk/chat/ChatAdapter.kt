@@ -294,14 +294,11 @@ internal class ChatRecyclerAdapter(
                         message.reactionsList?.forEachIndexed { index, reaction ->
                             imageView = ImageView(context)
                             imageView.loadImage(reaction.file, AndroidResource.dpToPx(10))
-                            val paramsImage: RelativeLayout.LayoutParams =
-                                RelativeLayout.LayoutParams(size, size)
-                            paramsImage.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-                            val left=((size / 2) * index)
-                            println("ViewHolder.setMessage-->$left --> $index")
-                            if (index == 0) {
-                                paramsImage.setMargins(0, 0, left, 0)
-                            }
+                            val paramsImage: FrameLayout.LayoutParams =
+                                FrameLayout.LayoutParams(size, size)
+                            paramsImage.gravity = Gravity.LEFT
+                            val left=((size / 1.2) * (index)).toInt()
+                            paramsImage.setMargins(left, 0, 0, 0)
                             rel_reactions_lay.addView(imageView,paramsImage)
                         }
                         for (i in rel_reactions_lay.childCount until 0){
