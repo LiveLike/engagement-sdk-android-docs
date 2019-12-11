@@ -69,7 +69,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
     }
     private val timer = Timer()
-    private val chatRoomIds = listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+    private var chatRoomIds: List<String> = if (BuildConfig.DEBUG) {
+        listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+    } else {
+        listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
+    }
     private lateinit var chatRoomLastTimeStampMap: MutableMap<String, Long>
 
     override fun onCreate(savedInstanceState: Bundle?) {

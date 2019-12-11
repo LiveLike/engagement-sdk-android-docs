@@ -31,7 +31,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@+id/followupAnimation"
+        app:layout_constraintTop_toBottomOf="@+id/textRecyclerView"
         android:layout_height="wrap_content">
 
         <com.livelike.engagementsdk.widget.view.components.PointView
@@ -84,17 +84,16 @@
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/followupAnimation"
         android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_marginBottom="20dp"
+        android:layout_height="0dp"
         android:adjustViewBounds="false"
         android:cropToPadding="false"
         android:scaleType="fitCenter"
+        android:padding="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"
         app:layout_constraintEnd_toEndOf="@+id/textRecyclerView"
         app:layout_constraintStart_toStartOf="@+id/textRecyclerView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:visibility="visible" />
+        tools:visibility="invisible" />
 
 </android.support.constraint.ConstraintLayout>
