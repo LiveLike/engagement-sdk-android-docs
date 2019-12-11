@@ -89,13 +89,13 @@ internal class ChatActionsPopupView(
                 ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                 setMargins(2,2,2,2)
             }
-            frameLayout.setPadding(fiveDp, threeDp, fiveDp, threeDp)
+            frameLayout.setPadding(1, 0, 1, 0)
             frameLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background_selector)
             frameLayout.isClickable = true
             frameLayout.setOnClickListener {  }
             imageView.loadImage(reaction.file, AndroidResource.dpToPx(28))
 
-            val cnt=Random().nextInt(100000)
+            val cnt=Random().nextInt(10000)
             countView.apply {
                 text = formattedReactionCount(cnt)
                 setTextColor(Color.BLACK)
@@ -107,7 +107,7 @@ internal class ChatActionsPopupView(
                 }
             }
             frameLayout.addView(imageView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.CENTER).apply {
-                setMargins(0, 7, 3, 0)
+                setMargins(fiveDp, 7, fiveDp, 3)
             })
             frameLayout.addView(countView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.TOP or Gravity.RIGHT))
             reactionsBox.addView(frameLayout)

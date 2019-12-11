@@ -314,7 +314,7 @@ class ChatViewThemeAttributes {
             chatReactionPadding =
                 getDimensionPixelSize(
                     R.styleable.LiveLike_ChatView_chatReactionPadding,
-                    AndroidResource.dpToPx(0)
+                    AndroidResource.dpToPx(3)
                 )
             chatAvatarHeight =
                 getDimensionPixelSize(
