@@ -12,7 +12,6 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
-import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
@@ -23,6 +22,7 @@ import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.isoUTCDateTimeFormatter
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.pubnub.api.PNConfiguration
@@ -83,7 +83,7 @@ internal class PubnubChatMessagingClient(
     }
 
     private fun convertToTimeToken(timestamp: Long): Long {
-        return timestamp * 100000
+        return timestamp * 10000
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -93,7 +93,7 @@ internal class PubnubChatMessagingClient(
                 ZonedDateTime.ofInstant(
                     Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
                     org.threeten.bp.ZoneId.of("UTC")
-                ).formatIsoLocal8601()
+                ).format(isoUTCDateTimeFormatter)
             )
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
@@ -296,7 +296,7 @@ internal class PubnubChatMessagingClient(
 
     private fun loadMessageHistoryByTimestamp(
         channel: String,
-        timeToken: Long = Calendar.getInstance().timeInMillis * 100000,
+        timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
         pubnub.history()
@@ -342,7 +342,7 @@ internal class PubnubChatMessagingClient(
                                 this@PubnubChatMessagingClient
                             )
                         }
-                        if (result.messages.size > MAX_HISTORY_COUNT_PER_CHANNEL) {
+                        if (result.messages.size >= MAX_HISTORY_COUNT_PER_CHANNEL) {
                             getAllMessages(channel, result.messages.last().timetoken, endTimeToken)
                         }
                     }

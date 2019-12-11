@@ -11,7 +11,6 @@ internal fun ChatMessage.toPubnubChatMessage(programDateTime: String): PubnubCha
         senderId,
         senderDisplayPic,
         senderDisplayName,
-        timeStamp,
         programDateTime
     )
 }
@@ -24,7 +23,6 @@ internal fun PubnubChatMessage.toChatMessage(channel: String): ChatMessage {
         senderId,
         senderNickname,
         senderImageUrl,
-        messageId,
-        createdAt
+        messageId
     )
 }

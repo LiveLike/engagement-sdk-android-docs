@@ -108,6 +108,7 @@ internal class ContentSession(
             for (chatRoomIdPair in chatRoomMap) {
                 if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
                     msgListener?.onNewMessage(chatRoomIdPair.key, message)
+                    return
                 }
             }
         }
@@ -272,7 +273,7 @@ internal class ContentSession(
                         } else if (it.currentBadge != null && it.newBadges?.isNotEmpty() == true) {
                             analyticService.registerSuperProperty(
                                 AnalyticsSuperProperties.TIME_LAST_BADGE_AWARD,
-                                ZonedDateTime.now().formatIsoLocal8601()
+                                ZonedDateTime.now().formatIsoZoned8601()
                             )
                             analyticService.registerSuperProperty(
                                 AnalyticsSuperProperties.BADGE_LEVEL_THIS_PROGRAM,

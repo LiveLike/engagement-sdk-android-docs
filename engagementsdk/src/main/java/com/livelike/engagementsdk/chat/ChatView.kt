@@ -32,7 +32,6 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.formatIsoLocal8601
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
@@ -69,7 +68,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.threeten.bp.ZonedDateTime
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -605,16 +603,15 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
-            timeStamp = ZonedDateTime.now().formatIsoLocal8601(),
             isFromMe = true
         ).let {
             viewModel?.apply {
                 displayChatMessage(it)
                 chatListener?.onChatMessageSend(it, timeData)
+                edittext_chat_message.setText("")
+                snapToLive()
             }
         }
-        edittext_chat_message.setText("")
-        snapToLive()
     }
 
     private fun hideSnapToLive() {
@@ -666,7 +663,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private fun snapToLive() {
         chatdisplay?.let { rv ->
             hideSnapToLive()
-            viewModel?.chatAdapter?.itemCount?.let {
+            viewModel?.messageList?.size?.let {
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {

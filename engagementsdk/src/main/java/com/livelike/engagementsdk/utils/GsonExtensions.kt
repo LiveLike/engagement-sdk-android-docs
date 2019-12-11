@@ -36,7 +36,7 @@ internal val gson = GsonBuilder()
     .registerTypeAdapter(ZonedDateTime::class.java, DateSerializer())
     .create()!!
 
-private val isoUTCDateTimeFormatter =
+internal val isoUTCDateTimeFormatter =
     DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneId.of("UTC"))
 
 internal class DateDeserializer : JsonDeserializer<ZonedDateTime> {

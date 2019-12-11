@@ -117,6 +117,6 @@ internal fun ZonedDateTime.formatIso8601(): String {
 }
 
 /** Formats in 2019-09-17T10:30:56 */
-internal fun ZonedDateTime.formatIsoLocal8601(): String {
-    return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(this)
+internal fun ZonedDateTime.formatIsoZoned8601(): String {
+    return DateTimeFormatter.ISO_ZONED_DATE_TIME.format(this)
 }
