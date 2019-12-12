@@ -60,7 +60,6 @@ internal class ChatViewModel(
         }
         messageList.add(message.apply {
             isFromMe = userStream.latest()?.id == senderId
-            reactionsList = chatAdapter.chatReactionRepository.reactionList
         })
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))

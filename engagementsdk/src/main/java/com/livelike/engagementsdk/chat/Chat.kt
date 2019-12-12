@@ -32,7 +32,8 @@ data class ChatMessage(
     var id: String = UUID.randomUUID().toString(),
     val timeStamp: String? = null,
     var isFromMe: Boolean = false,
-    var reactionsList:List<Reaction>?=null
+    var myReaction:Reaction?=null,
+    var reactionsList:HashSet<Reaction> = HashSet()
 ) {
     fun toReportMessageJson(): String {
         return """{
