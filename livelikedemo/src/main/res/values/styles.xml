@@ -53,7 +53,7 @@
         <item name="chatReactionYPosition">25dp</item>
         <item name="chatReactionElevation">6dp</item>
         <item name="chatReactionRadius">20dp</item>
-        <item name="chatReactionBackgroundColor">@android:color/white</item>
+        <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">false</item>

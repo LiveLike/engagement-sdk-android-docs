@@ -42,6 +42,7 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
+import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -172,7 +173,8 @@ internal class ChatRecyclerAdapter(
                 chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
                 chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
                 chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
-                chatReactionBackgroundColor = chatViewThemeAttribute.chatReactionBackgroundColor,
+                chatReactionPanelColor = chatViewThemeAttribute.chatReactionPanelColor,
+                chatReactionPanelCountColor = chatViewThemeAttribute.chatReactionPanelCountColor,
                 chatReactionPadding = chatViewThemeAttribute.chatReactionPadding,
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
@@ -318,7 +320,7 @@ internal class ChatRecyclerAdapter(
                         }
 
                         var imageView: ImageView
-                        val size= AndroidResource.dpToPx(10)
+                        val size = AndroidResource.dpToPx(10)
                         rel_reactions_lay.removeAllViews()
                         // TODO need to check for updating list and work on remove the reaction with animation
                         reactionsList.forEachIndexed { index, reaction ->
@@ -338,6 +340,13 @@ internal class ChatRecyclerAdapter(
                                     imageView.startAnimation(bounceAnimation)
                                 }
                             }
+                        }
+                        txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
+                        if (reactionsList.size > 0) {
+                            txt_chat_reactions_count.visibility = View.VISIBLE
+                            txt_chat_reactions_count.text = "${reactionsList.size}"
+                        } else {
+                            txt_chat_reactions_count.visibility = View.GONE
                         }
                     }
                 }

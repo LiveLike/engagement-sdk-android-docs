@@ -351,9 +351,24 @@ class ChatViewThemeAttributes {
                     AndroidResource.dpToPx(0)
                 )
 
-            chatReactionBackgroundColor = getColor(
-                R.styleable.LiveLike_ChatView_chatReactionBackgroundColor,
+            chatReactionPanelColor = getColor(
+                R.styleable.LiveLike_ChatView_chatReactionPanelColor,
                 ContextCompat.getColor(context, android.R.color.transparent)
+            )
+
+            chatReactionPanelCountColor = getColor(
+                R.styleable.LiveLike_ChatView_chatReactionPanelCountColor,
+                ContextCompat.getColor(context, android.R.color.black)
+            )
+
+            chatReactionDisplayCountColor = getColor(
+                R.styleable.LiveLike_ChatView_chatReactionDisplayCountColor,
+                ContextCompat.getColor(context, android.R.color.white)
+            )
+
+            chatReactionFlagTintColor = getColor(
+                R.styleable.LiveLike_ChatView_chatReactionFlagTintColor,
+                ContextCompat.getColor(context, android.R.color.black)
             )
 
             chatBubblePaddingLeft = getDimensionPixelOffset(
@@ -450,7 +465,6 @@ class ChatViewThemeAttributes {
     var chatBubbleBackgroundRes: Int? = null
     var chatBackgroundRes: Drawable? = null
     var chatViewBackgroundRes: Drawable? = null
-    var chatReactionBackgroundRes: Drawable? = null
     var chatInputBackgroundRes: Drawable? = null
     var chatInputViewBackgroundRes: Drawable? = null
     var chatDisplayBackgroundRes: Drawable? = null
@@ -462,11 +476,15 @@ class ChatViewThemeAttributes {
     var sendImageTintColor: Int = Color.WHITE
     var sendStickerTintColor: Int = Color.WHITE
     var rankValueTextColor: Int = Color.WHITE
-    var chatReactionBackgroundColor: Int = Color.TRANSPARENT
     var chatInputTextColor: Int = Color.TRANSPARENT
     var chatInputHintTextColor: Int = Color.TRANSPARENT
     var chatOtherNickNameColor: Int = Color.TRANSPARENT
     var chatNickNameColor: Int = Color.TRANSPARENT
+    var chatReactionBackgroundRes: Drawable? = null
+    var chatReactionPanelColor: Int = Color.TRANSPARENT
+    var chatReactionPanelCountColor: Int = Color.BLACK
+    var chatReactionDisplayCountColor: Int = Color.WHITE
+    var chatReactionFlagTintColor: Int = Color.BLACK
     var chatReactionX: Int = 0
     var chatReactionY: Int = 0
     var chatReactionElevation: Float = 4f

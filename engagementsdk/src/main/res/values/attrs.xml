@@ -77,7 +77,10 @@
         <attr name="chatReactionXPosition" format="dimension"/>
         <attr name="chatReactionElevation" format="dimension"/>
         <attr name="chatReactionRadius" format="dimension"/>
-        <attr name="chatReactionBackgroundColor" format="color" />
+        <attr name="chatReactionPanelColor" format="color" />
+        <attr name="chatReactionPanelCountColor" format="color" />
+        <attr name="chatReactionDisplayCountColor" format="color" />
+        <attr name="chatReactionFlagTintColor" format="color" />
         <attr name="chatReactionPadding" format="dimension" />
         <attr name="chatSendDrawable" format="reference"/>
         <attr name="chatStickerSendDrawable" format="reference"/>

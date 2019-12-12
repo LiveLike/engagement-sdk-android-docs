@@ -24,18 +24,24 @@
                 android:background="@drawable/ic_chat_floating_ui"
                 android:orientation="horizontal"/>
 
-            <ImageView
-                android:id="@+id/moderation_flag"
+            <android.support.v7.widget.CardView
+                android:id="@+id/moderation_flag_lay"
                 android:layout_width="46dp"
                 android:layout_height="36dp"
                 android:visibility="gone"
+                android:clickable="true"
                 tools:visibility="visible"
                 app:layout_constraintLeft_toRightOf="@id/reaction_panel_interaction_box"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginLeft="8dp"
-                android:src="@drawable/chat_ic_flag"
-                android:background="@drawable/ic_chat_floating_ui"
-                android:layout_gravity="bottom"/>
+                android:layout_gravity="bottom">
+
+                <ImageView
+                    android:id="@+id/moderation_flag"
+                    android:src="@drawable/chat_ic_flag"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </android.support.v7.widget.CardView>
 
 
 
