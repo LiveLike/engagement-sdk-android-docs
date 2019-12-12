@@ -15,6 +15,7 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.scanForActivity
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
 
@@ -49,7 +50,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
         viewModel.stickerPacks.subscribe(javaClass) {
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
-                val stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context as AppCompatActivity).supportFragmentManager, stickerPacks, stickerPackRepository.programId) { s -> listener?.onClick(s) }
+                val stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context.scanForActivity() as AppCompatActivity).supportFragmentManager, stickerPacks, stickerPackRepository.programId) { s -> listener?.onClick(s) }
                 pager.adapter = stickerCollectionPagerAdapter
                 pager_tab.setupWithViewPager(pager)
                 pager_tab.getTabAt(0)?.customView = createTabItemView()

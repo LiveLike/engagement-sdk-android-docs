@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
@@ -43,6 +44,8 @@ interface LiveLikeContentSession {
     fun exitChatRoom(chatRoomId: String)
     /** Exit all the Connected Chat Rooms */
     fun exitAllConnectedChatRooms()
+    /** Returns the number of messages published on a chatroom since a given time*/
+    fun getMessageCount(chatRoomId: String, startTimestamp: Long, callback: LiveLikeCallback<Long>)
     /** Register a message count listner for the specified Chat Room */
     fun setMessageListener(messageListener: MessageListener)
     /** Intercepts the widgets and hold them until show() or dismiss() is being called */

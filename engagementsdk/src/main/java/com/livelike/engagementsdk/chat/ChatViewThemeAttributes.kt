@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.chat
 
-import android.app.Activity
+import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,7 +13,7 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 
 class ChatViewThemeAttributes {
-    fun initAttributes(context: Activity, typedArray: TypedArray?) {
+    fun initAttributes(context: Context, typedArray: TypedArray?) {
         typedArray?.apply {
             showChatAvatarLogo = getBoolean(R.styleable.LiveLike_ChatView_showChatAvatarLogo, false)
             chatAvatarCircle = getBoolean(R.styleable.LiveLike_ChatView_chatAvatarCircle, false)
