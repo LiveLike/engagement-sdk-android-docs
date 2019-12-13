@@ -396,13 +396,9 @@ internal class ContentSession(
         logVerbose { "Closing the Session" }
         contentSessionScope.cancel()
         chatClient?.run {
-            unsubscribeAll()
-            stop()
             destroy()
         }
         widgetClient?.run {
-            unsubscribeAll()
-            stop()
             destroy()
         }
         currentWidgetViewStream.clear()
