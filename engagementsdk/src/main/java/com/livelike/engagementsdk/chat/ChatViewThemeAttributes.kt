@@ -85,32 +85,60 @@ class ChatViewThemeAttributes {
             getValue(R.styleable.LiveLike_ChatView_chatBubbleBackground, colorBubbleValue)
 
             chatBubbleBackgroundRes = when {
-                colorBubbleValue.type == TypedValue.TYPE_REFERENCE -> getResourceId(
+                colorBubbleValue.type == TypedValue.TYPE_REFERENCE || colorBubbleValue.type == TypedValue.TYPE_STRING -> getResourceId(
                     R.styleable.LiveLike_ChatView_chatBubbleBackground,
                     R.drawable.ic_chat_message_bubble_rounded_rectangle
                 )
-                colorBubbleValue.type == TypedValue.TYPE_NULL -> R.drawable.ic_chat_message_bubble_rounded_rectangle
+                colorBubbleValue.type == TypedValue.TYPE_NULL -> null
                 colorBubbleValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorBubbleValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorBubbleValue.data
-                else -> R.drawable.ic_chat_message_bubble_rounded_rectangle
+                else -> null
+            }
+
+            val colorHighlightedBubbleValue = TypedValue()
+            getValue(
+                R.styleable.LiveLike_ChatView_chatReactionMessageBubbleHighlightedBackground,
+                colorHighlightedBubbleValue
+            )
+
+            chatReactionMessageBubbleHighlightedBackground = when {
+                colorHighlightedBubbleValue.type == TypedValue.TYPE_REFERENCE || colorHighlightedBubbleValue.type == TypedValue.TYPE_STRING -> getResourceId(
+                    R.styleable.LiveLike_ChatView_chatReactionMessageBubbleHighlightedBackground,
+                    R.drawable.ic_chat_message_bubble_rounded_rectangle
+                )
+                colorHighlightedBubbleValue.type == TypedValue.TYPE_NULL -> null
+                colorHighlightedBubbleValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorHighlightedBubbleValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorHighlightedBubbleValue.data
+                else -> null
             }
 
             val colorBackValue = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatBackground, colorBackValue)
 
-            chatBackgroundRes = when (colorBackValue.type) {
-                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                    context,
-                    getResourceId(
-                        R.styleable.LiveLike_ChatView_chatBackground,
-                        android.R.color.transparent
-                    )
-                )
-                TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
-                    context,
+            chatBackgroundRes = when {
+                colorBackValue.type == TypedValue.TYPE_REFERENCE || colorBackValue.type == TypedValue.TYPE_STRING -> getResourceId(
+                    R.styleable.LiveLike_ChatView_chatBackground,
                     android.R.color.transparent
                 )
-                else -> ColorDrawable(colorBackValue.data)
+                colorBackValue.type == TypedValue.TYPE_NULL -> null
+                colorBackValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorBackValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorBackValue.data
+                else -> null
             }
+
+            val colorHighlightedBackValue = TypedValue()
+            getValue(
+                R.styleable.LiveLike_ChatView_chatReactionMessageBackHighlightedBackground,
+                colorHighlightedBackValue
+            )
+
+            chatReactionMessageBackHighlightedBackground = when {
+                colorHighlightedBackValue.type == TypedValue.TYPE_REFERENCE || colorHighlightedBackValue.type == TypedValue.TYPE_STRING -> getResourceId(
+                    R.styleable.LiveLike_ChatView_chatReactionMessageBackHighlightedBackground,
+                    android.R.color.transparent
+                )
+                colorHighlightedBackValue.type == TypedValue.TYPE_NULL -> null
+                colorHighlightedBackValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorHighlightedBackValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorHighlightedBackValue.data
+                else -> null
+            }
+
 
             val sendDrawable = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatSendDrawable, sendDrawable)
@@ -203,7 +231,7 @@ class ChatViewThemeAttributes {
             getValue(R.styleable.LiveLike_ChatView_chatViewBackground, colorViewValue)
 
             chatViewBackgroundRes = when (colorViewValue.type) {
-                TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
+                TypedValue.TYPE_REFERENCE,TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.LiveLike_ChatView_chatViewBackground,
@@ -254,7 +282,7 @@ class ChatViewThemeAttributes {
             )
 
             chatInputViewBackgroundRes = when (colorInputViewBackgroundValue.type) {
-                TypedValue.TYPE_REFERENCE -> ContextCompat.getDrawable(
+                TypedValue.TYPE_REFERENCE,TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.LiveLike_ChatView_chatInputViewBackground,
@@ -353,7 +381,7 @@ class ChatViewThemeAttributes {
 
             chatReactionPanelColor = getColor(
                 R.styleable.LiveLike_ChatView_chatReactionPanelColor,
-                ContextCompat.getColor(context, android.R.color.transparent)
+                Color.WHITE
             )
 
             chatReactionPanelCountColor = getColor(
@@ -463,7 +491,7 @@ class ChatViewThemeAttributes {
     var sendIconHeight: Int = 0
     var chatInputTextSize: Int = 0
     var chatBubbleBackgroundRes: Int? = null
-    var chatBackgroundRes: Drawable? = null
+    var chatBackgroundRes: Int? = null
     var chatViewBackgroundRes: Drawable? = null
     var chatInputBackgroundRes: Drawable? = null
     var chatInputViewBackgroundRes: Drawable? = null
@@ -481,7 +509,9 @@ class ChatViewThemeAttributes {
     var chatOtherNickNameColor: Int = Color.TRANSPARENT
     var chatNickNameColor: Int = Color.TRANSPARENT
     var chatReactionBackgroundRes: Drawable? = null
-    var chatReactionPanelColor: Int = Color.TRANSPARENT
+    var chatReactionMessageBubbleHighlightedBackground: Int? = null
+    var chatReactionMessageBackHighlightedBackground: Int? = null
+    var chatReactionPanelColor: Int = Color.WHITE
     var chatReactionPanelCountColor: Int = Color.BLACK
     var chatReactionDisplayCountColor: Int = Color.WHITE
     var chatReactionFlagTintColor: Int = Color.BLACK

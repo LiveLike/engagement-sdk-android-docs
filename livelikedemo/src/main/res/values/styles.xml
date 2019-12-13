@@ -1,18 +1,18 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="displayUserProfile">true</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">false</item>
+
+    </style>
+
+    <style name="Default" parent="AppTheme">
         <item name="displayUserProfile">true</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">true</item>
@@ -28,13 +28,17 @@
         <item name="emptyChatBackgroundTextColor">#50FFFFFF</item>
         <item name="chatAvatarMarginLeft">13dp</item>
         <item name="closeKeyboardOnSend">true</item>
+        <item name="chatReactionPanelColor">@android:color/white</item>
+        <item name="chatReactionRadius">8dp</item>
+        <item name="chatBubbleBackground">@drawable/ic_chat_message_bubble_rounded_rectangle</item>
+        <item name="chatReactionMessageBubbleHighlightedBackground">@drawable/ic_chat_message_highlighted_bubble_rounded_rectangle</item>
     </style>
 
-    <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">
+    <style name="TurnerChatTheme" parent="AppTheme">
         <item name="displayUserProfile">true</item>
         <item name="chatWidth">match_parent</item>
-        <item name="chatBubbleBackground">#FFF</item>
         <item name="chatBackground">#FFF</item>
+        <item name="chatReactionMessageBackHighlightedBackground">#66502878</item>
         <item name="usernameColor">#000</item>
         <item name="stickerIconTintColor">#1675E7</item>
         <item name="otherUsernameColor">#000</item>
@@ -78,7 +82,6 @@
         <item name="chatBubblePaddingRight">8dp</item>
         <item name="chatBubblePaddingTop">8dp</item>
         <item name="chatBubblePaddingBottom">8dp</item>
-        <item name="chatReactionPadding">8dp</item>
 
         <item name="textColor">#000</item>
         <item name="rankValueTextColor">#000</item>
@@ -89,6 +92,7 @@
         <item name="emptyChatBackgroundText">No Chat!!</item>
         <item name="emptyChatBackgroundTextSize">15sp</item>
         <item name="emptyChatBackgroundTextColor">#50000000</item>
+
 
     </style>
 

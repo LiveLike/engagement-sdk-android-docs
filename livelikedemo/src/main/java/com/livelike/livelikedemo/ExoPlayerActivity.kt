@@ -82,7 +82,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(PREF_CHAT_ROOM_LAST_TIME, null),
             object : TypeToken<MutableMap<String, Long>>() {}.type) ?: mutableMapOf()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        this.setTheme(intent.getIntExtra("theme", R.style.AppTheme_NoActionBar))
+        this.setTheme(intent.getIntExtra("theme", R.style.Default))
 
         setContentView(R.layout.activity_exo_player)
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT

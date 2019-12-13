@@ -6,7 +6,6 @@ import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.support.v7.widget.CardView
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -23,7 +22,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag
-import kotlinx.android.synthetic.main.popup_chat_reaction.view.reaction_panel_interaction_box
+import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_lay
 import java.util.Random
 import kotlin.math.abs
 
@@ -54,23 +53,28 @@ internal class ChatActionsPopupView(
             setCardBackgroundColor(chatReactionPanelColor)
             cardElevation = chatReactionElevation
             radius = chatReactionRadius
+            setContentPadding(
+                chatReactionPadding,
+                chatReactionPadding,
+                chatReactionPadding,
+                chatReactionPadding
+            )
         }
-        contentView.reaction_panel_interaction_box.setPadding(
-            chatReactionPadding,
-            chatReactionPadding,
-            chatReactionPadding,
-            chatReactionPadding
-        )
-        if (!isOwnMessage) {
-            val moderationFlagView = contentView.findViewById<CardView>(R.id.moderation_flag_lay)
-            moderationFlagView.setCardBackgroundColor(chatReactionPanelColor)
 
-            moderationFlagView.visibility = View.VISIBLE
-            moderationFlagView.setOnClickListener {
-                dismiss()
-                flagClick.onClick(it)
+        if (!isOwnMessage) {
+            contentView.moderation_flag_lay.apply {
+                visibility = View.VISIBLE
+                setOnClickListener {
+                    dismiss()
+                    flagClick.onClick(it)
+                }
+                radius = chatReactionRadius
+                setCardBackgroundColor(chatReactionPanelColor)
             }
-            contentView.moderation_flag.setColorFilter(chatReactionFlagTintColor, PorterDuff.Mode.MULTIPLY)
+            contentView.moderation_flag.setColorFilter(
+                chatReactionFlagTintColor,
+                PorterDuff.Mode.MULTIPLY
+            )
         }
         setOnDismissListener(hideFloatinUi)
         isOutsideTouchable = true
@@ -111,7 +115,7 @@ internal class ChatActionsPopupView(
             frameLayout.setPadding(1, 0, 1, 0)
 
             userReaction?.let {
-                if(it.name==reaction.name)
+                if(it.name == reaction.name)
                     frameLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background)
             }
             imageView.setOnTouchListener { v, event ->

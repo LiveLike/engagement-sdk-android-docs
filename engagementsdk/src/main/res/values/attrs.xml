@@ -81,6 +81,8 @@
         <attr name="chatReactionPanelCountColor" format="color" />
         <attr name="chatReactionDisplayCountColor" format="color" />
         <attr name="chatReactionFlagTintColor" format="color" />
+        <attr name="chatReactionMessageBubbleHighlightedBackground" format="reference" />
+        <attr name="chatReactionMessageBackHighlightedBackground" format="reference|color" />
         <attr name="chatReactionPadding" format="dimension" />
         <attr name="chatSendDrawable" format="reference"/>
         <attr name="chatStickerSendDrawable" format="reference"/>

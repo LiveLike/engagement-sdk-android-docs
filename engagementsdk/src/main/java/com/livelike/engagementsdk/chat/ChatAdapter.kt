@@ -1,5 +1,7 @@
 package com.livelike.engagementsdk.chat
 
+import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
@@ -146,7 +148,7 @@ internal class ChatRecyclerAdapter(
         }
 
         private fun showFloatingUI(isOwnMessage: Boolean, reaction: Reaction?=null) {
-            v.chatBackground.alpha = 0.5f
+            updateBackground(true)
             val locationOnScreen = v.getLocationOnScreen()
             ChatActionsPopupView(
                 v.context,
@@ -202,10 +204,101 @@ internal class ChatRecyclerAdapter(
             )
         }
 
-        private fun hideFloatingUI() {
+        private fun updateBackground(isSelected: Boolean) {
+            //TODO: Need to check before functionality make it in more proper way
             v.apply {
-                chatBackground.alpha = 1f
+                if (isSelected) {
+                    chatViewThemeAttribute.chatReactionMessageBubbleHighlightedBackground?.let { res ->
+                        if (res < 0) {
+                            v.chatBubbleBackground.setBackgroundColor(res)
+                        } else {
+                            val value = TypedValue()
+                            try {
+                                v.context.resources.getValue(res, value, true)
+                                when (value.type) {
+                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> v.chatBubbleBackground.setBackgroundResource(
+                                        res
+                                    )
+                                    TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
+                                        R.drawable.ic_chat_message_bubble_rounded_rectangle
+                                    )
+                                    else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
+                                }
+                            }catch (e: Resources.NotFoundException){
+                                v.chatBackground.setBackgroundColor(res)
+                            }
+                        }
+                    }
+                    chatViewThemeAttribute.chatReactionMessageBackHighlightedBackground?.let { res ->
+                        if (res < 0) {
+                            v.chatBackground.setBackgroundColor(res)
+                        } else {
+                            val value = TypedValue()
+                            try {
+                                v.context.resources.getValue(res, value, true)
+                                when (value.type) {
+                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> v.chatBackground.setBackgroundResource(
+                                        res
+                                    )
+                                    TypedValue.TYPE_NULL -> v.chatBackground.setBackgroundColor(
+                                        Color.TRANSPARENT
+                                    )
+                                    else -> v.chatBackground.setBackgroundColor(Color.TRANSPARENT)
+                                }
+                            }catch (e: Resources.NotFoundException){
+                                v.chatBackground.setBackgroundColor(res)
+                            }
+                        }
+                    }
+                } else {
+                    chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
+                        if (res < 0) {
+                            v.chatBubbleBackground.setBackgroundColor(res)
+                        } else {
+                            val value = TypedValue()
+                            try {
+                                v.context.resources.getValue(res, value, true)
+                                when (value.type) {
+                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> v.chatBubbleBackground.setBackgroundResource(
+                                        res
+                                    )
+                                    TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
+                                        R.drawable.ic_chat_message_bubble_rounded_rectangle
+                                    )
+                                    else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
+                                }
+                            } catch (e: Resources.NotFoundException) {
+                                v.chatBackground.setBackgroundColor(res)
+                            }
+                        }
+                    }
+                    chatViewThemeAttribute.chatBackgroundRes?.let {res->
+                        if (res < 0) {
+                            v.chatBackground.setBackgroundColor(res)
+                        } else {
+                            val value = TypedValue()
+                            try {
+                                v.context.resources.getValue(res, value, true)
+                                when (value.type) {
+                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> v.chatBackground.setBackgroundResource(
+                                        res
+                                    )
+                                    TypedValue.TYPE_NULL -> v.chatBackground.setBackgroundColor(
+                                        Color.TRANSPARENT
+                                    )
+                                    else -> v.chatBackground.setBackgroundColor(Color.TRANSPARENT)
+                                }
+                            } catch (e: Resources.NotFoundException) {
+                                v.chatBackground.setBackgroundColor(res)
+                            }
+                        }
+                    }
+                }
             }
+        }
+
+        private fun hideFloatingUI() {
+            updateBackground(false)
         }
 
         private fun setMessage(
@@ -228,14 +321,14 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.text = message.senderDisplayName
                         }
 
-                        val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
-                        layoutParam.setMargins(
-                            chatMarginLeft,
-                            chatMarginTop+AndroidResource.dpToPx(6),
-                            chatMarginRight,
-                            chatMarginBottom
-                        )
-                        v.chatBackground.layoutParams = layoutParam
+//                        val layoutParam = v.chatBackground.layoutParams
+//                        layoutParam.setMargins(
+//                            chatMarginLeft,
+//                            chatMarginTop+AndroidResource.dpToPx(6),
+//                            chatMarginRight,
+//                            chatMarginBottom
+//                        )
+//                        v.chatBackground.layoutParams = layoutParam
 
                         v.chatBubbleBackground.setPadding(
                             chatBubblePaddingLeft,
@@ -272,7 +365,6 @@ internal class ChatRecyclerAdapter(
                         layoutParamAvatar.gravity = chatAvatarGravity
                         v.img_chat_avatar.layoutParams = layoutParamAvatar
 
-                        v.chatBackground.background = chatBackgroundRes
 
                         val options = RequestOptions()
                         if (chatAvatarCircle) {

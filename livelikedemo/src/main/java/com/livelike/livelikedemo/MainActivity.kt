@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity() {
         val channelManager = (application as LiveLikeApplication).channelManager
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class, R.style.AppTheme_NoActionBar, true)
-        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.AppTheme_NoActionBar, false)
+        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class, R.style.Default, true)
+        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.Default, false)
 
         layout_side_panel.setOnClickListener {
             startActivity(playerDetailIntent(player))
@@ -60,9 +60,9 @@ class MainActivity : AppCompatActivity() {
                     (application as LiveLikeApplication).setTheme()
                     themes_label.text = channels[which]
                     player.theme = when (which) {
-                        0 -> R.style.AppTheme_NoActionBar
+                        0 -> R.style.Default
                         1 -> R.style.TurnerChatTheme
-                        else -> R.style.AppTheme_NoActionBar
+                        else -> R.style.Default
                     }
                 }
                 create()
