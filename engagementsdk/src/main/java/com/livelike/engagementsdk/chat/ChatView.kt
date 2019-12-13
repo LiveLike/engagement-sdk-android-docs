@@ -3,7 +3,6 @@ package com.livelike.engagementsdk.chat
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.app.Activity
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -40,6 +39,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlin.math.max
 import kotlin.math.min
@@ -122,7 +122,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         get() = (session.getTargetObject() as ContentSession?)?.chatViewModel
 
     init {
-        (context as Activity).window.setSoftInputMode(
+        context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
                     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
@@ -420,7 +420,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     // Hide keyboard when clicking outside of the EditText
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        val v = (context as Activity).currentFocus
+        val v = context.scanForActivity()?.currentFocus
 
         if (v != null &&
             (ev?.action == MotionEvent.ACTION_UP || ev?.action == MotionEvent.ACTION_MOVE) &&

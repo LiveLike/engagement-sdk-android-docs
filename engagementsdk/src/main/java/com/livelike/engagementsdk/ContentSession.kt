@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
@@ -185,6 +186,21 @@ internal class ContentSession(
                                 ?: "error in fetching room id resource"
                         }
                     }
+                }
+            }
+        }
+    }
+
+    override fun getMessageCount(
+        chatRoomId: String,
+        startTimestamp: Long,
+        callback: LiveLikeCallback<Long>
+    ) {
+        fetchChatRoom(chatRoomId) { chatRoom ->
+            chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
+                delay(500)
+                privateGroupPubnubClient?.getMessageCount(channel, startTimestamp)?.run {
+                    callback.processResult(this)
                 }
             }
         }
