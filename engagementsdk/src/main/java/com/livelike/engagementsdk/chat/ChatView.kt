@@ -12,6 +12,7 @@ import android.text.Spannable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -20,6 +21,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EpochTime
@@ -214,8 +216,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun initEmptyView() {
         chatEmptyLayout?.let {
-            if (chatdisplayBack.childCount == 1)
-                chatdisplayBack.addView(chatEmptyLayout)
+            if (chatdisplayBack.childCount == 1) {
+                val layoutParam=FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT)
+                layoutParam.gravity=Gravity.CENTER
+                chatdisplayBack.addView(chatEmptyLayout,layoutParam)
+            }
             chatEmptyLayout?.visibility = View.GONE
         }
     }
