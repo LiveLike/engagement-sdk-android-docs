@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
@@ -68,6 +69,7 @@ internal class ChatRecyclerAdapter(
 
     internal var isPublicChat: Boolean = true
 
+
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -79,7 +81,6 @@ internal class ChatRecyclerAdapter(
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
-        val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context,R.anim.bounce_animation)
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
@@ -317,30 +318,41 @@ internal class ChatRecyclerAdapter(
                             else -> chatMessage.text = message.message
                         }
 
-                        var imageView: ImageView
-                        val size= AndroidResource.dpToPx(10)
-                        rel_reactions_lay.removeAllViews()
-                        // TODO need to check for updating list and work on remove the reaction with animation
-                        reactionsList.forEachIndexed { index, reaction ->
-                            imageView = ImageView(context)
-                            imageView.loadImage(reaction.file, AndroidResource.dpToPx(10))
-                            val paramsImage: FrameLayout.LayoutParams =
-                                FrameLayout.LayoutParams(size, size)
-                            paramsImage.gravity = Gravity.LEFT
-                            val left = ((size / 1.2) * (index)).toInt()
-                            paramsImage.setMargins(left, 0, 0, 0)
-                            rel_reactions_lay.addView(imageView, paramsImage)
-                            imageView.bringToFront()
-                            imageView.invalidate()
-
-                            myReaction?.let {
-                                if (it.name == reaction.name) {
-                                    imageView.startAnimation(bounceAnimation)
-                                }
-                            }
-                        }
+                        addChatReactionsToLayout(rel_reactions_lay,reactionsList,context,myReaction)
                     }
                 }
+            }
+        }
+    }
+}
+
+fun addChatReactionsToLayout(
+    parentLayout: FrameLayout,
+    reactionsList: HashSet<Reaction>,
+    context: Context,
+    myReaction: Reaction?
+) {
+    val CHAT_REACTION_DISPLAY_SIZE = 10
+    val bounceAnimation: Animation = AnimationUtils.loadAnimation(context, R.anim.bounce_animation)
+    var imageView: ImageView
+    val size = AndroidResource.dpToPx(CHAT_REACTION_DISPLAY_SIZE)
+    parentLayout.removeAllViews()
+    // TODO need to check for updating list and work on remove the reaction with animation
+    reactionsList.forEachIndexed { index, reaction ->
+        imageView = ImageView(context)
+        imageView.loadImage(reaction.file, AndroidResource.dpToPx(CHAT_REACTION_DISPLAY_SIZE))
+        val paramsImage: FrameLayout.LayoutParams =
+            FrameLayout.LayoutParams(size, size)
+        paramsImage.gravity = Gravity.LEFT
+        val left = ((size / 1.2) * (index)).toInt()
+        paramsImage.setMargins(left, 0, 0, 0)
+        parentLayout.addView(imageView, paramsImage)
+        imageView.bringToFront()
+        imageView.invalidate()
+
+        myReaction?.let {
+            if (it.name == reaction.name) {
+                imageView.startAnimation(bounceAnimation)
             }
         }
     }
