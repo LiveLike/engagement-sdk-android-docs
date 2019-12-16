@@ -41,8 +41,6 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -57,9 +55,7 @@ import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chat_view
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_img
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_lay
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_txt
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplayBack
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
@@ -68,6 +64,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -106,7 +104,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
-
+    private var emptyView: View? = null
     private var currentUser: LiveLikeUser? = null
 
     /** Boolean option to enable / disable the profile display inside chat view */
@@ -201,6 +199,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 sendImageTintColor,
                 android.graphics.PorterDuff.Mode.MULTIPLY
             )
+            if (chatEmptyChatLayout != 0) {
+                emptyView = View.inflate(context, chatEmptyChatLayout, null)
+                chatdisplayBack.addView(emptyView)
+                emptyView?.visibility= View.GONE
+            }
         }
     }
 
@@ -319,24 +322,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun checkEmptyChat() {
-        chatAttribute.chatEmptyBackgroundImage?.let {
-            chatdisplay_empty_img.setImageDrawable(it)
-            toggleVisibilityEmptyChat()
+        emptyView?.let {
+            if ((viewModel?.messageList?.size ?: 0) == 0)
+                it.visibility = View.VISIBLE
+            else
+                it.visibility = View.GONE
         }
-
-        chatAttribute.chatEmptyBackgroundText?.let {
-            chatdisplay_empty_txt.text = it
-            chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatAttribute.chatEmptyBackgroundTextSize)
-            chatdisplay_empty_txt.setTextColor(chatAttribute.chatEmptyBackgroundTextColor)
-            toggleVisibilityEmptyChat()
-        }
-    }
-
-    private fun toggleVisibilityEmptyChat() {
-        if ((viewModel?.messageList?.size ?: 0) == 0)
-            chatdisplay_empty_lay.visibility = View.VISIBLE
-        else
-            chatdisplay_empty_lay.visibility = View.GONE
     }
 
     private fun initStickerKeyboard(
