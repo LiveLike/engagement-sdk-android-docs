@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
         themes_button.setOnClickListener {
-            val channels = arrayListOf("Default", "Turner")
+            val channels = arrayListOf("Default", "Turner","Custom Chat Reaction")
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a theme!")
                 setItems(channels.toTypedArray()) { _, which ->
@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
                     player.theme = when (which) {
                         0 -> R.style.Default
                         1 -> R.style.TurnerChatTheme
+                        2 -> R.style.CustomChatReactionTheme
                         else -> R.style.Default
                     }
                 }

@@ -16,7 +16,8 @@
         <item name="displayUserProfile">true</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">true</item>
-        <item name="chatWidth">wrap_content</item>
+        <item name="chatBubbleWidth">wrap_content</item>
+        <item name="chatBackgroundWidth">wrap_content</item>
         <item name="chatSendButtonPaddingLeft">10dp</item>
         <item name="chatSendButtonPaddingRight">10dp</item>
         <item name="chatSendButtonPaddingTop">6dp</item>
@@ -37,7 +38,8 @@
 
     <style name="TurnerChatTheme" parent="AppTheme">
         <item name="displayUserProfile">true</item>
-        <item name="chatWidth">match_constraint</item>
+        <item name="chatBubbleWidth">match_parent</item>
+        <item name="chatBackgroundWidth">0dp</item>
         <item name="chatBackground">#FFF</item>
         <item name="chatReactionMessageBackHighlightedBackground">#66502878</item>
         <item name="usernameColor">#000</item>
@@ -60,6 +62,7 @@
         <item name="chatReactionRadius">20dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
+        <item name="chatReactionDisplayCountColor">@android:color/black</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">false</item>
         <item name="chatAvatarHeight">36dp</item>
@@ -93,8 +96,14 @@
         <item name="emptyChatBackgroundText">No Chat!!</item>
         <item name="emptyChatBackgroundTextSize">15sp</item>
         <item name="emptyChatBackgroundTextColor">#50000000</item>
+    </style>
 
-
+    <style name="CustomChatReactionTheme" parent="Default">
+        <item name="chatReactionPanelColor">#5028a0</item>
+        <item name="chatReactionDisplayCountColor">#ffffff</item>
+        <item name="chatReactionMessageBubbleHighlightedBackground">@drawable/ic_chat_message_highlighted_bubble_rounded_rectangle</item>
+        <item name="chatReactionFlagTintColor">@android:color/white</item>
+        <item name="chatReactionPanelCountColor">@android:color/white</item>
     </style>
 
     <style name="TestAppLabel" parent="TextAppearance.AppCompat">

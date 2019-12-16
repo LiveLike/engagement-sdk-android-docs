@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.chat.chatreaction
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -24,7 +23,8 @@ import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_bac
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_lay
 import java.util.Random
-import kotlin.math.abs
+import kotlin.math.ln
+import kotlin.math.pow
 
 
 /**
@@ -72,8 +72,7 @@ internal class ChatActionsPopupView(
                 setCardBackgroundColor(chatReactionPanelColor)
             }
             contentView.moderation_flag.setColorFilter(
-                chatReactionFlagTintColor,
-                PorterDuff.Mode.MULTIPLY
+                chatReactionFlagTintColor
             )
         }
         setOnDismissListener(hideFloatinUi)
@@ -83,17 +82,13 @@ internal class ChatActionsPopupView(
     }
 
     private fun formattedReactionCount(count: Int): String {
-        return when {
-            abs(count / 1000000) > 1 -> {
-                (count / 1000000).toString() + "m"
-            }
-            abs(count / 1000) > 1 -> {
-                (count / 1000).toString() + "k"
-            }
-            else -> {
-                count.toString()
-            }
-        }
+        if (count < 1000) return "" + count
+        val exp = (ln(count.toDouble()) / ln(1000.0)).toInt()
+        return String.format(
+            "%.1f%c",
+            count / 1000.0.pow(exp.toDouble()),
+            "kMGTPE"[exp - 1]
+        )
     }
 
     private fun initReactions() {

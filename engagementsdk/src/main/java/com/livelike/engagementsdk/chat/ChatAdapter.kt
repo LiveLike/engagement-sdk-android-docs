@@ -178,6 +178,7 @@ internal class ChatRecyclerAdapter(
                 chatReactionPanelColor = chatViewThemeAttribute.chatReactionPanelColor,
                 chatReactionPanelCountColor = chatViewThemeAttribute.chatReactionPanelCountColor,
                 chatReactionPadding = chatViewThemeAttribute.chatReactionPadding,
+                chatReactionFlagTintColor = chatViewThemeAttribute.chatReactionFlagTintColor,
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
                         message?.apply {
@@ -328,6 +329,7 @@ internal class ChatRecyclerAdapter(
                             chatMarginRight,
                             chatMarginBottom
                         )
+                        layoutParam.width = chatBackgroundWidth
                         v.chatBackground.layoutParams = layoutParam
                         v.chatBubbleBackground.setPadding(
                             chatBubblePaddingLeft,
@@ -343,7 +345,7 @@ internal class ChatRecyclerAdapter(
                             chatBubbleMarginRight,
                             chatBubbleMarginBottom
                         )
-                        layoutParam1.width = chatWidth
+                        layoutParam1.width = chatBubbleWidth
                         v.chatBubbleBackground.layoutParams = layoutParam1
 
                         v.img_chat_avatar.visibility =

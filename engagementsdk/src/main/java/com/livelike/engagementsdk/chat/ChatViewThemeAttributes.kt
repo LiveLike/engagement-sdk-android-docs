@@ -5,10 +5,12 @@ import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import android.view.Gravity
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 
@@ -304,9 +306,14 @@ class ChatViewThemeAttributes {
                 ContextCompat.getColor(context, R.color.livelike_chat_input_text_color)
             )
 
-            chatWidth = getLayoutDimension(
-                R.styleable.LiveLike_ChatView_chatWidth,
-                FrameLayout.LayoutParams.WRAP_CONTENT
+            chatBubbleWidth = getLayoutDimension(
+                R.styleable.LiveLike_ChatView_chatBubbleWidth,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+
+            chatBackgroundWidth = getLayoutDimension(
+                R.styleable.LiveLike_ChatView_chatBackgroundWidth,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
 
             sendIconHeight = getLayoutDimension(
@@ -486,7 +493,8 @@ class ChatViewThemeAttributes {
     var chatBubbleMarginRight: Int = 0
     var chatBubbleMarginTop: Int = 0
     var chatBubbleMarginBottom: Int = 0
-    var chatWidth: Int = 0
+    var chatBubbleWidth: Int = 0
+    var chatBackgroundWidth: Int = 0
     var sendIconWidth: Int = 0
     var sendIconHeight: Int = 0
     var chatInputTextSize: Int = 0

@@ -34,11 +34,15 @@
         <attr name="messageColor" format="color"/>
         <attr name="chatBubbleBackground" format="reference|color"/>
         <attr name="chatBackground" format="reference|color"/>
-        <attr name="chatWidth" format="dimension">
+        <attr name="chatBubbleWidth" format="dimension">
             <enum name="fill_parent" value="-1" />
             <enum name="match_parent" value="-1" />
             <enum name="wrap_content" value="-2" />
-            <enum name="match_constraint" value="0" />
+        </attr>
+        <attr name="chatBackgroundWidth" format="dimension">
+            <enum name="fill_parent" value="-1" />
+            <enum name="match_parent" value="-1" />
+            <enum name="wrap_content" value="-2" />
         </attr>
         <attr name="sendButtonWidth" format="dimension">
             <enum name="fill_parent" value="-1" />
