@@ -38,6 +38,7 @@
             <enum name="fill_parent" value="-1" />
             <enum name="match_parent" value="-1" />
             <enum name="wrap_content" value="-2" />
+            <enum name="match_constraint" value="0" />
         </attr>
         <attr name="sendButtonWidth" format="dimension">
             <enum name="fill_parent" value="-1" />

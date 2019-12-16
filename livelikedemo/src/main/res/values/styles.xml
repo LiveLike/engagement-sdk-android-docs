@@ -16,6 +16,7 @@
         <item name="displayUserProfile">true</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">true</item>
+        <item name="chatWidth">wrap_content</item>
         <item name="chatSendButtonPaddingLeft">10dp</item>
         <item name="chatSendButtonPaddingRight">10dp</item>
         <item name="chatSendButtonPaddingTop">6dp</item>
@@ -36,7 +37,7 @@
 
     <style name="TurnerChatTheme" parent="AppTheme">
         <item name="displayUserProfile">true</item>
-        <item name="chatWidth">match_parent</item>
+        <item name="chatWidth">match_constraint</item>
         <item name="chatBackground">#FFF</item>
         <item name="chatReactionMessageBackHighlightedBackground">#66502878</item>
         <item name="usernameColor">#000</item>

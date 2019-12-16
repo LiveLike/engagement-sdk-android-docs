@@ -321,15 +321,14 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.text = message.senderDisplayName
                         }
 
-//                        val layoutParam = v.chatBackground.layoutParams
-//                        layoutParam.setMargins(
-//                            chatMarginLeft,
-//                            chatMarginTop+AndroidResource.dpToPx(6),
-//                            chatMarginRight,
-//                            chatMarginBottom
-//                        )
-//                        v.chatBackground.layoutParams = layoutParam
-
+                        val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
+                        layoutParam.setMargins(
+                            chatMarginLeft,
+                            chatMarginTop + AndroidResource.dpToPx(6),
+                            chatMarginRight,
+                            chatMarginBottom
+                        )
+                        v.chatBackground.layoutParams = layoutParam
                         v.chatBubbleBackground.setPadding(
                             chatBubblePaddingLeft,
                             chatBubblePaddingTop,
