@@ -51,7 +51,7 @@ class ChatViewThemeAttributes {
             chatAvatarGravity =
                 getInt(R.styleable.LiveLike_ChatView_chatAvatarGravity, Gravity.NO_GRAVITY)
 
-            chatEmptyChatLayout = getResourceId(R.styleable.LiveLike_ChatView_emptyChatLayout,R.layout.default_empty_chat_view)
+            emptyChatLayoutId = getResourceId(R.styleable.LiveLike_ChatView_emptyChatLayout,R.layout.default_empty_chat_view)
 
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatBubbleBackground, colorBubbleValue)
@@ -455,6 +455,6 @@ class ChatViewThemeAttributes {
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
-    var chatEmptyChatLayout:Int = 0
+    var emptyChatLayoutId:Int = 0
     var closeKeyboardOnSend: Boolean = true
 }

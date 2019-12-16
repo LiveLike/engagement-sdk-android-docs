@@ -83,7 +83,7 @@
         <item name="loseAnimation">@string/lose_animation_turner</item>
         <item name="closeKeyboardOnSend">false</item>
 
-        <item name="emptyChatLayout">@layout/empty_chat_data_view</item>
+<!--        <item name="emptyChatLayout">@layout/empty_chat_data_view</item>-->
     </style>
 
     <style name="TestAppLabel" parent="TextAppearance.AppCompat">
