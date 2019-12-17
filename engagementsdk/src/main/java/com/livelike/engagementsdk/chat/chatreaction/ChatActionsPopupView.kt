@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -95,19 +94,17 @@ internal class ChatActionsPopupView(
         val reactionsBox =
             contentView.findViewById<ImageView>(R.id.reaction_panel_interaction_box) as ViewGroup
         reactionsBox.removeAllViews()
-        val threeDp = AndroidResource.dpToPx(2)
-        val fiveDp = AndroidResource.dpToPx(5)
+        val fiveDp = AndroidResource.dpToPx(8)
         chatReactionRepository.reactionList?.forEach { reaction ->
-            val frameLayout = FrameLayout(context)
+            val frameLayout = LinearLayout(context)
             val countView = TextView(context)
             val imageView = ImageView(context)
-            frameLayout.layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(2, 2, 2, 2)
+            frameLayout.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT).apply {
             }
-            frameLayout.setPadding(1, 0, 1, 0)
+            frameLayout.orientation = LinearLayout.VERTICAL
+            frameLayout.setPadding(2, 0, 2, 0)
+            imageView.loadImage(reaction.file, AndroidResource.dpToPx(22))
 
             userReaction?.let {
                 if(it.name == reaction.name)
@@ -138,10 +135,9 @@ internal class ChatActionsPopupView(
                 return@setOnTouchListener false
             }
 
-            imageView.loadImage(reaction.file, AndroidResource.dpToPx(24))
             imageView.scaleType = ImageView.ScaleType.CENTER
 
-            val cnt = Random().nextInt(10000)
+            val cnt= Random().nextInt(10000)
             countView.apply {
                 text = formattedReactionCount(cnt)
                 setTextColor(chatReactionPanelCountColor)
@@ -152,30 +148,20 @@ internal class ChatActionsPopupView(
                     else -> View.VISIBLE
                 }
             }
-            frameLayout.addView(
-                imageView,
-                FrameLayout.LayoutParams(
-                    AndroidResource.dpToPx(29),
-                    AndroidResource.dpToPx(29),
-                    Gravity.CENTER
-                ).apply {
-                    setMargins(threeDp, 7, threeDp, 3)
-                })
-            frameLayout.addView(
-                countView,
-                FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    Gravity.TOP or Gravity.RIGHT
-                )
-            )
+            frameLayout.addView(countView,LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.RIGHT
+            })
+            frameLayout.addView(imageView,LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.LEFT
+                setMargins(fiveDp,0,fiveDp,0)
+            })
             reactionsBox.addView(frameLayout)
         }
         contentView.chat_reaction_background_card.visibility =
             if ((chatReactionRepository.reactionList?.size ?: 0) > 0) {
                 View.VISIBLE
             } else {
-                View.GONE
+                View.INVISIBLE
             }
     }
 }

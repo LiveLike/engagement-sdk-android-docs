@@ -197,13 +197,19 @@ internal class ChatRecyclerAdapter(
                         }
                     }
                 }
+            ).apply {
+                animationStyle = R.style.ChatReactionAnimation
+                showAtLocation(
+                    v,
+                    Gravity.NO_GRAVITY,
+                    locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
+                    locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+                )
+            }
 
-            ).showAtLocation(
-                v,
-                Gravity.NO_GRAVITY,
-                locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
-                locationOnScreen.y - chatViewThemeAttribute.chatReactionY
-            )
+
+
+
         }
 
         private fun updateBackground(isSelected: Boolean) {
@@ -367,7 +373,7 @@ internal class ChatRecyclerAdapter(
                         // TODO need to check for updating list and work on remove the reaction with animation
                         reactionsList.forEachIndexed { index, reaction ->
                             imageView = ImageView(context)
-                            imageView.loadImage(reaction.file, AndroidResource.dpToPx(10))
+                            imageView.loadImage(reaction.file, AndroidResource.dpToPx(12))
                             val paramsImage: FrameLayout.LayoutParams =
                                 FrameLayout.LayoutParams(size, size)
                             paramsImage.gravity = Gravity.LEFT
