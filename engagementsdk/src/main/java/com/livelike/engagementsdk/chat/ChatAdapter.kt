@@ -210,90 +210,40 @@ internal class ChatRecyclerAdapter(
             v.apply {
                 if (isSelected) {
                     chatViewThemeAttribute.chatReactionMessageBubbleHighlightedBackground?.let { res ->
-                        if (res < 0) {
-                            v.chatBubbleBackground.setBackgroundColor(res)
-                        } else {
-                            val value = TypedValue()
-                            try {
-                                v.context.resources.getValue(res, value, true)
-                                when (value.type) {
-                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> v.chatBubbleBackground.setBackgroundResource(
-                                        res
-                                    )
-                                    TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
-                                        R.drawable.ic_chat_message_bubble_rounded_rectangle
-                                    )
-                                    else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
-                                }
-                            }catch (e: Resources.NotFoundException){
-                                v.chatBackground.setBackgroundColor(res)
-                            }
-                        }
+                        updateUI(v.chatBubbleBackground, res)
                     }
                     chatViewThemeAttribute.chatReactionMessageBackHighlightedBackground?.let { res ->
-                        if (res < 0) {
-                            v.chatBackground.setBackgroundColor(res)
-                        } else {
-                            val value = TypedValue()
-                            try {
-                                v.context.resources.getValue(res, value, true)
-                                when (value.type) {
-                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> v.chatBackground.setBackgroundResource(
-                                        res
-                                    )
-                                    TypedValue.TYPE_NULL -> v.chatBackground.setBackgroundColor(
-                                        Color.TRANSPARENT
-                                    )
-                                    else -> v.chatBackground.setBackgroundColor(Color.TRANSPARENT)
-                                }
-                            }catch (e: Resources.NotFoundException){
-                                v.chatBackground.setBackgroundColor(res)
-                            }
-                        }
+                        updateUI(v.chatBackground, res)
                     }
                 } else {
                     chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
-                        if (res < 0) {
-                            v.chatBubbleBackground.setBackgroundColor(res)
-                        } else {
-                            val value = TypedValue()
-                            try {
-                                v.context.resources.getValue(res, value, true)
-                                when (value.type) {
-                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> v.chatBubbleBackground.setBackgroundResource(
-                                        res
-                                    )
-                                    TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
-                                        R.drawable.ic_chat_message_bubble_rounded_rectangle
-                                    )
-                                    else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
-                                }
-                            } catch (e: Resources.NotFoundException) {
-                                v.chatBackground.setBackgroundColor(res)
-                            }
-                        }
+                        updateUI(v.chatBubbleBackground, res)
                     }
-                    chatViewThemeAttribute.chatBackgroundRes?.let {res->
-                        if (res < 0) {
-                            v.chatBackground.setBackgroundColor(res)
-                        } else {
-                            val value = TypedValue()
-                            try {
-                                v.context.resources.getValue(res, value, true)
-                                when (value.type) {
-                                    TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> v.chatBackground.setBackgroundResource(
-                                        res
-                                    )
-                                    TypedValue.TYPE_NULL -> v.chatBackground.setBackgroundColor(
-                                        Color.TRANSPARENT
-                                    )
-                                    else -> v.chatBackground.setBackgroundColor(Color.TRANSPARENT)
-                                }
-                            } catch (e: Resources.NotFoundException) {
-                                v.chatBackground.setBackgroundColor(res)
-                            }
-                        }
+                    chatViewThemeAttribute.chatBackgroundRes?.let { res ->
+                        updateUI(v.chatBackground, res)
                     }
+                }
+            }
+        }
+
+        private fun updateUI(view: View, res: Int) {
+            if (res < 0) {
+                view.setBackgroundColor(res)
+            } else {
+                val value = TypedValue()
+                try {
+                    v.context.resources.getValue(res, value, true)
+                    when (value.type) {
+                        TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> view.setBackgroundResource(
+                            res
+                        )
+                        TypedValue.TYPE_NULL -> view.setBackgroundColor(
+                            Color.TRANSPARENT
+                        )
+                        else -> view.setBackgroundColor(Color.TRANSPARENT)
+                    }
+                } catch (e: Resources.NotFoundException) {
+                    view.setBackgroundColor(res)
                 }
             }
         }
