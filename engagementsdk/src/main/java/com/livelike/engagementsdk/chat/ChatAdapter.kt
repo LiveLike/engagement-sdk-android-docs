@@ -182,10 +182,8 @@ internal class ChatRecyclerAdapter(
 
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
-                            chat_nickname.text = context.getString(
-                                R.string.chat_pre_nickname_me,
+                            chat_nickname.text =
                                 message.senderDisplayName
-                            )
                         } else {
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
