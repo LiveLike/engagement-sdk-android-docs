@@ -34,7 +34,12 @@
         <attr name="messageColor" format="color"/>
         <attr name="chatBubbleBackground" format="reference|color"/>
         <attr name="chatBackground" format="reference|color"/>
-        <attr name="chatWidth" format="dimension">
+        <attr name="chatBubbleWidth" format="dimension">
+            <enum name="fill_parent" value="-1" />
+            <enum name="match_parent" value="-1" />
+            <enum name="wrap_content" value="-2" />
+        </attr>
+        <attr name="chatBackgroundWidth" format="dimension">
             <enum name="fill_parent" value="-1" />
             <enum name="match_parent" value="-1" />
             <enum name="wrap_content" value="-2" />
@@ -77,7 +82,12 @@
         <attr name="chatReactionXPosition" format="dimension"/>
         <attr name="chatReactionElevation" format="dimension"/>
         <attr name="chatReactionRadius" format="dimension"/>
-        <attr name="chatReactionBackgroundColor" format="color" />
+        <attr name="chatReactionPanelColor" format="color" />
+        <attr name="chatReactionPanelCountColor" format="color" />
+        <attr name="chatReactionDisplayCountColor" format="color" />
+        <attr name="chatReactionFlagTintColor" format="color" />
+        <attr name="chatReactionMessageBubbleHighlightedBackground" format="reference" />
+        <attr name="chatReactionMessageBackHighlightedBackground" format="reference|color" />
         <attr name="chatReactionPadding" format="dimension" />
         <attr name="chatSendDrawable" format="reference"/>
         <attr name="chatStickerSendDrawable" format="reference"/>

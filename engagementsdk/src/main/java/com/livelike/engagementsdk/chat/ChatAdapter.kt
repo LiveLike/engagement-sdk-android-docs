@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk.chat
 
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
@@ -43,6 +45,7 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
+import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -69,7 +72,6 @@ internal class ChatRecyclerAdapter(
 
     internal var isPublicChat: Boolean = true
 
-
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -81,6 +83,7 @@ internal class ChatRecyclerAdapter(
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
+        val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context,R.anim.bounce_animation)
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
@@ -146,7 +149,7 @@ internal class ChatRecyclerAdapter(
         }
 
         private fun showFloatingUI(isOwnMessage: Boolean, reaction: Reaction?=null) {
-            v.chatBackground.alpha = 0.5f
+            updateBackground(true)
             val locationOnScreen = v.getLocationOnScreen()
             ChatActionsPopupView(
                 v.context,
@@ -173,8 +176,10 @@ internal class ChatRecyclerAdapter(
                 chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
                 chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
                 chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
-                chatReactionBackgroundColor = chatViewThemeAttribute.chatReactionBackgroundColor,
+                chatReactionPanelColor = chatViewThemeAttribute.chatReactionPanelColor,
+                chatReactionPanelCountColor = chatViewThemeAttribute.chatReactionPanelCountColor,
                 chatReactionPadding = chatViewThemeAttribute.chatReactionPadding,
+                chatReactionFlagTintColor = chatViewThemeAttribute.chatReactionFlagTintColor,
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
                         message?.apply {
@@ -201,10 +206,51 @@ internal class ChatRecyclerAdapter(
             )
         }
 
-        private fun hideFloatingUI() {
+        private fun updateBackground(isSelected: Boolean) {
+            //TODO: Need to check before functionality make it in more proper way
             v.apply {
-                chatBackground.alpha = 1f
+                if (isSelected) {
+                    chatViewThemeAttribute.chatReactionMessageBubbleHighlightedBackground?.let { res ->
+                        updateUI(v.chatBubbleBackground, res)
+                    }
+                    chatViewThemeAttribute.chatReactionMessageBackHighlightedBackground?.let { res ->
+                        updateUI(v.chatBackground, res)
+                    }
+                } else {
+                    chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
+                        updateUI(v.chatBubbleBackground, res)
+                    }
+                    chatViewThemeAttribute.chatBackgroundRes?.let { res ->
+                        updateUI(v.chatBackground, res)
+                    }
+                }
             }
+        }
+
+        private fun updateUI(view: View, res: Int) {
+            if (res < 0) {
+                view.setBackgroundColor(res)
+            } else {
+                val value = TypedValue()
+                try {
+                    v.context.resources.getValue(res, value, true)
+                    when (value.type) {
+                        TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> view.setBackgroundResource(
+                            res
+                        )
+                        TypedValue.TYPE_NULL -> view.setBackgroundColor(
+                            Color.TRANSPARENT
+                        )
+                        else -> view.setBackgroundColor(Color.TRANSPARENT)
+                    }
+                } catch (e: Resources.NotFoundException) {
+                    view.setBackgroundColor(res)
+                }
+            }
+        }
+
+        private fun hideFloatingUI() {
+            updateBackground(false)
         }
 
         private fun setMessage(
@@ -228,12 +274,12 @@ internal class ChatRecyclerAdapter(
                         val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
                         layoutParam.setMargins(
                             chatMarginLeft,
-                            chatMarginTop+AndroidResource.dpToPx(6),
+                            chatMarginTop + AndroidResource.dpToPx(6),
                             chatMarginRight,
                             chatMarginBottom
                         )
+                        layoutParam.width = chatBackgroundWidth
                         v.chatBackground.layoutParams = layoutParam
-
                         v.chatBubbleBackground.setPadding(
                             chatBubblePaddingLeft,
                             chatBubblePaddingTop,
@@ -248,7 +294,7 @@ internal class ChatRecyclerAdapter(
                             chatBubbleMarginRight,
                             chatBubbleMarginBottom
                         )
-                        layoutParam1.width = chatWidth
+                        layoutParam1.width = chatBubbleWidth
                         v.chatBubbleBackground.layoutParams = layoutParam1
 
                         v.img_chat_avatar.visibility =
@@ -269,7 +315,6 @@ internal class ChatRecyclerAdapter(
                         layoutParamAvatar.gravity = chatAvatarGravity
                         v.img_chat_avatar.layoutParams = layoutParamAvatar
 
-                        v.chatBackground.background = chatBackgroundRes
 
                         val options = RequestOptions()
                         if (chatAvatarCircle) {
@@ -316,41 +361,37 @@ internal class ChatRecyclerAdapter(
                             else -> chatMessage.text = message.message
                         }
 
-                        addChatReactionsToLayout(rel_reactions_lay,reactionsList,context,myReaction)
+                        var imageView: ImageView
+                        val size = AndroidResource.dpToPx(10)
+                        rel_reactions_lay.removeAllViews()
+                        // TODO need to check for updating list and work on remove the reaction with animation
+                        reactionsList.forEachIndexed { index, reaction ->
+                            imageView = ImageView(context)
+                            imageView.loadImage(reaction.file, AndroidResource.dpToPx(10))
+                            val paramsImage: FrameLayout.LayoutParams =
+                                FrameLayout.LayoutParams(size, size)
+                            paramsImage.gravity = Gravity.LEFT
+                            val left = ((size / 1.2) * (index)).toInt()
+                            paramsImage.setMargins(left, 0, 0, 0)
+                            rel_reactions_lay.addView(imageView, paramsImage)
+                            imageView.bringToFront()
+                            imageView.invalidate()
+
+                            myReaction?.let {
+                                if (it.name == reaction.name) {
+                                    imageView.startAnimation(bounceAnimation)
+                                }
+                            }
+                        }
+                        txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
+                        if (reactionsList.size > 0) {
+                            txt_chat_reactions_count.visibility = View.VISIBLE
+                            txt_chat_reactions_count.text = "${reactionsList.size}"
+                        } else {
+                            txt_chat_reactions_count.visibility = View.GONE
+                        }
                     }
                 }
-            }
-        }
-    }
-}
-
-fun addChatReactionsToLayout(
-    parentLayout: FrameLayout,
-    reactionsList: HashSet<Reaction>,
-    context: Context,
-    myReaction: Reaction?
-) {
-    val CHAT_REACTION_DISPLAY_SIZE = 10
-    val bounceAnimation: Animation = AnimationUtils.loadAnimation(context, R.anim.bounce_animation)
-    var imageView: ImageView
-    val size = AndroidResource.dpToPx(CHAT_REACTION_DISPLAY_SIZE)
-    parentLayout.removeAllViews()
-    // TODO need to check for updating list and work on remove the reaction with animation
-    reactionsList.forEachIndexed { index, reaction ->
-        imageView = ImageView(context)
-        imageView.loadImage(reaction.file, AndroidResource.dpToPx(CHAT_REACTION_DISPLAY_SIZE))
-        val paramsImage: FrameLayout.LayoutParams =
-            FrameLayout.LayoutParams(size, size)
-        paramsImage.gravity = Gravity.LEFT
-        val left = ((size / 1.2) * (index)).toInt()
-        paramsImage.setMargins(left, 0, 0, 0)
-        parentLayout.addView(imageView, paramsImage)
-        imageView.bringToFront()
-        imageView.invalidate()
-
-        myReaction?.let {
-            if (it.name == reaction.name) {
-                imageView.startAnimation(bounceAnimation)
             }
         }
     }
