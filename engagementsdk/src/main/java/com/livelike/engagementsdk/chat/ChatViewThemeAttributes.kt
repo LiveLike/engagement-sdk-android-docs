@@ -51,36 +51,6 @@ class ChatViewThemeAttributes {
             chatAvatarGravity =
                 getInt(R.styleable.LiveLike_ChatView_chatAvatarGravity, Gravity.NO_GRAVITY)
 
-            val emptyBackValue = TypedValue()
-            getValue(R.styleable.LiveLike_ChatView_emptyChatBackgroundImage, emptyBackValue)
-
-            chatEmptyBackgroundImage = when (emptyBackValue.type) {
-                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                    context,
-                    getResourceId(
-                        R.styleable.LiveLike_ChatView_emptyChatBackgroundImage,
-                        R.drawable.placeholder_chat
-                    )
-                )
-                else -> ContextCompat.getDrawable(
-                    context,
-                    R.drawable.placeholder_chat
-                )
-            }
-
-            chatEmptyBackgroundText =
-                getString(R.styleable.LiveLike_ChatView_emptyChatBackgroundText)
-
-            chatEmptyBackgroundTextColor = getColor(
-                R.styleable.LiveLike_ChatView_emptyChatBackgroundTextColor,
-                Color.WHITE
-            )
-
-            chatEmptyBackgroundTextSize = getDimensionPixelSize(
-                R.styleable.LiveLike_ChatView_emptyChatBackgroundTextSize,
-                13
-            ).toFloat()
-
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatBubbleBackground, colorBubbleValue)
 
@@ -483,9 +453,5 @@ class ChatViewThemeAttributes {
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
-    var chatEmptyBackgroundImage: Drawable? = null
-    var chatEmptyBackgroundText: String? = null
-    var chatEmptyBackgroundTextColor: Int = Color.WHITE
-    var chatEmptyBackgroundTextSize: Float = 13f
     var closeKeyboardOnSend: Boolean = true
 }
