@@ -108,13 +108,15 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var showingSnapToLive: Boolean = false
     private var currentUser: LiveLikeUser? = null
 
-    private var chatEmptyLayout: View? = null
+    var emptyChatBackgroundView: View? = null
+        set(view) {
+            field = view
+            if (chatdisplayBack.childCount > 1)
+                chatdisplayBack.removeViewAt(1)
+            initEmptyView()
+        }
 
-    fun setEmptyChatLayout(view: View?) {
-        this.chatEmptyLayout = view
-        chatdisplayBack.removeViewAt(1)
-        initEmptyView()
-    }
+
 
     /** Boolean option to enable / disable the profile display inside chat view */
     var displayUserProfile: Boolean = false
@@ -209,19 +211,24 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 sendImageTintColor,
                 android.graphics.PorterDuff.Mode.MULTIPLY
             )
-            chatEmptyLayout = View.inflate(context, chatAttribute.emptyChatLayoutId, null)
+            if (chatAttribute.emptyChatLayoutId != 0)
+                emptyChatBackgroundView =
+                    View.inflate(context, chatAttribute.emptyChatLayoutId, null)
             initEmptyView()
         }
     }
 
     private fun initEmptyView() {
-        chatEmptyLayout?.let {
+        emptyChatBackgroundView?.let {
             if (chatdisplayBack.childCount == 1) {
-                val layoutParam=FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT)
-                layoutParam.gravity=Gravity.CENTER
-                chatdisplayBack.addView(chatEmptyLayout,layoutParam)
+                val layoutParam = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
+                layoutParam.gravity = Gravity.CENTER
+                chatdisplayBack.addView(emptyChatBackgroundView, layoutParam)
             }
-            chatEmptyLayout?.visibility = View.GONE
+            emptyChatBackgroundView?.visibility = View.GONE
         }
     }
 
@@ -340,7 +347,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun checkEmptyChat() {
-        chatEmptyLayout?.let {
+        emptyChatBackgroundView?.let {
             if ((viewModel?.messageList?.size ?: 0) == 0)
                 it.visibility = View.VISIBLE
             else

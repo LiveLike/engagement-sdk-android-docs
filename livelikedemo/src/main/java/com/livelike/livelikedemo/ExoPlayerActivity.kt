@@ -271,7 +271,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (themeCurrent == R.style.TurnerChatTheme) {
                 val emptyView =
                     LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
-                chat_view.setEmptyChatLayout(emptyView)
+                chat_view.emptyChatBackgroundView = emptyView
             }
 
             chat_view.setSession(session)

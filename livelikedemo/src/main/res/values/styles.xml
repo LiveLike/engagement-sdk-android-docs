@@ -25,6 +25,7 @@
         <item name="chatBubbleMarginLeft">5dp</item>
         <item name="chatAvatarMarginLeft">13dp</item>
         <item name="closeKeyboardOnSend">true</item>
+        <item name="emptyChatBackgroundView">@layout/default_empty_chat_view</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme.NoActionBar">

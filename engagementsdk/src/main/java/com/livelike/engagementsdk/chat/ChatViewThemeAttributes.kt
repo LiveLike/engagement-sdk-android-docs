@@ -51,7 +51,7 @@ class ChatViewThemeAttributes {
             chatAvatarGravity =
                 getInt(R.styleable.LiveLike_ChatView_chatAvatarGravity, Gravity.NO_GRAVITY)
 
-            emptyChatLayoutId = getResourceId(R.styleable.LiveLike_ChatView_emptyChatLayout,R.layout.default_empty_chat_view)
+            emptyChatLayoutId = getResourceId(R.styleable.LiveLike_ChatView_emptyChatBackgroundView,0)
 
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatBubbleBackground, colorBubbleValue)
