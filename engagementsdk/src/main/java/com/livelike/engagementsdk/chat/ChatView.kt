@@ -211,9 +211,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 sendImageTintColor,
                 android.graphics.PorterDuff.Mode.MULTIPLY
             )
-            if (chatAttribute.emptyChatLayoutId != 0)
-                emptyChatBackgroundView =
-                    View.inflate(context, chatAttribute.emptyChatLayoutId, null)
             initEmptyView()
         }
     }
