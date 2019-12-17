@@ -90,7 +90,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             object : TypeToken<MutableMap<String, Long>>() {}.type
         ) ?: mutableMapOf()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        themeCurrent = intent.getIntExtra("theme", R.style.AppTheme_NoActionBar)
+        themeCurrent = intent.getIntExtra("theme", R.style.AppTheme)
         this.setTheme(themeCurrent!!)
 
         setContentView(R.layout.activity_exo_player)

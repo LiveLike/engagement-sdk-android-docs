@@ -1,102 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout android:layout_width="match_parent"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    >
 
-    <LinearLayout
-        android:id="@+id/chatBackground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/img_chat_avatar"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="bottom"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="6dp"
-            android:visibility="gone" />
+    <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/chatBubbleBackground"
+            android:id="@+id/chatBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="4dp"
-            android:animateLayoutChanges="true"
-            android:background="@drawable/ic_chat_message_bubble_rounded_rectangle"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/chat_nickname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="@color/livelike_default_chat_cell_name_color"
-                android:textSize="@dimen/livelike_default_chat_cell_name_size"
-                android:textStyle="bold"
-                app:fontFamily="@font/livelike_chat_nickname_font"
-                tools:ignore="HardcodedText"
-                tools:text="asd" />
+            <ImageView
+                android:id="@+id/img_chat_avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="6dp"
+                android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/chatMessage"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/chatBubbleBackground"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="start"
-                android:text=""
-                android:textAlignment="viewStart"
-                android:textColor="@color/livelike_default_chat_cell_message_color"
-                android:textSize="@dimen/livelike_default_chat_cell_text_size"
-                app:fontFamily="@font/livelike_chat_message_font"
-                tools:ignore="HardcodedText"
-                tools:text="@tools:sample/lorem[30]" />
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="4dp"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/chat_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/livelike_default_chat_cell_name_color"
+                    android:textSize="@dimen/livelike_default_chat_cell_name_size"
+                    android:textStyle="bold"
+                    app:fontFamily="@font/livelike_chat_nickname_font"
+                    tools:ignore="HardcodedText"
+                    tools:text="asd" />
+
+                <TextView
+                    android:id="@+id/chatMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text=""
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/livelike_default_chat_cell_message_color"
+                    android:textSize="@dimen/livelike_default_chat_cell_text_size"
+                    app:fontFamily="@font/livelike_chat_message_font"
+                    tools:ignore="HardcodedText"
+                    tools:text="@tools:sample/lorem[30]" />
+
+            </LinearLayout>
+
 
         </LinearLayout>
 
+        <FrameLayout
+            android:id="@+id/rel_reactions_lay"
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="3dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toStartOf="@+id/txt_chat_reactions_count"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </LinearLayout>
+        </FrameLayout>
 
-    <FrameLayout
-        android:id="@+id/rel_reactions_lay"
-        android:layout_width="wrap_content"
-        android:layout_height="10dp"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="3dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintEnd_toStartOf="@+id/txt_chat_reactions_count">
-
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/txt_chat_reactions_count"
-        android:layout_width="wrap_content"
-        android:layout_height="10dp"
-        android:layout_marginTop="5dp"
-        android:text="213"
-        android:gravity="center"
-        android:textSize="9sp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textColor="@android:color/white"
-        android:layout_marginEnd="18dp"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintEnd_toEndOf="@+id/chatBackground"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/txt_chat_reactions_count"
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"
+            android:layout_marginTop="3.5dp"
+            android:layout_marginEnd="18dp"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="@android:color/white"
+            android:textSize="9sp"
+            app:layout_constraintEnd_toEndOf="@+id/chatBackground"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>
