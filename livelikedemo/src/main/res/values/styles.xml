@@ -28,7 +28,7 @@
         <item name="chatAvatarMarginLeft">13dp</item>
         <item name="closeKeyboardOnSend">true</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
-        <item name="chatReactionRadius">18dp</item>
+        <item name="chatReactionRadius">8dp</item>
         <item name="chatBubbleBackground">@drawable/ic_chat_message_bubble_rounded_rectangle</item>
         <item name="chatReactionMessageBubbleHighlightedBackground">@drawable/ic_chat_message_highlighted_bubble_rounded_rectangle</item>
     </style>
