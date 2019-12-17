@@ -93,11 +93,11 @@ internal class ContentSession(
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
     // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
-    private val configurationFlow = flow {
+    private val configurationUserPairFlow = flow {
         while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
             delay(1000)
         }
-        emit(sdkConfiguration.latest()!!)
+        emit(Pair(sdkConfiguration.latest()!!, userRepository.currentUserStream.latest()!!))
     }
     private var privateChatRoomID = ""
 
@@ -174,9 +174,9 @@ internal class ContentSession(
     private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit) {
         contentSessionScope.launch {
             chatRepository?.let { chatRepository ->
-                configurationFlow.collect { config ->
+                configurationUserPairFlow.collect { pair ->
                     val chatRoomResult =
-                        chatRepository.fetchChatRoom(chatRoomId, config.chatRoomUrlTemplate)
+                        chatRepository.fetchChatRoom(chatRoomId, pair.first.chatRoomUrlTemplate)
                     if (chatRoomResult is Result.Success) {
                         chatRoomMap[chatRoomId] = chatRoomResult.data
                         chatRoomResultCall.invoke(chatRoomResult.data)
@@ -396,13 +396,9 @@ internal class ContentSession(
         logVerbose { "Closing the Session" }
         contentSessionScope.cancel()
         chatClient?.run {
-            unsubscribeAll()
-            stop()
             destroy()
         }
         widgetClient?.run {
-            unsubscribeAll()
-            stop()
             destroy()
         }
         currentWidgetViewStream.clear()
