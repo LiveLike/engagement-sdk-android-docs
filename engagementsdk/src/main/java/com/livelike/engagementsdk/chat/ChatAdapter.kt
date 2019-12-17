@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk.chat
 
+import android.content.Context
 import android.graphics.drawable.ColorDrawable
+import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
@@ -11,7 +13,10 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -21,20 +26,26 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
+import com.livelike.engagementsdk.chat.chatreaction.Reaction
+import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
+import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -57,6 +68,7 @@ internal class ChatRecyclerAdapter(
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
+
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
@@ -93,7 +105,7 @@ internal class ChatRecyclerAdapter(
 
         override fun onLongClick(p0: View?): Boolean {
             if (isPublicChat)
-                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false)
+                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false,message?.myReaction)
             return true
         }
 
@@ -133,7 +145,7 @@ internal class ChatRecyclerAdapter(
             hideFloatingUI()
         }
 
-        private fun showFloatingUI(isOwnMessage: Boolean) {
+        private fun showFloatingUI(isOwnMessage: Boolean, reaction: Reaction?=null) {
             v.chatBackground.alpha = 0.5f
             val locationOnScreen = v.getLocationOnScreen()
             ChatActionsPopupView(
@@ -157,12 +169,36 @@ internal class ChatRecyclerAdapter(
                 },
                 ::hideFloatingUI,
                 isOwnMessage,
+                userReaction = reaction,
                 chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
                 chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
                 chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
                 chatReactionBackgroundColor = chatViewThemeAttribute.chatReactionBackgroundColor,
-                        chatReactionPadding = chatViewThemeAttribute.chatReactionPadding
-            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatViewThemeAttribute.chatReactionX, locationOnScreen.y - chatViewThemeAttribute.chatReactionY)
+                chatReactionPadding = chatViewThemeAttribute.chatReactionPadding,
+                selectReactionListener = object : SelectReactionListener {
+                    override fun onSelectReaction(reaction: Reaction?) {
+                        message?.apply {
+                            if (reaction == null) {
+                                reactionsList.remove(myReaction)
+                                myReaction = null
+                            } else {
+                                if (myReaction != null) {
+                                    reactionsList.remove(myReaction!!)
+                                }
+                                myReaction = reaction
+                                reactionsList.add(reaction)
+                            }
+                            notifyItemChanged(adapterPosition)
+                        }
+                    }
+                }
+
+            ).showAtLocation(
+                v,
+                Gravity.NO_GRAVITY,
+                locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
+                locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+            )
         }
 
         private fun hideFloatingUI() {
@@ -189,13 +225,10 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.text = message.senderDisplayName
                         }
 
-                        val layoutParam = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT
-                        )
+                        val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
                         layoutParam.setMargins(
                             chatMarginLeft,
-                            chatMarginTop,
+                            chatMarginTop+AndroidResource.dpToPx(6),
                             chatMarginRight,
                             chatMarginBottom
                         )
@@ -282,8 +315,42 @@ internal class ChatRecyclerAdapter(
                             }
                             else -> chatMessage.text = message.message
                         }
+
+                        addChatReactionsToLayout(rel_reactions_lay,reactionsList,context,myReaction)
                     }
                 }
+            }
+        }
+    }
+}
+
+fun addChatReactionsToLayout(
+    parentLayout: FrameLayout,
+    reactionsList: HashSet<Reaction>,
+    context: Context,
+    myReaction: Reaction?
+) {
+    val CHAT_REACTION_DISPLAY_SIZE = 10
+    val bounceAnimation: Animation = AnimationUtils.loadAnimation(context, R.anim.bounce_animation)
+    var imageView: ImageView
+    val size = AndroidResource.dpToPx(CHAT_REACTION_DISPLAY_SIZE)
+    parentLayout.removeAllViews()
+    // TODO need to check for updating list and work on remove the reaction with animation
+    reactionsList.forEachIndexed { index, reaction ->
+        imageView = ImageView(context)
+        imageView.loadImage(reaction.file, AndroidResource.dpToPx(CHAT_REACTION_DISPLAY_SIZE))
+        val paramsImage: FrameLayout.LayoutParams =
+            FrameLayout.LayoutParams(size, size)
+        paramsImage.gravity = Gravity.LEFT
+        val left = ((size / 1.2) * (index)).toInt()
+        paramsImage.setMargins(left, 0, 0, 0)
+        parentLayout.addView(imageView, paramsImage)
+        imageView.bringToFront()
+        imageView.invalidate()
+
+        myReaction?.let {
+            if (it.name == reaction.name) {
+                imageView.startAnimation(bounceAnimation)
             }
         }
     }

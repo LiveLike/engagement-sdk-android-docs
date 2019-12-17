@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.services.network.RequestType
 import com.livelike.engagementsdk.services.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Random
 
 internal class ChatReactionRepository(val programId: String) : BaseRepository() {
 
