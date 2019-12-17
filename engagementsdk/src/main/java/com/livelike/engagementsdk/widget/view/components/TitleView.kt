@@ -14,12 +14,6 @@ class TitleView(context: Context, attr: AttributeSet) : ConstraintLayout(context
             titleTextView.text = value
         }
 
-    var background: Int = R.drawable.header_rounded_corner_prediciton
-        set(value) {
-            field = value
-            titleTextView.background = AppCompatResources.getDrawable(context, value)
-        }
-
     init {
         inflate(context, R.layout.atom_widget_title, this)
     }

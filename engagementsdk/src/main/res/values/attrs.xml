@@ -110,10 +110,6 @@
             <flag name="top" value="48" />
         </attr>
         <attr name="rankValueTextColor" format="color"/>
-        <attr name="emptyChatBackgroundImage" format="reference"/>
-        <attr name="emptyChatBackgroundText" format="string"/>
-        <attr name="emptyChatBackgroundTextColor" format="color"/>
-        <attr name="emptyChatBackgroundTextSize" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="PointView">

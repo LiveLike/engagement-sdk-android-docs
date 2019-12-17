@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
@@ -12,6 +13,8 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -23,6 +26,8 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
+import com.livelike.engagementsdk.chat.chatreaction.Reaction
+import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
@@ -64,6 +69,7 @@ internal class ChatRecyclerAdapter(
 
     internal var isPublicChat: Boolean = true
 
+
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -99,7 +105,7 @@ internal class ChatRecyclerAdapter(
 
         override fun onLongClick(p0: View?): Boolean {
             if (isPublicChat)
-                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false)
+                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false,message?.myReaction)
             return true
         }
 
@@ -139,7 +145,7 @@ internal class ChatRecyclerAdapter(
             hideFloatingUI()
         }
 
-        private fun showFloatingUI(isOwnMessage: Boolean) {
+        private fun showFloatingUI(isOwnMessage: Boolean, reaction: Reaction?=null) {
             v.chatBackground.alpha = 0.5f
             val locationOnScreen = v.getLocationOnScreen()
             ChatActionsPopupView(
@@ -163,11 +169,29 @@ internal class ChatRecyclerAdapter(
                 },
                 ::hideFloatingUI,
                 isOwnMessage,
+                userReaction = reaction,
                 chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
                 chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
                 chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
                 chatReactionBackgroundColor = chatViewThemeAttribute.chatReactionBackgroundColor,
-                chatReactionPadding = chatViewThemeAttribute.chatReactionPadding
+                chatReactionPadding = chatViewThemeAttribute.chatReactionPadding,
+                selectReactionListener = object : SelectReactionListener {
+                    override fun onSelectReaction(reaction: Reaction?) {
+                        message?.apply {
+                            if (reaction == null) {
+                                reactionsList.remove(myReaction)
+                                myReaction = null
+                            } else {
+                                if (myReaction != null) {
+                                    reactionsList.remove(myReaction!!)
+                                }
+                                myReaction = reaction
+                                reactionsList.add(reaction)
+                            }
+                            notifyItemChanged(adapterPosition)
+                        }
+                    }
+                }
             ).apply {
                 animationStyle = R.style.ChatReactionAnimation
                 showAtLocation(
@@ -177,6 +201,9 @@ internal class ChatRecyclerAdapter(
                     locationOnScreen.y - chatViewThemeAttribute.chatReactionY
                 )
             }
+
+
+
 
         }
 
@@ -197,10 +224,8 @@ internal class ChatRecyclerAdapter(
 
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
-                            chat_nickname.text = context.getString(
-                                R.string.chat_pre_nickname_me,
+                            chat_nickname.text =
                                 message.senderDisplayName
-                            )
                         } else {
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
@@ -297,24 +322,41 @@ internal class ChatRecyclerAdapter(
                             else -> chatMessage.text = message.message
                         }
 
-                        var imageView: ImageView
-                        val size=AndroidResource.dpToPx(10)
-                        message.reactionsList?.forEachIndexed { index, reaction ->
-                            imageView = ImageView(context)
-                            imageView.loadImage(reaction.file, AndroidResource.dpToPx(10))
-                            val paramsImage: FrameLayout.LayoutParams =
-                                FrameLayout.LayoutParams(size, size)
-                            paramsImage.gravity = Gravity.LEFT
-                            val left=((size / 1.2) * (index)).toInt()
-                            paramsImage.setMargins(left, 0, 0, 0)
-                            rel_reactions_lay.addView(imageView,paramsImage)
-                        }
-                        for (i in rel_reactions_lay.childCount until 0){
-                            rel_reactions_lay.getChildAt(i).bringToFront()
-                            rel_reactions_lay.getChildAt(i).invalidate()
-                        }
+                        addChatReactionsToLayout(rel_reactions_lay,reactionsList,context,myReaction)
                     }
                 }
+            }
+        }
+    }
+}
+
+fun addChatReactionsToLayout(
+    parentLayout: FrameLayout,
+    reactionsList: HashSet<Reaction>,
+    context: Context,
+    myReaction: Reaction?
+) {
+    val CHAT_REACTION_DISPLAY_SIZE = 10
+    val bounceAnimation: Animation = AnimationUtils.loadAnimation(context, R.anim.bounce_animation)
+    var imageView: ImageView
+    val size = AndroidResource.dpToPx(CHAT_REACTION_DISPLAY_SIZE)
+    parentLayout.removeAllViews()
+    // TODO need to check for updating list and work on remove the reaction with animation
+    reactionsList.forEachIndexed { index, reaction ->
+        imageView = ImageView(context)
+        imageView.loadImage(reaction.file, AndroidResource.dpToPx(CHAT_REACTION_DISPLAY_SIZE))
+        val paramsImage: FrameLayout.LayoutParams =
+            FrameLayout.LayoutParams(size, size)
+        paramsImage.gravity = Gravity.LEFT
+        val left = ((size / 1.2) * (index)).toInt()
+        paramsImage.setMargins(left, 0, 0, 0)
+        parentLayout.addView(imageView, paramsImage)
+        imageView.bringToFront()
+        imageView.invalidate()
+
+        myReaction?.let {
+            if (it.name == reaction.name) {
+                imageView.startAnimation(bounceAnimation)
             }
         }
     }

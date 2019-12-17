@@ -29,6 +29,9 @@ android {
     }
 
     buildTypes {
+        qa{
+            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/"'
+        }
         debug{
             buildConfigField "String", "CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/"'
         }
@@ -51,6 +54,7 @@ android {
     }
 
     configurations {
+        qa
         debug
         release
     }
@@ -68,10 +72,9 @@ dependencies {
 
     // Pubnub SDK for real-time communication
     implementation group: 'com.pubnub', name: 'pubnub-gson', version: "$pubnubVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
     implementation "com.airbnb.android:lottie:$lottieVersion"
-
-    // Sendbird SDK for Chat messaging
-    implementation "com.sendbird.sdk:sendbird-android-sdk:$sendbirdVersion"
 
     // Tests frameworks
     testImplementation "junit:junit:$junitVersion"

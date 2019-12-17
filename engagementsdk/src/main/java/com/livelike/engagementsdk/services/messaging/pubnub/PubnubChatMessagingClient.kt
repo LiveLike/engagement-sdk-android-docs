@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.services.network.Result
 import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
@@ -27,6 +28,7 @@ import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
+import com.pubnub.api.PubNubException
 import com.pubnub.api.callbacks.PNCallback
 import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.enums.PNOperationType
@@ -244,7 +246,7 @@ internal class PubnubChatMessagingClient(
         if (event == PubnubChatEventType.MESSAGE_CREATED.key || event == PubnubChatEventType.MESSAGE_DELETED.key) {
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
-            val clientMessage: ClientMessage
+            var clientMessage: ClientMessage? = null
             when (event) {
                 PubnubChatEventType.MESSAGE_CREATED.key -> {
                     if (isDiscardOwnPublishInSubcription && publishMessageIdList.contains(pubnubChatEvent.payload.messageId)) {
@@ -284,13 +286,11 @@ internal class PubnubChatMessagingClient(
                         EpochTime(0)
                     )
                 }
-                else -> {
-                    logError { "We don't know how to handle this message" }
-                    clientMessage = ClientMessage(JsonObject())
-                }
             }
             logError { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
-            listener?.onClientMessageEvent(client, clientMessage)
+            clientMessage?.let { listener?.onClientMessageEvent(client, clientMessage) }
+        } else {
+            logError { "We don't know how to handle this message" }
         }
     }
 
@@ -348,6 +348,21 @@ internal class PubnubChatMessagingClient(
                     }
                 }
             })
+    }
+
+    internal fun getMessageCount(
+        channel: String,
+        startTimestamp: Long
+    ): Result<Long> {
+        return try {
+            val countResult = pubnub.messageCounts()
+                .channels(listOf(channel))
+                .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
+                .sync()
+            Result.Success(countResult.channels[channel] ?: 0)
+        } catch (ex: PubNubException) {
+            Result.Error(ex)
+        }
     }
 
     override fun subscribe(channels: List<String>) {

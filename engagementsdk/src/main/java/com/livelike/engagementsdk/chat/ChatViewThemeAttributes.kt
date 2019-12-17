@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.chat
 
-import android.app.Activity
+import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,7 +13,7 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 
 class ChatViewThemeAttributes {
-    fun initAttributes(context: Activity, typedArray: TypedArray?) {
+    fun initAttributes(context: Context, typedArray: TypedArray?) {
         typedArray?.apply {
             showChatAvatarLogo = getBoolean(R.styleable.LiveLike_ChatView_showChatAvatarLogo, false)
             chatAvatarCircle = getBoolean(R.styleable.LiveLike_ChatView_chatAvatarCircle, false)
@@ -50,36 +50,6 @@ class ChatViewThemeAttributes {
 
             chatAvatarGravity =
                 getInt(R.styleable.LiveLike_ChatView_chatAvatarGravity, Gravity.NO_GRAVITY)
-
-            val emptyBackValue = TypedValue()
-            getValue(R.styleable.LiveLike_ChatView_emptyChatBackgroundImage, emptyBackValue)
-
-            chatEmptyBackgroundImage = when (emptyBackValue.type) {
-                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
-                    context,
-                    getResourceId(
-                        R.styleable.LiveLike_ChatView_emptyChatBackgroundImage,
-                        R.drawable.placeholder_chat
-                    )
-                )
-                else -> ContextCompat.getDrawable(
-                    context,
-                    R.drawable.placeholder_chat
-                )
-            }
-
-            chatEmptyBackgroundText =
-                getString(R.styleable.LiveLike_ChatView_emptyChatBackgroundText)
-
-            chatEmptyBackgroundTextColor = getColor(
-                R.styleable.LiveLike_ChatView_emptyChatBackgroundTextColor,
-                Color.WHITE
-            )
-
-            chatEmptyBackgroundTextSize = getDimensionPixelSize(
-                R.styleable.LiveLike_ChatView_emptyChatBackgroundTextSize,
-                13
-            ).toFloat()
 
             val colorBubbleValue = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatBubbleBackground, colorBubbleValue)
@@ -483,9 +453,5 @@ class ChatViewThemeAttributes {
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
-    var chatEmptyBackgroundImage: Drawable? = null
-    var chatEmptyBackgroundText: String? = null
-    var chatEmptyBackgroundTextColor: Int = Color.WHITE
-    var chatEmptyBackgroundTextSize: Float = 13f
     var closeKeyboardOnSend: Boolean = true
 }
