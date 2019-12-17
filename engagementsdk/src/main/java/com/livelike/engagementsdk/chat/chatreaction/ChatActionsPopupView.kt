@@ -104,9 +104,6 @@ internal class ChatActionsPopupView(
             }
             frameLayout.orientation = LinearLayout.VERTICAL
             frameLayout.setPadding(2, 0, 2, 0)
-            frameLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background_selector)
-            frameLayout.isClickable = true
-            frameLayout.setOnClickListener {  }
             imageView.loadImage(reaction.file, AndroidResource.dpToPx(22))
 
             userReaction?.let {
