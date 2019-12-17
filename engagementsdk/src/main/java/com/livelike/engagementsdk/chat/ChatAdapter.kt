@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
