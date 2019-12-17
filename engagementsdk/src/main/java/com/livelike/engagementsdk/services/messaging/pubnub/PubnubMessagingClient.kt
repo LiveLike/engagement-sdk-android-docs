@@ -25,12 +25,16 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
     }
 
+    private val subscribedChannels = mutableListOf<String>()
+
     override fun stop() {
+        pubnub.unsubscribeAll()
         pubnub.disconnect()
     }
 
     override fun start() {
         pubnub.reconnect()
+        pubnub.subscribe().channels(subscribedChannels).execute()
     }
 
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
@@ -128,10 +132,12 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
     }
     override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
+        subscribedChannels.addAll(channels)
     }
 
     override fun unsubscribe(channels: List<String>) {
         pubnub.unsubscribe().channels(channels).execute()
+        subscribedChannels.removeAll(channels)
     }
 
     override fun unsubscribeAll() {
