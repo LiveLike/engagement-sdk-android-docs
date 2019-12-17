@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -168,8 +167,17 @@ internal class ChatRecyclerAdapter(
                 chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
                 chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
                 chatReactionBackgroundColor = chatViewThemeAttribute.chatReactionBackgroundColor,
-                        chatReactionPadding = chatViewThemeAttribute.chatReactionPadding
-            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatViewThemeAttribute.chatReactionX, locationOnScreen.y - chatViewThemeAttribute.chatReactionY)
+                chatReactionPadding = chatViewThemeAttribute.chatReactionPadding
+            ).apply {
+                animationStyle = R.style.ChatReactionAnimation
+                showAtLocation(
+                    v,
+                    Gravity.NO_GRAVITY,
+                    locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
+                    locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+                )
+            }
+
         }
 
         private fun hideFloatingUI() {

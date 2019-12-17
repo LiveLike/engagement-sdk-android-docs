@@ -82,20 +82,22 @@ internal class ChatActionsPopupView(
         val threeDp = AndroidResource.dpToPx(3)
         val fiveDp = AndroidResource.dpToPx(5)
         chatReactionRepository.reactionList?.forEach { reaction ->
-            val frameLayout = FrameLayout(context)
+            val frameLayout = LinearLayout(context)
             val countView = TextView(context)
             val imageView = ImageView(context)
             frameLayout.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                 setMargins(2,2,2,2)
             }
+            frameLayout.orientation = LinearLayout.VERTICAL
+            frameLayout.gravity = Gravity.RIGHT
             frameLayout.setPadding(1, 0, 1, 0)
             frameLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background_selector)
             frameLayout.isClickable = true
             frameLayout.setOnClickListener {  }
-            imageView.loadImage(reaction.file, AndroidResource.dpToPx(28))
+            imageView.loadImage(reaction.file, AndroidResource.dpToPx(20))
 
-            val cnt=Random().nextInt(10000)
+            val cnt= Random().nextInt(10000)
             countView.apply {
                 text = formattedReactionCount(cnt)
                 setTextColor(Color.BLACK)
@@ -106,10 +108,8 @@ internal class ChatActionsPopupView(
                     else -> View.VISIBLE
                 }
             }
-            frameLayout.addView(imageView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.CENTER).apply {
-                setMargins(fiveDp, 7, fiveDp, 3)
-            })
-            frameLayout.addView(countView,FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,FrameLayout.LayoutParams.WRAP_CONTENT,Gravity.TOP or Gravity.RIGHT))
+            frameLayout.addView(countView,LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT))
+            frameLayout.addView(imageView,LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT))
             reactionsBox.addView(frameLayout)
         }
     }
