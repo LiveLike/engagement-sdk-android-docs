@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.progress
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
 class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
     private var viewModel: PollViewModel? = null
@@ -74,7 +75,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
 
             titleView.title = resource.question
-            titleView.background = R.drawable.header_rounded_corner_poll
+            txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
             titleTextView.gravity = Gravity.START
 
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {

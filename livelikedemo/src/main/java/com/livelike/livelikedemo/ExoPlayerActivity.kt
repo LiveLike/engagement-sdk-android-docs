@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import com.google.gson.GsonBuilder
@@ -23,11 +24,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.math.abs
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -38,6 +34,11 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.math.abs
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -47,6 +48,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val CHANNEL_NAME = "channelName"
     }
 
+    private var themeCurrent: Int? = null
     private var isChatRoomJoined: Boolean = false
     private lateinit var player: VideoPlayer
     private var session: LiveLikeContentSession? = null
@@ -55,21 +57,21 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var channelManager: ChannelManager? = null
 
     private var adsPlaying = false
-    set(adsPlaying) {
-        field = adsPlaying
+        set(adsPlaying) {
+            field = adsPlaying
 
-        if (adsPlaying) {
-            startAd.text = "Stop Ads"
-            player.stop()
-            session?.pause()
-            privateGroupChatsession?.pause()
-        } else {
-            startAd.text = "Start Ads"
-            player.start()
-            session?.resume()
-            privateGroupChatsession?.resume()
+            if (adsPlaying) {
+                startAd.text = "Stop Ads"
+                player.stop()
+                session?.pause()
+                privateGroupChatsession?.pause()
+            } else {
+                startAd.text = "Start Ads"
+                player.start()
+                session?.resume()
+                privateGroupChatsession?.resume()
+            }
         }
-    }
     private val timer = Timer()
     private var chatRoomIds: List<String> = if (BuildConfig.DEBUG) {
         listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
@@ -81,10 +83,15 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         chatRoomLastTimeStampMap = GsonBuilder().create().fromJson(
-            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(PREF_CHAT_ROOM_LAST_TIME, null),
-            object : TypeToken<MutableMap<String, Long>>() {}.type) ?: mutableMapOf()
+            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
+                PREF_CHAT_ROOM_LAST_TIME,
+                null
+            ),
+            object : TypeToken<MutableMap<String, Long>>() {}.type
+        ) ?: mutableMapOf()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        this.setTheme(intent.getIntExtra("theme", R.style.Default))
+        themeCurrent = intent.getIntExtra("theme", R.style.AppTheme)
+        this.setTheme(themeCurrent!!)
 
         setContentView(R.layout.activity_exo_player)
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
@@ -143,21 +150,28 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.toTypedArray()) { _, which ->
                     val enteredChatRoomId = chatRoomIds[which]
                     privateGroupChatsession?.enterChatRoom(enteredChatRoomId)
-                    chatRoomLastTimeStampMap[enteredChatRoomId] = Calendar.getInstance().timeInMillis
-                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(PREF_CHAT_ROOM_LAST_TIME, GsonBuilder().create().toJson(chatRoomLastTimeStampMap)).apply()
+                    chatRoomLastTimeStampMap[enteredChatRoomId] =
+                        Calendar.getInstance().timeInMillis
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
+                        PREF_CHAT_ROOM_LAST_TIME,
+                        GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
+                    ).apply()
                     if (!isChatRoomJoined) {
                         val anotherChatRoomId = chatRoomIds[abs(which - 1)]
                         val timestamp = (chatRoomLastTimeStampMap.get(anotherChatRoomId)
                             ?: Calendar.getInstance().timeInMillis)
-                        privateGroupChatsession?.getMessageCount(anotherChatRoomId, timestamp, object :
-                            LiveLikeCallback<Long>() {
-                            override fun onResponse(result: Long?, error: String?) {
-                                result?.let {
-                                    messageCount[anotherChatRoomId] =
-                                        (messageCount[anotherChatRoomId] ?: 0) + result
+                        privateGroupChatsession?.getMessageCount(
+                            anotherChatRoomId,
+                            timestamp,
+                            object :
+                                LiveLikeCallback<Long>() {
+                                override fun onResponse(result: Long?, error: String?) {
+                                    result?.let {
+                                        messageCount[anotherChatRoomId] =
+                                            (messageCount[anotherChatRoomId] ?: 0) + result
+                                    }
                                 }
-                            }
-                        })
+                            })
                         privateGroupChatsession?.joinChatRoom(anotherChatRoomId)
                         isChatRoomJoined = true
                     }
@@ -219,8 +233,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
-            val session = (application as LiveLikeApplication).createSession(channel.llProgram.toString(),
-                dialog)
+            val session = (application as LiveLikeApplication).createSession(
+                channel.llProgram.toString(),
+                dialog
+            )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
                     (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString())
@@ -230,7 +246,11 @@ class ExoPlayerActivity : AppCompatActivity() {
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = 0 // reset unread message count
                         chatRoomLastTimeStampMap[chatRoom] = Calendar.getInstance().timeInMillis
-                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(PREF_CHAT_ROOM_LAST_TIME, GsonBuilder().create().toJson(chatRoomLastTimeStampMap)).apply()
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit()
+                            .putString(
+                                PREF_CHAT_ROOM_LAST_TIME,
+                                GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
+                            ).apply()
                     } else {
                         if (messageCount[chatRoom] == null) {
                             messageCount[chatRoom] = 1
@@ -239,12 +259,20 @@ class ExoPlayerActivity : AppCompatActivity() {
                         }
                     }
                     messageCount.forEach {
-                        logsPreview.text = "channel : ${it.key}, unread : ${it.value} \n\n ${logsPreview.text}"
-                        fullLogs.text = "channel : ${it.key}, unread : ${it.value} \n\n ${fullLogs.text}"
+                        logsPreview.text =
+                            "channel : ${it.key}, unread : ${it.value} \n\n ${logsPreview.text}"
+                        fullLogs.text =
+                            "channel : ${it.key}, unread : ${it.value} \n\n ${fullLogs.text}"
                         Log.e("Here", "channel : ${it.key}, unread : ${it.value}")
                     }
                 }
             })
+
+            if (themeCurrent == R.style.TurnerChatTheme) {
+                val emptyView =
+                    LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
+                chat_view.emptyChatBackgroundView = emptyView
+            }
 
             chat_view.setSession(session)
             widget_view.setSession(session)
@@ -255,10 +283,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
                 getString("userPic", "").let {
-                        if (it.isNotEmpty()) {
-                            (application as LiveLikeApplication).sdk.updateChatUserPic(it)
-                        }
+                    if (it.isNotEmpty()) {
+                        (application as LiveLikeApplication).sdk.updateChatUserPic(it)
                     }
+                }
             }
 
             this.session = session

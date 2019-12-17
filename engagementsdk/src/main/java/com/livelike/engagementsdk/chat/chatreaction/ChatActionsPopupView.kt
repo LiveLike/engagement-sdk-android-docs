@@ -171,6 +171,12 @@ internal class ChatActionsPopupView(
             )
             reactionsBox.addView(frameLayout)
         }
+        contentView.chat_reaction_background_card.visibility =
+            if ((chatReactionRepository.reactionList?.size ?: 0) > 0) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
     }
 }
 interface SelectReactionListener{

@@ -8,7 +8,6 @@
     <string name="flag_ui_blocking_message">You will no longer see messages from: %s.</string>
     <string name="flag_ui_blocking_title">Block this user</string>
     <string name="flag_ui_reporting_title">Report message</string>
-    <string name="chat_pre_nickname_me">(Me) %s</string>
     <string name="chat_deleted_message_redacted">Redacted</string>
     <string name="livelike_rank_label">RANK</string>
     <string name="badge_earned_congrats_message">Congrats! You just earn a new badge!</string>
