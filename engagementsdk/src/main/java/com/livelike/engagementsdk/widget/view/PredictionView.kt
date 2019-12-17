@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.progress
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
 class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
@@ -58,7 +59,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
 
             titleView.title = resource.question
-            titleView.background = R.drawable.header_rounded_corner_prediciton
+            txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
             titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
