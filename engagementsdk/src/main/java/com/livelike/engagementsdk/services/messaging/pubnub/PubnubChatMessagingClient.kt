@@ -246,7 +246,7 @@ internal class PubnubChatMessagingClient(
         if (event == PubnubChatEventType.MESSAGE_CREATED.key || event == PubnubChatEventType.MESSAGE_DELETED.key) {
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
-            val clientMessage: ClientMessage
+            var clientMessage: ClientMessage? = null
             when (event) {
                 PubnubChatEventType.MESSAGE_CREATED.key -> {
                     if (isDiscardOwnPublishInSubcription && publishMessageIdList.contains(pubnubChatEvent.payload.messageId)) {
@@ -286,13 +286,11 @@ internal class PubnubChatMessagingClient(
                         EpochTime(0)
                     )
                 }
-                else -> {
-                    logError { "We don't know how to handle this message" }
-                    clientMessage = ClientMessage(JsonObject())
-                }
             }
             logError { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
-            listener?.onClientMessageEvent(client, clientMessage)
+            clientMessage?.let { listener?.onClientMessageEvent(client, clientMessage) }
+        } else {
+            logError { "We don't know how to handle this message" }
         }
     }
 
