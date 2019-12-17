@@ -76,9 +76,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
     implementation "com.airbnb.android:lottie:$lottieVersion"
 
-    // Sendbird SDK for Chat messaging
-    implementation "com.sendbird.sdk:sendbird-android-sdk:$sendbirdVersion"
-
     // Tests frameworks
     testImplementation "junit:junit:$junitVersion"
 
