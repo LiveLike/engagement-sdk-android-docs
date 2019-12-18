@@ -48,6 +48,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val CHANNEL_NAME = "channelName"
     }
 
+    private var showNotification: Boolean = true
     private var themeCurrent: Int? = null
     private var isChatRoomJoined: Boolean = false
     private lateinit var player: VideoPlayer
@@ -102,6 +103,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             fullLogs.visibility = if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
         }
         fullLogs.movementMethod = ScrollingMovementMethod()
+
+        showNotification = intent.getBooleanExtra("showNotification",true)
 
         adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
         val position = savedInstanceState?.getLong(POSITION) ?: 0
@@ -204,20 +207,24 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var showingDialog = false
 
     private fun WidgetInterceptor.showDialog(context: Context) {
-        showingDialog = true
-        AlertDialog.Builder(context).apply {
-            setMessage("You received a Widget, what do you want to do?")
-            setPositiveButton("Show") { _, _ ->
-                showingDialog = false
-                showWidget()
-            }
-            setNegativeButton("Dismiss") { _, _ ->
-                showingDialog = false
-                dismissWidget()
-            }
-            setCancelable(false)
-            create()
-        }.show()
+        if(showNotification) {
+            showingDialog = true
+            AlertDialog.Builder(context).apply {
+                setMessage("You received a Widget, what do you want to do?")
+                setPositiveButton("Show") { _, _ ->
+                    showingDialog = false
+                    showWidget()
+                }
+                setNegativeButton("Dismiss") { _, _ ->
+                    showingDialog = false
+                    dismissWidget()
+                }
+                setCancelable(false)
+                create()
+            }.show()
+        }else{
+            showWidget()
+        }
     }
 
     var messageCount: MutableMap<String, Long> = mutableMapOf()
