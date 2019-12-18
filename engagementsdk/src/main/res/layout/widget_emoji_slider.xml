@@ -13,25 +13,36 @@
         app:layout_constraintStart_toStartOf="parent"
         android:background="@drawable/rounded_corner_with_background">
 
+        <View
+            android:id="@+id/txtTitleBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/image_slider_header_top_rounded_bg"
+            app:layout_constraintBottom_toBottomOf="@+id/titleView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/titleView" />
+
         <com.livelike.engagementsdk.widget.view.components.TitleView
+            android:id="@+id/titleView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="5dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:padding="10dp"
             app:layout_constraintEnd_toStartOf="@+id/textEggTimer"
-            android:id="@+id/titleView"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
             android:id="@+id/textEggTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:visibility="visible"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintBottom_toTopOf="@+id/image_slider"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/titleView" />
+            app:layout_constraintBottom_toBottomOf="@+id/titleView"
+            app:layout_constraintTop_toTopOf="@+id/titleView"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"/>
+
 
         <com.livelike.engagementsdk.widget.view.components.imageslider.ImageSlider
             android:id="@+id/image_slider"
