@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import java.math.RoundingMode
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
+import kotlinx.android.synthetic.main.widget_emoji_slider.view.txtTitleBackground
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +55,6 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             resource.getMergedOptions() ?: return
             if (!isViewInflated) {
                 inflate(context, R.layout.widget_emoji_slider, this)
-                titleTextView.background = AppCompatResources.getDrawable(context, R.drawable.image_slider_header_top_rounded_bg)
                 titleTextView.gravity = Gravity.CENTER
                 titleView.title = resource.question
                 if (image_slider.progress == ImageSlider.INITIAL_POSITION)
