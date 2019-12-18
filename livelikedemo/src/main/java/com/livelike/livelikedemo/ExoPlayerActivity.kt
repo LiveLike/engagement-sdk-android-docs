@@ -24,11 +24,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.math.abs
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -39,6 +34,11 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.math.abs
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -207,24 +207,20 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var showingDialog = false
 
     private fun WidgetInterceptor.showDialog(context: Context) {
-        if(showNotification) {
-            showingDialog = true
-            AlertDialog.Builder(context).apply {
-                setMessage("You received a Widget, what do you want to do?")
-                setPositiveButton("Show") { _, _ ->
-                    showingDialog = false
-                    showWidget()
-                }
-                setNegativeButton("Dismiss") { _, _ ->
-                    showingDialog = false
-                    dismissWidget()
-                }
-                setCancelable(false)
-                create()
-            }.show()
-        }else{
-            showWidget()
-        }
+        showingDialog = true
+        AlertDialog.Builder(context).apply {
+            setMessage("You received a Widget, what do you want to do?")
+            setPositiveButton("Show") { _, _ ->
+                showingDialog = false
+                showWidget()
+            }
+            setNegativeButton("Dismiss") { _, _ ->
+                showingDialog = false
+                dismissWidget()
+            }
+            setCancelable(false)
+            create()
+        }.show()
     }
 
     var messageCount: MutableMap<String, Long> = mutableMapOf()
@@ -242,7 +238,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(
                 channel.llProgram.toString(),
-                dialog
+                when (showNotification) {
+                    true -> dialog
+                    else -> null
+                }
             )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
