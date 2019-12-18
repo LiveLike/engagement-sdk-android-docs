@@ -8,8 +8,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
-import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
+import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
@@ -19,10 +19,11 @@ import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
-    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>, var theme: Int, var keyboardClose: Boolean = true)
+    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>, var theme: Int, var keyboardClose: Boolean = true,var showNotification:Boolean=true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +39,11 @@ class MainActivity : AppCompatActivity() {
 
         layout_overlay.setOnClickListener {
             startActivity(playerDetailIntent(drawerDemoActivity))
+        }
+
+        chk_show_dismiss.isChecked = player.showNotification
+        chk_show_dismiss.setOnCheckedChangeListener { buttonView, isChecked ->
+            player.showNotification = isChecked
         }
 
         events_button.setOnClickListener {
@@ -113,6 +119,7 @@ class MainActivity : AppCompatActivity() {
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent = Intent(this, player.cls.java)
     intent.putExtra("theme", player.theme)
+    intent.putExtra("showNotification",player.showNotification)
     intent.putExtra("keyboardClose", when (player.theme) {
         R.style.TurnerChatTheme -> player.keyboardClose
         else -> true

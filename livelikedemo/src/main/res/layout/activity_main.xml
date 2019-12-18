@@ -119,6 +119,17 @@
                         app:layout_constraintStart_toStartOf="@id/themes_button"
                         tools:text="Select Theme"
                         />
+
+                    <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/chk_show_dismiss"
+                        android:layout_margin="6dp"
+                        android:text="Show Notification For Allow Widget"
+                        app:layout_constraintTop_toBottomOf="@+id/themes_label"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        />
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
 

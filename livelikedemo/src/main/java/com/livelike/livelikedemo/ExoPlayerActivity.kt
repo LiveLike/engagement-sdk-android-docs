@@ -24,11 +24,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.math.abs
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -39,6 +34,11 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.math.abs
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -48,6 +48,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val CHANNEL_NAME = "channelName"
     }
 
+    private var showNotification: Boolean = true
     private var themeCurrent: Int? = null
     private var isChatRoomJoined: Boolean = false
     private lateinit var player: VideoPlayer
@@ -102,6 +103,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             fullLogs.visibility = if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
         }
         fullLogs.movementMethod = ScrollingMovementMethod()
+
+        showNotification = intent.getBooleanExtra("showNotification",true)
 
         adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
         val position = savedInstanceState?.getLong(POSITION) ?: 0
@@ -235,7 +238,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(
                 channel.llProgram.toString(),
-                dialog
+                when (showNotification) {
+                    true -> dialog
+                    else -> null
+                }
             )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
