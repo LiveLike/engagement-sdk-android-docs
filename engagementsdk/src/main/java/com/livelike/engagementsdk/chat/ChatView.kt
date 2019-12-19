@@ -319,7 +319,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         s as Spannable,
                         this@ChatView.context,
                         stickerPackRepository,
-                        edittext_chat_message
+                        edittext_chat_message,null
                     )
                 }
 

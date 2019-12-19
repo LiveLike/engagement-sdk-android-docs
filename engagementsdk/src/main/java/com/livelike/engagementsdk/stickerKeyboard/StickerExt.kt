@@ -16,6 +16,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
 import pl.droidsonroids.gif.GifDrawable
+import pl.droidsonroids.gif.MultiCallback
 
 fun String.findStickers(): Matcher {
     val regex = ":[^ :\\s]*:"
@@ -36,7 +37,7 @@ fun Matcher.countMatches(): Int {
     return counter
 }
 
-fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, size: Int = 50, onMatch: (() -> Unit)? = null) {
+fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?,callback: MultiCallback?, size: Int = 50, onMatch: (() -> Unit)? = null) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
     existingSpans?.forEach { imageSpan ->
@@ -76,6 +77,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
                             setupBounds(drawable, edittext_chat_message, size)
                             drawable.reset()
                             drawable.start()
+                            drawable.callback = callback
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
