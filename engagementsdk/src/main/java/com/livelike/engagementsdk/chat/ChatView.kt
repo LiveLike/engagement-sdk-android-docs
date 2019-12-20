@@ -33,6 +33,8 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
@@ -583,6 +585,19 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         setBackButtonInterceptor(this)
     }
 
+    /**
+     * use this to listen messages sent from this view
+     **/
+    var sentMessageListener: ((message: LiveLikeChatMessage) -> Unit)? = null
+
+    /**
+     * Use this function to hide any soft and sticker keyboards over the view.
+     **/
+    fun dismissKeyboard() {
+        hideKeyboard(KeyboardHideReason.EXPLICIT_CALL)
+        hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
+    }
+
     private fun sendMessageNow() {
         if (edittext_chat_message.text.isBlank()) {
             // Do nothing if the message is blank or empty
@@ -598,6 +613,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.userPic,
             isFromMe = true
         ).let {
+            sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
                 chatListener?.onChatMessageSend(it, timeData)
