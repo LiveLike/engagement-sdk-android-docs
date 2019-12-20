@@ -92,8 +92,8 @@ class ExoPlayerActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         themeCurrent = intent.getIntExtra("theme", R.style.AppTheme)
         this.setTheme(themeCurrent!!)
-
         setContentView(R.layout.activity_exo_player)
+        testKeyboardDismissUseCase(themeCurrent!!)
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
         player = (application as LiveLikeApplication).createPlayer(playerView)
@@ -179,6 +179,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
                 create()
             }.show()
+        }
+    }
+
+    private fun testKeyboardDismissUseCase(themeCurrent: Int) {
+        if (themeCurrent == R.style.TurnerChatTheme) {
+            chat_view.sentMessageListener = {
+                chat_view.dismissKeyboard()
+            }
         }
     }
 
