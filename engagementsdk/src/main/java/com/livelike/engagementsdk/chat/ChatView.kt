@@ -43,6 +43,8 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -66,8 +68,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -93,16 +93,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
-    var closeKeyboardOnSend: Boolean
-        get() = chatAttribute.closeKeyboardOnSend
-        set(value) {
-            chatAttribute.closeKeyboardOnSend = value
-            edittext_chat_message.imeOptions = when (chatAttribute.closeKeyboardOnSend) {
-                true -> EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_EXTRACT_UI
-                else -> EditorInfo.IME_ACTION_NONE or EditorInfo.IME_FLAG_NO_EXTRACT_UI
-            }
-        }
-
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
@@ -115,8 +105,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 chatdisplayBack.removeViewAt(1)
             initEmptyView()
         }
-
-
 
     /** Boolean option to enable / disable the profile display inside chat view */
     var displayUserProfile: Boolean = false
@@ -176,7 +164,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatDisplayBackgroundRes?.let {
                 chatdisplay.background = it
             }
-            this@ChatView.closeKeyboardOnSend = closeKeyboardOnSend
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
             edittext_chat_message.setTextColor(chatInputTextColor)
@@ -538,10 +525,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
-                    if (!hasFocus) {
-                        if (chatAttribute.closeKeyboardOnSend)
-                            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
-                    }
                 }
 
                 // Send message on tap Enter
@@ -604,10 +587,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         if (edittext_chat_message.text.isBlank()) {
             // Do nothing if the message is blank or empty
             return
-        }
-        if (chatAttribute.closeKeyboardOnSend) {
-            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
-            hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
