@@ -8,7 +8,7 @@
         android:id="@+id/titleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:gravity="start"
         android:textAllCaps="true"
         android:textColor="@color/livelike_header_text_color"
         android:textSize="@dimen/livelike_header_text_size"
@@ -17,4 +17,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="jkfj ksjfh sjf" />
+        tools:text="jkfj ksjfh sjf jfsg jkfh jfdh hfg kfj kfjd gkfjhgfskj lkfs hksfjls kjgsjgsklf gs kjghf jkgdhfk jhd fkjgh kfdj hkdfjhgkfdj hkfdj hgkjfdh g" />

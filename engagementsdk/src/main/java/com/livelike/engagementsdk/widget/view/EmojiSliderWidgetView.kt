@@ -55,7 +55,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             resource.getMergedOptions() ?: return
             if (!isViewInflated) {
                 inflate(context, R.layout.widget_emoji_slider, this)
-                titleTextView.gravity = Gravity.CENTER
+                titleTextView.gravity = Gravity.START
                 titleView.title = resource.question
                 if (image_slider.progress == ImageSlider.INITIAL_POSITION)
                     image_slider.progress = entity.initialMagnitude
