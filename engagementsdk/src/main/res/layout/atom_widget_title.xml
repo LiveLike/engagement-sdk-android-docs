@@ -8,12 +8,7 @@
         android:id="@+id/titleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/header_rounded_corner_default"
-        android:gravity="center"
-        android:paddingStart="16dp"
-        android:paddingLeft="16dp"
-        android:paddingEnd="16dp"
-        android:paddingRight="16dp"
+        android:gravity="start"
         android:textAllCaps="true"
         android:textColor="@color/livelike_header_text_color"
         android:textSize="@dimen/livelike_header_text_size"
@@ -22,4 +17,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Question-Text-goes-here" />
+        tools:text="jkfj ksjfh sjf jfsg jkfh jfdh hfg kfj kfjd gkfjhgfskj lkfs hksfjls kjgsjgsklf gs kjghf jkgdhfk jhd fkjgh kfdj hkdfjhgkfdj hkfdj hgkjfdh g" />

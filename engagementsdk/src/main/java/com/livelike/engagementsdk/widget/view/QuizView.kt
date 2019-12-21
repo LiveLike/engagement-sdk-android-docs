@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.progress
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecyclerView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
     private var viewModel: QuizViewModel? = null
@@ -65,7 +66,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
 
             titleView.title = resource.question
-            titleView.background = R.drawable.header_rounded_corner_quiz
+            txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
+
             titleTextView.gravity = Gravity.START
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
                 viewModel?.adapter?.apply {

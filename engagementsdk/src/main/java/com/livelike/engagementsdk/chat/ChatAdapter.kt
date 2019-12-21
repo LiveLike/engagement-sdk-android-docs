@@ -1,6 +1,10 @@
 package com.livelike.engagementsdk.chat
 
+import android.content.Context
+import android.content.res.Resources
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
@@ -11,7 +15,10 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -21,20 +28,27 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
+import com.livelike.engagementsdk.chat.chatreaction.Reaction
+import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
+import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
+import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -69,6 +83,7 @@ internal class ChatRecyclerAdapter(
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
+        val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context,R.anim.bounce_animation)
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
@@ -93,7 +108,7 @@ internal class ChatRecyclerAdapter(
 
         override fun onLongClick(p0: View?): Boolean {
             if (isPublicChat)
-                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false)
+                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false,message?.myReaction)
             return true
         }
 
@@ -133,8 +148,8 @@ internal class ChatRecyclerAdapter(
             hideFloatingUI()
         }
 
-        private fun showFloatingUI(isOwnMessage: Boolean) {
-            v.chatBackground.alpha = 0.5f
+        private fun showFloatingUI(isOwnMessage: Boolean, reaction: Reaction?=null) {
+            updateBackground(true)
             val locationOnScreen = v.getLocationOnScreen()
             ChatActionsPopupView(
                 v.context,
@@ -157,18 +172,91 @@ internal class ChatRecyclerAdapter(
                 },
                 ::hideFloatingUI,
                 isOwnMessage,
+                userReaction = reaction,
                 chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
                 chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
                 chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
-                chatReactionBackgroundColor = chatViewThemeAttribute.chatReactionBackgroundColor,
-                        chatReactionPadding = chatViewThemeAttribute.chatReactionPadding
-            ).showAtLocation(v, Gravity.NO_GRAVITY, locationOnScreen.x + chatViewThemeAttribute.chatReactionX, locationOnScreen.y - chatViewThemeAttribute.chatReactionY)
+                chatReactionPanelColor = chatViewThemeAttribute.chatReactionPanelColor,
+                chatReactionPanelCountColor = chatViewThemeAttribute.chatReactionPanelCountColor,
+                chatReactionPadding = chatViewThemeAttribute.chatReactionPadding,
+                chatReactionFlagTintColor = chatViewThemeAttribute.chatReactionFlagTintColor,
+                selectReactionListener = object : SelectReactionListener {
+                    override fun onSelectReaction(reaction: Reaction?) {
+                        message?.apply {
+                            if (reaction == null) {
+                                reactionsList.remove(myReaction)
+                                myReaction = null
+                            } else {
+                                if (myReaction != null) {
+                                    reactionsList.remove(myReaction!!)
+                                }
+                                myReaction = reaction
+                                reactionsList.add(reaction)
+                            }
+                            notifyItemChanged(adapterPosition)
+                        }
+                    }
+                }
+            ).apply {
+                animationStyle = R.style.ChatReactionAnimation
+                showAtLocation(
+                    v,
+                    Gravity.NO_GRAVITY,
+                    locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
+                    locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+                )
+            }
+
+
+
+
+        }
+
+        private fun updateBackground(isSelected: Boolean) {
+            //TODO: Need to check before functionality make it in more proper way
+            v.apply {
+                if (isSelected) {
+                    chatViewThemeAttribute.chatReactionMessageBubbleHighlightedBackground?.let { res ->
+                        updateUI(v.chatBubbleBackground, res)
+                    }
+                    chatViewThemeAttribute.chatReactionMessageBackHighlightedBackground?.let { res ->
+                        updateUI(v.chatBackground, res)
+                    }
+                } else {
+                    chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
+                        updateUI(v.chatBubbleBackground, res)
+                    }
+                    chatViewThemeAttribute.chatBackgroundRes?.let { res ->
+                        updateUI(v.chatBackground, res)
+                    }
+                }
+            }
+        }
+
+        private fun updateUI(view: View, res: Int) {
+            if (res < 0) {
+                view.setBackgroundColor(res)
+            } else {
+                val value = TypedValue()
+                try {
+                    v.context.resources.getValue(res, value, true)
+                    when (value.type) {
+                        TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> view.setBackgroundResource(
+                            res
+                        )
+                        TypedValue.TYPE_NULL -> view.setBackgroundColor(
+                            Color.TRANSPARENT
+                        )
+                        else -> view.setBackgroundColor(Color.TRANSPARENT)
+                    }
+                } catch (e: Resources.NotFoundException) {
+                    view.setBackgroundColor(res)
+                }
+            }
         }
 
         private fun hideFloatingUI() {
-            v.apply {
-                chatBackground.alpha = 1f
-            }
+            updateBackground(false)
         }
 
         private fun setMessage(
@@ -182,27 +270,22 @@ internal class ChatRecyclerAdapter(
 
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
-                            chat_nickname.text = context.getString(
-                                R.string.chat_pre_nickname_me,
+                            chat_nickname.text =
                                 message.senderDisplayName
-                            )
                         } else {
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
                         }
 
-                        val layoutParam = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT
-                        )
+                        val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
                         layoutParam.setMargins(
                             chatMarginLeft,
-                            chatMarginTop,
+                            chatMarginTop + AndroidResource.dpToPx(6),
                             chatMarginRight,
                             chatMarginBottom
                         )
+                        layoutParam.width = chatBackgroundWidth
                         v.chatBackground.layoutParams = layoutParam
-
                         v.chatBubbleBackground.setPadding(
                             chatBubblePaddingLeft,
                             chatBubblePaddingTop,
@@ -217,7 +300,7 @@ internal class ChatRecyclerAdapter(
                             chatBubbleMarginRight,
                             chatBubbleMarginBottom
                         )
-                        layoutParam1.width = chatWidth
+                        layoutParam1.width = chatBubbleWidth
                         v.chatBubbleBackground.layoutParams = layoutParam1
 
                         v.img_chat_avatar.visibility =
@@ -238,7 +321,6 @@ internal class ChatRecyclerAdapter(
                         layoutParamAvatar.gravity = chatAvatarGravity
                         v.img_chat_avatar.layoutParams = layoutParamAvatar
 
-                        v.chatBackground.background = chatBackgroundRes
 
                         val options = RequestOptions()
                         if (chatAvatarCircle) {
@@ -283,6 +365,36 @@ internal class ChatRecyclerAdapter(
                                 }
                             }
                             else -> chatMessage.text = message.message
+                        }
+
+                        var imageView: ImageView
+                        val size = AndroidResource.dpToPx(10)
+                        rel_reactions_lay.removeAllViews()
+                        // TODO need to check for updating list and work on remove the reaction with animation
+                        reactionsList.forEachIndexed { index, reaction ->
+                            imageView = ImageView(context)
+                            imageView.loadImage(reaction.file, AndroidResource.dpToPx(12))
+                            val paramsImage: FrameLayout.LayoutParams =
+                                FrameLayout.LayoutParams(size, size)
+                            paramsImage.gravity = Gravity.LEFT
+                            val left = ((size / 1.2) * (index)).toInt()
+                            paramsImage.setMargins(left, 0, 0, 0)
+                            rel_reactions_lay.addView(imageView, paramsImage)
+                            imageView.bringToFront()
+                            imageView.invalidate()
+
+                            myReaction?.let {
+                                if (it.name == reaction.name) {
+                                    imageView.startAnimation(bounceAnimation)
+                                }
+                            }
+                        }
+                        txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
+                        if (reactionsList.size > 0) {
+                            txt_chat_reactions_count.visibility = View.VISIBLE
+                            txt_chat_reactions_count.text = "${reactionsList.size}"
+                        } else {
+                            txt_chat_reactions_count.visibility = View.GONE
                         }
                     }
                 }

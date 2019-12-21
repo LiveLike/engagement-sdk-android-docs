@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <android.support.v7.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardElevation="0dp"
-        android:layout_margin="8dp"
-        android:id="@+id/chat_reaction_background_card">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
-        <android.support.constraint.ConstraintLayout
+    <android.support.v7.widget.CardView
+        android:id="@+id/chat_reaction_background_card"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        app:contentPadding="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/reaction_panel_interaction_box"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            xmlns:tools="http://schemas.android.com/tools">
-
-            <LinearLayout
-                android:id="@+id/reaction_panel_interaction_box"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:padding="6dp"
-                android:background="@drawable/ic_chat_floating_ui"
-                android:orientation="horizontal"/>
-
-            <ImageView
-                android:id="@+id/moderation_flag"
-                android:layout_width="46dp"
-                android:layout_height="36dp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:layout_constraintLeft_toRightOf="@id/reaction_panel_interaction_box"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginLeft="8dp"
-                android:src="@drawable/chat_ic_flag"
-                android:background="@drawable/ic_chat_floating_ui"
-                android:layout_gravity="bottom"/>
-
-
-
-        </android.support.constraint.ConstraintLayout>
+            android:orientation="horizontal" />
     </android.support.v7.widget.CardView>
-</FrameLayout>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/moderation_flag_lay"
+        android:layout_width="46dp"
+        android:layout_height="42dp"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="8dp"
+        android:clickable="true"
+        android:visibility="gone"
+        app:layout_constraintLeft_toRightOf="@id/chat_reaction_background_card"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/moderation_flag"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/chat_ic_flag" />
+    </android.support.v7.widget.CardView>
+
+
+</android.support.constraint.ConstraintLayout>

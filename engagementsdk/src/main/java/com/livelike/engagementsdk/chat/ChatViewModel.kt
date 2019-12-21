@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.launch
+import java.util.Random
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
