@@ -158,20 +158,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                     ).apply()
                     if (!isChatRoomJoined) {
                         val anotherChatRoomId = chatRoomIds[abs(which - 1)]
-                        val timestamp = (chatRoomLastTimeStampMap.get(anotherChatRoomId)
-                            ?: Calendar.getInstance().timeInMillis)
-                        privateGroupChatsession?.getMessageCount(
-                            anotherChatRoomId,
-                            timestamp,
-                            object :
-                                LiveLikeCallback<Long>() {
-                                override fun onResponse(result: Long?, error: String?) {
-                                    result?.let {
-                                        messageCount[anotherChatRoomId] =
-                                            (messageCount[anotherChatRoomId] ?: 0) + result
-                                    }
-                                }
-                            })
                         privateGroupChatsession?.joinChatRoom(anotherChatRoomId)
                         isChatRoomJoined = true
                     }
@@ -248,6 +234,23 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
                     (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString())
+                for (pair in chatRoomLastTimeStampMap) {
+                    val chatRoomId = pair.key
+                    val timestamp = (chatRoomLastTimeStampMap.get(chatRoomId)
+                        ?: Calendar.getInstance().timeInMillis)
+                    privateGroupChatsession?.getMessageCount(
+                        chatRoomId,
+                        timestamp,
+                        object :
+                            LiveLikeCallback<Long>() {
+                            override fun onResponse(result: Long?, error: String?) {
+                                result?.let {
+                                    messageCount[chatRoomId] =
+                                        (messageCount[chatRoomId] ?: 0) + result
+                                }
+                            }
+                        })
+                }
             }
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
