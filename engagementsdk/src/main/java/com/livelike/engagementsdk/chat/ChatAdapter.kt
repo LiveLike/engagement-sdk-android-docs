@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -108,8 +107,11 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(p0: View?): Boolean {
-            if (isPublicChat)
-                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false,message?.myReaction)
+            if (isPublicChat) {
+                val isOwnMessage = (p0?.tag as ChatMessage?)?.isFromMe ?: false
+                if((isOwnMessage && (chatReactionRepository.reactionList?.size ?: 0) > 0) || !isOwnMessage)
+                    showFloatingUI(isOwnMessage, message?.myReaction)
+            }
             return true
         }
 
