@@ -46,6 +46,7 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
+import pl.droidsonroids.gif.MultiCallback
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -349,17 +350,19 @@ internal class ChatRecyclerAdapter(
                         val atLeastOneSticker = inputNoString.findStickers().find()
                         val numberOfStickers = message.message.findStickers().countMatches()
 
+                        val callback =  MultiCallback(true)
+                        callback.addView(chatMessage)
                         when {
                             (isOnlyStickers && numberOfStickers == 1) -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null, 200) {
+                                replaceWithStickers(s, context, stickerPackRepository, null,callback, 200) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null) {
+                                replaceWithStickers(s, context, stickerPackRepository, null,callback) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }

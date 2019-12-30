@@ -9,7 +9,6 @@ import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import android.view.Gravity
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -20,7 +19,6 @@ class ChatViewThemeAttributes {
             showChatAvatarLogo = getBoolean(R.styleable.LiveLike_ChatView_showChatAvatarLogo, false)
             chatAvatarCircle = getBoolean(R.styleable.LiveLike_ChatView_chatAvatarCircle, false)
             showStickerSend = getBoolean(R.styleable.LiveLike_ChatView_showStickerSend, true)
-            closeKeyboardOnSend = getBoolean(R.styleable.LiveLike_ChatView_closeKeyboardOnSend, true)
             chatNickNameColor = getColor(
                 R.styleable.LiveLike_ChatView_usernameColor,
                 ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
@@ -110,7 +108,6 @@ class ChatViewThemeAttributes {
                 colorHighlightedBackValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorHighlightedBackValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorHighlightedBackValue.data
                 else -> null
             }
-
 
             val sendDrawable = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatSendDrawable, sendDrawable)
@@ -203,7 +200,7 @@ class ChatViewThemeAttributes {
             getValue(R.styleable.LiveLike_ChatView_chatViewBackground, colorViewValue)
 
             chatViewBackgroundRes = when (colorViewValue.type) {
-                TypedValue.TYPE_REFERENCE,TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.LiveLike_ChatView_chatViewBackground,
@@ -254,7 +251,7 @@ class ChatViewThemeAttributes {
             )
 
             chatInputViewBackgroundRes = when (colorInputViewBackgroundValue.type) {
-                TypedValue.TYPE_REFERENCE,TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
                     context,
                     getResourceId(
                         R.styleable.LiveLike_ChatView_chatInputViewBackground,
@@ -509,5 +506,4 @@ class ChatViewThemeAttributes {
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
-    var closeKeyboardOnSend: Boolean = true
 }
