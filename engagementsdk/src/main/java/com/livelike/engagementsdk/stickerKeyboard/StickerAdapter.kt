@@ -27,8 +27,8 @@ class StickerCollectionAdapter(private val stickerPacks: List<StickerPack>, val 
                                private val onClickCallback: (Sticker) -> Unit):RecyclerView.Adapter<StickerCollectionViewHolder>(){
     private val RECENT_STICKERS_POSITION = 0
 
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): StickerCollectionViewHolder {
-        return StickerCollectionViewHolder(LayoutInflater.from(p0.context).inflate(R.layout.livelike_sticker_keyboard_rv,p0,false)) { sticker->
+    override fun onCreateViewHolder(viewGroup: ViewGroup, index: Int): StickerCollectionViewHolder {
+        return StickerCollectionViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.livelike_sticker_keyboard_rv,viewGroup,false)) { sticker->
             notifyDataSetChanged()
             onClickCallback(sticker)
         }
@@ -36,8 +36,8 @@ class StickerCollectionAdapter(private val stickerPacks: List<StickerPack>, val 
 
     override fun getItemCount(): Int = stickerPacks.size
 
-    override fun onBindViewHolder(p0: StickerCollectionViewHolder, p1: Int) {
-        p0.bind(stickerPacks[p1],p1==RECENT_STICKERS_POSITION,programId)
+    override fun onBindViewHolder(viewHolder: StickerCollectionViewHolder, index: Int) {
+        viewHolder.bind(stickerPacks[index],index==RECENT_STICKERS_POSITION,programId)
     }
 }
 
