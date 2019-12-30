@@ -390,6 +390,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
             KeyboardHideReason.MESSAGE_SENT -> "Sent Message"
             KeyboardHideReason.CHANGING_KEYBOARD_TYPE -> "Dismissed Via Changing Keyboard Type"
             KeyboardHideReason.BACK_BUTTON -> "Dismissed Via Back Button"
+            KeyboardHideReason.EXPLICIT_CALL -> "Dismissed Via explicit call"
         }
         properties.put("Keyboard Hide Method", hideReason)
         chatMessageId?.apply {
@@ -626,7 +627,8 @@ enum class KeyboardHideReason {
     MESSAGE_SENT,
     CHANGING_KEYBOARD_TYPE,
     TAP_OUTSIDE,
-    BACK_BUTTON
+    BACK_BUTTON,
+    EXPLICIT_CALL // it was added to expose control to integrators.
 }
 
 enum class KeyboardType {
