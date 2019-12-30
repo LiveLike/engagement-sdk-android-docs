@@ -60,7 +60,7 @@
             android:maxLength="150"
             android:background="@android:color/transparent"
             android:hint="@string/livelike_chat_input_hint"
-            android:imeOptions="flagNoExtractUi|actionSend"
+            android:imeOptions="flagNoExtractUi"
             android:imeActionLabel="Send"
             android:maxLines="1"
             android:inputType="text"
