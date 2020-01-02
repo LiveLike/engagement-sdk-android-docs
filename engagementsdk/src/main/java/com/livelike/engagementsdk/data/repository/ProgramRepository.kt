@@ -21,30 +21,32 @@ internal class ProgramRepository(
     private val userRepository: UserRepository
 ) : BaseRepository() {
 
-    lateinit var program: Program
+    internal var program: Program? = null
 
-    val rewardType: RewardsType by lazy { RewardsType.valueOf(program.rewardsType.toUpperCase()) }
+    internal val rewardType: RewardsType by lazy { RewardsType.valueOf(program?.rewardsType?.toUpperCase() ?: "none") }
     /**
      *  user points and other gamification stuff under this program.
      */
     val programGamificationProfileStream: Stream<ProgramGamificationProfile> = SubscriptionManager()
 
     suspend fun fetchProgramRank() {
-        if (program.rewardsType.equals(RewardsType.NONE.key)) {
-            logError { "Should not call if Gamification is disabled" }
-            return
-        }
+        program?.let { program ->
+            if (program.rewardsType.equals(RewardsType.NONE.key)) {
+                logError { "Should not call if Gamification is disabled" }
+                return
+            }
 
-        val result = dataClient.remoteCall<ProgramGamificationProfile>(
-            program.rankUrl,
-            RequestType.GET,
-            accessToken = userRepository.userAccessToken
-        )
-        if (result is Result.Success) {
-            withContext(Dispatchers.Main) {
-                val programGamification = result.data
-                logDebug { "points update : ${programGamification.points}, rank update: ${programGamification.rank}" }
-                programGamificationProfileStream.onNext(programGamification)
+            val result = dataClient.remoteCall<ProgramGamificationProfile>(
+                program.rankUrl,
+                RequestType.GET,
+                accessToken = userRepository.userAccessToken
+            )
+            if (result is Result.Success) {
+                withContext(Dispatchers.Main) {
+                    val programGamification = result.data
+                    logDebug { "points update : ${programGamification.points}, rank update: ${programGamification.rank}" }
+                    programGamificationProfileStream.onNext(programGamification)
+                }
             }
         }
     }

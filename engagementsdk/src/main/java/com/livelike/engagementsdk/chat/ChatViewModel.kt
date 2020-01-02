@@ -15,7 +15,6 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.launch
-import java.util.Random
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -32,7 +31,7 @@ internal class ChatViewModel(
     var currentChatRoom: ChatRoom? = null
     set(value) {
         field = value
-        chatAdapter.isPublicChat = currentChatRoom?.id == programRepository.program.defaultChatRoom?.id
+        chatAdapter.isPublicChat = currentChatRoom?.id == programRepository?.program?.defaultChatRoom?.id
     }
     internal var chatLoaded = false
         set(value) {
@@ -93,7 +92,8 @@ internal class ChatViewModel(
 
     private fun reportChatMessage(message: ChatMessage) {
         uiScope.launch {
-            dataClient.reportMessage(programRepository.program.id, message, userStream.latest()?.accessToken)
+            val programId = programRepository.program?.id
+            programId?.let { dataClient.reportMessage(programId, message, userStream.latest()?.accessToken) }
         }
     }
 
