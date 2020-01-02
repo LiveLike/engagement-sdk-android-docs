@@ -138,7 +138,7 @@ internal class ContentSession(
                 analyticService.trackConfiguration(configuration.name ?: "")
 
                 if (programId.isNotEmpty()) {
-                    llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
+                    llDataClient.getProgramData(configuration.programDetailUrlTemplate.replace(TEMPLATE_PROGRAM_ID, programId)) { program ->
                         if (program !== null) {
                             programRepository.program = program
                             userRepository.rewardType = program.rewardsType
