@@ -11,12 +11,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.utils.AndroidResource
+import pl.droidsonroids.gif.GifDrawable
+import pl.droidsonroids.gif.MultiCallback
 import java.io.IOException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
-import pl.droidsonroids.gif.GifDrawable
-import pl.droidsonroids.gif.MultiCallback
 
 fun String.findStickers(): Matcher {
     val regex = ":[^ :\\s]*:"
@@ -118,8 +118,14 @@ private fun setupBounds(
     overrideSize: Int
 ) {
     val padding = AndroidResource.dpToPx(8)
-    val ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()
-    val ratioHeight = drawable.intrinsicHeight.toFloat()/overrideSize.toFloat()
+    var ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()
+    var ratioHeight = drawable.intrinsicHeight.toFloat()/overrideSize.toFloat()
+
+    if (overrideSize == AndroidResource.dpToPx(65) && drawable.intrinsicWidth <= AndroidResource.dpToPx(65)) {
+        ratioWidth = 1f
+        ratioHeight = 1f
+    }
+
     if (edittext_chat_message != null && overrideSize > edittext_chat_message.width) {
         drawable.setBounds(
             0,

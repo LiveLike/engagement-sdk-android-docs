@@ -355,7 +355,7 @@ internal class ChatRecyclerAdapter(
                         when {
                             (isOnlyStickers && numberOfStickers == 1) -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null,callback, 200) {
+                                replaceWithStickers(s, context, stickerPackRepository, null,callback, AndroidResource.dpToPx(65)) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
