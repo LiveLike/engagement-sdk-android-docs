@@ -68,7 +68,6 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                         }
 
                         override fun onPageSelected(index: Int) {
-                            println("StickerKeyboardView.onPageSelected-> $index")
                             pager_tab.getTabAt(index)?.select()
                         }
                     })

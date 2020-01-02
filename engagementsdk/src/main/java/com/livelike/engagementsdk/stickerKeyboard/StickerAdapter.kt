@@ -62,6 +62,7 @@ class StickerCollectionViewHolder(
             }
             adapter.submitList(stickers)
         } else {
+            itemView.empty_recent_text?.visibility = View.GONE
             adapter.submitList(stickerPack.stickers)
         }
     }
@@ -110,11 +111,10 @@ class PagerSnapScrollListener(private val recyclerView: RecyclerView, private va
     }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        val layoutManager = recyclerView!!.layoutManager as LinearLayoutManager
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
 
         val firstPos = layoutManager.findFirstVisibleItemPosition()
         val lastPos = layoutManager.findLastVisibleItemPosition()
-
         val screenEndX = recyclerView.context.resources.displayMetrics.widthPixels
         val midScreen = (screenEndX / 2)
 
