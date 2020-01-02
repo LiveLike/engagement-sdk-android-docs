@@ -168,11 +168,11 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     }
 
     override fun createUserData(
-        clientId: String,
+        profileUrl: String,
         responseCallback: (livelikeUser: LiveLikeUser) -> Unit
     ) {
         client.newCall(
-            Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/")).addUserAgent()
+            Request.Builder().url(profileUrl).addUserAgent()
                 .post(
                     RequestBody.create(
                         null,
@@ -190,7 +190,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         responseData.extractStringOrEmpty("access_token"),
                         responseData.extractBoolean("widgets_enabled"),
                         responseData.extractBoolean("chat_enabled"),
-                        ""
+                        "",
+                        responseData.extractStringOrEmpty("url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -206,12 +207,12 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     }
 
     override fun getUserData(
-        clientId: String,
+        profileUrl: String,
         accessToken: String,
         responseCallback: (livelikeUser: LiveLikeUser?) -> Unit
     ) {
         client.newCall(
-            Request.Builder().url(BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"))
+            Request.Builder().url(profileUrl)
                 .addUserAgent()
                 .addAuthorizationBearer(accessToken)
                 .get()
@@ -226,7 +227,8 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         accessToken,
                         responseData.extractBoolean("widgets_enabled"),
                         responseData.extractBoolean("chat_enabled"),
-                        ""
+                        "",
+                        responseData.extractStringOrEmpty("url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -241,9 +243,9 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         })
     }
 
-    override suspend fun patchUser(clientId: String, userJson: JsonObject, accessToken: String?) {
+    override suspend fun patchUser(profileUrl: String, userJson: JsonObject, accessToken: String?) {
         remoteCall<LiveLikeUser>(
-            BuildConfig.CONFIG_URL.plus("applications/$clientId/profile/"),
+            profileUrl,
             RequestType.PATCH,
             RequestBody.create(
                 MediaType.parse("application/json; charset=utf-8"), userJson.toString()
