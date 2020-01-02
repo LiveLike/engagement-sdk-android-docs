@@ -118,21 +118,30 @@ private fun setupBounds(
     overrideSize: Int
 ) {
     val padding = AndroidResource.dpToPx(8)
-    val ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()
-    val ratioHeight = drawable.intrinsicHeight.toFloat()/overrideSize.toFloat()
+    var ratioWidth = drawable.intrinsicWidth.toFloat() / overrideSize.toFloat()
+    var ratioHeight = drawable.intrinsicHeight.toFloat() / overrideSize.toFloat()
+   
+    if (overrideSize == 200) {
+        if (drawable.intrinsicWidth > 200) {
+
+        } else {
+            ratioWidth = 1f
+            ratioHeight = 1f
+        }
+    }
     if (edittext_chat_message != null && overrideSize > edittext_chat_message.width) {
         drawable.setBounds(
             0,
             padding,
-            (edittext_chat_message.width*ratioWidth).roundToInt(),
-            edittext_chat_message.width+padding
+            (edittext_chat_message.width * ratioWidth).roundToInt(),
+            edittext_chat_message.width + padding
         )
     } else {
         drawable.setBounds(
             0,
             padding,
-            (overrideSize*ratioWidth).roundToInt(),
-            (overrideSize*ratioHeight).roundToInt()+padding
+            (overrideSize * ratioWidth).roundToInt(),
+            (overrideSize * ratioHeight).roundToInt() + padding
         )
     }
 }
