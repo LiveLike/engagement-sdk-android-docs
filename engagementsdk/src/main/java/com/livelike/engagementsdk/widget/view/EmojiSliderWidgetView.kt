@@ -58,7 +58,9 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                 titleTextView.gravity = Gravity.START
                 titleView.title = resource.question
                 if (image_slider.progress == ImageSlider.INITIAL_POSITION)
-                    image_slider.progress = entity.initialMagnitude?:0f
+                    entity.initialMagnitude?.let {
+                        image_slider.progress = it
+                    }
                 val size = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     36f,
