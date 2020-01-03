@@ -43,7 +43,8 @@ internal class EmojiSliderWidgetViewModel(
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val payload = event.message["payload"].asJsonObject
                     uiScope.launch {
-                        results.onNext(gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null)
+                        val data=gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
+                        results.onNext(data)
                     }
                 }
 
