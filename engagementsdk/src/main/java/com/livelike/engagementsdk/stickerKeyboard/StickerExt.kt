@@ -11,12 +11,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.utils.AndroidResource
+import pl.droidsonroids.gif.GifDrawable
+import pl.droidsonroids.gif.MultiCallback
 import java.io.IOException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
-import pl.droidsonroids.gif.GifDrawable
-import pl.droidsonroids.gif.MultiCallback
 
 fun String.findStickers(): Matcher {
     val regex = ":[^ :\\s]*:"
@@ -36,6 +36,8 @@ fun Matcher.countMatches(): Int {
         counter++
     return counter
 }
+
+const val stickerSize=65
 
 fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?,callback: MultiCallback?, size: Int = 50, onMatch: (() -> Unit)? = null) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
@@ -118,30 +120,28 @@ private fun setupBounds(
     overrideSize: Int
 ) {
     val padding = AndroidResource.dpToPx(8)
-    var ratioWidth = drawable.intrinsicWidth.toFloat() / overrideSize.toFloat()
-    var ratioHeight = drawable.intrinsicHeight.toFloat() / overrideSize.toFloat()
-   
-    if (overrideSize == 200) {
-        if (drawable.intrinsicWidth > 200) {
+    var ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()
+    var ratioHeight = drawable.intrinsicHeight.toFloat()/overrideSize.toFloat()
 
-        } else {
-            ratioWidth = 1f
-            ratioHeight = 1f
-        }
+    if (overrideSize == AndroidResource.dpToPx(stickerSize) && drawable.intrinsicWidth <= AndroidResource.dpToPx(
+            stickerSize)) {
+        ratioWidth = 1f
+        ratioHeight = 1f
     }
+
     if (edittext_chat_message != null && overrideSize > edittext_chat_message.width) {
         drawable.setBounds(
             0,
             padding,
-            (edittext_chat_message.width * ratioWidth).roundToInt(),
-            edittext_chat_message.width + padding
+            (edittext_chat_message.width*ratioWidth).roundToInt(),
+            edittext_chat_message.width+padding
         )
     } else {
         drawable.setBounds(
             0,
             padding,
-            (overrideSize * ratioWidth).roundToInt(),
-            (overrideSize * ratioHeight).roundToInt() + padding
+            (overrideSize*ratioWidth).roundToInt(),
+            (overrideSize*ratioHeight).roundToInt()+padding
         )
     }
 }
