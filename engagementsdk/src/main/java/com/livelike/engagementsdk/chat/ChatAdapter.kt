@@ -113,7 +113,7 @@ internal class ChatRecyclerAdapter(
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
                 if (reactionsAvailable || !isOwnMessage) {
-                    showFloatingUI(isOwnMessage, message?.myReaction,check() && adapterPosition==0)
+                    showFloatingUI(isOwnMessage, message?.myReaction,check() && adapterPosition == 0 && itemCount > 1)
                 }
             }
             return true
@@ -164,7 +164,7 @@ internal class ChatRecyclerAdapter(
             val locationOnScreen = v.getLocationOnScreen()
             var y = locationOnScreen.y - chatViewThemeAttribute.chatReactionY
             if (checkItemIsAtTop) {
-                y = locationOnScreen.y + v.height + 20
+                y = locationOnScreen.y + v.height + 30
             }
             ChatActionsPopupView(
                 v.context,
@@ -213,7 +213,10 @@ internal class ChatRecyclerAdapter(
                     }
                 }
             ).apply {
-                animationStyle = R.style.ChatReactionAnimation
+                animationStyle = when {
+                    checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
+                    else -> R.style.ChatReactionAnimation
+                }
                 showAtLocation(
                     v,
                     Gravity.NO_GRAVITY,
