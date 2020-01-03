@@ -13,7 +13,7 @@ internal class ChatReactionRepository(val programId: String) : BaseRepository() 
 
     var reactionList: List<Reaction>? = null
 
-    suspend fun getReactions(): List<Reaction>? {
+    private suspend fun getReactions(): List<Reaction>? {
         return null
 //        return withContext(Dispatchers.IO) {
 //            if (reactionList == null) {

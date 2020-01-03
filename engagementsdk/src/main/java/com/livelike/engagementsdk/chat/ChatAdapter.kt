@@ -69,6 +69,7 @@ internal class ChatRecyclerAdapter(
 
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    lateinit var check: () -> Boolean
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
@@ -111,8 +112,9 @@ internal class ChatRecyclerAdapter(
             if (isPublicChat) {
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
-                if (reactionsAvailable || !isOwnMessage)
-                    showFloatingUI(isOwnMessage, message?.myReaction)
+                if (reactionsAvailable || !isOwnMessage) {
+                    showFloatingUI(isOwnMessage, message?.myReaction,check() && adapterPosition==0)
+                }
             }
             return true
         }
@@ -153,9 +155,17 @@ internal class ChatRecyclerAdapter(
             hideFloatingUI()
         }
 
-        private fun showFloatingUI(isOwnMessage: Boolean, reaction: Reaction?=null) {
+        private fun showFloatingUI(
+            isOwnMessage: Boolean,
+            reaction: Reaction? = null,
+            checkItemIsAtTop: Boolean
+        ) {
             updateBackground(true)
             val locationOnScreen = v.getLocationOnScreen()
+            var y = locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+            if (checkItemIsAtTop) {
+                y = locationOnScreen.y + v.height + 20
+            }
             ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
@@ -208,13 +218,9 @@ internal class ChatRecyclerAdapter(
                     v,
                     Gravity.NO_GRAVITY,
                     locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
-                    locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+                    y
                 )
             }
-
-
-
-
         }
 
         private fun updateBackground(isSelected: Boolean) {
