@@ -106,9 +106,9 @@ internal class ChatRecyclerAdapter(
                 }.show()
             })
 
-        override fun onLongClick(p0: View?): Boolean {
+        override fun onLongClick(view: View?): Boolean {
             if (isPublicChat) {
-                val isOwnMessage = (p0?.tag as ChatMessage?)?.isFromMe ?: false
+                val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailableOnMyMessage = isOwnMessage && (chatReactionRepository.reactionList?.size ?: 0) > 0
                 if (reactionsAvailableOnMyMessage || !isOwnMessage)
                     showFloatingUI(isOwnMessage, message?.myReaction)
