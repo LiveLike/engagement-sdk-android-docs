@@ -35,6 +35,7 @@ import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.stickerKeyboard.stickerSize
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
@@ -355,7 +356,7 @@ internal class ChatRecyclerAdapter(
                         when {
                             (isOnlyStickers && numberOfStickers == 1) -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null,callback, 200) {
+                                replaceWithStickers(s, context, stickerPackRepository, null,callback, AndroidResource.dpToPx(stickerSize)) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
