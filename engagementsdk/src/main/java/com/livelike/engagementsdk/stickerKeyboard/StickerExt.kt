@@ -37,6 +37,8 @@ fun Matcher.countMatches(): Int {
     return counter
 }
 
+const val stickerSize=65
+
 fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?,callback: MultiCallback?, size: Int = 50, onMatch: (() -> Unit)? = null) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
@@ -121,7 +123,8 @@ private fun setupBounds(
     var ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()
     var ratioHeight = drawable.intrinsicHeight.toFloat()/overrideSize.toFloat()
 
-    if (overrideSize == AndroidResource.dpToPx(65) && drawable.intrinsicWidth <= AndroidResource.dpToPx(65)) {
+    if (overrideSize == AndroidResource.dpToPx(stickerSize) && drawable.intrinsicWidth <= AndroidResource.dpToPx(
+            stickerSize)) {
         ratioWidth = 1f
         ratioHeight = 1f
     }
