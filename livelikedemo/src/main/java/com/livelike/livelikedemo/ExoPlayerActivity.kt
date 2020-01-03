@@ -93,8 +93,8 @@ class ExoPlayerActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         themeCurrent = intent.getIntExtra("theme", R.style.AppTheme)
         this.setTheme(themeCurrent!!)
-
         setContentView(R.layout.activity_exo_player)
+        testKeyboardDismissUseCase(themeCurrent!!)
         playerView.layoutParams.width = Constraints.LayoutParams.MATCH_PARENT
 
         player = (application as LiveLikeApplication).createPlayer(playerView)
@@ -161,20 +161,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                     ).apply()
                     if (!isChatRoomJoined) {
                         val anotherChatRoomId = chatRoomIds[abs(which - 1)]
-                        val timestamp = (chatRoomLastTimeStampMap.get(anotherChatRoomId)
-                            ?: Calendar.getInstance().timeInMillis)
-                        privateGroupChatsession?.getMessageCount(
-                            anotherChatRoomId,
-                            timestamp,
-                            object :
-                                LiveLikeCallback<Long>() {
-                                override fun onResponse(result: Long?, error: String?) {
-                                    result?.let {
-                                        messageCount[anotherChatRoomId] =
-                                            (messageCount[anotherChatRoomId] ?: 0) + result
-                                    }
-                                }
-                            })
                         privateGroupChatsession?.joinChatRoom(anotherChatRoomId)
                         isChatRoomJoined = true
                     }
@@ -182,6 +168,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
                 create()
             }.show()
+        }
+    }
+
+    private fun testKeyboardDismissUseCase(themeCurrent: Int) {
+        if (themeCurrent == R.style.TurnerChatTheme) {
+            chat_view.sentMessageListener = {
+                chat_view.dismissKeyboard()
+            }
         }
     }
 
@@ -246,6 +240,23 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
                     (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString())
+                for (pair in chatRoomLastTimeStampMap) {
+                    val chatRoomId = pair.key
+                    val timestamp = (chatRoomLastTimeStampMap.get(chatRoomId)
+                        ?: Calendar.getInstance().timeInMillis)
+                    privateGroupChatsession?.getMessageCount(
+                        chatRoomId,
+                        timestamp,
+                        object :
+                            LiveLikeCallback<Long>() {
+                            override fun onResponse(result: Long?, error: String?) {
+                                result?.let {
+                                    messageCount[chatRoomId] =
+                                        (messageCount[chatRoomId] ?: 0) + result
+                                }
+                            }
+                        })
+                }
             }
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {

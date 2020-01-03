@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -35,6 +34,7 @@ import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.stickerKeyboard.stickerSize
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
@@ -84,7 +84,7 @@ internal class ChatRecyclerAdapter(
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
-        val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context,R.anim.bounce_animation)
+        private val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context,R.anim.bounce_animation)
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
@@ -107,13 +107,17 @@ internal class ChatRecyclerAdapter(
                 }.show()
             })
 
-        override fun onLongClick(p0: View?): Boolean {
-            if (isPublicChat)
-                showFloatingUI((p0?.tag as ChatMessage?)?.isFromMe ?: false,message?.myReaction)
+        override fun onLongClick(view: View?): Boolean {
+            if (isPublicChat) {
+                val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
+                val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
+                if (reactionsAvailable || !isOwnMessage)
+                    showFloatingUI(isOwnMessage, message?.myReaction)
+            }
             return true
         }
 
-        override fun onClick(p0: View?) {
+        override fun onClick(view: View?) {
             hideFloatingUI()
         }
 
@@ -355,7 +359,7 @@ internal class ChatRecyclerAdapter(
                         when {
                             (isOnlyStickers && numberOfStickers == 1) -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null,callback, 200) {
+                                replaceWithStickers(s, context, stickerPackRepository, null,callback, AndroidResource.dpToPx(stickerSize)) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }

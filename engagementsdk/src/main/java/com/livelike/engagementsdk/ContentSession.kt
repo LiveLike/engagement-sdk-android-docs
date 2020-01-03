@@ -57,6 +57,7 @@ internal class ContentSession(
         userRepository.setProfilePicUrl(url)
     }
 
+    private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
     private var chatRepository: ChatRepository? = null
     private var isGamificationEnabled: Boolean = false
@@ -127,6 +128,14 @@ internal class ContentSession(
         userRepository.currentUserStream.combineLatestOnce(sdkConfiguration).subscribe(javaClass.simpleName) {
             it?.let { pair ->
                 val configuration = pair.second
+                chatRepository = ChatRepository(
+                    configuration.pubNubKey,
+                    pair.first.accessToken,
+                    pair.first.id,
+                    analyticService,
+                    proxyMsgListener,
+                    configuration.pubnubPublishKey
+                )
                 analyticService =
                     MixpanelAnalytics(
                         applicationContext,
@@ -145,14 +154,6 @@ internal class ContentSession(
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
                             chatViewModel.currentChatRoom = program.defaultChatRoom
-                            chatRepository = ChatRepository(
-                                configuration.pubNubKey,
-                                pair.first.accessToken,
-                                pair.first.id,
-                                analyticService,
-                                proxyMsgListener,
-                                configuration.pubnubPublishKey
-                            )
                             if (privateChatRoomID.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
@@ -173,18 +174,18 @@ internal class ContentSession(
 
     private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit) {
         contentSessionScope.launch {
-            chatRepository?.let { chatRepository ->
                 configurationUserPairFlow.collect { pair ->
-                    val chatRoomResult =
-                        chatRepository.fetchChatRoom(chatRoomId, pair.first.chatRoomUrlTemplate)
-                    if (chatRoomResult is Result.Success) {
-                        chatRoomMap[chatRoomId] = chatRoomResult.data
-                        chatRoomResultCall.invoke(chatRoomResult.data)
-                    } else if (chatRoomResult is Result.Error) {
-                        logError {
-                            chatRoomResult.exception?.message
-                                ?: "error in fetching room id resource"
-                        }
+                    chatRepository?.let { chatRepository ->
+                        val chatRoomResult =
+                            chatRepository.fetchChatRoom(chatRoomId, pair.first.chatRoomUrlTemplate)
+                        if (chatRoomResult is Result.Success) {
+                            chatRoomMap[chatRoomId] = chatRoomResult.data
+                            chatRoomResultCall.invoke(chatRoomResult.data)
+                        } else if (chatRoomResult is Result.Error) {
+                            logError {
+                                chatRoomResult.exception?.message
+                                    ?: "error in fetching room id resource"
+                            }
                     }
                 }
             }
@@ -198,8 +199,11 @@ internal class ContentSession(
     ) {
         fetchChatRoom(chatRoomId) { chatRoom ->
             chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
-                delay(500)
-                privateGroupPubnubClient?.getMessageCount(channel, startTimestamp)?.run {
+                if (pubnubClientForMessageCount == null) {
+                    pubnubClientForMessageCount =
+                        chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
+                }
+                pubnubClientForMessageCount?.getMessageCount(channel, startTimestamp)?.run {
                     callback.processResult(this)
                 }
             }
@@ -217,7 +221,7 @@ internal class ContentSession(
         }
         fetchChatRoom(chatRoomId) {
             val channel = it.channels.chat[CHAT_PROVIDER]
-            delay(5000)
+            delay(1000)
             channel?.let { channel ->
                 privateGroupPubnubClient?.addChannelSubscription(channel, timestamp)
             }
@@ -237,6 +241,7 @@ internal class ContentSession(
 
         fetchChatRoom(chatRoomId) { chatRoom ->
             val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
+            delay(500)
             if (privateGroupPubnubClient == null) {
                 initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
             } else {
