@@ -84,7 +84,7 @@ internal class ChatRecyclerAdapter(
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
         private var message: ChatMessage? = null
-        val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context,R.anim.bounce_animation)
+        private val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context,R.anim.bounce_animation)
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
@@ -110,14 +110,14 @@ internal class ChatRecyclerAdapter(
         override fun onLongClick(view: View?): Boolean {
             if (isPublicChat) {
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
-                val reactionsAvailableOnMyMessage = isOwnMessage && (chatReactionRepository.reactionList?.size ?: 0) > 0
-                if (reactionsAvailableOnMyMessage || !isOwnMessage)
+                val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
+                if (reactionsAvailable || !isOwnMessage)
                     showFloatingUI(isOwnMessage, message?.myReaction)
             }
             return true
         }
 
-        override fun onClick(p0: View?) {
+        override fun onClick(view: View?) {
             hideFloatingUI()
         }
 
