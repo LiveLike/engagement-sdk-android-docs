@@ -2,151 +2,74 @@
 
 package com.livelike.engagementsdk.stickerKeyboard
 
-import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
+import android.support.annotation.Px
 import android.support.v7.recyclerview.extensions.ListAdapter
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.PagerSnapHelper
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addRecentSticker
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getRecentStickers
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_item.view.itemImage
-import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.empty_recent_text
-import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.rvStickers
+import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.empty_recent_text
+import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.rvStickers
 
-// Since this is an object collection, use a FragmentStatePagerAdapter,
-// and NOT a FragmentPagerAdapter.
-class StickerCollectionPagerAdapter(
-    fm: FragmentManager,
-    private val stickerPacks: List<StickerPack>,
-    val programId : String,
-    val onClickCallback: (Sticker) -> Unit
-) : FragmentStatePagerAdapter(fm) {
 
+class StickerCollectionAdapter(private val stickerPacks: List<StickerPack>, val programId : String,
+                               private val onClickCallback: (Sticker) -> Unit):RecyclerView.Adapter<StickerCollectionViewHolder>(){
     private val RECENT_STICKERS_POSITION = 0
-    private var recentStickerView: RecentStickerFragment? = null
 
-    override fun getCount(): Int = stickerPacks.size + 1
-
-    override fun getItem(i: Int): Fragment {
-        return if (i == RECENT_STICKERS_POSITION) {
-            recentStickerView = RecentStickerFragment().apply {
-                setOnClickListener(object : FragmentClickListener {
-                    override fun onClick(sticker: Sticker) {
-                        onClickCallback(sticker)
-                    }
-                })
-                arguments = Bundle().apply {
-                    putString(ARG_PROGRAM_ID, programId)
-                }
-                updateRecentStickers(programId)
-            }
-            return recentStickerView as Fragment
-        } else {
-            StickerObjectFragment().apply {
-                setOnClickListener(object : FragmentClickListener {
-                    override fun onClick(sticker: Sticker) {
-                        onClickCallback(sticker)
-                    }
-                })
-                arguments = Bundle().apply {
-                    putParcelableArray(ARG_OBJECT, stickerPacks[i - 1].stickers.toTypedArray())
-                }
-            }
+    override fun onCreateViewHolder(viewGroup: ViewGroup, index: Int): StickerCollectionViewHolder {
+        return StickerCollectionViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.livelike_sticker_keyboard_rv,viewGroup,false)) { sticker->
+            notifyDataSetChanged()
+            onClickCallback(sticker)
         }
     }
 
-    fun refreshRecents() {
-        recentStickerView?.updateRecentStickers(programId)
+    override fun getItemCount(): Int = stickerPacks.size
+
+    override fun onBindViewHolder(viewHolder: StickerCollectionViewHolder, index: Int) {
+        viewHolder.bind(stickerPacks[index],index==RECENT_STICKERS_POSITION,programId)
     }
 }
 
-private const val ARG_OBJECT = "stickerList"
-private const val ARG_PROGRAM_ID = "programID"
+class StickerCollectionViewHolder(
+    itemView: View,
+    var onClickCallback: (Sticker) -> Unit
+):RecyclerView.ViewHolder(itemView){
 
-interface FragmentClickListener {
-    fun onClick(sticker: Sticker)
-}
-
-class RecentStickerFragment : Fragment() {
-
-    private var listener: FragmentClickListener? = null
-    private val adapter = StickerAdapter { sticker -> listener?.onClick(sticker) }
-
-    fun setOnClickListener(listener: FragmentClickListener) {
-        this.listener = listener
+    init {
+        itemView.rvStickers.layoutManager = GridLayoutManager(itemView.context, 6)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.livelike_sticker_keyboard_rv, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val programId = arguments?.takeIf { it.containsKey(ARG_PROGRAM_ID) }?.getString(ARG_PROGRAM_ID)
-            ?: ""
-        rvStickers.layoutManager = GridLayoutManager(context, 6)
-        rvStickers.adapter = adapter
-        super.onViewCreated(view, savedInstanceState)
-        updateRecentStickers(programId)
-    }
-
-    fun updateRecentStickers(programId : String) {
-        val stickers = getRecentStickers(programId)
-        empty_recent_text?.visibility = if (stickers.isEmpty()) {
+    fun bind(stickerPack: StickerPack, isRecent: Boolean, programId: String) {
+        val adapter = StickerAdapter { sticker -> onClickCallback(sticker) }
+        itemView.rvStickers.adapter = adapter
+        if (isRecent) {
+            val stickers = getRecentStickers(programId)
+            itemView.empty_recent_text?.visibility = if (stickers.isEmpty()) {
                 View.VISIBLE
             } else {
                 View.GONE
             }
-        adapter.submitList(stickers)
+            adapter.submitList(stickers)
+        } else {
+            itemView.empty_recent_text?.visibility = View.GONE
+            adapter.submitList(stickerPack.stickers)
+        }
     }
 }
 
-class StickerObjectFragment : Fragment() {
-    private var listener: FragmentClickListener? = null
-    private var stickers: Array<Sticker>? = null
-
-    fun setOnClickListener(listener: FragmentClickListener) {
-        this.listener = listener
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.livelike_sticker_keyboard_rv, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        stickers = arguments?.takeIf { it.containsKey(ARG_OBJECT) }?.let {
-            it.getParcelableArray(ARG_OBJECT) as Array<Sticker>
-        }
-
-        if (stickers.isNullOrEmpty() && savedInstanceState != null) {
-            stickers = savedInstanceState.getParcelableArray(ARG_OBJECT) as Array<Sticker>
-        }
-
-        rvStickers.layoutManager = GridLayoutManager(context, 6)
-        val adapter = StickerAdapter { sticker -> listener?.onClick(sticker) }
-        rvStickers.adapter = adapter
-        adapter.submitList(stickers?.toList())
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArray(ARG_OBJECT, stickers)
-    }
+interface FragmentClickListener {
+    fun onClick(sticker: Sticker)
 }
 
 class StickerDiffCallback : DiffUtil.ItemCallback<Sticker>() {
@@ -174,6 +97,142 @@ class StickerAdapter(private val onClick: (Sticker) -> Unit) : ListAdapter<Stick
             view.itemImage.setOnClickListener {
                 onClick(sticker)
                 addRecentSticker(sticker)
+            }
+        }
+    }
+}
+
+class PagerSnapScrollListener(private val recyclerView: RecyclerView, private val externalListener: RVPagerStateListener, maxPages: Int) : RecyclerView.OnScrollListener() {
+    var pageStates: MutableList<VisiblePageState> = ArrayList(maxPages)
+    var pageStatesPool = List(maxPages) { VisiblePageState(0, recyclerView, 0, 0, 0f) }
+
+    init {
+        recyclerView.addOnScrollListener(this)
+    }
+
+    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+        val firstPos = layoutManager.findFirstVisibleItemPosition()
+        val lastPos = layoutManager.findLastVisibleItemPosition()
+        val screenEndX = recyclerView.context.resources.displayMetrics.widthPixels
+        val midScreen = (screenEndX / 2)
+
+        for (position in firstPos..lastPos) {
+            val view = layoutManager.findViewByPosition(position)!!
+            val viewWidth = view.measuredWidth
+            val viewStartX = view.x
+            val viewEndX = viewStartX + viewWidth
+            if (viewEndX >= 0 && viewStartX <= screenEndX) {
+                val viewHalfWidth = view.measuredWidth / 2f
+
+                val pageState = pageStatesPool[position - firstPos]
+                pageState.index = position
+                pageState.view = view
+                pageState.viewCenterX = (viewStartX + viewWidth / 2f).toInt()
+                pageState.distanceToSettledPixels = (pageState.viewCenterX - midScreen)
+                pageState.distanceToSettled = (pageState.viewCenterX + viewHalfWidth) / (midScreen + viewHalfWidth)
+                pageStates.add(pageState)
+            }
+        }
+        externalListener.onPageScroll(pageStates)
+
+        // Clear this in advance so as to avoid holding refs to views.
+        pageStates.clear()
+    }
+
+    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+        externalListener.onScrollStateChanged(statesArray[newState])
+    }
+
+    companion object {
+        val statesArray = listOf(RVPageScrollState.Idle, RVPageScrollState.Dragging, RVPageScrollState.Settling)
+    }
+}
+
+sealed class RVPageScrollState {
+    object Idle : RVPageScrollState()
+    object Dragging : RVPageScrollState()
+    object Settling : RVPageScrollState()
+}
+
+data class VisiblePageState(
+    var index: Int,
+    var view: View,
+    @Px var viewCenterX: Int,
+    @Px var distanceToSettledPixels: Int,
+    var distanceToSettled: Float)
+
+interface RVPagerStateListener {
+    fun onPageScroll(pagesState: List<VisiblePageState>) {}
+    fun onScrollStateChanged(state: RVPageScrollState) {}
+    fun onPageSelected(index: Int) {}
+}
+
+open class RVPagerSnapHelperListenable(private val maxPages: Int = 3) {
+    fun attachToRecyclerView(recyclerView: RecyclerView, listener: RVPagerStateListener) {
+        assertRecyclerViewSetup(recyclerView)
+        setUpSnapHelper(recyclerView, listener)
+        setUpScrollListener(recyclerView, listener)
+    }
+
+    private fun setUpScrollListener(recyclerView: RecyclerView, listener: RVPagerStateListener) =
+        PagerSnapScrollListener(recyclerView, listener, maxPages)
+
+    private fun setUpSnapHelper(recyclerView: RecyclerView, listener: RVPagerStateListener) =
+        PagerSnapHelperVerbose(recyclerView, listener).attachToRecyclerView(recyclerView)
+
+    private fun assertRecyclerViewSetup(recyclerView: RecyclerView) {
+        if (recyclerView.layoutManager !is LinearLayoutManager) {
+            throw IllegalArgumentException("RVPagerSnapHelperListenable can only work with a linear layout manager")
+        }
+
+        if ((recyclerView.layoutManager as LinearLayoutManager).orientation != LinearLayoutManager.HORIZONTAL) {
+            throw IllegalArgumentException("RVPagerSnapHelperListenable can only work with a horizontal orientation")
+        }
+    }
+}
+
+class PagerSnapHelperVerbose(private val recyclerView: RecyclerView, private val externalListener: RVPagerStateListener)
+    : PagerSnapHelper()
+    , ViewTreeObserver.OnGlobalLayoutListener {
+
+    private var lastPage = RecyclerView.NO_POSITION
+
+    init {
+        recyclerView.viewTreeObserver.addOnGlobalLayoutListener(this)
+    }
+
+    override fun onGlobalLayout() {
+        val position = (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+        if (position != RecyclerView.NO_POSITION) {
+            notifyNewPageIfNeeded(position)
+            recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        }
+    }
+
+    override fun findSnapView(layoutManager: RecyclerView.LayoutManager?): View? {
+        val view = super.findSnapView(layoutManager)
+        view?.let {
+            notifyNewPageIfNeeded(recyclerView.getChildAdapterPosition(view))
+        }
+        return view
+    }
+
+    override fun findTargetSnapPosition(layoutManager: RecyclerView.LayoutManager?, velocityX: Int, velocityY: Int): Int {
+        val position = super.findTargetSnapPosition(layoutManager, velocityX, velocityY)
+
+        if (position < recyclerView.adapter?.itemCount?:0) { // Making up for a "bug" in the original snap-helper.
+            notifyNewPageIfNeeded(position)
+        }
+        return position
+    }
+
+    private fun notifyNewPageIfNeeded(page: Int?) {
+        page?.let {
+            if (page != lastPage) {
+                this.externalListener.onPageSelected(page)
+                lastPage = page
             }
         }
     }
