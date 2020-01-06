@@ -12,6 +12,7 @@ import android.text.Spannable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -20,6 +21,7 @@ import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EpochTime
@@ -31,6 +33,8 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
@@ -57,9 +61,7 @@ import kotlinx.android.synthetic.main.chat_user_profile_bar.view.user_profile_tv
 import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chat_view
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_img
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_lay
-import kotlinx.android.synthetic.main.chat_view.view.chatdisplay_empty_txt
+import kotlinx.android.synthetic.main.chat_view.view.chatdisplayBack
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
@@ -93,21 +95,18 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
-    var closeKeyboardOnSend: Boolean
-        get() = chatAttribute.closeKeyboardOnSend
-        set(value) {
-            chatAttribute.closeKeyboardOnSend = value
-            edittext_chat_message.imeOptions = when (chatAttribute.closeKeyboardOnSend) {
-                true -> EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_EXTRACT_UI
-                else -> EditorInfo.IME_ACTION_NONE or EditorInfo.IME_FLAG_NO_EXTRACT_UI
-            }
-        }
-
     private var session: LiveLikeContentSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
-
     private var currentUser: LiveLikeUser? = null
+
+    var emptyChatBackgroundView: View? = null
+        set(view) {
+            field = view
+            if (chatdisplayBack.childCount > 1)
+                chatdisplayBack.removeViewAt(1)
+            initEmptyView()
+        }
 
     /** Boolean option to enable / disable the profile display inside chat view */
     var displayUserProfile: Boolean = false
@@ -132,7 +131,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             0, 0
         ).apply {
             try {
-                displayUserProfile = getBoolean(R.styleable.LiveLike_ChatView_displayUserProfile, false)
+                displayUserProfile =
+                    getBoolean(R.styleable.LiveLike_ChatView_displayUserProfile, false)
                 chatAttribute.initAttributes(context, this)
             } finally {
                 recycle()
@@ -166,7 +166,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             chatDisplayBackgroundRes?.let {
                 chatdisplay.background = it
             }
-            this@ChatView.closeKeyboardOnSend = closeKeyboardOnSend
             chat_input_background.background = chatInputViewBackgroundRes
             chat_input_border.background = chatInputBackgroundRes
             edittext_chat_message.setTextColor(chatInputTextColor)
@@ -201,6 +200,21 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 sendImageTintColor,
                 android.graphics.PorterDuff.Mode.MULTIPLY
             )
+            initEmptyView()
+        }
+    }
+
+    private fun initEmptyView() {
+        emptyChatBackgroundView?.let {
+            if (chatdisplayBack.childCount == 1) {
+                val layoutParam = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
+                layoutParam.gravity = Gravity.CENTER
+                chatdisplayBack.addView(emptyChatBackgroundView, layoutParam)
+            }
+            emptyChatBackgroundView?.visibility = View.GONE
         }
     }
 
@@ -294,7 +308,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         s as Spannable,
                         this@ChatView.context,
                         stickerPackRepository,
-                        edittext_chat_message
+                        edittext_chat_message,null
                     )
                 }
 
@@ -319,24 +333,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun checkEmptyChat() {
-        chatAttribute.chatEmptyBackgroundImage?.let {
-            chatdisplay_empty_img.setImageDrawable(it)
-            toggleVisibilityEmptyChat()
+        emptyChatBackgroundView?.let {
+            if ((viewModel?.messageList?.size ?: 0) == 0)
+                it.visibility = View.VISIBLE
+            else
+                it.visibility = View.GONE
         }
-
-        chatAttribute.chatEmptyBackgroundText?.let {
-            chatdisplay_empty_txt.text = it
-            chatdisplay_empty_txt.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatAttribute.chatEmptyBackgroundTextSize)
-            chatdisplay_empty_txt.setTextColor(chatAttribute.chatEmptyBackgroundTextColor)
-            toggleVisibilityEmptyChat()
-        }
-    }
-
-    private fun toggleVisibilityEmptyChat() {
-        if ((viewModel?.messageList?.size ?: 0) == 0)
-            chatdisplay_empty_lay.visibility = View.VISIBLE
-        else
-            chatdisplay_empty_lay.visibility = View.GONE
     }
 
     private fun initStickerKeyboard(
@@ -431,7 +433,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             v.getLocationOnScreen(scrcoords)
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
-            val outsideStickerKeyboardBound = (v.bottom - sticker_keyboard.height - button_chat_send.height)
+            val outsideStickerKeyboardBound =
+                (v.bottom - sticker_keyboard.height - button_chat_send.height)
             // Added check for height greater than 0 so bound position for touch should be above the send icon
             if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
                 hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
@@ -524,10 +527,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
-                    if (!hasFocus) {
-                        if (chatAttribute.closeKeyboardOnSend)
-                            hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
-                    }
                 }
 
                 // Send message on tap Enter
@@ -575,25 +574,34 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
-            val inputManager =
-                context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputManager.hideSoftInputFromWindow(
-                edittext_chat_message.windowToken,
-                0
-            )
+        val inputManager =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManager.hideSoftInputFromWindow(
+            edittext_chat_message.windowToken,
+            0
+        )
 
-            session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
-            setBackButtonInterceptor(this)
+        session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
+        setBackButtonInterceptor(this)
+    }
+
+    /**
+     * use this to listen messages sent from this view
+     **/
+    var sentMessageListener: ((message: LiveLikeChatMessage) -> Unit)? = null
+
+    /**
+     * Use this function to hide any soft and sticker keyboards over the view.
+     **/
+    fun dismissKeyboard() {
+        hideKeyboard(KeyboardHideReason.EXPLICIT_CALL)
+        hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
     }
 
     private fun sendMessageNow() {
         if (edittext_chat_message.text.isBlank()) {
             // Do nothing if the message is blank or empty
             return
-        }
-        if (chatAttribute.closeKeyboardOnSend) {
-            hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
-            hideStickerKeyboard(KeyboardHideReason.MESSAGE_SENT)
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
@@ -605,6 +613,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.userPic,
             isFromMe = true
         ).let {
+            sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
                 chatListener?.onChatMessageSend(it, timeData)

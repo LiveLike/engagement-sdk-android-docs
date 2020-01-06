@@ -8,8 +8,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
-import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
+import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
@@ -19,18 +19,19 @@ import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
-    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>, var theme: Int, var keyboardClose: Boolean = true)
+    data class PlayerInfo(val playerName: String, val cls: KClass<out Activity>, var theme: Int, var keyboardClose: Boolean = true,var showNotification:Boolean=true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val channelManager = (application as LiveLikeApplication).channelManager
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class, R.style.AppTheme_NoActionBar, true)
-        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.AppTheme_NoActionBar, false)
+        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class, R.style.Default, true)
+        val drawerDemoActivity = PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.Default, false)
 
         layout_side_panel.setOnClickListener {
             startActivity(playerDetailIntent(player))
@@ -38,6 +39,11 @@ class MainActivity : AppCompatActivity() {
 
         layout_overlay.setOnClickListener {
             startActivity(playerDetailIntent(drawerDemoActivity))
+        }
+
+        chk_show_dismiss.isChecked = player.showNotification
+        chk_show_dismiss.setOnCheckedChangeListener { buttonView, isChecked ->
+            player.showNotification = isChecked
         }
 
         events_button.setOnClickListener {
@@ -52,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
         themes_button.setOnClickListener {
-            val channels = arrayListOf("Default", "Turner")
+            val channels = arrayListOf("Default", "Turner","Custom Chat Reaction")
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a theme!")
                 setItems(channels.toTypedArray()) { _, which ->
@@ -60,9 +66,10 @@ class MainActivity : AppCompatActivity() {
                     (application as LiveLikeApplication).setTheme()
                     themes_label.text = channels[which]
                     player.theme = when (which) {
-                        0 -> R.style.AppTheme_NoActionBar
+                        0 -> R.style.Default
                         1 -> R.style.TurnerChatTheme
-                        else -> R.style.AppTheme_NoActionBar
+                        2 -> R.style.CustomChatReactionTheme
+                        else -> R.style.Default
                     }
                 }
                 create()
@@ -112,6 +119,7 @@ class MainActivity : AppCompatActivity() {
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent = Intent(this, player.cls.java)
     intent.putExtra("theme", player.theme)
+    intent.putExtra("showNotification",player.showNotification)
     intent.putExtra("keyboardClose", when (player.theme) {
         R.style.TurnerChatTheme -> player.keyboardClose
         else -> true

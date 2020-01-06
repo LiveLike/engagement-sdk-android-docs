@@ -31,7 +31,7 @@ internal class ChatViewModel(
     var currentChatRoom: ChatRoom? = null
     set(value) {
         field = value
-        chatAdapter.isPublicChat = currentChatRoom?.id == programRepository.program.defaultChatRoom?.id
+        chatAdapter.isPublicChat = currentChatRoom?.id == programRepository?.program?.defaultChatRoom?.id
     }
     internal var chatLoaded = false
         set(value) {
@@ -92,7 +92,8 @@ internal class ChatViewModel(
 
     private fun reportChatMessage(message: ChatMessage) {
         uiScope.launch {
-            dataClient.reportMessage(programRepository.program.id, message, userStream.latest()?.accessToken)
+            val programId = programRepository.program?.id
+            programId?.let { dataClient.reportMessage(programId, message, userStream.latest()?.accessToken) }
         }
     }
 

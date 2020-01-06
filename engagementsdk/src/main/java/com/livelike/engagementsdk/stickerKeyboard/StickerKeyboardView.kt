@@ -4,8 +4,8 @@ import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Context
 import android.support.constraint.ConstraintLayout
-import android.support.v4.view.ViewPager
-import android.support.v7.app.AppCompatActivity
+import android.support.design.widget.TabLayout
+import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +15,9 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.scanForActivity
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
+
 
 class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) : ConstraintLayout(context, attributes) {
     private lateinit var viewModel: StickerKeyboardViewModel
@@ -50,29 +50,54 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
         viewModel.stickerPacks.subscribe(javaClass) {
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
-                val stickerCollectionPagerAdapter = StickerCollectionPagerAdapter((context.scanForActivity() as AppCompatActivity).supportFragmentManager, stickerPacks, stickerPackRepository.programId) { s -> listener?.onClick(s) }
+                val stickerCollectionPagerAdapter = StickerCollectionAdapter(
+                    stickerPacks,
+                    stickerPackRepository.programId
+                ) { s -> listener?.onClick(s) }
+                pager.layoutManager =
+                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 pager.adapter = stickerCollectionPagerAdapter
-                pager_tab.setupWithViewPager(pager)
-                pager_tab.getTabAt(0)?.customView = createTabItemView()
-                for (i in 0 until pager_tab.tabCount) {
-                    pager_tab.getTabAt(i + 1)?.customView = createTabItemView(stickerPacks[i].file)
-                }
-                pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-                    override fun onPageScrollStateChanged(state: Int) {
+                RVPagerSnapHelperListenable().attachToRecyclerView(
+                    pager,
+                    object : RVPagerStateListener {
+                        override fun onPageScroll(pagesState: List<VisiblePageState>) {
+
+                        }
+
+                        override fun onScrollStateChanged(state: RVPageScrollState) {
+                        }
+
+                        override fun onPageSelected(index: Int) {
+                            pager_tab.getTabAt(index)?.select()
+                        }
+                    })
+
+                val listener = object : TabLayout.BaseOnTabSelectedListener<TabLayout.Tab> {
+                    override fun onTabReselected(p0: TabLayout.Tab?) {
+
                     }
 
-                    override fun onPageScrolled(
-                        position: Int,
-                        positionOffset: Float,
-                        positionOffsetPixels: Int
-                    ) {}
+                    override fun onTabUnselected(p0: TabLayout.Tab?) {
 
-                    override fun onPageSelected(position: Int) {
-                        if (position == 0) {
-                            stickerCollectionPagerAdapter.refreshRecents()
+                    }
+
+                    override fun onTabSelected(p0: TabLayout.Tab?) {
+                        p0?.let {
+                            pager.smoothScrollToPosition(p0.position)
                         }
                     }
-                })
+
+                }
+                pager_tab.addOnTabSelectedListener(listener)
+                for (i in 0..stickerPacks.size) {
+                    val tab = pager_tab.newTab()
+                    if (i == 0) {
+                        tab.customView = createTabItemView()
+                    } else {
+                        tab.customView = createTabItemView(stickerPacks[i].file)
+                    }
+                    pager_tab.addTab(tab)
+                }
             }
             viewModel.preload(context)
         }
