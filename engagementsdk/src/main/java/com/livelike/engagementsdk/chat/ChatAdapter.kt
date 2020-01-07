@@ -69,7 +69,7 @@ internal class ChatRecyclerAdapter(
 
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
-    lateinit var check: () -> Boolean
+    lateinit var checkListIsAtTop: () -> Boolean
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
@@ -113,7 +113,7 @@ internal class ChatRecyclerAdapter(
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
                 if (reactionsAvailable || !isOwnMessage) {
-                    showFloatingUI(isOwnMessage, message?.myReaction,check() && adapterPosition == 0 && itemCount > 1)
+                    showFloatingUI(isOwnMessage, message?.myReaction,checkListIsAtTop() && adapterPosition == 0 && itemCount > 1)
                 }
             }
             return true
