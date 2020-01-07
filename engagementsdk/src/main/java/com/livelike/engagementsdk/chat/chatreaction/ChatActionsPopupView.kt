@@ -158,6 +158,6 @@ internal class ChatActionsPopupView(
             }
     }
 }
-interface SelectReactionListener{
+internal interface SelectReactionListener{
     fun onSelectReaction(reaction: Reaction?)
 }
