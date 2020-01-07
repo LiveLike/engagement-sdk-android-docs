@@ -63,6 +63,8 @@ interface AnalyticsService {
     fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)
     fun trackPointThisProgram(points: Int)
     fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)
+    fun trackChatReactionPanelOpen(messageId:String)
+    fun trackChatReactionSelected(messageId: String,reactionId:String,reactionAction:String)
 }
 
 class MockAnalyticsService(private val programId: String = "") : AnalyticsService {
@@ -73,6 +75,18 @@ class MockAnalyticsService(private val programId: String = "") : AnalyticsServic
 
     override fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int) {
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$badgeId $badgeLevel")
+    }
+
+    override fun trackChatReactionPanelOpen(messageId: String) {
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$messageId")
+    }
+
+    override fun trackChatReactionSelected(
+        messageId: String,
+        reactionId: String,
+        reactionAction: String
+    ) {
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $reactionAction")
     }
 
     override fun registerSuperProperty(
@@ -267,6 +281,8 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         const val KEY_POINT_TUTORIAL_COMPLETED = "Points Tutorial Completed"
         const val KEY_REASON = "Reason"
         const val KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED = "Badge Collected Button Pressed"
+        const val KEY_EVENT_CHAT_REACTION_PANEL_OPEN = "Chat Reaction Panel Opened"
+        const val KEY_EVENT_CHAT_REACTION_SELECTED = "Chat Reaction Selected"
     }
 
     private var parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
@@ -476,6 +492,26 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         properties.put("Level", badgeLevel)
         mixpanel.track(KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED, properties)
         eventObservers[programId]?.invoke(KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED, properties)
+    }
+
+    override fun trackChatReactionPanelOpen(messageId: String) {
+        val properties = JSONObject()
+        properties.put("messageId", messageId)
+        mixpanel.track(KEY_EVENT_CHAT_REACTION_PANEL_OPEN, properties)
+        eventObservers[programId]?.invoke(KEY_EVENT_CHAT_REACTION_PANEL_OPEN, properties)
+    }
+
+    override fun trackChatReactionSelected(
+        messageId: String,
+        reactionId: String,
+        reactionAction: String
+    ) {
+        val properties = JSONObject()
+        properties.put("messageId", messageId)
+        properties.put("reactionId", reactionId)
+        properties.put("reactionAction", reactionAction)
+        mixpanel.track(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
+        eventObservers[programId]?.invoke(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
     }
 
     override fun registerSuperProperty(

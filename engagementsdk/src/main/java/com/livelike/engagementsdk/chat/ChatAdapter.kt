@@ -198,15 +198,24 @@ internal class ChatRecyclerAdapter(
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
                         message?.apply {
+                            val reactionId: String?
+                            val reactionAction: String
                             if (reaction == null) {
                                 reactionsList.remove(myReaction)
+                                reactionId = myReaction?.name
                                 myReaction = null
+                                reactionAction = "Removed"
                             } else {
-                                if (myReaction != null) {
-                                    reactionsList.remove(myReaction!!)
+                                myReaction?.let {
+                                    reactionsList.remove(it)
                                 }
+                                reactionId = reaction.name
                                 myReaction = reaction
                                 reactionsList.add(reaction)
+                                reactionAction = "Added"
+                            }
+                            reactionId?.let {
+                                analyticsService.trackChatReactionSelected(id, it, reactionAction)
                             }
                             notifyItemChanged(adapterPosition)
                         }
@@ -223,6 +232,9 @@ internal class ChatRecyclerAdapter(
                     locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
                     y
                 )
+                message?.id?.let {
+                    analyticsService.trackChatReactionPanelOpen(it)
+                }
             }
         }
 
