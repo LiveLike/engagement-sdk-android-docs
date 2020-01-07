@@ -196,15 +196,17 @@ internal class ChatRecyclerAdapter(
                                 myReaction = null
                                 reactionAction = "Removed"
                             } else {
-                                if (myReaction != null) {
-                                    reactionsList.remove(myReaction!!)
+                                myReaction?.let {
+                                    reactionsList.remove(it)
                                 }
                                 reactionId = reaction.name
                                 myReaction = reaction
                                 reactionsList.add(reaction)
                                 reactionAction = "Added"
                             }
-                            analyticsService.trackChatReactionSelected(id, reactionId!!,reactionAction)
+                            reactionId?.let {
+                                analyticsService.trackChatReactionSelected(id, it, reactionAction)
+                            }
                             notifyItemChanged(adapterPosition)
                         }
                     }
@@ -217,7 +219,9 @@ internal class ChatRecyclerAdapter(
                     locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
                     locationOnScreen.y - chatViewThemeAttribute.chatReactionY
                 )
-                analyticsService.trackChatReactionPanelOpen(message?.id!!)
+                message?.id?.let {
+                    analyticsService.trackChatReactionPanelOpen(it)
+                }
             }
         }
 
