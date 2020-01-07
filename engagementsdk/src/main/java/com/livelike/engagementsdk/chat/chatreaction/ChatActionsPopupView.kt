@@ -164,6 +164,7 @@ internal class ChatActionsPopupView(
                 View.INVISIBLE
             }
     }
+
 }
 interface SelectReactionListener{
     fun onSelectReaction(reaction: Reaction?)
