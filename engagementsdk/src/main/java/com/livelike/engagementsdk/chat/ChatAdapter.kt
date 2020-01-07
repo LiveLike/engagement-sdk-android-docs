@@ -69,6 +69,7 @@ internal class ChatRecyclerAdapter(
 
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    lateinit var checkListIsAtTop: () -> Boolean
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
@@ -111,8 +112,9 @@ internal class ChatRecyclerAdapter(
             if (isPublicChat) {
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
-                if (reactionsAvailable || !isOwnMessage)
-                    showFloatingUI(isOwnMessage, message?.myReaction)
+                if (reactionsAvailable || !isOwnMessage) {
+                    showFloatingUI(isOwnMessage, message?.myReaction,checkListIsAtTop() && adapterPosition == 0 && itemCount > 1)
+                }
             }
             return true
         }
@@ -153,9 +155,17 @@ internal class ChatRecyclerAdapter(
             hideFloatingUI()
         }
 
-        private fun showFloatingUI(isOwnMessage: Boolean, reaction: Reaction?=null) {
+        private fun showFloatingUI(
+            isOwnMessage: Boolean,
+            reaction: Reaction? = null,
+            checkItemIsAtTop: Boolean
+        ) {
             updateBackground(true)
             val locationOnScreen = v.getLocationOnScreen()
+            var y = locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+            if (checkItemIsAtTop) {
+                y = locationOnScreen.y + v.height + 30
+            }
             ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
@@ -212,12 +222,15 @@ internal class ChatRecyclerAdapter(
                     }
                 }
             ).apply {
-                animationStyle = R.style.ChatReactionAnimation
+                animationStyle = when {
+                    checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
+                    else -> R.style.ChatReactionAnimation
+                }
                 showAtLocation(
                     v,
                     Gravity.NO_GRAVITY,
                     locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
-                    locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+                    y
                 )
                 message?.id?.let {
                     analyticsService.trackChatReactionPanelOpen(it)
