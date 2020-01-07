@@ -69,6 +69,7 @@ internal class ChatRecyclerAdapter(
 
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    lateinit var checkListIsAtTop: () -> Boolean
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
@@ -111,8 +112,9 @@ internal class ChatRecyclerAdapter(
             if (isPublicChat) {
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
-                if (reactionsAvailable || !isOwnMessage)
-                    showFloatingUI(isOwnMessage, message?.myReaction)
+                if (reactionsAvailable || !isOwnMessage) {
+                    showFloatingUI(isOwnMessage, message?.myReaction,checkListIsAtTop() && adapterPosition == 0 && itemCount > 1)
+                }
             }
             return true
         }
@@ -153,9 +155,17 @@ internal class ChatRecyclerAdapter(
             hideFloatingUI()
         }
 
-        private fun showFloatingUI(isOwnMessage: Boolean, reaction: Reaction?=null) {
+        private fun showFloatingUI(
+            isOwnMessage: Boolean,
+            reaction: Reaction? = null,
+            checkItemIsAtTop: Boolean
+        ) {
             updateBackground(true)
             val locationOnScreen = v.getLocationOnScreen()
+            var y = locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+            if (checkItemIsAtTop) {
+                y = locationOnScreen.y + v.height + 30
+            }
             ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
@@ -182,28 +192,43 @@ internal class ChatRecyclerAdapter(
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
                         message?.apply {
+                            val reactionId: String?
+                            val reactionAction: String
                             if (reaction == null) {
                                 reactionsList.remove(myReaction)
+                                reactionId = myReaction?.name
                                 myReaction = null
+                                reactionAction = "Removed"
                             } else {
-                                if (myReaction != null) {
-                                    reactionsList.remove(myReaction!!)
+                                myReaction?.let {
+                                    reactionsList.remove(it)
                                 }
+                                reactionId = reaction.name
                                 myReaction = reaction
                                 reactionsList.add(reaction)
+                                reactionAction = "Added"
+                            }
+                            reactionId?.let {
+                                analyticsService.trackChatReactionSelected(id, it, reactionAction)
                             }
                             notifyItemChanged(adapterPosition)
                         }
                     }
                 }
             ).apply {
-                animationStyle = R.style.ChatReactionAnimation
+                animationStyle = when {
+                    checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
+                    else -> R.style.ChatReactionAnimation
+                }
                 showAtLocation(
                     v,
                     Gravity.NO_GRAVITY,
                     locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
-                    locationOnScreen.y - chatViewThemeAttribute.chatReactionY
+                    y
                 )
+                message?.id?.let {
+                    analyticsService.trackChatReactionPanelOpen(it)
+                }
             }
         }
 
