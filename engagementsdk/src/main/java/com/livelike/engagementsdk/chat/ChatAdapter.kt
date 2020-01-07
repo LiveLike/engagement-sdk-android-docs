@@ -113,7 +113,6 @@ internal class ChatRecyclerAdapter(
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
                 if (reactionsAvailable || !isOwnMessage) {
-                    println("ViewHolder.onLongClick-> $adapterPosition")
                     showFloatingUI(isOwnMessage, message?.myReaction,checkListIsAtTop(adapterPosition) && itemCount > 1)
                 }
             }
