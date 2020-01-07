@@ -45,8 +45,6 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -70,6 +68,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -300,6 +300,21 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         }
                 }
             }
+
+            chatAdapter.checkListIsAtTop = lambda@{
+                val lm: LinearLayoutManager = chatdisplay.layoutManager as LinearLayoutManager
+                val poss=lm.findFirstCompletelyVisibleItemPosition()
+                if (poss == 0) {
+                    return@lambda true
+                }
+                val pos = lm.findFirstVisibleItemPosition()
+                if (lm.findViewByPosition(pos)?.top == 0 && pos == 0) {
+                    return@lambda true
+                }
+                return@lambda false
+            }
+
+            initStickerKeyboard(sticker_keyboard, this)
 
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
