@@ -362,7 +362,7 @@ internal class ContentSession(
 
         if (syncEnabled) {
             chatClient =
-                chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
+                chatClient?.syncTo(currentPlayheadTime)
         }
 
         chatClient = chatClient?.toChatQueue()
