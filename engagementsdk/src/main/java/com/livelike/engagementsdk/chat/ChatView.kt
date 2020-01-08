@@ -301,12 +301,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
             chatAdapter.checkListIsAtTop = lambda@{
                 val lm: LinearLayoutManager = chatdisplay.layoutManager as LinearLayoutManager
-                val poss=lm.findFirstCompletelyVisibleItemPosition()
-                if (poss == 0) {
-                    return@lambda true
-                }
-                val pos = lm.findFirstVisibleItemPosition()
-                if (lm.findViewByPosition(pos)?.top == 0 && pos == 0) {
+                if (lm.findFirstVisibleItemPosition() == it) {
                     return@lambda true
                 }
                 return@lambda false
