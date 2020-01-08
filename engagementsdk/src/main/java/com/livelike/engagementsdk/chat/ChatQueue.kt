@@ -46,8 +46,8 @@ internal class ChatQueue(upstream: MessagingClient) :
                 val id = event.message.get("id").asString
                 renderer?.deleteChatMessage(id)
             }
-            ChatViewModel.EVENT_MESSAGE_ID_UPDATED -> {
-                renderer?.updateChatMessageId(event.message.get("old-id").asString, event.message.get("new-id").asString)
+            ChatViewModel.EVENT_MESSAGE_TIMETOKEN_UPDATED -> {
+                renderer?.updateChatMessageTimeToken(event.message.get("messageId").asString, event.message.get("timetoken").asString)
             }
             ChatViewModel.EVENT_LOADING_COMPLETE -> {
                 renderer?.loadingCompleted()

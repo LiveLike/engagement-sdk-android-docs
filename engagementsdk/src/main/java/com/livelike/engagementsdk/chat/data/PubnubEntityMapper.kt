@@ -15,7 +15,7 @@ internal fun ChatMessage.toPubnubChatMessage(programDateTime: String): PubnubCha
     )
 }
 
-internal fun PubnubChatMessage.toChatMessage(channel: String): ChatMessage {
+internal fun PubnubChatMessage.toChatMessage(channel: String, timetoken: Long): ChatMessage {
 
     return ChatMessage(
         channel,
@@ -24,6 +24,7 @@ internal fun PubnubChatMessage.toChatMessage(channel: String): ChatMessage {
         senderNickname,
         senderImageUrl,
         messageId,
-        pubnubMessageToken = messageToken
+        pubnubMessageToken = messageToken,
+        timetoken = timetoken
     )
 }
