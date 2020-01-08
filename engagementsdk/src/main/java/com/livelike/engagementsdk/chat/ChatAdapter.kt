@@ -188,13 +188,7 @@ internal class ChatRecyclerAdapter(
                 ::hideFloatingUI,
                 isOwnMessage,
                 userReaction = reaction,
-                chatReactionBackground = chatViewThemeAttribute.chatReactionBackgroundRes,
-                chatReactionElevation = chatViewThemeAttribute.chatReactionElevation,
-                chatReactionRadius = chatViewThemeAttribute.chatReactionRadius,
-                chatReactionPanelColor = chatViewThemeAttribute.chatReactionPanelColor,
-                chatReactionPanelCountColor = chatViewThemeAttribute.chatReactionPanelCountColor,
-                chatReactionPadding = chatViewThemeAttribute.chatReactionPadding,
-                chatReactionFlagTintColor = chatViewThemeAttribute.chatReactionFlagTintColor,
+                chatViewThemeAttributes = chatViewThemeAttribute,
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
                         message?.apply {
@@ -396,12 +390,12 @@ internal class ChatRecyclerAdapter(
                         }
 
                         var imageView: ImageView
-                        val size = AndroidResource.dpToPx(10)
+                        val size = context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_display_size)
                         rel_reactions_lay.removeAllViews()
                         // TODO need to check for updating list and work on remove the reaction with animation
                         reactionsList.forEachIndexed { index, reaction ->
                             imageView = ImageView(context)
-                            imageView.loadImage(reaction.file, AndroidResource.dpToPx(12))
+                            imageView.loadImage(reaction.file, size)
                             val paramsImage: FrameLayout.LayoutParams =
                                 FrameLayout.LayoutParams(size, size)
                             paramsImage.gravity = Gravity.LEFT

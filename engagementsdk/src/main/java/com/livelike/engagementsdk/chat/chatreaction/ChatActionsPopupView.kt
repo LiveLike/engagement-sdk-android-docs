@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -16,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
@@ -31,52 +30,48 @@ import kotlin.math.pow
  */
 internal class ChatActionsPopupView(
     val context: Context,
-    val chatReactionRepository: ChatReactionRepository,
+    private val chatReactionRepository: ChatReactionRepository,
     flagClick: View.OnClickListener,
-    hideFloatinUi: () -> Unit,
+    hideFloatingUi: () -> Unit,
     isOwnMessage: Boolean,
-    val userReaction: Reaction?=null,
-    chatReactionBackground: Drawable? = ColorDrawable(Color.TRANSPARENT),
-    chatReactionElevation: Float = 0f,
-    chatReactionRadius: Float = 4f,
-    chatReactionPanelColor: Int = Color.WHITE,
-    var chatReactionPanelCountColor: Int = Color.BLACK,
-    var chatReactionFlagTintColor:Int=Color.BLACK,
-    chatReactionPadding: Int = AndroidResource.dpToPx(6),
-    val selectReactionListener: SelectReactionListener?=null
+    val userReaction: Reaction? = null,
+    private val chatViewThemeAttributes: ChatViewThemeAttributes,
+    val selectReactionListener: SelectReactionListener? = null
 ) : PopupWindow(context) {
 
     init {
-        contentView = LayoutInflater.from(context).inflate(R.layout.popup_chat_reaction, null)
-        contentView.chat_reaction_background_card.apply {
-            setCardBackgroundColor(chatReactionPanelColor)
-            cardElevation = chatReactionElevation
-            radius = chatReactionRadius
-            setContentPadding(
-                chatReactionPadding,
-                chatReactionPadding,
-                chatReactionPadding,
-                chatReactionPadding
-            )
-        }
-
-        if (!isOwnMessage) {
-            contentView.moderation_flag_lay.apply {
-                visibility = View.VISIBLE
-                setOnClickListener {
-                    dismiss()
-                    flagClick.onClick(it)
-                }
-                radius = chatReactionRadius
+        chatViewThemeAttributes.apply {
+            contentView = LayoutInflater.from(context).inflate(R.layout.popup_chat_reaction, null)
+            contentView.chat_reaction_background_card.apply {
                 setCardBackgroundColor(chatReactionPanelColor)
+                cardElevation = chatReactionElevation
+                radius = chatReactionRadius
+                setContentPadding(
+                    chatReactionPadding,
+                    chatReactionPadding,
+                    chatReactionPadding,
+                    chatReactionPadding
+                )
             }
-            contentView.moderation_flag.setColorFilter(
-                chatReactionFlagTintColor
-            )
+
+            if (!isOwnMessage) {
+                contentView.moderation_flag_lay.apply {
+                    visibility = View.VISIBLE
+                    setOnClickListener {
+                        dismiss()
+                        flagClick.onClick(it)
+                    }
+                    radius = chatReactionRadius
+                    setCardBackgroundColor(chatReactionPanelColor)
+                }
+                contentView.moderation_flag.setColorFilter(
+                    chatReactionFlagTintColor
+                )
+            }
+            setOnDismissListener(hideFloatingUi)
+            isOutsideTouchable = true
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
-        setOnDismissListener(hideFloatinUi)
-        isOutsideTouchable = true
-        setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         initReactions()
     }
 
@@ -94,7 +89,7 @@ internal class ChatActionsPopupView(
         val reactionsBox =
             contentView.findViewById<ImageView>(R.id.reaction_panel_interaction_box) as ViewGroup
         reactionsBox.removeAllViews()
-        val fiveDp = AndroidResource.dpToPx(8)
+        val eightDp = AndroidResource.dpToPx(8)
         chatReactionRepository.reactionList?.forEach { reaction ->
             val frameLayout = LinearLayout(context)
             val countView = TextView(context)
@@ -103,15 +98,13 @@ internal class ChatActionsPopupView(
                 ViewGroup.LayoutParams.WRAP_CONTENT).apply {
             }
             frameLayout.orientation = LinearLayout.VERTICAL
-            frameLayout.setPadding(2, 0, 2, 0)
-            imageView.loadImage(reaction.file, AndroidResource.dpToPx(22))
+            imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
 
             userReaction?.let {
                 if(it.name == reaction.name)
                     frameLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background)
             }
             imageView.setOnTouchListener { v, event ->
-
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
                         v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(50).start()
@@ -137,12 +130,12 @@ internal class ChatActionsPopupView(
 
             imageView.scaleType = ImageView.ScaleType.CENTER
 
-            val cnt= Random().nextInt(10000)
+            val cnt = Random().nextInt(10000)
             countView.apply {
                 text = formattedReactionCount(cnt)
-                setTextColor(chatReactionPanelCountColor)
+                setTextColor(chatViewThemeAttributes.chatReactionPanelCountColor)
                 setTypeface(null, Typeface.BOLD)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+                textSize = context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size)
                 visibility = when (cnt) {
                     0 -> View.GONE
                     else -> View.VISIBLE
@@ -153,7 +146,7 @@ internal class ChatActionsPopupView(
             })
             frameLayout.addView(imageView,LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                 gravity = Gravity.LEFT
-                setMargins(fiveDp,0,fiveDp,0)
+                setMargins(eightDp,0,eightDp,0)
             })
             reactionsBox.addView(frameLayout)
         }
@@ -166,6 +159,6 @@ internal class ChatActionsPopupView(
     }
 
 }
-interface SelectReactionListener{
+internal interface SelectReactionListener{
     fun onSelectReaction(reaction: Reaction?)
 }
