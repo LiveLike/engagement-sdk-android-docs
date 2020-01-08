@@ -507,9 +507,9 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         reactionAction: String
     ) {
         val properties = JSONObject()
-        properties.put("messageId", messageId)
-        properties.put("reactionId", reactionId)
-        properties.put("reactionAction", reactionAction)
+        properties.put("Chat Message ID", messageId)
+        properties.put("Chat Reaction ID", reactionId)
+        properties.put("Reaction Action", reactionAction)
         mixpanel.track(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
         eventObservers[programId]?.invoke(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
     }
