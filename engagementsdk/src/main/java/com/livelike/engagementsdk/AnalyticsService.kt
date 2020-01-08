@@ -9,11 +9,11 @@ import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Matcher
-import org.json.JSONObject
 
 /**
  * The base interface for the analytics. This will log events to any remote analytics provider.
@@ -410,7 +410,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         }
         properties.put("Keyboard Hide Method", hideReason)
         chatMessageId?.apply {
-            properties.put("Chat Message ID", chatMessageId)
+            properties.put(CHAT_MESSAGE_ID, chatMessageId)
         }
         mixpanel.track(KEY_KEYBOARD_HIDDEN, properties)
         eventObservers[programId]?.invoke(KEY_KEYBOARD_HIDDEN, properties)
@@ -507,9 +507,9 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         reactionAction: String
     ) {
         val properties = JSONObject()
-        properties.put("messageId", messageId)
-        properties.put("reactionId", reactionId)
-        properties.put("reactionAction", reactionAction)
+        properties.put(CHAT_MESSAGE_ID, messageId)
+        properties.put("Chat Reaction ID", reactionId)
+        properties.put("Reaction Action", reactionAction)
         mixpanel.track(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
         eventObservers[programId]?.invoke(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
     }
@@ -530,7 +530,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
 
     override fun trackMessageSent(msgId: String, msg: String) {
         val properties = JSONObject()
-        properties.put("Chat Message ID", msgId)
+        properties.put(CHAT_MESSAGE_ID, msgId)
         properties.put("Character Length", msg.length)
         properties.put("Sticker Count", msg.findStickers().countMatches())
         properties.put("Sticker Id", msg.findStickers().allMatches())
@@ -677,3 +677,5 @@ enum class DismissAction {
     SWIPE,
     TAP_X
 }
+
+const val CHAT_MESSAGE_ID = "Chat Message ID"
