@@ -153,6 +153,7 @@ internal class ContentSession(
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
+                            chatViewModel.reportUrl = program.reportUrl
                             chatViewModel.stickerPackRepository = StickerPackRepository(programId, program.stickerPacksUrl)
                             chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
                             contentSessionScope.launch { chatViewModel?.chatReactionRepository?.preloadImages(applicationContext) }

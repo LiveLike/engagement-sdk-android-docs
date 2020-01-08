@@ -52,6 +52,8 @@ internal class ChatViewModel(
             value?.let {
                 chatAdapter.chatReactionRepository = value }
         }
+    var reportUrl: String? = null
+
     internal var chatLoaded = false
         set(value) {
             field = value
@@ -111,8 +113,7 @@ internal class ChatViewModel(
 
     private fun reportChatMessage(message: ChatMessage) {
         uiScope.launch {
-            val programId = programRepository.program?.id
-            programId?.let { dataClient.reportMessage(programId, message, userStream.latest()?.accessToken) }
+            reportUrl?.let { reportUrl -> dataClient.reportMessage(reportUrl, message, userStream.latest()?.accessToken) }
         }
     }
 

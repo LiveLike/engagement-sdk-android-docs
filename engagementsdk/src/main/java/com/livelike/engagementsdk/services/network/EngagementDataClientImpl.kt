@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.ChatMessage
@@ -48,12 +47,12 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     WidgetDataClient, ChatDataClient {
 
     override suspend fun reportMessage(
-        programId: String,
+        remoteUrl: String,
         message: ChatMessage,
         accessToken: String?
     ) {
         remoteCall<LiveLikeUser>(
-            BuildConfig.CONFIG_URL.plus("programs/$programId/report/"),
+            remoteUrl,
             RequestType.POST,
             RequestBody.create(
                 MediaType.parse("application/json; charset=utf-8"), message.toReportMessageJson()

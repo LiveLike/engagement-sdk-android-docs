@@ -27,5 +27,5 @@ internal interface WidgetDataClient {
 }
 
 internal interface ChatDataClient {
-    suspend fun reportMessage(programId: String, message: ChatMessage, accessToken: String?)
+    suspend fun reportMessage(remoteUrl: String, message: ChatMessage, accessToken: String?)
 }
