@@ -313,9 +313,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
                 return@lambda false
             }
-
-            initStickerKeyboard(sticker_keyboard, this)
-
+            
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     replaceWithStickers(
