@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -135,7 +136,7 @@ internal class ChatActionsPopupView(
                 text = formattedReactionCount(cnt)
                 setTextColor(chatViewThemeAttributes.chatReactionPanelCountColor)
                 setTypeface(null, Typeface.BOLD)
-                textSize = context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX,context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size))
                 visibility = when (cnt) {
                     0 -> View.GONE
                     else -> View.VISIBLE
