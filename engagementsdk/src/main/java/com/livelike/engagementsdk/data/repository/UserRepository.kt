@@ -94,7 +94,7 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
         return reward
     }
 
-    fun setProfilePicUrl(url: String) {
+    fun setProfilePicUrl(url: String?) {
         currentUserStream.latest()?.apply {
             this.userPic = url
             currentUserStream.onNext(this)

@@ -68,7 +68,7 @@ class EngagementSDK(
         }
     }
 
-    override fun updateChatUserPic(url: String) {
+    override fun updateChatUserPic(url: String?) {
         sdkScope.launch {
             userRepository.setProfilePicUrl(url)
         }

@@ -53,7 +53,7 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
-    override fun setProfilePicUrl(url: String) {
+    override fun setProfilePicUrl(url: String?) {
         userRepository.setProfilePicUrl(url)
     }
 
