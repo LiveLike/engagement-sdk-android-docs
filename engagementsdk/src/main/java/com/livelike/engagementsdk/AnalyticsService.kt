@@ -496,7 +496,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
 
     override fun trackChatReactionPanelOpen(messageId: String) {
         val properties = JSONObject()
-        properties.put("messageId", messageId)
+        properties.put(CHAT_MESSAGE_ID, messageId)
         mixpanel.track(KEY_EVENT_CHAT_REACTION_PANEL_OPEN, properties)
         eventObservers[programId]?.invoke(KEY_EVENT_CHAT_REACTION_PANEL_OPEN, properties)
     }
