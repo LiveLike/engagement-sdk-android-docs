@@ -228,6 +228,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         viewModel?.apply {
             uiScope.launch { chatAdapter.chatReactionRepository.preloadImages(context) }
             chatAdapter.chatViewThemeAttribute = chatAttribute
+            initStickerKeyboard(sticker_keyboard, this)
+
             setDataSource(chatAdapter)
             eventStream.subscribe(javaClass.simpleName) {
                 when (it) {
@@ -306,9 +308,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
                 return@lambda false
             }
-
-            initStickerKeyboard(sticker_keyboard, this)
-
+            
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     replaceWithStickers(
