@@ -3,13 +3,11 @@ package com.livelike.engagementsdk.stickerKeyboard
 import android.content.Context
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
-import com.livelike.engagementsdk.BuildConfig
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class StickerPackRepository(val programId: String) {
-    private val endpoint = BuildConfig.CONFIG_URL + "sticker-packs/?program_id=$programId"
+class StickerPackRepository(val programId: String, private val endpoint: String) {
     private var stickerPackList: List<StickerPack>? = null
 
     suspend fun getStickerPacks(): List<StickerPack> {

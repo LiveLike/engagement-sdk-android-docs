@@ -14,25 +14,46 @@ import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
     val userStream: Stream<LiveLikeUser>,
     val programRepository: ProgramRepository,
-    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
-    val stickerPackRepository: StickerPackRepository
+    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
 ) : ChatRenderer, ViewModel() {
 
     var chatListener: ChatEventListener? = null
-    var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository, ChatReactionRepository(programRepository.programId))
+    var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     val messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(true)
     var currentChatRoom: ChatRoom? = null
-    set(value) {
-        field = value
-        chatAdapter.isPublicChat = currentChatRoom?.id == programRepository?.program?.defaultChatRoom?.id
+        set(value) {
+            field = value
+            chatAdapter.isPublicChat = currentChatRoom?.id == programRepository?.program?.defaultChatRoom?.id
+        }
+
+    var stickerPackRepository: StickerPackRepository? = null
+        set(value) {
+            field = value
+            value?.let { chatAdapter.stickerPackRepository = value }
+        }
+    val stickerPackRepositoryFlow = flow {
+        while (stickerPackRepository == null) {
+            delay(1000)
+        }
+        emit(stickerPackRepository!!)
     }
+    var chatReactionRepository: ChatReactionRepository? = null
+        set(value) {
+            field = value
+            value?.let {
+                chatAdapter.chatReactionRepository = value }
+        }
+    var reportUrl: String? = null
+
     internal var chatLoaded = false
         set(value) {
             field = value
@@ -92,8 +113,7 @@ internal class ChatViewModel(
 
     private fun reportChatMessage(message: ChatMessage) {
         uiScope.launch {
-            val programId = programRepository.program?.id
-            programId?.let { dataClient.reportMessage(programId, message, userStream.latest()?.accessToken) }
+            reportUrl?.let { reportUrl -> dataClient.reportMessage(reportUrl, message, userStream.latest()?.accessToken) }
         }
     }
 
