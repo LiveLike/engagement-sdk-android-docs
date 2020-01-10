@@ -4,11 +4,11 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import java.util.UUID
 
-interface ChatEventListener {
+internal interface ChatEventListener {
     fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
 }
 
-interface ChatRenderer {
+internal interface ChatRenderer {
     fun displayChatMessage(message: ChatMessage)
     fun deleteChatMessage(messageId: String)
     fun updateChatMessageId(oldId: String, newId: String)
@@ -23,7 +23,7 @@ interface ChatRenderer {
  *  @param id A unique ID to identify the message.
  *  @param timeStamp Message timeStamp.
  */
-data class ChatMessage(
+internal data class ChatMessage(
     var channel: String,
     var message: String,
     val senderId: String,
@@ -32,8 +32,8 @@ data class ChatMessage(
     var id: String = UUID.randomUUID().toString(),
     val timeStamp: String? = null,
     var isFromMe: Boolean = false,
-    var myReaction:Reaction?=null,
-    var reactionsList:HashSet<Reaction> = HashSet()
+    var myReaction: Reaction? = null,
+    var reactionsList: HashSet<Reaction> = HashSet()
 ) {
     fun toReportMessageJson(): String {
         return """{

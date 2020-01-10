@@ -2,16 +2,13 @@ package com.livelike.engagementsdk.chat.chatreaction
 
 import android.content.Context
 import com.bumptech.glide.Glide
-import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.data.repository.BaseRepository
 import com.livelike.engagementsdk.services.network.RequestType
 import com.livelike.engagementsdk.services.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class ChatReactionRepository(val programId: String) : BaseRepository() {
-
-    private val remoteUrl = BuildConfig.CONFIG_URL + "reaction-packs/?program_id=$programId"
+internal class ChatReactionRepository(private val remoteUrl: String) : BaseRepository() {
 
     var reactionList: List<Reaction>? = null
 
