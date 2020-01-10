@@ -1,7 +1,10 @@
 package com.livelike.engagementsdk.chat
 
+import android.content.Context
+import android.net.Uri
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
+import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
@@ -15,6 +18,8 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -193,6 +198,20 @@ internal class ChatViewModel(
             } else {
                 logError { "Chat repo is null" }
             }
+        }
+    }
+
+    fun uploadAndPostImage(context : Context, chatMessage: ChatMessage, timedata: EpochTime) {
+        // TODO: could be suspend
+        logError { "Upload and post image" }
+        GlobalScope.launch (Dispatchers.IO) {
+
+            val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length-1))
+            val fileBytes = context.contentResolver.openInputStream(url)?.readBytes()
+            val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
+            // TODO modify the chat message
+            logError { imageUrl }
+            chatListener?.onChatMessageSend(chatMessage, timedata)
         }
     }
 }

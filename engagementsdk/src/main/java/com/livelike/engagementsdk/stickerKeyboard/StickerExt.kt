@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
+import android.util.Log
 import android.widget.EditText
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -20,6 +21,12 @@ import kotlin.math.roundToInt
 
 fun String.findStickers(): Matcher {
     val regex = ":[^ :\\s]*:"
+    val pattern = Pattern.compile(regex)
+    return pattern.matcher(this)
+}
+
+fun String.findImages(): Matcher {
+    val regex = ":content://[^ :\\s]*:"
     val pattern = Pattern.compile(regex)
     return pattern.matcher(this)
 }
@@ -45,11 +52,13 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
     existingSpans?.forEach { imageSpan ->
         existingSpanPositions.add(s.getSpanStart(imageSpan))
     }
-    val matcher = s.toString().findStickers()
+    var matcher = s.toString().findStickers()
 
     while (matcher.find()) {
 
         val url = stickerPackRepository.getSticker(matcher.group().replace(":", ""))?.file
+
+        Log.e("yo", matcher.group())
 
         val startIndex = matcher.start()
         val end = matcher.end()
@@ -112,9 +121,77 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
                 })
         }
     }
+
+
+
+
+
+    matcher = s.toString().findImages()
+
+    while (matcher.find()) {
+
+        val fullUrl = matcher.group()
+        val url = matcher.group().substring(1, fullUrl.length -1)
+
+        Log.e("yo", url)
+
+        val startIndex = matcher.start()
+        val end = matcher.end()
+
+        if (url.contains(".gif")) {
+            Glide.with(context)
+                .`as`(ByteArray::class.java)
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(object : CustomTarget<ByteArray>(size, size) {
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+
+                    override fun onResourceReady(
+                        resource: ByteArray,
+                        transition: Transition<in ByteArray>?
+                    ) {
+                        try {
+                            val drawable = GifDrawable(resource)
+                            setupBounds(drawable, edittext_chat_message, size)
+                            drawable.reset()
+                            drawable.start()
+                            drawable.callback = callback
+                            val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
+                            s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            onMatch?.invoke()
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
+                })
+        } else {
+            Glide.with(context)
+                .load(url)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(object : CustomTarget<Drawable>(size, size) {
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+
+                    override fun onResourceReady(
+                        drawable: Drawable,
+                        transition: Transition<in Drawable>?
+                    ) {
+                        try {
+                            setupBounds(drawable, edittext_chat_message, size)
+                            val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
+                            s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            onMatch?.invoke()
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
+                })
+        }
+    }
 }
 
-private fun setupBounds(
+internal fun setupBounds(
     drawable: Drawable,
     edittext_chat_message: EditText?,
     overrideSize: Int

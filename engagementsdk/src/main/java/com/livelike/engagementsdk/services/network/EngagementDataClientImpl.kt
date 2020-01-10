@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.services.network
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Handler
 import android.os.Looper
 import android.webkit.URLUtil
@@ -25,9 +26,6 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
 import com.livelike.engagementsdk.widget.util.SingleRunner
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -36,15 +34,42 @@ import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
 import okhttp3.MediaType
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+
 
 @Suppress("USELESS_ELVIS")
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     WidgetDataClient, ChatDataClient {
+    override suspend fun uploadImage(remoteUrl: String, accessToken : String?, image: ByteArray): String {
+
+        val formBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "image", "yo",
+                RequestBody.create(MediaType.parse("image/png"), image)
+            )
+            .build()
+
+        val response = remoteCall<String>(
+            remoteUrl,
+            RequestType.POST,
+            formBody,
+            accessToken
+        )
+
+        when(response){
+            is Result.Success -> return response.data
+            is Result.Error -> throw response.exception
+        }
+    }
 
     override suspend fun reportMessage(
         remoteUrl: String,
@@ -260,6 +285,10 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         accessToken: String?
     ): Result<T> {
         return safeRemoteApiCall({
+//            val logging = HttpLoggingInterceptor()
+//            logging.level = (HttpLoggingInterceptor.Level.HEADERS)
+//            val client = OkHttpClient().newBuilder().addInterceptor(logging).build()
+
             withContext(Dispatchers.IO) {
                 logDebug { "url : $url" }
                 val request = Request.Builder()

@@ -28,4 +28,5 @@ internal interface WidgetDataClient {
 
 internal interface ChatDataClient {
     suspend fun reportMessage(remoteUrl: String, message: ChatMessage, accessToken: String?)
+    suspend fun uploadImage(remoteUrl: String, accessToken : String?, image: ByteArray) : String
 }

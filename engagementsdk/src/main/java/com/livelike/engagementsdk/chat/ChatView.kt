@@ -38,6 +38,8 @@ import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
+import com.livelike.engagementsdk.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.stickerKeyboard.findImages
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
@@ -380,9 +382,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         val textToInsert = ":${sticker.shortcode}:"
                         val start = max(edittext_chat_message.selectionStart, 0)
                         val end = max(edittext_chat_message.selectionEnd, 0)
-                        if (edittext_chat_message.text.length + textToInsert.length < 150) {
+                        if (edittext_chat_message.text!!.length + textToInsert.length < 150) {
                             // replace selected text or start where the cursor is
-                            edittext_chat_message.text.replace(
+                            edittext_chat_message.text?.replace(
                                 min(start, end), max(start, end),
                                 textToInsert, 0, textToInsert.length
                             )
@@ -623,7 +625,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun sendMessageNow() {
-        if (edittext_chat_message.text.isBlank()) {
+        if (edittext_chat_message.text.isNullOrBlank()) {
             // Do nothing if the message is blank or empty
             return
         }
@@ -640,7 +642,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                chatListener?.onChatMessageSend(it, timeData)
+                if(it.message.findImages().countMatches()>0){
+                    uploadAndPostImage(context, it, timeData)
+                }else{
+                    chatListener?.onChatMessageSend(it, timeData)
+                }
                 edittext_chat_message.setText("")
                 snapToLive()
             }
