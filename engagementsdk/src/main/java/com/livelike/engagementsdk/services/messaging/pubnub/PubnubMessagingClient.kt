@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
 import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
-import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.enums.PNOperationType
 import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNStatus
@@ -48,7 +47,7 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
         val client = this
 
         // Extract SubscribeCallback?
-        pubnub.addListener(object : SubscribeCallback() {
+        pubnub.addListener(object : PubnubSubscribeCallbackAdapter() {
             override fun status(pubnub: PubNub, status: PNStatus) {
                 when (status.operation) {
                     // let's combine unsubscribe and subscribe handling for ease of use

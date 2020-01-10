@@ -30,7 +30,6 @@ import com.pubnub.api.PNConfiguration
 import com.pubnub.api.PubNub
 import com.pubnub.api.PubNubException
 import com.pubnub.api.callbacks.PNCallback
-import com.pubnub.api.callbacks.SubscribeCallback
 import com.pubnub.api.enums.PNOperationType
 import com.pubnub.api.enums.PNReconnectionPolicy
 import com.pubnub.api.enums.PNStatusCategory
@@ -142,9 +141,9 @@ internal class PubnubChatMessagingClient(
             })
             .channel(channel)
             .async(object : PNCallback<PNPublishResult>() {
-                override fun onResponse(result: PNPublishResult?, status: PNStatus?) {
+                override fun onResponse(result: PNPublishResult?, status: PNStatus) {
                     logDebug { "pub status code: " + status?.statusCode }
-                    if (status?.isError == false) {
+                    if (!status.isError) {
                         analyticsService.trackMessageSent(
                             pubnubChatEvent.payload.messageId,
                             pubnubChatEvent.payload.message
@@ -180,7 +179,7 @@ internal class PubnubChatMessagingClient(
         val client = this
 
         // Extract SubscribeCallback?
-        pubnub.addListener(object : SubscribeCallback() {
+        pubnub.addListener(object : PubnubSubscribeCallbackAdapter() {
             override fun status(pubnub: PubNub, status: PNStatus) {
                 when (status.operation) {
                     // let's combine unsubscribe and subscribe handling for ease of use
@@ -305,8 +304,8 @@ internal class PubnubChatMessagingClient(
             .start(timeToken)
             .reverse(false)
             .async(object : PNCallback<PNHistoryResult>() {
-                override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
-                    if (status?.isError == false && result?.messages?.isEmpty() == false) {
+                override fun onResponse(result: PNHistoryResult?, status: PNStatus) {
+                    if (!status.isError && result?.messages?.isEmpty() == false) {
                         result.messages.forEach {
                             processPubnubChatEvent(
                                 it.entry.asJsonObject,
@@ -333,8 +332,8 @@ internal class PubnubChatMessagingClient(
             .includeTimetoken(true)
             .reverse(false)
             .async(object : PNCallback<PNHistoryResult>() {
-                override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
-                    if (status?.isError == false && result?.messages?.isEmpty() == false) {
+                override fun onResponse(result: PNHistoryResult?, status: PNStatus) {
+                    if (!status.isError && result?.messages?.isEmpty() == false) {
                         result.messages.forEach {
                             processPubnubChatEvent(
                                 it.entry.asJsonObject,
@@ -359,7 +358,7 @@ internal class PubnubChatMessagingClient(
                 .channels(listOf(channel))
                 .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
                 .sync()
-            Result.Success(countResult.channels[channel] ?: 0)
+            Result.Success(countResult?.channels?.get(channel) ?: 0)
         } catch (ex: PubNubException) {
             Result.Error(ex)
         }
