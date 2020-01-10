@@ -31,6 +31,7 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -40,6 +41,7 @@ import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findImages
+import com.livelike.engagementsdk.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
@@ -323,13 +325,21 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    stickerPackRepository?.let { stickerPackRepository ->
-                        replaceWithStickers(
+                    if(s.toString().findImages().matches()){
+                        replaceWithImages(
                             s as Spannable,
                             this@ChatView.context,
-                            stickerPackRepository,
                             edittext_chat_message, null
                         )
+                    }else{
+                        stickerPackRepository?.let { stickerPackRepository ->
+                            replaceWithStickers(
+                                s as Spannable,
+                                this@ChatView.context,
+                                stickerPackRepository,
+                                edittext_chat_message, null
+                            )
+                        }
                     }
                 }
 
@@ -631,7 +641,10 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
+
+        // TODO all this can be moved to view model easily
         ChatMessage(
+            PubnubChatEventType.MESSAGE_CREATED,
             viewModel?.currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",

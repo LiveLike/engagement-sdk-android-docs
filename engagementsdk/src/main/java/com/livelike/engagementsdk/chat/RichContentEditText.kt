@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import android.content.Context
+import android.content.res.AssetFileDescriptor
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
@@ -60,13 +61,12 @@ class RichContentEditText : AppCompatEditText{
 
     override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection {
         val ic: InputConnection = super.onCreateInputConnection(editorInfo)
-        EditorInfoCompat.setContentMimeTypes(editorInfo, arrayOf("image/png", "image/gif"))
+        EditorInfoCompat.setContentMimeTypes(editorInfo, arrayOf("image/*"))
 
         val callback =
             InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
                 val lacksPermission = (flags and
                         InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0
-                // read and display inputContentInfo asynchronously
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && lacksPermission) {
                     try {
                         inputContentInfo.requestPermission()
@@ -74,44 +74,13 @@ class RichContentEditText : AppCompatEditText{
                         return@OnCommitContentListener false
                     }
                 }
+                context.contentResolver.openAssetFileDescriptor(inputContentInfo.contentUri,"r")?.use {
+                    if (it.length > 3_000_000){
+                        return@OnCommitContentListener false
+                    }
+                }
 
                 setText(":${inputContentInfo.contentUri}:")
-//
-//                GlobalScope.launch (Dispatchers.IO) {
-//                    val logging = HttpLoggingInterceptor()
-//                    logging.level = (HttpLoggingInterceptor.Level.BODY)
-//                    val client = OkHttpClient.Builder()
-//                    client.addInterceptor(logging)
-//                    val fileBytes = context.contentResolver.openInputStream(inputContentInfo.contentUri).readBytes()
-//
-//                   val requestBody =
-//                       MultipartBody
-//                           .Builder()
-//                          .setType(MultipartBody.FORM)
-//                          .addPart(
-//                              Headers.of("Content-Disposition", "form-data; name=\"title\""),
-//                              RequestBody.create(null, "Square Logo"))
-//                          .addPart(
-//                              Headers.of("Content-Disposition", "form-data; name=\"image\""),
-//                              RequestBody.create(MediaType.parse("image/*"), fileBytes))
-//                          .build()
-//
-//                    val request = Request.Builder()
-//                        .url("https://api.imgur.com/3/image")
-//                        .addHeader("Authorization", "Bearer adddc49cbc0d86a46b7ce36454e99e17d5248472")
-//                        .method("POST", requestBody)
-//                        .build()
-//                    val call = client.build().newCall(request)
-//                    call.enqueue(object : Callback {
-//                        override fun onResponse(call: Call?, response: Response) {
-//                            logError { "DONE ${response.body()}" } // uploaded url under data.link
-//                        }
-//                        override fun onFailure(call: Call?, e: IOException?) {
-//                            logError { e }
-//                        }
-//                    })
-//                }
-
                 true
             }
         return InputConnectionCompat.createWrapper(ic, editorInfo, callback)

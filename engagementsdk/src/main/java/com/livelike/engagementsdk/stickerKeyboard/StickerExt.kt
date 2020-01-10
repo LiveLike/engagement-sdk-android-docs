@@ -26,7 +26,7 @@ fun String.findStickers(): Matcher {
 }
 
 fun String.findImages(): Matcher {
-    val regex = ":content://[^ :\\s]*:"
+    val regex = ":content://[^ :\\s]*:|:https://[^ :\\s]*:"
     val pattern = Pattern.compile(regex)
     return pattern.matcher(this)
 }
@@ -57,8 +57,6 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
     while (matcher.find()) {
 
         val url = stickerPackRepository.getSticker(matcher.group().replace(":", ""))?.file
-
-        Log.e("yo", matcher.group())
 
         val startIndex = matcher.start()
         val end = matcher.end()
@@ -121,19 +119,21 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
                 })
         }
     }
+}
 
+fun replaceWithImages(s: Spannable?, context: Context, edittext_chat_message: EditText?,callback: MultiCallback?, size: Int = 50, onMatch: (() -> Unit)? = null) {
+    val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
+    val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
+    existingSpans?.forEach { imageSpan ->
+        existingSpanPositions.add(s.getSpanStart(imageSpan))
+    }
 
-
-
-
-    matcher = s.toString().findImages()
+    val matcher = s.toString().findImages()
 
     while (matcher.find()) {
 
         val fullUrl = matcher.group()
         val url = matcher.group().substring(1, fullUrl.length -1)
-
-        Log.e("yo", url)
 
         val startIndex = matcher.start()
         val end = matcher.end()

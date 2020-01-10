@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.services.network.ChatDataClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
@@ -91,6 +92,12 @@ internal class ChatViewModel(
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
+
+        val imageUrl = message.imageUrl
+
+        if(message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()){
+            message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
+        }
         if (messageList.size == 0) {
             messageList.add(message.apply {
                 isFromMe = userStream.latest()?.id == senderId
@@ -108,6 +115,7 @@ internal class ChatViewModel(
                 }
             }
         }
+
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
             eventStream.onNext(EVENT_NEW_MESSAGE)
@@ -202,15 +210,12 @@ internal class ChatViewModel(
     }
 
     fun uploadAndPostImage(context : Context, chatMessage: ChatMessage, timedata: EpochTime) {
-        // TODO: could be suspend
-        logError { "Upload and post image" }
         GlobalScope.launch (Dispatchers.IO) {
-
             val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length-1))
             val fileBytes = context.contentResolver.openInputStream(url)?.readBytes()
             val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
-            // TODO modify the chat message
-            logError { imageUrl }
+            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+            chatMessage.imageUrl = imageUrl
             chatListener?.onChatMessageSend(chatMessage, timedata)
         }
     }

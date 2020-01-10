@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.services.network
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Handler
 import android.os.Looper
 import android.webkit.URLUtil
@@ -53,12 +52,12 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         val formBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart(
-                "image", "yo",
+                "image", "image.png",
                 RequestBody.create(MediaType.parse("image/png"), image)
             )
             .build()
 
-        val response = remoteCall<String>(
+        val response = remoteCall<ImageResource>(
             remoteUrl,
             RequestType.POST,
             formBody,
@@ -66,10 +65,12 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         )
 
         when(response){
-            is Result.Success -> return response.data
+            is Result.Success -> return response.data.image_url
             is Result.Error -> throw response.exception
         }
     }
+
+    data class ImageResource(val id: String, val image_url: String)
 
     override suspend fun reportMessage(
         remoteUrl: String,
@@ -285,10 +286,6 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
         accessToken: String?
     ): Result<T> {
         return safeRemoteApiCall({
-//            val logging = HttpLoggingInterceptor()
-//            logging.level = (HttpLoggingInterceptor.Level.HEADERS)
-//            val client = OkHttpClient().newBuilder().addInterceptor(logging).build()
-
             withContext(Dispatchers.IO) {
                 logDebug { "url : $url" }
                 val request = Request.Builder()
