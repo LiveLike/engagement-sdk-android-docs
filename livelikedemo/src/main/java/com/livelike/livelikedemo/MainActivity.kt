@@ -84,11 +84,11 @@ class MainActivity : AppCompatActivity() {
 //                edit().putString("userPic","http://lorempixel.com/200/200/?$it").apply()
             }
             getString("userPic", "").let {
-                if (it.isNullOrEmpty()) {
-                    edit().putString("userPic", "https://loremflickr.com/200/200?lock=${java.util.UUID.randomUUID()}").apply()
-                } else {
-                    edit().putString("userPic", it).apply()
-                }
+//                if (it.isNullOrEmpty()) {
+//                    edit().putString("userPic", "https://loremflickr.com/200/200?lock=${java.util.UUID.randomUUID()}").apply()
+//                } else {
+//                    edit().putString("userPic", it).apply()
+//                }
             }
         }
 
