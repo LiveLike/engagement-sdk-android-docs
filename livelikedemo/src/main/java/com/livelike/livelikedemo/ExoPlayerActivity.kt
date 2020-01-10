@@ -299,10 +299,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                         (application as LiveLikeApplication).sdk.updateChatNickname(it)
                     }
                 }
-                getString("userPic", "").let {
-                    if (it.isNotEmpty()) {
-                        (application as LiveLikeApplication).sdk.updateChatUserPic(it)
-                    }
+                getString("userPic", null).let {
+                    (application as LiveLikeApplication).sdk.updateChatUserPic(it)
                 }
             }
 

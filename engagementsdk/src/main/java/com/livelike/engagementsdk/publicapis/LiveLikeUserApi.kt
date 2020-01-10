@@ -12,7 +12,7 @@ data class LiveLikeUserApi(
 )
 
 // this model is not changed since 1.2 release in hurry, we need to fix it may require to bump to major version.
-data class LiveLikeChatMessage(val nickname: String = "", val userPic: String? = "", val message: String = "", val timestamp: String = "", val id: Long = 0)
+data class LiveLikeChatMessage(val nickname: String = "", val userPic: String? , val message: String = "", val timestamp: String = "", val id: Long = 0)
 
 internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
     // TODO will require to bump to major version as id needs to be string
