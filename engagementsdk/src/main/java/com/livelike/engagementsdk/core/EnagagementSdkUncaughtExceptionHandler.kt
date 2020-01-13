@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.core
 
+import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient.client
 
 /**
@@ -17,19 +18,14 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
         Thread.setDefaultUncaughtExceptionHandler(this)
     }
 
-    override fun uncaughtException(p0: Thread?, p1: Throwable?) {
+    override fun uncaughtException(thread: Thread?, throwable: Throwable?) {
 
-//        TODO: commenting swallow code untill identified why after filtering host exception are logged.
 //        var swallow = true // should swallow the exception inorder to prevent the crash
         var record = false // should record exception if it possibility is due to SDK.
 
-        p1?.let { throwable ->
+        throwable?.let { throwable ->
 
-            for (s in throwable.stackTrace) {
-                if (s.className.contains("com.livelike.engagementsdk")) {
-                    record = true
-                }
-            }
+            record = doContainsSDKFootprint(throwable)
 
 //            if (p0?.name == "main" || !record) {
 //                swallow = false
@@ -38,14 +34,35 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
         }
 
         if (record) {
-            p1?.run {
-                client?.notify(p1)
-                p1.printStackTrace()
+            throwable?.run {
+                client?.notify(throwable)
+                throwable.printStackTrace()
             }
         }
 
         //        if (!swallow) {
-        defaultHandler.uncaughtException(p0, p1)
+        defaultHandler.uncaughtException(thread, throwable)
 //        }
+    }
+
+    private fun doContainsSDKFootprint(throwable: Throwable): Boolean {
+        var cause: Throwable? = throwable
+        var count = 0
+        do {
+            cause?.let { currentCause ->
+                for (s in currentCause.stackTrace) {
+                    if (s.className.contains(BuildConfig.LIBRARY_PACKAGE_NAME)) {
+                        return true
+                    }
+                }
+                cause = currentCause.cause
+            }
+            count++
+        } while (cause != null && count <10)
+
+        if (count == 10) {
+            return true // to make it more fail-safe if there is weird deep connections or repetition in causes then will capture for now to see
+        }
+        return false
     }
 }
