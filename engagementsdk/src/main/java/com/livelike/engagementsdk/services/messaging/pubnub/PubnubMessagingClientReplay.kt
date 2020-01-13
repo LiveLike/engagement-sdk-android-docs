@@ -59,7 +59,7 @@ internal class PubnubMessagingClientReplay(
             .end(0)
             .includeTimetoken(true)
             .async(object : PNCallback<PNHistoryResult>() {
-                override fun onResponse(result: PNHistoryResult?, status: PNStatus?) {
+                override fun onResponse(result: PNHistoryResult?, status: PNStatus) {
                         result?.let {
                             result.messages.reversed().forEach {
                                 val payload = it.entry.asJsonObject.getAsJsonObject("payload")

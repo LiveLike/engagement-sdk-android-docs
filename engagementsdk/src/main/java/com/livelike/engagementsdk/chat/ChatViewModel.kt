@@ -52,6 +52,11 @@ internal class ChatViewModel(
             value?.let {
                 chatAdapter.chatReactionRepository = value }
         }
+    var chatRepository: ChatRepository? = null
+        set(value) {
+            field = value
+            chatAdapter.chatRepository = value
+        }
     var reportUrl: String? = null
 
     internal var chatLoaded = false

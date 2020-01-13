@@ -65,6 +65,7 @@ internal class ChatRecyclerAdapter(
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     lateinit var chatReactionRepository: ChatReactionRepository
 
@@ -206,6 +207,13 @@ internal class ChatRecyclerAdapter(
                                 myReaction = reaction
                                 reactionsList.add(reaction)
                                 reactionAction = "Added"
+                                pubnubMessageToken?.let { pubnubMessageToken ->
+                                    chatRepository?.addMessageReaction(
+                                        channel,
+                                        pubnubMessageToken,
+                                        reaction.id
+                                    )
+                                }
                             }
                             reactionId?.let {
                                 analyticsService.trackChatReactionSelected(id, it, reactionAction)

@@ -23,6 +23,7 @@ internal fun PubnubChatMessage.toChatMessage(channel: String): ChatMessage {
         senderId,
         senderNickname,
         senderImageUrl,
-        messageId
+        messageId,
+        pubnubMessageToken = messageToken
     )
 }
