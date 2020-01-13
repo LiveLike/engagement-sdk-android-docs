@@ -35,9 +35,13 @@ import com.pubnub.api.enums.PNReconnectionPolicy
 import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
+import com.pubnub.api.models.consumer.history.PNFetchMessagesResult
 import com.pubnub.api.models.consumer.history.PNHistoryResult
+import com.pubnub.api.models.consumer.message_actions.PNAddMessageActionResult
+import com.pubnub.api.models.consumer.message_actions.PNMessageAction
+import com.pubnub.api.models.consumer.message_actions.PNRemoveMessageActionResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
-import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
+import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
 import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -149,6 +153,9 @@ internal class PubnubChatMessagingClient(
                             pubnubChatEvent.payload.message
                         )
                         logDebug { "pub timetoken: " + result?.timetoken!! }
+                        for (i in 0..1002) {
+                            addMessageAction(channel, result?.timetoken!!, i.toString())
+                        }
                         it.resume(true)
                     } else {
                         it.resume(false)
@@ -232,7 +239,11 @@ internal class PubnubChatMessagingClient(
                 processPubnubChatEvent(message.message.asJsonObject, message.channel, client)
             }
 
-            override fun presence(pubnub: PubNub, presence: PNPresenceEventResult) {}
+            override fun messageAction(
+                pubnub: PubNub,
+                pnMessageActionResult: PNMessageActionResult
+            ) {
+            }
         })
     }
 
@@ -293,6 +304,7 @@ internal class PubnubChatMessagingClient(
         }
     }
 
+    @Deprecated("use loadMessagesWithReactions")
     private fun loadMessageHistoryByTimestamp(
         channel: String,
         timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
@@ -309,6 +321,35 @@ internal class PubnubChatMessagingClient(
                         result.messages.forEach {
                             processPubnubChatEvent(
                                 it.entry.asJsonObject,
+                                channel,
+                                this@PubnubChatMessagingClient
+                            )
+                        }
+                    }
+                    sendLoadingCompletedEvent(channel)
+                }
+            })
+    }
+
+    private fun loadMessagesWithReactions(
+        channel: String,
+        timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
+        chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
+    ) {
+        pubnub.fetchMessages()
+            .channels(listOf(channel))
+            .maximumPerChannel(chatHistoyLimit)
+            .start(timeToken)
+            .includeMessageActions(true)
+            .async(object : PNCallback<PNFetchMessagesResult>() {
+                override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
+                    if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
+                        result?.channels?.get(channel)?.forEach {
+                            processPubnubChatEvent(
+                                it.message.asJsonObject.apply {
+                                    getAsJsonObject("payload")
+                                        .addProperty("messageToken", it.timetoken)
+                                },
                                 channel,
                                 this@PubnubChatMessagingClient
                             )
@@ -349,6 +390,44 @@ internal class PubnubChatMessagingClient(
             })
     }
 
+    fun addMessageAction(channel: String, messageTimetoken: Long, value: String) {
+        pubnub.addMessageAction()
+            .channel(channel)
+            .messageAction(PNMessageAction().apply {
+                type = "rc"
+                this.value = value
+                this.messageTimetoken = messageTimetoken
+            }).async(object : PNCallback<PNAddMessageActionResult>() {
+                override fun onResponse(result: PNAddMessageActionResult?, status: PNStatus) {
+                    if (!status.isError) {
+                        println(result?.getType())
+                        println(result?.getValue())
+                        println(result?.getUuid())
+                        println(result?.getActionTimetoken())
+                        println(result?.getMessageTimetoken())
+                    } else {
+                        status.getErrorData().getThrowable().printStackTrace()
+                    }
+                }
+            })
+    }
+
+    fun removeMessageAction(channel: String, messageTimetoken: Long, actionTimetoken: Long) {
+        pubnub.removeMessageAction()
+            .channel(channel)
+            .messageTimetoken(messageTimetoken)
+            .actionTimetoken(actionTimetoken)
+            .async(object : PNCallback<PNRemoveMessageActionResult>() {
+            override fun onResponse(result: PNRemoveMessageActionResult?, status: PNStatus) {
+                if (!status.isError) {
+                    println("removed")
+                } else {
+                    status.getErrorData().getThrowable().printStackTrace()
+                }
+            }
+        })
+    }
+
     internal fun getMessageCount(
         channel: String,
         startTimestamp: Long
@@ -367,7 +446,8 @@ internal class PubnubChatMessagingClient(
     override fun subscribe(channels: List<String>) {
         channels.forEach {
             connectedChannels.add(it)
-            loadMessageHistoryByTimestamp(channel = it)
+//            loadMessageHistoryByTimestamp(channel = it)
+            loadMessagesWithReactions(it)
         }
         pubnub.subscribe().channels(channels).execute()
     }

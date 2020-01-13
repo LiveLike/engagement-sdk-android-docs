@@ -65,6 +65,7 @@ internal class ChatRecyclerAdapter(
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     lateinit var chatReactionRepository: ChatReactionRepository
 
