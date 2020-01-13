@@ -153,9 +153,6 @@ internal class PubnubChatMessagingClient(
                             pubnubChatEvent.payload.message
                         )
                         logDebug { "pub timetoken: " + result?.timetoken!! }
-                        for (i in 0..1002) {
-                            addMessageAction(channel, result?.timetoken!!, i.toString())
-                        }
                         it.resume(true)
                     } else {
                         it.resume(false)
@@ -400,13 +397,10 @@ internal class PubnubChatMessagingClient(
             }).async(object : PNCallback<PNAddMessageActionResult>() {
                 override fun onResponse(result: PNAddMessageActionResult?, status: PNStatus) {
                     if (!status.isError) {
-                        println(result?.getType())
-                        println(result?.getValue())
-                        println(result?.getUuid())
-                        println(result?.getActionTimetoken())
-                        println(result?.getMessageTimetoken())
+                        println(result?.type)
+                        println(result?.value)
                     } else {
-                        status.getErrorData().getThrowable().printStackTrace()
+                        status.errorData.throwable.printStackTrace()
                     }
                 }
             })
@@ -420,9 +414,9 @@ internal class PubnubChatMessagingClient(
             .async(object : PNCallback<PNRemoveMessageActionResult>() {
             override fun onResponse(result: PNRemoveMessageActionResult?, status: PNStatus) {
                 if (!status.isError) {
-                    println("removed")
+                logDebug { "message action removed" }
                 } else {
-                    status.getErrorData().getThrowable().printStackTrace()
+                    status.errorData.throwable.printStackTrace()
                 }
             }
         })

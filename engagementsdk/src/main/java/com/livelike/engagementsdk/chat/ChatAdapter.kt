@@ -207,6 +207,13 @@ internal class ChatRecyclerAdapter(
                                 myReaction = reaction
                                 reactionsList.add(reaction)
                                 reactionAction = "Added"
+                                pubnubMessageToken?.let { pubnubMessageToken ->
+                                    chatRepository?.addMessageReaction(
+                                        channel,
+                                        pubnubMessageToken,
+                                        reaction.id
+                                    )
+                                }
                             }
                             reactionId?.let {
                                 analyticsService.trackChatReactionSelected(id, it, reactionAction)

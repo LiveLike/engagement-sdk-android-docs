@@ -31,12 +31,12 @@ internal data class ChatMessage(
     val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
     val timeStamp: String? = null,
-    var pubnubTimeToken: Long? = null,
+    var pubnubMessageToken: Long? = null,
     var isFromMe: Boolean = false,
     var myChatMessageReaction: ChatMessageReaction? = null,
     var emojiCountMap: MutableMap<String, Int>? = null,
     var myReaction: Reaction? = null,
-    var reactionsList: HashSet<Reaction> = HashSet()
+    var reactionsList: HashSet<Reaction> = HashSet() // will be removing last 2 params once ui logic is fixed.
 ) {
     fun toReportMessageJson(): String {
         return """{
