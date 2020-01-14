@@ -5,7 +5,9 @@ import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
+import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
@@ -35,6 +37,7 @@ import com.pubnub.api.enums.PNReconnectionPolicy
 import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
+import com.pubnub.api.models.consumer.history.PNFetchMessageItem
 import com.pubnub.api.models.consumer.history.PNFetchMessagesResult
 import com.pubnub.api.models.consumer.history.PNHistoryResult
 import com.pubnub.api.models.consumer.message_actions.PNAddMessageActionResult
@@ -241,6 +244,7 @@ internal class PubnubChatMessagingClient(
                 pubnub: PubNub,
                 pnMessageActionResult: PNMessageActionResult
             ) {
+                logDebug { "real time message action : " + pnMessageActionResult.event }
             }
         })
     }
@@ -249,7 +253,8 @@ internal class PubnubChatMessagingClient(
         jsonObject: JsonObject,
         channel: String,
         client: PubnubChatMessagingClient,
-        timeToken: Long
+        timeToken: Long,
+        actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>? = null
     ) {
         val event = jsonObject.extractStringOrEmpty("event")
         if (event == PubnubChatEventType.MESSAGE_CREATED.key || event == PubnubChatEventType.MESSAGE_DELETED.key) {
@@ -280,7 +285,9 @@ internal class PubnubChatMessagingClient(
 
                     try {
                         clientMessage = ClientMessage(
-                            gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel, timeToken)).asJsonObject.apply {
+                            gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel, timeToken,
+                                processReactionCounts(actions), getOwnReaction(actions))
+                            ).asJsonObject.apply {
                                 addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
                                 addProperty("pubnubMessageToken", pubnubChatEvent.pubnubToken)
                             },
@@ -313,6 +320,29 @@ internal class PubnubChatMessagingClient(
         }
     }
 
+    private fun getOwnReaction(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
+        actions?.get(REACTION_CREATED)?.let { reactions ->
+            for (value in reactions.keys) {
+                reactions[value]?.forEach { action ->
+                    if (action.uuid == pubnub.configuration.uuid) {
+                        return ChatMessageReaction(value, action.actionTimetoken.toLongOrNull())
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    private fun processReactionCounts(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): MutableMap<String, Int> {
+        val reactionCountMap = mutableMapOf<String, Int>()
+        actions?.get(REACTION_CREATED)?.let { reactions ->
+            for (value in reactions.keys) {
+                reactionCountMap[value] = reactions[value]?.size ?: 0
+            }
+        }
+        return reactionCountMap
+    }
+
     internal fun loadMessagesWithReactions(
         channel: String,
         timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
@@ -335,7 +365,8 @@ internal class PubnubChatMessagingClient(
                                 jsonObject,
                                 channel,
                                 this@PubnubChatMessagingClient,
-                                it.timetoken
+                                it.timetoken,
+                                it.actions
                             )
                         }
                     }
@@ -407,7 +438,7 @@ internal class PubnubChatMessagingClient(
         pubnub.addMessageAction()
             .channel(channel)
             .messageAction(PNMessageAction().apply {
-                type = "rc"
+                type = REACTION_CREATED
                 this.value = value
                 this.messageTimetoken = messageTimetoken
             }).async(object : PNCallback<PNAddMessageActionResult>() {

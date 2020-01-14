@@ -11,6 +11,7 @@ import kotlinx.coroutines.withContext
 internal class ChatReactionRepository(private val remoteUrl: String) : BaseRepository() {
 
     var reactionList: List<Reaction>? = null
+    var reactionMap: Map<String, Reaction>? = null
 
     suspend fun getReactions(): List<Reaction>? {
 //        return null
@@ -32,8 +33,19 @@ internal class ChatReactionRepository(private val remoteUrl: String) : BaseRepos
                     listOf()
                 }
             }
+            initReactionMap(reactionList)
             return@withContext reactionList
         }
+    }
+
+    private fun initReactionMap(reactionList: List<Reaction>?) {
+        reactionList?.let { reactionList ->
+            reactionMap = reactionList.map { it.id to it }.toMap()
+        }
+    }
+
+    fun getReaction(id: String): Reaction? {
+        return reactionMap?.get(id)
     }
 
     suspend fun preloadImages(context: Context) {

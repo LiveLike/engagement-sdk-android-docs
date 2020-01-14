@@ -107,6 +107,17 @@ internal class ChatViewModel(
         }
     }
 
+    override fun removeMessageReaction(messagePubnubToken: Long, actionPubnubToken: String) {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun addMessageReaction(
+        isOwnReaction: Boolean,
+        chatMessageReaction: ChatMessageReaction
+    ) {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun deleteChatMessage(messageId: String) {
         messageList.find { it.id == messageId }?.apply {
             message = "Redacted"

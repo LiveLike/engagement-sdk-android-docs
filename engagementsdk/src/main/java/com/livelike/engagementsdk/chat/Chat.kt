@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import java.util.UUID
 
 internal interface ChatEventListener {
@@ -13,6 +12,8 @@ internal interface ChatRenderer {
     fun deleteChatMessage(messageId: String)
     fun updateChatMessageTimeToken(messageId: String, timetoken: String)
     fun loadingCompleted()
+    fun addMessageReaction(isOwnReaction: Boolean, chatMessageReaction: ChatMessageReaction)
+    fun removeMessageReaction(messagePubnubToken: Long, actionPubnubToken: String)
 }
 
 /**
@@ -36,8 +37,6 @@ internal data class ChatMessage(
     var isFromMe: Boolean = false,
     var myChatMessageReaction: ChatMessageReaction? = null,
     var emojiCountMap: MutableMap<String, Int> = mutableMapOf(),
-    var myReaction: Reaction? = null,
-    var reactionsList: HashSet<Reaction> = HashSet(), // will be removing last 2 params once ui logic is fixed.
     // time of the message
     var timetoken: Long = 0L
 ) {
