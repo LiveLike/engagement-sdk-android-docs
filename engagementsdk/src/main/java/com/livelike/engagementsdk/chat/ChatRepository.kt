@@ -55,6 +55,7 @@ internal class ChatRepository(
     }
 
     fun loadPreviousMessages(channel: String, time: Long){
+        println("ChatRepository.loadPreviousMessages-> $time")
         pubnubChatMessagingClient?.loadMessageHistory(channel, time, 20)
     }
 }

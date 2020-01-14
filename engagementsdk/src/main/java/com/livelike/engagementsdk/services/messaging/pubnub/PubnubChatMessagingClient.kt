@@ -325,7 +325,7 @@ internal class PubnubChatMessagingClient(
             .async(object : PNCallback<PNHistoryResult>() {
                 override fun onResponse(result: PNHistoryResult?, status: PNStatus) {
                     if (!status.isError && result?.messages?.isEmpty() == false) {
-                        result.messages.forEach {
+                        result.messages.reversed().forEach {
                             processPubnubChatEvent(
                                 it.entry.asJsonObject,
                                 channel,

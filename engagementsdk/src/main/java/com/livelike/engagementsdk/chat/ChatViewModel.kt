@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat
 
-import android.util.Log
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.LiveLikeUser
@@ -16,16 +15,9 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlin.reflect.KFunction0
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -92,44 +84,24 @@ internal class ChatViewModel(
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
-        messageList.add(message.apply {
-            isFromMe = userStream.latest()?.id == senderId
-        })
-        uiScope.launch{
-            doSortAndSubmitMessageList()
-        }
-    }
-
-    private fun debounce(
-        waitMs: Long = 300L,
-        coroutineScope: CoroutineScope,
-        destinationFunction: KFunction0<Unit>
-    ): () -> Unit {
-        var debounceJob: Job? = null
-        return {
-            debounceJob?.cancel()
-            debounceJob = coroutineScope.launch {
-                delay(waitMs)
-                destinationFunction()
+        if (messageList.size == 0) {
+            messageList.add(message.apply {
+                isFromMe = userStream.latest()?.id == senderId
+            })
+        } else {
+            messageList.first().let {
+                if (message.timetoken != 0L && it.timetoken > message.timetoken) {
+                    messageList.add(0, message.apply {
+                        isFromMe = userStream.latest()?.id == senderId
+                    })
+                } else {
+                    messageList.add(message.apply {
+                        isFromMe = userStream.latest()?.id == senderId
+                    })
+                }
             }
         }
-    }
-
-    // Debouce the sorting operation to avoid the heavy call being done too often
-    val doSortAndSubmitMessageList: ()->Unit = debounce(300L, GlobalScope, ::sortAndSubmitMessageList)
-
-    private fun sortAndSubmitMessageList() = runBlocking(Dispatchers.Default){
-        Log.d("Sorting", "Sorting")
-        messageList.sortBy {
-            if(it.timeStamp.isNullOrEmpty() || it.timeStamp == "0") {
-                // If no timestamp, sort by timetoken
-                it.timetoken
-            }
-            else {
-                // else, sort by timestamp
-                it.timeStamp.toLongOrNull() ?: 0}
-            }
-        withContext(Dispatchers.Main){
+        uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
             eventStream.onNext(EVENT_NEW_MESSAGE)
         }
@@ -148,10 +120,6 @@ internal class ChatViewModel(
             it.id == messageId
         }?.apply {
             this.timetoken = timetoken.toLong()
-        }
-
-        uiScope.launch{
-            doSortAndSubmitMessageList()
         }
     }
 
