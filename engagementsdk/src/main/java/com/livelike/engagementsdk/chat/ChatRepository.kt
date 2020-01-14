@@ -19,10 +19,10 @@ internal class ChatRepository(
     private val publishKey: String? = null
 ) : BaseRepository() {
 
-    private var pubnubChatMessagingClient: PubnubChatMessagingClient? = null
+    var pubnubChatMessagingClient : PubnubChatMessagingClient? = null
 
     fun establishChatMessagingConnection(): MessagingClient {
-        val pubnubChatMessagingClient = PubnubChatMessagingClient(
+        pubnubChatMessagingClient = PubnubChatMessagingClient(
             subscribeKey,
             authKey,
             uuid,
@@ -30,8 +30,7 @@ internal class ChatRepository(
             publishKey,
             msgListener = msgListener
         )
-        this.pubnubChatMessagingClient = pubnubChatMessagingClient
-        return pubnubChatMessagingClient
+        return pubnubChatMessagingClient!!
     }
 
     suspend fun fetchChatRoom(chatRoomId: String, chatRoomTemplateUrl: String): Result<ChatRoom> {
@@ -53,5 +52,9 @@ internal class ChatRepository(
             messagePubnubToken,
             reactionpubnubToken
         )
+    }
+
+    fun loadPreviousMessages(channel: String, time: Long){
+        pubnubChatMessagingClient?.loadMessagesWithReactions(channel, time, 20)
     }
 }

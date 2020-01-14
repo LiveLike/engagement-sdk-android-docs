@@ -196,7 +196,6 @@ internal class ContentSession(
             }
         }
     }
-
     override fun getMessageCount(
         chatRoomId: String,
         startTimestamp: Long,

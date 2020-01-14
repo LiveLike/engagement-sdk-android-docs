@@ -65,6 +65,7 @@ import kotlinx.android.synthetic.main.chat_view.view.chatdisplayBack
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
+import kotlinx.android.synthetic.main.chat_view.view.swipeToRefresh
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -203,6 +204,10 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             )
             initEmptyView()
         }
+
+        swipeToRefresh.setOnRefreshListener {
+            viewModel?.loadPreviousMessages()
+        }
     }
 
     private fun initEmptyView() {
@@ -236,16 +241,20 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
                         checkEmptyChat()
-                        if (isLastItemVisible) {
+                        if (isLastItemVisible && !swipeToRefresh.isRefreshing) {
                             snapToLive()
                         }
                     }
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
                         uiScope.launch {
-                            hideLoadingSpinner()
-                            checkEmptyChat()
-                            delay(100)
-                            snapToLive()
+                            if(swipeToRefresh.isRefreshing){
+                                swipeToRefresh.isRefreshing = false
+                            }else{
+                                hideLoadingSpinner()
+                                checkEmptyChat()
+                                delay(100)
+                                snapToLive()
+                            }
                         }
                     }
                     ChatViewModel.EVENT_LOADING_STARTED -> {

@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
+import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
@@ -73,7 +74,7 @@ internal class ChatViewModel(
     companion object {
         const val EVENT_NEW_MESSAGE = "new-message"
         const val EVENT_MESSAGE_DELETED = "deletion"
-        const val EVENT_MESSAGE_ID_UPDATED = "id-updated"
+        const val EVENT_MESSAGE_TIMETOKEN_UPDATED = "id-updated"
         const val EVENT_LOADING_COMPLETE = "loading-complete"
         const val EVENT_LOADING_STARTED = "loading-started"
     }
@@ -83,9 +84,23 @@ internal class ChatViewModel(
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
-        messageList.add(message.apply {
-            isFromMe = userStream.latest()?.id == senderId
-        })
+        if (messageList.size == 0) {
+            messageList.add(message.apply {
+                isFromMe = userStream.latest()?.id == senderId
+            })
+        } else {
+            messageList.first().let {
+                if (message.timetoken != 0L && it.timetoken > message.timetoken) {
+                    messageList.add(0, message.apply {
+                        isFromMe = userStream.latest()?.id == senderId
+                    })
+                } else {
+                    messageList.add(message.apply {
+                        isFromMe = userStream.latest()?.id == senderId
+                    })
+                }
+            }
+        }
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
             eventStream.onNext(EVENT_NEW_MESSAGE)
@@ -100,11 +115,11 @@ internal class ChatViewModel(
         eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 
-    override fun updateChatMessageId(oldId: String, newId: String) {
+    override fun updateChatMessageTimeToken(messageId: String, timetoken: String) {
         messageList.find {
-            it.id == oldId
+            it.id == messageId
         }?.apply {
-            id = newId
+            this.timetoken = timetoken.toLong()
         }
     }
 
@@ -113,6 +128,8 @@ internal class ChatViewModel(
             chatLoaded = true
             chatAdapter.submitList(ArrayList(messageList))
             chatAdapter.notifyDataSetChanged()
+        }else{
+            eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
     }
 
@@ -126,4 +143,18 @@ internal class ChatViewModel(
         messageList.clear()
         chatAdapter.submitList(messageList)
     }
+
+    fun loadPreviousMessages(){
+        currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let {channel ->
+            if (chatRepository != null) {
+                chatRepository?.loadPreviousMessages(
+                    channel,
+                    messageList.first().timetoken
+                )
+            }else{
+                logError { "Chat repo is null" }
+            }
+        }
+    }
+
 }
