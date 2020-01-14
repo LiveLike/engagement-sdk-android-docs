@@ -113,7 +113,7 @@ internal class ChatRecyclerAdapter(
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
                 if (reactionsAvailable || !isOwnMessage) {
-                    showFloatingUI(isOwnMessage, message?.myReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
+                    showFloatingUI(isOwnMessage, message?.myChatMessageReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
                 }
             }
             return true
@@ -157,7 +157,7 @@ internal class ChatRecyclerAdapter(
 
         private fun showFloatingUI(
             isOwnMessage: Boolean,
-            reaction: Reaction? = null,
+            reaction: ChatMessageReaction? = null,
             checkItemIsAtTop: Boolean
         ) {
             updateBackground(true)
@@ -197,14 +197,14 @@ internal class ChatRecyclerAdapter(
                             if (reaction == null) {
                                 reactionsList.remove(myReaction)
                                 reactionId = myReaction?.name
-                                myReaction = null
+                                myChatMessageReaction = null
                                 reactionAction = "Removed"
                             } else {
                                 myReaction?.let {
                                     reactionsList.remove(it)
                                 }
                                 reactionId = reaction.name
-                                myReaction = reaction
+                                myChatMessageReaction = ChatMessageReaction(reaction.id)
                                 reactionsList.add(reaction)
                                 reactionAction = "Added"
                                 pubnubMessageToken?.let { pubnubMessageToken ->
@@ -420,7 +420,7 @@ internal class ChatRecyclerAdapter(
                         txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
                         if (reactionsList.size > 0) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
-                            txt_chat_reactions_count.text = "${reactionsList.size}"
+                            txt_chat_reactions_count.text = "${reactionsList .size}"
                         } else {
                             txt_chat_reactions_count.visibility = View.GONE
                         }

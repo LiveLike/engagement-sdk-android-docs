@@ -34,7 +34,7 @@ internal data class ChatMessage(
     var pubnubMessageToken: Long? = null,
     var isFromMe: Boolean = false,
     var myChatMessageReaction: ChatMessageReaction? = null,
-    var emojiCountMap: MutableMap<String, Int>? = null,
+    var emojiCountMap: MutableMap<String, Int> = mutableMapOf(),
     var myReaction: Reaction? = null,
     var reactionsList: HashSet<Reaction> = HashSet() // will be removing last 2 params once ui logic is fixed.
 ) {
@@ -51,5 +51,5 @@ internal data class ChatMessage(
 
 internal data class ChatMessageReaction(
     val emojiId: String,
-    val pubnubActionToken: Long
+    val pubnubActionToken: Long? = null
 )

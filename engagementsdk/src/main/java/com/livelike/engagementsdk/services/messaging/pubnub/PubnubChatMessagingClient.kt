@@ -233,7 +233,8 @@ internal class PubnubChatMessagingClient(
             }
 
             override fun message(pubnub: PubNub, message: PNMessageResult) {
-                processPubnubChatEvent(message.message.asJsonObject, message.channel, client)
+                processPubnubChatEvent(message.message.asJsonObject.apply {
+                    addProperty("pubnubToken", message.timetoken) }, message.channel, client)
             }
 
             override fun messageAction(
@@ -271,6 +272,7 @@ internal class PubnubChatMessagingClient(
                         clientMessage = ClientMessage(
                             gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel)).asJsonObject.apply {
                                 addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
+                                addProperty("pubnubMessageToken", pubnubChatEvent.pubnubToken)
                             },
                             channel,
                             EpochTime(epochTimeMs)
@@ -342,11 +344,11 @@ internal class PubnubChatMessagingClient(
                 override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
                     if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
                         result?.channels?.get(channel)?.forEach {
+                            val jsonObject = it.message.asJsonObject.apply {
+                                    addProperty("pubnubToken", it.timetoken)
+                            }
                             processPubnubChatEvent(
-                                it.message.asJsonObject.apply {
-                                    getAsJsonObject("payload")
-                                        .addProperty("messageToken", it.timetoken)
-                                },
+                                jsonObject,
                                 channel,
                                 this@PubnubChatMessagingClient
                             )
