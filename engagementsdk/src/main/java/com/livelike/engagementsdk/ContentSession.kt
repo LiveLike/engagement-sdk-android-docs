@@ -54,7 +54,7 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
-    override fun setProfilePicUrl(url: String) {
+    override fun setProfilePicUrl(url: String?) {
         userRepository.setProfilePicUrl(url)
     }
 
@@ -196,7 +196,6 @@ internal class ContentSession(
             }
         }
     }
-
     override fun getMessageCount(
         chatRoomId: String,
         startTimestamp: Long,

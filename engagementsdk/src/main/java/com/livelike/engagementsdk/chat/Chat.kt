@@ -11,7 +11,7 @@ internal interface ChatEventListener {
 internal interface ChatRenderer {
     fun displayChatMessage(message: ChatMessage)
     fun deleteChatMessage(messageId: String)
-    fun updateChatMessageId(oldId: String, newId: String)
+    fun updateChatMessageTimeToken(messageId: String, timetoken: String)
     fun loadingCompleted()
 }
 
@@ -30,13 +30,16 @@ internal data class ChatMessage(
     val senderDisplayName: String,
     val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
+    // PDT video time //NOt using right now for later use FYI @shivansh @Willis
     val timeStamp: String? = null,
     var pubnubMessageToken: Long? = null,
     var isFromMe: Boolean = false,
     var myChatMessageReaction: ChatMessageReaction? = null,
     var emojiCountMap: MutableMap<String, Int> = mutableMapOf(),
     var myReaction: Reaction? = null,
-    var reactionsList: HashSet<Reaction> = HashSet() // will be removing last 2 params once ui logic is fixed.
+    var reactionsList: HashSet<Reaction> = HashSet(), // will be removing last 2 params once ui logic is fixed.
+    // time of the message
+    var timetoken: Long = 0L
 ) {
     fun toReportMessageJson(): String {
         return """{
