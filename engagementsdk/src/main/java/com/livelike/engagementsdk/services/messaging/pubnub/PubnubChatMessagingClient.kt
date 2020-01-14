@@ -311,35 +311,7 @@ internal class PubnubChatMessagingClient(
         }
     }
 
-    internal fun loadMessageHistory(
-        channel: String,
-        timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
-        chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
-    ) {
-        pubnub.history()
-            .includeTimetoken(true)
-            .channel(channel)
-            .count(chatHistoyLimit)
-            .start(timeToken)
-            .reverse(false)
-            .async(object : PNCallback<PNHistoryResult>() {
-                override fun onResponse(result: PNHistoryResult?, status: PNStatus) {
-                    if (!status.isError && result?.messages?.isEmpty() == false) {
-                        result.messages.reversed().forEach {
-                            processPubnubChatEvent(
-                                it.entry.asJsonObject,
-                                channel,
-                                this@PubnubChatMessagingClient,
-                                it.timetoken
-                            )
-                        }
-                    }
-                    sendLoadingCompletedEvent(channel)
-                }
-            })
-    }
-
-    private fun loadMessagesWithReactions(
+    internal fun loadMessagesWithReactions(
         channel: String,
         timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
@@ -353,7 +325,7 @@ internal class PubnubChatMessagingClient(
             .async(object : PNCallback<PNFetchMessagesResult>() {
                 override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
                     if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
-                        result?.channels?.get(channel)?.forEach {
+                        result.channels?.get(channel)?.reversed()?.forEach {
                             processPubnubChatEvent(
                                 it.message.asJsonObject.apply {
                                     getAsJsonObject("payload")
