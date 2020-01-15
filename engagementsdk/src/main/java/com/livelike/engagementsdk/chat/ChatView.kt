@@ -62,7 +62,6 @@ import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chat_view
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplayBack
-import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
 import kotlinx.android.synthetic.main.chat_view.view.swipeToRefresh
@@ -583,14 +582,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun showLoadingSpinner() {
-        loadingSpinner.visibility = View.VISIBLE
+//        loadingSpinner.visibility = View.VISIBLE
         chatInput.visibility = View.GONE
         chatdisplay.visibility = View.GONE
         snap_live.visibility = View.GONE
     }
 
     private fun hideLoadingSpinner() {
-        loadingSpinner.visibility = View.GONE
+//        loadingSpinner.visibility = View.GONE
         chatInput.visibility = View.VISIBLE
         chatdisplay.visibility = View.VISIBLE
     }

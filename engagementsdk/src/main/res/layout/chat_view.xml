@@ -54,7 +54,7 @@
 
     </FrameLayout>
 
-    <ProgressBar
+    <!--<ProgressBar
             android:id="@+id/loadingSpinner"
             android:layout_width="wrap_content"
         android:layout_marginRight="8dp"
@@ -64,7 +64,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:visibility="gone"/>
+            android:visibility="gone"/>-->
 
     <ImageButton
         android:id="@+id/snap_live"

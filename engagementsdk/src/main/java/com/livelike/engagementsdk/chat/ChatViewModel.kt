@@ -146,7 +146,7 @@ internal class ChatViewModel(
 
     fun loadPreviousMessages(){
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let {channel ->
-            if (chatRepository != null) {
+            if (chatRepository != null && messageList.size > 0) {
                 chatRepository?.loadPreviousMessages(
                     channel,
                     messageList.first().timetoken
