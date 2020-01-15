@@ -39,8 +39,6 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
@@ -49,6 +47,8 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -412,23 +412,25 @@ internal class ChatRecyclerAdapter(
                         val size = context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_display_size)
                         rel_reactions_lay.removeAllViews()
                         // TODO need to check for updating list and work on remove the reaction with animation
-                        emojiCountMap.keys.forEachIndexed { index, reactionId ->
-                            imageView = ImageView(context)
-                            val reaction = chatReactionRepository.getReaction(reactionId)
-                            reaction?.let { reaction ->
-                                imageView.loadImage(reaction.file, size)
-                                val paramsImage: FrameLayout.LayoutParams =
-                                    FrameLayout.LayoutParams(size, size)
-                                paramsImage.gravity = Gravity.LEFT
-                                val left = ((size / 1.2) * (index)).toInt()
-                                paramsImage.setMargins(left, 0, 0, 0)
-                                rel_reactions_lay.addView(imageView, paramsImage)
-                                imageView.bringToFront()
-                                imageView.invalidate()
+                        emojiCountMap.keys.filter { return@filter (emojiCountMap[it] ?: 0) > 0 }.forEachIndexed { index, reactionId ->
+                            if ((emojiCountMap[reactionId] ?: 0) > 0) {
+                                imageView = ImageView(context)
+                                val reaction = chatReactionRepository.getReaction(reactionId)
+                                reaction?.let { reaction ->
+                                    imageView.loadImage(reaction.file, size)
+                                    val paramsImage: FrameLayout.LayoutParams =
+                                        FrameLayout.LayoutParams(size, size)
+                                    paramsImage.gravity = Gravity.LEFT
+                                    val left = ((size / 1.2) * (index)).toInt()
+                                    paramsImage.setMargins(left, 0, 0, 0)
+                                    rel_reactions_lay.addView(imageView, paramsImage)
+                                    imageView.bringToFront()
+                                    imageView.invalidate()
 
-                                myChatMessageReaction?.let {
-                                    if (it.emojiId == reaction.id) {
-                                        imageView.startAnimation(bounceAnimation)
+                                    myChatMessageReaction?.let {
+                                        if (it.emojiId == reaction.id) {
+                                            imageView.startAnimation(bounceAnimation)
+                                        }
                                     }
                                 }
                             }
