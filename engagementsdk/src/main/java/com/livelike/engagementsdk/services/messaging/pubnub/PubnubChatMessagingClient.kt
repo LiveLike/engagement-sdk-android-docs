@@ -248,11 +248,9 @@ internal class PubnubChatMessagingClient(
                 pnMessageActionResult: PNMessageActionResult
             ) {
                 coroutineScope.launch {
-                    if (lastActionTimeToken != pnMessageActionResult.messageAction.actionTimetoken) {
-                        lastActionTimeToken = pnMessageActionResult.messageAction.actionTimetoken
-                        logDebug { "real time message action : " + pnMessageActionResult.event }
-                        processPubnubMessageAction(pnMessageActionResult, client)
-                    }
+                    lastActionTimeToken = pnMessageActionResult.messageAction.actionTimetoken
+                    logDebug { "real time message action : " + pnMessageActionResult.event }
+                    processPubnubMessageAction(pnMessageActionResult, client)
                 }
             }
         })
@@ -535,7 +533,7 @@ internal class PubnubChatMessagingClient(
             .async(object : PNCallback<PNRemoveMessageActionResult>() {
             override fun onResponse(result: PNRemoveMessageActionResult?, status: PNStatus) {
                 if (!status.isError) {
-                logDebug { "message action removed" }
+                    logDebug { "own message action removed" }
                 } else {
                     status.errorData.throwable.printStackTrace()
                 }

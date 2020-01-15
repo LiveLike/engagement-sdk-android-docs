@@ -112,7 +112,7 @@ internal class ChatViewModel(
     override fun removeMessageReaction(messagePubnubToken: Long, emojiId: String) {
         messageList.forEach { chatMessage ->
             chatMessage.apply {
-                if (this.pubnubMessageToken == messagePubnubToken) {
+                if (this.timetoken == messagePubnubToken) {
                     emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) - 1
                     uiScope.launch { chatAdapter.notifyDataSetChanged() }
                     return@forEach
@@ -130,7 +130,7 @@ internal class ChatViewModel(
 
         messageList.forEach { chatMessage ->
             chatMessage.apply {
-                if (this.pubnubMessageToken == messagePubnubToken) {
+                if (this.timetoken == messagePubnubToken) {
                     if (isOwnReaction) {
                         if (chatMessage?.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
                             chatMessage?.myChatMessageReaction?.pubnubActionToken = chatMessageReaction.pubnubActionToken
