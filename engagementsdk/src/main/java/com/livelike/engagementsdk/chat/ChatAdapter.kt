@@ -200,7 +200,7 @@ internal class ChatRecyclerAdapter(
                                 myChatMessageReaction?.let { myChatMessageReaction ->
                                     emojiCountMap[myChatMessageReaction.emojiId] = (emojiCountMap[myChatMessageReaction.emojiId] ?: 0) - 1
                                     myChatMessageReaction.pubnubActionToken?.let { pubnubActionToken ->
-                                        pubnubMessageToken?.let {
+                                        timetoken?.let {
                                             chatRepository?.removeMessageReaction(channel, it, pubnubActionToken)
                                         }
                                     }
@@ -211,7 +211,7 @@ internal class ChatRecyclerAdapter(
                                 myChatMessageReaction?.let {
                                     emojiCountMap[it.emojiId] = (emojiCountMap[it.emojiId] ?: 0) - 1
                                     it.pubnubActionToken?.let { pubnubActionToken ->
-                                        pubnubMessageToken?.let {
+                                        timetoken?.let {
                                             chatRepository?.removeMessageReaction(channel, it, pubnubActionToken)
                                         }
                                     }
@@ -219,7 +219,7 @@ internal class ChatRecyclerAdapter(
                                 reactionId = reaction.id
                                 myChatMessageReaction = ChatMessageReaction(reaction.id)
                                 emojiCountMap[reaction.id] = (emojiCountMap[reaction.id] ?: 0) + 1
-                                pubnubMessageToken?.let { pubnubMessageToken ->
+                                timetoken?.let { pubnubMessageToken ->
                                     chatRepository?.addMessageReaction(
                                         channel,
                                         pubnubMessageToken,
