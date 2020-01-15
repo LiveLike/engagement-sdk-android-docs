@@ -436,9 +436,10 @@ internal class ChatRecyclerAdapter(
                             }
                         }
                         txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
-                        if (emojiCountMap.isNotEmpty()) {
+                        val sumCount= emojiCountMap.values.sum()
+                        if (emojiCountMap.isNotEmpty() && sumCount > 0) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
-                            txt_chat_reactions_count.text = "${emojiCountMap.values.sum()}"
+                            txt_chat_reactions_count.text = "$sumCount"
                         } else {
                             txt_chat_reactions_count.visibility = View.GONE
                         }
