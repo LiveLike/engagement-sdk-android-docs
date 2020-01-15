@@ -245,10 +245,53 @@ internal class PubnubChatMessagingClient(
                 pnMessageActionResult: PNMessageActionResult
             ) {
                 logDebug { "real time message action : " + pnMessageActionResult.event }
+                processPubnubMessageAction(pnMessageActionResult, client)
             }
         })
     }
 
+    private fun processPubnubMessageAction(
+        pnMessageActionResult: PNMessageActionResult,
+        client: PubnubChatMessagingClient
+    ) {
+        if (pnMessageActionResult.messageAction.type == REACTION_CREATED) {
+            val clientMessage: ClientMessage
+            if (pnMessageActionResult.event == "added") {
+                clientMessage = ClientMessage(
+                    JsonObject().apply {
+                        addProperty("event", ChatViewModel.EVENT_REACTION_ADDED)
+                        addProperty(
+                            "isOwnReaction",
+                            pubnub.configuration.uuid == pnMessageActionResult.messageAction.uuid
+                        )
+                        addProperty(
+                            "actionPubnubToken",
+                            pnMessageActionResult.messageAction.actionTimetoken
+                        )
+                        addProperty(
+                            "messagePubnubToken",
+                            pnMessageActionResult.messageAction.messageTimetoken
+                        )
+                        addProperty("emojiId", pnMessageActionResult.messageAction.value)
+                    },
+                    pnMessageActionResult.channel
+                )
+            } else {
+                clientMessage = ClientMessage(
+                    JsonObject().apply {
+                        addProperty("event", ChatViewModel.EVENT_REACTION_REMOVED)
+                        addProperty(
+                            "messagePubnubToken",
+                            pnMessageActionResult.messageAction.messageTimetoken
+                        )
+                        addProperty("emojiId", pnMessageActionResult.messageAction.value)
+                    },
+                    pnMessageActionResult.channel
+                )
+            }
+            listener?.onClientMessageEvent(client, clientMessage)
+        }
+    }
     private fun processPubnubChatEvent(
         jsonObject: JsonObject,
         channel: String,
