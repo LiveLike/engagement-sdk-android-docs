@@ -12,8 +12,8 @@ internal interface ChatRenderer {
     fun deleteChatMessage(messageId: String)
     fun updateChatMessageTimeToken(messageId: String, timetoken: String)
     fun loadingCompleted()
-    fun addMessageReaction(isOwnReaction: Boolean, chatMessageReaction: ChatMessageReaction)
-    fun removeMessageReaction(messagePubnubToken: Long, actionPubnubToken: String)
+    fun addMessageReaction(isOwnReaction: Boolean, messagePubnubToken: Long, chatMessageReaction: ChatMessageReaction)
+    fun removeMessageReaction(messagePubnubToken: Long, emojiId: String)
 }
 
 /**
@@ -53,5 +53,5 @@ internal data class ChatMessage(
 
 internal data class ChatMessageReaction(
     val emojiId: String,
-    val pubnubActionToken: Long? = null
+    var pubnubActionToken: Long? = null
 )
