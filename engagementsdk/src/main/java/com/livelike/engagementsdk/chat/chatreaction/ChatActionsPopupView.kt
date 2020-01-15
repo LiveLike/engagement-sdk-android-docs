@@ -9,22 +9,19 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import android.widget.RelativeLayout
 import android.widget.TextView
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_lay
-import java.util.Random
-import kotlin.math.ln
-import kotlin.math.pow
-
 
 /**
  * Chat reactions and Chat moderation actions view that will popup when use long press chat
@@ -35,7 +32,8 @@ internal class ChatActionsPopupView(
     flagClick: View.OnClickListener,
     hideFloatingUi: () -> Unit,
     isOwnMessage: Boolean,
-    val userReaction: Reaction? = null,
+    val userReaction: ChatMessageReaction? = null,
+    val emojiCountMap: MutableMap<String, Int>? = null,
     private val chatViewThemeAttributes: ChatViewThemeAttributes,
     val selectReactionListener: SelectReactionListener? = null
 ) : PopupWindow(context) {
@@ -77,33 +75,26 @@ internal class ChatActionsPopupView(
     }
 
     private fun formattedReactionCount(count: Int): String {
-        if (count < 1000) return "" + count
-        val exp = (ln(count.toDouble()) / ln(1000.0)).toInt()
-        return String.format(
-            "%.1f%c",
-            count / 1000.0.pow(exp.toDouble()),
-            "kMGTPE"[exp - 1]
-        )
+        return if (count < 99)
+            "$count"
+        else
+            "99+"
     }
 
     private fun initReactions() {
         val reactionsBox =
-            contentView.findViewById<ImageView>(R.id.reaction_panel_interaction_box) as ViewGroup
+            contentView.findViewById<LinearLayout>(R.id.reaction_panel_interaction_box)
         reactionsBox.removeAllViews()
-        val eightDp = AndroidResource.dpToPx(8)
         chatReactionRepository.reactionList?.forEach { reaction ->
-            val frameLayout = LinearLayout(context)
+            val relativeLayout = RelativeLayout(context)
             val countView = TextView(context)
             val imageView = ImageView(context)
-            frameLayout.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-            }
-            frameLayout.orientation = LinearLayout.VERTICAL
+            imageView.id = View.generateViewId()
             imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
 
             userReaction?.let {
-                if(it.name == reaction.name)
-                    frameLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background)
+                if (it.emojiId == reaction.id)
+                    relativeLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background)
             }
             imageView.setOnTouchListener { v, event ->
                 when (event.action) {
@@ -115,8 +106,8 @@ internal class ChatActionsPopupView(
                         v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(50).start()
                         selectReactionListener?.let {
                             if (userReaction != null) {
-                                if (userReaction.name == reaction.name) {
-                                    it.onSelectReaction(null) //No selection
+                                if (userReaction.emojiId == reaction.id) {
+                                    it.onSelectReaction(null) // No selection
                                 } else
                                     it.onSelectReaction(reaction)
                             } else
@@ -131,25 +122,22 @@ internal class ChatActionsPopupView(
 
             imageView.scaleType = ImageView.ScaleType.CENTER
 
-            val cnt = Random().nextInt(10000)
+            val count = emojiCountMap?.get(reaction.id) ?: 0
             countView.apply {
-                text = formattedReactionCount(cnt)
+                gravity = Gravity.RIGHT
+                text = formattedReactionCount(count)
                 setTextColor(chatViewThemeAttributes.chatReactionPanelCountColor)
                 setTypeface(null, Typeface.BOLD)
-                setTextSize(TypedValue.COMPLEX_UNIT_PX,context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size))
-                visibility = when (cnt) {
-                    0 -> View.GONE
-                    else -> View.VISIBLE
-                }
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size))
             }
-            frameLayout.addView(countView,LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                gravity = Gravity.RIGHT
+            relativeLayout.addView(imageView, RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT).apply {
+                addRule(RelativeLayout.CENTER_IN_PARENT)
             })
-            frameLayout.addView(imageView,LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                gravity = Gravity.LEFT
-                setMargins(eightDp,0,eightDp,0)
+            relativeLayout.addView(countView, RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT).apply {
+                addRule(RelativeLayout.ALIGN_TOP,imageView.id)
+                addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
             })
-            reactionsBox.addView(frameLayout)
+            reactionsBox.addView(relativeLayout,LinearLayout.LayoutParams(AndroidResource.dpToPx(35),AndroidResource.dpToPx(35)))
         }
         contentView.chat_reaction_background_card.visibility =
             if ((chatReactionRepository.reactionList?.size ?: 0) > 0) {
@@ -158,8 +146,7 @@ internal class ChatActionsPopupView(
                 View.INVISIBLE
             }
     }
-
 }
-internal interface SelectReactionListener{
+internal interface SelectReactionListener {
     fun onSelectReaction(reaction: Reaction?)
 }

@@ -52,6 +52,17 @@ internal class ChatQueue(upstream: MessagingClient) :
             ChatViewModel.EVENT_LOADING_COMPLETE -> {
                 renderer?.loadingCompleted()
             }
+            ChatViewModel.EVENT_REACTION_ADDED -> {
+                event.message.run {
+                    renderer?.addMessageReaction(get("isOwnReaction").asBoolean, get("messagePubnubToken").asLong,
+                        ChatMessageReaction(get("emojiId").asString, get("actionPubnubToken").asString.toLongOrNull()))
+                }
+            }
+            ChatViewModel.EVENT_REACTION_REMOVED -> {
+                event.message.run {
+                    renderer?.removeMessageReaction(get("messagePubnubToken").asLong, get("emojiId").asString)
+                }
+            }
         }
     }
 }
