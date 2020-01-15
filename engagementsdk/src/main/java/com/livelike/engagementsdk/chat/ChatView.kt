@@ -45,8 +45,6 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -62,6 +60,7 @@ import kotlinx.android.synthetic.main.chat_view.view.chatInput
 import kotlinx.android.synthetic.main.chat_view.view.chat_view
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplay
 import kotlinx.android.synthetic.main.chat_view.view.chatdisplayBack
+import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
 import kotlinx.android.synthetic.main.chat_view.view.swipeToRefresh
@@ -71,6 +70,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -205,6 +206,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         swipeToRefresh.setOnRefreshListener {
+            swipeToRefresh.isRefreshing = false
             viewModel?.loadPreviousMessages()
         }
     }
@@ -582,14 +584,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun showLoadingSpinner() {
-//        loadingSpinner.visibility = View.VISIBLE
+        loadingSpinner.visibility = View.VISIBLE
         chatInput.visibility = View.GONE
         chatdisplay.visibility = View.GONE
         snap_live.visibility = View.GONE
     }
 
     private fun hideLoadingSpinner() {
-//        loadingSpinner.visibility = View.GONE
+        loadingSpinner.visibility = View.GONE
         chatInput.visibility = View.VISIBLE
         chatdisplay.visibility = View.VISIBLE
     }
