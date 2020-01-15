@@ -247,9 +247,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
                         uiScope.launch {
-                            if(swipeToRefresh.isRefreshing){
+                            if (swipeToRefresh.isRefreshing) {
                                 swipeToRefresh.isRefreshing = false
-                            }else{
+                            } else {
                                 hideLoadingSpinner()
                                 checkEmptyChat()
                                 delay(100)
@@ -317,7 +317,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
                 return@lambda false
             }
-            
+
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     stickerPackRepository?.let { stickerPackRepository ->

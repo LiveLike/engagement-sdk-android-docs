@@ -39,8 +39,6 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
@@ -49,6 +47,8 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -113,7 +113,7 @@ internal class ChatRecyclerAdapter(
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
                 if (reactionsAvailable || !isOwnMessage) {
-                    showFloatingUI(isOwnMessage, message?.myReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
+                    showFloatingUI(isOwnMessage, message?.myChatMessageReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
                 }
             }
             return true
@@ -157,7 +157,7 @@ internal class ChatRecyclerAdapter(
 
         private fun showFloatingUI(
             isOwnMessage: Boolean,
-            reaction: Reaction? = null,
+            reaction: ChatMessageReaction? = null,
             checkItemIsAtTop: Boolean
         ) {
             updateBackground(true)
@@ -188,6 +188,7 @@ internal class ChatRecyclerAdapter(
                 ::hideFloatingUI,
                 isOwnMessage,
                 userReaction = reaction,
+                emojiCountMap = message?.emojiCountMap,
                 chatViewThemeAttributes = chatViewThemeAttribute,
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
@@ -195,25 +196,37 @@ internal class ChatRecyclerAdapter(
                             val reactionId: String?
                             val reactionAction: String
                             if (reaction == null) {
-                                reactionsList.remove(myReaction)
-                                reactionId = myReaction?.name
-                                myReaction = null
+                                reactionId = myChatMessageReaction?.emojiId
+                                myChatMessageReaction?.let { myChatMessageReaction ->
+                                    emojiCountMap[myChatMessageReaction.emojiId] = (emojiCountMap[myChatMessageReaction.emojiId] ?: 0) - 1
+                                    myChatMessageReaction.pubnubActionToken?.let { pubnubActionToken ->
+                                        timetoken?.let {
+                                            chatRepository?.removeMessageReaction(channel, it, pubnubActionToken)
+                                        }
+                                    }
+                                }
+                                myChatMessageReaction = null
                                 reactionAction = "Removed"
                             } else {
-                                myReaction?.let {
-                                    reactionsList.remove(it)
+                                myChatMessageReaction?.let {
+                                    emojiCountMap[it.emojiId] = (emojiCountMap[it.emojiId] ?: 0) - 1
+                                    it.pubnubActionToken?.let { pubnubActionToken ->
+                                        timetoken?.let {
+                                            chatRepository?.removeMessageReaction(channel, it, pubnubActionToken)
+                                        }
+                                    }
                                 }
-                                reactionId = reaction.name
-                                myReaction = reaction
-                                reactionsList.add(reaction)
-                                reactionAction = "Added"
-                                pubnubMessageToken?.let { pubnubMessageToken ->
+                                reactionId = reaction.id
+                                myChatMessageReaction = ChatMessageReaction(reaction.id)
+                                emojiCountMap[reaction.id] = (emojiCountMap[reaction.id] ?: 0) + 1
+                                timetoken?.let { pubnubMessageToken ->
                                     chatRepository?.addMessageReaction(
                                         channel,
                                         pubnubMessageToken,
                                         reaction.id
                                     )
                                 }
+                                reactionAction = "Added"
                             }
                             reactionId?.let {
                                 analyticsService.trackChatReactionSelected(id, it, reactionAction)
@@ -399,28 +412,33 @@ internal class ChatRecyclerAdapter(
                         val size = context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_display_size)
                         rel_reactions_lay.removeAllViews()
                         // TODO need to check for updating list and work on remove the reaction with animation
-                        reactionsList.forEachIndexed { index, reaction ->
-                            imageView = ImageView(context)
-                            imageView.loadImage(reaction.file, size)
-                            val paramsImage: FrameLayout.LayoutParams =
-                                FrameLayout.LayoutParams(size, size)
-                            paramsImage.gravity = Gravity.LEFT
-                            val left = ((size / 1.2) * (index)).toInt()
-                            paramsImage.setMargins(left, 0, 0, 0)
-                            rel_reactions_lay.addView(imageView, paramsImage)
-                            imageView.bringToFront()
-                            imageView.invalidate()
+                        emojiCountMap.keys.filter { return@filter (emojiCountMap[it] ?: 0) > 0 }.forEachIndexed { index, reactionId ->
+                            if ((emojiCountMap[reactionId] ?: 0) > 0) {
+                                imageView = ImageView(context)
+                                val reaction = chatReactionRepository.getReaction(reactionId)
+                                reaction?.let { reaction ->
+                                    imageView.loadImage(reaction.file, size)
+                                    val paramsImage: FrameLayout.LayoutParams =
+                                        FrameLayout.LayoutParams(size, size)
+                                    paramsImage.gravity = Gravity.LEFT
+                                    val left = ((size / 1.2) * (index)).toInt()
+                                    paramsImage.setMargins(left, 0, 0, 0)
+                                    rel_reactions_lay.addView(imageView, paramsImage)
+                                    imageView.bringToFront()
+                                    imageView.invalidate()
 
-                            myReaction?.let {
-                                if (it.name == reaction.name) {
-                                    imageView.startAnimation(bounceAnimation)
+                                    myChatMessageReaction?.let {
+                                        if (it.emojiId == reaction.id) {
+                                            imageView.startAnimation(bounceAnimation)
+                                        }
+                                    }
                                 }
                             }
                         }
                         txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
-                        if (reactionsList.size > 0) {
+                        if (emojiCountMap.isNotEmpty()) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
-                            txt_chat_reactions_count.text = "${reactionsList.size}"
+                            txt_chat_reactions_count.text = "${emojiCountMap.values.sum()}"
                         } else {
                             txt_chat_reactions_count.visibility = View.GONE
                         }

@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import java.util.UUID
 
 internal interface ChatEventListener {
@@ -13,6 +12,8 @@ internal interface ChatRenderer {
     fun deleteChatMessage(messageId: String)
     fun updateChatMessageTimeToken(messageId: String, timetoken: String)
     fun loadingCompleted()
+    fun addMessageReaction(isOwnReaction: Boolean, messagePubnubToken: Long, chatMessageReaction: ChatMessageReaction)
+    fun removeMessageReaction(messagePubnubToken: Long, emojiId: String)
 }
 
 /**
@@ -30,16 +31,14 @@ internal data class ChatMessage(
     val senderDisplayName: String,
     val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
-    //PDT video time //NOt using right now for later use FYI @shivansh @Willis
+    // PDT video time //NOt using right now for later use FYI @shivansh @Willis
     val timeStamp: String? = null,
     var pubnubMessageToken: Long? = null,
     var isFromMe: Boolean = false,
     var myChatMessageReaction: ChatMessageReaction? = null,
-    var emojiCountMap: MutableMap<String, Int>? = null,
-    var myReaction: Reaction? = null,
-    var reactionsList: HashSet<Reaction> = HashSet(), // will be removing last 2 params once ui logic is fixed.
+    var emojiCountMap: MutableMap<String, Int> = mutableMapOf(),
     // time of the message
-    var timetoken : Long = 0L
+    var timetoken: Long = 0L
 ) {
     fun toReportMessageJson(): String {
         return """{
@@ -54,5 +53,5 @@ internal data class ChatMessage(
 
 internal data class ChatMessageReaction(
     val emojiId: String,
-    val pubnubActionToken: Long
+    var pubnubActionToken: Long? = null
 )

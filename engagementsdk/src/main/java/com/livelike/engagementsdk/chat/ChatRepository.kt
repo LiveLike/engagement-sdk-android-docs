@@ -19,7 +19,7 @@ internal class ChatRepository(
     private val publishKey: String? = null
 ) : BaseRepository() {
 
-    var pubnubChatMessagingClient : PubnubChatMessagingClient? = null
+    var pubnubChatMessagingClient: PubnubChatMessagingClient? = null
 
     fun establishChatMessagingConnection(): MessagingClient {
         pubnubChatMessagingClient = PubnubChatMessagingClient(
@@ -54,7 +54,7 @@ internal class ChatRepository(
         )
     }
 
-    fun loadPreviousMessages(channel: String, time: Long){
+    fun loadPreviousMessages(channel: String, time: Long) {
         pubnubChatMessagingClient?.loadMessagesWithReactions(channel, time, 20)
     }
 }

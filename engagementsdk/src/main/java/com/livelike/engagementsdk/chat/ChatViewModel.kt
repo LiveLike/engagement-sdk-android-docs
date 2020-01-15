@@ -77,6 +77,8 @@ internal class ChatViewModel(
         const val EVENT_MESSAGE_TIMETOKEN_UPDATED = "id-updated"
         const val EVENT_LOADING_COMPLETE = "loading-complete"
         const val EVENT_LOADING_STARTED = "loading-started"
+        const val EVENT_REACTION_ADDED = "reaction-added"
+        const val EVENT_REACTION_REMOVED = "reaction-removed"
     }
 
     override fun displayChatMessage(message: ChatMessage) {
@@ -107,6 +109,43 @@ internal class ChatViewModel(
         }
     }
 
+    override fun removeMessageReaction(messagePubnubToken: Long, emojiId: String) {
+        messageList.forEach { chatMessage ->
+            chatMessage.apply {
+                if (this.timetoken == messagePubnubToken) {
+                    emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) - 1
+                    uiScope.launch { chatAdapter.notifyDataSetChanged() }
+                    return@forEach
+                }
+                // remember case not handled for now if same user removes its reaction while using 2 devices
+            }
+        }
+    }
+
+    override fun addMessageReaction(
+        isOwnReaction: Boolean,
+        messagePubnubToken: Long,
+        chatMessageReaction: ChatMessageReaction
+    ) {
+
+        messageList.forEach { chatMessage ->
+            chatMessage.apply {
+                if (this.timetoken == messagePubnubToken) {
+                    if (isOwnReaction) {
+                        if (chatMessage?.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
+                            chatMessage?.myChatMessageReaction?.pubnubActionToken = chatMessageReaction.pubnubActionToken
+                        }
+                    } else {
+                        val emojiId = chatMessageReaction.emojiId
+                        emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) + 1
+                        uiScope.launch { chatAdapter.notifyDataSetChanged() }
+                    }
+                    return@forEach
+                }
+            }
+        }
+    }
+
     override fun deleteChatMessage(messageId: String) {
         messageList.find { it.id == messageId }?.apply {
             message = "Redacted"
@@ -128,7 +167,7 @@ internal class ChatViewModel(
             chatLoaded = true
             chatAdapter.submitList(ArrayList(messageList))
             chatAdapter.notifyDataSetChanged()
-        }else{
+        } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
     }
@@ -144,17 +183,16 @@ internal class ChatViewModel(
         chatAdapter.submitList(messageList)
     }
 
-    fun loadPreviousMessages(){
-        currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let {channel ->
+    fun loadPreviousMessages() {
+        currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
             if (chatRepository != null) {
                 chatRepository?.loadPreviousMessages(
                     channel,
                     messageList.first().timetoken
                 )
-            }else{
+            } else {
                 logError { "Chat repo is null" }
             }
         }
     }
-
 }
