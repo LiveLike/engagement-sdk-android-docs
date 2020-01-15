@@ -19,9 +19,6 @@ import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Random
-import kotlin.math.ln
-import kotlin.math.pow
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_lay
@@ -36,6 +33,7 @@ internal class ChatActionsPopupView(
     hideFloatingUi: () -> Unit,
     isOwnMessage: Boolean,
     val userReaction: ChatMessageReaction? = null,
+    val emojiCountMap: MutableMap<String, Int>? = null,
     private val chatViewThemeAttributes: ChatViewThemeAttributes,
     val selectReactionListener: SelectReactionListener? = null
 ) : PopupWindow(context) {
@@ -77,13 +75,10 @@ internal class ChatActionsPopupView(
     }
 
     private fun formattedReactionCount(count: Int): String {
-        if (count < 1000) return "" + count
-        val exp = (ln(count.toDouble()) / ln(1000.0)).toInt()
-        return String.format(
-            "%.1f%c",
-            count / 1000.0.pow(exp.toDouble()),
-            "kMGTPE"[exp - 1]
-        )
+        if (count <99)
+            return "--" + count
+        else
+            return "99+"
     }
 
     private fun initReactions() {
@@ -131,9 +126,9 @@ internal class ChatActionsPopupView(
 
             imageView.scaleType = ImageView.ScaleType.CENTER
 
-            val cnt = Random().nextInt(10000)
+            val cnt = emojiCountMap?.get(reaction.id) ?: 0
             countView.apply {
-                text = formattedReactionCount(cnt)
+                text = formattedReactionCount(emojiCountMap?.get(reaction.id) ?: 0)
                 setTextColor(chatViewThemeAttributes.chatReactionPanelCountColor)
                 setTypeface(null, Typeface.BOLD)
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size))

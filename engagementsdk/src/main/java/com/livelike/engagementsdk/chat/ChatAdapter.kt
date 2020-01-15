@@ -188,6 +188,7 @@ internal class ChatRecyclerAdapter(
                 ::hideFloatingUI,
                 isOwnMessage,
                 userReaction = reaction,
+                emojiCountMap = message?.emojiCountMap,
                 chatViewThemeAttributes = chatViewThemeAttribute,
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
