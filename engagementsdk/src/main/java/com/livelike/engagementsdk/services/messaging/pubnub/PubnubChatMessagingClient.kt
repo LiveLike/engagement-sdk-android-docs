@@ -52,6 +52,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
 
@@ -67,6 +68,8 @@ internal class PubnubChatMessagingClient(
     val msgListener: MessageListener? = null
 ) : MessagingClient {
 
+    @Volatile
+    private var lastActionTimeToken: Long = 0
     private var connectedChannels: MutableSet<String> = mutableSetOf()
 
     private val publishQueue = Queue<Pair<String, PubnubChatEvent<PubnubChatMessage>>>()
@@ -244,8 +247,13 @@ internal class PubnubChatMessagingClient(
                 pubnub: PubNub,
                 pnMessageActionResult: PNMessageActionResult
             ) {
-                logDebug { "real time message action : " + pnMessageActionResult.event }
-                processPubnubMessageAction(pnMessageActionResult, client)
+                coroutineScope.launch {
+                    if (lastActionTimeToken != pnMessageActionResult.messageAction.actionTimetoken) {
+                        lastActionTimeToken = pnMessageActionResult.messageAction.actionTimetoken
+                        logDebug { "real time message action : " + pnMessageActionResult.event }
+                        processPubnubMessageAction(pnMessageActionResult, client)
+                    }
+                }
             }
         })
     }
@@ -254,7 +262,7 @@ internal class PubnubChatMessagingClient(
         pnMessageActionResult: PNMessageActionResult,
         client: PubnubChatMessagingClient
     ) {
-        if (pnMessageActionResult.messageAction.type == REACTION_CREATED) {
+        if (pnMessageActionResult.messageAction.type == REACTION_CREATED && pubnub.configuration.uuid != pnMessageActionResult.messageAction.uuid) {
             val clientMessage: ClientMessage
             if (pnMessageActionResult.event == "added") {
                 clientMessage = ClientMessage(
@@ -276,22 +284,23 @@ internal class PubnubChatMessagingClient(
                     },
                     pnMessageActionResult.channel
                 )
+                listener?.onClientMessageEvent(client, clientMessage)
             } else {
-                clientMessage = ClientMessage(
-                    JsonObject().apply {
-                        addProperty("event", ChatViewModel.EVENT_REACTION_REMOVED)
-                        addProperty(
-                            "messagePubnubToken",
-                            pnMessageActionResult.messageAction.messageTimetoken
-                        )
-                        addProperty("emojiId", pnMessageActionResult.messageAction.value)
-                    },
-                    pnMessageActionResult.channel
-                )
+                    clientMessage = ClientMessage(
+                        JsonObject().apply {
+                            addProperty("event", ChatViewModel.EVENT_REACTION_REMOVED)
+                            addProperty(
+                                "messagePubnubToken",
+                                pnMessageActionResult.messageAction.messageTimetoken
+                            )
+                            addProperty("emojiId", pnMessageActionResult.messageAction.value)
+                        },
+                        pnMessageActionResult.channel
+                    )
+                    listener?.onClientMessageEvent(client, clientMessage)
+                }
             }
-            listener?.onClientMessageEvent(client, clientMessage)
         }
-    }
     private fun processPubnubChatEvent(
         jsonObject: JsonObject,
         channel: String,
@@ -487,8 +496,30 @@ internal class PubnubChatMessagingClient(
             }).async(object : PNCallback<PNAddMessageActionResult>() {
                 override fun onResponse(result: PNAddMessageActionResult?, status: PNStatus) {
                     if (!status.isError) {
-                        println(result?.type)
-                        println(result?.value)
+                        val clientMessage = ClientMessage(
+                            JsonObject().apply {
+                                addProperty("event", ChatViewModel.EVENT_REACTION_ADDED)
+                                addProperty(
+                                    "isOwnReaction",
+                                    true
+                                )
+                                addProperty(
+                                    "actionPubnubToken",
+                                    result?.actionTimetoken
+                                )
+                                addProperty(
+                                    "messagePubnubToken",
+                                    result?.messageTimetoken
+                                )
+                                addProperty("emojiId", result?.value)
+                            },
+                            channel
+                        )
+                        listener?.onClientMessageEvent(
+                            this@PubnubChatMessagingClient,
+                            clientMessage
+                        )
+                        logDebug { "own message action added" }
                     } else {
                         status.errorData.throwable.printStackTrace()
                     }
