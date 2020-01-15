@@ -8,7 +8,8 @@ import com.livelike.engagementsdk.services.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class ChatReactionRepository(private val remoteUrl: String) : BaseRepository() {
+internal class ChatReactionRepository private constructor(private val remoteUrl: String) :
+    BaseRepository() {
 
     var reactionList: List<Reaction>? = null
     var reactionMap: Map<String, Reaction>? = null
@@ -39,8 +40,8 @@ internal class ChatReactionRepository(private val remoteUrl: String) : BaseRepos
     }
 
     private fun initReactionMap(reactionList: List<Reaction>?) {
-        reactionList?.let { reactionList ->
-            reactionMap = reactionList.map { it.id to it }.toMap()
+        reactionList?.let { list ->
+            reactionMap = list.map { it.id to it }.toMap()
         }
     }
 
@@ -54,5 +55,14 @@ internal class ChatReactionRepository(private val remoteUrl: String) : BaseRepos
                 Glide.with(context).load(it.file).preload()
             }
         }
+    }
+
+    companion object {
+
+        @Volatile
+        private var INSTANCE: ChatReactionRepository? = null
+
+        fun getInstance(remoteUrl: String): ChatReactionRepository =
+            INSTANCE ?: ChatReactionRepository(remoteUrl).also { INSTANCE = it }
     }
 }

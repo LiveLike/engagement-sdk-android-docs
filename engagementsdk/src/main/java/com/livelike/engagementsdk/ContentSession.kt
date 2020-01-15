@@ -155,9 +155,9 @@ internal class ContentSession(
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
                             chatViewModel.reportUrl = program.reportUrl
                             chatViewModel.stickerPackRepository = StickerPackRepository(programId, program.stickerPacksUrl)
-                            chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
+                            chatViewModel.chatReactionRepository = ChatReactionRepository.getInstance(program.reactionPacksUrl)
                             chatViewModel.chatRepository = chatRepository
-                            contentSessionScope.launch { chatViewModel?.chatReactionRepository?.preloadImages(applicationContext) }
+                            contentSessionScope.launch { chatViewModel.chatReactionRepository?.preloadImages(applicationContext) }
                             chatViewModel.currentChatRoom = program.defaultChatRoom
                             if (privateChatRoomID.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
                             program.analyticsProps.forEach { map ->
