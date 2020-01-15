@@ -248,11 +248,9 @@ internal class PubnubChatMessagingClient(
                 pnMessageActionResult: PNMessageActionResult
             ) {
                 coroutineScope.launch {
-                    if (lastActionTimeToken != pnMessageActionResult.messageAction.actionTimetoken) {
-                        lastActionTimeToken = pnMessageActionResult.messageAction.actionTimetoken
-                        logDebug { "real time message action : " + pnMessageActionResult.event }
-                        processPubnubMessageAction(pnMessageActionResult, client)
-                    }
+                    lastActionTimeToken = pnMessageActionResult.messageAction.actionTimetoken
+                    logDebug { "real time message action : " + pnMessageActionResult.event }
+                    processPubnubMessageAction(pnMessageActionResult, client)
                 }
             }
         })
