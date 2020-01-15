@@ -33,8 +33,7 @@ android {
             buildConfigField "String", "CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/"'
         }
         debug{
-//            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/"'
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/"'
+            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/"'
         }
         release {
             buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/"'
