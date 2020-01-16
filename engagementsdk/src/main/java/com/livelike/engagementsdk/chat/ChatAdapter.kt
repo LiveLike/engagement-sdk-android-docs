@@ -39,6 +39,8 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
@@ -47,8 +49,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -109,13 +109,11 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(view: View?): Boolean {
-            if (isPublicChat) {
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
                 if (reactionsAvailable || !isOwnMessage) {
                     showFloatingUI(isOwnMessage, message?.myChatMessageReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
                 }
-            }
             return true
         }
 
@@ -234,7 +232,8 @@ internal class ChatRecyclerAdapter(
                             notifyItemChanged(adapterPosition)
                         }
                     }
-                }
+                },
+                isPublichat = isPublicChat
             ).apply {
                 animationStyle = when {
                     checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
@@ -436,9 +435,10 @@ internal class ChatRecyclerAdapter(
                             }
                         }
                         txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
-                        if (emojiCountMap.isNotEmpty()) {
+                        val sumCount = emojiCountMap.values.sum()
+                        if (emojiCountMap.isNotEmpty() && sumCount > 0) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
-                            txt_chat_reactions_count.text = "${emojiCountMap.values.sum()}"
+                            txt_chat_reactions_count.text = "$sumCount"
                         } else {
                             txt_chat_reactions_count.visibility = View.GONE
                         }

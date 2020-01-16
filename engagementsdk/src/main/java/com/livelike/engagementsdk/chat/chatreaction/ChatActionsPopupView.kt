@@ -35,7 +35,8 @@ internal class ChatActionsPopupView(
     val userReaction: ChatMessageReaction? = null,
     val emojiCountMap: MutableMap<String, Int>? = null,
     private val chatViewThemeAttributes: ChatViewThemeAttributes,
-    val selectReactionListener: SelectReactionListener? = null
+    val selectReactionListener: SelectReactionListener? = null,
+    val isPublichat: Boolean
 ) : PopupWindow(context) {
 
     init {
@@ -53,7 +54,7 @@ internal class ChatActionsPopupView(
                 )
             }
 
-            if (!isOwnMessage) {
+            if (!isOwnMessage && isPublichat) {
                 contentView.moderation_flag_lay.apply {
                     visibility = View.VISIBLE
                     setOnClickListener {
@@ -134,10 +135,10 @@ internal class ChatActionsPopupView(
                 addRule(RelativeLayout.CENTER_IN_PARENT)
             })
             relativeLayout.addView(countView, RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT).apply {
-                addRule(RelativeLayout.ALIGN_TOP,imageView.id)
+                addRule(RelativeLayout.ALIGN_TOP, imageView.id)
                 addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
             })
-            reactionsBox.addView(relativeLayout,LinearLayout.LayoutParams(AndroidResource.dpToPx(35),AndroidResource.dpToPx(35)))
+            reactionsBox.addView(relativeLayout, LinearLayout.LayoutParams(AndroidResource.dpToPx(35), AndroidResource.dpToPx(35)))
         }
         contentView.chat_reaction_background_card.visibility =
             if ((chatReactionRepository.reactionList?.size ?: 0) > 0) {
