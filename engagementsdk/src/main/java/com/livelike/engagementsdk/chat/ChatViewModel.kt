@@ -104,7 +104,7 @@ internal class ChatViewModel(
             }
         }
         uiScope.launch {
-            chatAdapter.submitList(ArrayList(messageList))
+            chatAdapter.submitList(ArrayList(messageList.toSet()))
             eventStream.onNext(EVENT_NEW_MESSAGE)
         }
     }
@@ -150,7 +150,7 @@ internal class ChatViewModel(
         messageList.find { it.id == messageId }?.apply {
             message = "Redacted"
         }
-        chatAdapter.submitList(ArrayList(messageList))
+        chatAdapter.submitList(ArrayList(messageList.toSet()))
         eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 
@@ -165,7 +165,7 @@ internal class ChatViewModel(
     override fun loadingCompleted() {
         if (!chatLoaded) {
             chatLoaded = true
-            chatAdapter.submitList(ArrayList(messageList))
+            chatAdapter.submitList(ArrayList(messageList.toSet()))
             chatAdapter.notifyDataSetChanged()
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)

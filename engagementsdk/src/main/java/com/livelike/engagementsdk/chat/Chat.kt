@@ -49,6 +49,14 @@ internal data class ChatMessage(
                     "message": "$message"
                 }""".trimIndent()
     }
+
+    override fun equals(other: Any?): Boolean {
+        return id == (other as? ChatMessage)?.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
 }
 
 internal data class ChatMessageReaction(
