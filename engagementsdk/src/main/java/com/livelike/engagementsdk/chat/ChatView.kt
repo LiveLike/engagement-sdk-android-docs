@@ -554,11 +554,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 // Send message on tap Enter
                 setOnEditorActionListener { _, actionId, event ->
                     if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
-                        (actionId == EditorInfo.IME_ACTION_SEND)
+                        (actionId == EditorInfo.IME_ACTION_SEND) ||
+                        (actionId == EditorInfo.IME_ACTION_DONE)
                     ) {
                         sendMessageNow()
                     }
-                    false
+                    true
                 }
             }
         }

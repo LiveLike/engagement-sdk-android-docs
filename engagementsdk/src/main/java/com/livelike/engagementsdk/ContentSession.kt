@@ -247,7 +247,7 @@ internal class ContentSession(
             val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
             delay(500)
             if (privateGroupPubnubClient == null) {
-                initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
+                initializeChatMessaging(channel, syncEnabled = true, privateGroupsChat = true)
             } else {
                 privateGroupPubnubClient?.activeChatRoom = channel
             }
