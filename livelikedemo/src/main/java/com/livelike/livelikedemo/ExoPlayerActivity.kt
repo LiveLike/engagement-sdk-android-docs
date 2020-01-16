@@ -239,7 +239,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
-                    (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString(), (application as LiveLikeApplication).timecodeGetter)
+                    (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString())
                 for (pair in chatRoomLastTimeStampMap) {
                     val chatRoomId = pair.key
                     val timestamp = (chatRoomLastTimeStampMap.get(chatRoomId)
