@@ -93,4 +93,5 @@
     <color name="livelike_image_slider_header_bg">#cc000000</color>
     <color name="livelike_image_slider_widget_result_end_color">#3C1EFF</color>
     <color name="livelike_image_slider_widget_result_center_color">#FF2D2D</color>
+    <color name="livelike_sticker_recent_empty_text_color">#66ffffff</color>
 </resources>
