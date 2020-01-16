@@ -31,17 +31,25 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="8dp">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/chatdisplay"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:stackFromEnd="true"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-            tools:listitem="@layout/default_chat_cell"
-            android:stackFromBottom="true"
-            android:transcriptMode="normal"
-            android:divider="@null"
-            android:dividerHeight="0dp" />
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/swipeToRefresh">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/chatdisplay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:stackFromEnd="true"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                tools:listitem="@layout/default_chat_cell"
+                android:stackFromBottom="true"
+                android:transcriptMode="normal"
+                android:divider="@null"
+                android:dividerHeight="0dp" />
+
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
 
     </FrameLayout>

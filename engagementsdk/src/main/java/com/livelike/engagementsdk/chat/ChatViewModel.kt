@@ -13,26 +13,53 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
+import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
     val userStream: Stream<LiveLikeUser>,
     val programRepository: ProgramRepository,
-    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
-    val stickerPackRepository: StickerPackRepository
+    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
 ) : ChatRenderer, ViewModel() {
 
     var chatListener: ChatEventListener? = null
-    var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage, stickerPackRepository, ChatReactionRepository(programRepository.programId))
+    var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     val messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(true)
     var currentChatRoom: ChatRoom? = null
-    set(value) {
-        field = value
-        chatAdapter.isPublicChat = currentChatRoom?.id == programRepository?.program?.defaultChatRoom?.id
+        set(value) {
+            field = value
+            chatAdapter.isPublicChat = currentChatRoom?.id == programRepository?.program?.defaultChatRoom?.id
+        }
+
+    var stickerPackRepository: StickerPackRepository? = null
+        set(value) {
+            field = value
+            value?.let { chatAdapter.stickerPackRepository = value }
+        }
+    val stickerPackRepositoryFlow = flow {
+        while (stickerPackRepository == null) {
+            delay(1000)
+        }
+        emit(stickerPackRepository!!)
     }
+    var chatReactionRepository: ChatReactionRepository? = null
+        set(value) {
+            field = value
+            value?.let {
+                chatAdapter.chatReactionRepository = value }
+        }
+    var chatRepository: ChatRepository? = null
+        set(value) {
+            field = value
+            chatAdapter.chatRepository = value
+        }
+    var reportUrl: String? = null
+
     internal var chatLoaded = false
         set(value) {
             field = value
@@ -47,9 +74,11 @@ internal class ChatViewModel(
     companion object {
         const val EVENT_NEW_MESSAGE = "new-message"
         const val EVENT_MESSAGE_DELETED = "deletion"
-        const val EVENT_MESSAGE_ID_UPDATED = "id-updated"
+        const val EVENT_MESSAGE_TIMETOKEN_UPDATED = "id-updated"
         const val EVENT_LOADING_COMPLETE = "loading-complete"
         const val EVENT_LOADING_STARTED = "loading-started"
+        const val EVENT_REACTION_ADDED = "reaction-added"
+        const val EVENT_REACTION_REMOVED = "reaction-removed"
     }
 
     override fun displayChatMessage(message: ChatMessage) {
@@ -57,12 +86,63 @@ internal class ChatViewModel(
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
-        messageList.add(message.apply {
-            isFromMe = userStream.latest()?.id == senderId
-        })
+        if (messageList.size == 0) {
+            messageList.add(message.apply {
+                isFromMe = userStream.latest()?.id == senderId
+            })
+        } else {
+            messageList.first().let {
+                if (message.timetoken != 0L && it.timetoken > message.timetoken) {
+                    messageList.add(0, message.apply {
+                        isFromMe = userStream.latest()?.id == senderId
+                    })
+                } else {
+                    messageList.add(message.apply {
+                        isFromMe = userStream.latest()?.id == senderId
+                    })
+                }
+            }
+        }
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
             eventStream.onNext(EVENT_NEW_MESSAGE)
+        }
+    }
+
+    override fun removeMessageReaction(messagePubnubToken: Long, emojiId: String) {
+        messageList.forEach { chatMessage ->
+            chatMessage.apply {
+                if (this.timetoken == messagePubnubToken) {
+                    emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) - 1
+                    uiScope.launch { chatAdapter.notifyDataSetChanged() }
+                    return@forEach
+                }
+                // remember case not handled for now if same user removes its reaction while using 2 devices
+            }
+        }
+    }
+
+    override fun addMessageReaction(
+        isOwnReaction: Boolean,
+        messagePubnubToken: Long,
+        chatMessageReaction: ChatMessageReaction
+    ) {
+
+        messageList.forEach { chatMessage ->
+            chatMessage.apply {
+                if (this.timetoken == messagePubnubToken) {
+                    if (isOwnReaction) {
+                        if (chatMessage?.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
+                            chatMessage?.myChatMessageReaction?.pubnubActionToken = chatMessageReaction.pubnubActionToken
+                        }
+                    } else {
+                        val emojiId = chatMessageReaction.emojiId
+                        emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) + 1
+                        uiScope.launch { chatAdapter.notifyDataSetChanged() }
+                    }
+                    return@forEach
+                }
+            }
         }
     }
 
@@ -74,11 +154,11 @@ internal class ChatViewModel(
         eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 
-    override fun updateChatMessageId(oldId: String, newId: String) {
+    override fun updateChatMessageTimeToken(messageId: String, timetoken: String) {
         messageList.find {
-            it.id == oldId
+            it.id == messageId
         }?.apply {
-            id = newId
+            this.timetoken = timetoken.toLong()
         }
     }
 
@@ -87,18 +167,32 @@ internal class ChatViewModel(
             chatLoaded = true
             chatAdapter.submitList(ArrayList(messageList))
             chatAdapter.notifyDataSetChanged()
+        } else {
+            eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
     }
 
     private fun reportChatMessage(message: ChatMessage) {
         uiScope.launch {
-            val programId = programRepository.program?.id
-            programId?.let { dataClient.reportMessage(programId, message, userStream.latest()?.accessToken) }
+            reportUrl?.let { reportUrl -> dataClient.reportMessage(reportUrl, message, userStream.latest()?.accessToken) }
         }
     }
 
     fun flushMessages() {
         messageList.clear()
         chatAdapter.submitList(messageList)
+    }
+
+    fun loadPreviousMessages() {
+        currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
+            if (chatRepository != null && messageList.isNotEmpty()) {
+                chatRepository?.loadPreviousMessages(
+                    channel,
+                    messageList.first().timetoken
+                )
+            } else {
+                logError { "Chat repo is null" }
+            }
+        }
     }
 }

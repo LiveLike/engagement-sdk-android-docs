@@ -1,18 +1,19 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import java.util.UUID
 
-interface ChatEventListener {
+internal interface ChatEventListener {
     fun onChatMessageSend(message: ChatMessage, timeData: EpochTime)
 }
 
-interface ChatRenderer {
+internal interface ChatRenderer {
     fun displayChatMessage(message: ChatMessage)
     fun deleteChatMessage(messageId: String)
-    fun updateChatMessageId(oldId: String, newId: String)
+    fun updateChatMessageTimeToken(messageId: String, timetoken: String)
     fun loadingCompleted()
+    fun addMessageReaction(isOwnReaction: Boolean, messagePubnubToken: Long, chatMessageReaction: ChatMessageReaction)
+    fun removeMessageReaction(messagePubnubToken: Long, emojiId: String)
 }
 
 /**
@@ -23,17 +24,21 @@ interface ChatRenderer {
  *  @param id A unique ID to identify the message.
  *  @param timeStamp Message timeStamp.
  */
-data class ChatMessage(
+internal data class ChatMessage(
     var channel: String,
     var message: String,
     val senderId: String,
     val senderDisplayName: String,
     val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
+    // PDT video time //NOt using right now for later use FYI @shivansh @Willis
     val timeStamp: String? = null,
+    var pubnubMessageToken: Long? = null,
     var isFromMe: Boolean = false,
-    var myReaction:Reaction?=null,
-    var reactionsList:HashSet<Reaction> = HashSet()
+    var myChatMessageReaction: ChatMessageReaction? = null,
+    var emojiCountMap: MutableMap<String, Int> = mutableMapOf(),
+    // time of the message
+    var timetoken: Long = 0L
 ) {
     fun toReportMessageJson(): String {
         return """{
@@ -45,3 +50,8 @@ data class ChatMessage(
                 }""".trimIndent()
     }
 }
+
+internal data class ChatMessageReaction(
+    val emojiId: String,
+    var pubnubActionToken: Long? = null
+)

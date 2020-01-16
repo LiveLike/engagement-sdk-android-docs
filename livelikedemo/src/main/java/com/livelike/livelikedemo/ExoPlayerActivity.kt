@@ -48,6 +48,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val CHANNEL_NAME = "channelName"
     }
 
+    private var showNotification: Boolean = true
     private var themeCurrent: Int? = null
     private var isChatRoomJoined: Boolean = false
     private lateinit var player: VideoPlayer
@@ -102,6 +103,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             fullLogs.visibility = if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
         }
         fullLogs.movementMethod = ScrollingMovementMethod()
+
+        showNotification = intent.getBooleanExtra("showNotification", true)
 
         adsPlaying = savedInstanceState?.getBoolean(AD_STATE) ?: false
         val position = savedInstanceState?.getLong(POSITION) ?: 0
@@ -229,7 +232,10 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (channel != ChannelManager.NONE_CHANNEL) {
             val session = (application as LiveLikeApplication).createSession(
                 channel.llProgram.toString(),
-                dialog
+                when (showNotification) {
+                    true -> dialog
+                    else -> null
+                }
             )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
@@ -293,10 +299,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                         (application as LiveLikeApplication).sdk.updateChatNickname(it)
                     }
                 }
-                getString("userPic", "").let {
-                    if (it.isNotEmpty()) {
-                        (application as LiveLikeApplication).sdk.updateChatUserPic(it)
-                    }
+                getString("userPic", null).let {
+                    (application as LiveLikeApplication).sdk.updateChatUserPic(it)
                 }
             }
 

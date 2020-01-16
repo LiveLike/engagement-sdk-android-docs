@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat.data
 
 import com.livelike.engagementsdk.chat.ChatMessage
+import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 
 internal fun ChatMessage.toPubnubChatMessage(programDateTime: String): PubnubChatMessage {
@@ -15,7 +16,12 @@ internal fun ChatMessage.toPubnubChatMessage(programDateTime: String): PubnubCha
     )
 }
 
-internal fun PubnubChatMessage.toChatMessage(channel: String): ChatMessage {
+internal fun PubnubChatMessage.toChatMessage(
+    channel: String,
+    timetoken: Long,
+    emojiCountMap: MutableMap<String, Int>,
+    myReaction: ChatMessageReaction?
+): ChatMessage {
 
     return ChatMessage(
         channel,
@@ -23,6 +29,10 @@ internal fun PubnubChatMessage.toChatMessage(channel: String): ChatMessage {
         senderId,
         senderNickname,
         senderImageUrl,
-        messageId
+        messageId,
+        pubnubMessageToken = messageToken,
+        timetoken = timetoken,
+        emojiCountMap = emojiCountMap,
+        myChatMessageReaction = myReaction
     )
 }

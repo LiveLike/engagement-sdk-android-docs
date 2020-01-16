@@ -65,10 +65,12 @@ import kotlinx.android.synthetic.main.chat_view.view.chatdisplayBack
 import kotlinx.android.synthetic.main.chat_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.chat_view.view.snap_live
 import kotlinx.android.synthetic.main.chat_view.view.sticker_keyboard
+import kotlinx.android.synthetic.main.chat_view.view.swipeToRefresh
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 /**
@@ -202,6 +204,10 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             )
             initEmptyView()
         }
+
+        swipeToRefresh.setOnRefreshListener {
+            viewModel?.loadPreviousMessages()
+        }
     }
 
     private fun initEmptyView() {
@@ -226,8 +232,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         viewModel?.apply {
-            uiScope.launch { chatAdapter.chatReactionRepository.preloadImages(context) }
             chatAdapter.chatViewThemeAttribute = chatAttribute
+            initStickerKeyboard(sticker_keyboard, this)
 
             setDataSource(chatAdapter)
             eventStream.subscribe(javaClass.simpleName) {
@@ -235,16 +241,20 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
                         checkEmptyChat()
-                        if (isLastItemVisible) {
+                        if (isLastItemVisible && !swipeToRefresh.isRefreshing) {
                             snapToLive()
                         }
                     }
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
                         uiScope.launch {
-                            hideLoadingSpinner()
-                            checkEmptyChat()
-                            delay(100)
-                            snapToLive()
+                            if (swipeToRefresh.isRefreshing) {
+                                swipeToRefresh.isRefreshing = false
+                            } else {
+                                hideLoadingSpinner()
+                                checkEmptyChat()
+                                delay(100)
+                                snapToLive()
+                            }
                         }
                     }
                     ChatViewModel.EVENT_LOADING_STARTED -> {
@@ -300,16 +310,24 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
             }
 
-            initStickerKeyboard(sticker_keyboard, this)
+            chatAdapter.checkListIsAtTop = lambda@{
+                val lm: LinearLayoutManager = chatdisplay.layoutManager as LinearLayoutManager
+                if (lm.findFirstVisibleItemPosition() == it) {
+                    return@lambda true
+                }
+                return@lambda false
+            }
 
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    replaceWithStickers(
-                        s as Spannable,
-                        this@ChatView.context,
-                        stickerPackRepository,
-                        edittext_chat_message
-                    )
+                    stickerPackRepository?.let { stickerPackRepository ->
+                        replaceWithStickers(
+                            s as Spannable,
+                            this@ChatView.context,
+                            stickerPackRepository,
+                            edittext_chat_message, null
+                        )
+                    }
                 }
 
                 override fun beforeTextChanged(
@@ -345,29 +363,33 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         stickerKeyboardView: StickerKeyboardView,
         chatViewModel: ChatViewModel
     ) {
-        stickerKeyboardView.setProgram(chatViewModel.stickerPackRepository) {
-            if (it.isNullOrEmpty()) {
-                button_emoji?.visibility = View.GONE
-                sticker_keyboard?.visibility = View.GONE
-            } else {
-                button_emoji?.visibility = View.VISIBLE
+        uiScope.launch {
+            chatViewModel.stickerPackRepositoryFlow.collect { stickerPackRepository ->
+                stickerKeyboardView.setProgram(stickerPackRepository) {
+                    if (it.isNullOrEmpty()) {
+                        button_emoji?.visibility = View.GONE
+                        sticker_keyboard?.visibility = View.GONE
+                    } else {
+                        button_emoji?.visibility = View.VISIBLE
+                    }
+                }
+                // used to pass the shortcode to the keyboard
+                stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
+                    override fun onClick(sticker: Sticker) {
+                        val textToInsert = ":${sticker.shortcode}:"
+                        val start = max(edittext_chat_message.selectionStart, 0)
+                        val end = max(edittext_chat_message.selectionEnd, 0)
+                        if (edittext_chat_message.text.length + textToInsert.length < 150) {
+                            // replace selected text or start where the cursor is
+                            edittext_chat_message.text.replace(
+                                min(start, end), max(start, end),
+                                textToInsert, 0, textToInsert.length
+                            )
+                        }
+                    }
+                })
             }
         }
-        // used to pass the shortcode to the keyboard
-        stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
-            override fun onClick(sticker: Sticker) {
-                val textToInsert = ":${sticker.shortcode}:"
-                val start = max(edittext_chat_message.selectionStart, 0)
-                val end = max(edittext_chat_message.selectionEnd, 0)
-                if (edittext_chat_message.text.length + textToInsert.length < 150) {
-                    // replace selected text or start where the cursor is
-                    edittext_chat_message.text.replace(
-                        min(start, end), max(start, end),
-                        textToInsert, 0, textToInsert.length
-                    )
-                }
-            }
-        })
     }
 
     private fun wouldShowBadge(programRank: ProgramGamificationProfile, animate: Boolean = false) {
@@ -532,11 +554,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 // Send message on tap Enter
                 setOnEditorActionListener { _, actionId, event ->
                     if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
-                        (actionId == EditorInfo.IME_ACTION_SEND)
+                        (actionId == EditorInfo.IME_ACTION_SEND) ||
+                        (actionId == EditorInfo.IME_ACTION_DONE)
                     ) {
                         sendMessageNow()
                     }
-                    false
+                    true
                 }
             }
         }

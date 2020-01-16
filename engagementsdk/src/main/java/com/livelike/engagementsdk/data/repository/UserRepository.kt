@@ -36,17 +36,17 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
      * If no access token new user profile will be created.
      * If invalid token passed then also new user created with error.
      */
-    fun initUser(userAccessToken: String?) {
+    fun initUser(userAccessToken: String?, profileUrl: String) {
         if (userAccessToken == null) {
-            dataClient.createUserData(clientId) {
+            dataClient.createUserData(profileUrl) {
                 publishUser(it)
             }
         } else {
-            dataClient.getUserData(clientId, accessToken = userAccessToken) {
+            dataClient.getUserData(profileUrl, accessToken = userAccessToken) {
                 // TODO add Result class wrapper for network result instead of treating null as a case of invalid access token
                 if (it == null) {
                     logError { "Network error or invalid access token" }
-                    initUser(null)
+                    initUser(null, profileUrl)
                 } else {
                     publishUser(it)
                 }
@@ -79,7 +79,7 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
         val jsonObject = JsonObject()
         jsonObject.addProperty("id", liveLikeUser.id)
         jsonObject.addProperty("nickname", liveLikeUser.nickname)
-        dataClient.patchUser(clientId, jsonObject, userAccessToken)
+        dataClient.patchUser(liveLikeUser.url, jsonObject, userAccessToken)
     }
 
     var rewardType = "none"
@@ -94,7 +94,7 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
         return reward
     }
 
-    fun setProfilePicUrl(url: String) {
+    fun setProfilePicUrl(url: String?) {
         currentUserStream.latest()?.apply {
             this.userPic = url
             currentUserStream.onNext(this)

@@ -5,6 +5,7 @@ import android.widget.FrameLayout
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatRepository
 import com.livelike.engagementsdk.chat.ChatViewModel
+import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.toChatQueue
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -53,7 +54,7 @@ internal class ContentSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
-    override fun setProfilePicUrl(url: String) {
+    override fun setProfilePicUrl(url: String?) {
         userRepository.setProfilePicUrl(url)
     }
 
@@ -79,8 +80,7 @@ internal class ContentSession(
         MockAnalyticsService(programId)
     private val llDataClient = EngagementDataClientImpl()
 
-    private val stickerPackRepository = StickerPackRepository(programId)
-    val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream, stickerPackRepository) }
+    val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream) }
     override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
@@ -147,12 +147,17 @@ internal class ContentSession(
                 analyticService.trackConfiguration(configuration.name ?: "")
 
                 if (programId.isNotEmpty()) {
-                    llDataClient.getProgramData(BuildConfig.CONFIG_URL.plus("programs/$programId")) { program ->
+                    llDataClient.getProgramData(configuration.programDetailUrlTemplate.replace(TEMPLATE_PROGRAM_ID, programId)) { program ->
                         if (program !== null) {
                             programRepository.program = program
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
+                            chatViewModel.reportUrl = program.reportUrl
+                            chatViewModel.stickerPackRepository = StickerPackRepository(programId, program.stickerPacksUrl)
+                            chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
+                            chatViewModel.chatRepository = chatRepository
+                            contentSessionScope.launch { chatViewModel.chatReactionRepository?.preloadImages(applicationContext) }
                             chatViewModel.currentChatRoom = program.defaultChatRoom
                             if (privateChatRoomID.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
                             program.analyticsProps.forEach { map ->
@@ -191,7 +196,6 @@ internal class ContentSession(
             }
         }
     }
-
     override fun getMessageCount(
         chatRoomId: String,
         startTimestamp: Long,
@@ -362,7 +366,7 @@ internal class ContentSession(
 
         if (syncEnabled) {
             chatClient =
-                chatClient?.syncTo(currentPlayheadTime, 86400000L) // Messages are valid 24 hours
+                chatClient?.syncTo(currentPlayheadTime)
         }
 
         chatClient = chatClient?.toChatQueue()

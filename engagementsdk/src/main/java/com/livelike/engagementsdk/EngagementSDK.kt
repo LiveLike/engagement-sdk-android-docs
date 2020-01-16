@@ -51,8 +51,8 @@ class EngagementSDK(
         initLiveLikeSharedPrefs(applicationContext)
         dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
             configurationStream.onNext(it)
+            userRepository.initUser(accessToken, it.profileUrl)
         }
-        userRepository.initUser(accessToken)
     }
 
     override val userStream: Stream<LiveLikeUserApi>
@@ -68,7 +68,7 @@ class EngagementSDK(
         }
     }
 
-    override fun updateChatUserPic(url: String) {
+    override fun updateChatUserPic(url: String?) {
         sdkScope.launch {
             userRepository.setProfilePicUrl(url)
         }
@@ -133,6 +133,10 @@ class EngagementSDK(
         @SerializedName("analytics_properties")
         val analyticsProps: Map<String, String>,
         @SerializedName("chat_room_detail_url_template")
-        val chatRoomUrlTemplate: String
+        val chatRoomUrlTemplate: String,
+        @SerializedName("profile_url")
+        val profileUrl: String,
+        @SerializedName("program_detail_url_template")
+        val programDetailUrlTemplate: String
     )
 }

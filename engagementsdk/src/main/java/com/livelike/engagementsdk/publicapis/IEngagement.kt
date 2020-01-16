@@ -22,5 +22,5 @@ interface IEngagement {
     fun updateChatNickname(nickname: String)
 
     /** Override the default auto-generated chat userpic **/
-    fun updateChatUserPic(url: String)
+    fun updateChatUserPic(url: String?)
 }
