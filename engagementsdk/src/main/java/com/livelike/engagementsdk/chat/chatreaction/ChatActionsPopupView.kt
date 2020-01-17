@@ -91,6 +91,7 @@ internal class ChatActionsPopupView(
             val countView = TextView(context)
             val imageView = ImageView(context)
             imageView.id = View.generateViewId()
+            imageView.contentDescription = reaction.name
             imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
 
             userReaction?.let {
