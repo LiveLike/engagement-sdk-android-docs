@@ -35,13 +35,13 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
         super.onVisibilityChanged(changedView, visibility)
     }
 
-    private fun createTabItemView(imgUri: String? = null): View {
+    private fun createTabItemView(stickerPack: StickerPack? = null): View {
         val imageView = ImageView(context)
+        imageView.contentDescription = stickerPack?.name ?: context.getString(R.string.recent_sticker)
         imageView.layoutParams = ViewGroup.LayoutParams(
             AndroidResource.dpToPx(24),
             AndroidResource.dpToPx(24))
-        Glide.with(this).load(imgUri ?: R.drawable.keyboard_ic_recent).into(imageView)
-
+        Glide.with(this).load((stickerPack?.file) ?: R.drawable.keyboard_ic_recent).into(imageView)
         return imageView
     }
 
@@ -94,7 +94,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     if (i == 0) {
                         tab.customView = createTabItemView()
                     } else {
-                        tab.customView = createTabItemView(stickerPacks[i].file)
+                        tab.customView = createTabItemView(stickerPacks[i])
                     }
                     pager_tab.addTab(tab)
                 }
