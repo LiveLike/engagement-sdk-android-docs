@@ -49,7 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_profile_display_LL"/>
 
-    <EditText
+    <com.livelike.engagementsdk.chat.RichContentEditText
             android:id="@+id/edittext_chat_message"
             android:layout_width="0dp"
             android:layout_height="0dp"

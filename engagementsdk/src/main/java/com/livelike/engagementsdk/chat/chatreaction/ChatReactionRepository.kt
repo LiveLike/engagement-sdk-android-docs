@@ -8,7 +8,7 @@ import com.livelike.engagementsdk.services.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class ChatReactionRepository private constructor(private val remoteUrl: String) :
+internal class ChatReactionRepository(private val remoteUrl: String) :
     BaseRepository() {
 
     var reactionList: List<Reaction>? = null
@@ -55,14 +55,5 @@ internal class ChatReactionRepository private constructor(private val remoteUrl:
                 Glide.with(context).load(it.file).preload()
             }
         }
-    }
-
-    companion object {
-
-        @Volatile
-        private var INSTANCE: ChatReactionRepository? = null
-
-        fun getInstance(remoteUrl: String): ChatReactionRepository =
-            INSTANCE ?: ChatReactionRepository(remoteUrl).also { INSTANCE = it }
     }
 }
