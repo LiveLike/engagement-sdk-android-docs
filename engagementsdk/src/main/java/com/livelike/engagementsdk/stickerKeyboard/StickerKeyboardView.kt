@@ -37,7 +37,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
     private fun createTabItemView(stickerPack: StickerPack? = null): View {
         val imageView = ImageView(context)
-        imageView.contentDescription = stickerPack?.name ?: "Recent Stickers"
+        imageView.contentDescription = stickerPack?.name ?: context.getString(R.string.recent_sticker)
         imageView.layoutParams = ViewGroup.LayoutParams(
             AndroidResource.dpToPx(24),
             AndroidResource.dpToPx(24))
