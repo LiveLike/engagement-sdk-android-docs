@@ -83,6 +83,7 @@
             android:padding="9dp"
             android:background="@null"
             android:scaleType="centerCrop"
+            android:contentDescription="@string/sticker_keyboard"
             app:layout_constraintBottom_toBottomOf="@+id/chat_input_border"
             app:layout_constraintEnd_toEndOf="@+id/chat_input_border"
             app:layout_constraintHorizontal_bias="1.0"
