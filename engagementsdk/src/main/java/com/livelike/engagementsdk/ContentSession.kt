@@ -155,7 +155,7 @@ internal class ContentSession(
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
                             chatViewModel.reportUrl = program.reportUrl
                             chatViewModel.stickerPackRepository = StickerPackRepository(programId, program.stickerPacksUrl)
-                            chatViewModel.chatReactionRepository = ChatReactionRepository.getInstance(program.reactionPacksUrl)
+                            chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
                             chatViewModel.chatRepository = chatRepository
                             contentSessionScope.launch { chatViewModel.chatReactionRepository?.preloadImages(applicationContext) }
                             chatViewModel.currentChatRoom = program.defaultChatRoom
@@ -247,7 +247,7 @@ internal class ContentSession(
             val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
             delay(500)
             if (privateGroupPubnubClient == null) {
-                initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
+                initializeChatMessaging(channel, syncEnabled = true, privateGroupsChat = true)
             } else {
                 privateGroupPubnubClient?.activeChatRoom = channel
             }

@@ -11,7 +11,9 @@ import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
+import com.livelike.engagementsdk.chat.data.remote.toPubnubChatEventType
 import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.parseISODateTime
@@ -100,7 +102,7 @@ internal class PubnubChatMessagingClient(
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         val clientMessage = gson.fromJson(message, ChatMessage::class.java)
         val pubnubChatEvent = PubnubChatEvent(
-            PubnubChatEventType.MESSAGE_CREATED.key, clientMessage.toPubnubChatMessage(
+            clientMessage.messageEvent.key, clientMessage.toPubnubChatMessage(
                 ZonedDateTime.ofInstant(
                     Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
                     org.threeten.bp.ZoneId.of("UTC")
@@ -306,13 +308,13 @@ internal class PubnubChatMessagingClient(
         timeToken: Long,
         actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>? = null
     ) {
-        val event = jsonObject.extractStringOrEmpty("event")
-        if (event == PubnubChatEventType.MESSAGE_CREATED.key || event == PubnubChatEventType.MESSAGE_DELETED.key) {
+        val event = jsonObject.extractStringOrEmpty("event").toPubnubChatEventType()
+        if (event != null) {
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
             var clientMessage: ClientMessage? = null
             when (event) {
-                PubnubChatEventType.MESSAGE_CREATED.key -> {
+                MESSAGE_CREATED, IMAGE_CREATED -> {
                     if (isDiscardOwnPublishInSubcription && publishMessageIdList.contains(pubnubChatEvent.payload.messageId)) {
                         publishMessageIdList.remove(pubnubChatEvent.payload.messageId)
                         logError { "discarding as its own recently published message which is broadcasted by pubnub on that channel." }
@@ -335,9 +337,7 @@ internal class PubnubChatMessagingClient(
 
                     try {
                         clientMessage = ClientMessage(
-                            gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel, timeToken,
-                                processReactionCounts(actions), getOwnReaction(actions))
-                            ).asJsonObject.apply {
+                            gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel, timeToken, processReactionCounts(actions), getOwnReaction(actions), event)).asJsonObject.apply {
                                 addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
                                 addProperty("pubnubMessageToken", pubnubChatEvent.pubnubToken)
                             },
@@ -353,7 +353,7 @@ internal class PubnubChatMessagingClient(
                         return
                     }
                 }
-                PubnubChatEventType.MESSAGE_DELETED.key -> {
+                MESSAGE_DELETED, IMAGE_DELETED -> {
                     clientMessage = ClientMessage(JsonObject().apply {
                         addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
                         addProperty("id", pubnubChatEvent.payload.messageId)

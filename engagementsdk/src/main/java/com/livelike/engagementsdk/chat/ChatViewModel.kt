@@ -1,12 +1,16 @@
 package com.livelike.engagementsdk.chat
 
+import android.content.Context
+import android.net.Uri
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
+import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.services.network.ChatDataClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
@@ -15,6 +19,8 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -86,6 +92,12 @@ internal class ChatViewModel(
         if (getBlockedUsers().contains(message.senderId)) {
             return
         }
+
+        val imageUrl = message.imageUrl
+
+        if(message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()){
+            message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
+        }
         if (messageList.size == 0) {
             messageList.add(message.apply {
                 isFromMe = userStream.latest()?.id == senderId
@@ -103,8 +115,9 @@ internal class ChatViewModel(
                 }
             }
         }
+
         uiScope.launch {
-            chatAdapter.submitList(ArrayList(messageList))
+            chatAdapter.submitList(ArrayList(messageList.toSet()))
             eventStream.onNext(EVENT_NEW_MESSAGE)
         }
     }
@@ -150,7 +163,7 @@ internal class ChatViewModel(
         messageList.find { it.id == messageId }?.apply {
             message = "Redacted"
         }
-        chatAdapter.submitList(ArrayList(messageList))
+        chatAdapter.submitList(ArrayList(messageList.toSet()))
         eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 
@@ -165,7 +178,7 @@ internal class ChatViewModel(
     override fun loadingCompleted() {
         if (!chatLoaded) {
             chatLoaded = true
-            chatAdapter.submitList(ArrayList(messageList))
+            chatAdapter.submitList(ArrayList(messageList.toSet()))
             chatAdapter.notifyDataSetChanged()
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
@@ -193,6 +206,17 @@ internal class ChatViewModel(
             } else {
                 logError { "Chat repo is null" }
             }
+        }
+    }
+
+    fun uploadAndPostImage(context : Context, chatMessage: ChatMessage, timedata: EpochTime) {
+        GlobalScope.launch (Dispatchers.IO) {
+            val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length-1))
+            val fileBytes = context.contentResolver.openInputStream(url)?.readBytes()
+            val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
+            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+            chatMessage.imageUrl = imageUrl
+            chatListener?.onChatMessageSend(chatMessage, timedata)
         }
     }
 }

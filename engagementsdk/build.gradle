@@ -95,6 +95,8 @@ dependencies {
     implementation "com.mixpanel.android:mixpanel-android:$mixpanelVersion"
 
     implementation "com.bugsnag:bugsnag-android:$bugsnagVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+
 }
 
 repositories {

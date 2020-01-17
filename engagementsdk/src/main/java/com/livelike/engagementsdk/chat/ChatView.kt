@@ -31,6 +31,7 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -38,6 +39,9 @@ import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
+import com.livelike.engagementsdk.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.stickerKeyboard.findImages
+import com.livelike.engagementsdk.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
@@ -45,8 +49,6 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -72,6 +74,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -206,6 +210,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         swipeToRefresh.setOnRefreshListener {
+            swipeToRefresh.isRefreshing = false
             viewModel?.loadPreviousMessages()
         }
     }
@@ -320,13 +325,21 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    stickerPackRepository?.let { stickerPackRepository ->
-                        replaceWithStickers(
+                    if(s.toString().findImages().matches()){
+                        replaceWithImages(
                             s as Spannable,
                             this@ChatView.context,
-                            stickerPackRepository,
                             edittext_chat_message, null
                         )
+                    }else{
+                        stickerPackRepository?.let { stickerPackRepository ->
+                            replaceWithStickers(
+                                s as Spannable,
+                                this@ChatView.context,
+                                stickerPackRepository,
+                                edittext_chat_message, null
+                            )
+                        }
                     }
                 }
 
@@ -380,9 +393,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         val textToInsert = ":${sticker.shortcode}:"
                         val start = max(edittext_chat_message.selectionStart, 0)
                         val end = max(edittext_chat_message.selectionEnd, 0)
-                        if (edittext_chat_message.text.length + textToInsert.length < 150) {
+                        if (edittext_chat_message.text!!.length + textToInsert.length < 150) {
                             // replace selected text or start where the cursor is
-                            edittext_chat_message.text.replace(
+                            edittext_chat_message.text?.replace(
                                 min(start, end), max(start, end),
                                 textToInsert, 0, textToInsert.length
                             )
@@ -623,13 +636,16 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun sendMessageNow() {
-        if (edittext_chat_message.text.isBlank()) {
+        if (edittext_chat_message.text.isNullOrBlank()) {
             // Do nothing if the message is blank or empty
             return
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
+
+        // TODO all this can be moved to view model easily
         ChatMessage(
+            PubnubChatEventType.MESSAGE_CREATED,
             viewModel?.currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",
@@ -640,7 +656,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                chatListener?.onChatMessageSend(it, timeData)
+                if(it.message.findImages().countMatches()>0){
+                    uploadAndPostImage(context, it, timeData)
+                }else{
+                    chatListener?.onChatMessageSend(it, timeData)
+                }
                 edittext_chat_message.setText("")
                 snapToLive()
             }

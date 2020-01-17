@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import java.util.UUID
 
 internal interface ChatEventListener {
@@ -25,6 +26,7 @@ internal interface ChatRenderer {
  *  @param timeStamp Message timeStamp.
  */
 internal data class ChatMessage(
+    var messageEvent: PubnubChatEventType,
     var channel: String,
     var message: String,
     val senderId: String,
@@ -34,6 +36,8 @@ internal data class ChatMessage(
     // PDT video time //NOt using right now for later use FYI @shivansh @Willis
     val timeStamp: String? = null,
     var pubnubMessageToken: Long? = null,
+    var imageUrl: String? = null,
+    var badgeUrlImage: String? = null,
     var isFromMe: Boolean = false,
     var myChatMessageReaction: ChatMessageReaction? = null,
     var emojiCountMap: MutableMap<String, Int> = mutableMapOf(),
@@ -49,9 +53,18 @@ internal data class ChatMessage(
                     "message": "$message"
                 }""".trimIndent()
     }
+
+    override fun equals(other: Any?): Boolean {
+        return id == (other as? ChatMessage)?.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
 }
 
 internal data class ChatMessageReaction(
     val emojiId: String,
     var pubnubActionToken: Long? = null
 )
+internal const val CHAT_MESSAGE_IMAGE_TEMPLATE = ":message:"

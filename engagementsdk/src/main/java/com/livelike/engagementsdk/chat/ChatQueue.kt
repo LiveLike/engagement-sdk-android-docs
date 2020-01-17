@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.logError
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
@@ -26,21 +27,14 @@ internal class ChatQueue(upstream: MessagingClient) :
     var renderer: ChatRenderer? = null
 
     override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
-        // If chat is paused we can queue here
-        val messageJson = JsonObject()
-        messageJson.addProperty("message", message.message)
-        messageJson.addProperty("sender", message.senderDisplayName)
-        messageJson.addProperty("sender_id", message.senderId)
-        messageJson.addProperty("id", message.id)
-        messageJson.addProperty("channel", message.channel)
-        messageJson.addProperty("image_url", message.senderDisplayPic)
         publishMessage(gson.toJson(message), message.channel, timeData)
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         when (event.message.get("event").asString) {
             ChatViewModel.EVENT_NEW_MESSAGE -> {
-                renderer?.displayChatMessage(gson.fromJson(event.message, ChatMessage::class.java))
+                val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
+                renderer?.displayChatMessage(chatMessage)
             }
             ChatViewModel.EVENT_MESSAGE_DELETED -> {
                 val id = event.message.get("id").asString

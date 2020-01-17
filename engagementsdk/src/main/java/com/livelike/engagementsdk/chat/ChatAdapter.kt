@@ -31,14 +31,18 @@ import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.stickerKeyboard.findImages
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
+import com.livelike.engagementsdk.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.stickerKeyboard.stickerSize
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
@@ -47,8 +51,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -109,13 +111,11 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(view: View?): Boolean {
-            if (isPublicChat) {
                 val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
                 val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
                 if (reactionsAvailable || !isOwnMessage) {
                     showFloatingUI(isOwnMessage, message?.myChatMessageReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
                 }
-            }
             return true
         }
 
@@ -234,7 +234,8 @@ internal class ChatRecyclerAdapter(
                             notifyItemChanged(adapterPosition)
                         }
                     }
-                }
+                },
+                isPublichat = isPublicChat
             ).apply {
                 animationStyle = when {
                     checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
@@ -384,14 +385,22 @@ internal class ChatRecyclerAdapter(
                         val spaceRemover = Pattern.compile("[\\s]")
                         val inputNoString = spaceRemover.matcher(message.message)
                             .replaceAll(Matcher.quoteReplacement(""))
-                        val isOnlyStickers = inputNoString.findIsOnlyStickers().matches()
-                        val atLeastOneSticker = inputNoString.findStickers().find()
+                        val isOnlyStickers = inputNoString.findIsOnlyStickers().matches() || message.message.findImages().matches()
+                        val atLeastOneSticker = inputNoString.findStickers().find() || message.message.findImages().matches()
                         val numberOfStickers = message.message.findStickers().countMatches()
+                        val isExternalImage = message.message.findImages().matches()
 
                         val callback = MultiCallback(true)
                         callback.addView(chatMessage)
                         when {
-                            (isOnlyStickers && numberOfStickers == 1) -> {
+                            isExternalImage -> {
+                                val s = SpannableString(message.message)
+                                replaceWithImages(s, context, null, callback, AndroidResource.dpToPx(stickerSize)) {
+                                    // TODO this might write to the wrong messageView on slow connection.
+                                    chatMessage.text = s
+                                }
+                            }
+                            (isOnlyStickers && numberOfStickers < 2) -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(s, context, stickerPackRepository, null, callback, AndroidResource.dpToPx(stickerSize)) {
                                     // TODO this might write to the wrong messageView on slow connection.
@@ -436,9 +445,10 @@ internal class ChatRecyclerAdapter(
                             }
                         }
                         txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
-                        if (emojiCountMap.isNotEmpty()) {
+                        val sumCount = emojiCountMap.values.sum()
+                        if (emojiCountMap.isNotEmpty() && sumCount > 0) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
-                            txt_chat_reactions_count.text = "${emojiCountMap.values.sum()}"
+                            txt_chat_reactions_count.text = "$sumCount"
                         } else {
                             txt_chat_reactions_count.visibility = View.GONE
                         }
