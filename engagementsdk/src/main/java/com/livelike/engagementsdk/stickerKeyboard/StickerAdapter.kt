@@ -101,6 +101,7 @@ class StickerAdapter(private val onClick: (Sticker) -> Unit) : ListAdapter<Stick
     class StickerViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         fun onBind(sticker: Sticker, onClick: (Sticker) -> Unit) {
             Glide.with(view).load(sticker.file).diskCacheStrategy(DiskCacheStrategy.ALL).into(view.itemImage)
+            view.itemImage.contentDescription = sticker.shortcode
             view.itemImage.setOnClickListener {
                 onClick(sticker)
                 addRecentSticker(sticker)

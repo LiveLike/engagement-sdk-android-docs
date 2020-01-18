@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -210,7 +211,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         swipeToRefresh.setOnRefreshListener {
-            swipeToRefresh.isRefreshing = false
             viewModel?.loadPreviousMessages()
         }
     }
@@ -386,6 +386,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     } else {
                         button_emoji?.visibility = View.VISIBLE
                     }
+                    viewModel?.chatAdapter?.notifyDataSetChanged()
                 }
                 // used to pass the shortcode to the keyboard
                 stickerKeyboardView.setOnClickListener(object : FragmentClickListener {

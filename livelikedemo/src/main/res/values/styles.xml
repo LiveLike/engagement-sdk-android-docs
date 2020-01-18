@@ -33,7 +33,7 @@
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme">
-        <item name="displayUserProfile">true</item>
+        <item name="displayUserProfile">false</item>
         <item name="chatBubbleWidth">match_parent</item>
         <item name="chatBackgroundWidth">0dp</item>
         <item name="chatBackground">#FFF</item>
