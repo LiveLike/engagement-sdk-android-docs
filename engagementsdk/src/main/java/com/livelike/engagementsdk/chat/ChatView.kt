@@ -376,6 +376,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         stickerKeyboardView: StickerKeyboardView,
         chatViewModel: ChatViewModel
     ) {
+        stickerKeyboardView.initTheme(chatAttribute)
         uiScope.launch {
             chatViewModel.stickerPackRepositoryFlow.collect { stickerPackRepository ->
                 stickerKeyboardView.setProgram(stickerPackRepository) {

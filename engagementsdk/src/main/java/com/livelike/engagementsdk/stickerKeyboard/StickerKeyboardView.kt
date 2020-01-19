@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.stickerKeyboard
 import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.LinearLayoutManager
@@ -14,6 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.utils.AndroidResource
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
@@ -21,10 +23,19 @@ import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 
 class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) : ConstraintLayout(context, attributes) {
     private lateinit var viewModel: StickerKeyboardViewModel
-
+    private var chatViewThemeAttributes:ChatViewThemeAttributes?=null
     init {
         LayoutInflater.from(context).inflate(R.layout.livelike_sticker_keyboard_pager, this, true)
         layoutTransition = LayoutTransition()
+    }
+
+    fun initTheme(themeAttributes: ChatViewThemeAttributes) {
+        chatViewThemeAttributes = themeAttributes
+        themeAttributes.apply {
+            pager.background = stickerBackground
+            pager_tab.background = stickerTabBackground
+            pager_tab.setSelectedTabIndicatorColor(stickerSelectedTabIndicatorColor)
+        }
     }
 
     override fun onVisibilityChanged(changedView: View, visibility: Int) {
@@ -38,6 +49,13 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
     private fun createTabItemView(stickerPack: StickerPack? = null): View {
         val imageView = ImageView(context)
         imageView.contentDescription = stickerPack?.name ?: context.getString(R.string.recent_sticker)
+        chatViewThemeAttributes?.let {
+            if (stickerPack?.file == null)
+                imageView.setColorFilter(
+                    it.stickerSelectedTabIndicatorColor,
+                    android.graphics.PorterDuff.Mode.MULTIPLY
+                )
+        }
         imageView.layoutParams = ViewGroup.LayoutParams(
             AndroidResource.dpToPx(24),
             AndroidResource.dpToPx(24))
@@ -52,7 +70,9 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
             it?.let { stickerPacks ->
                 val stickerCollectionPagerAdapter = StickerCollectionAdapter(
                     stickerPacks,
-                    stickerPackRepository.programId
+                    stickerPackRepository.programId,
+                    emptyRecentTextColor = chatViewThemeAttributes?.stickerRecentEmptyTextColor
+                        ?: Color.WHITE
                 ) { s -> listener?.onClick(s) }
                 pager.layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)

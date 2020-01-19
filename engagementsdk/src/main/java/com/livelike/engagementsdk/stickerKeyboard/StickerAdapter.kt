@@ -23,12 +23,17 @@ import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.empty_re
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.rvStickers
 
 
-class StickerCollectionAdapter(private val stickerPacks: List<StickerPack>, val programId : String,
-                               private val onClickCallback: (Sticker) -> Unit):RecyclerView.Adapter<StickerCollectionViewHolder>(){
+class StickerCollectionAdapter(
+    private val stickerPacks: List<StickerPack>,
+    val programId: String,
+    private val emptyRecentTextColor: Int = R.color.livelike_sticker_recent_empty_text_color,
+    private val onClickCallback: (Sticker) -> Unit
+) : RecyclerView.Adapter<StickerCollectionViewHolder>() {
     private val RECENT_STICKERS_POSITION = 0
 
+
     override fun onCreateViewHolder(viewGroup: ViewGroup, index: Int): StickerCollectionViewHolder {
-        return StickerCollectionViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.livelike_sticker_keyboard_rv,viewGroup,false)) { sticker->
+        return StickerCollectionViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.livelike_sticker_keyboard_rv,viewGroup,false),emptyRecentTextColor) { sticker->
             notifyDataSetChanged()
             onClickCallback(sticker)
         }
@@ -37,17 +42,19 @@ class StickerCollectionAdapter(private val stickerPacks: List<StickerPack>, val 
     override fun getItemCount(): Int = stickerPacks.size
 
     override fun onBindViewHolder(viewHolder: StickerCollectionViewHolder, index: Int) {
-        viewHolder.bind(stickerPacks[index],index==RECENT_STICKERS_POSITION,programId)
+        viewHolder.bind(stickerPacks[index],index == RECENT_STICKERS_POSITION,programId)
     }
 }
 
 class StickerCollectionViewHolder(
     itemView: View,
+    emptyRecentTextColor:Int,
     var onClickCallback: (Sticker) -> Unit
 ):RecyclerView.ViewHolder(itemView){
 
     init {
         itemView.rvStickers.layoutManager = GridLayoutManager(itemView.context, 6)
+        itemView.empty_recent_text.setTextColor(emptyRecentTextColor)
     }
 
     fun bind(stickerPack: StickerPack, isRecent: Boolean, programId: String) {
