@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -324,14 +325,27 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
 
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
+                var containsImage = false
                 override fun afterTextChanged(s: Editable?) {
-                    if(s.toString().findImages().matches()){
+                    val matcher = s.toString().findImages()
+                    if(matcher.find()){
+                        containsImage = true
                         replaceWithImages(
                             s as Spannable,
                             this@ChatView.context,
                             edittext_chat_message, null
                         )
+                        // cleanup before the image
+                        if(matcher.start()>0) edittext_chat_message.text?.delete(0, matcher.start())
+
+                        // cleanup after the image
+                        if(matcher.end()<s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
+
+                    }else if (containsImage){
+                        containsImage = false
+                        s?.length?.let { edittext_chat_message.text?.delete(0, it) }
                     }else{
+                        containsImage = false
                         stickerPackRepository?.let { stickerPackRepository ->
                             replaceWithStickers(
                                 s as Spannable,
@@ -341,6 +355,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                             )
                         }
                     }
+
                 }
 
                 override fun beforeTextChanged(
@@ -348,11 +363,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     start: Int,
                     count: Int,
                     after: Int
-                ) {
-                }
+                ) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                }
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) = Unit
             })
 
             button_emoji.setOnClickListener {
@@ -532,12 +550,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
             edittext_chat_message.apply {
                 addTextChangedListener(object : TextWatcher {
+                    var previousText : CharSequence = ""
                     override fun beforeTextChanged(
                         s: CharSequence,
                         start: Int,
                         count: Int,
                         after: Int
                     ) {
+                        previousText = s
                     }
 
                     override fun onTextChanged(

@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.stickerKeyboard
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
 import android.util.Log
