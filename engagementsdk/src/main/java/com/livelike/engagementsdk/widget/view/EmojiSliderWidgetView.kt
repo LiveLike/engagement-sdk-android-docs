@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -14,16 +13,15 @@ import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawab
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
-import java.math.RoundingMode
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
-import kotlinx.android.synthetic.main.widget_emoji_slider.view.txtTitleBackground
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.math.RoundingMode
 
 internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = null) :
     GenericSpecifiedWidgetView<ImageSliderEntity, EmojiSliderWidgetViewModel>(context, attr) {
@@ -46,7 +44,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
     override fun showResults() {
         val result = viewModel.results.latest()
-        val averageMagnitude = result?.averageMagnitude ?: image_slider.progress
+        val averageMagnitude = when (result?.averageMagnitude) {
+            0.0f -> image_slider.progress
+            else -> result?.averageMagnitude ?: image_slider.progress
+        }
         image_slider.averageProgress = averageMagnitude
     }
 

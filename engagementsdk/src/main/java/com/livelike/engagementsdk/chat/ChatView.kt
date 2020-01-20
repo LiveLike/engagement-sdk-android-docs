@@ -376,6 +376,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         stickerKeyboardView: StickerKeyboardView,
         chatViewModel: ChatViewModel
     ) {
+        stickerKeyboardView.initTheme(chatAttribute)
         uiScope.launch {
             chatViewModel.stickerPackRepositoryFlow.collect { stickerPackRepository ->
                 stickerKeyboardView.setProgram(stickerPackRepository) {
@@ -385,6 +386,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     } else {
                         button_emoji?.visibility = View.VISIBLE
                     }
+                    viewModel?.chatAdapter?.notifyDataSetChanged()
                 }
                 // used to pass the shortcode to the keyboard
                 stickerKeyboardView.setOnClickListener(object : FragmentClickListener {

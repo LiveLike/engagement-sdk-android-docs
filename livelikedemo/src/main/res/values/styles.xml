@@ -33,7 +33,7 @@
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme">
-        <item name="displayUserProfile">true</item>
+        <item name="displayUserProfile">false</item>
         <item name="chatBubbleWidth">match_parent</item>
         <item name="chatBackgroundWidth">0dp</item>
         <item name="chatBackground">#FFF</item>
@@ -87,6 +87,10 @@
         <item name="rankValueTextColor">#000</item>
         <item name="winAnimation">@string/win_animation_turner</item>
         <item name="loseAnimation">@string/lose_animation_turner</item>
+        <item name="stickerSelectedTabIndicatorColor">@color/livelike_black</item>
+        <item name="stickerTabBackground">@color/livelike_white</item>
+        <item name="stickerBackground">@color/livelike_white</item>
+        <item name="stickerRecentEmptyTextColor">@color/livelike_black</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">
