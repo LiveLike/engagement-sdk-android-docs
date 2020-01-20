@@ -215,7 +215,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         responseData.extractStringOrEmpty("access_token"),
                         responseData.extractBoolean("widgets_enabled"),
                         responseData.extractBoolean("chat_enabled"),
-                        "",
+                        null,
                         responseData.extractStringOrEmpty("url")
                     )
                     logVerbose { user }
@@ -252,7 +252,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
                         accessToken,
                         responseData.extractBoolean("widgets_enabled"),
                         responseData.extractBoolean("chat_enabled"),
-                        "",
+                        null,
                         responseData.extractStringOrEmpty("url")
                     )
                     logVerbose { user }
