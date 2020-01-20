@@ -18,6 +18,11 @@
     <item name="livelike_chat_nickname_font"
         type="font">@font/roboto_bold</item>
 
+    <item name="livelike_chatMessage_timestamp_text_font"
+        type="font">@font/roboto_regular</item>
+
+
+
     <declare-styleable name="LiveLike_WidgetView">
         <attr name="winAnimation" format="string"/>
         <attr name="loseAnimation" format="string"/>
