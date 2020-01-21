@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@color/livelike_black">
 
     <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -67,6 +68,20 @@
                     tools:ignore="HardcodedText"
                     tools:text="@tools:sample/lorem[30]" />
 
+                <TextView
+                    android:id="@+id/message_date_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/livelike_chatMessage_timestamp_text_color"
+                    android:fontFamily="@font/livelike_chatMessage_timestamp_text_font"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    android:layout_marginTop="4dp"
+                    tools:text="Jan 13, 3:45 PM" />
+
             </LinearLayout>
 
 
@@ -101,5 +116,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </android.support.constraint.ConstraintLayout>
+
 </FrameLayout>
