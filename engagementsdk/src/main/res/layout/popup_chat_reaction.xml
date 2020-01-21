@@ -18,7 +18,8 @@
             android:layout_width="wrap_content"
             android:gravity="center"
             android:layout_height="match_parent"
-            android:orientation="horizontal" />
+            android:orientation="horizontal"
+            />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -40,5 +41,12 @@
             android:src="@drawable/chat_ic_flag" />
     </android.support.v7.widget.CardView>
 
+    <!--Added this imageview as dummy only for voice over for opening reaction panel -->
+    <ImageView
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/reactions_panel_opened" />
 
 </android.support.constraint.ConstraintLayout>

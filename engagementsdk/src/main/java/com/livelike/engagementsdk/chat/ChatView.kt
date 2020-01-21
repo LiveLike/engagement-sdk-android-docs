@@ -4,12 +4,12 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -19,7 +19,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -324,14 +323,27 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
 
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
+                var containsImage = false
                 override fun afterTextChanged(s: Editable?) {
-                    if(s.toString().findImages().matches()){
+                    val matcher = s.toString().findImages()
+                    if(matcher.find()){
+                        containsImage = true
                         replaceWithImages(
                             s as Spannable,
                             this@ChatView.context,
                             edittext_chat_message, null
                         )
+                        // cleanup before the image
+                        if(matcher.start()>0) edittext_chat_message.text?.delete(0, matcher.start())
+
+                        // cleanup after the image
+                        if(matcher.end()<s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
+
+                    }else if (containsImage){
+                        containsImage = false
+                        s?.length?.let { edittext_chat_message.text?.delete(0, it) }
                     }else{
+                        containsImage = false
                         stickerPackRepository?.let { stickerPackRepository ->
                             replaceWithStickers(
                                 s as Spannable,
@@ -341,6 +353,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                             )
                         }
                     }
+
                 }
 
                 override fun beforeTextChanged(
@@ -348,11 +361,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     start: Int,
                     count: Int,
                     after: Int
-                ) {
-                }
+                ) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                }
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) = Unit
             })
 
             button_emoji.setOnClickListener {
@@ -473,9 +489,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             val outsideStickerKeyboardBound =
                 (v.bottom - sticker_keyboard.height - button_chat_send.height)
             // Added check for height greater than 0 so bound position for touch should be above the send icon
-            if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
-                hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
-                hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            if (!edittext_chat_message.isTouching) {
+                if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
+                    hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                    hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                }
             }
         }
         return super.dispatchTouchEvent(ev)
@@ -532,12 +550,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
             edittext_chat_message.apply {
                 addTextChangedListener(object : TextWatcher {
+                    var previousText : CharSequence = ""
                     override fun beforeTextChanged(
                         s: CharSequence,
                         start: Int,
                         count: Int,
                         after: Int
                     ) {
+                        previousText = s
                     }
 
                     override fun onTextChanged(
@@ -564,17 +584,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
-                }
-
-                // Send message on tap Enter
-                setOnEditorActionListener { _, actionId, event ->
-                    if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
-                        (actionId == EditorInfo.IME_ACTION_SEND) ||
-                        (actionId == EditorInfo.IME_ACTION_DONE)
-                    ) {
-                        sendMessageNow()
-                    }
-                    true
                 }
             }
         }
