@@ -72,10 +72,10 @@ internal class ChatActionsPopupView(
             setOnDismissListener(hideFloatingUi)
             isOutsideTouchable = true
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            contentView.isFocusable=true
-            contentView.contentDescription = context.getString(R.string.reactions_panel_opened)
-            contentView.importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_YES
-            contentView.requestFocus()
+            contentView.chat_reaction_background_card.isFocusable=true
+            contentView.chat_reaction_background_card.contentDescription = context.getString(R.string.reactions_panel_opened)
+            contentView.chat_reaction_background_card.importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_YES
+            contentView.chat_reaction_background_card.requestFocus()
         }
         initReactions()
         contentView.img_dummy.requestFocus()
