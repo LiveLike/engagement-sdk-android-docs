@@ -41,6 +41,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Calendar
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -322,7 +323,9 @@ internal class ChatRecyclerAdapter(
                         }
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
-                            v.message_date_time.text = messageTimeFormatter?.invoke(message.getUnixTimeStamp())
+                            v.message_date_time.text = messageTimeFormatter?.invoke(
+                                message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis
+                            ) // to handle the case if its own message and time has not come from pubnub yet.
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }

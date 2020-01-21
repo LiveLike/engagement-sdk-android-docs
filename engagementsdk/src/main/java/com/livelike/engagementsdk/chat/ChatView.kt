@@ -23,6 +23,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ContentSession
+import com.livelike.engagementsdk.DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.KeyboardHideReason
 import com.livelike.engagementsdk.KeyboardType
@@ -48,6 +49,7 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
@@ -232,7 +234,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      * returns the formatted string to display
      */
     open fun formatMessageDateTime(messageTimeStamp: Long): String {
-        return "Jan 13, 3:45 PM"
+        var dateTime = Date()
+        dateTime.time = messageTimeStamp
+        return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
     }
 
     fun setSession(session: LiveLikeContentSession) {

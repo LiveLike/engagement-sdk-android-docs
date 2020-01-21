@@ -62,8 +62,12 @@ internal data class ChatMessage(
         return id.hashCode()
     }
 
-    fun getUnixTimeStamp(): Long {
-        return timetoken / 10000
+    fun getUnixTimeStamp(): Long? {
+        return try {
+            timetoken / 10000
+        } catch (ex: ArithmeticException) {
+            null
+        }
     }
 }
 
