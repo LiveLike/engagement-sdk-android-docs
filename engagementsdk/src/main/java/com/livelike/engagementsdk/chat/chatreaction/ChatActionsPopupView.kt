@@ -9,7 +9,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.accessibility.AccessibilityEvent
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -21,9 +20,9 @@ import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
+import kotlinx.android.synthetic.main.popup_chat_reaction.view.img_dummy
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_lay
-import kotlinx.android.synthetic.main.popup_chat_reaction.view.reaction_panel_interaction_box
 
 /**
  * Chat reactions and Chat moderation actions view that will popup when use long press chat
@@ -73,8 +72,13 @@ internal class ChatActionsPopupView(
             setOnDismissListener(hideFloatingUi)
             isOutsideTouchable = true
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            contentView.isFocusable=true
+            contentView.contentDescription = context.getString(R.string.reactions_panel_opened)
+            contentView.importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_YES
+            contentView.requestFocus()
         }
         initReactions()
+        contentView.img_dummy.requestFocus()
     }
 
     private fun formattedReactionCount(count: Int): String {
@@ -94,6 +98,8 @@ internal class ChatActionsPopupView(
             val imageView = ImageView(context)
             imageView.id = View.generateViewId()
             imageView.contentDescription = reaction.name
+            imageView.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
+            imageView.isFocusable = true
             imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
 
             userReaction?.let {
