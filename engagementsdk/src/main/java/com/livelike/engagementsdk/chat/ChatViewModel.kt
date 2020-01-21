@@ -35,7 +35,7 @@ internal class ChatViewModel(
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     val messageList = mutableListOf<ChatMessage>()
-    internal val eventStream: Stream<String> = SubscriptionManager(true)
+    internal val eventStream: Stream<String> = SubscriptionManager(true,this.javaClass.simpleName)
     var currentChatRoom: ChatRoom? = null
         set(value) {
             field = value
@@ -69,7 +69,7 @@ internal class ChatViewModel(
     internal var chatLoaded = false
         set(value) {
             field = value
-            println("--->>>ChatViewModel.chatLoaded -> $chatLoaded")
+            println("--->>>ChatViewModel.chatLoaded -> $field")
             if (field) {
                 eventStream.onNext(EVENT_LOADING_COMPLETE)
             } else {
@@ -179,9 +179,9 @@ internal class ChatViewModel(
     override fun loadingCompleted() {
         println("--->>>ChatViewModel.loadingCompleted-> $chatLoaded")
         if (!chatLoaded) {
-            chatLoaded = true
             chatAdapter.submitList(ArrayList(messageList.toSet()))
             chatAdapter.notifyDataSetChanged()
+            chatLoaded = true
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
         }

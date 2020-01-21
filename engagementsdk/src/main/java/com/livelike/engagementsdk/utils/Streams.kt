@@ -6,7 +6,7 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.exceptionhelpers.safeCodeBlockCall
 import java.util.concurrent.ConcurrentHashMap
 
-internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) :
+internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true,val file:Any?=null) :
     Stream<T> {
     override fun latest(): T? {
         return currentData
@@ -18,7 +18,7 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
 
     override fun onNext(data1: T?) {
         // TODO add debug log with class name appended
-        println("--->>>SubscriptionManager.onNext-> $data1")
+        println("--->>>SubscriptionManager.onNext-->$file-> $data1 <<><><> ${observerMap.size}")
         safeCodeBlockCall({
             println("--->>>SubscriptionManager.onNext->> ${observerMap.size}")
             observerMap.forEach {
@@ -30,18 +30,18 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
     }
 
     override fun subscribe(key: Any, observer: (T?) -> Unit) {
-        println("--->>>SubscriptionManager.subscribe--> $key")
+        println("--->>>SubscriptionManager.subscribe-->$file--> $key")
         observerMap[key] = observer
         if (emitOnSubscribe) observer.invoke(currentData)
     }
 
     override fun unsubscribe(key: Any) {
-        println("--->>>SubscriptionManager.unsubscribe--> $key")
+        println("--->>>SubscriptionManager.unsubscribe-->$file--> $key")
         observerMap.remove(key)
     }
 
     override fun clear() {
-        println("--->>>SubscriptionManager.clear-->")
+        println("--->>>SubscriptionManager.clear-->$file-->")
         currentData = null
         onNext(null)
         observerMap.clear()
