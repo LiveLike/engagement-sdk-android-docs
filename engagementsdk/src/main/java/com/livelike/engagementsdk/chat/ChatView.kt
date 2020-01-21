@@ -352,6 +352,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
                         // cleanup after the image
                         if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
+                        // Move to end of line
+                        edittext_chat_message.setSelection(edittext_chat_message.text?.length ?: 0)
                     } else if (containsImage) {
                         containsImage = false
                         s?.length?.let { edittext_chat_message.text?.delete(0, it) }
