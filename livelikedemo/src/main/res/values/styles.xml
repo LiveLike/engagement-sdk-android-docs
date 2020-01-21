@@ -14,6 +14,7 @@
 
     <style name="Default" parent="AppTheme">
         <item name="displayUserProfile">true</item>
+        <item name="showMessageTime">false</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">true</item>
         <item name="chatBubbleWidth">wrap_content</item>
@@ -34,6 +35,7 @@
 
     <style name="TurnerChatTheme" parent="AppTheme">
         <item name="displayUserProfile">false</item>
+        <item name="showMessageTime">true</item>
         <item name="chatBubbleWidth">match_parent</item>
         <item name="chatBackgroundWidth">0dp</item>
         <item name="chatBackground">#FFF</item>
