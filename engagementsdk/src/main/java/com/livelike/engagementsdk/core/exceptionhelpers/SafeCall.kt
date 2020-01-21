@@ -9,6 +9,8 @@ internal fun safeCodeBlockCall(call: () -> Unit, errorMessage: String? = null) {
     return try {
         call()
     } catch (ex: Throwable) {
+        println("--->>><top>.safeCodeBlockCall--> ${ex.message}")
+        ex.printStackTrace()
         BugsnagClient.client?.notify(ex.cause ?: ex)
         ex.cause?.printStackTrace() ?: ex.printStackTrace()
     }

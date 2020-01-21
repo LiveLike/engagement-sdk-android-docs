@@ -69,6 +69,7 @@ internal class ChatViewModel(
     internal var chatLoaded = false
         set(value) {
             field = value
+            println("--->>>ChatViewModel.chatLoaded -> $chatLoaded")
             if (field) {
                 eventStream.onNext(EVENT_LOADING_COMPLETE)
             } else {
@@ -176,6 +177,7 @@ internal class ChatViewModel(
     }
 
     override fun loadingCompleted() {
+        println("--->>>ChatViewModel.loadingCompleted-> $chatLoaded")
         if (!chatLoaded) {
             chatLoaded = true
             chatAdapter.submitList(ArrayList(messageList.toSet()))

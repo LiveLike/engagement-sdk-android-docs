@@ -18,8 +18,11 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
 
     override fun onNext(data1: T?) {
         // TODO add debug log with class name appended
+        println("--->>>SubscriptionManager.onNext-> $data1")
         safeCodeBlockCall({
+            println("--->>>SubscriptionManager.onNext->> ${observerMap.size}")
             observerMap.forEach {
+                println("--->>>SubscriptionManager.onNext>>>>> ${it.key} -> $data1")
                 it.value.invoke(data1)
             }
         })
@@ -27,15 +30,18 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
     }
 
     override fun subscribe(key: Any, observer: (T?) -> Unit) {
+        println("--->>>SubscriptionManager.subscribe--> $key")
         observerMap[key] = observer
         if (emitOnSubscribe) observer.invoke(currentData)
     }
 
     override fun unsubscribe(key: Any) {
+        println("--->>>SubscriptionManager.unsubscribe--> $key")
         observerMap.remove(key)
     }
 
     override fun clear() {
+        println("--->>>SubscriptionManager.clear-->")
         currentData = null
         onNext(null)
         observerMap.clear()

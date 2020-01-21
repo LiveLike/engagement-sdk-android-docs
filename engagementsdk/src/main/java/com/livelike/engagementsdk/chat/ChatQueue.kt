@@ -1,12 +1,10 @@
 package com.livelike.engagementsdk.chat
 
-import com.google.gson.JsonObject
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logError
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
@@ -33,17 +31,21 @@ internal class ChatQueue(upstream: MessagingClient) :
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         when (event.message.get("event").asString) {
             ChatViewModel.EVENT_NEW_MESSAGE -> {
+                println("--->>>ChatQueue.onClientMessageEvent-> New Message")
                 val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
                 renderer?.displayChatMessage(chatMessage)
             }
             ChatViewModel.EVENT_MESSAGE_DELETED -> {
+                println("--->>>ChatQueue.onClientMessageEvent--> Delete Message")
                 val id = event.message.get("id").asString
                 renderer?.deleteChatMessage(id)
             }
             ChatViewModel.EVENT_MESSAGE_TIMETOKEN_UPDATED -> {
+                println("--->>>ChatQueue.onClientMessageEvent -> Time token updated")
                 renderer?.updateChatMessageTimeToken(event.message.get("messageId").asString, event.message.get("timetoken").asString)
             }
             ChatViewModel.EVENT_LOADING_COMPLETE -> {
+                println("--->>>ChatQueue.onClientMessageEvent -> Completed")
                 renderer?.loadingCompleted()
             }
             ChatViewModel.EVENT_REACTION_ADDED -> {
