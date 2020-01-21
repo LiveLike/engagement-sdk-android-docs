@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.Spannable
-import android.text.SpannableString
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -49,6 +48,8 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -74,8 +75,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -88,7 +87,7 @@ import kotlin.math.min
  *  ```
  *
  */
-class ChatView(context: Context, private val attrs: AttributeSet?) :
+open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
@@ -228,6 +227,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
+    /**
+     * unix timestamp is passed as param
+     * returns the formatted string to display
+     */
+    open fun formatMessageDateTime(messageTimeStamp: Long): String {
+        return "Jan 13, 3:45 PM"
+    }
+
     fun setSession(session: LiveLikeContentSession) {
         if (this.session === session) return // setting it multiple times same view with same session have a weird behaviour will debug later.
         hideGamification()
@@ -237,6 +244,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         viewModel?.apply {
             chatAdapter.chatViewThemeAttribute = chatAttribute
+            chatAdapter.messageTimeFormatter = { time ->
+                formatMessageDateTime(time)
+            }
             initStickerKeyboard(sticker_keyboard, this)
 
             setDataSource(chatAdapter)
@@ -326,7 +336,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 var containsImage = false
                 override fun afterTextChanged(s: Editable?) {
                     val matcher = s.toString().findImages()
-                    if(matcher.find()){
+                    if (matcher.find()) {
                         containsImage = true
                         replaceWithImages(
                             s as Spannable,
@@ -334,15 +344,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                             edittext_chat_message, null
                         )
                         // cleanup before the image
-                        if(matcher.start()>0) edittext_chat_message.text?.delete(0, matcher.start())
+                        if (matcher.start()> 0) edittext_chat_message.text?.delete(0, matcher.start())
 
                         // cleanup after the image
-                        if(matcher.end()<s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
-
-                    }else if (containsImage){
+                        if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
+                    } else if (containsImage) {
                         containsImage = false
                         s?.length?.let { edittext_chat_message.text?.delete(0, it) }
-                    }else{
+                    } else {
                         containsImage = false
                         stickerPackRepository?.let { stickerPackRepository ->
                             replaceWithStickers(
@@ -353,7 +362,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                             )
                         }
                     }
-
                 }
 
                 override fun beforeTextChanged(
@@ -550,7 +558,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
             edittext_chat_message.apply {
                 addTextChangedListener(object : TextWatcher {
-                    var previousText : CharSequence = ""
+                    var previousText: CharSequence = ""
                     override fun beforeTextChanged(
                         s: CharSequence,
                         start: Int,
@@ -652,7 +660,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
-
         // TODO all this can be moved to view model easily
         ChatMessage(
             PubnubChatEventType.MESSAGE_CREATED,
@@ -666,9 +673,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                if(it.message.findImages().countMatches()>0){
+                if (it.message.findImages().countMatches()> 0) {
                     uploadAndPostImage(context, it, timeData)
-                }else{
+                } else {
                     chatListener?.onChatMessageSend(it, timeData)
                 }
                 edittext_chat_message.setText("")

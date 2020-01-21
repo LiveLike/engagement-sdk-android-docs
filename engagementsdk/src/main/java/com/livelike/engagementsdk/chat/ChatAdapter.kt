@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat
 
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -15,8 +14,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
@@ -44,16 +41,17 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
+import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -78,6 +76,8 @@ internal class ChatRecyclerAdapter(
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
+
+    internal var messageTimeFormatter: ((time: Long) -> String)? = null
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
@@ -319,6 +319,12 @@ internal class ChatRecyclerAdapter(
                         } else {
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
+                        }
+                        if (chatViewThemeAttribute.showMessageDateTime) {
+                            v.message_date_time.visibility = View.VISIBLE
+                            v.message_date_time.text = messageTimeFormatter?.invoke(message.getUnixTimeStamp())
+                        } else {
+                            v.message_date_time.visibility = View.GONE
                         }
 
                         val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
