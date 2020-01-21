@@ -60,6 +60,7 @@
             android:paddingRight="16dp"
             android:maxLength="150"
             android:maxLines="3"
+            android:imeOptions="flagNoExtractUi"
             android:minHeight="40dp"
             android:background="@android:color/transparent"
             android:hint="@string/livelike_chat_input_hint"

@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -20,7 +19,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -491,9 +489,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             val outsideStickerKeyboardBound =
                 (v.bottom - sticker_keyboard.height - button_chat_send.height)
             // Added check for height greater than 0 so bound position for touch should be above the send icon
-            if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
-                hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
-                hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            if (!edittext_chat_message.isTouching) {
+                if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
+                    hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                    hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                }
             }
         }
         return super.dispatchTouchEvent(ev)
