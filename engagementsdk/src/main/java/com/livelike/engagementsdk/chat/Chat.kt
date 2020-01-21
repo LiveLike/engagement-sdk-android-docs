@@ -63,6 +63,9 @@ internal data class ChatMessage(
     }
 
     fun getUnixTimeStamp(): Long? {
+        if (timetoken == 0L) {
+            return null
+        }
         return try {
             timetoken / 10000
         } catch (ex: ArithmeticException) {
