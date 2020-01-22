@@ -14,6 +14,7 @@
 
     <style name="Default" parent="AppTheme">
         <item name="displayUserProfile">true</item>
+        <item name="showMessageTime">true</item>
         <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">true</item>
         <item name="chatBubbleWidth">wrap_content</item>
@@ -34,6 +35,7 @@
 
     <style name="TurnerChatTheme" parent="AppTheme">
         <item name="displayUserProfile">false</item>
+        <item name="showMessageTime">true</item>
         <item name="chatBubbleWidth">match_parent</item>
         <item name="chatBackgroundWidth">0dp</item>
         <item name="chatBackground">#FFF</item>
@@ -94,6 +96,7 @@
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">
+        <item name="showMessageTime">false</item>
         <item name="chatReactionPanelColor">#5028a0</item>
         <item name="chatReactionDisplayCountColor">#ffffff</item>
         <item name="chatReactionMessageBubbleHighlightedBackground">@drawable/ic_chat_message_highlighted_bubble_rounded_rectangle</item>

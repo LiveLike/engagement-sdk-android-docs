@@ -19,6 +19,7 @@ class ChatViewThemeAttributes {
             showChatAvatarLogo = getBoolean(R.styleable.LiveLike_ChatView_showChatAvatarLogo, false)
             chatAvatarCircle = getBoolean(R.styleable.LiveLike_ChatView_chatAvatarCircle, false)
             showStickerSend = getBoolean(R.styleable.LiveLike_ChatView_showStickerSend, true)
+            showMessageDateTime = getBoolean(R.styleable.LiveLike_ChatView_showMessageTime, true)
             chatNickNameColor = getColor(
                 R.styleable.LiveLike_ChatView_usernameColor,
                 ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
@@ -490,6 +491,7 @@ class ChatViewThemeAttributes {
         }
     }
 
+    var showMessageDateTime: Boolean = true
     var chatBubblePaddingLeft: Int = 0
     var chatBubblePaddingRight: Int = 0
     var chatBubblePaddingTop: Int = 0

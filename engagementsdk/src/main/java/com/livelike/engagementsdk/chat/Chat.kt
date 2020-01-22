@@ -61,6 +61,17 @@ internal data class ChatMessage(
     override fun hashCode(): Int {
         return id.hashCode()
     }
+
+    fun getUnixTimeStamp(): Long? {
+        if (timetoken == 0L) {
+            return null
+        }
+        return try {
+            timetoken / 10000
+        } catch (ex: ArithmeticException) {
+            null
+        }
+    }
 }
 
 internal data class ChatMessageReaction(
