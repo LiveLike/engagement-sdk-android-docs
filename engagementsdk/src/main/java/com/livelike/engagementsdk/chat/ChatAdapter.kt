@@ -153,6 +153,8 @@ internal class ChatRecyclerAdapter(
             v.setOnClickListener(this)
         }
 
+        val callback = MultiCallback(true)
+
         fun bindTo(item: ChatMessage?) {
             v.tag = item
             setMessage(item)
@@ -305,6 +307,7 @@ internal class ChatRecyclerAdapter(
             updateBackground(false)
         }
 
+
         private fun setMessage(
             message: ChatMessage?
         ) {
@@ -403,7 +406,7 @@ internal class ChatRecyclerAdapter(
                         val numberOfStickers = message.message.findStickers().countMatches()
                         val isExternalImage = message.message.findImages().matches()
 
-                        val callback = MultiCallback(true)
+                        chatMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                         callback.addView(chatMessage)
                         when {
                             isExternalImage -> {
