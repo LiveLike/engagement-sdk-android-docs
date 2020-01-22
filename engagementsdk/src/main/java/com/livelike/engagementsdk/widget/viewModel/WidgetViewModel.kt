@@ -82,7 +82,7 @@ internal abstract class WidgetViewModel<T : Resource>(
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
-            delay(1000)
+            delay(2000)
             state.onNext(WidgetState.SHOW_RESULTS)
             delay(1000)
             state.onNext(WidgetState.SHOW_GAMIFICATION)
