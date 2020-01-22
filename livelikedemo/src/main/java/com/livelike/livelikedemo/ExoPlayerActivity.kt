@@ -230,13 +230,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
-            val session = (application as LiveLikeApplication).createSession(
-                channel.llProgram.toString(),
-                when (showNotification) {
-                    true -> dialog
-                    else -> null
-                }
-            )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
                     (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString(), (application as LiveLikeApplication).timecodeGetter)
@@ -290,7 +283,13 @@ class ExoPlayerActivity : AppCompatActivity() {
                     LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
                 chat_view.emptyChatBackgroundView = emptyView
             }
-
+            val session = (application as LiveLikeApplication).createSession(
+                channel.llProgram.toString(),
+                when (showNotification) {
+                    true -> dialog
+                    else -> null
+                }
+            )
             chat_view.setSession(session)
             widget_view.setSession(session)
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {

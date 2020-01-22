@@ -240,9 +240,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             initStickerKeyboard(sticker_keyboard, this)
 
             setDataSource(chatAdapter)
-            println("--->>>ChatView.setSession>>")
             eventStream.subscribe(javaClass.simpleName) {
-                println("--->>>ChatView.setSession----> $it")
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
@@ -458,7 +456,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     override fun onViewRemoved(view: View?) {
-        println("--->>>ChatView.onViewRemoved")
         viewModel?.apply {
             eventStream.unsubscribe(javaClass.simpleName)
             userStream.unsubscribe(javaClass.simpleName)
