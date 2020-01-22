@@ -225,7 +225,6 @@ internal class ContentSession(
         }
         fetchChatRoom(chatRoomId) {
             val channel = it.channels.chat[CHAT_PROVIDER]
-            delay(1000)
             channel?.let { channel ->
                 wouldInitPrivateGroupSession(channel)
                 privateGroupPubnubClient?.addChannelSubscription(channel, timestamp)
