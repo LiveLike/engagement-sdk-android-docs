@@ -6,7 +6,7 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.exceptionhelpers.safeCodeBlockCall
 import java.util.concurrent.ConcurrentHashMap
 
-internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true,val file:Any?=null) :
+internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = true) :
     Stream<T> {
     override fun latest(): T? {
         return currentData
