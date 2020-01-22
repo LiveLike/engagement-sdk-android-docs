@@ -227,6 +227,7 @@ internal class ContentSession(
             val channel = it.channels.chat[CHAT_PROVIDER]
             delay(1000)
             channel?.let { channel ->
+                wouldInitPrivateGroupSession(channel)
                 privateGroupPubnubClient?.addChannelSubscription(channel, timestamp)
             }
         }
@@ -246,16 +247,20 @@ internal class ContentSession(
         fetchChatRoom(chatRoomId) { chatRoom ->
             val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
             delay(500)
-            if (privateGroupPubnubClient == null) {
-                initializeChatMessaging(channel, syncEnabled = true, privateGroupsChat = true)
-            } else {
-                privateGroupPubnubClient?.activeChatRoom = channel
-            }
+            wouldInitPrivateGroupSession(channel)
+            privateGroupPubnubClient?.activeChatRoom = channel
             chatViewModel.apply {
                 flushMessages()
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }
+        }
+    }
+
+    @Synchronized
+    private fun wouldInitPrivateGroupSession(channel: String) {
+        if (privateGroupPubnubClient == null) {
+            initializeChatMessaging(channel, syncEnabled = true, privateGroupsChat = true)
         }
     }
 
@@ -348,7 +353,7 @@ internal class ContentSession(
     }
 
     // ///// Chat. ///////
-
+    @Synchronized
     private fun initializeChatMessaging(
         chatChannel: String?,
         syncEnabled: Boolean = true,
@@ -373,7 +378,6 @@ internal class ContentSession(
             ?.apply {
                 if (privateGroupsChat) {
                     subscribe(chatRoomMap.keys.toList().filter { it != chatChannel })
-                    privateGroupPubnubClient?.activeChatRoom = chatChannel
                 } else {
                     subscribe(listOf(chatChannel))
                 }
