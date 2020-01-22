@@ -22,32 +22,39 @@ class RichContentEditText : AppCompatEditText {
 
     override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection {
         val ic: InputConnection = super.onCreateInputConnection(editorInfo)
-        EditorInfoCompat.setContentMimeTypes(editorInfo, arrayOf("image/*"))
+        if (allowMediaFromKeyboard) {
+            EditorInfoCompat.setContentMimeTypes(editorInfo, arrayOf("image/*"))
 
-        val callback =
-            InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
-                val lacksPermission = (flags and
-                        InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && lacksPermission) {
-                    try {
-                        inputContentInfo.requestPermission()
-                    } catch (e: Exception) {
-                        return@OnCommitContentListener false
-                    }
-                }
-                context.contentResolver.openAssetFileDescriptor(inputContentInfo.contentUri, "r")
-                    ?.use {
-                        if (it.length > 3_000_000) {
+            val callback =
+                InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
+                    val lacksPermission = (flags and
+                            InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && lacksPermission) {
+                        try {
+                            inputContentInfo.requestPermission()
+                        } catch (e: Exception) {
                             return@OnCommitContentListener false
                         }
                     }
+                    context.contentResolver.openAssetFileDescriptor(
+                        inputContentInfo.contentUri,
+                        "r"
+                    )
+                        ?.use {
+                            if (it.length > 3_000_000) {
+                                return@OnCommitContentListener false
+                            }
+                        }
 
-                setText(":${inputContentInfo.contentUri}:")
-                true
-            }
-        return InputConnectionCompat.createWrapper(ic, editorInfo, callback)
+                    setText(":${inputContentInfo.contentUri}:")
+                    true
+                }
+            return InputConnectionCompat.createWrapper(ic, editorInfo, callback)
+        }
+        return ic
     }
 
+    var allowMediaFromKeyboard: Boolean=true
     var isTouching = false
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
