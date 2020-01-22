@@ -49,9 +49,6 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -77,6 +74,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -106,6 +106,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
     private var currentUser: LiveLikeUser? = null
+
+    var allowMediaFromKeyboard: Boolean = true
+        set(value) {
+            field = value
+            edittext_chat_message.allowMediaFromKeyboard = value
+        }
 
     var emptyChatBackgroundView: View? = null
         set(view) {
