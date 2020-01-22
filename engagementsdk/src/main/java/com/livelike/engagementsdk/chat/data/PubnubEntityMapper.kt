@@ -37,6 +37,7 @@ internal fun PubnubChatMessage.toChatMessage(
         timetoken = timetoken,
         emojiCountMap = emojiCountMap,
         myChatMessageReaction = myReaction,
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
+        timeStamp = programDateTime
     )
 }
