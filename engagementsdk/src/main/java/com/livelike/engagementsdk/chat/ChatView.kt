@@ -422,7 +422,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     } else {
                         button_emoji?.visibility = View.VISIBLE
                     }
-                    viewModel?.chatAdapter?.notifyDataSetChanged()
+                    viewModel?.chatAdapter?.notifyItemRangeChanged(0, viewModel?.messageList?.size?:0)
                 }
                 // used to pass the shortcode to the keyboard
                 stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
