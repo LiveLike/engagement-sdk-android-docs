@@ -1,12 +1,10 @@
 package com.livelike.engagementsdk.chat
 
-import com.google.gson.JsonObject
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logError
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
