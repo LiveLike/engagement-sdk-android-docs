@@ -50,6 +50,9 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -75,9 +78,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -423,7 +423,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     } else {
                         button_emoji?.visibility = View.VISIBLE
                     }
-                    viewModel?.chatAdapter?.notifyItemRangeChanged(0, viewModel?.messageList?.size?:0)
+                    viewModel?.chatAdapter?.notifyItemRangeChanged(0, viewModel?.messageList?.size ?: 0)
                 }
                 // used to pass the shortcode to the keyboard
                 stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
@@ -764,6 +764,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
             }
         }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        wouldUpdateChatInputAccessibiltyFocus()
     }
 
     override fun onDetachedFromWindow() {
