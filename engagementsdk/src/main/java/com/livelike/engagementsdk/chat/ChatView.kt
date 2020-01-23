@@ -18,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
+import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -638,6 +639,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         loadingSpinner.visibility = View.GONE
         chatInput.visibility = View.VISIBLE
         chatdisplay.visibility = View.VISIBLE
+        wouldUpdateChatInputAccessibiltyFocus()
+    }
+
+    private fun wouldUpdateChatInputAccessibiltyFocus() {
+        chatInput.postDelayed({
+            edittext_chat_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+        }, 500)
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
