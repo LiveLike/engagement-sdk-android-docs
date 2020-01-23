@@ -227,6 +227,7 @@ internal class ContentSession(
             val channel = it.channels.chat[CHAT_PROVIDER]
             channel?.let { channel ->
                 wouldInitPrivateGroupSession(channel)
+                delay(500)
                 privateGroupPubnubClient?.addChannelSubscription(channel, timestamp)
             }
         }
@@ -375,9 +376,7 @@ internal class ContentSession(
 
         chatClient = chatClient?.toChatQueue()
             ?.apply {
-                if (privateGroupsChat) {
-                    subscribe(chatRoomMap.keys.toList().filter { it != chatChannel })
-                } else {
+                if (!privateGroupsChat) {
                     subscribe(listOf(chatChannel))
                 }
                 this.renderer = chatViewModel
