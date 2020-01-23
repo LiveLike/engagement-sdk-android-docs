@@ -71,6 +71,9 @@
             app:layout_constraintStart_toStartOf="@+id/chat_input_border"
             app:layout_constraintTop_toTopOf="@+id/chat_input_border"
             android:importantForAutofill="no"
+            android:importantForAccessibility="yes"
+            android:focusable="true"
+            android:screenReaderFocusable="true"
             tools:targetApi="o"/>
 
     <ImageButton
@@ -111,7 +114,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/chat_input_border"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/chat_input_border"
-            android:focusable="true"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:contentDescription="@string/livelike_chat_input_hint"/>
