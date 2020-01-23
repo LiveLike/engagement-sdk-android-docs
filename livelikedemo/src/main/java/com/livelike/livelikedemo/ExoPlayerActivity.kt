@@ -235,8 +235,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                     (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString(), (application as LiveLikeApplication).timecodeGetter)
                 for (pair in chatRoomLastTimeStampMap) {
                     val chatRoomId = pair.key
-                    val timestamp = (chatRoomLastTimeStampMap.get(chatRoomId)
-                        ?: Calendar.getInstance().timeInMillis)
+                    val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
+                        ?: Calendar.getInstance().timeInMillis)) + 100
+                    //Adding this millisecond so while retrieving count from the pubnub it will not include the last timestamp message,also some extra time while saving data on pubnub servers
                     privateGroupChatsession?.getMessageCount(
                         chatRoomId,
                         timestamp,
