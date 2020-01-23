@@ -256,6 +256,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                                 }
                             }
                         })
+                    privateGroupChatsession?.joinChatRoom(chatRoomId)
                 }
             }
             privateGroupChatsession?.setMessageListener(object : MessageListener {
@@ -289,8 +290,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                 val emptyView =
                     LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
                 chat_view.emptyChatBackgroundView = emptyView
+                chat_view.allowMediaFromKeyboard = false
             }
-
             chat_view.setSession(session)
             widget_view.setSession(session)
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {

@@ -127,7 +127,7 @@ internal class ChatViewModel(
             chatMessage.apply {
                 if (this.timetoken == messagePubnubToken) {
                     emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) - 1
-                    uiScope.launch { chatAdapter.notifyDataSetChanged() }
+                    uiScope.launch { chatAdapter.notifyItemRangeRemoved(0, messageList.size) }
                     return@forEach
                 }
                 // remember case not handled for now if same user removes its reaction while using 2 devices
@@ -151,7 +151,7 @@ internal class ChatViewModel(
                     } else {
                         val emojiId = chatMessageReaction.emojiId
                         emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) + 1
-                        uiScope.launch { chatAdapter.notifyDataSetChanged() }
+                        uiScope.launch { chatAdapter.notifyItemRangeChanged(0, messageList.size) }
                     }
                     return@forEach
                 }
@@ -179,7 +179,7 @@ internal class ChatViewModel(
         if (!chatLoaded) {
             chatLoaded = true
             chatAdapter.submitList(ArrayList(messageList.toSet()))
-            chatAdapter.notifyDataSetChanged()
+            chatAdapter.notifyItemRangeInserted(0, messageList.size)
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
