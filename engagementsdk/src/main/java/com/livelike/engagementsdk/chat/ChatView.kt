@@ -688,7 +688,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
-            isFromMe = true
+            isFromMe = true,
+            width = 0,
+            height = 0
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {

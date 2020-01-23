@@ -216,6 +216,9 @@ internal class ChatViewModel(
             val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
             chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
             chatMessage.imageUrl = imageUrl
+
+            chatMessage.width = 0
+            chatMessage.height = 0
             chatListener?.onChatMessageSend(chatMessage, timedata)
         }
     }

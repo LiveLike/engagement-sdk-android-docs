@@ -19,5 +19,9 @@ internal data class PubnubChatMessage(
     @SerializedName("messageToken")
     val messageToken: Long? = null,
     @SerializedName("image_url")
-    val imageUrl: String?
+    val imageUrl: String?,
+    @SerializedName("width")
+    val width: Int,
+    @SerializedName("height")
+    val height: Int
 )
