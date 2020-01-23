@@ -44,11 +44,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
     override fun showResults() {
         val result = viewModel.results.latest()
-        val averageMagnitude = when (result?.averageMagnitude) {
-            0.0f -> image_slider.progress
-            else -> result?.averageMagnitude ?: image_slider.progress
-        }
-        image_slider.averageProgress = averageMagnitude
+        image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
     }
 
     override fun dataModelObserver(entity: ImageSliderEntity?) {

@@ -153,6 +153,8 @@ internal class ChatRecyclerAdapter(
             v.setOnClickListener(this)
         }
 
+        val callback = MultiCallback(true)
+
         fun bindTo(item: ChatMessage?) {
             v.tag = item
             setMessage(item)
@@ -170,6 +172,7 @@ internal class ChatRecyclerAdapter(
             if (checkItemIsAtTop) {
                 y = locationOnScreen.y + v.height + 30
             }
+            val currentPos=adapterPosition
             ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
@@ -196,7 +199,7 @@ internal class ChatRecyclerAdapter(
                 chatViewThemeAttributes = chatViewThemeAttribute,
                 selectReactionListener = object : SelectReactionListener {
                     override fun onSelectReaction(reaction: Reaction?) {
-                        message?.apply {
+                        getItem(currentPos)?.apply {
                             val reactionId: String?
                             val reactionAction: String
                             if (reaction == null) {
@@ -235,7 +238,7 @@ internal class ChatRecyclerAdapter(
                             reactionId?.let {
                                 analyticsService.trackChatReactionSelected(id, it, reactionAction)
                             }
-                            notifyItemChanged(adapterPosition)
+                            notifyItemChanged(currentPos)
                         }
                     }
                 },
@@ -303,6 +306,7 @@ internal class ChatRecyclerAdapter(
         private fun hideFloatingUI() {
             updateBackground(false)
         }
+
 
         private fun setMessage(
             message: ChatMessage?
@@ -402,7 +406,7 @@ internal class ChatRecyclerAdapter(
                         val numberOfStickers = message.message.findStickers().countMatches()
                         val isExternalImage = message.message.findImages().matches()
 
-                        val callback = MultiCallback(true)
+                        chatMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                         callback.addView(chatMessage)
                         when {
                             isExternalImage -> {
@@ -432,6 +436,7 @@ internal class ChatRecyclerAdapter(
                         var imageView: ImageView
                         val size = context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_display_size)
                         rel_reactions_lay.removeAllViews()
+
                         // TODO need to check for updating list and work on remove the reaction with animation
                         emojiCountMap.keys.filter { return@filter (emojiCountMap[it] ?: 0) > 0 }.forEachIndexed { index, reactionId ->
                             if ((emojiCountMap[reactionId] ?: 0) > 0) {

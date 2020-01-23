@@ -33,7 +33,6 @@ internal data class ChatMessage(
     val senderDisplayName: String,
     val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
-    // PDT video time //NOt using right now for later use FYI @shivansh @Willis
     val timeStamp: String? = null,
     var pubnubMessageToken: Long? = null,
     var imageUrl: String? = null,
@@ -63,11 +62,12 @@ internal data class ChatMessage(
     }
 
     fun getUnixTimeStamp(): Long? {
-        if (timetoken == 0L) {
+        val timeStamp = timeStamp?.toLongOrNull() ?: 0
+        if (timeStamp == 0L) {
             return null
         }
         return try {
-            timetoken / 10000
+            timeStamp
         } catch (ex: ArithmeticException) {
             null
         }
