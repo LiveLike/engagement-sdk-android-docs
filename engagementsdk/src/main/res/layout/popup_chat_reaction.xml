@@ -10,6 +10,9 @@
         android:layout_width="wrap_content"
         android:layout_height="42dp"
         app:contentPadding="0dp"
+        android:focusable="true"
+        android:contentDescription="@string/reactions_panel_opened"
+        android:importantForAccessibility="yes"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -43,10 +46,13 @@
 
     <!--Added this imageview as dummy only for voice over for opening reaction panel -->
     <ImageView
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/img_dummy"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/reactions_panel_opened" />
+        android:contentDescription="@string/reactions_panel_opened"
+        android:focusable="true"
+        android:importantForAccessibility="yes"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
