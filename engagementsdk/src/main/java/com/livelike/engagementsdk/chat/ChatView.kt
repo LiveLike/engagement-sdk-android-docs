@@ -688,8 +688,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
-            isFromMe = true,
-            timeStamp = timeData.timeSinceEpochInMs.toString()
+            isFromMe = true
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
