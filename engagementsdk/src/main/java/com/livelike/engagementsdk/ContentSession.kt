@@ -376,6 +376,7 @@ internal class ContentSession(
 
         chatClient = chatClient?.toChatQueue()
             ?.apply {
+                // check issue here
                 if (!privateGroupsChat) {
                     subscribe(listOf(chatChannel))
                 }
