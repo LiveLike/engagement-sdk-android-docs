@@ -43,8 +43,8 @@ internal data class ChatMessage(
     var emojiCountMap: MutableMap<String, Int> = mutableMapOf(),
     // time of the message
     var timetoken: Long = 0L,
-    var width: Int = 0,
-    var height: Int = 0
+    var image_width: Int? = 100,
+    var image_height: Int? = 100
 ) {
     fun toReportMessageJson(): String {
         return """{

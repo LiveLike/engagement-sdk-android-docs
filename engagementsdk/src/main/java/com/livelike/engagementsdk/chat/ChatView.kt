@@ -509,7 +509,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             val y = ev.rawY + v.top - scrcoords[1]
             val outsideStickerKeyboardBound =
                 (v.bottom - sticker_keyboard.height - button_chat_send.height)
-            // Added check for height greater than 0 so bound position for touch should be above the send icon
+            // Added check for image_height greater than 0 so bound position for touch should be above the send icon
             if (!edittext_chat_message.isTouching) {
                 if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
                     hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
@@ -689,8 +689,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
             isFromMe = true,
-            width = 0,
-            height = 0
+            image_width = 100,
+            image_height = 100
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {

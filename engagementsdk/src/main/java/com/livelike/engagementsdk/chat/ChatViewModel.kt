@@ -1,7 +1,11 @@
 package com.livelike.engagementsdk.chat
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EpochTime
@@ -24,6 +28,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+
+
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -216,10 +222,21 @@ internal class ChatViewModel(
             val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
             chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
             chatMessage.imageUrl = imageUrl
+            Glide.with(context.applicationContext)
+                .asBitmap()
+                .load(url)
+                .into(object: SimpleTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        chatMessage.image_width = resource.width
+                        chatMessage.image_height = resource.height
+                        chatListener?.onChatMessageSend(chatMessage, timedata)
+                    }
 
-            chatMessage.width = 0
-            chatMessage.height = 0
-            chatListener?.onChatMessageSend(chatMessage, timedata)
+                })
+
         }
     }
 }
