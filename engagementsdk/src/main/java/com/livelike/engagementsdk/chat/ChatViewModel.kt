@@ -181,8 +181,12 @@ internal class ChatViewModel(
     override fun updateChatMessageTimeToken(messageId: String, timetoken: String) {
         messageList.find {
             it.id == messageId
-        }?.apply {
-            this.timetoken = timetoken.toLong()
+        }?.let { cm ->
+            cm.timetoken = timetoken.toLong()
+            uiScope.launch {
+                chatAdapter.submitList(ArrayList(messageList))
+                chatAdapter.notifyItemChanged(messageList.indexOf(cm))
+            }
         }
     }
 
