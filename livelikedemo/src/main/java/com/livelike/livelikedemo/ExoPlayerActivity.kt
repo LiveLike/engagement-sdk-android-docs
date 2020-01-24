@@ -250,7 +250,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                                 }
                             }
                         })
-                    privateGroupChatsession?.joinChatRoom(chatRoomId)
                 }
             }
             chatRoomIds.forEach {
