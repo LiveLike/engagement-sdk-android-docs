@@ -174,7 +174,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         })
     }
 
-
     private fun initView(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.chat_view, this, true)
         user_profile_display_LL.visibility = if (displayUserProfile) View.VISIBLE else View.GONE
