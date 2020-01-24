@@ -78,6 +78,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import pl.droidsonroids.gif.MultiCallback
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -134,6 +135,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     private val viewModel: ChatViewModel?
         get() = (session.getTargetObject() as ContentSession?)?.chatViewModel
 
+    val callback = MultiCallback(true)
+
     init {
         context.scanForActivity()?.window?.setSoftInputMode(
             WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
@@ -170,6 +173,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
         })
     }
+
 
     private fun initView(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.chat_view, this, true)
@@ -216,6 +220,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             )
             initEmptyView()
         }
+        callback.addView(edittext_chat_message)
 
         swipeToRefresh.setOnRefreshListener {
             viewModel?.loadPreviousMessages()
@@ -352,7 +357,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         replaceWithImages(
                             s as Spannable,
                             this@ChatView.context,
-                            edittext_chat_message, null
+                            edittext_chat_message, callback
                         )
                         // cleanup before the image
                         if (matcher.start()> 0) edittext_chat_message.text?.delete(0, matcher.start())
