@@ -11,6 +11,7 @@
         android:layout_height="42dp"
         app:contentPadding="0dp"
         android:focusable="true"
+        android:screenReaderFocusable="true"
         android:contentDescription="@string/reactions_panel_opened"
         android:importantForAccessibility="yes"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -43,16 +44,5 @@
             android:layout_height="match_parent"
             android:src="@drawable/chat_ic_flag" />
     </android.support.v7.widget.CardView>
-
-    <!--Added this imageview as dummy only for voice over for opening reaction panel -->
-    <ImageView
-        android:id="@+id/img_dummy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/reactions_panel_opened"
-        android:focusable="true"
-        android:importantForAccessibility="yes"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

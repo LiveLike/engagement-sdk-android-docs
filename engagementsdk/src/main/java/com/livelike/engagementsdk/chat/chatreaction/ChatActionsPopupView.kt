@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.accessibility.AccessibilityEvent
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -20,7 +21,6 @@ import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
-import kotlinx.android.synthetic.main.popup_chat_reaction.view.img_dummy
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_lay
 
@@ -72,10 +72,11 @@ internal class ChatActionsPopupView(
             setOnDismissListener(hideFloatingUi)
             isOutsideTouchable = true
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            contentView.chat_reaction_background_card.requestFocus()
+            contentView.chat_reaction_background_card.postDelayed({
+                contentView.chat_reaction_background_card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+            },500)
         }
         initReactions()
-        contentView.img_dummy.requestFocus()
     }
 
     private fun formattedReactionCount(count: Int): String {
