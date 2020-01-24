@@ -66,8 +66,7 @@ internal class PubnubChatMessagingClient(
     uuid: String,
     private val analyticsService: AnalyticsService,
     publishKey: String? = null,
-    val isDiscardOwnPublishInSubcription: Boolean = true,
-    val msgListener: MessageListener? = null
+    val isDiscardOwnPublishInSubcription: Boolean = true
 ) : MessagingClient {
 
     @Volatile
@@ -327,10 +326,6 @@ internal class PubnubChatMessagingClient(
                             channel
                         )
                         listener?.onClientMessageEvent(client, clientMessage)
-                        msgListener?.onNewMessage(
-                            channel,
-                            pubnubChatEvent.payload.toLiveLikeChatMessage()
-                        )
                         return // discarding as its own recently published message which is broadcasted by pubnub on that channel.
                     }
                     val pdtString = pubnubChatEvent.payload.programDateTime
@@ -347,10 +342,6 @@ internal class PubnubChatMessagingClient(
                             },
                             channel,
                             EpochTime(epochTimeMs)
-                        )
-                        msgListener?.onNewMessage(
-                            channel,
-                            pubnubChatEvent.payload.toLiveLikeChatMessage()
                         )
                     } catch (ex: IllegalArgumentException) {
                         logError { ex.message }

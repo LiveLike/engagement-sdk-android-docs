@@ -250,8 +250,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                                 }
                             }
                         })
-                    privateGroupChatsession?.joinChatRoom(chatRoomId)
                 }
+            }
+            chatRoomIds.forEach {
+                privateGroupChatsession?.joinChatRoom(it)
             }
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {

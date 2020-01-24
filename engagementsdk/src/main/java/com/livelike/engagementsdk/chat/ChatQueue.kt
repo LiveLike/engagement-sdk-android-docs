@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
@@ -10,6 +12,7 @@ internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),
     ChatEventListener {
 
+    var msgListener: MessageListener? = null
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
@@ -33,6 +36,10 @@ internal class ChatQueue(upstream: MessagingClient) :
             ChatViewModel.EVENT_NEW_MESSAGE -> {
                 val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
                 renderer?.displayChatMessage(chatMessage)
+                msgListener?.onNewMessage(
+                    event.channel,
+                    chatMessage.toLiveLikeChatMessage()
+                )
             }
             ChatViewModel.EVENT_MESSAGE_DELETED -> {
                 val id = event.message.get("id").asString

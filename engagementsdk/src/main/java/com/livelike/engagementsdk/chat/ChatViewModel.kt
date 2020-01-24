@@ -95,7 +95,7 @@ internal class ChatViewModel(
 
         val imageUrl = message.imageUrl
 
-        if(message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()){
+        if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
             message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
         }
         if (messageList.size == 0) {
@@ -108,6 +108,11 @@ internal class ChatViewModel(
                     messageList.add(0, message.apply {
                         isFromMe = userStream.latest()?.id == senderId
                     })
+                } else if (message.timetoken != 0L && messageList?.last()?.timetoken > message.timetoken) {
+                    messageList.add(message)
+                    messageList.sortBy {
+                        it.timetoken
+                    }
                 } else {
                     messageList.add(message.apply {
                         isFromMe = userStream.latest()?.id == senderId
@@ -209,9 +214,9 @@ internal class ChatViewModel(
         }
     }
 
-    fun uploadAndPostImage(context : Context, chatMessage: ChatMessage, timedata: EpochTime) {
-        GlobalScope.launch (Dispatchers.IO) {
-            val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length-1))
+    fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
+        GlobalScope.launch(Dispatchers.IO) {
+            val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length - 1))
             val fileBytes = context.contentResolver.openInputStream(url)?.readBytes()
             val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
             chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED

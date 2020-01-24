@@ -10,12 +10,24 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+const val SYNC_TIME_FIDELITY = 100L
+
 internal class SynchronizedMessagingClient(
     upstream: MessagingClient,
     var timeSource: () -> EpochTime,
     private val validEventBufferMs: Long
 ) :
     MessagingClientProxy(upstream) {
+
+    private val queue = Queue<ClientMessage>()
+    private var coroutineTimer: Job
+
+    init {
+        coroutineTimer = GlobalScope.launch {
+            publishTimeSynchronizedMessageFromQueue()
+        }
+    }
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
         upstream.publishMessage(message, channel, timeSinceEpoch)
     }
@@ -26,20 +38,6 @@ internal class SynchronizedMessagingClient(
 
     override fun start() {
         upstream.start()
-    }
-
-    companion object {
-        const val SYNC_TIME_FIDELITY = 100L
-    }
-
-    private val queue = Queue<ClientMessage>()
-    private var coroutineTimer: Job? = null
-
-    override fun subscribe(channels: List<String>) {
-        coroutineTimer = GlobalScope.launch {
-            publishTimeSynchronizedMessageFromQueue()
-        }
-        super.subscribe(channels)
     }
 
     private suspend fun publishTimeSynchronizedMessageFromQueue() {
