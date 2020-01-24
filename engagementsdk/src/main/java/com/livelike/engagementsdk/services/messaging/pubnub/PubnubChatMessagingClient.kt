@@ -4,20 +4,20 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.chat.data.remote.toPubnubChatEventType
 import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.parseISODateTime
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -402,7 +402,7 @@ internal class PubnubChatMessagingClient(
             .async(object : PNCallback<PNFetchMessagesResult>() {
                 override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
                     if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
-                        result.channels?.get(channel)?.reversed()?.forEach {
+                        result.channels?.get(channel)?.forEach {
                             val jsonObject = it.message.asJsonObject.apply {
                                 addProperty("pubnubToken", it.timetoken)
                             }
