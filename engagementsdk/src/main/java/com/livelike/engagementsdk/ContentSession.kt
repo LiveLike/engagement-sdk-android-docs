@@ -133,7 +133,6 @@ internal class ContentSession(
                     pair.first.accessToken,
                     pair.first.id,
                     analyticService,
-                    proxyMsgListener,
                     configuration.pubnubPublishKey
                 )
                 analyticService =
@@ -376,6 +375,7 @@ internal class ContentSession(
 
         chatClient = chatClient?.toChatQueue()
             ?.apply {
+                msgListener=proxyMsgListener
                 // check issue here
                 if (!privateGroupsChat) {
                     subscribe(listOf(chatChannel))

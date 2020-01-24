@@ -15,7 +15,6 @@ internal class ChatRepository(
     private val authKey: String,
     private val uuid: String,
     private val analyticsService: AnalyticsService,
-    private val msgListener: MessageListener,
     private val publishKey: String? = null
 ) : BaseRepository() {
 
@@ -27,8 +26,7 @@ internal class ChatRepository(
             authKey,
             uuid,
             analyticsService,
-            publishKey,
-            msgListener = msgListener
+            publishKey
         )
         return pubnubChatMessagingClient!!
     }
