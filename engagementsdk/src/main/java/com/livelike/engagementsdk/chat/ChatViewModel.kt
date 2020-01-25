@@ -121,9 +121,11 @@ internal class ChatViewModel(
             }
         }
 
-        uiScope.launch {
-            chatAdapter.submitList(ArrayList(messageList.toSet()))
-            eventStream.onNext(EVENT_NEW_MESSAGE)
+        if (chatLoaded) {
+            uiScope.launch {
+                chatAdapter.submitList(ArrayList(messageList.toSet()))
+                eventStream.onNext(EVENT_NEW_MESSAGE)
+            }
         }
     }
 
@@ -184,7 +186,6 @@ internal class ChatViewModel(
         if (!chatLoaded) {
             chatLoaded = true
             chatAdapter.submitList(ArrayList(messageList.toSet()))
-            chatAdapter.notifyDataSetChanged()
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
