@@ -261,7 +261,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                        //Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
                         if (message.timestamp.isEmpty()) {
                             chatRoomLastTimeStampMap[chatRoom] =
-                                Calendar.getInstance().timeInMillis * 1000
+                                Calendar.getInstance().timeInMillis
                         } else {
                             chatRoomLastTimeStampMap[chatRoom] =
                                 (message.timestamp.toLong())

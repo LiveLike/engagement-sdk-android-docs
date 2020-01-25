@@ -20,5 +20,9 @@ internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
 }
 
 internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
+    if (timetoken > 0) {
+        timetoken /= 10000
+        timetoken += 1
+    }
     return LiveLikeChatMessage(senderDisplayName, senderDisplayPic, message, timetoken.toString(), id.hashCode().toLong())
 }

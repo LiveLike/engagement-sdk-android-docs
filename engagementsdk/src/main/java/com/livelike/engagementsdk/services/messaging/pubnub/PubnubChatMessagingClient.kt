@@ -541,10 +541,11 @@ internal class PubnubChatMessagingClient(
         return try {
             val countResult = pubnub.messageCounts()
                 .channels(listOf(channel))
-                .channelsTimetoken(listOf(startTimestamp))
+                .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
                 .sync()
             Result.Success(countResult?.channels?.get(channel) ?: 0)
         } catch (ex: PubNubException) {
+            ex.printStackTrace()
             Result.Error(ex)
         }
     }
