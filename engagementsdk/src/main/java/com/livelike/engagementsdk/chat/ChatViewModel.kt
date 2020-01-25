@@ -34,7 +34,7 @@ internal class ChatViewModel(
 
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
-    val messageList = mutableListOf<ChatMessage>()
+    var messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(true)
     var currentChatRoom: ChatRoom? = null
         set(value) {
@@ -198,7 +198,7 @@ internal class ChatViewModel(
     }
 
     fun flushMessages() {
-        messageList.clear()
+        messageList = mutableListOf()
         chatAdapter.submitList(messageList)
     }
 
