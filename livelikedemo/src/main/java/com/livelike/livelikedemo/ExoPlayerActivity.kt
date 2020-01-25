@@ -24,11 +24,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.math.abs
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -39,6 +34,11 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.math.abs
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -236,8 +236,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 for (pair in chatRoomLastTimeStampMap) {
                     val chatRoomId = pair.key
                     val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
-                        ?: Calendar.getInstance().timeInMillis)) + 100
-                    //Adding this millisecond so while retrieving count from the pubnub it will not include the last timestamp message,also some extra time while saving data on pubnub servers
+                        ?: Calendar.getInstance().timeInMillis))
                     privateGroupChatsession?.getMessageCount(
                         chatRoomId,
                         timestamp,
@@ -259,7 +258,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = 0 // reset unread message count
-                        chatRoomLastTimeStampMap[chatRoom] = Calendar.getInstance().timeInMillis
+                       //Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
+                        if (message.timestamp.isEmpty()) {
+                            chatRoomLastTimeStampMap[chatRoom] =
+                                Calendar.getInstance().timeInMillis * 1000
+                        } else {
+                            chatRoomLastTimeStampMap[chatRoom] =
+                                (message.timestamp.toLong())
+                        }
                         getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit()
                             .putString(
                                 PREF_CHAT_ROOM_LAST_TIME,

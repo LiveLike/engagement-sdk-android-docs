@@ -20,5 +20,5 @@ internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
 }
 
 internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
-    return LiveLikeChatMessage(senderDisplayName, senderDisplayPic, message, "", id.hashCode().toLong())
+    return LiveLikeChatMessage(senderDisplayName, senderDisplayPic, message, timetoken.toString(), id.hashCode().toLong())
 }
