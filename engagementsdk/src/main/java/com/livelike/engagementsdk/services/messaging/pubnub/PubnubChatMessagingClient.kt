@@ -400,7 +400,7 @@ internal class PubnubChatMessagingClient(
             .async(object : PNCallback<PNFetchMessagesResult>() {
                 override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
                     if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
-                        result.channels?.get(channel)?.forEach {
+                        result.channels?.get(channel)?.reversed()?.forEach {
                             val jsonObject = it.message.asJsonObject.apply {
                                 addProperty("pubnubToken", it.timetoken)
                             }
