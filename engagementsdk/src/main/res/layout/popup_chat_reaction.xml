@@ -11,9 +11,6 @@
         android:layout_height="42dp"
         app:contentPadding="0dp"
         android:focusable="true"
-        android:screenReaderFocusable="true"
-        android:contentDescription="@string/reactions_panel_opened"
-        android:importantForAccessibility="yes"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,6 +20,11 @@
             android:gravity="center"
             android:layout_height="match_parent"
             android:orientation="horizontal"
+            android:screenReaderFocusable="true"
+            android:defaultFocusHighlightEnabled="true"
+            android:focusedByDefault="true"
+            android:contentDescription="@string/reactions_panel_opened"
+            android:importantForAccessibility="yes"
             />
     </android.support.v7.widget.CardView>
 

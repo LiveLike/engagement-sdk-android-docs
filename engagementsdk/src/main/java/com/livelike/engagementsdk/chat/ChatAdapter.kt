@@ -244,7 +244,6 @@ internal class ChatRecyclerAdapter(
                 },
                 isPublichat = isPublicChat
             ).apply {
-                isFocusable = true
                 animationStyle = when {
                     checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
                     else -> R.style.ChatReactionAnimation
