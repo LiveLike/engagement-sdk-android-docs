@@ -20,9 +20,10 @@ internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
 }
 
 internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
+    var epochTimeStamp = 0L
     if (timetoken > 0) {
-        timetoken /= 10000
-        timetoken += 1
+        epochTimeStamp = timetoken / 10000
+        epochTimeStamp += 1
     }
-    return LiveLikeChatMessage(senderDisplayName, senderDisplayPic, message, timetoken.toString(), id.hashCode().toLong())
+    return LiveLikeChatMessage(senderDisplayName, senderDisplayPic, message, epochTimeStamp.toString(), id.hashCode().toLong())
 }
