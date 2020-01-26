@@ -237,12 +237,22 @@ class ExoPlayerActivity : AppCompatActivity() {
                     val chatRoomId = pair.key
                     val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
                         ?: Calendar.getInstance().timeInMillis))
+                    logsPreview.text =
+                        "Get Count: $timestamp roomId: $chatRoomId \n\n ${logsPreview.text}"
+                    fullLogs.text =
+                        "Get Count: $timestamp roomId: $chatRoomId \n\n ${fullLogs.text}"
+                    Log.v("Here", "Getting Count Read channel : $chatRoomId")
                     privateGroupChatsession?.getMessageCount(
                         chatRoomId,
                         timestamp,
                         object :
                             LiveLikeCallback<Long>() {
                             override fun onResponse(result: Long?, error: String?) {
+                                logsPreview.text =
+                                    "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
+                                fullLogs.text =
+                                    "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${fullLogs.text}"
+                                Log.v("Here", "Count Read channel : $chatRoomId count: $result")
                                 result?.let {
                                     messageCount[chatRoomId] =
                                         (messageCount[chatRoomId] ?: 0) + result
@@ -259,6 +269,12 @@ class ExoPlayerActivity : AppCompatActivity() {
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = 0 // reset unread message count
                        //Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
+                        Log.v("Here","onNewMessage :${message.timestamp}")
+                        logsPreview.text =
+                            "New Message : ${message.timestamp} \n\n ${logsPreview.text}"
+                        fullLogs.text =
+                            "New Message : ${message.timestamp} \n\n ${fullLogs.text}"
+
                         if (message.timestamp.isEmpty()) {
                             chatRoomLastTimeStampMap[chatRoom] =
                                 Calendar.getInstance().timeInMillis

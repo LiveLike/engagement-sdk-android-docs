@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.services.network.Result
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
@@ -107,6 +108,9 @@ internal class ContentSession(
     // TODO remove proxy message listener by having pipe in chat data layers/chain that tranforms pubnub channel to room
     private var proxyMsgListener: MessageListener = object : MessageListener {
         override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
+            logDebug {
+                "ContentSession onNewMessage: ${message.message} timestamp:${message.timestamp}  chatRoomsSize:${chatRoomMap.size} chatRoomId:$chatRoom"
+            }
             for (chatRoomIdPair in chatRoomMap) {
                 if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
                     msgListener?.onNewMessage(chatRoomIdPair.key, message)
