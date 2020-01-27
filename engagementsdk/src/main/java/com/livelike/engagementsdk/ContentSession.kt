@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
+import android.util.Log
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatRepository
@@ -218,6 +219,7 @@ internal class ContentSession(
     }
 
     override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
+        Log.v("Here", "joinChatRoom: $chatRoomId  timestamp:$timestamp")
         if (chatRoomMap.size > 50) {
             return logError {
                 "subscribing  count for pubnub channels cannot be greater than 50"
@@ -366,7 +368,6 @@ internal class ContentSession(
             return
 
         analyticService.trackLastChatStatus(true)
-        chatClient?.destroy() // destroying previous client in case of private group chat, will decouple it later from program.
         chatClient = chatRepository?.establishChatMessagingConnection()
         if (privateGroupsChat) {
             privateGroupPubnubClient = chatClient as PubnubChatMessagingClient

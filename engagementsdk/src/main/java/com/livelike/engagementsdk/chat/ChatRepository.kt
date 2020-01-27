@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.data.repository.BaseRepository
@@ -20,14 +19,16 @@ internal class ChatRepository(
 
     var pubnubChatMessagingClient: PubnubChatMessagingClient? = null
 
+    @Synchronized
     fun establishChatMessagingConnection(): MessagingClient {
-        pubnubChatMessagingClient = PubnubChatMessagingClient(
-            subscribeKey,
-            authKey,
-            uuid,
-            analyticsService,
-            publishKey
-        )
+        if (pubnubChatMessagingClient == null)
+            pubnubChatMessagingClient = PubnubChatMessagingClient(
+                subscribeKey,
+                authKey,
+                uuid,
+                analyticsService,
+                publishKey
+            )
         return pubnubChatMessagingClient!!
     }
 

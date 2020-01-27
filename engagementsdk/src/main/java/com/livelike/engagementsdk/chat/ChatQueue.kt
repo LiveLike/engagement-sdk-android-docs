@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
@@ -47,6 +48,22 @@ internal class ChatQueue(upstream: MessagingClient) :
             }
             ChatViewModel.EVENT_MESSAGE_TIMETOKEN_UPDATED -> {
                 renderer?.updateChatMessageTimeToken(event.message.get("messageId").asString, event.message.get("timetoken").asString)
+                var epochTimeStamp = 0L
+                val time=event.message.get("timetoken").asString.toLong()
+                if (time > 0) {
+                    epochTimeStamp = time / 10000
+                    epochTimeStamp += 1
+                }
+                msgListener?.onNewMessage(
+                    event.channel,
+                    LiveLikeChatMessage(
+                        "",
+                        "",
+                        "",
+                        epochTimeStamp.toString(),
+                        event.message.get("messageId").asString.hashCode().toLong()
+                    )
+                )
             }
             ChatViewModel.EVENT_LOADING_COMPLETE -> {
                 renderer?.loadingCompleted()
