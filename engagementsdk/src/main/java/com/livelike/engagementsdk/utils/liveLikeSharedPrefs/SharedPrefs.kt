@@ -104,3 +104,23 @@ internal fun getRecentStickers(programId: String): List<Sticker> {
     val stickerSet: Set<String> = getSharedPreferences().getStringSet(RECENT_STICKERS + programId, setOf()) ?: setOf()
     return stickerSet.map { Sticker(it.split(RECENT_STICKERS_DELIMITER)[0], it.split(RECENT_STICKERS_DELIMITER)[1]) }
 }
+
+internal fun addPublishedMessage(channel: String, messageId : String){
+    val msgList = getPublishedMessages(channel)
+    msgList.add(messageId)
+    val editor = getSharedPreferences().edit()
+    editor.putStringSet("$channel-published", msgList).apply()
+}
+
+internal fun flushPublishedMessage(vararg channels: String){
+    val editor = getSharedPreferences().edit()
+    channels.forEach {channel->
+        editor.remove("$channel-published")
+    }
+    editor.apply()
+}
+
+internal fun getPublishedMessages(channel: String) : MutableSet<String>{
+    return getSharedPreferences().getStringSet("$channel-published", mutableSetOf()) ?: mutableSetOf()
+}
+

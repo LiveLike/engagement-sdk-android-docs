@@ -380,7 +380,7 @@ internal class ContentSession(
 
         chatClient = chatClient?.toChatQueue()
             ?.apply {
-                msgListener=proxyMsgListener
+                msgListener = proxyMsgListener
                 // check issue here
                 if (!privateGroupsChat) {
                     subscribe(listOf(chatChannel))

@@ -34,11 +34,11 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.lang.Math.abs
 import java.util.Calendar
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
-import kotlin.math.abs
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -160,7 +160,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                         GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
                     ).apply()
                     if (!isChatRoomJoined) {
-                        val anotherChatRoomId = chatRoomIds[abs(which - 1)]
+                        val anotherChatRoomId = chatRoomIds[kotlin.math.abs(which - 1)]
                         privateGroupChatsession?.joinChatRoom(anotherChatRoomId)
                         isChatRoomJoined = true
                     }
