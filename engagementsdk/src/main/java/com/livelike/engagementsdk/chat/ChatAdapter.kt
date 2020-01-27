@@ -172,7 +172,7 @@ internal class ChatRecyclerAdapter(
             if (checkItemIsAtTop) {
                 y = locationOnScreen.y + v.height + 30
             }
-            val currentPos=adapterPosition
+            val currentPos = adapterPosition
             ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
@@ -244,7 +244,6 @@ internal class ChatRecyclerAdapter(
                 },
                 isPublichat = isPublicChat
             ).apply {
-                isFocusable = true
                 animationStyle = when {
                     checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
                     else -> R.style.ChatReactionAnimation
@@ -307,7 +306,6 @@ internal class ChatRecyclerAdapter(
         private fun hideFloatingUI() {
             updateBackground(false)
         }
-
 
         private fun setMessage(
             message: ChatMessage?

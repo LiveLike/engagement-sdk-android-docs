@@ -9,7 +9,10 @@ import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.chat.data.remote.toPubnubChatEventType
 import com.livelike.engagementsdk.chat.data.toChatMessage
@@ -54,7 +57,6 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
 
@@ -247,11 +249,10 @@ internal class PubnubChatMessagingClient(
                 pubnub: PubNub,
                 pnMessageActionResult: PNMessageActionResult
             ) {
-                coroutineScope.launch {
-                    lastActionTimeToken = pnMessageActionResult.messageAction.actionTimetoken
-                    logDebug { "real time message action : " + pnMessageActionResult.event }
-                    processPubnubMessageAction(pnMessageActionResult, client)
-                }
+                // check later using coroutine mainscope not executing when private group, so removing for now
+                lastActionTimeToken = pnMessageActionResult.messageAction.actionTimetoken
+                logDebug { "real time message action : " + pnMessageActionResult.event }
+                processPubnubMessageAction(pnMessageActionResult, client)
             }
         })
     }
@@ -545,6 +546,7 @@ internal class PubnubChatMessagingClient(
                 .sync()
             Result.Success(countResult?.channels?.get(channel) ?: 0)
         } catch (ex: PubNubException) {
+            ex.printStackTrace()
             Result.Error(ex)
         }
     }
