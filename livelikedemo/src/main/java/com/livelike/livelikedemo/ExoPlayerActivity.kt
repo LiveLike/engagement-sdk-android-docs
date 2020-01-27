@@ -24,6 +24,11 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.math.abs
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -34,11 +39,6 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.math.abs
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -283,7 +283,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                         "New Message :${message.message} timestamp:${message.timestamp} \n\n ${fullLogs.text}"
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = 0 // reset unread message count
-                        //Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
+                        // Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
                         if (message.timestamp.isEmpty()) {
                             chatRoomLastTimeStampMap[chatRoom] =
                                 Calendar.getInstance().timeInMillis

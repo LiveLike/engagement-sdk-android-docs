@@ -1,7 +1,11 @@
 package com.livelike.engagementsdk.chat
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EpochTime
@@ -177,8 +181,12 @@ internal class ChatViewModel(
     override fun updateChatMessageTimeToken(messageId: String, timetoken: String) {
         messageList.find {
             it.id == messageId
-        }?.apply {
-            this.timetoken = timetoken.toLong()
+        }?.let { cm ->
+            cm.timetoken = timetoken.toLong()
+            uiScope.launch {
+                chatAdapter.submitList(ArrayList(messageList))
+                chatAdapter.notifyItemChanged(messageList.indexOf(cm))
+            }
         }
     }
 
@@ -222,7 +230,19 @@ internal class ChatViewModel(
             val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
             chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
             chatMessage.imageUrl = imageUrl
-            chatListener?.onChatMessageSend(chatMessage, timedata)
+            Glide.with(context.applicationContext)
+                .asBitmap()
+                .load(url)
+                .into(object : SimpleTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        chatMessage.image_width = resource.width
+                        chatMessage.image_height = resource.height
+                        chatListener?.onChatMessageSend(chatMessage, timedata)
+                    }
+                })
         }
     }
 }

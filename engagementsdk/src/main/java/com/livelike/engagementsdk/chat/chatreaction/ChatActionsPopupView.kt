@@ -92,7 +92,7 @@ internal class ChatActionsPopupView(
             val countView = TextView(context)
             val imageView = ImageView(context)
             imageView.id = View.generateViewId()
-            imageView.isFocusable=true
+            imageView.isFocusable = true
             imageView.contentDescription = reaction.name
             imageView.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
             imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
@@ -152,7 +152,7 @@ internal class ChatActionsPopupView(
             }
         contentView.chat_reaction_background_card.postDelayed({
             contentView.chat_reaction_background_card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-        },500)
+        }, 500)
     }
 }
 internal interface SelectReactionListener {

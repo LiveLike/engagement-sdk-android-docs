@@ -14,7 +14,9 @@ internal fun ChatMessage.toPubnubChatMessage(programDateTime: String): PubnubCha
         senderDisplayPic,
         senderDisplayName,
         programDateTime,
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
+        image_width = image_width,
+        image_height = image_height
     )
 }
 
@@ -28,7 +30,7 @@ internal fun PubnubChatMessage.toChatMessage(
     return ChatMessage(
         event,
         channel,
-        message,
+        message ?: "",
         senderId,
         senderNickname,
         senderImageUrl,
@@ -37,6 +39,8 @@ internal fun PubnubChatMessage.toChatMessage(
         timetoken = timetoken,
         emojiCountMap = emojiCountMap,
         myChatMessageReaction = myReaction,
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
+        image_width = image_width,
+        image_height = image_height
     )
 }
