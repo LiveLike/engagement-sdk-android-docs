@@ -395,6 +395,7 @@ internal class ContentSession(
         logVerbose { "Pausing the Session" }
         widgetClient?.stop()
         chatClient?.stop()
+        pubnubClientForMessageCount?.stop()
         analyticService.trackLastChatStatus(false)
         analyticService.trackLastWidgetStatus(false)
     }
@@ -403,6 +404,7 @@ internal class ContentSession(
         logVerbose { "Resuming the Session" }
         widgetClient?.start()
         chatClient?.start()
+        pubnubClientForMessageCount?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticService.trackLastChatStatus(true)
         analyticService.trackLastWidgetStatus(true)
@@ -415,6 +417,9 @@ internal class ContentSession(
             destroy()
         }
         widgetClient?.run {
+            destroy()
+        }
+        pubnubClientForMessageCount?.run {
             destroy()
         }
         currentWidgetViewStream.clear()

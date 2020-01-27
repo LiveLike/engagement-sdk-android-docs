@@ -230,9 +230,19 @@ class ExoPlayerActivity : AppCompatActivity() {
         })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
+            val session = (application as LiveLikeApplication).createSession(
+                channel.llProgram.toString(),
+                when (showNotification) {
+                    true -> dialog
+                    else -> null
+                }
+            )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
-                    (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString(), (application as LiveLikeApplication).timecodeGetter)
+                    (application as LiveLikeApplication).sdk.createContentSession(
+                        channel.llProgram.toString(),
+                        (application as LiveLikeApplication).timecodeGetter
+                    )
                 for (pair in chatRoomLastTimeStampMap) {
                     val chatRoomId = pair.key
                     val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
@@ -241,7 +251,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                         "Get Count: $timestamp roomId: $chatRoomId \n\n ${logsPreview.text}"
                     fullLogs.text =
                         "Get Count: $timestamp roomId: $chatRoomId \n\n ${fullLogs.text}"
-                    Log.v("Here", "Getting Count Read channel : $chatRoomId")
+                    Log.v("Here", "Getting Count Read channel : $chatRoomId timestamp: $timestamp")
                     privateGroupChatsession?.getMessageCount(
                         chatRoomId,
                         timestamp,
@@ -252,7 +262,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                                     "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
                                 fullLogs.text =
                                     "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${fullLogs.text}"
-                                Log.v("Here", "Count Read channel : $chatRoomId count: $result")
+                                Log.v("Here", "Count Read channel : $chatRoomId lasttimestamp:$timestamp count: $result")
                                 result?.let {
                                     messageCount[chatRoomId] =
                                         (messageCount[chatRoomId] ?: 0) + result
@@ -266,15 +276,14 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
+                    Log.v("Here", "onNewMessage: ${message.message}  timestamp:${message.timestamp}")
+                    logsPreview.text =
+                        "New Message :${message.message} timestamp:${message.timestamp} \n\n ${logsPreview.text}"
+                    fullLogs.text =
+                        "New Message :${message.message} timestamp:${message.timestamp} \n\n ${fullLogs.text}"
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = 0 // reset unread message count
-                       //Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
-                        Log.v("Here","onNewMessage :${message.timestamp}")
-                        logsPreview.text =
-                            "New Message : ${message.timestamp} \n\n ${logsPreview.text}"
-                        fullLogs.text =
-                            "New Message : ${message.timestamp} \n\n ${fullLogs.text}"
-
+                        //Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
                         if (message.timestamp.isEmpty()) {
                             chatRoomLastTimeStampMap[chatRoom] =
                                 Calendar.getInstance().timeInMillis
@@ -310,13 +319,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 chat_view.emptyChatBackgroundView = emptyView
                 chat_view.allowMediaFromKeyboard = false
             }
-            val session = (application as LiveLikeApplication).createSession(
-                channel.llProgram.toString(),
-                when (showNotification) {
-                    true -> dialog
-                    else -> null
-                }
-            )
+
             chat_view.setSession(session)
             widget_view.setSession(session)
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {

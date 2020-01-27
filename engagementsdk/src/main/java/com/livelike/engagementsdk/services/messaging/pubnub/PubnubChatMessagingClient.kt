@@ -314,7 +314,7 @@ internal class PubnubChatMessagingClient(
                 MESSAGE_CREATED, IMAGE_CREATED -> {
                     if (isDiscardOwnPublishInSubcription && publishMessageIdList.contains(pubnubChatEvent.payload.messageId)) {
                         publishMessageIdList.remove(pubnubChatEvent.payload.messageId)
-                        logError { "discarding as its own recently published message which is broadcasted by pubnub on that channel." }
+                        logError { "discarding as its own recently published message which is broadcasted by pubnub on that channel. $listener" }
                         clientMessage = ClientMessage(
                             JsonObject().apply {
                                 addProperty("event", ChatViewModel.EVENT_MESSAGE_TIMETOKEN_UPDATED)
