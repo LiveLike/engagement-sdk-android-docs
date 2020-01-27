@@ -11,6 +11,11 @@
         android:layout_height="42dp"
         app:contentPadding="0dp"
         android:focusable="true"
+        android:descendantFocusability="beforeDescendants"
+        android:defaultFocusHighlightEnabled="true"
+        android:focusedByDefault="true"
+        android:importantForAccessibility="yes"
+        android:screenReaderFocusable="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -19,13 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:contentDescription="@string/reactions_panel_opened"
-            android:defaultFocusHighlightEnabled="true"
-            android:focusable="true"
-            android:focusedByDefault="true"
             android:gravity="center"
-            android:importantForAccessibility="yes"
             android:orientation="horizontal"
-            android:screenReaderFocusable="true"
             tools:targetApi="o" />
     </android.support.v7.widget.CardView>
 

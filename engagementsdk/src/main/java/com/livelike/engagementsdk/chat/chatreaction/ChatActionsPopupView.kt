@@ -23,7 +23,6 @@ import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_lay
-import kotlinx.android.synthetic.main.popup_chat_reaction.view.reaction_panel_interaction_box
 
 /**
  * Chat reactions and Chat moderation actions view that will popup when use long press chat
@@ -93,6 +92,7 @@ internal class ChatActionsPopupView(
             val countView = TextView(context)
             val imageView = ImageView(context)
             imageView.id = View.generateViewId()
+            imageView.isFocusable=true
             imageView.contentDescription = reaction.name
             imageView.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
             imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
@@ -150,8 +150,8 @@ internal class ChatActionsPopupView(
             } else {
                 View.INVISIBLE
             }
-        contentView.reaction_panel_interaction_box.postDelayed({
-            contentView.reaction_panel_interaction_box.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+        contentView.chat_reaction_background_card.postDelayed({
+            contentView.chat_reaction_background_card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
         },500)
     }
 }
