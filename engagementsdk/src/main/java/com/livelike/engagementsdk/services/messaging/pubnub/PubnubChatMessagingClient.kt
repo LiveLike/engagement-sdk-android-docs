@@ -4,20 +4,17 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatMessage
 import com.livelike.engagementsdk.chat.data.remote.toPubnubChatEventType
 import com.livelike.engagementsdk.chat.data.toChatMessage
 import com.livelike.engagementsdk.chat.data.toPubnubChatMessage
 import com.livelike.engagementsdk.parseISODateTime
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
@@ -28,6 +25,9 @@ import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.isoUTCDateTimeFormatter
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addPublishedMessage
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.flushPublishedMessage
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getPublishedMessages
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.pubnub.api.PNConfiguration
@@ -74,7 +74,6 @@ internal class PubnubChatMessagingClient(
     private var connectedChannels: MutableSet<String> = mutableSetOf()
 
     private val publishQueue = Queue<Pair<String, PubnubChatEvent<PubnubChatMessage>>>()
-    private val publishMessageIdList = mutableListOf<String>() // Use to discard subscribe updates by own publish
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
@@ -110,7 +109,7 @@ internal class PubnubChatMessagingClient(
         )
         publishQueue.enqueue(Pair(channel, pubnubChatEvent))
         if (isDiscardOwnPublishInSubcription) {
-            publishMessageIdList.add(pubnubChatEvent.payload.messageId)
+            addPublishedMessage(channel, pubnubChatEvent.payload.messageId)
         }
         if (!isPublishRunning) {
             startPublishingFromQueue()
@@ -314,8 +313,7 @@ internal class PubnubChatMessagingClient(
             var clientMessage: ClientMessage? = null
             when (event) {
                 MESSAGE_CREATED, IMAGE_CREATED -> {
-                    if (isDiscardOwnPublishInSubcription && publishMessageIdList.contains(pubnubChatEvent.payload.messageId)) {
-                        publishMessageIdList.remove(pubnubChatEvent.payload.messageId)
+                    if (isDiscardOwnPublishInSubcription && getPublishedMessages(channel).contains(pubnubChatEvent.payload.messageId)) {
                         logError { "discarding as its own recently published message which is broadcasted by pubnub on that channel." }
                         clientMessage = ClientMessage(
                             JsonObject().apply {
@@ -591,5 +589,6 @@ internal class PubnubChatMessagingClient(
         coroutineScope.cancel()
         unsubscribeAll()
         pubnub.destroy()
+        flushPublishedMessage(*connectedChannels.toTypedArray())
     }
 }
