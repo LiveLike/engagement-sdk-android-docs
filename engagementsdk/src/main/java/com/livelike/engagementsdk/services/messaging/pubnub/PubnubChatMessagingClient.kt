@@ -83,6 +83,7 @@ internal class PubnubChatMessagingClient(
     var activeChatRoom = ""
         set(value) {
             field = value
+            flushPublishedMessage(*connectedChannels.toTypedArray())
             subscribe(listOf(value))
         }
 
