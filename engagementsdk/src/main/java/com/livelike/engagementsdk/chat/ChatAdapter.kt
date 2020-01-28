@@ -41,9 +41,6 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Calendar
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
@@ -53,6 +50,9 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
+import java.util.Calendar
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -89,7 +89,13 @@ internal class ChatRecyclerAdapter(
         holder.itemView.requestLayout()
     }
 
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        holder.hideFloatingUI()
+    }
+
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
+        private var chatPopUpView: ChatActionsPopupView?=null
         private var message: ChatMessage? = null
         private val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context, R.anim.bounce_animation)
         private val dialogOptions = listOf(
@@ -148,7 +154,6 @@ internal class ChatRecyclerAdapter(
                     }
                 }
             }
-
             v.setOnLongClickListener(this)
             v.setOnClickListener(this)
         }
@@ -167,13 +172,15 @@ internal class ChatRecyclerAdapter(
             checkItemIsAtTop: Boolean
         ) {
             updateBackground(true)
+            if (chatPopUpView?.isShowing == true)
+                chatPopUpView?.dismiss()
             val locationOnScreen = v.getLocationOnScreen()
             var y = locationOnScreen.y - chatViewThemeAttribute.chatReactionY
             if (checkItemIsAtTop) {
                 y = locationOnScreen.y + v.height + 30
             }
             val currentPos = adapterPosition
-            ChatActionsPopupView(
+            chatPopUpView = ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
                 View.OnClickListener { _ ->
@@ -205,10 +212,15 @@ internal class ChatRecyclerAdapter(
                             if (reaction == null) {
                                 reactionId = myChatMessageReaction?.emojiId
                                 myChatMessageReaction?.let { myChatMessageReaction ->
-                                    emojiCountMap[myChatMessageReaction.emojiId] = (emojiCountMap[myChatMessageReaction.emojiId] ?: 0) - 1
+                                    emojiCountMap[myChatMessageReaction.emojiId] =
+                                        (emojiCountMap[myChatMessageReaction.emojiId] ?: 0) - 1
                                     myChatMessageReaction.pubnubActionToken?.let { pubnubActionToken ->
                                         timetoken?.let {
-                                            chatRepository?.removeMessageReaction(channel, it, pubnubActionToken)
+                                            chatRepository?.removeMessageReaction(
+                                                channel,
+                                                it,
+                                                pubnubActionToken
+                                            )
                                         }
                                     }
                                 }
@@ -219,7 +231,11 @@ internal class ChatRecyclerAdapter(
                                     emojiCountMap[it.emojiId] = (emojiCountMap[it.emojiId] ?: 0) - 1
                                     it.pubnubActionToken?.let { pubnubActionToken ->
                                         timetoken?.let {
-                                            chatRepository?.removeMessageReaction(channel, it, pubnubActionToken)
+                                            chatRepository?.removeMessageReaction(
+                                                channel,
+                                                it,
+                                                pubnubActionToken
+                                            )
                                         }
                                     }
                                 }
@@ -303,7 +319,10 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        private fun hideFloatingUI() {
+        fun hideFloatingUI() {
+            if (chatPopUpView?.isShowing == true)
+                chatPopUpView?.dismiss()
+            chatPopUpView = null
             updateBackground(false)
         }
 
