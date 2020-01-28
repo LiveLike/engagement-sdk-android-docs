@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import android.util.Log
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -33,6 +34,7 @@ internal class ChatQueue(upstream: MessagingClient) :
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        Log.v("Here", "Event Message Timetoken : ${event.message.get("timetoken")?.asString}")
         when (event.message.get("event").asString) {
             ChatViewModel.EVENT_NEW_MESSAGE -> {
                 val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
@@ -52,7 +54,6 @@ internal class ChatQueue(upstream: MessagingClient) :
                 val time=event.message.get("timetoken").asString.toLong()
                 if (time > 0) {
                     epochTimeStamp = time / 10000
-                    epochTimeStamp += 1
                 }
                 msgListener?.onNewMessage(
                     event.channel,

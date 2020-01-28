@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
+import android.util.Log
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
@@ -545,6 +546,7 @@ internal class PubnubChatMessagingClient(
                 .channels(listOf(channel))
                 .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
                 .sync()
+            Log.v("Here", "Count Read channel : $channel lasttimestamp:${convertToTimeToken(startTimestamp)}")
             Result.Success(countResult?.channels?.get(channel) ?: 0)
         } catch (ex: PubNubException) {
             ex.printStackTrace()
