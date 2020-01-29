@@ -688,7 +688,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         ChatMessage(
             PubnubChatEventType.MESSAGE_CREATED,
             viewModel?.currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
-            edittext_chat_message.text.toString(),
+            edittext_chat_message.text.toString().trim(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
