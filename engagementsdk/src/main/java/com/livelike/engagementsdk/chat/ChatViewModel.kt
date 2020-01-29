@@ -29,8 +29,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
-
-
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
     val userStream: Stream<LiveLikeUser>,
@@ -40,7 +38,7 @@ internal class ChatViewModel(
 
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
-    val messageList = mutableListOf<ChatMessage>()
+    var messageList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(true)
     var currentChatRoom: ChatRoom? = null
         set(value) {
@@ -127,9 +125,11 @@ internal class ChatViewModel(
             }
         }
 
-        uiScope.launch {
-            chatAdapter.submitList(ArrayList(messageList.toSet()))
-            eventStream.onNext(EVENT_NEW_MESSAGE)
+        if (chatLoaded) {
+            uiScope.launch {
+                chatAdapter.submitList(ArrayList(messageList.toSet()))
+                eventStream.onNext(EVENT_NEW_MESSAGE)
+            }
         }
     }
 
@@ -138,7 +138,7 @@ internal class ChatViewModel(
             chatMessage.apply {
                 if (this.timetoken == messagePubnubToken) {
                     emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) - 1
-                    uiScope.launch { chatAdapter.notifyItemRangeRemoved(0, messageList.size) }
+                    uiScope.launch { chatAdapter.notifyDataSetChanged() }
                     return@forEach
                 }
                 // remember case not handled for now if same user removes its reaction while using 2 devices
@@ -162,7 +162,7 @@ internal class ChatViewModel(
                     } else {
                         val emojiId = chatMessageReaction.emojiId
                         emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) + 1
-                        uiScope.launch { chatAdapter.notifyItemRangeChanged(0, messageList.size) }
+                        uiScope.launch { chatAdapter.notifyDataSetChanged() }
                     }
                     return@forEach
                 }
@@ -194,7 +194,6 @@ internal class ChatViewModel(
         if (!chatLoaded) {
             chatLoaded = true
             chatAdapter.submitList(ArrayList(messageList.toSet()))
-            chatAdapter.notifyItemRangeInserted(0, messageList.size)
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
         }
@@ -207,7 +206,7 @@ internal class ChatViewModel(
     }
 
     fun flushMessages() {
-        messageList.clear()
+        messageList = mutableListOf()
         chatAdapter.submitList(messageList)
     }
 
@@ -234,7 +233,7 @@ internal class ChatViewModel(
             Glide.with(context.applicationContext)
                 .asBitmap()
                 .load(url)
-                .into(object: SimpleTarget<Bitmap>() {
+                .into(object : SimpleTarget<Bitmap>() {
                     override fun onResourceReady(
                         resource: Bitmap,
                         transition: Transition<in Bitmap>?
@@ -243,9 +242,7 @@ internal class ChatViewModel(
                         chatMessage.image_height = resource.height
                         chatListener?.onChatMessageSend(chatMessage, timedata)
                     }
-
                 })
-
         }
     }
 }

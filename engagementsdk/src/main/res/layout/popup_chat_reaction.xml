@@ -11,18 +11,22 @@
         android:layout_height="42dp"
         app:contentPadding="0dp"
         android:focusable="true"
-        android:contentDescription="@string/reactions_panel_opened"
+        android:descendantFocusability="beforeDescendants"
+        android:defaultFocusHighlightEnabled="true"
+        android:focusedByDefault="true"
         android:importantForAccessibility="yes"
+        android:screenReaderFocusable="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/reaction_panel_interaction_box"
             android:layout_width="wrap_content"
-            android:gravity="center"
             android:layout_height="match_parent"
+            android:contentDescription="@string/reactions_panel_opened"
+            android:gravity="center"
             android:orientation="horizontal"
-            />
+            tools:targetApi="o" />
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -43,16 +47,5 @@
             android:layout_height="match_parent"
             android:src="@drawable/chat_ic_flag" />
     </android.support.v7.widget.CardView>
-
-    <!--Added this imageview as dummy only for voice over for opening reaction panel -->
-    <ImageView
-        android:id="@+id/img_dummy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/reactions_panel_opened"
-        android:focusable="true"
-        android:importantForAccessibility="yes"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

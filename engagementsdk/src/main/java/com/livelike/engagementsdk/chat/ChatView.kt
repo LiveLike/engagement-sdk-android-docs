@@ -174,7 +174,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         })
     }
 
-
     private fun initView(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.chat_view, this, true)
         user_profile_display_LL.visibility = if (displayUserProfile) View.VISIBLE else View.GONE
@@ -428,7 +427,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     } else {
                         button_emoji?.visibility = View.VISIBLE
                     }
-                    viewModel?.chatAdapter?.notifyItemRangeChanged(0, viewModel?.messageList?.size ?: 0)
+                    viewModel?.chatAdapter?.notifyDataSetChanged()
                 }
                 // used to pass the shortcode to the keyboard
                 stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
