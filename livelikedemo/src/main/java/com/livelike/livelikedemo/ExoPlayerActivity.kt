@@ -152,12 +152,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.toTypedArray()) { _, which ->
                     val enteredChatRoomId = chatRoomIds[which]
                     privateGroupChatsession?.enterChatRoom(enteredChatRoomId)
-                    chatRoomLastTimeStampMap[enteredChatRoomId] =
-                        Calendar.getInstance().timeInMillis
-                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
-                        PREF_CHAT_ROOM_LAST_TIME,
-                        GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
-                    ).apply()
+//                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
+//                        PREF_CHAT_ROOM_LAST_TIME,
+//                        GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
+//                    ).apply()
                     if (!isChatRoomJoined) {
                         val anotherChatRoomId = chatRoomIds[kotlin.math.abs(which - 1)]
                         privateGroupChatsession?.joinChatRoom(anotherChatRoomId)
@@ -274,7 +272,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
                 privateGroupChatsession?.setMessageListener(object : MessageListener {
                     override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
-                        Log.v("Here", "onNewMessage: ${message.message}  timestamp:${message.timestamp}")
+                        Log.v("Here$chatRoom", "onNewMessage: ${message.message}  timestamp:${message.timestamp}")
                         logsPreview.text =
                             "New Message :${message.message} timestamp:${message.timestamp} \n\n ${logsPreview.text}"
                         fullLogs.text =
@@ -291,7 +289,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                                 if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < message.timestamp.toLong())
                                     chatRoomLastTimeStampMap[chatRoom] = (message.timestamp.toLong() + 1)
                             }
-                            Log.v("Here", "onNewMessage2: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}")
+                            Log.v("Here$chatRoom", "onNewMessage2: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}")
                             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit()
                                 .putString(
                                     PREF_CHAT_ROOM_LAST_TIME,
@@ -303,14 +301,14 @@ class ExoPlayerActivity : AppCompatActivity() {
                                 if (messageCount[chatRoom] == null) {
                                     messageCount[chatRoom] = 1
                                 }
-                                Log.v("Here", "onNewMessage3: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}")
+                                Log.v("Here$chatRoom", "onNewMessage3: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}")
                                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit()
                                     .putString(
                                         PREF_CHAT_ROOM_LAST_TIME,
                                         GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
                                     ).apply()
                             }
-                            Log.v("Here", "onNewMessage4: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}")
+                            Log.v("Here$chatRoom", "onNewMessage4: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}")
                             if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < message.timestamp.toLong())
                                 if (messageCount[chatRoom] == null) {
                                     messageCount[chatRoom] = 1
@@ -323,7 +321,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                                 "channel : ${it.key}, unread : ${it.value} \n\n ${logsPreview.text}"
                             fullLogs.text =
                                 "channel : ${it.key}, unread : ${it.value} \n\n ${fullLogs.text}"
-                            Log.v("Here", "channel : ${it.key}, unread : ${it.value} lasttimestamp:${chatRoomLastTimeStampMap[chatRoom]}")
+                            Log.v("Here$chatRoom", "channel : ${it.key}, unread : ${it.value} lasttimestamp:${chatRoomLastTimeStampMap[chatRoom]}")
                         }
                     }
                 })
