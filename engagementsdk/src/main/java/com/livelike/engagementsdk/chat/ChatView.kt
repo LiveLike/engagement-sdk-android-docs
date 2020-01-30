@@ -4,6 +4,8 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -206,7 +208,27 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             layoutParams.height = sendIconHeight
             button_chat_send.layoutParams = layoutParams
             button_chat_send.setImageDrawable(chatSendDrawable)
-            button_chat_send.background = chatSendBackgroundDrawable
+            chatSendBackgroundDrawable?.let {res->
+                if (res < 0) {
+                    button_chat_send.setBackgroundColor(res)
+                } else {
+                    val value = TypedValue()
+                    try {
+                        resources.getValue(res, value, true)
+                        when (value.type) {
+                            TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> button_chat_send.setBackgroundResource(
+                                res
+                            )
+                            TypedValue.TYPE_NULL -> button_chat_send.setBackgroundColor(
+                                Color.TRANSPARENT
+                            )
+                            else -> button_chat_send.setBackgroundColor(Color.TRANSPARENT)
+                        }
+                    } catch (e: Resources.NotFoundException) {
+                        button_chat_send.setBackgroundColor(res)
+                    }
+                }
+            }
             button_chat_send.setPadding(
                 chatSendPaddingLeft,
                 chatSendPaddingTop,
