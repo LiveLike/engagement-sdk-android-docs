@@ -76,14 +76,13 @@
             android:screenReaderFocusable="true"
             tools:targetApi="o"/>
 
-    <ImageButton
+    <ImageView
             android:id="@+id/button_emoji"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_gravity="bottom"
             android:layout_marginEnd="8dp"
             android:padding="9dp"
-            android:background="@null"
             android:scaleType="centerCrop"
             android:contentDescription="@string/sticker_keyboard"
             app:layout_constraintBottom_toBottomOf="@+id/chat_input_border"
@@ -95,7 +94,7 @@
             tools:ignore="ContentDescription"
             android:layout_marginRight="8dp"/>
 
-    <ImageButton
+    <ImageView
             android:id="@+id/button_chat_send"
             android:layout_width="56dp"
             android:layout_height="40dp"
@@ -105,7 +104,6 @@
             android:clickable="true"
             android:gravity="center"
             android:layout_marginLeft="3dp"
-            android:background="@null"
             android:scaleType="fitXY"
             android:src="@drawable/ic_chat_send"
             android:textColor="#ffffff"
