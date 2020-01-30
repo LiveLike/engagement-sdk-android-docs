@@ -9,11 +9,11 @@ import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
-import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Matcher
+import org.json.JSONObject
 
 /**
  * The base interface for the analytics. This will log events to any remote analytics provider.
@@ -63,8 +63,8 @@ interface AnalyticsService {
     fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)
     fun trackPointThisProgram(points: Int)
     fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)
-    fun trackChatReactionPanelOpen(messageId:String)
-    fun trackChatReactionSelected(messageId: String,reactionId:String,reactionAction:String)
+    fun trackChatReactionPanelOpen(messageId: String)
+    fun trackChatReactionSelected(messageId: String, reactionId: String, reactionAction: String)
 }
 
 class MockAnalyticsService(private val programId: String = "") : AnalyticsService {
@@ -398,6 +398,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         hideMethod: KeyboardHideReason,
         chatMessageId: String?
     ) {
+        return // disabling keyboard hide temporary as it is getting called multiple times
         val properties = JSONObject()
         properties.put("Keyboard Type", getKeyboardType(keyboardType))
 
