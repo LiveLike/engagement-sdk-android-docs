@@ -41,6 +41,11 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Calendar
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
+import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
@@ -50,9 +55,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.util.Calendar
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> = object : DiffUtil.ItemCallback<ChatMessage>() {
     override fun areItemsTheSame(p0: ChatMessage, p1: ChatMessage): Boolean {
@@ -95,7 +97,7 @@ internal class ChatRecyclerAdapter(
     }
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener, View.OnClickListener {
-        private var chatPopUpView: ChatActionsPopupView?=null
+        private var chatPopUpView: ChatActionsPopupView? = null
         private var message: ChatMessage? = null
         private val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context, R.anim.bounce_animation)
         private val dialogOptions = listOf(
@@ -351,6 +353,17 @@ internal class ChatRecyclerAdapter(
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }
+
+                        val topBorderLP = v.border_top.layoutParams
+                        topBorderLP.height = chatMessageTopBorderHeight
+                        v.border_top.layoutParams = topBorderLP
+
+                        val bottomBorderLP = v.border_bottom.layoutParams
+                        bottomBorderLP.height = chatMessageBottomBorderHeight
+                        v.border_bottom.layoutParams = bottomBorderLP
+
+                        v.border_top.setBackgroundColor(chatMessageTopBorderColor)
+                        v.border_bottom.setBackgroundColor(chatMessageBottomBorderColor)
 
                         val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
                         layoutParam.setMargins(

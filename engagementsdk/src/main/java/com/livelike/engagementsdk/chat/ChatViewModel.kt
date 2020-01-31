@@ -186,6 +186,7 @@ internal class ChatViewModel(
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList))
                 chatAdapter.notifyItemChanged(messageList.indexOf(cm))
+                eventStream.onNext(EVENT_NEW_MESSAGE)
             }
         }
     }

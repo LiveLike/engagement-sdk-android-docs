@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
+import android.util.Log
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
@@ -92,7 +93,7 @@ internal class PubnubChatMessagingClient(
             connectedChannels.add(channel)
             val endTimeStamp = Calendar.getInstance().timeInMillis
             pubnub.subscribe().channels(listOf(channel)).execute()
-            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
+//            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
         }
     }
 
@@ -541,6 +542,7 @@ internal class PubnubChatMessagingClient(
                 .channels(listOf(channel))
                 .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
                 .sync()
+            Log.v("Here", "Count Read channel : $channel lasttimestamp:${convertToTimeToken(startTimestamp)}")
             Result.Success(countResult?.channels?.get(channel) ?: 0)
         } catch (ex: PubNubException) {
             ex.printStackTrace()
