@@ -164,14 +164,19 @@ class ChatViewThemeAttributes {
             val chatSendBackValue = TypedValue()
             getValue(R.styleable.LiveLike_ChatView_chatSendBackground, chatSendBackValue)
 
-            chatSendBackgroundDrawable = when {
-                chatSendBackValue.type == TypedValue.TYPE_REFERENCE || chatSendBackValue.type == TypedValue.TYPE_STRING -> getResourceId(
-                    R.styleable.LiveLike_ChatView_chatSendBackground,
+            chatSendBackgroundDrawable = when (chatSendBackValue.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                    context,
+                    getResourceId(
+                        R.styleable.LiveLike_ChatView_chatSendBackground,
+                        android.R.color.transparent
+                    )
+                )
+                TypedValue.TYPE_NULL -> ContextCompat.getDrawable(
+                    context,
                     android.R.color.transparent
                 )
-                chatSendBackValue.type == TypedValue.TYPE_NULL -> null
-                chatSendBackValue.type >= TypedValue.TYPE_FIRST_COLOR_INT && colorBubbleValue.type <= TypedValue.TYPE_LAST_COLOR_INT -> colorBubbleValue.data
-                else -> null
+                else -> ColorDrawable(chatSendBackValue.data)
             }
 
             val colorReactionValue = TypedValue()
@@ -517,7 +522,7 @@ class ChatViewThemeAttributes {
     var chatSendDrawable: Drawable? = null
     var chatStickerSendDrawable: Drawable? = null
     var chatUserPicDrawable: Drawable? = null
-    var chatSendBackgroundDrawable: Int? = null
+    var chatSendBackgroundDrawable: Drawable? = null
     var chatMessageColor: Int = Color.TRANSPARENT
     var sendImageTintColor: Int = Color.WHITE
     var sendStickerTintColor: Int = Color.WHITE
