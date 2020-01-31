@@ -21,6 +21,7 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.utils.toAnalyticsString
 import java.util.PriorityQueue
 import java.util.Queue
 import kotlinx.coroutines.Dispatchers
@@ -134,7 +135,10 @@ internal class WidgetManager(
     }
 
     private fun showWidgetOnScreen(msgHolder: MessageHolder) {
-        val widgetType = msgHolder.clientMessage.message.get("event").asString ?: ""
+        val widgetType = WidgetType.fromString(
+            msgHolder.clientMessage.message.get("event").asString ?: ""
+        )?.toAnalyticsString() ?: ""
+
         val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
