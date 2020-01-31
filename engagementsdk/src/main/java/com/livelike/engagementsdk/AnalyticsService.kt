@@ -37,7 +37,7 @@ interface AnalyticsService {
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
     fun trackSessionStarted()
-    fun trackMessageSent(msgId: String, msg: String)
+    fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean = false)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
@@ -144,7 +144,7 @@ class MockAnalyticsService(private val programId: String = "") : AnalyticsServic
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
 
-    override fun trackMessageSent(msgId: String, msg: String) {
+    override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
@@ -529,12 +529,13 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         }
     }
 
-    override fun trackMessageSent(msgId: String, msg: String) {
+    override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, msgId)
         properties.put("Character Length", msg.length)
         properties.put("Sticker Count", msg.findStickers().countMatches())
         properties.put("Sticker Id", msg.findStickers().allMatches())
+        properties.put("Has External Image", hasExternalImage)
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
         eventObservers[programId]?.invoke(KEY_CHAT_MESSAGE_SENT, properties)
 

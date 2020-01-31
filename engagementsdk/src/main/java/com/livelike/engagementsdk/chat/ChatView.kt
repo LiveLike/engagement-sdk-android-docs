@@ -699,7 +699,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                if (it.message.findImages().countMatches()> 0) {
+                val hasExternalImage = it.message.findImages().countMatches() > 0
+                if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)
                 } else {
                     chatListener?.onChatMessageSend(it, timeData)
@@ -708,7 +709,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 snapToLive()
                 analyticsService.trackMessageSent(
                     it.id,
-                    it.message
+                    it.message,
+                    hasExternalImage
                 )
             }
         }
