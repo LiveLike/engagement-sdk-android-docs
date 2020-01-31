@@ -617,7 +617,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
             if (visibility == View.VISIBLE) {
-                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
+//                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
             }
             visibility = View.GONE
         }
@@ -660,7 +660,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             0
         )
 
-        session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
+//        session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
         setBackButtonInterceptor(this)
     }
 

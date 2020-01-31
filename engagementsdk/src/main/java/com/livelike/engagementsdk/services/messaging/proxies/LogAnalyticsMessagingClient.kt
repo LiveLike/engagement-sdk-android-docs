@@ -27,9 +27,6 @@ internal class LogAnalyticsMessagingClient(
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         listener?.onClientMessageEvent(client, event)
-        val widgetType = event.message.get("event").asString ?: ""
-        val payload = event.message["payload"].asJsonObject
-        val widgetId = payload["id"].asString
     }
 }
 

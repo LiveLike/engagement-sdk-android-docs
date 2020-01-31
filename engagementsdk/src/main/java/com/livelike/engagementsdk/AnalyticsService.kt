@@ -398,7 +398,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         hideMethod: KeyboardHideReason,
         chatMessageId: String?
     ) {
-        return // disabling keyboard hide temporary as it is getting called multiple times
         val properties = JSONObject()
         properties.put("Keyboard Type", getKeyboardType(keyboardType))
 
