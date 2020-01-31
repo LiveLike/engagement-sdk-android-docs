@@ -125,10 +125,6 @@ class ExoPlayerActivity : AppCompatActivity() {
 
         setUpAdClickListeners()
 
-        channelManager?.let {
-            selectChannel(it.selectedChannel)
-        }
-
         selectChannelButton.setOnClickListener {
             channelManager?.let { cm ->
                 val channels = cm.getChannels()
@@ -338,7 +334,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                 chat_view.emptyChatBackgroundView = emptyView
                 chat_view.allowMediaFromKeyboard = false
             }
-
             chat_view.setSession(session)
             widget_view.setSession(session)
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
