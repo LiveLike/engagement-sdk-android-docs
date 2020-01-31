@@ -705,7 +705,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     chatListener?.onChatMessageSend(it, timeData)
                 }
                 edittext_chat_message.setText("")
-                snapToLive()
             }
         }
     }
