@@ -45,7 +45,7 @@
         <item name="otherUsernameColor">#000</item>
         <item name="messageColor">#5f5f5f</item>
         <item name="chatInputViewBackground">#FFF</item>
-        <item name="chatDisplayBackground">#efeff4</item>
+        <item name="chatDisplayBackground">#fff</item>
         <item name="chatViewBackground">#FFF</item>
         <item name="chatInputTextColor">#8e8e93</item>
         <item name="chatInputTextSize">15sp</item>
@@ -93,6 +93,8 @@
         <item name="stickerTabBackground">@color/livelike_white</item>
         <item name="stickerBackground">@color/livelike_white</item>
         <item name="stickerRecentEmptyTextColor">@color/livelike_black</item>
+        <item name="chatMessageBottomBorderHeight">1dp</item>
+        <item name="chatMessageBottomBorderColor">#efeff4</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">

@@ -488,6 +488,24 @@ class ChatViewThemeAttributes {
                 R.styleable.LiveLike_ChatView_stickerRecentEmptyTextColor,
                 ContextCompat.getColor(context, R.color.livelike_sticker_recent_empty_text_color)
             )
+            chatMessageTopBorderColor = getColor(
+                R.styleable.LiveLike_ChatView_chatMessageTopBorderColor,
+                ContextCompat.getColor(context, android.R.color.transparent)
+            )
+            chatMessageBottomBorderColor = getColor(
+                R.styleable.LiveLike_ChatView_chatMessageBottomBorderColor,
+                ContextCompat.getColor(context, android.R.color.transparent)
+            )
+            chatMessageTopBorderHeight =
+                getDimensionPixelSize(
+                    R.styleable.LiveLike_ChatView_chatMessageTopBorderHeight,
+                    AndroidResource.dpToPx(0)
+                )
+            chatMessageBottomBorderHeight =
+                getDimensionPixelSize(
+                    R.styleable.LiveLike_ChatView_chatMessageBottomBorderHeight,
+                    AndroidResource.dpToPx(0)
+                )
         }
     }
 
@@ -558,4 +576,8 @@ class ChatViewThemeAttributes {
     var stickerTabBackground: Drawable? = null
     var stickerSelectedTabIndicatorColor: Int = Color.WHITE
     var stickerRecentEmptyTextColor: Int = Color.WHITE
+    var chatMessageTopBorderColor: Int = Color.TRANSPARENT
+    var chatMessageBottomBorderColor: Int = Color.TRANSPARENT
+    var chatMessageTopBorderHeight: Int = 0
+    var chatMessageBottomBorderHeight: Int = 0
 }

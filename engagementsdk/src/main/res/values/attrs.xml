@@ -129,6 +129,10 @@
         <attr name="stickerTabBackground" format="reference|color" />
         <attr name="stickerSelectedTabIndicatorColor" format="color" />
         <attr name="stickerRecentEmptyTextColor" format="color" />
+        <attr name="chatMessageTopBorderHeight" format="dimension"/>
+        <attr name="chatMessageTopBorderColor" format="color"/>
+        <attr name="chatMessageBottomBorderHeight" format="dimension"/>
+        <attr name="chatMessageBottomBorderColor" format="color"/>
     </declare-styleable>
 
     <declare-styleable name="PointView">
