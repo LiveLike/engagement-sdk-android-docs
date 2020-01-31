@@ -628,13 +628,11 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         if (lastOrientation == isPortrait) return // return if the orientation stays the same
         lastOrientation = isPortrait
         JSONObject().apply {
-            put("Device Orientation", if (isPortrait)"PORTRAIT" else "LANDSCAPE")
-            mixpanel.track(KEY_ORIENTATION_CHANGED, this)
+            put("Device Orientation", if (isPortrait)"Portrait" else "Landscape")
             mixpanel.registerSuperProperties(this)
-            eventObservers[programId]?.invoke(KEY_ORIENTATION_CHANGED, this)
         }
         JSONObject().apply {
-            put("Last Device Orientation", if (isPortrait)"PORTRAIT" else "LANDSCAPE")
+            put("Last Device Orientation", if (isPortrait)"Portrait" else "Landscape")
             mixpanel.people.set(this)
         }
     }
