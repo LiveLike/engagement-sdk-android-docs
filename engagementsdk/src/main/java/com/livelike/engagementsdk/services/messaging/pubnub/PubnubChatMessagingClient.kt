@@ -157,10 +157,6 @@ internal class PubnubChatMessagingClient(
                 override fun onResponse(result: PNPublishResult?, status: PNStatus) {
                     logDebug { "pub status code: " + status?.statusCode }
                     if (!status.isError) {
-                        analyticsService.trackMessageSent(
-                            pubnubChatEvent.payload.messageId,
-                            pubnubChatEvent.payload.message
-                        )
                         logDebug { "pub timetoken: " + result?.timetoken!! }
                         it.resume(true)
                     } else {
