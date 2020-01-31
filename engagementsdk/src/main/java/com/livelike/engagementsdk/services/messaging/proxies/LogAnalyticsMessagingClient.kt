@@ -30,7 +30,6 @@ internal class LogAnalyticsMessagingClient(
         val widgetType = event.message.get("event").asString ?: ""
         val payload = event.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
-        analyticsService.trackWidgetReceived(widgetType, widgetId)
     }
 }
 
