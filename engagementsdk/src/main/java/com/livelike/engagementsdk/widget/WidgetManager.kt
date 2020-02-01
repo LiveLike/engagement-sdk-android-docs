@@ -22,12 +22,12 @@ import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.toAnalyticsString
-import java.util.PriorityQueue
-import java.util.Queue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.PriorityQueue
+import java.util.Queue
 
 internal class WidgetManager(
     upstream: MessagingClient,
@@ -127,7 +127,7 @@ internal class WidgetManager(
                     } catch (e: Exception) {
                         logError { "Widget interceptor encountered a problem: $e \n Dismissing the widget" }
                         dismissPendingMessage()
-                    }
+                    }   
                 }
             }
             pendingMessage = message
@@ -135,14 +135,14 @@ internal class WidgetManager(
     }
 
     private fun showWidgetOnScreen(msgHolder: MessageHolder) {
-        val widgetType = WidgetType.fromString(
-            msgHolder.clientMessage.message.get("event").asString ?: ""
-        )?.toAnalyticsString() ?: ""
+        val widgetType = msgHolder.clientMessage.message.get("event").asString ?: ""
 
         val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
-        analyticsService.trackWidgetDisplayed(widgetType, widgetId)
+        analyticsService.trackWidgetDisplayed(WidgetType.fromString(
+            msgHolder.clientMessage.message.get("event").asString ?: ""
+        )?.toAnalyticsString() ?: "", widgetId)
 
         handler.post {
             currentWidgetViewStream.onNext(
