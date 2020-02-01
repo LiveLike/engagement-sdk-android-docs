@@ -531,7 +531,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
     override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, msgId)
-        properties.put("Character Length", (if (hasExternalImage) 1 else msg.length))
+        properties.put("Character Length", (if (hasExternalImage) 0 else msg.length))
         properties.put("Sticker Count", msg.findStickers().countMatches())
         properties.put("Sticker Id", msg.findStickers().allMatches())
         properties.put("Has External Image", hasExternalImage)
