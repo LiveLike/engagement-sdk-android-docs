@@ -60,11 +60,12 @@ internal fun <X, Y> Stream<X>.map(applyTransformation: (x: X) -> Y): Stream<Y> {
 /**
  * combine the latest from 2 streams only once, so the stream out will be single RX
  */
-internal fun <X, Y> Stream<X>.combineLatestOnce(other: Stream<Y>): Stream<Pair<X, Y>> {
+internal fun <X, Y> Stream<X>.combineLatestOnce(other: Stream<Y>,hashCode:Int?=null): Stream<Pair<X, Y>> {
     val pairedStream: Stream<Pair<X, Y>> = SubscriptionManager()
-    this.subscribe(other.hashCode()) {
+    val combinedHashCode = "${other.hashCode()}$hashCode"
+    this.subscribe(combinedHashCode) {
         it?.let { x ->
-            this.unsubscribe(other.hashCode())
+            this.unsubscribe(combinedHashCode)
             other.subscribe(this.hashCode()) { y ->
                 y?.let {
                     other.unsubscribe(this.hashCode())

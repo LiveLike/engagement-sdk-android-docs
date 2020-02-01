@@ -124,13 +124,13 @@ internal class ContentSession(
     private var msgListener: MessageListener? = null
 
     init {
-        userRepository.currentUserStream.subscribe(javaClass) {
+        userRepository.currentUserStream.subscribe(this) {
             it?.let {
                 analyticService.trackUsername(it.nickname)
             }
         }
 
-        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration).subscribe(javaClass.simpleName) {
+        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration,this.hashCode()).subscribe(this) {
             it?.let { pair ->
                 val configuration = pair.second
                 chatRepository = ChatRepository(
@@ -377,7 +377,6 @@ internal class ContentSession(
             chatClient =
                 chatClient?.syncTo(currentPlayheadTime)
         }
-
         chatClient = chatClient?.toChatQueue()
             ?.apply {
                 msgListener = proxyMsgListener
