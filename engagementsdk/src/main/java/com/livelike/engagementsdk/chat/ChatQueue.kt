@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.chat
 
-import android.util.Log
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -50,7 +49,7 @@ internal class ChatQueue(upstream: MessagingClient) :
             ChatViewModel.EVENT_MESSAGE_TIMETOKEN_UPDATED -> {
                 renderer?.updateChatMessageTimeToken(event.message.get("messageId").asString, event.message.get("timetoken").asString)
                 var epochTimeStamp = 0L
-                val time= event.message.get("timetoken").asString.toLong()
+                val time = event.message.get("timetoken").asString.toLong()
                 if (time > 0) {
                     epochTimeStamp = time / 10000
                 }
