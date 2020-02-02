@@ -33,8 +33,8 @@ internal class ChatActionsPopupView(
     flagClick: View.OnClickListener,
     hideFloatingUi: () -> Unit,
     isOwnMessage: Boolean,
-    val userReaction: ChatMessageReaction? = null,
-    val emojiCountMap: MutableMap<String, Int>? = null,
+    var userReaction: ChatMessageReaction? = null,
+    var emojiCountMap: MutableMap<String, Int>? = null,
     private val chatViewThemeAttributes: ChatViewThemeAttributes,
     val selectReactionListener: SelectReactionListener? = null,
     val isPublichat: Boolean
@@ -83,6 +83,15 @@ internal class ChatActionsPopupView(
             "99+"
     }
 
+    fun updatePopView(
+        emojiCountMap: MutableMap<String, Int>? = null,
+        userReaction: ChatMessageReaction? = null
+    ) {
+        this.userReaction = userReaction
+        this.emojiCountMap = emojiCountMap
+        initReactions()
+    }
+
     private fun initReactions() {
         val reactionsBox =
             contentView.findViewById<LinearLayout>(R.id.reaction_panel_interaction_box)
@@ -111,7 +120,7 @@ internal class ChatActionsPopupView(
                         v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(50).start()
                         selectReactionListener?.let {
                             if (userReaction != null) {
-                                if (userReaction.emojiId == reaction.id) {
+                                if (userReaction?.emojiId == reaction.id) {
                                     it.onSelectReaction(null) // No selection
                                 } else
                                     it.onSelectReaction(reaction)
