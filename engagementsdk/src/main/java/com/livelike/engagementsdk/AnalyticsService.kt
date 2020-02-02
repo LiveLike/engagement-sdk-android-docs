@@ -9,11 +9,11 @@ import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
-import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Matcher
+import org.json.JSONObject
 
 /**
  * The base interface for the analytics. This will log events to any remote analytics provider.
@@ -37,7 +37,7 @@ interface AnalyticsService {
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
     fun trackSessionStarted()
-    fun trackMessageSent(msgId: String, msg: String)
+    fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean = false)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
@@ -63,8 +63,8 @@ interface AnalyticsService {
     fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)
     fun trackPointThisProgram(points: Int)
     fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)
-    fun trackChatReactionPanelOpen(messageId:String)
-    fun trackChatReactionSelected(messageId: String,reactionId:String,reactionAction:String)
+    fun trackChatReactionPanelOpen(messageId: String)
+    fun trackChatReactionSelected(messageId: String, reactionId: String, reactionAction: String)
 }
 
 class MockAnalyticsService(private val programId: String = "") : AnalyticsService {
@@ -144,7 +144,7 @@ class MockAnalyticsService(private val programId: String = "") : AnalyticsServic
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
     }
 
-    override fun trackMessageSent(msgId: String, msg: String) {
+    override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
@@ -528,12 +528,13 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         }
     }
 
-    override fun trackMessageSent(msgId: String, msg: String) {
+    override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, msgId)
-        properties.put("Character Length", msg.length)
+        properties.put("Character Length", (if (hasExternalImage) 0 else msg.length))
         properties.put("Sticker Count", msg.findStickers().countMatches())
         properties.put("Sticker Id", msg.findStickers().allMatches())
+        properties.put("Has External Image", hasExternalImage)
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
         eventObservers[programId]?.invoke(KEY_CHAT_MESSAGE_SENT, properties)
 
@@ -626,13 +627,11 @@ class MixpanelAnalytics(val context: Context, token: String?, private val progra
         if (lastOrientation == isPortrait) return // return if the orientation stays the same
         lastOrientation = isPortrait
         JSONObject().apply {
-            put("Device Orientation", if (isPortrait)"PORTRAIT" else "LANDSCAPE")
-            mixpanel.track(KEY_ORIENTATION_CHANGED, this)
+            put("Device Orientation", if (isPortrait)"Portrait" else "Landscape")
             mixpanel.registerSuperProperties(this)
-            eventObservers[programId]?.invoke(KEY_ORIENTATION_CHANGED, this)
         }
         JSONObject().apply {
-            put("Last Device Orientation", if (isPortrait)"PORTRAIT" else "LANDSCAPE")
+            put("Last Device Orientation", if (isPortrait)"Portrait" else "Landscape")
             mixpanel.people.set(this)
         }
     }

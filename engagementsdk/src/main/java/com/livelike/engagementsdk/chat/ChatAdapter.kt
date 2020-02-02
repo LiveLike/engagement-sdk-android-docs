@@ -44,6 +44,9 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Calendar
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -55,9 +58,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.util.Calendar
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -90,13 +90,7 @@ internal class ChatRecyclerAdapter(
 
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
-        return ViewHolder(
-            LayoutInflater.from(root.context).inflate(
-                R.layout.default_chat_cell,
-                root,
-                false
-            )
-        )
+        return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -118,17 +112,11 @@ internal class ChatRecyclerAdapter(
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener,
         View.OnClickListener {
         private var message: ChatMessage? = null
-        private val bounceAnimation: Animation =
-            AnimationUtils.loadAnimation(v.context, R.anim.bounce_animation)
+        private val bounceAnimation: Animation = AnimationUtils.loadAnimation(v.context, R.anim.bounce_animation)
         private val dialogOptions = listOf(
             v.context.getString(R.string.flag_ui_blocking_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
-                    setMessage(
-                        context.getString(
-                            R.string.flag_ui_blocking_message,
-                            msg.senderDisplayName
-                        )
-                    )
+                    setMessage(context.getString(R.string.flag_ui_blocking_message, msg.senderDisplayName))
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackBlockingUser()
                         blockUser(msg.senderId)
@@ -148,15 +136,11 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(view: View?): Boolean {
-            val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
-            val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
-            if (reactionsAvailable || !isOwnMessage) {
-                showFloatingUI(
-                    isOwnMessage,
-                    message?.myChatMessageReaction,
-                    checkListIsAtTop(adapterPosition) && itemCount > 1
-                )
-            }
+                val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
+                val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
+                if (reactionsAvailable || !isOwnMessage) {
+                    showFloatingUI(isOwnMessage, message?.myChatMessageReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
+                }
             return true
         }
 
@@ -415,8 +399,7 @@ internal class ChatRecyclerAdapter(
                         v.border_top.setBackgroundColor(chatMessageTopBorderColor)
                         v.border_bottom.setBackgroundColor(chatMessageBottomBorderColor)
 
-                        val layoutParam =
-                            v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
+                        val layoutParam = v.chatBackground.layoutParams as ConstraintLayout.LayoutParams
                         layoutParam.setMargins(
                             chatMarginLeft,
                             chatMarginTop + AndroidResource.dpToPx(6),
@@ -483,10 +466,8 @@ internal class ChatRecyclerAdapter(
                         val spaceRemover = Pattern.compile("[\\s]")
                         val inputNoString = spaceRemover.matcher(message.message)
                             .replaceAll(Matcher.quoteReplacement(""))
-                        val isOnlyStickers =
-                            inputNoString.findIsOnlyStickers().matches() || message.message.findImages().matches()
-                        val atLeastOneSticker =
-                            inputNoString.findStickers().find() || message.message.findImages().matches()
+                        val isOnlyStickers = inputNoString.findIsOnlyStickers().matches() || message.message.findImages().matches()
+                        val atLeastOneSticker = inputNoString.findStickers().find() || message.message.findImages().matches()
                         val numberOfStickers = message.message.findStickers().countMatches()
                         val isExternalImage = message.message.findImages().matches()
 
@@ -495,40 +476,21 @@ internal class ChatRecyclerAdapter(
                         when {
                             isExternalImage -> {
                                 val s = SpannableString(message.message)
-                                replaceWithImages(
-                                    s,
-                                    context,
-                                    null,
-                                    callback,
-                                    AndroidResource.dpToPx(stickerSize)
-                                ) {
+                                replaceWithImages(s, context, null, callback, AndroidResource.dpToPx(stickerSize)) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             (isOnlyStickers && numberOfStickers < 2) -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(
-                                    s,
-                                    context,
-                                    stickerPackRepository,
-                                    null,
-                                    callback,
-                                    AndroidResource.dpToPx(stickerSize)
-                                ) {
+                                replaceWithStickers(s, context, stickerPackRepository, null, callback, AndroidResource.dpToPx(stickerSize)) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(
-                                    s,
-                                    context,
-                                    stickerPackRepository,
-                                    null,
-                                    callback
-                                ) {
+                                replaceWithStickers(s, context, stickerPackRepository, null, callback) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
@@ -537,36 +499,34 @@ internal class ChatRecyclerAdapter(
                         }
 
                         var imageView: ImageView
-                        val size =
-                            context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_display_size)
+                        val size = context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_display_size)
                         rel_reactions_lay.removeAllViews()
 
                         // TODO need to check for updating list and work on remove the reaction with animation
-                        emojiCountMap.keys.filter { return@filter (emojiCountMap[it] ?: 0) > 0 }
-                            .forEachIndexed { index, reactionId ->
-                                if ((emojiCountMap[reactionId] ?: 0) > 0) {
-                                    imageView = ImageView(context)
-                                    val reaction = chatReactionRepository.getReaction(reactionId)
-                                    reaction?.let { reaction ->
-                                        imageView.contentDescription = reaction.name
-                                        imageView.loadImage(reaction.file, size)
-                                        val paramsImage: FrameLayout.LayoutParams =
-                                            FrameLayout.LayoutParams(size, size)
-                                        paramsImage.gravity = Gravity.LEFT
-                                        val left = ((size / 1.2) * (index)).toInt()
-                                        paramsImage.setMargins(left, 0, 0, 0)
-                                        rel_reactions_lay.addView(imageView, paramsImage)
-                                        imageView.bringToFront()
-                                        imageView.invalidate()
+                        emojiCountMap.keys.filter { return@filter (emojiCountMap[it] ?: 0) > 0 }.forEachIndexed { index, reactionId ->
+                            if ((emojiCountMap[reactionId] ?: 0) > 0) {
+                                imageView = ImageView(context)
+                                val reaction = chatReactionRepository.getReaction(reactionId)
+                                reaction?.let { reaction ->
+                                    imageView.contentDescription = reaction.name
+                                    imageView.loadImage(reaction.file, size)
+                                    val paramsImage: FrameLayout.LayoutParams =
+                                        FrameLayout.LayoutParams(size, size)
+                                    paramsImage.gravity = Gravity.LEFT
+                                    val left = ((size / 1.2) * (index)).toInt()
+                                    paramsImage.setMargins(left, 0, 0, 0)
+                                    rel_reactions_lay.addView(imageView, paramsImage)
+                                    imageView.bringToFront()
+                                    imageView.invalidate()
 
-                                        myChatMessageReaction?.let {
-                                            if (it.emojiId == reaction.id) {
-                                                imageView.startAnimation(bounceAnimation)
-                                            }
+                                    myChatMessageReaction?.let {
+                                        if (it.emojiId == reaction.id) {
+                                            imageView.startAnimation(bounceAnimation)
                                         }
                                     }
                                 }
                             }
+                        }
                         txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
                         val sumCount = emojiCountMap.values.sum()
                         if (emojiCountMap.isNotEmpty() && sumCount > 0) {

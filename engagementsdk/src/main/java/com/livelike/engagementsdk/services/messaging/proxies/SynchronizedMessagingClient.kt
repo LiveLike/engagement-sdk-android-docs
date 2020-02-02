@@ -59,13 +59,13 @@ internal class SynchronizedMessagingClient(
                 return
             }
             else -> {
-                //Adding the check for similar message ,it is occuring if user get message
+                // Adding the check for similar message ,it is occuring if user get message
                 // from history and also receive message from pubnub listener
-                //checking right now is based on id
+                // checking right now is based on id
                 val currentChatMessageId = event.message.get("id")?.asString
                 val foundMsg = queue.elements.find {
                     val msgId = it.message.get("id")?.asString
-                    return@find msgId!=null && currentChatMessageId!=null && msgId == currentChatMessageId
+                    return@find msgId != null && currentChatMessageId != null && msgId == currentChatMessageId
                 }
                 if (foundMsg == null)
                     queue.enqueue(event)
