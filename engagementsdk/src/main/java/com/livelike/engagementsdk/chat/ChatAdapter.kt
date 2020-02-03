@@ -33,6 +33,7 @@ import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.stickerKeyboard.clearTarget
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findImages
 import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
@@ -476,7 +477,7 @@ internal class ChatRecyclerAdapter(
                         when {
                             isExternalImage -> {
                                 val s = SpannableString(message.message)
-                                replaceWithImages(s, context, null, callback, AndroidResource.dpToPx(stickerSize)) {
+                                replaceWithImages(s, context, null, callback, AndroidResource.dpToPx(stickerSize), message.id) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
@@ -495,7 +496,10 @@ internal class ChatRecyclerAdapter(
                                     chatMessage.text = s
                                 }
                             }
-                            else -> chatMessage.text = message.message
+                            else -> {
+                                clearTarget(message.id, context)
+                                chatMessage.text = message.message
+                            }
                         }
 
                         var imageView: ImageView

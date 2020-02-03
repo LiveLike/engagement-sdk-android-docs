@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.stickerKeyboard
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.text.SpannableString
@@ -122,7 +123,15 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
     }
 }
 
-fun replaceWithImages(s: Spannable?, context: Context, edittext_chat_message: EditText?,callback: MultiCallback?, size: Int = 50, onMatch: (() -> Unit)? = null) {
+var targetDrawables = mutableMapOf<String, CustomTarget<Drawable>?>()
+var targetByteArrays = mutableMapOf<String, CustomTarget<ByteArray>?>()
+
+fun clearTarget(id: String, context: Context){
+    Glide.with(context).clear(targetByteArrays[id])
+    Glide.with(context).clear(targetDrawables[id])
+}
+
+fun replaceWithImages(s: Spannable?, context: Context, edittext_chat_message: EditText?,callback: MultiCallback?, size: Int = 50, id : String = "", onMatch: (() -> Unit)? = null) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
     existingSpans?.forEach { imageSpan ->
@@ -130,6 +139,8 @@ fun replaceWithImages(s: Spannable?, context: Context, edittext_chat_message: Ed
     }
 
     val matcher = s.toString().findImages()
+
+    clearTarget(id, context)
 
     while (matcher.find()) {
 
@@ -140,7 +151,7 @@ fun replaceWithImages(s: Spannable?, context: Context, edittext_chat_message: Ed
         val end = matcher.end()
 
         if (url.contains(".gif")) {
-            Glide.with(context)
+            targetByteArrays[id] = Glide.with(context)
                 .`as`(ByteArray::class.java)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -167,7 +178,7 @@ fun replaceWithImages(s: Spannable?, context: Context, edittext_chat_message: Ed
                     }
                 })
         } else {
-            Glide.with(context)
+            targetDrawables[id] = Glide.with(context)
                 .load(url)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(object : CustomTarget<Drawable>(size, size) {
