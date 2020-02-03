@@ -52,15 +52,15 @@ import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.message_actions.PNRemoveMessageActionResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
 
@@ -388,38 +388,40 @@ internal class PubnubChatMessagingClient(
 
     internal fun loadMessagesWithReactions(
         channel: String,
-        timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
+        timeToken: Long = 0L,
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
-        pubnub.time().async(object :PNCallback<PNTimeResult>(){
-            override fun onResponse(result: PNTimeResult?, status: PNStatus) {
-                pubnub.fetchMessages()
-                    .channels(listOf(channel))
-                    .includeMeta(true)
-                    .maximumPerChannel(chatHistoyLimit)
-                    .start(result?.timetoken?:timeToken)
-                    .includeMessageActions(true)
-                    .async(object : PNCallback<PNFetchMessagesResult>() {
-                        override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
-                            if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
-                                result.channels?.get(channel)?.reversed()?.forEach {
-                                    val jsonObject = it.message.asJsonObject.apply {
-                                        addProperty("pubnubToken", it.timetoken)
-                                    }
-                                    processPubnubChatEvent(
-                                        jsonObject,
-                                        channel,
-                                        this@PubnubChatMessagingClient,
-                                        it.timetoken,
-                                        it.actions
-                                    )
+        if (timeToken == 0L)
+            pubnub.time().async(object : PNCallback<PNTimeResult>() {
+                override fun onResponse(result: PNTimeResult?, status: PNStatus) {
+                    loadMessagesWithReactions(channel,result?.timetoken ?: timeToken,chatHistoyLimit)
+                }
+            }) else
+            pubnub.fetchMessages()
+                .channels(listOf(channel))
+                .includeMeta(true)
+                .maximumPerChannel(chatHistoyLimit)
+                .start(timeToken)
+                .includeMessageActions(true)
+                .async(object : PNCallback<PNFetchMessagesResult>() {
+                    override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
+                        if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
+                            result.channels?.get(channel)?.reversed()?.forEach {
+                                val jsonObject = it.message.asJsonObject.apply {
+                                    addProperty("pubnubToken", it.timetoken)
                                 }
+                                processPubnubChatEvent(
+                                    jsonObject,
+                                    channel,
+                                    this@PubnubChatMessagingClient,
+                                    it.timetoken,
+                                    it.actions
+                                )
                             }
-                            sendLoadingCompletedEvent(channel)
                         }
-                    })
-            }
-        })
+                        sendLoadingCompletedEvent(channel)
+                    }
+                })
     }
 
     @Deprecated("use loadMessagesWithReactions")
