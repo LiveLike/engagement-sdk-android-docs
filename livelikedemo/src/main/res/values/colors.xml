@@ -14,5 +14,6 @@
     <color name="livelike_poll_bar_gradient_right">#5290E8</color>
     <color name="livelike_neutral_bar_gradient_left">#666666</color>
     <color name="livelike_neutral_bar_gradient_right">#666666</color>
+    <color name="livelike_default_button_background_color">#323235</color>
 
 </resources>
