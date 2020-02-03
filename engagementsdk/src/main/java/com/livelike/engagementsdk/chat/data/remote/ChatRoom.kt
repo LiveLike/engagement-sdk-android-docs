@@ -15,7 +15,9 @@ internal data class ChatRoom(
     @SerializedName("id")
     val id: String,
     @SerializedName("url")
-    val url: String
+    val url: String,
+    @SerializedName("upload_url")
+    val uploadUrl: String
 )
 
 internal data class Channels(

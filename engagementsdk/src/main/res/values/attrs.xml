@@ -18,6 +18,11 @@
     <item name="livelike_chat_nickname_font"
         type="font">@font/roboto_bold</item>
 
+    <item name="livelike_chatMessage_timestamp_text_font"
+        type="font">@font/roboto_regular</item>
+
+
+
     <declare-styleable name="LiveLike_WidgetView">
         <attr name="winAnimation" format="string"/>
         <attr name="loseAnimation" format="string"/>
@@ -27,6 +32,7 @@
     <declare-styleable name="LiveLike_ChatView">
         <attr name="displayUserProfile" format="boolean" />
         <attr name="showStickerSend" format="boolean" />
+        <attr name="showMessageTime" format="boolean" />
         <attr name="usernameColor" format="color"/>
         <attr name="otherUsernameColor" format="color"/>
         <attr name="sendIconTintColor" format="color"/>
@@ -119,6 +125,10 @@
             <flag name="top" value="48" />
         </attr>
         <attr name="rankValueTextColor" format="color"/>
+        <attr name="stickerBackground" format="reference|color" />
+        <attr name="stickerTabBackground" format="reference|color" />
+        <attr name="stickerSelectedTabIndicatorColor" format="color" />
+        <attr name="stickerRecentEmptyTextColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="PointView">

@@ -16,9 +16,14 @@ data class LiveLikeChatMessage(val nickname: String = "", val userPic: String?, 
 
 internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
     // TODO will require to bump to major version as id needs to be string
-    return LiveLikeChatMessage(senderNickname, senderImageUrl, message, "", messageId.hashCode().toLong())
+    return LiveLikeChatMessage(senderNickname, senderImageUrl, message ?: "", "", messageId.hashCode().toLong())
 }
 
 internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
-    return LiveLikeChatMessage(senderDisplayName, senderDisplayPic, message, "", id.hashCode().toLong())
+    var epochTimeStamp = 0L
+    if (timetoken > 0) {
+        epochTimeStamp = timetoken / 10000
+        epochTimeStamp += 1
+    }
+    return LiveLikeChatMessage(senderDisplayName, senderDisplayPic, message, epochTimeStamp.toString(), id.hashCode().toLong())
 }

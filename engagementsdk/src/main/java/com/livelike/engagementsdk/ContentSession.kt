@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.services.network.Result
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
@@ -107,6 +108,9 @@ internal class ContentSession(
     // TODO remove proxy message listener by having pipe in chat data layers/chain that tranforms pubnub channel to room
     private var proxyMsgListener: MessageListener = object : MessageListener {
         override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
+            logDebug {
+                "ContentSession onNewMessage: ${message.message} timestamp:${message.timestamp}  chatRoomsSize:${chatRoomMap.size} chatRoomId:$chatRoom"
+            }
             for (chatRoomIdPair in chatRoomMap) {
                 if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
                     msgListener?.onNewMessage(chatRoomIdPair.key, message)
@@ -133,7 +137,6 @@ internal class ContentSession(
                     pair.first.accessToken,
                     pair.first.id,
                     analyticService,
-                    proxyMsgListener,
                     configuration.pubnubPublishKey
                 )
                 analyticService =
@@ -225,8 +228,9 @@ internal class ContentSession(
         }
         fetchChatRoom(chatRoomId) {
             val channel = it.channels.chat[CHAT_PROVIDER]
-            delay(1000)
             channel?.let { channel ->
+                wouldInitPrivateGroupSession(channel)
+                delay(500)
                 privateGroupPubnubClient?.addChannelSubscription(channel, timestamp)
             }
         }
@@ -246,16 +250,20 @@ internal class ContentSession(
         fetchChatRoom(chatRoomId) { chatRoom ->
             val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
             delay(500)
-            if (privateGroupPubnubClient == null) {
-                initializeChatMessaging(channel, syncEnabled = false, privateGroupsChat = true)
-            } else {
-                privateGroupPubnubClient?.activeChatRoom = channel
-            }
+            wouldInitPrivateGroupSession(channel)
+            privateGroupPubnubClient?.activeChatRoom = channel
             chatViewModel.apply {
                 flushMessages()
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }
+        }
+    }
+
+    @Synchronized
+    private fun wouldInitPrivateGroupSession(channel: String) {
+        if (privateGroupPubnubClient == null) {
+            initializeChatMessaging(channel, syncEnabled = true, privateGroupsChat = true)
         }
     }
 
@@ -348,7 +356,7 @@ internal class ContentSession(
     }
 
     // ///// Chat. ///////
-
+    @Synchronized
     private fun initializeChatMessaging(
         chatChannel: String?,
         syncEnabled: Boolean = true,
@@ -371,10 +379,9 @@ internal class ContentSession(
 
         chatClient = chatClient?.toChatQueue()
             ?.apply {
-                if (privateGroupsChat) {
-                    subscribe(chatRoomMap.keys.toList().filter { it != chatChannel })
-                    privateGroupPubnubClient?.activeChatRoom = chatChannel
-                } else {
+                msgListener = proxyMsgListener
+                // check issue here
+                if (!privateGroupsChat) {
                     subscribe(listOf(chatChannel))
                 }
                 this.renderer = chatViewModel
@@ -388,6 +395,7 @@ internal class ContentSession(
         logVerbose { "Pausing the Session" }
         widgetClient?.stop()
         chatClient?.stop()
+        pubnubClientForMessageCount?.stop()
         analyticService.trackLastChatStatus(false)
         analyticService.trackLastWidgetStatus(false)
     }
@@ -396,6 +404,7 @@ internal class ContentSession(
         logVerbose { "Resuming the Session" }
         widgetClient?.start()
         chatClient?.start()
+        pubnubClientForMessageCount?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticService.trackLastChatStatus(true)
         analyticService.trackLastWidgetStatus(true)
@@ -408,6 +417,9 @@ internal class ContentSession(
             destroy()
         }
         widgetClient?.run {
+            destroy()
+        }
+        pubnubClientForMessageCount?.run {
             destroy()
         }
         currentWidgetViewStream.clear()

@@ -239,17 +239,30 @@ class ExoPlayerActivity : AppCompatActivity() {
             )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
-                    (application as LiveLikeApplication).sdk.createContentSession(channel.llProgram.toString())
+                    (application as LiveLikeApplication).sdk.createContentSession(
+                        channel.llProgram.toString(),
+                        (application as LiveLikeApplication).timecodeGetter
+                    )
                 for (pair in chatRoomLastTimeStampMap) {
                     val chatRoomId = pair.key
-                    val timestamp = (chatRoomLastTimeStampMap.get(chatRoomId)
-                        ?: Calendar.getInstance().timeInMillis)
+                    val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
+                        ?: Calendar.getInstance().timeInMillis))
+                    logsPreview.text =
+                        "Get Count: $timestamp roomId: $chatRoomId \n\n ${logsPreview.text}"
+                    fullLogs.text =
+                        "Get Count: $timestamp roomId: $chatRoomId \n\n ${fullLogs.text}"
+                    Log.v("Here", "Getting Count Read channel : $chatRoomId timestamp: $timestamp")
                     privateGroupChatsession?.getMessageCount(
                         chatRoomId,
                         timestamp,
                         object :
                             LiveLikeCallback<Long>() {
                             override fun onResponse(result: Long?, error: String?) {
+                                logsPreview.text =
+                                    "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
+                                fullLogs.text =
+                                    "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${fullLogs.text}"
+                                Log.v("Here", "Count Read channel : $chatRoomId lasttimestamp:$timestamp count: $result")
                                 result?.let {
                                     messageCount[chatRoomId] =
                                         (messageCount[chatRoomId] ?: 0) + result
@@ -258,11 +271,26 @@ class ExoPlayerActivity : AppCompatActivity() {
                         })
                 }
             }
+            chatRoomIds.forEach {
+                privateGroupChatsession?.joinChatRoom(it)
+            }
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
+                    Log.v("Here", "onNewMessage: ${message.message}  timestamp:${message.timestamp}")
+                    logsPreview.text =
+                        "New Message :${message.message} timestamp:${message.timestamp} \n\n ${logsPreview.text}"
+                    fullLogs.text =
+                        "New Message :${message.message} timestamp:${message.timestamp} \n\n ${fullLogs.text}"
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = 0 // reset unread message count
-                        chatRoomLastTimeStampMap[chatRoom] = Calendar.getInstance().timeInMillis
+                        // Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
+                        if (message.timestamp.isEmpty()) {
+                            chatRoomLastTimeStampMap[chatRoom] =
+                                Calendar.getInstance().timeInMillis
+                        } else {
+                            chatRoomLastTimeStampMap[chatRoom] =
+                                (message.timestamp.toLong())
+                        }
                         getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit()
                             .putString(
                                 PREF_CHAT_ROOM_LAST_TIME,
@@ -280,7 +308,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             "channel : ${it.key}, unread : ${it.value} \n\n ${logsPreview.text}"
                         fullLogs.text =
                             "channel : ${it.key}, unread : ${it.value} \n\n ${fullLogs.text}"
-                        Log.e("Here", "channel : ${it.key}, unread : ${it.value}")
+                        Log.v("Here", "channel : ${it.key}, unread : ${it.value}")
                     }
                 }
             })
@@ -289,6 +317,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 val emptyView =
                     LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
                 chat_view.emptyChatBackgroundView = emptyView
+                chat_view.allowMediaFromKeyboard = false
             }
 
             chat_view.setSession(session)

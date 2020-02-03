@@ -19,6 +19,7 @@ class ChatViewThemeAttributes {
             showChatAvatarLogo = getBoolean(R.styleable.LiveLike_ChatView_showChatAvatarLogo, false)
             chatAvatarCircle = getBoolean(R.styleable.LiveLike_ChatView_chatAvatarCircle, false)
             showStickerSend = getBoolean(R.styleable.LiveLike_ChatView_showStickerSend, true)
+            showMessageDateTime = getBoolean(R.styleable.LiveLike_ChatView_showMessageTime, true)
             chatNickNameColor = getColor(
                 R.styleable.LiveLike_ChatView_usernameColor,
                 ContextCompat.getColor(context, R.color.livelike_openChatNicknameMe)
@@ -441,9 +442,56 @@ class ChatViewThemeAttributes {
                 R.styleable.LiveLike_ChatView_chatMarginBottom,
                 AndroidResource.dpToPx(4)
             )
+
+            val stickerBackgroundValue = TypedValue()
+            getValue(
+                R.styleable.LiveLike_ChatView_stickerBackground,
+                stickerBackgroundValue
+            )
+            stickerBackground = when (stickerBackgroundValue.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                    context,
+                    getResourceId(
+                        R.styleable.LiveLike_ChatView_stickerBackground,
+                        android.R.color.transparent
+                    )
+                )
+                TypedValue.TYPE_NULL -> ColorDrawable(
+                    ContextCompat.getColor(context, android.R.color.transparent)
+                )
+                else -> ColorDrawable(stickerBackgroundValue.data)
+            }
+
+            val stickerTabBackgroundValue = TypedValue()
+            getValue(
+                R.styleable.LiveLike_ChatView_stickerTabBackground,
+                stickerTabBackgroundValue
+            )
+            stickerTabBackground = when (stickerTabBackgroundValue.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                    context,
+                    getResourceId(
+                        R.styleable.LiveLike_ChatView_stickerTabBackground,
+                        android.R.color.transparent
+                    )
+                )
+                TypedValue.TYPE_NULL -> ColorDrawable(
+                    ContextCompat.getColor(context, android.R.color.transparent)
+                )
+                else -> ColorDrawable(stickerTabBackgroundValue.data)
+            }
+            stickerSelectedTabIndicatorColor = getColor(
+                R.styleable.LiveLike_ChatView_stickerSelectedTabIndicatorColor,
+                ContextCompat.getColor(context, android.R.color.white)
+            )
+            stickerRecentEmptyTextColor = getColor(
+                R.styleable.LiveLike_ChatView_stickerRecentEmptyTextColor,
+                ContextCompat.getColor(context, R.color.livelike_sticker_recent_empty_text_color)
+            )
         }
     }
 
+    var showMessageDateTime: Boolean = true
     var chatBubblePaddingLeft: Int = 0
     var chatBubblePaddingRight: Int = 0
     var chatBubblePaddingTop: Int = 0
@@ -506,4 +554,8 @@ class ChatViewThemeAttributes {
     var chatAvatarWidth: Int = AndroidResource.dpToPx(32)
     var chatAvatarHeight: Int = AndroidResource.dpToPx(32)
     var chatAvatarGravity: Int = Gravity.NO_GRAVITY
+    var stickerBackground: Drawable? = null
+    var stickerTabBackground: Drawable? = null
+    var stickerSelectedTabIndicatorColor: Int = Color.WHITE
+    var stickerRecentEmptyTextColor: Int = Color.WHITE
 }

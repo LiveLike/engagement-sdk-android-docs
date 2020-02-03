@@ -207,7 +207,7 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
     }
 
     private void performDismiss() {
-        // Animate the dismissed view to zero-height and then fire the dismiss callback.
+        // Animate the dismissed view to zero-image_height and then fire the dismiss callback.
         // This triggers layout on each animation frame; in the future we may want to do something
         // smarter and more performant.
 

@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.accessibility.AccessibilityEvent
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -91,6 +92,9 @@ internal class ChatActionsPopupView(
             val countView = TextView(context)
             val imageView = ImageView(context)
             imageView.id = View.generateViewId()
+            imageView.isFocusable = true
+            imageView.contentDescription = reaction.name
+            imageView.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
             imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
 
             userReaction?.let {
@@ -146,6 +150,9 @@ internal class ChatActionsPopupView(
             } else {
                 View.INVISIBLE
             }
+        contentView.chat_reaction_background_card.postDelayed({
+            contentView.chat_reaction_background_card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+        }, 500)
     }
 }
 internal interface SelectReactionListener {

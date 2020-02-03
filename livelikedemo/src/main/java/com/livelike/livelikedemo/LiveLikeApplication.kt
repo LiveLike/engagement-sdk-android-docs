@@ -21,6 +21,11 @@ class LiveLikeApplication : Application() {
 
     lateinit var channelManager: ChannelManager
     lateinit var player: VideoPlayer
+    val timecodeGetter = object : EngagementSDK.TimecodeGetter {
+        override fun getTimecode(): EpochTime {
+            return EpochTime(player.getPDT())
+        }
+    }
     private var session: LiveLikeContentSession? = null
     lateinit var sdk: EngagementSDK
     lateinit var sdk2: EngagementSDK
@@ -70,11 +75,7 @@ class LiveLikeApplication : Application() {
     ): LiveLikeContentSession {
         if (session == null || session?.contentSessionId() != sessionId) {
             session?.close()
-            session = sdk.createContentSession(sessionId, object : EngagementSDK.TimecodeGetter {
-                override fun getTimecode(): EpochTime {
-                    return EpochTime(player.getPDT())
-                }
-            })
+            session = sdk.createContentSession(sessionId, timecodeGetter)
         }
         session!!.widgetInterceptor = widgetInterceptor
         return session as LiveLikeContentSession

@@ -18,12 +18,13 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.view.inputmethod.EditorInfo
+import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.ContentSession
+import com.livelike.engagementsdk.DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.KeyboardHideReason
 import com.livelike.engagementsdk.KeyboardType
@@ -31,6 +32,7 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
@@ -38,6 +40,9 @@ import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
+import com.livelike.engagementsdk.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.stickerKeyboard.findImages
+import com.livelike.engagementsdk.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
@@ -45,6 +50,7 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
 import kotlin.math.max
 import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
@@ -72,6 +78,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import pl.droidsonroids.gif.MultiCallback
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -84,7 +91,7 @@ import kotlinx.coroutines.launch
  *  ```
  *
  */
-class ChatView(context: Context, private val attrs: AttributeSet?) :
+open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
@@ -101,6 +108,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
     private var currentUser: LiveLikeUser? = null
+
+    var allowMediaFromKeyboard: Boolean = true
+        set(value) {
+            field = value
+            edittext_chat_message.allowMediaFromKeyboard = value
+        }
 
     var emptyChatBackgroundView: View? = null
         set(view) {
@@ -121,6 +134,8 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private val viewModel: ChatViewModel?
         get() = (session.getTargetObject() as ContentSession?)?.chatViewModel
+
+    val callback = MultiCallback(true)
 
     init {
         context.scanForActivity()?.window?.setSoftInputMode(
@@ -204,6 +219,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             )
             initEmptyView()
         }
+        callback.addView(edittext_chat_message)
 
         swipeToRefresh.setOnRefreshListener {
             viewModel?.loadPreviousMessages()
@@ -224,6 +240,16 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
+    /**
+     * unix timestamp is passed as param
+     * returns the formatted string to display
+     */
+    open fun formatMessageDateTime(messageTimeStamp: Long): String {
+        var dateTime = Date()
+        dateTime.time = messageTimeStamp
+        return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
+    }
+
     fun setSession(session: LiveLikeContentSession) {
         if (this.session === session) return // setting it multiple times same view with same session have a weird behaviour will debug later.
         hideGamification()
@@ -233,6 +259,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         viewModel?.apply {
             chatAdapter.chatViewThemeAttribute = chatAttribute
+            chatAdapter.messageTimeFormatter = { time ->
+                formatMessageDateTime(time)
+            }
             initStickerKeyboard(sticker_keyboard, this)
 
             setDataSource(chatAdapter)
@@ -319,14 +348,36 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
 
             edittext_chat_message.addTextChangedListener(object : TextWatcher {
+                var containsImage = false
                 override fun afterTextChanged(s: Editable?) {
-                    stickerPackRepository?.let { stickerPackRepository ->
-                        replaceWithStickers(
+                    val matcher = s.toString().findImages()
+                    if (matcher.find()) {
+                        containsImage = true
+                        replaceWithImages(
                             s as Spannable,
                             this@ChatView.context,
-                            stickerPackRepository,
-                            edittext_chat_message, null
+                            edittext_chat_message, callback
                         )
+                        // cleanup before the image
+                        if (matcher.start()> 0) edittext_chat_message.text?.delete(0, matcher.start())
+
+                        // cleanup after the image
+                        if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
+                        // Move to end of line
+                        edittext_chat_message.setSelection(edittext_chat_message.text?.length ?: 0)
+                    } else if (containsImage) {
+                        containsImage = false
+                        s?.length?.let { edittext_chat_message.text?.delete(0, it) }
+                    } else {
+                        containsImage = false
+                        stickerPackRepository?.let { stickerPackRepository ->
+                            replaceWithStickers(
+                                s as Spannable,
+                                this@ChatView.context,
+                                stickerPackRepository,
+                                edittext_chat_message, null
+                            )
+                        }
                     }
                 }
 
@@ -335,11 +386,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     start: Int,
                     count: Int,
                     after: Int
-                ) {
-                }
+                ) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                }
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) = Unit
             })
 
             button_emoji.setOnClickListener {
@@ -363,6 +417,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         stickerKeyboardView: StickerKeyboardView,
         chatViewModel: ChatViewModel
     ) {
+        stickerKeyboardView.initTheme(chatAttribute)
         uiScope.launch {
             chatViewModel.stickerPackRepositoryFlow.collect { stickerPackRepository ->
                 stickerKeyboardView.setProgram(stickerPackRepository) {
@@ -372,6 +427,7 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                     } else {
                         button_emoji?.visibility = View.VISIBLE
                     }
+                    viewModel?.chatAdapter?.notifyDataSetChanged()
                 }
                 // used to pass the shortcode to the keyboard
                 stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
@@ -379,9 +435,9 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         val textToInsert = ":${sticker.shortcode}:"
                         val start = max(edittext_chat_message.selectionStart, 0)
                         val end = max(edittext_chat_message.selectionEnd, 0)
-                        if (edittext_chat_message.text.length + textToInsert.length < 150) {
+                        if (edittext_chat_message.text!!.length + textToInsert.length < 250) {
                             // replace selected text or start where the cursor is
-                            edittext_chat_message.text.replace(
+                            edittext_chat_message.text?.replace(
                                 min(start, end), max(start, end),
                                 textToInsert, 0, textToInsert.length
                             )
@@ -457,10 +513,12 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
             val y = ev.rawY + v.top - scrcoords[1]
             val outsideStickerKeyboardBound =
                 (v.bottom - sticker_keyboard.height - button_chat_send.height)
-            // Added check for height greater than 0 so bound position for touch should be above the send icon
-            if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
-                hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
-                hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+            // Added check for image_height greater than 0 so bound position for touch should be above the send icon
+            if (!edittext_chat_message.isTouching) {
+                if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
+                    hideStickerKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                    hideKeyboard(KeyboardHideReason.TAP_OUTSIDE)
+                }
             }
         }
         return super.dispatchTouchEvent(ev)
@@ -517,12 +575,14 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
 
             edittext_chat_message.apply {
                 addTextChangedListener(object : TextWatcher {
+                    var previousText: CharSequence = ""
                     override fun beforeTextChanged(
                         s: CharSequence,
                         start: Int,
                         count: Int,
                         after: Int
                     ) {
+                        previousText = s
                     }
 
                     override fun onTextChanged(
@@ -549,17 +609,6 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                         session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
-                }
-
-                // Send message on tap Enter
-                setOnEditorActionListener { _, actionId, event ->
-                    if ((event != null && event.keyCode == KeyEvent.KEYCODE_ENTER) ||
-                        (actionId == EditorInfo.IME_ACTION_SEND) ||
-                        (actionId == EditorInfo.IME_ACTION_DONE)
-                    ) {
-                        sendMessageNow()
-                    }
-                    true
                 }
             }
         }
@@ -594,6 +643,13 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
         loadingSpinner.visibility = View.GONE
         chatInput.visibility = View.VISIBLE
         chatdisplay.visibility = View.VISIBLE
+        wouldUpdateChatInputAccessibiltyFocus()
+    }
+
+    private fun wouldUpdateChatInputAccessibiltyFocus() {
+        chatInput.postDelayed({
+            edittext_chat_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+        }, 500)
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
@@ -622,24 +678,32 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun sendMessageNow() {
-        if (edittext_chat_message.text.isBlank()) {
+        if (edittext_chat_message.text.isNullOrBlank()) {
             // Do nothing if the message is blank or empty
             return
         }
         val timeData = session?.getPlayheadTime() ?: EpochTime(0)
 
+        // TODO all this can be moved to view model easily
         ChatMessage(
+            PubnubChatEventType.MESSAGE_CREATED,
             viewModel?.currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             edittext_chat_message.text.toString(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
-            isFromMe = true
+            isFromMe = true,
+            image_width = 100,
+            image_height = 100
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                chatListener?.onChatMessageSend(it, timeData)
+                if (it.message.findImages().countMatches()> 0) {
+                    uploadAndPostImage(context, it, timeData)
+                } else {
+                    chatListener?.onChatMessageSend(it, timeData)
+                }
                 edittext_chat_message.setText("")
                 snapToLive()
             }
@@ -705,6 +769,11 @@ class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
             }
         }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        wouldUpdateChatInputAccessibiltyFocus()
     }
 
     override fun onDetachedFromWindow() {

@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import java.util.UUID
 
 internal interface ChatEventListener {
@@ -25,6 +26,7 @@ internal interface ChatRenderer {
  *  @param timeStamp Message timeStamp.
  */
 internal data class ChatMessage(
+    var messageEvent: PubnubChatEventType,
     var channel: String,
     var message: String,
     val senderId: String,
@@ -34,11 +36,15 @@ internal data class ChatMessage(
     // PDT video time //NOt using right now for later use FYI @shivansh @Willis
     val timeStamp: String? = null,
     var pubnubMessageToken: Long? = null,
+    var imageUrl: String? = null,
+    var badgeUrlImage: String? = null,
     var isFromMe: Boolean = false,
     var myChatMessageReaction: ChatMessageReaction? = null,
     var emojiCountMap: MutableMap<String, Int> = mutableMapOf(),
     // time of the message
-    var timetoken: Long = 0L
+    var timetoken: Long = 0L,
+    var image_width: Int? = 100,
+    var image_height: Int? = 100
 ) {
     fun toReportMessageJson(): String {
         return """{
@@ -49,9 +55,29 @@ internal data class ChatMessage(
                     "message": "$message"
                 }""".trimIndent()
     }
+
+    override fun equals(other: Any?): Boolean {
+        return id == (other as? ChatMessage)?.id
+    }
+
+    override fun hashCode(): Int {
+        return id.hashCode()
+    }
+
+    fun getUnixTimeStamp(): Long? {
+        if (timetoken == 0L) {
+            return null
+        }
+        return try {
+            timetoken / 10000
+        } catch (ex: ArithmeticException) {
+            null
+        }
+    }
 }
 
 internal data class ChatMessageReaction(
     val emojiId: String,
     var pubnubActionToken: Long? = null
 )
+internal const val CHAT_MESSAGE_IMAGE_TEMPLATE = ":message:"
