@@ -134,12 +134,12 @@ internal class ChatViewModel(
     }
 
     override fun removeMessageReaction(messagePubnubToken: Long, emojiId: String) {
-        messageList.forEach { chatMessage ->
+        messageList.forEachIndexed { index, chatMessage ->
             chatMessage.apply {
                 if (this.timetoken == messagePubnubToken) {
                     emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) - 1
-                    uiScope.launch { chatAdapter.notifyDataSetChanged() }
-                    return@forEach
+                    uiScope.launch { chatAdapter.notifyItemChanged(index) }
+                    return@forEachIndexed
                 }
                 // remember case not handled for now if same user removes its reaction while using 2 devices
             }
@@ -152,7 +152,7 @@ internal class ChatViewModel(
         chatMessageReaction: ChatMessageReaction
     ) {
 
-        messageList.forEach { chatMessage ->
+        messageList.forEachIndexed { index, chatMessage ->
             chatMessage.apply {
                 if (this.timetoken == messagePubnubToken) {
                     if (isOwnReaction) {
@@ -162,9 +162,9 @@ internal class ChatViewModel(
                     } else {
                         val emojiId = chatMessageReaction.emojiId
                         emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) + 1
-                        uiScope.launch { chatAdapter.notifyDataSetChanged() }
+                        uiScope.launch { chatAdapter.notifyItemChanged(index) }
                     }
-                    return@forEach
+                    return@forEachIndexed
                 }
             }
         }
