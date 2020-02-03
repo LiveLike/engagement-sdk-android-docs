@@ -43,6 +43,7 @@ import com.pubnub.api.enums.PNReconnectionPolicy
 import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
+import com.pubnub.api.models.consumer.PNTimeResult
 import com.pubnub.api.models.consumer.history.PNFetchMessageItem
 import com.pubnub.api.models.consumer.history.PNFetchMessagesResult
 import com.pubnub.api.models.consumer.history.PNHistoryResult
@@ -390,31 +391,35 @@ internal class PubnubChatMessagingClient(
         timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
-        pubnub.fetchMessages()
-            .channels(listOf(channel))
-            .includeMeta(true)
-            .maximumPerChannel(chatHistoyLimit)
-            .start(timeToken)
-            .includeMessageActions(true)
-            .async(object : PNCallback<PNFetchMessagesResult>() {
-                override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
-                    if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
-                        result.channels?.get(channel)?.reversed()?.forEach {
-                            val jsonObject = it.message.asJsonObject.apply {
-                                addProperty("pubnubToken", it.timetoken)
+        pubnub.time().async(object :PNCallback<PNTimeResult>(){
+            override fun onResponse(result: PNTimeResult?, status: PNStatus) {
+                pubnub.fetchMessages()
+                    .channels(listOf(channel))
+                    .includeMeta(true)
+                    .maximumPerChannel(chatHistoyLimit)
+                    .start(result?.timetoken?:timeToken)
+                    .includeMessageActions(true)
+                    .async(object : PNCallback<PNFetchMessagesResult>() {
+                        override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
+                            if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
+                                result.channels?.get(channel)?.reversed()?.forEach {
+                                    val jsonObject = it.message.asJsonObject.apply {
+                                        addProperty("pubnubToken", it.timetoken)
+                                    }
+                                    processPubnubChatEvent(
+                                        jsonObject,
+                                        channel,
+                                        this@PubnubChatMessagingClient,
+                                        it.timetoken,
+                                        it.actions
+                                    )
+                                }
                             }
-                            processPubnubChatEvent(
-                                jsonObject,
-                                channel,
-                                this@PubnubChatMessagingClient,
-                                it.timetoken,
-                                it.actions
-                            )
+                            sendLoadingCompletedEvent(channel)
                         }
-                    }
-                    sendLoadingCompletedEvent(channel)
-                }
-            })
+                    })
+            }
+        })
     }
 
     @Deprecated("use loadMessagesWithReactions")
