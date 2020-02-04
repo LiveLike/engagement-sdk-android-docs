@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             val currentNetworkInfo =
                 intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
             if (currentNetworkInfo.isConnected) {
+                (application as LiveLikeApplication).initSDK()
                 channelManager.loadClientConfig()
             }
         }
@@ -59,6 +60,7 @@ class MainActivity : AppCompatActivity() {
             cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network?) {
                     super.onAvailable(network)
+                    (application as LiveLikeApplication).initSDK()
                     channelManager.loadClientConfig()
                 }
 
