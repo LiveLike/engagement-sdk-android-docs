@@ -28,7 +28,8 @@
         <item name="chatBubbleMarginLeft">5dp</item>
         <item name="chatAvatarMarginLeft">13dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
-        <item name="chatReactionRadius">8dp</item>
+        <item name="chatReactionRadius">12dp</item>
+        <item name="chatSelectedReactionRadius">12dp</item>
         <item name="chatBubbleBackground">@drawable/ic_chat_message_bubble_rounded_rectangle</item>
         <item name="chatReactionMessageBubbleHighlightedBackground">@drawable/ic_chat_message_highlighted_bubble_rounded_rectangle</item>
     </style>
@@ -58,6 +59,7 @@
         <item name="chatReactionYPosition">25dp</item>
         <item name="chatReactionElevation">6dp</item>
         <item name="chatReactionRadius">20dp</item>
+        <item name="chatSelectedReactionRadius">14dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
         <item name="chatReactionDisplayCountColor">@android:color/black</item>

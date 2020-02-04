@@ -314,6 +314,10 @@ class ChatViewThemeAttributes {
                 R.styleable.LiveLike_ChatView_chatReactionRadius,
                 AndroidResource.dpToPx(0)
             ).toFloat()
+            chatSelectedReactionRadius = getDimensionPixelSize(
+                R.styleable.LiveLike_ChatView_chatSelectedReactionRadius,
+                AndroidResource.dpToPx(0)
+            ).toFloat()
             chatReactionPadding =
                 getDimensionPixelSize(
                     R.styleable.LiveLike_ChatView_chatReactionPadding,
@@ -560,6 +564,7 @@ class ChatViewThemeAttributes {
     var chatReactionY: Int = 0
     var chatReactionElevation: Float = 4f
     var chatReactionRadius: Float = 4f
+    var chatSelectedReactionRadius: Float = 4f
     var chatReactionPadding: Int = 0
     var showChatAvatarLogo: Boolean = false
     var chatAvatarMarginRight: Int = AndroidResource.dpToPx(3)

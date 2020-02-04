@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.CardView
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -97,6 +99,9 @@ internal class ChatActionsPopupView(
             contentView.findViewById<LinearLayout>(R.id.reaction_panel_interaction_box)
         reactionsBox.removeAllViews()
         chatReactionRepository.reactionList?.forEach { reaction ->
+            val cardView = CardView(context)
+            cardView.cardElevation = 0f
+            cardView.setContentPadding(5,5,8,5)
             val relativeLayout = RelativeLayout(context)
             val countView = TextView(context)
             val imageView = ImageView(context)
@@ -107,8 +112,10 @@ internal class ChatActionsPopupView(
             imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
 
             userReaction?.let {
-                if (it.emojiId == reaction.id)
-                    relativeLayout.setBackgroundResource(R.drawable.chat_reaction_tap_background)
+                if (it.emojiId == reaction.id) {
+                    cardView.radius = chatViewThemeAttributes.chatSelectedReactionRadius
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(context,R.color.livelike_chat_reaction_selected_background_color))
+                }
             }
             imageView.setOnTouchListener { v, event ->
                 when (event.action) {
@@ -151,7 +158,8 @@ internal class ChatActionsPopupView(
                 addRule(RelativeLayout.ALIGN_TOP, imageView.id)
                 addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
             })
-            reactionsBox.addView(relativeLayout, LinearLayout.LayoutParams(AndroidResource.dpToPx(35), AndroidResource.dpToPx(35)))
+            cardView.addView(relativeLayout)
+            reactionsBox.addView(cardView, LinearLayout.LayoutParams(AndroidResource.dpToPx(35), AndroidResource.dpToPx(35)))
         }
         contentView.chat_reaction_background_card.visibility =
             if ((chatReactionRepository.reactionList?.size ?: 0) > 0) {
