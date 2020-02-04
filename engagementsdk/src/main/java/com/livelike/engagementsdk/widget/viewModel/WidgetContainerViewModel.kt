@@ -6,19 +6,23 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 
 // TODO remove view references from this view model, also clean content session for same.
 
-class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>) {
+class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
     private var widgetContainer: FrameLayout? = null
+    var analyticsService: AnalyticsService? = null
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(widgetContainer: FrameLayout) {
@@ -41,18 +45,27 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Speci
                 })
         )
 
-        currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { widgetView: SpecifiedWidgetView? ->
-            widgetObserver(widgetView)
+        currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
+            widgetObserver(pair?.second, pair?.first)
         }
 
         // Show / Hide animation
         widgetContainer.layoutTransition = LayoutTransition()
     }
 
-    private fun widgetObserver(widgetView: SpecifiedWidgetView?) {
+    private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
         removeViews()
         if (widgetView != null) {
             displayWidget(widgetView)
+        }
+        if (widgetContainer != null) {
+            widgetView?.widgetId?.let { widgetId ->
+                analyticsService?.trackWidgetDisplayed(
+                    WidgetType.fromString(
+                        widgetType ?: ""
+                    )?.toAnalyticsString() ?: "", widgetId
+                )
+            }
         }
     }
 
