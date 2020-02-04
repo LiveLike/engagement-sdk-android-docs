@@ -57,7 +57,7 @@ internal class WidgetProvider {
         animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
         widgetThemeAttributes: WidgetViewThemeAttributes
     ): SpecifiedWidgetView? {
-        return when (WidgetType.fromString(widgetInfos.type)) {
+        val specifiedWidgetView = when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
@@ -128,11 +128,15 @@ internal class WidgetProvider {
                 )
             }
             IMAGE_SLIDER -> EmojiSliderWidgetView(context).apply {
-                widgetViewModel = EmojiSliderWidgetViewModel(widgetInfos, analyticsService, sdkConfiguration, onDismiss,
-                    userRepository, programRepository, widgetMessagingClient)
+                widgetViewModel = EmojiSliderWidgetViewModel(
+                    widgetInfos, analyticsService, sdkConfiguration, onDismiss,
+                    userRepository, programRepository, widgetMessagingClient
+                )
             }
             else -> null
         }
+        specifiedWidgetView?.widgetId = widgetInfos.widgetId
+        return specifiedWidgetView
     }
 }
 
@@ -141,6 +145,8 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
+
+    var widgetId: String = ""
     open var widgetViewModel: ViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
     open var widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()

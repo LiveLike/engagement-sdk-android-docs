@@ -21,18 +21,17 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import java.util.PriorityQueue
+import java.util.Queue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.PriorityQueue
-import java.util.Queue
 
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
-    private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
+    private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>,
     private val context: Context,
     private val widgetInterceptorStream: Stream<WidgetInterceptor>,
     private val analyticsService: AnalyticsService,
@@ -127,7 +126,7 @@ internal class WidgetManager(
                     } catch (e: Exception) {
                         logError { "Widget interceptor encountered a problem: $e \n Dismissing the widget" }
                         dismissPendingMessage()
-                    }   
+                    }
                 }
             }
             pendingMessage = message
@@ -140,27 +139,25 @@ internal class WidgetManager(
         val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
-        analyticsService.trackWidgetDisplayed(WidgetType.fromString(
-            msgHolder.clientMessage.message.get("event").asString ?: ""
-        )?.toAnalyticsString() ?: "", widgetId)
-
         handler.post {
             currentWidgetViewStream.onNext(
-                WidgetProvider()
-                    .get(
-                    this,
-                    WidgetInfos(widgetType, payload, widgetId),
-                    context,
-                    analyticsService,
-                    sdkConfiguration,
-                    {
-                        checkForPointTutorial()
-                        publishNextInQueue()
-                    },
-                    userRepository,
-                    programRepository,
-                    animationEventsStream,
-                    widgetThemeAttributes ?: WidgetViewThemeAttributes()
+                Pair(widgetType,
+                    WidgetProvider()
+                        .get(
+                        this,
+                        WidgetInfos(widgetType, payload, widgetId),
+                        context,
+                        analyticsService,
+                        sdkConfiguration,
+                        {
+                            checkForPointTutorial()
+                            publishNextInQueue()
+                        },
+                        userRepository,
+                        programRepository,
+                        animationEventsStream,
+                        widgetThemeAttributes ?: WidgetViewThemeAttributes()
+                    )
                 )
             )
         }
@@ -215,7 +212,7 @@ enum class WidgetType(val event: String) {
 
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
-    widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
+    widgetInfosStream: SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>,
     context: Context,
     widgetInterceptorStream: Stream<WidgetInterceptor>,
     analyticsService: AnalyticsService,

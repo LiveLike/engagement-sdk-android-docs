@@ -86,7 +86,7 @@ internal class ContentSession(
     override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
-    private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
+    private val currentWidgetViewStream = SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
     private val programRepository = ProgramRepository(programId, userRepository)
@@ -130,7 +130,7 @@ internal class ContentSession(
             }
         }
 
-        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration,this.hashCode()).subscribe(this) {
+        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode()).subscribe(this) {
             it?.let { pair ->
                 val configuration = pair.second
                 chatRepository = ChatRepository(
@@ -146,6 +146,7 @@ internal class ContentSession(
                         configuration.mixpanelToken,
                         programId
                     )
+                widgetContainer.analyticsService = analyticService
                 analyticService.trackSession(pair.first.id)
                 analyticService.trackUsername(pair.first.nickname)
                 analyticService.trackConfiguration(configuration.name ?: "")
