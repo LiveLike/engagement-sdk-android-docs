@@ -5,4 +5,43 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorDivider">#8BBDBDBD</color>
     <color name="text_color">#ffffff</color>
+<!-- ALERT -->
+    <color name="livelike_alert_notification_label_gradient_left">#FFEB3B</color>
+    <color name="livelike_alert_notification_label_gradient_right">#53C018</color>
+<!-- POLL -->
+    <color name="livelike_poll_title_gradient_left">#5290E8</color>
+    <color name="livelike_poll_title_gradient_right">#5290E8</color>
+    <color name="livelike_poll_option_selected_border">#5290E8</color>
+    <color name="livelike_poll_bar_gradient_left">#5290E8</color>
+    <color name="livelike_poll_bar_gradient_right">#5290E8</color>
+    <!-- QUIZ -->
+    <color name="livelike_quiz_title_gradient_left">#5290E8</color>
+    <color name="livelike_quiz_title_gradient_right">#5290E8</color>
+    <color name="livelike_quiz_option_selected_border">#5290E8</color>
+    <color name="livelike_quiz_bar_gradient_left">#5290E8</color>
+    <color name="livelike_quiz_bar_gradient_right">#5290E8</color>
+   <!-- PREDICTION -->
+    <color name="livelike_prediction_option_selected_border">#5290E8</color>
+    <color name="livelike_prediction_image_option_selected_border">#5290E8</color>
+    <color name="livelike_prediction_title_gradient_left">#5290E8</color>
+    <color name="livelike_prediction_title_gradient_right">#5290E8</color>
+
+    <color name="livelike_correct_bar_gradient_left">#5290E8</color>
+    <color name="livelike_correct_bar_gradient_right">#5290E8</color>
+    <color name="livelike_incorrect_bar_gradient_left">#5290E8</color>
+    <color name="livelike_incorrect_bar_gradient_right">#5290E8</color>
+    <color name="livelike_correct_option_border_color">#5290E8</color>
+    <color name="livelike_incorrect_option_border_color">#5290E8</color>
+    <color name="livelike_neutral_bar_gradient_left">#666666</color>
+    <color name="livelike_neutral_bar_gradient_right">#666666</color>
+    <color name="livelike_default_button_background_color">#323235</color>
+
+    <!-- EMOJI SLIDER -->
+    <color name="livelike_image_slider_header_bg">#5290E8</color>
+    <color name="livelike_image_slider_gradient_start">#5290E8</color>
+    <color name="livelike_image_slider_gradient_end">#5290E8</color>
+    <color name="livelike_image_slider_bg">#8A8A8F</color>
+    <color name="livelike_image_slider_widget_result_end_color">#5290E8</color>
+    <color name="livelike_image_slider_widget_result_center_color">#8A8A8F</color>
+
 </resources>

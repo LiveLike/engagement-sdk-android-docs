@@ -54,10 +54,6 @@
     <color name="livelike_poll_title_gradient_right">#c864c8</color>
     <color name="livelike_poll_option_selected_border">#c86dd7</color>
 
-    <color name="livelike_image_option_background_start">#00000000</color>
-    <color name="livelike_image_option_background_center">#99000000</color>
-    <color name="livelike_image_option_background_end">#000000</color>
-
     <color name="livelike_neutral_option_border_color">#99000000</color>
     <color name="livelike_incorrect_option_border_color">#c8000d</color>
     <color name="livelike_correct_option_border_color">#00c83c</color>
