@@ -35,6 +35,12 @@ class LiveLikeApplication : Application() {
         Bugsnag.init(this)
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
 
+        initSDK()
+//        TODO: THIS SHOULD BE FIXED ASAP
+//        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
+    }
+
+    fun initSDK() {
         val accessToken = getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
             PREF_USER_ACCESS_TOKEN,
             null
@@ -43,10 +49,8 @@ class LiveLikeApplication : Application() {
         if (accessToken == null) {
             fetchAndPersisToken(sdk)
         }
-
-//        TODO: THIS SHOULD BE FIXED ASAP
-//        sdk2 = EngagementSDK("vjiRzT1wPpLEdgQwjWXN0TAuTx1KT7HljjDD4buA", applicationContext)
     }
+
 
     private fun fetchAndPersisToken(sdk: EngagementSDK) {
         sdk.userStream.subscribe(javaClass.simpleName) {
