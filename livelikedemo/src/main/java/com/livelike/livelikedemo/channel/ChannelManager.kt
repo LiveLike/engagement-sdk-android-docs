@@ -39,7 +39,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
         loadClientConfig()
     }
 
-    private fun loadClientConfig() {
+    fun loadClientConfig() {
         val request = Request.Builder()
             .url(channelConfigUrl)
             .build()
@@ -54,6 +54,9 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                     try {
                         val json = JSONObject(responseData)
                         val results = json.getJSONArray("results")
+                        if(results.length()>0){
+                            channelList.clear()
+                        }
                         for (i in 0 until results.length()) {
                             val channel = getChannelFor(results.getJSONObject(i))
                             channel?.let {
