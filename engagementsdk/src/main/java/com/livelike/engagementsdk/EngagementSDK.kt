@@ -7,9 +7,11 @@ import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.exceptionhelpers.safeProxyForEmptyReturnCalls
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.services.network.Result
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.utils.map
@@ -27,7 +29,8 @@ import kotlinx.coroutines.launch
 class EngagementSDK(
     private val clientId: String,
     private val applicationContext: Context,
-    accessToken: String? = null
+    accessToken: String? = null,
+    private val errorDelegate: ErrorDelegate? = null
 ) : IEngagement {
 
 //    We should add errorDelegate as parameter of SDK init, on this error delegate we can propogate the events of network failures or any other. Based on it integrator can re-init sdk
@@ -50,8 +53,12 @@ class EngagementSDK(
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
         dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
-            configurationStream.onNext(it)
-            userRepository.initUser(accessToken, it.profileUrl)
+            if(it is Result.Success) {
+                configurationStream.onNext(it.data)
+                userRepository.initUser(accessToken, it.data.profileUrl)
+            }else{
+                errorDelegate?.onError((it as Result.Error).exception.message?:"Some Error occurred, used sdk logger for more details")
+            }
         }
     }
 
