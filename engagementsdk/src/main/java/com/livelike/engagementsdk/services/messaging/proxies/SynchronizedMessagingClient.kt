@@ -10,7 +10,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-const val SYNC_TIME_FIDELITY = 1000L
+const val SYNC_TIME_FIDELITY = 500L
 
 internal class SynchronizedMessagingClient(
     upstream: MessagingClient,
