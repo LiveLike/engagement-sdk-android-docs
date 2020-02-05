@@ -314,6 +314,10 @@ class ChatViewThemeAttributes {
                 R.styleable.LiveLike_ChatView_chatReactionRadius,
                 AndroidResource.dpToPx(0)
             ).toFloat()
+            chatSelectedReactionRadius = getDimensionPixelSize(
+                R.styleable.LiveLike_ChatView_chatSelectedReactionRadius,
+                AndroidResource.dpToPx(0)
+            ).toFloat()
             chatReactionPadding =
                 getDimensionPixelSize(
                     R.styleable.LiveLike_ChatView_chatReactionPadding,
@@ -488,6 +492,24 @@ class ChatViewThemeAttributes {
                 R.styleable.LiveLike_ChatView_stickerRecentEmptyTextColor,
                 ContextCompat.getColor(context, R.color.livelike_sticker_recent_empty_text_color)
             )
+            chatMessageTopBorderColor = getColor(
+                R.styleable.LiveLike_ChatView_chatMessageTopBorderColor,
+                ContextCompat.getColor(context, android.R.color.transparent)
+            )
+            chatMessageBottomBorderColor = getColor(
+                R.styleable.LiveLike_ChatView_chatMessageBottomBorderColor,
+                ContextCompat.getColor(context, android.R.color.transparent)
+            )
+            chatMessageTopBorderHeight =
+                getDimensionPixelSize(
+                    R.styleable.LiveLike_ChatView_chatMessageTopBorderHeight,
+                    AndroidResource.dpToPx(0)
+                )
+            chatMessageBottomBorderHeight =
+                getDimensionPixelSize(
+                    R.styleable.LiveLike_ChatView_chatMessageBottomBorderHeight,
+                    AndroidResource.dpToPx(0)
+                )
         }
     }
 
@@ -542,6 +564,7 @@ class ChatViewThemeAttributes {
     var chatReactionY: Int = 0
     var chatReactionElevation: Float = 4f
     var chatReactionRadius: Float = 4f
+    var chatSelectedReactionRadius: Float = 4f
     var chatReactionPadding: Int = 0
     var showChatAvatarLogo: Boolean = false
     var chatAvatarMarginRight: Int = AndroidResource.dpToPx(3)
@@ -558,4 +581,8 @@ class ChatViewThemeAttributes {
     var stickerTabBackground: Drawable? = null
     var stickerSelectedTabIndicatorColor: Int = Color.WHITE
     var stickerRecentEmptyTextColor: Int = Color.WHITE
+    var chatMessageTopBorderColor: Int = Color.TRANSPARENT
+    var chatMessageBottomBorderColor: Int = Color.TRANSPARENT
+    var chatMessageTopBorderHeight: Int = 0
+    var chatMessageBottomBorderHeight: Int = 0
 }

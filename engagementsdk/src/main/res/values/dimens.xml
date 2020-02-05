@@ -38,7 +38,7 @@
     <dimen name="livelike_cheer_meter_corner_radius">8dp</dimen>
     <dimen name="livelike_cheer_meter_padding">10dp</dimen>
     <dimen name="livelike_chat_reaction_size">24dp</dimen>
-    <dimen name="livelike_chat_reaction_display_size">10dp</dimen>
+    <dimen name="livelike_chat_reaction_display_size">12dp</dimen>
     <dimen name="livelike_chat_reaction_popup_text_size">10sp</dimen>
 
 </resources>

@@ -1,8 +1,10 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
+import android.util.Log
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatRepository
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -71,6 +73,7 @@ internal class ContentSession(
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
 
+
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
     }
@@ -85,7 +88,7 @@ internal class ContentSession(
     override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
-    private val currentWidgetViewStream = SubscriptionManager<SpecifiedWidgetView?>()
+    private val currentWidgetViewStream = SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
     private val programRepository = ProgramRepository(programId, userRepository)
@@ -104,6 +107,7 @@ internal class ContentSession(
     private var privateChatRoomID = ""
 
     private var chatRoomMap = mutableMapOf<String, ChatRoom>()
+    private val chatRoomMsgMap = mutableMapOf<String, List<ChatMessage>>()
 
     // TODO remove proxy message listener by having pipe in chat data layers/chain that tranforms pubnub channel to room
     private var proxyMsgListener: MessageListener = object : MessageListener {
@@ -123,13 +127,13 @@ internal class ContentSession(
     private var msgListener: MessageListener? = null
 
     init {
-        userRepository.currentUserStream.subscribe(javaClass) {
+        userRepository.currentUserStream.subscribe(this) {
             it?.let {
                 analyticService.trackUsername(it.nickname)
             }
         }
 
-        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration).subscribe(javaClass.simpleName) {
+        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode()).subscribe(this) {
             it?.let { pair ->
                 val configuration = pair.second
                 chatRepository = ChatRepository(
@@ -145,6 +149,7 @@ internal class ContentSession(
                         configuration.mixpanelToken,
                         programId
                     )
+                widgetContainer.analyticsService = analyticService
                 analyticService.trackSession(pair.first.id)
                 analyticService.trackUsername(pair.first.nickname)
                 analyticService.trackConfiguration(configuration.name ?: "")
@@ -218,6 +223,7 @@ internal class ContentSession(
     }
 
     override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
+        Log.v("Here", "joinChatRoom: $chatRoomId  timestamp:$timestamp")
         if (chatRoomMap.size > 50) {
             return logError {
                 "subscribing  count for pubnub channels cannot be greater than 50"
@@ -245,6 +251,7 @@ internal class ContentSession(
 
     override fun enterChatRoom(chatRoomId: String) {
         if (privateChatRoomID == chatRoomId) return // Already in the room
+        val lastChatRoomId = privateChatRoomID
         privateChatRoomID = chatRoomId
 
         fetchChatRoom(chatRoomId) { chatRoom ->
@@ -253,7 +260,13 @@ internal class ContentSession(
             wouldInitPrivateGroupSession(channel)
             privateGroupPubnubClient?.activeChatRoom = channel
             chatViewModel.apply {
+                chatRoomMsgMap[lastChatRoomId] = messageList.takeLast(CHAT_HISTORY_LIMIT)
                 flushMessages()
+                if(chatRoomMsgMap.containsKey(chatRoomId)){
+                    chatRoomMsgMap[chatRoomId]?.let {
+                        this.cacheList.addAll(it)
+                    }
+                }
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }
@@ -366,7 +379,6 @@ internal class ContentSession(
             return
 
         analyticService.trackLastChatStatus(true)
-        chatClient?.destroy() // destroying previous client in case of private group chat, will decouple it later from program.
         chatClient = chatRepository?.establishChatMessagingConnection()
         if (privateGroupsChat) {
             privateGroupPubnubClient = chatClient as PubnubChatMessagingClient
@@ -376,7 +388,6 @@ internal class ContentSession(
             chatClient =
                 chatClient?.syncTo(currentPlayheadTime)
         }
-
         chatClient = chatClient?.toChatQueue()
             ?.apply {
                 msgListener = proxyMsgListener

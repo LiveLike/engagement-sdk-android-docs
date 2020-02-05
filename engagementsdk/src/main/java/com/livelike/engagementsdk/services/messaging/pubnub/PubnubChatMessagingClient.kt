@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
+import android.util.Log
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
@@ -42,6 +43,7 @@ import com.pubnub.api.enums.PNReconnectionPolicy
 import com.pubnub.api.enums.PNStatusCategory
 import com.pubnub.api.models.consumer.PNPublishResult
 import com.pubnub.api.models.consumer.PNStatus
+import com.pubnub.api.models.consumer.PNTimeResult
 import com.pubnub.api.models.consumer.history.PNFetchMessageItem
 import com.pubnub.api.models.consumer.history.PNFetchMessagesResult
 import com.pubnub.api.models.consumer.history.PNHistoryResult
@@ -50,15 +52,15 @@ import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.message_actions.PNRemoveMessageActionResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
 
@@ -79,6 +81,7 @@ internal class PubnubChatMessagingClient(
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
+    private var firstTimeToken: Long? = null
 
     var activeChatRoom = ""
         set(value) {
@@ -92,7 +95,7 @@ internal class PubnubChatMessagingClient(
             connectedChannels.add(channel)
             val endTimeStamp = Calendar.getInstance().timeInMillis
             pubnub.subscribe().channels(listOf(channel)).execute()
-            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
+//            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
         }
     }
 
@@ -157,10 +160,6 @@ internal class PubnubChatMessagingClient(
                 override fun onResponse(result: PNPublishResult?, status: PNStatus) {
                     logDebug { "pub status code: " + status?.statusCode }
                     if (!status.isError) {
-                        analyticsService.trackMessageSent(
-                            pubnubChatEvent.payload.messageId,
-                            pubnubChatEvent.payload.message
-                        )
                         logDebug { "pub timetoken: " + result?.timetoken!! }
                         it.resume(true)
                     } else {
@@ -390,34 +389,49 @@ internal class PubnubChatMessagingClient(
 
     internal fun loadMessagesWithReactions(
         channel: String,
-        timeToken: Long = convertToTimeToken(Calendar.getInstance().timeInMillis),
+        timeToken: Long = 0L,
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
-        pubnub.fetchMessages()
-            .channels(listOf(channel))
-            .includeMeta(true)
-            .maximumPerChannel(chatHistoyLimit)
-            .start(timeToken)
-            .includeMessageActions(true)
-            .async(object : PNCallback<PNFetchMessagesResult>() {
-                override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
-                    if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
-                        result.channels?.get(channel)?.reversed()?.forEach {
-                            val jsonObject = it.message.asJsonObject.apply {
-                                addProperty("pubnubToken", it.timetoken)
-                            }
-                            processPubnubChatEvent(
-                                jsonObject,
-                                channel,
-                                this@PubnubChatMessagingClient,
-                                it.timetoken,
-                                it.actions
-                            )
-                        }
-                    }
-                    sendLoadingCompletedEvent(channel)
+        if (timeToken == 0L)
+            pubnub.time().async(object : PNCallback<PNTimeResult>() {
+                override fun onResponse(result: PNTimeResult?, status: PNStatus) {
+                    loadMessagesWithReactions(channel,result?.timetoken ?: timeToken,chatHistoyLimit)
                 }
-            })
+            }) else {
+            val updatedTimeToke: Long =
+                if (timeToken == -1L)
+                    firstTimeToken ?: Calendar.getInstance().timeInMillis
+                else
+                    timeToken
+            pubnub.fetchMessages()
+                .channels(listOf(channel))
+                .includeMeta(true)
+                .maximumPerChannel(chatHistoyLimit)
+                .start(updatedTimeToke)
+                .includeMessageActions(true)
+                .async(object : PNCallback<PNFetchMessagesResult>() {
+                    override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
+                        if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
+                            firstTimeToken = null
+                            result.channels?.get(channel)?.reversed()?.forEach {
+                                val jsonObject = it.message.asJsonObject.apply {
+                                    if (firstTimeToken == null)
+                                        firstTimeToken = it.timetoken
+                                    addProperty("pubnubToken", it.timetoken)
+                                }
+                                processPubnubChatEvent(
+                                    jsonObject,
+                                    channel,
+                                    this@PubnubChatMessagingClient,
+                                    it.timetoken,
+                                    it.actions
+                                )
+                            }
+                        }
+                        sendLoadingCompletedEvent(channel)
+                    }
+                })
+        }
     }
 
     @Deprecated("use loadMessagesWithReactions")
@@ -545,6 +559,7 @@ internal class PubnubChatMessagingClient(
                 .channels(listOf(channel))
                 .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
                 .sync()
+            Log.v("Here", "Count Read channel : $channel lasttimestamp:${convertToTimeToken(startTimestamp)}")
             Result.Success(countResult?.channels?.get(channel) ?: 0)
         } catch (ex: PubNubException) {
             ex.printStackTrace()

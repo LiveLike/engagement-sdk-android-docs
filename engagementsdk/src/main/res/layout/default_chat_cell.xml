@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     xmlns:tools="http://schemas.android.com/tools"
     tools:background="@color/livelike_black">
 
+    <View
+        android:id="@+id/border_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
     <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -90,7 +95,7 @@
         <FrameLayout
             android:id="@+id/rel_reactions_lay"
             android:layout_width="wrap_content"
-            android:layout_height="11dp"
+            android:layout_height="12dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="3dp"
             android:orientation="horizontal"
@@ -104,19 +109,23 @@
         <TextView
             android:id="@+id/txt_chat_reactions_count"
             android:layout_width="wrap_content"
-            android:layout_height="11dp"
+            android:layout_height="12dp"
             android:layout_marginTop="3.5dp"
             android:layout_marginEnd="18dp"
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@android:color/white"
             android:textStyle="bold"
-            android:textSize="9sp"
+            android:textSize="11sp"
             app:layout_constraintEnd_toEndOf="@+id/chatBackground"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
+    <View
+        android:id="@+id/border_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
-</FrameLayout>
+</LinearLayout>

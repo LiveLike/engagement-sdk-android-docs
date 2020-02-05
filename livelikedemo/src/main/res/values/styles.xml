@@ -28,7 +28,8 @@
         <item name="chatBubbleMarginLeft">5dp</item>
         <item name="chatAvatarMarginLeft">13dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
-        <item name="chatReactionRadius">8dp</item>
+        <item name="chatReactionRadius">12dp</item>
+        <item name="chatSelectedReactionRadius">12dp</item>
         <item name="chatBubbleBackground">@drawable/ic_chat_message_bubble_rounded_rectangle</item>
         <item name="chatReactionMessageBubbleHighlightedBackground">@drawable/ic_chat_message_highlighted_bubble_rounded_rectangle</item>
     </style>
@@ -45,7 +46,7 @@
         <item name="otherUsernameColor">#000</item>
         <item name="messageColor">#5f5f5f</item>
         <item name="chatInputViewBackground">#FFF</item>
-        <item name="chatDisplayBackground">#efeff4</item>
+        <item name="chatDisplayBackground">#fff</item>
         <item name="chatViewBackground">#FFF</item>
         <item name="chatInputTextColor">#8e8e93</item>
         <item name="chatInputTextSize">15sp</item>
@@ -58,6 +59,7 @@
         <item name="chatReactionYPosition">25dp</item>
         <item name="chatReactionElevation">6dp</item>
         <item name="chatReactionRadius">20dp</item>
+        <item name="chatSelectedReactionRadius">14dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
         <item name="chatReactionDisplayCountColor">@android:color/black</item>
@@ -93,6 +95,8 @@
         <item name="stickerTabBackground">@color/livelike_white</item>
         <item name="stickerBackground">@color/livelike_white</item>
         <item name="stickerRecentEmptyTextColor">@color/livelike_black</item>
+        <item name="chatMessageBottomBorderHeight">1dp</item>
+        <item name="chatMessageBottomBorderColor">#efeff4</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">

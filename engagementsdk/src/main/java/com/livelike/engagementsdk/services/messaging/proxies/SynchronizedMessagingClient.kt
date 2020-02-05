@@ -5,12 +5,12 @@ import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.utils.Queue
 import com.livelike.engagementsdk.utils.logVerbose
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-const val SYNC_TIME_FIDELITY = 100L
+const val SYNC_TIME_FIDELITY = 500L
 
 internal class SynchronizedMessagingClient(
     upstream: MessagingClient,
@@ -23,7 +23,7 @@ internal class SynchronizedMessagingClient(
     private var coroutineTimer: Job
 
     init {
-        coroutineTimer = GlobalScope.launch {
+        coroutineTimer = MainScope().launch {
             publishTimeSynchronizedMessageFromQueue()
         }
     }
@@ -58,7 +58,18 @@ internal class SynchronizedMessagingClient(
                 logDismissedEvent(event)
                 return
             }
-            else -> queue.enqueue(event)
+            else -> {
+                // Adding the check for similar message ,it is occuring if user get message
+                // from history and also receive message from pubnub listener
+                // checking right now is based on id
+                val currentChatMessageId = event.message.get("id")?.asString
+                val foundMsg = queue.elements.find {
+                    val msgId = it.message.get("id")?.asString
+                    return@find msgId != null && currentChatMessageId != null && msgId == currentChatMessageId
+                }
+                if (foundMsg == null)
+                    queue.enqueue(event)
+            }
         }
     }
 
@@ -77,10 +88,12 @@ internal class SynchronizedMessagingClient(
         listener?.onClientMessageEvent(this, event)
     }
 
-    private fun shouldPublishEvent(event: ClientMessage): Boolean =
-        timeSource() <= EpochTime(0) || // Timesource return 0 - sync disabled
+    private fun shouldPublishEvent(event: ClientMessage): Boolean {
+        val timeStamp = timeSource()
+        return timeStamp <= EpochTime(0) || // Timesource return 0 - sync disabled
                 event.timeStamp <= EpochTime(0) || // Event time is 0 - bypass sync
-                (event.timeStamp <= timeSource() && event.timeStamp >= timeSource() - validEventBufferMs)
+                (event.timeStamp <= timeStamp && event.timeStamp >= timeStamp - validEventBufferMs)
+    }
 
     private fun shouldDismissEvent(event: ClientMessage): Boolean =
         event.timeStamp > EpochTime(0) &&

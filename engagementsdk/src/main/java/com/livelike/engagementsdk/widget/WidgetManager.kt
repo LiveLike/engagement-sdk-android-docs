@@ -31,7 +31,7 @@ import kotlinx.coroutines.withContext
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
-    private val currentWidgetViewStream: Stream<SpecifiedWidgetView?>,
+    private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>,
     private val context: Context,
     private val widgetInterceptorStream: Stream<WidgetInterceptor>,
     private val analyticsService: AnalyticsService,
@@ -135,28 +135,29 @@ internal class WidgetManager(
 
     private fun showWidgetOnScreen(msgHolder: MessageHolder) {
         val widgetType = msgHolder.clientMessage.message.get("event").asString ?: ""
+
         val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
-        analyticsService.trackWidgetDisplayed(widgetType, widgetId)
-
         handler.post {
             currentWidgetViewStream.onNext(
-                WidgetProvider()
-                    .get(
-                    this,
-                    WidgetInfos(widgetType, payload, widgetId),
-                    context,
-                    analyticsService,
-                    sdkConfiguration,
-                    {
-                        checkForPointTutorial()
-                        publishNextInQueue()
-                    },
-                    userRepository,
-                    programRepository,
-                    animationEventsStream,
-                    widgetThemeAttributes ?: WidgetViewThemeAttributes()
+                Pair(widgetType,
+                    WidgetProvider()
+                        .get(
+                        this,
+                        WidgetInfos(widgetType, payload, widgetId),
+                        context,
+                        analyticsService,
+                        sdkConfiguration,
+                        {
+                            checkForPointTutorial()
+                            publishNextInQueue()
+                        },
+                        userRepository,
+                        programRepository,
+                        animationEventsStream,
+                        widgetThemeAttributes ?: WidgetViewThemeAttributes()
+                    )
                 )
             )
         }
@@ -211,7 +212,7 @@ enum class WidgetType(val event: String) {
 
 internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
-    widgetInfosStream: SubscriptionManager<SpecifiedWidgetView?>,
+    widgetInfosStream: SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>,
     context: Context,
     widgetInterceptorStream: Stream<WidgetInterceptor>,
     analyticsService: AnalyticsService,

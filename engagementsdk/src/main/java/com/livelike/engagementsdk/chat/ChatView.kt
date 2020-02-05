@@ -617,7 +617,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
             if (visibility == View.VISIBLE) {
-                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
+//                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
             }
             visibility = View.GONE
         }
@@ -660,7 +660,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             0
         )
 
-        session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
+//        session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
         setBackButtonInterceptor(this)
     }
 
@@ -688,7 +688,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         ChatMessage(
             PubnubChatEventType.MESSAGE_CREATED,
             viewModel?.currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
-            edittext_chat_message.text.toString(),
+            edittext_chat_message.text.toString().trim(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
             currentUser?.userPic,
@@ -699,13 +699,19 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                if (it.message.findImages().countMatches()> 0) {
+                val hasExternalImage = it.message.findImages().countMatches() > 0
+                if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)
                 } else {
                     chatListener?.onChatMessageSend(it, timeData)
                 }
                 edittext_chat_message.setText("")
                 snapToLive()
+                analyticsService.trackMessageSent(
+                    it.id,
+                    it.message,
+                    hasExternalImage
+                )
             }
         }
     }
