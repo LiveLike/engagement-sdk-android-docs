@@ -369,6 +369,11 @@ internal class ChatRecyclerAdapter(
             v.apply {
                 this@ViewHolder.message = message
                 message?.apply {
+
+                    // Cleanup the recycled item
+                    chatMessage.text = ""
+                    Glide.with(context).clear(chatMessage)
+
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
 
