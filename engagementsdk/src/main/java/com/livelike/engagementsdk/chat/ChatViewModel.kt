@@ -39,6 +39,7 @@ internal class ChatViewModel(
     var chatListener: ChatEventListener? = null
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     var messageList = mutableListOf<ChatMessage>()
+    var cacheList = mutableListOf<ChatMessage>()
     internal val eventStream: Stream<String> = SubscriptionManager(true)
     var currentChatRoom: ChatRoom? = null
         set(value) {
@@ -194,6 +195,9 @@ internal class ChatViewModel(
     override fun loadingCompleted() {
         if (!chatLoaded) {
             chatLoaded = true
+            if (messageList.isEmpty() && cacheList.isNotEmpty()) {
+                messageList.addAll(cacheList)
+            }
             chatAdapter.submitList(ArrayList(messageList.toSet()))
         } else {
             eventStream.onNext(EVENT_LOADING_COMPLETE)
@@ -207,18 +211,26 @@ internal class ChatViewModel(
     }
 
     fun flushMessages() {
+        cacheList = mutableListOf()
         messageList = mutableListOf()
         chatAdapter.submitList(messageList)
     }
 
     fun loadPreviousMessages() {
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
-            if (chatRepository != null && messageList.size > 0) {
-                chatRepository?.loadPreviousMessages(
-                    channel,
-                    messageList.first().timetoken
-                )
+            if (chatRepository != null) {
+                if (messageList.size > 0)
+                    chatRepository?.loadPreviousMessages(
+                        channel,
+                        messageList.first().timetoken
+                    )
+                else
+                    chatRepository?.loadPreviousMessages(
+                        channel,
+                        -1L
+                    )
             } else {
+                eventStream.onNext(EVENT_LOADING_COMPLETE)
                 logError { "Chat repo is null" }
             }
         }
