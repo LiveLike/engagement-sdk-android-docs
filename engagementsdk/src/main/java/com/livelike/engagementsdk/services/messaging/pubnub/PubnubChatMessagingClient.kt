@@ -81,6 +81,7 @@ internal class PubnubChatMessagingClient(
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
+    private var firstTimeToken: Long? = null
 
     var activeChatRoom = ""
         set(value) {
@@ -396,18 +397,26 @@ internal class PubnubChatMessagingClient(
                 override fun onResponse(result: PNTimeResult?, status: PNStatus) {
                     loadMessagesWithReactions(channel,result?.timetoken ?: timeToken,chatHistoyLimit)
                 }
-            }) else
+            }) else {
+            val updatedTimeToke: Long =
+                if (timeToken == -1L)
+                    firstTimeToken ?: Calendar.getInstance().timeInMillis
+                else
+                    timeToken
             pubnub.fetchMessages()
                 .channels(listOf(channel))
                 .includeMeta(true)
                 .maximumPerChannel(chatHistoyLimit)
-                .start(timeToken)
+                .start(updatedTimeToke)
                 .includeMessageActions(true)
                 .async(object : PNCallback<PNFetchMessagesResult>() {
                     override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
                         if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
+                            firstTimeToken = null
                             result.channels?.get(channel)?.reversed()?.forEach {
                                 val jsonObject = it.message.asJsonObject.apply {
+                                    if (firstTimeToken == null)
+                                        firstTimeToken = it.timetoken
                                     addProperty("pubnubToken", it.timetoken)
                                 }
                                 processPubnubChatEvent(
@@ -422,6 +431,7 @@ internal class PubnubChatMessagingClient(
                         sendLoadingCompletedEvent(channel)
                     }
                 })
+        }
     }
 
     @Deprecated("use loadMessagesWithReactions")

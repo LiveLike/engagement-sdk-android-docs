@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatRepository
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -72,6 +73,7 @@ internal class ContentSession(
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
 
+
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
     }
@@ -105,6 +107,7 @@ internal class ContentSession(
     private var privateChatRoomID = ""
 
     private var chatRoomMap = mutableMapOf<String, ChatRoom>()
+    private val chatRoomMsgMap = mutableMapOf<String, List<ChatMessage>>()
 
     // TODO remove proxy message listener by having pipe in chat data layers/chain that tranforms pubnub channel to room
     private var proxyMsgListener: MessageListener = object : MessageListener {
@@ -248,6 +251,7 @@ internal class ContentSession(
 
     override fun enterChatRoom(chatRoomId: String) {
         if (privateChatRoomID == chatRoomId) return // Already in the room
+        val lastChatRoomId = privateChatRoomID
         privateChatRoomID = chatRoomId
 
         fetchChatRoom(chatRoomId) { chatRoom ->
@@ -256,7 +260,13 @@ internal class ContentSession(
             wouldInitPrivateGroupSession(channel)
             privateGroupPubnubClient?.activeChatRoom = channel
             chatViewModel.apply {
+                chatRoomMsgMap[lastChatRoomId] = messageList.takeLast(CHAT_HISTORY_LIMIT)
                 flushMessages()
+                if(chatRoomMsgMap.containsKey(chatRoomId)){
+                    chatRoomMsgMap[chatRoomId]?.let {
+                        this.cacheList.addAll(it)
+                    }
+                }
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }
