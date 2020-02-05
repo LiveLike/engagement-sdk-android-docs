@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
@@ -30,6 +31,7 @@ import com.livelike.engagementsdk.services.network.Result
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
+import com.livelike.engagementsdk.utils.isNetworkConnected
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
@@ -53,6 +55,7 @@ internal class ContentSession(
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val programId: String,
+    private val errorDelegate: ErrorDelegate? = null,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
 
@@ -179,6 +182,9 @@ internal class ContentSession(
                     }
                 }
             }
+        }
+        if (!applicationContext.isNetworkConnected()) {
+            errorDelegate?.onError("Network error please create the session again")
         }
     }
 

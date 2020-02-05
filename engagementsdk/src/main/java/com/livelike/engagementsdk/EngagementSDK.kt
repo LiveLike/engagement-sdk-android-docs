@@ -53,11 +53,11 @@ class EngagementSDK(
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
         dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
-            if(it is Result.Success) {
+            if (it is Result.Success) {
                 configurationStream.onNext(it.data)
                 userRepository.initUser(accessToken, it.data.profileUrl)
-            }else{
-                errorDelegate?.onError((it as Result.Error).exception.message?:"Some Error occurred, used sdk logger for more details")
+            } else {
+                errorDelegate?.onError((it as Result.Error).exception.message ?: "Some Error occurred, used sdk logger for more details")
             }
         }
     }
@@ -85,12 +85,13 @@ class EngagementSDK(
      *  Creates a content session without sync.
      *  @param programId Backend generated unique identifier for current program
      */
-    fun createContentSession(programId: String): LiveLikeContentSession {
+    fun createContentSession(programId: String, errorDelegate: ErrorDelegate? = null): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
             userRepository,
             applicationContext,
-            programId) { EpochTime(0) }.safeProxyForEmptyReturnCalls()
+            programId,
+            errorDelegate) { EpochTime(0) }.safeProxyForEmptyReturnCalls()
     }
 
     /**
@@ -106,12 +107,13 @@ class EngagementSDK(
      *  @param programId Backend generated identifier for current program
      *  @param timecodeGetter returns the video timecode
      */
-    fun createContentSession(programId: String, timecodeGetter: TimecodeGetter): LiveLikeContentSession {
+    fun createContentSession(programId: String, timecodeGetter: TimecodeGetter, errorDelegate: ErrorDelegate? = null): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
             userRepository,
             applicationContext,
-            programId) { timecodeGetter.getTimecode() }.safeProxyForEmptyReturnCalls()
+            programId,
+            errorDelegate) { timecodeGetter.getTimecode() }.safeProxyForEmptyReturnCalls()
     }
 
     internal data class SdkConfiguration(
