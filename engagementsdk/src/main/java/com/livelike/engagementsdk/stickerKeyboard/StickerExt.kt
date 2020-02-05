@@ -133,6 +133,7 @@ fun replaceWithImages(
     s: Spannable?,
     context: Context,
     callback: MultiCallback?,
+    inEditText: Boolean,
     id: String = "",
     onMatch: (() -> Unit)? = null
 ) {
@@ -169,7 +170,7 @@ fun replaceWithImages(
                     ) {
                         try {
                             val drawable = GifDrawable(resource)
-                            setupBounds(drawable)
+                            setupBounds(drawable, inEditText)
                             drawable.reset()
                             drawable.start()
                             drawable.callback = callback
@@ -194,7 +195,7 @@ fun replaceWithImages(
                         transition: Transition<in Drawable>?
                     ) {
                         try {
-                            setupBounds(drawable)
+                            setupBounds(drawable, inEditText)
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
@@ -241,12 +242,16 @@ internal fun setupBounds(
 
 // This method is following iOS guidelines. Make sure to discuss with the iOS team before modifying it
 internal fun setupBounds(
-    drawable: Drawable
+    drawable: Drawable,
+    inEditText: Boolean
 ) {
     val padding = AndroidResource.dpToPx(8)
 
-    val overrideSize = AndroidResource.dpToPx(stickerSize)
-
+    val overrideSize = if(inEditText){
+        AndroidResource.dpToPx(30)
+    }else{
+        AndroidResource.dpToPx(stickerSize)
+    }
     val height = overrideSize
     val width = (overrideSize.toFloat()*drawable.intrinsicWidth.toFloat()/drawable.intrinsicHeight.toFloat()).roundToInt()
 

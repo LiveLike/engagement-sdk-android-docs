@@ -482,7 +482,7 @@ internal class ChatRecyclerAdapter(
                         when {
                             isExternalImage -> {
                                 val s = SpannableString(message.message)
-                                replaceWithImages(s, context, callback, message.id) {
+                                replaceWithImages(s, context, callback, false, message.id) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }

@@ -356,7 +356,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         replaceWithImages(
                             s as Spannable,
                             this@ChatView.context,
-                            callback
+                            callback,
+                            true
                         )
                         // cleanup before the image
                         if (matcher.start()> 0) edittext_chat_message.text?.delete(0, matcher.start())
