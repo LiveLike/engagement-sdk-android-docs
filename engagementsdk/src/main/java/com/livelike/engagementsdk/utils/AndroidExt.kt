@@ -13,7 +13,7 @@ internal fun Context.scanForActivity(): Activity? {
     return null
 }
 
-internal fun Context.isNetworkConnected(): Boolean {
+fun Context.isNetworkConnected(): Boolean {
     val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val activeNetwork = cm.activeNetworkInfo
     return activeNetwork != null && activeNetwork.isConnected
