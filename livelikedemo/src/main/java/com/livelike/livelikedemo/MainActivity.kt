@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import com.livelike.livelikedemo.channel.ChannelManager
+import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
@@ -26,8 +27,6 @@ import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
-import kotlin.reflect.KClass
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             val currentNetworkInfo =
                 intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
             if (currentNetworkInfo.isConnected) {
-                (application as LiveLikeApplication).initSDK()
+//                (application as LiveLikeApplication).initSDK()
                 channelManager.loadClientConfig()
             }
         }
@@ -60,13 +59,12 @@ class MainActivity : AppCompatActivity() {
             cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network?) {
                     super.onAvailable(network)
-                    (application as LiveLikeApplication).initSDK()
+//                    (application as LiveLikeApplication).initSDK()
                     channelManager.loadClientConfig()
                 }
 
                 override fun onLost(network: Network?) {
                     super.onLost(network)
-
                 }
 
                 override fun onUnavailable() {
@@ -76,7 +74,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
-
 
         setContentView(R.layout.activity_main)
 

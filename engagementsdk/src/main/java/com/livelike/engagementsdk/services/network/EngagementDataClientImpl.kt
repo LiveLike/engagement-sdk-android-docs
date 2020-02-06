@@ -25,6 +25,9 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.logWarn
 import com.livelike.engagementsdk.widget.util.SingleRunner
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -39,15 +42,11 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
-
 
 @Suppress("USELESS_ELVIS")
 internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
     WidgetDataClient, ChatDataClient {
-    override suspend fun uploadImage(remoteUrl: String, accessToken : String?, image: ByteArray): String {
+    override suspend fun uploadImage(remoteUrl: String, accessToken: String?, image: ByteArray): String {
 
         val formBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -64,7 +63,7 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
             accessToken
         )
 
-        when(response){
+        when (response) {
             is Result.Success -> return response.data.image_url
             is Result.Error -> throw response.exception
         }
@@ -179,14 +178,13 @@ internal class EngagementDataClientImpl : DataClient, EngagementSdkDataClient,
 
     override fun getEngagementSdkConfig(
         url: String,
-        responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit
+        responseCallback: (config: Result<EngagementSDK.SdkConfiguration>) -> Unit
     ) {
         GlobalScope.launch {
             val result =
                 remoteCall<EngagementSDK.SdkConfiguration>(url, RequestType.GET, null, null)
-            if (result is Result.Success) {
-                responseCallback.invoke(result.data)
-            } else {
+            responseCallback.invoke(result)
+            if (result is Result.Error) {
                 logError { "The client id is incorrect. Check your configuration." }
             }
         }
