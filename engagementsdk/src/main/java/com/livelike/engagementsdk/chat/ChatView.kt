@@ -279,9 +279,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             if (swipeToRefresh.isRefreshing) {
                                 swipeToRefresh.isRefreshing = false
                             } else {
+                                // Add delay to avoid UI glitch when recycler view is loading
+                                delay(500)
                                 hideLoadingSpinner()
                                 checkEmptyChat()
-                                delay(100)
                                 snapToLive()
                             }
                         }
