@@ -89,7 +89,6 @@ internal class ChatRecyclerAdapter(
     private var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
 
-
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
     }
@@ -105,7 +104,7 @@ internal class ChatRecyclerAdapter(
         super.onViewDetachedFromWindow(holder)
     }
 
-    private fun isAccessibilityEnabled(context: Context):Boolean {
+    private fun isAccessibilityEnabled(context: Context): Boolean {
         val am = context.getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
         return am.isEnabled && am.isTouchExplorationEnabled
     }
@@ -137,16 +136,28 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(view: View?): Boolean {
-                val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
-                val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
-                if (reactionsAvailable || !isOwnMessage) {
-                    showFloatingUI(isOwnMessage, message?.myChatMessageReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
-                }
+            wouldShowFloatingUi(view)
             return true
         }
 
+        private fun wouldShowFloatingUi(view: View?) {
+            val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
+            val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
+            if (reactionsAvailable || !isOwnMessage) {
+                showFloatingUI(
+                    isOwnMessage,
+                    message?.myChatMessageReaction,
+                    checkListIsAtTop(adapterPosition) && itemCount > 1
+                )
+            }
+        }
+
         override fun onClick(view: View?) {
-            hideFloatingUI()
+            if (chatPopUpView?.isShowing == true) {
+                wouldShowFloatingUi(view)
+            } else {
+                hideFloatingUI()
+            }
         }
 
         init {
