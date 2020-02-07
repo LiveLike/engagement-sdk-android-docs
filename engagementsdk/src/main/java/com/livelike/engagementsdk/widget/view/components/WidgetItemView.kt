@@ -210,7 +210,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
     }
 
     fun setProgressVisibility(b: Boolean) {
-        val visibility = if (b) View.VISIBLE else View.GONE
+        val visibility = if (b) View.VISIBLE else View.INVISIBLE
         imagePercentage?.visibility = visibility
         imageBar?.visibility = visibility
         determinateBar?.visibility = visibility
