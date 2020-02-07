@@ -17,7 +17,7 @@ internal interface DataClient {
 }
 
 internal interface EngagementSdkDataClient {
-    fun getEngagementSdkConfig(url: String, responseCallback: (config: EngagementSDK.SdkConfiguration) -> Unit)
+    fun getEngagementSdkConfig(url: String, responseCallback: (config: Result<EngagementSDK.SdkConfiguration>) -> Unit)
 }
 
 internal interface WidgetDataClient {
@@ -28,5 +28,5 @@ internal interface WidgetDataClient {
 
 internal interface ChatDataClient {
     suspend fun reportMessage(remoteUrl: String, message: ChatMessage, accessToken: String?)
-    suspend fun uploadImage(remoteUrl: String, accessToken : String?, image: ByteArray) : String
+    suspend fun uploadImage(remoteUrl: String, accessToken: String?, image: ByteArray): String
 }
