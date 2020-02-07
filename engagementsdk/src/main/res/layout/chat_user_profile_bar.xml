@@ -26,7 +26,9 @@
         android:textColor="@color/livelike_white"
         android:textSize="@dimen/livelike_default_chat_cell_name_size"
         android:textStyle="bold"
-        android:text="Me (SilverDog318)" />
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="Me (SilverDog318)" />
 
     <ImageView
         android:id="@+id/gamification_badge_iv"

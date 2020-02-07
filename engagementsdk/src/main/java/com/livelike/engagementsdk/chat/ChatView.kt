@@ -297,6 +297,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 currentUser = it
                 it?.let {
                     uiScope.launch {
+                        user_profile_tv.visibility = View.VISIBLE
                         user_profile_tv.text = it.nickname
                     }
                 }
