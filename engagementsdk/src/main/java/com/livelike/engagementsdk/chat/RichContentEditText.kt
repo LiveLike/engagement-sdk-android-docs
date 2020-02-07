@@ -23,7 +23,7 @@ class RichContentEditText : AppCompatEditText {
     override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection {
         val ic: InputConnection = super.onCreateInputConnection(editorInfo)
         if (allowMediaFromKeyboard) {
-            EditorInfoCompat.setContentMimeTypes(editorInfo, arrayOf("image/*"))
+            EditorInfoCompat.setContentMimeTypes(editorInfo, arrayOf("image/*", "image/gif", "image/png"))
 
             val callback =
                 InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
