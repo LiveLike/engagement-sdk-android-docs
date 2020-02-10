@@ -33,7 +33,6 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
@@ -133,7 +132,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
     private val viewModel: ChatViewModel?
-        get() = (session.getTargetObject() as ContentSession?)?.chatViewModel
+        get() = (session as ContentSession?)?.chatViewModel
 
     val callback = MultiCallback(true)
 

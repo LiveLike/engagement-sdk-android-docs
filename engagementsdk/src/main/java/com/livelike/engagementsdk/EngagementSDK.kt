@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
-import com.livelike.engagementsdk.core.exceptionhelpers.safeProxyForEmptyReturnCalls
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -91,7 +90,7 @@ class EngagementSDK(
             userRepository,
             applicationContext,
             programId,
-            errorDelegate) { EpochTime(0) }.safeProxyForEmptyReturnCalls()
+            errorDelegate) { EpochTime(0) }
     }
 
     /**
@@ -113,7 +112,7 @@ class EngagementSDK(
             userRepository,
             applicationContext,
             programId,
-            errorDelegate) { timecodeGetter.getTimecode() }.safeProxyForEmptyReturnCalls()
+            errorDelegate) { timecodeGetter.getTimecode() }
     }
 
     internal data class SdkConfiguration(
