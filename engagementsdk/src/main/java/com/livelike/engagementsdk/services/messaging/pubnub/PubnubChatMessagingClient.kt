@@ -255,7 +255,6 @@ internal class PubnubChatMessagingClient(
                         ),
                         object : TypeToken<MutableMap<String, ArrayList<String>>>() {}.type
                 ) ?: mutableMapOf()
-                println("PubnubChatMessagingClient.message-> ${pubnubChatRoomLastMessageTime?.size}-> $channel")
                 pubnubChatRoomLastMessageTime?.let {
                     val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(message.message.asJsonObject,
                     object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
@@ -278,7 +277,6 @@ internal class PubnubChatMessagingClient(
                             addProperty("pubnubToken", message.timetoken)
                         }, channel, client, message.timetoken)
                     }
-                    println("PubnubChatMessagingClient.message--->${it[activeChatRoom]?.size}")
                 }
             }
 
