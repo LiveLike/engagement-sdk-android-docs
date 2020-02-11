@@ -76,7 +76,7 @@ internal class ChatRecyclerAdapter(
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
-    private var isChatPopUpShowing: Boolean = false
+    private var lastFloatingUiAnchorView: View ? = null
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     lateinit var chatReactionRepository: ChatReactionRepository
@@ -141,6 +141,11 @@ internal class ChatRecyclerAdapter(
         }
 
         private fun wouldShowFloatingUi(view: View?) {
+            if (lastFloatingUiAnchorView == view) {
+                lastFloatingUiAnchorView = null
+                return
+            }
+            lastFloatingUiAnchorView = view
             val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
             val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
             if (reactionsAvailable || !isOwnMessage) {
@@ -153,9 +158,8 @@ internal class ChatRecyclerAdapter(
         }
 
         override fun onClick(view: View?) {
-            if (isChatPopUpShowing) {
+            if (chatPopUpView?.isShowing == true) {
                 hideFloatingUI()
-                isChatPopUpShowing = false
             } else {
                 wouldShowFloatingUi(view)
             }
@@ -207,7 +211,6 @@ internal class ChatRecyclerAdapter(
             reaction: ChatMessageReaction? = null,
             checkItemIsAtTop: Boolean
         ) {
-            isChatPopUpShowing = true
             currentChatReactionPopUpViewPos = adapterPosition
             updateBackground()
             if (chatPopUpView?.isShowing == true)
