@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.stickerKeyboard
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.text.style.DynamicDrawableSpan
@@ -8,7 +9,6 @@ import android.text.style.ImageSpan
 import android.widget.EditText
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -18,6 +18,9 @@ import java.io.IOException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
+import android.graphics.drawable.ColorDrawable
+import com.bumptech.glide.request.target.CustomTarget
+
 
 fun String.findStickers(): Matcher {
     val regex = ":[^ :\\s]*:"
@@ -135,6 +138,8 @@ fun replaceWithImages(
     callback: MultiCallback?,
     inEditText: Boolean,
     id: String = "",
+    width: Int = 100,
+    height: Int = 100,
     onMatch: (() -> Unit)? = null
 ) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
@@ -155,6 +160,13 @@ fun replaceWithImages(
         val startIndex = matcher.start()
         val end = matcher.end()
 
+        // Make a transparent drawable for when the image is loading
+        val transparentDrawable = ColorDrawable(Color.TRANSPARENT)
+        setupBounds(transparentDrawable, inEditText, width, height)
+        val span = ImageSpan(transparentDrawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
+        s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        onMatch?.invoke()
+
         if (url.contains(".gif")) {
             targetByteArrays[id] = Glide.with(context)
                 .`as`(ByteArray::class.java)
@@ -170,7 +182,10 @@ fun replaceWithImages(
                     ) {
                         try {
                             val drawable = GifDrawable(resource)
-                            setupBounds(drawable, inEditText)
+                            setupBounds(drawable, inEditText,
+                                drawable.intrinsicWidth,
+                                drawable.intrinsicHeight
+                            )
                             drawable.reset()
                             drawable.start()
                             drawable.callback = callback
@@ -195,7 +210,9 @@ fun replaceWithImages(
                         transition: Transition<in Drawable>?
                     ) {
                         try {
-                            setupBounds(drawable, inEditText)
+                            setupBounds(drawable, inEditText,
+                                drawable.intrinsicWidth,
+                                drawable.intrinsicHeight)
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
@@ -243,7 +260,9 @@ internal fun setupBounds(
 // This method is following iOS guidelines. Make sure to discuss with the iOS team before modifying it
 internal fun setupBounds(
     drawable: Drawable,
-    inEditText: Boolean
+    inEditText: Boolean,
+    w: Int,
+    h: Int
 ) {
     val padding = AndroidResource.dpToPx(8)
 
@@ -253,7 +272,7 @@ internal fun setupBounds(
         AndroidResource.dpToPx(stickerSize)
     }
     val height = overrideSize
-    val width = (overrideSize.toFloat()*drawable.intrinsicWidth.toFloat()/drawable.intrinsicHeight.toFloat()).roundToInt()
+    val width = (overrideSize.toFloat()*w/h).roundToInt()
 
     drawable.setBounds(
         0,
