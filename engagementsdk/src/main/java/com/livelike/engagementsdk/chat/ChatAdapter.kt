@@ -76,6 +76,7 @@ internal class ChatRecyclerAdapter(
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    private var isChatPopUpShowing: Boolean = false
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     lateinit var chatReactionRepository: ChatReactionRepository
@@ -136,7 +137,6 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(view: View?): Boolean {
-            wouldShowFloatingUi(view)
             return true
         }
 
@@ -153,10 +153,11 @@ internal class ChatRecyclerAdapter(
         }
 
         override fun onClick(view: View?) {
-            if (chatPopUpView?.isShowing == true) {
-                wouldShowFloatingUi(view)
-            } else {
+            if (isChatPopUpShowing) {
                 hideFloatingUI()
+                isChatPopUpShowing = false
+            } else {
+                wouldShowFloatingUi(view)
             }
         }
 
@@ -206,6 +207,7 @@ internal class ChatRecyclerAdapter(
             reaction: ChatMessageReaction? = null,
             checkItemIsAtTop: Boolean
         ) {
+            isChatPopUpShowing = true
             currentChatReactionPopUpViewPos = adapterPosition
             updateBackground()
             if (chatPopUpView?.isShowing == true)
