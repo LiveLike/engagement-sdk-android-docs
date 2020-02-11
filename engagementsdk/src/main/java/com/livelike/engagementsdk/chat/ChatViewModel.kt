@@ -260,12 +260,15 @@ internal class ChatViewModel(
                                 val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
                                 chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
                                 chatMessage.imageUrl = imageUrl
+                                val drawable = GifDrawable(fileBytes)
+                                chatMessage.image_width = drawable.intrinsicWidth
+                                chatMessage.image_height = drawable.intrinsicHeight
+                                val m = chatMessage.copy()
+                                m.message = ""
+                                chatListener?.onChatMessageSend(m, timedata)
+                                drawable.recycle()
                             }
-                            val drawable = GifDrawable(fileBytes)
-                            chatMessage.image_width = drawable.intrinsicWidth
-                            chatMessage.image_height = drawable.intrinsicHeight
-                            chatListener?.onChatMessageSend(chatMessage, timedata)
-                            drawable.recycle()
+
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }

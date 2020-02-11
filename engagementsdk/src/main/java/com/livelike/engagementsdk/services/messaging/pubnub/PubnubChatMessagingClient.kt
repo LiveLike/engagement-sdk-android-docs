@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
-import android.content.Context
 import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -98,6 +97,7 @@ internal class PubnubChatMessagingClient(
     fun addChannelSubscription(channel: String, startTimestamp: Long) {
         if (!connectedChannels.contains(channel)) {
             connectedChannels.add(channel)
+            flushPublishedMessage(*connectedChannels.toTypedArray())
             val endTimeStamp = Calendar.getInstance().timeInMillis
             pubnub.subscribe().channels(listOf(channel)).execute()
 //            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
