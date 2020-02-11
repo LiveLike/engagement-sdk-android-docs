@@ -76,6 +76,7 @@ internal class ChatRecyclerAdapter(
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    private var isChatPopUpShowing: Boolean = false
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     lateinit var chatReactionRepository: ChatReactionRepository
@@ -88,7 +89,6 @@ internal class ChatRecyclerAdapter(
     internal var messageTimeFormatter: ((time: Long) -> String)? = null
     private var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
-
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
@@ -105,7 +105,7 @@ internal class ChatRecyclerAdapter(
         super.onViewDetachedFromWindow(holder)
     }
 
-    private fun isAccessibilityEnabled(context: Context):Boolean {
+    private fun isAccessibilityEnabled(context: Context): Boolean {
         val am = context.getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
         return am.isEnabled && am.isTouchExplorationEnabled
     }
@@ -137,16 +137,28 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(view: View?): Boolean {
-                val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
-                val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
-                if (reactionsAvailable || !isOwnMessage) {
-                    showFloatingUI(isOwnMessage, message?.myChatMessageReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
-                }
             return true
         }
 
+        private fun wouldShowFloatingUi(view: View?) {
+            val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
+            val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
+            if (reactionsAvailable || !isOwnMessage) {
+                showFloatingUI(
+                    isOwnMessage,
+                    message?.myChatMessageReaction,
+                    checkListIsAtTop(adapterPosition) && itemCount > 1
+                )
+            }
+        }
+
         override fun onClick(view: View?) {
-            hideFloatingUI()
+            if (isChatPopUpShowing) {
+                hideFloatingUI()
+                isChatPopUpShowing = false
+            } else {
+                wouldShowFloatingUi(view)
+            }
         }
 
         init {
@@ -195,6 +207,7 @@ internal class ChatRecyclerAdapter(
             reaction: ChatMessageReaction? = null,
             checkItemIsAtTop: Boolean
         ) {
+            isChatPopUpShowing = true
             currentChatReactionPopUpViewPos = adapterPosition
             updateBackground()
             if (chatPopUpView?.isShowing == true)
@@ -542,7 +555,17 @@ internal class ChatRecyclerAdapter(
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text = "$sumCount"
                         } else {
-                            txt_chat_reactions_count.visibility = View.GONE
+                            txt_chat_reactions_count.visibility = View.INVISIBLE
+                            txt_chat_reactions_count.text = "  "
+                            if (chatViewThemeAttribute.chatReactionHintEnable) {
+                                val imageView = ImageView(context)
+                                imageView.contentDescription =
+                                    context.getString(R.string.you_can_add_reaction_hint)
+                                imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
+                                val params: FrameLayout.LayoutParams =
+                                    FrameLayout.LayoutParams(size, size)
+                                rel_reactions_lay.addView(imageView, params)
+                            }
                         }
                     }
                 }
