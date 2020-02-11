@@ -134,6 +134,8 @@
         <attr name="chatMessageTopBorderColor" format="color"/>
         <attr name="chatMessageBottomBorderHeight" format="dimension"/>
         <attr name="chatMessageBottomBorderColor" format="color"/>
+        <attr name="reaction_hint_enable" format="boolean" />
+        <attr name="reaction_icon" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="PointView">

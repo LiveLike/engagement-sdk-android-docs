@@ -510,6 +510,8 @@ class ChatViewThemeAttributes {
                     R.styleable.LiveLike_ChatView_chatMessageBottomBorderHeight,
                     AndroidResource.dpToPx(0)
                 )
+            chatReactionHintEnable = getBoolean(R.styleable.LiveLike_ChatView_reaction_hint_enable, false)
+            chatReactionHintIcon = getResourceId(R.styleable.LiveLike_ChatView_reaction_icon, R.drawable.ic_chat_reaction_default)
         }
     }
 
@@ -585,4 +587,6 @@ class ChatViewThemeAttributes {
     var chatMessageBottomBorderColor: Int = Color.TRANSPARENT
     var chatMessageTopBorderHeight: Int = 0
     var chatMessageBottomBorderHeight: Int = 0
+    var chatReactionHintEnable: Boolean = false
+    var chatReactionHintIcon: Int = R.drawable.ic_chat_reaction_turner
 }
