@@ -11,12 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
-import com.livelike.engagementsdk.widget.util.RoundedCornersTransformation
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButtonBackground
@@ -85,35 +82,43 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         if (itemIsSelected) {
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
                 WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
-                    updateViewButtonBackground(R.drawable.answer_outline_selected_prediction,option,itemIsSelected)
+                    updateViewButtonBackground(
+                        R.drawable.answer_outline_selected_prediction
+                    )
                 }
                 WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> {
                     updateViewProgressBar(R.drawable.progress_bar_poll)
-                    updateViewButtonBackground(R.drawable.answer_outline_selected_poll,option,itemIsSelected)
+                    updateViewButtonBackground(
+                        R.drawable.answer_outline_selected_poll
+                    )
                 }
                 WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> {
                     updateViewProgressBar(R.drawable.progress_bar_quiz)
-                    updateViewButtonBackground(R.drawable.answer_outline_selected_quiz,option,itemIsSelected)
+                    updateViewButtonBackground(
+                        R.drawable.answer_outline_selected_quiz
+                    )
                 }
                 else -> {
                     updateViewProgressBar(R.drawable.progress_bar_neutral)
-                    updateViewButtonBackground(R.drawable.answer_outline_selected_poll,option,itemIsSelected)
+                    updateViewButtonBackground(
+                        R.drawable.answer_outline_selected_poll
+                    )
                 }
             }
         } else {
             updateViewProgressBar(R.drawable.progress_bar_neutral)
-            updateViewButtonBackground(R.color.livelike_transparent,option,itemIsSelected)
+            updateViewButtonBackground(R.color.livelike_transparent)
         }
 
         if (!correctOptionId.isNullOrEmpty()) {
             updateViewProgressBar(R.drawable.progress_bar_neutral)
             if (userSelectedOptionId == option.id && !option.is_correct) {
                 updateViewProgressBar(R.drawable.progress_bar_wrong)
-                updateViewButtonBackground(R.drawable.answer_outline_wrong,option,itemIsSelected)
+                updateViewButtonBackground(R.drawable.answer_outline_wrong)
             }
             if (option.is_correct) {
                 updateViewProgressBar(R.drawable.progress_bar_correct)
-                updateViewButtonBackground(R.drawable.answer_outline_correct,option,itemIsSelected)
+                updateViewButtonBackground(R.drawable.answer_outline_correct)
             }
         }
         if (itemIsLast) {
@@ -179,7 +184,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         }
     }
 
-    private fun updateViewButtonBackground(drawableId: Int,option: Option,itemIsSelected: Boolean) {
+    private fun updateViewButtonBackground(drawableId: Int) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
         if (text_button != null && text_button?.tag != drawableId) {
             text_button?.background = drawable
@@ -188,28 +193,6 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         if (imageButtonBackground != null && imageButtonBackground?.tag != drawableId) {
             imageButtonBackground?.background = drawable
             imageButtonBackground?.tag = drawableId
-            if (itemIsSelected)
-                Glide.with(context)
-                    .load(option.image_url)
-                    .apply(
-                        RequestOptions().transform(
-                            RoundedCornersTransformation(
-                                AndroidResource.dpToPx(8).toFloat(),
-                                0,
-                                RoundedCornersTransformation.CornerType.BOTTOM_RIGHT
-                            ),
-                            RoundedCornersTransformation(
-                                AndroidResource.dpToPx(8).toFloat(),
-                                0,
-                                RoundedCornersTransformation.CornerType.TOP_RIGHT
-                            )
-                        )
-                    )
-                    .into(imageButton)
-            else
-                Glide.with(context)
-                    .load(option.image_url)
-                    .into(imageButton)
         }
     }
 
