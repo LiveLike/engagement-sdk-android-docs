@@ -554,7 +554,7 @@ internal class ChatRecyclerAdapter(
                         if (emojiCountMap.isNotEmpty() && sumCount > 0) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text = "$sumCount"
-                        } else {
+                        } else if ((chatReactionRepository.reactionList?.size ?: 0) > 0) {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "
                             if (chatViewThemeAttribute.chatReactionHintEnable) {
