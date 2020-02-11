@@ -40,7 +40,6 @@
             android:adjustViewBounds="true"
             android:layout_gravity="right|center"
             android:contentDescription="TODO"
-            android:scaleType="centerInside"
             tools:src="@tools:sample/avatars" />
     </FrameLayout>
 
@@ -75,7 +74,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="blah blah blah blah blah blah blah blah blah blah blah blah blha"
+            tools:text="blah blah blah blah blah  blah blah blha"
             android:gravity="start"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="16dp"
