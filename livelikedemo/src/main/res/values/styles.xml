@@ -100,6 +100,7 @@
         <item name="chatMessageBottomBorderHeight">1dp</item>
         <item name="chatMessageBottomBorderColor">#efeff4</item>
         <item name="reaction_icon">@drawable/ic_chat_reaction_turner</item>
+        <item name="reaction_hint_enable">true</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">

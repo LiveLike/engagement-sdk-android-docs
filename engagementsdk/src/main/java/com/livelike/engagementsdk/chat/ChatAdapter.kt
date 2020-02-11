@@ -552,15 +552,18 @@ internal class ChatRecyclerAdapter(
                         if (emojiCountMap.isNotEmpty() && sumCount > 0) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text = "$sumCount"
-                        } else if (chatViewThemeAttribute.chatReactionHintEnable) {
+                        } else {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "
-                            val imageView = ImageView(context)
-                            imageView.contentDescription = context.getString(R.string.you_can_add_reaction_hint)
-                            imageView.setImageResource(R.drawable.ic_chat_reaction_default)
-                            val params: FrameLayout.LayoutParams =
-                                FrameLayout.LayoutParams(size, size)
-                            rel_reactions_lay.addView(imageView, params)
+                            if (chatViewThemeAttribute.chatReactionHintEnable) {
+                                val imageView = ImageView(context)
+                                imageView.contentDescription =
+                                    context.getString(R.string.you_can_add_reaction_hint)
+                                imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
+                                val params: FrameLayout.LayoutParams =
+                                    FrameLayout.LayoutParams(size, size)
+                                rel_reactions_lay.addView(imageView, params)
+                            }
                         }
                     }
                 }
