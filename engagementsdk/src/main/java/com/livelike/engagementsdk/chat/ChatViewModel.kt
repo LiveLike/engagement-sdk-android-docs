@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.bumptech.glide.Glide
@@ -29,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import pl.droidsonroids.gif.GifDrawable
 import java.io.IOException
 
 internal class ChatViewModel(
@@ -260,13 +260,13 @@ internal class ChatViewModel(
                                 val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
                                 chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
                                 chatMessage.imageUrl = imageUrl
-                                val drawable = GifDrawable(fileBytes)
-                                chatMessage.image_width = drawable.intrinsicWidth
-                                chatMessage.image_height = drawable.intrinsicHeight
+                                val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                                chatMessage.image_width = bitmap.width
+                                chatMessage.image_height = bitmap.height
                                 val m = chatMessage.copy()
                                 m.message = ""
                                 chatListener?.onChatMessageSend(m, timedata)
-                                drawable.recycle()
+                                bitmap.recycle()
                             }
 
                         } catch (e: IOException) {
