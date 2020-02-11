@@ -11,15 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.MultiTransformation
-import com.bumptech.glide.load.resource.bitmap.FitCenter
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
-import kotlin.math.roundToInt
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButtonBackground
@@ -30,6 +24,7 @@ import kotlinx.android.synthetic.main.atom_widget_text_item.view.bkgrd
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.determinateBar
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.percentageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
+import kotlin.math.roundToInt
 
 internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
     private var inflated = false
@@ -87,19 +82,27 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         if (itemIsSelected) {
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
                 WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
-                    updateViewButtonBackground(R.drawable.answer_outline_selected_prediction)
+                    updateViewButtonBackground(
+                        R.drawable.answer_outline_selected_prediction
+                    )
                 }
                 WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> {
                     updateViewProgressBar(R.drawable.progress_bar_poll)
-                    updateViewButtonBackground(R.drawable.answer_outline_selected_poll)
+                    updateViewButtonBackground(
+                        R.drawable.answer_outline_selected_poll
+                    )
                 }
                 WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> {
                     updateViewProgressBar(R.drawable.progress_bar_quiz)
-                    updateViewButtonBackground(R.drawable.answer_outline_selected_quiz)
+                    updateViewButtonBackground(
+                        R.drawable.answer_outline_selected_quiz
+                    )
                 }
                 else -> {
                     updateViewProgressBar(R.drawable.progress_bar_neutral)
-                    updateViewButtonBackground(R.drawable.answer_outline_selected_poll)
+                    updateViewButtonBackground(
+                        R.drawable.answer_outline_selected_poll
+                    )
                 }
             }
         } else {
@@ -159,10 +162,6 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
 
         Glide.with(context)
             .load(option.image_url)
-            .apply(
-                RequestOptions().override(AndroidResource.dpToPx(80), AndroidResource.dpToPx(80))
-                    .transform(MultiTransformation(FitCenter(), RoundedCorners(12)))
-            )
             .into(imageButton)
         clickListener?.apply {
             imageButtonBackground.setOnClickListener(clickListener)
