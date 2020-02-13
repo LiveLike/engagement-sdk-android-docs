@@ -49,6 +49,9 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -75,9 +78,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -573,10 +573,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         button_chat_send.let { buttonChat ->
             buttonChat.setOnClickListener { sendMessageNow() }
 
-            if (edittext_chat_message.text.isNullOrEmpty()){
+            if (edittext_chat_message.text.isNullOrEmpty()) {
                 buttonChat.visibility = View.GONE
                 buttonChat.isEnabled = false
-            }else{
+            } else {
                 buttonChat.isEnabled = true
                 buttonChat.visibility = View.VISIBLE
             }
@@ -702,7 +702,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.userPic,
             isFromMe = true,
             image_width = 100,
-            image_height = 100
+            image_height = 100,
+            timeStamp = timeData.timeSinceEpochInMs.toString()
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
