@@ -27,6 +27,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -403,9 +404,16 @@ internal class ChatRecyclerAdapter(
                         }
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
-                            v.message_date_time.text = messageTimeFormatter?.invoke(
-                                message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis
-                            ) // to handle the case if its own message and time has not come from pubnub yet.
+                            if (EngagementSDK.enableDebug) {
+                                val pdt = message.timeStamp?.toLong() ?: 0
+                                v.message_date_time.text = "Created :  ${messageTimeFormatter?.invoke(
+                                    message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis)} | Synced : ${messageTimeFormatter?.invoke(
+                                    pdt)} "
+                            } else {
+                                v.message_date_time.text = messageTimeFormatter?.invoke(
+                                    message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis
+                                )
+                            }
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }

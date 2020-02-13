@@ -34,7 +34,7 @@ internal data class ChatMessage(
     val senderDisplayPic: String?,
     var id: String = UUID.randomUUID().toString(),
     // PDT video time //NOt using right now for later use FYI @shivansh @Willis
-    val timeStamp: String? = null,
+    var timeStamp: String? = null,
     var pubnubMessageToken: Long? = null,
     var imageUrl: String? = null,
     var badgeUrlImage: String? = null,

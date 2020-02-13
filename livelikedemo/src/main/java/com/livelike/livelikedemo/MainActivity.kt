@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.livelikedemo.channel.ChannelManager
 import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
@@ -113,10 +114,17 @@ class MainActivity : AppCompatActivity() {
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
                     (application as LiveLikeApplication).setTheme()
                     themes_label.text = channels[which]
+                    EngagementSDK.enableDebug = false
                     player.theme = when (which) {
                         0 -> R.style.Default
-                        1 -> R.style.TurnerChatTheme
-                        2 -> R.style.CustomChatReactionTheme
+                        1 -> {
+                            EngagementSDK.enableDebug = true
+                            R.style.TurnerChatTheme
+                        }
+                        2 -> {
+                            EngagementSDK.enableDebug = false
+                            R.style.CustomChatReactionTheme
+                        }
                         else -> R.style.Default
                     }
                 }
