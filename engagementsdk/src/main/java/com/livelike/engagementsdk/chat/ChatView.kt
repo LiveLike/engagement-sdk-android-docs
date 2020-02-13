@@ -267,6 +267,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             eventStream.subscribe(javaClass.simpleName) {
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
+                        println("ChatView.setSession NEW MESSAGE-> $isLastItemVisible ->${!swipeToRefresh.isRefreshing}")
                         // Auto scroll if user is looking at the latest messages
                         checkEmptyChat()
                         if (isLastItemVisible && !swipeToRefresh.isRefreshing) {
@@ -274,6 +275,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         }
                     }
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
+                        println("ChatView.setSession COMPLETE")
                         uiScope.launch {
                             if (swipeToRefresh.isRefreshing) {
                                 swipeToRefresh.isRefreshing = false
@@ -287,6 +289,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         }
                     }
                     ChatViewModel.EVENT_LOADING_STARTED -> {
+                        println("ChatView.setSession STARTED LOADING")
                         uiScope.launch {
                             showLoadingSpinner()
                         }
@@ -558,6 +561,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             showSnapToLive()
                             false
                         }
+                    println("ChatView.onScrolled->$autoScroll -> $isLastItemVisible -> $lastVisible ->$totalItemCount")
                     if (endHasBeenReached) {
                         autoScroll = false
                     }
@@ -774,13 +778,17 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         chatdisplay?.let { rv ->
             hideSnapToLive()
             viewModel?.messageList?.size?.let {
+                autoScroll = true
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
+                    println("ChatView.snapToLive-->$it")
                     rv.smoothScrollToPosition(it)
                 } else {
+                    println("ChatView.snapToLive----->${it-1}")
                     rv.scrollToPosition(it - 1)
                 }
+                autoScroll = false
             }
         }
     }

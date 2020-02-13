@@ -96,6 +96,7 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
+        println("ChatViewModel.displayChatMessage--> ${message.message}")
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         if (getBlockedUsers().contains(message.senderId)) {
             return
@@ -128,10 +129,11 @@ internal class ChatViewModel(
                 }
             }
         }
-
+        println("ChatViewModel.displayChatMessage---->${messageList.size} -> ${message.message}")
         if (chatLoaded) {
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList.toSet()))
+                println("ChatViewModel.displayChatMessage->${messageList.size}->${message.message}")
                 eventStream.onNext(EVENT_NEW_MESSAGE)
             }
         }
@@ -196,6 +198,7 @@ internal class ChatViewModel(
     }
 
     override fun loadingCompleted() {
+        println("ChatViewModel.loadingCompleted-->$chatLoaded")
         if (!chatLoaded) {
             chatLoaded = true
             if (messageList.isEmpty() && cacheList.isNotEmpty()) {
