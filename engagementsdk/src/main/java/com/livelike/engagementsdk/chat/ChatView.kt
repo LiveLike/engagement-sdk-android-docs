@@ -270,7 +270,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         // Auto scroll if user is looking at the latest messages
                         checkEmptyChat()
                         autoScroll = true
-                        if ((isLastItemVisible && !swipeToRefresh.isRefreshing)) {
+                        if (isLastItemVisible && !swipeToRefresh.isRefreshing) {
                             snapToLive()
                         }
                     }
