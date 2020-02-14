@@ -68,30 +68,41 @@ internal class SynchronizedMessagingClient(
                     val msgId = it.message.get("id")?.asString
                     return@find msgId != null && currentChatMessageId != null && msgId == currentChatMessageId
                 }
-                if (foundMsg == null)
+                if (foundMsg == null) {
                     queue.enqueue(event)
+                }
+                queue.elements.sortBy { it.message.get("pubnubMessageToken").asLong }
+                queue.elements.forEach {
+                    println("SynchronizedMessagingClient.onClientMessageEvent->>${it.channel}-->${it.message}")
+                }
                 queueMap[event.channel] = queue
             }
         }
     }
 
     fun processQueueForScheduledEvent() {
-        queueMap.forEach { key, queue ->
-            val event = queue.peek()
-            event?.let {
-                when {
-                    shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
-                    shouldDismissEvent(event) -> {
-                        logDismissedEvent(event)
-                        queue.dequeue()
+        queueMap.keys.forEach {
+            val queue = queueMap[it]
+            queue?.let {
+                val event = queue.peek()
+                event?.let {
+                    when {
+                        shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
+                        shouldDismissEvent(event) -> {
+                            logDismissedEvent(event)
+                            queue.dequeue()
+                        }
+                        else -> {
+                        }
                     }
-                    else->{}
                 }
             }
         }
+
      }
 
     private fun publishEvent(event: ClientMessage) {
+        println("SynchronizedMessagingClient.publishEvent->${event.message}")
         listener?.onClientMessageEvent(this, event)
     }
 

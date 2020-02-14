@@ -7,7 +7,6 @@ internal class Queue<T> {
     fun enqueue(item: T) = elements.add(item)
     fun dequeue() = if (!isEmpty()) elements.removeAt(0) else null
     fun peek() = if (!isEmpty()) elements[0] else null
-
     override fun toString(): String = elements.toString()
 }
 
