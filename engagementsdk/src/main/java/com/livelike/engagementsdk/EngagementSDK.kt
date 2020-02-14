@@ -32,7 +32,9 @@ class EngagementSDK(
     private val errorDelegate: ErrorDelegate? = null
 ) : IEngagement {
 
-//    We should add errorDelegate as parameter of SDK init, on this error delegate we can propogate the events of network failures or any other. Based on it integrator can re-init sdk
+    companion object {
+        var enableDebug: Boolean = false
+    }
 
     private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
     private val dataClient = EngagementDataClientImpl()
