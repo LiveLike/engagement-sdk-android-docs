@@ -26,7 +26,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 recycle()
             }
         }
-        session.setWidgetContainer(this)
+        session.setWidgetContainer(this, widgetViewThemeAttributes)
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
     }
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
