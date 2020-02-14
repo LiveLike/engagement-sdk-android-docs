@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.stickerKeyboard
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.text.style.DynamicDrawableSpan
@@ -9,6 +10,7 @@ import android.text.style.ImageSpan
 import android.widget.EditText
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -18,8 +20,6 @@ import java.io.IOException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
-import android.graphics.drawable.ColorDrawable
-import com.bumptech.glide.request.target.CustomTarget
 
 
 fun String.findStickers(): Matcher {
@@ -228,33 +228,40 @@ fun replaceWithImages(
 internal fun setupBounds(
     drawable: Drawable,
     edittext_chat_message: EditText?,
-    overrideSize: Int
+    size: Int
 ) {
     val padding = AndroidResource.dpToPx(8)
-    var ratioWidth = drawable.intrinsicWidth.toFloat()/overrideSize.toFloat()
-    var ratioHeight = drawable.intrinsicHeight.toFloat()/overrideSize.toFloat()
+    val w = drawable.intrinsicWidth
+    val h = drawable.intrinsicHeight
 
-    if (overrideSize == AndroidResource.dpToPx(stickerSize) && drawable.intrinsicWidth <= AndroidResource.dpToPx(
-            stickerSize)) {
-        ratioWidth = 1f
-        ratioHeight = 1f
+    val overrideSize = if(edittext_chat_message!=null){
+        AndroidResource.dpToPx(smallStickerSize)
+    }else{
+        AndroidResource.dpToPx(size)
+    }
+    var height = 0
+    var width = 0
+    when{
+        w == h -> {
+            height = overrideSize
+            width = overrideSize
+        }
+        w > h -> {
+            height = (overrideSize.toFloat()*h/w).roundToInt()
+            width = overrideSize
+        }
+        w < h -> {
+            height = overrideSize
+            width = (overrideSize.toFloat()*w/h).roundToInt()
+        }
     }
 
-    if (edittext_chat_message != null && overrideSize > edittext_chat_message.width) {
-        drawable.setBounds(
-            0,
-            padding,
-            (edittext_chat_message.width*ratioWidth).roundToInt(),
-            edittext_chat_message.width+padding
-        )
-    } else {
-        drawable.setBounds(
-            0,
-            padding,
-            (overrideSize*ratioWidth).roundToInt(),
-            (overrideSize*ratioHeight).roundToInt()+padding
-        )
-    }
+    drawable.setBounds(
+        0,
+        padding,
+        width,
+        height+padding
+    )
 }
 
 // This method is following iOS guidelines. Make sure to discuss with the iOS team before modifying it
@@ -267,7 +274,7 @@ internal fun setupBounds(
     val padding = AndroidResource.dpToPx(8)
 
     val overrideSize = if(inEditText){
-        AndroidResource.dpToPx(30)
+        AndroidResource.dpToPx(smallStickerSize)
     }else{
         AndroidResource.dpToPx(stickerSize)
     }
@@ -281,3 +288,5 @@ internal fun setupBounds(
         height+padding
     )
 }
+
+private const val smallStickerSize = 30
