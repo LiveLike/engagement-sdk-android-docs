@@ -128,7 +128,6 @@ internal class ChatViewModel(
                 }
             }
         }
-
         if (chatLoaded) {
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList))
