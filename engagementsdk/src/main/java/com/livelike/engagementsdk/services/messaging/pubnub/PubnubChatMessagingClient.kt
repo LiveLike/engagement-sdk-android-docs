@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.services.messaging.pubnub
 
 import android.util.Log
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.AnalyticsService
@@ -32,6 +33,7 @@ import com.livelike.engagementsdk.utils.isoUTCDateTimeFormatter
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addPublishedMessage
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.flushPublishedMessage
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getPublishedMessages
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getSharedPreferences
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.pubnub.api.PNConfiguration
@@ -73,6 +75,7 @@ internal class PubnubChatMessagingClient(
     val isDiscardOwnPublishInSubcription: Boolean = true
 ) : MessagingClient {
 
+    private val PREF_CHAT_ROOM_MSG_RECEIVED = "pubnub message received"
     @Volatile
     private var lastActionTimeToken: Long = 0
     private var connectedChannels: MutableSet<String> = mutableSetOf()
@@ -82,6 +85,7 @@ internal class PubnubChatMessagingClient(
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
     private var firstTimeToken: Long? = null
+    private var pubnubChatRoomLastMessageTime:MutableMap<String,ArrayList<String>>?=null
 
     var activeChatRoom = ""
         set(value) {
@@ -93,6 +97,7 @@ internal class PubnubChatMessagingClient(
     fun addChannelSubscription(channel: String, startTimestamp: Long) {
         if (!connectedChannels.contains(channel)) {
             connectedChannels.add(channel)
+            flushPublishedMessage(*connectedChannels.toTypedArray())
             val endTimeStamp = Calendar.getInstance().timeInMillis
             pubnub.subscribe().channels(listOf(channel)).execute()
 //            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
@@ -241,8 +246,38 @@ internal class PubnubChatMessagingClient(
             }
 
             override fun message(pubnub: PubNub, message: PNMessageResult) {
-                processPubnubChatEvent(message.message.asJsonObject.apply {
-                    addProperty("pubnubToken", message.timetoken) }, message.channel, client, message.timetoken)
+                val channel = message.channel
+                if (pubnubChatRoomLastMessageTime == null)
+                    pubnubChatRoomLastMessageTime = GsonBuilder().create().fromJson(
+                        getSharedPreferences().getString(
+                            PREF_CHAT_ROOM_MSG_RECEIVED,
+                            null
+                        ),
+                        object : TypeToken<MutableMap<String, ArrayList<String>>>() {}.type
+                ) ?: mutableMapOf()
+                pubnubChatRoomLastMessageTime?.let {
+                    val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(message.message.asJsonObject,
+                    object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
+                    val msgId = pubnubChatEvent.payload.messageId
+
+                    val list =
+                        when {
+                            it.containsKey(channel) -> it[channel]
+                            else -> ArrayList()
+                        } ?: ArrayList()
+                    if (!list.contains(msgId)) {
+                        list.add(msgId)
+                        it[channel] = list
+                        getSharedPreferences().edit()
+                            .putString(
+                                PREF_CHAT_ROOM_MSG_RECEIVED,
+                                GsonBuilder().create().toJson(it)
+                            ).apply()
+                        processPubnubChatEvent(message.message.asJsonObject.apply {
+                            addProperty("pubnubToken", message.timetoken)
+                        }, channel, client, message.timetoken)
+                    }
+                }
             }
 
             override fun messageAction(

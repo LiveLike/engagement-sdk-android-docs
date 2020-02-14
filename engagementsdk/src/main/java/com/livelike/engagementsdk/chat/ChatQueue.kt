@@ -36,6 +36,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         when (event.message.get("event").asString) {
             ChatViewModel.EVENT_NEW_MESSAGE -> {
                 val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
+                chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
                 renderer?.displayChatMessage(chatMessage)
                 msgListener?.onNewMessage(
                     event.channel,

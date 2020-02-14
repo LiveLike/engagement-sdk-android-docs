@@ -33,7 +33,6 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.core.exceptionhelpers.getTargetObject
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
@@ -133,7 +132,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
     private val viewModel: ChatViewModel?
-        get() = (session.getTargetObject() as ContentSession?)?.chatViewModel
+        get() = (session as ContentSession?)?.chatViewModel
 
     val callback = MultiCallback(true)
 
@@ -279,9 +278,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             if (swipeToRefresh.isRefreshing) {
                                 swipeToRefresh.isRefreshing = false
                             } else {
+                                // Add delay to avoid UI glitch when recycler view is loading
+                                delay(500)
                                 hideLoadingSpinner()
                                 checkEmptyChat()
-                                delay(100)
                                 snapToLive()
                             }
                         }
@@ -297,6 +297,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 currentUser = it
                 it?.let {
                     uiScope.launch {
+                        user_profile_tv.visibility = View.VISIBLE
                         user_profile_tv.text = it.nickname
                     }
                 }
@@ -356,7 +357,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         replaceWithImages(
                             s as Spannable,
                             this@ChatView.context,
-                            edittext_chat_message, callback
+                            callback,
+                            true
                         )
                         // cleanup before the image
                         if (matcher.start()> 0) edittext_chat_message.text?.delete(0, matcher.start())
@@ -570,8 +572,14 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
         button_chat_send.let { buttonChat ->
             buttonChat.setOnClickListener { sendMessageNow() }
-            buttonChat.visibility = View.GONE
-            buttonChat.isEnabled = false
+
+            if (edittext_chat_message.text.isNullOrEmpty()) {
+                buttonChat.visibility = View.GONE
+                buttonChat.isEnabled = false
+            } else {
+                buttonChat.isEnabled = true
+                buttonChat.visibility = View.VISIBLE
+            }
 
             edittext_chat_message.apply {
                 addTextChangedListener(object : TextWatcher {
@@ -694,7 +702,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.userPic,
             isFromMe = true,
             image_width = 100,
-            image_height = 100
+            image_height = 100,
+            timeStamp = timeData.timeSinceEpochInMs.toString()
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {

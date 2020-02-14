@@ -27,6 +27,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -76,6 +77,7 @@ internal class ChatRecyclerAdapter(
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
+    private var lastFloatingUiAnchorView: View ? = null
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
     lateinit var chatReactionRepository: ChatReactionRepository
@@ -88,7 +90,6 @@ internal class ChatRecyclerAdapter(
     internal var messageTimeFormatter: ((time: Long) -> String)? = null
     private var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
-
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(root.context).inflate(R.layout.default_chat_cell, root, false))
@@ -105,7 +106,7 @@ internal class ChatRecyclerAdapter(
         super.onViewDetachedFromWindow(holder)
     }
 
-    private fun isAccessibilityEnabled(context: Context):Boolean {
+    private fun isAccessibilityEnabled(context: Context): Boolean {
         val am = context.getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
         return am.isEnabled && am.isTouchExplorationEnabled
     }
@@ -137,16 +138,32 @@ internal class ChatRecyclerAdapter(
             })
 
         override fun onLongClick(view: View?): Boolean {
-                val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
-                val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
-                if (reactionsAvailable || !isOwnMessage) {
-                    showFloatingUI(isOwnMessage, message?.myChatMessageReaction, checkListIsAtTop(adapterPosition) && itemCount > 1)
-                }
             return true
         }
 
+        private fun wouldShowFloatingUi(view: View?) {
+            if (lastFloatingUiAnchorView == view) {
+                lastFloatingUiAnchorView = null
+                return
+            }
+            lastFloatingUiAnchorView = view
+            val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
+            val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
+            if (reactionsAvailable || !isOwnMessage) {
+                showFloatingUI(
+                    isOwnMessage,
+                    message?.myChatMessageReaction,
+                    checkListIsAtTop(adapterPosition) && itemCount > 1
+                )
+            }
+        }
+
         override fun onClick(view: View?) {
-            hideFloatingUI()
+            if (chatPopUpView?.isShowing == true) {
+                hideFloatingUI()
+            } else {
+                wouldShowFloatingUi(view)
+            }
         }
 
         init {
@@ -387,9 +404,16 @@ internal class ChatRecyclerAdapter(
                         }
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
-                            v.message_date_time.text = messageTimeFormatter?.invoke(
-                                message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis
-                            ) // to handle the case if its own message and time has not come from pubnub yet.
+                            if (EngagementSDK.enableDebug) {
+                                val pdt = message.timeStamp?.toLong() ?: 0
+                                v.message_date_time.text = "Created :  ${messageTimeFormatter?.invoke(
+                                    message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis)} | Synced : ${messageTimeFormatter?.invoke(
+                                    pdt)} "
+                            } else {
+                                v.message_date_time.text = messageTimeFormatter?.invoke(
+                                    message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis
+                                )
+                            }
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }
@@ -482,7 +506,7 @@ internal class ChatRecyclerAdapter(
                         when {
                             isExternalImage -> {
                                 val s = SpannableString(message.message)
-                                replaceWithImages(s, context, null, callback, AndroidResource.dpToPx(stickerSize), message.id) {
+                                replaceWithImages(s, context, callback, false, message.id, message.image_width ?: 100, message.image_height ?: 100) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
@@ -541,8 +565,18 @@ internal class ChatRecyclerAdapter(
                         if (emojiCountMap.isNotEmpty() && sumCount > 0) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text = "$sumCount"
-                        } else {
-                            txt_chat_reactions_count.visibility = View.GONE
+                        } else if ((chatReactionRepository.reactionList?.size ?: 0) > 0) {
+                            txt_chat_reactions_count.visibility = View.INVISIBLE
+                            txt_chat_reactions_count.text = "  "
+                            if (chatViewThemeAttribute.chatReactionHintEnable) {
+                                val imageView = ImageView(context)
+                                imageView.contentDescription =
+                                    context.getString(R.string.you_can_add_reaction_hint)
+                                imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
+                                val params: FrameLayout.LayoutParams =
+                                    FrameLayout.LayoutParams(size, size)
+                                rel_reactions_lay.addView(imageView, params)
+                            }
                         }
                     }
                 }

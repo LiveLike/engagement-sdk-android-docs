@@ -1,10 +1,13 @@
 package com.livelike.engagementsdk.chat
 
 import android.content.Context
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
@@ -24,10 +27,10 @@ import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -40,7 +43,7 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     var messageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
-    internal val eventStream: Stream<String> = SubscriptionManager(true)
+    internal val eventStream: Stream<String> = SubscriptionManager(false)
     var currentChatRoom: ChatRoom? = null
         set(value) {
             field = value
@@ -237,25 +240,39 @@ internal class ChatViewModel(
     }
 
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
-        GlobalScope.launch(Dispatchers.IO) {
+
             val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length - 1))
-            val fileBytes = context.contentResolver.openInputStream(url)?.readBytes()
-            val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
-            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-            chatMessage.imageUrl = imageUrl
-            Glide.with(context.applicationContext)
-                .asBitmap()
+
+            Glide.with(context)
+                .`as`(ByteArray::class.java)
                 .load(url)
-                .into(object : SimpleTarget<Bitmap>() {
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(object : CustomTarget<ByteArray>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                    }
+
                     override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
+                        fileBytes: ByteArray,
+                        transition: Transition<in ByteArray>?
                     ) {
-                        chatMessage.image_width = resource.width
-                        chatMessage.image_height = resource.height
-                        chatListener?.onChatMessageSend(chatMessage, timedata)
+                        try {
+                            uiScope.launch(Dispatchers.IO) {
+                                val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
+                                chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                                chatMessage.imageUrl = imageUrl
+                                val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                                chatMessage.image_width = bitmap.width
+                                chatMessage.image_height = bitmap.height
+                                val m = chatMessage.copy()
+                                m.message = ""
+                                chatListener?.onChatMessageSend(m, timedata)
+                                bitmap.recycle()
+                            }
+
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
                     }
                 })
-        }
     }
 }

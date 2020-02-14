@@ -22,36 +22,43 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton_lay"
             android:layout_marginRight="8dp"/>
 
-    <ImageView
+    <FrameLayout
+        android:id="@+id/imageButton_lay"
+        android:layout_width="90dp"
+        android:layout_height="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
             android:id="@+id/imageButton"
-            android:layout_width="70dp"
-            android:layout_height="60dp"
-            android:scaleType="centerCrop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_gravity="right|center"
             android:contentDescription="TODO"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:src="@tools:sample/avatars"
-    />
+            tools:src="@tools:sample/avatars" />
+    </FrameLayout>
 
     <!--suppress AndroidDomInspection -->
     <TextView
-            android:id="@+id/imagePercentage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/livelike_percent_label_text_color"
-            android:textSize="@dimen/livelike_percent_label_text_size"
-            android:gravity="end"
-            android:fontFamily="@font/livelike_header_font"
-            app:layout_constraintTop_toBottomOf="@id/imageBar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:text="50%"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/imageText"
-    />
+        android:id="@+id/imagePercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:fontFamily="@font/livelike_header_font"
+        android:gravity="end"
+        android:textColor="@color/livelike_percent_label_text_color"
+        android:textSize="@dimen/livelike_percent_label_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/imageText"
+        app:layout_constraintTop_toBottomOf="@id/imageText"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="50%" />
 
     <!--suppress AndroidDomInspection -->
     <TextView
@@ -63,17 +70,18 @@
             android:textSize="@dimen/livelike_option_text_size"
             android:textAlignment="textStart"
             android:layout_marginBottom="8dp"
+            android:lineSpacingExtra="6dp"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="blah blah blah blah blah blah blah blah "
+            tools:text="blah blah blah blah blah  blah blah blha"
             android:gravity="start"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="16dp"
             android:layout_marginLeft="16dp"
             app:layout_constraintVertical_bias="0.0"
             android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton_lay"
             android:layout_marginRight="8dp"/>
 
     <View android:layout_width="0dp"
