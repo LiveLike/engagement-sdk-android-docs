@@ -26,11 +26,11 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -128,10 +128,9 @@ internal class ChatViewModel(
                 }
             }
         }
-
         if (chatLoaded) {
             uiScope.launch {
-                chatAdapter.submitList(ArrayList(messageList.toSet()))
+                chatAdapter.submitList(ArrayList(messageList))
                 eventStream.onNext(EVENT_NEW_MESSAGE)
             }
         }
@@ -268,7 +267,6 @@ internal class ChatViewModel(
                                 chatListener?.onChatMessageSend(m, timedata)
                                 bitmap.recycle()
                             }
-
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }
