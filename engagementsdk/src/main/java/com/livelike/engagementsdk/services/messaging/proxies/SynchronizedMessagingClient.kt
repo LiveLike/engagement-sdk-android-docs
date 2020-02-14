@@ -72,9 +72,6 @@ internal class SynchronizedMessagingClient(
                     queue.enqueue(event)
                 }
                 queue.elements.sortBy { it.message.get("pubnubMessageToken").asLong }
-                queue.elements.forEach {
-                    println("SynchronizedMessagingClient.onClientMessageEvent->>${it.channel}-->${it.message}")
-                }
                 queueMap[event.channel] = queue
             }
         }
@@ -102,7 +99,6 @@ internal class SynchronizedMessagingClient(
      }
 
     private fun publishEvent(event: ClientMessage) {
-        println("SynchronizedMessagingClient.publishEvent->${event.message}")
         listener?.onClientMessageEvent(this, event)
     }
 
