@@ -19,7 +19,7 @@ internal class SynchronizedMessagingClient(
 ) :
     MessagingClientProxy(upstream) {
 
-    private val queue = Queue<ClientMessage>()
+    private val queueMap:MutableMap<String,Queue<ClientMessage>> = mutableMapOf()
     private var coroutineTimer: Job
 
     init {
@@ -47,7 +47,7 @@ internal class SynchronizedMessagingClient(
     }
 
     override fun unsubscribeAll() {
-        coroutineTimer?.cancel()
+        coroutineTimer.cancel()
         super.unsubscribeAll()
     }
 
@@ -62,6 +62,7 @@ internal class SynchronizedMessagingClient(
                 // Adding the check for similar message ,it is occuring if user get message
                 // from history and also receive message from pubnub listener
                 // checking right now is based on id
+                val queue = queueMap[event.channel] ?: Queue()
                 val currentChatMessageId = event.message.get("id")?.asString
                 val foundMsg = queue.elements.find {
                     val msgId = it.message.get("id")?.asString
@@ -69,20 +70,26 @@ internal class SynchronizedMessagingClient(
                 }
                 if (foundMsg == null)
                     queue.enqueue(event)
+                queueMap[event.channel] = queue
             }
         }
     }
 
     fun processQueueForScheduledEvent() {
-        val event = queue.peek() ?: return
-        when {
-            shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
-            shouldDismissEvent(event) -> {
-                logDismissedEvent(event)
-                queue.dequeue()
+        queueMap.forEach { key, queue ->
+            val event = queue.peek()
+            event?.let {
+                when {
+                    shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
+                    shouldDismissEvent(event) -> {
+                        logDismissedEvent(event)
+                        queue.dequeue()
+                    }
+                    else->{}
+                }
             }
         }
-    }
+     }
 
     private fun publishEvent(event: ClientMessage) {
         listener?.onClientMessageEvent(this, event)
