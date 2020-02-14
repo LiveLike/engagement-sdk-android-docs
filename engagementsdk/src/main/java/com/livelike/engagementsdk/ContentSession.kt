@@ -76,7 +76,6 @@ internal class ContentSession(
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
 
-
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
     }
@@ -268,7 +267,7 @@ internal class ContentSession(
             chatViewModel.apply {
                 chatRoomMsgMap[lastChatRoomId] = messageList.takeLast(CHAT_HISTORY_LIMIT)
                 flushMessages()
-                if(chatRoomMsgMap.containsKey(chatRoomId)){
+                if (chatRoomMsgMap.containsKey(chatRoomId)) {
                     chatRoomMsgMap[chatRoomId]?.let {
                         this.cacheList.addAll(it)
                     }
@@ -346,8 +345,11 @@ internal class ContentSession(
 
     // ///// Widgets ///////
 
-    override fun setWidgetContainer(widgetView: FrameLayout) {
-        widgetContainer.setWidgetContainer(widgetView)
+    override fun setWidgetContainer(
+        widgetView: FrameLayout,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes
+    ) {
+        widgetContainer.setWidgetContainer(widgetView, widgetViewThemeAttributes)
     }
 
     private fun initializeWidgetMessaging(
