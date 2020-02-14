@@ -33,6 +33,7 @@ class EngagementSDK(
 ) : IEngagement {
 
     companion object {
+        @JvmStatic
         var enableDebug: Boolean = false
     }
 
