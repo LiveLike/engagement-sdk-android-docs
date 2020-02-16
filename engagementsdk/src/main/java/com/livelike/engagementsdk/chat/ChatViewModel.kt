@@ -26,11 +26,11 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -98,6 +98,11 @@ internal class ChatViewModel(
     override fun displayChatMessage(message: ChatMessage) {
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         if (getBlockedUsers().contains(message.senderId)) {
+            return
+        }
+
+        if (messageList.find {it.timetoken == message.timetoken} != null) {
+            // Do not re-display message already displayed
             return
         }
 

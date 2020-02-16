@@ -360,7 +360,6 @@ internal class PubnubChatMessagingClient(
                             channel
                         )
                         listener?.onClientMessageEvent(client, clientMessage)
-                        return // discarding as its own recently published message which is broadcasted by pubnub on that channel.
                     }
                     val pdtString = pubnubChatEvent.payload.programDateTime
                     var epochTimeMs = 0L
