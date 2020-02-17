@@ -360,6 +360,7 @@ internal class PubnubChatMessagingClient(
                             channel
                         )
                         listener?.onClientMessageEvent(client, clientMessage)
+                        return
                     }
                     val pdtString = pubnubChatEvent.payload.programDateTime
                     var epochTimeMs = 0L
