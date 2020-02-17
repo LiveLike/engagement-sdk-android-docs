@@ -3,6 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:defaultFocusHighlightEnabled="true"
+    android:focusedByDefault="true"
+    android:importantForAccessibility="yes"
+    android:screenReaderFocusable="true"
+    android:focusable="true"
     xmlns:tools="http://schemas.android.com/tools"
     tools:background="@color/livelike_black">
 
@@ -10,6 +15,7 @@
         android:id="@+id/border_top"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
+
     <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
