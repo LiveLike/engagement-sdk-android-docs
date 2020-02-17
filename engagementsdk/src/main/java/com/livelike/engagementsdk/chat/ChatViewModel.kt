@@ -101,11 +101,6 @@ internal class ChatViewModel(
             return
         }
 
-        if (messageList.find {it.timetoken == message.timetoken} != null) {
-            // Do not re-display message already displayed
-            return
-        }
-
         val imageUrl = message.imageUrl
 
         if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
