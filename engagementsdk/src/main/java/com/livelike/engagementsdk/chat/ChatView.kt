@@ -538,9 +538,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      *  @param chatAdapter ChatAdapter used for creating this view.
      */
     private fun setDataSource(chatAdapter: ChatRecyclerAdapter) {
-        if (chatAdapter.itemCount < 1) {
-            showLoadingSpinner()
-        }
         chatdisplay.let { rv ->
             rv.adapter = chatAdapter
             val lm = rv.layoutManager as LinearLayoutManager
