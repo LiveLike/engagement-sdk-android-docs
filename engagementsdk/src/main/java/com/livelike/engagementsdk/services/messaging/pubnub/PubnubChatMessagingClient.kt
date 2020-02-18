@@ -446,7 +446,7 @@ internal class PubnubChatMessagingClient(
                 .includeMessageActions(true)
                 .async(object : PNCallback<PNFetchMessagesResult>() {
                     override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
-                        if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
+                        if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false && channel!="chat_4d5ecf8d_3012_4ca2_8a56_4b8470c1ec8b") {
                             firstTimeToken = null
                             result.channels?.get(channel)?.reversed()?.forEach {
                                 val jsonObject = it.message.asJsonObject.apply {

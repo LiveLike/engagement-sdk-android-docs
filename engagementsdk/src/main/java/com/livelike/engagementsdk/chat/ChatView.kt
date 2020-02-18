@@ -291,6 +291,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     ChatViewModel.EVENT_LOADING_STARTED -> {
                         uiScope.launch {
                             hideKeyboard(KeyboardHideReason.EXPLICIT_CALL)
+                            hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
+                            initEmptyView()
+                            delay(400)
                             showLoadingSpinner()
                         }
                     }
