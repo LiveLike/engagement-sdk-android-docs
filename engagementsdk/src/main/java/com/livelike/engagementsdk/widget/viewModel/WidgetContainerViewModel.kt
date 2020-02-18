@@ -14,19 +14,25 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 
 // TODO remove view references from this view model, also clean content session for same.
 
 class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
+    private lateinit var widgetViewThemeAttributes: WidgetViewThemeAttributes
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
     private var widgetContainer: FrameLayout? = null
     var analyticsService: AnalyticsService? = null
 
     @SuppressLint("ClickableViewAccessibility")
-    fun setWidgetContainer(widgetContainer: FrameLayout) {
+    fun setWidgetContainer(
+        widgetContainer: FrameLayout,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes
+    ) {
         this.widgetContainer = widgetContainer
+        this.widgetViewThemeAttributes = widgetViewThemeAttributes
         // Swipe to dismiss
         widgetContainer.setOnTouchListener(
             SwipeDismissTouchListener(
@@ -73,6 +79,11 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Pair<
         if (view != null) {
             dismissWidget = view.dismissFunc
             (view.parent as ViewGroup?)?.removeAllViews() // Clean the view parent in case of reuse
+            view?.widgetViewThemeAttributes?.apply {
+                widgetWinAnimation = widgetViewThemeAttributes.widgetWinAnimation
+                widgetLoseAnimation = widgetViewThemeAttributes.widgetLoseAnimation
+                widgetDrawAnimation = widgetViewThemeAttributes.widgetDrawAnimation
+            }
             widgetContainer?.addView(view)
             logDebug { "NOW - Show WidgetInfos" }
         } else {

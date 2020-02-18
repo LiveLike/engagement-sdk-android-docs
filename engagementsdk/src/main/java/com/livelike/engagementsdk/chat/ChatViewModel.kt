@@ -128,10 +128,9 @@ internal class ChatViewModel(
                 }
             }
         }
-
         if (chatLoaded) {
             uiScope.launch {
-                chatAdapter.submitList(ArrayList(messageList.toSet()))
+                chatAdapter.submitList(ArrayList(messageList))
                 eventStream.onNext(EVENT_NEW_MESSAGE)
             }
         }
@@ -268,7 +267,6 @@ internal class ChatViewModel(
                                 chatListener?.onChatMessageSend(m, timedata)
                                 bitmap.recycle()
                             }
-
                         } catch (e: IOException) {
                             e.printStackTrace()
                         }

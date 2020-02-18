@@ -28,7 +28,10 @@ interface LiveLikeContentSession {
     /** Return the content Session Id (Program Id) for this session.*/
     fun contentSessionId(): String
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
-    fun setWidgetContainer(widgetView: FrameLayout)
+    fun setWidgetContainer(
+        widgetView: FrameLayout,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()
+    )
     /** Set the user profile pic. to be shown in chatting*/
     fun setProfilePicUrl(url: String?)
     /** Enter a Chat Room */
