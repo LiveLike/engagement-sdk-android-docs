@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.ACCESSIBILITY_SERVICE
 import android.content.res.Resources
@@ -47,9 +48,6 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Calendar
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -62,6 +60,12 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import pl.droidsonroids.gif.MultiCallback
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -385,6 +389,11 @@ internal class ChatRecyclerAdapter(
             updateBackground()
         }
 
+        // HH:MM:SS eg 02:45:12
+        private fun Long.toTimeString() : String =
+            SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date().apply { time = this@toTimeString })
+
+        @SuppressLint("SetTextI18n")
         private fun setMessage(
             message: ChatMessage?
         ) {
@@ -411,9 +420,11 @@ internal class ChatRecyclerAdapter(
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
                                 val pdt = message.timeStamp?.toLong() ?: 0
-                                v.message_date_time.text = "Created :  ${messageTimeFormatter?.invoke(
-                                    message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis)} | Synced : ${messageTimeFormatter?.invoke(
-                                    pdt)} "
+                                val createdAt = (
+                                        message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis).toTimeString()
+                                val syncedTime = pdt.toTimeString()
+
+                                v.message_date_time.text = "Created :  $createdAt | Synced : $syncedTime "
                             } else {
                                 v.message_date_time.text = messageTimeFormatter?.invoke(
                                     message.getUnixTimeStamp() ?: Calendar.getInstance().timeInMillis
