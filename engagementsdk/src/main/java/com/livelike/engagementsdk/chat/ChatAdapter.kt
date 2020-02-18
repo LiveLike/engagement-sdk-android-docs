@@ -17,6 +17,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -57,6 +58,7 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
+import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import pl.droidsonroids.gif.MultiCallback
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -201,6 +203,9 @@ internal class ChatRecyclerAdapter(
             v.tag = item
             setMessage(item)
             updateBackground()
+            v.postDelayed({
+                v.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
+            }, 100)
             if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                 if (chatPopUpView?.isShowing == true) {
                     chatPopUpView?.updatePopView(

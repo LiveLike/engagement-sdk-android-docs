@@ -263,7 +263,6 @@ internal class ContentSession(
             val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
             delay(500)
             wouldInitPrivateGroupSession(channel)
-            privateGroupPubnubClient?.activeChatRoom = channel
             chatViewModel.apply {
                 chatRoomMsgMap[lastChatRoomId] = messageList.takeLast(CHAT_HISTORY_LIMIT)
                 flushMessages()
@@ -275,6 +274,7 @@ internal class ContentSession(
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }
+            privateGroupPubnubClient?.activeChatRoom = channel
         }
     }
 

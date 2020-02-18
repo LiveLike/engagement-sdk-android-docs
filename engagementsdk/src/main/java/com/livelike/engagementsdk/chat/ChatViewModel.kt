@@ -26,11 +26,11 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -116,12 +116,14 @@ internal class ChatViewModel(
                     messageList.add(0, message.apply {
                         isFromMe = userStream.latest()?.id == senderId
                     })
-                } else if (message.timetoken != 0L && messageList?.last()?.timetoken > message.timetoken) {
-                    messageList.add(message)
-                    messageList.sortBy {
-                        it.timetoken
-                    }
-                } else {
+                }
+//                else if (message.timetoken != 0L && messageList?.last()?.timetoken > message.timetoken) {
+//                    messageList.add(message)
+//                    messageList.sortBy {
+//                        it.timetoken
+//                    }
+//                }
+                else {
                     messageList.add(message.apply {
                         isFromMe = userStream.latest()?.id == senderId
                     })
