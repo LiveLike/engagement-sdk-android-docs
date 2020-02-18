@@ -227,7 +227,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun initEmptyView() {
         emptyChatBackgroundView?.let {
-            it.visibility = View.GONE
             if (chatdisplayBack.childCount == 1) {
                 val layoutParam = FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
@@ -235,8 +234,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 )
                 layoutParam.gravity = Gravity.CENTER
                 chatdisplayBack.addView(it, layoutParam)
-                it.visibility = View.GONE
             }
+            it.visibility = View.GONE
         }
     }
 
