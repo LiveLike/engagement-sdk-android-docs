@@ -262,8 +262,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 formatMessageDateTime(time)
             }
             initStickerKeyboard(sticker_keyboard, this)
-
             setDataSource(chatAdapter)
+            if (chatLoaded)
+                checkEmptyChat()
             eventStream.subscribe(javaClass.simpleName) {
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
