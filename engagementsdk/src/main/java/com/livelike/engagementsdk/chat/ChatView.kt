@@ -49,9 +49,6 @@ import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -78,6 +75,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -233,9 +233,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     FrameLayout.LayoutParams.MATCH_PARENT
                 )
                 layoutParam.gravity = Gravity.CENTER
-                chatdisplayBack.addView(emptyChatBackgroundView, layoutParam)
+                chatdisplayBack.addView(it, layoutParam)
             }
-            emptyChatBackgroundView?.visibility = View.GONE
+            it.visibility = View.GONE
         }
     }
 
@@ -268,8 +268,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
-                        checkEmptyChat()
                         autoScroll = true
+                        checkEmptyChat()
                         if (isLastItemVisible && !swipeToRefresh.isRefreshing) {
                             snapToLive()
                         }
@@ -289,6 +289,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                     ChatViewModel.EVENT_LOADING_STARTED -> {
                         uiScope.launch {
+                            hideKeyboard(KeyboardHideReason.EXPLICIT_CALL)
+                            hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
+                            initEmptyView()
+                            delay(400)
                             showLoadingSpinner()
                         }
                     }
@@ -409,10 +413,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun checkEmptyChat() {
         emptyChatBackgroundView?.let {
-            if ((viewModel?.messageList?.size ?: 0) == 0)
-                it.visibility = View.VISIBLE
+            it.visibility = if ((viewModel?.messageList?.size ?: 0) == 0)
+                View.VISIBLE
             else
-                it.visibility = View.GONE
+                View.GONE
         }
     }
 
