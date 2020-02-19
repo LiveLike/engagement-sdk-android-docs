@@ -148,6 +148,8 @@ class EngagementSDK(
         @SerializedName("profile_url")
         val profileUrl: String,
         @SerializedName("program_detail_url_template")
-        val programDetailUrlTemplate: String
+        val programDetailUrlTemplate: String,
+        @SerializedName("pubnub_origin")
+        val pubnubOrigin: String? = null
     )
 }

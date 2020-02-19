@@ -14,7 +14,8 @@ internal class ChatRepository(
     private val authKey: String,
     private val uuid: String,
     private val analyticsService: AnalyticsService,
-    private val publishKey: String? = null
+    private val publishKey: String? = null,
+    private val origin: String? = null
 ) : BaseRepository() {
 
     var pubnubChatMessagingClient: PubnubChatMessagingClient? = null
@@ -27,7 +28,8 @@ internal class ChatRepository(
                 authKey,
                 uuid,
                 analyticsService,
-                publishKey
+                publishKey,
+                origin = origin
             )
         return pubnubChatMessagingClient!!
     }
