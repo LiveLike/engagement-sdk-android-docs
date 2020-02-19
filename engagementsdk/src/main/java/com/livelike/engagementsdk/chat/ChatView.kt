@@ -262,8 +262,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 formatMessageDateTime(time)
             }
             initStickerKeyboard(sticker_keyboard, this)
-
             setDataSource(chatAdapter)
+            if (chatLoaded)
+                checkEmptyChat()
             eventStream.subscribe(javaClass.simpleName) {
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
@@ -538,9 +539,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      *  @param chatAdapter ChatAdapter used for creating this view.
      */
     private fun setDataSource(chatAdapter: ChatRecyclerAdapter) {
-        if (chatAdapter.itemCount < 1) {
-            showLoadingSpinner()
-        }
         chatdisplay.let { rv ->
             rv.adapter = chatAdapter
             val lm = rv.layoutManager as LinearLayoutManager

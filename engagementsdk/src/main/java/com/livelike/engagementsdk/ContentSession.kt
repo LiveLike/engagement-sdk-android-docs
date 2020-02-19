@@ -407,6 +407,7 @@ internal class ContentSession(
                     subscribe(listOf(chatChannel))
                 }
                 this.renderer = chatViewModel
+                chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
             }
     }
