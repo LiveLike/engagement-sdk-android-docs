@@ -143,7 +143,8 @@ internal class ContentSession(
                     pair.first.accessToken,
                     pair.first.id,
                     analyticService,
-                    configuration.pubnubPublishKey
+                    configuration.pubnubPublishKey,
+                    origin = configuration.pubnubOrigin
                 )
                 analyticService =
                     MixpanelAnalytics(
