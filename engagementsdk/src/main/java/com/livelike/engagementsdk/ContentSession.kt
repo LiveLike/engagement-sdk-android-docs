@@ -170,8 +170,10 @@ internal class ContentSession(
                             chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
                             chatViewModel.chatRepository = chatRepository
                             contentSessionScope.launch { chatViewModel.chatReactionRepository?.preloadImages(applicationContext) }
-                            chatViewModel.currentChatRoom = program.defaultChatRoom
-                            if (privateChatRoomID.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
+                            if (privateChatRoomID.isEmpty()) {
+                                chatViewModel.currentChatRoom = program.defaultChatRoom
+                                initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
+                            }
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
