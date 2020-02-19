@@ -33,6 +33,7 @@ import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
 import com.livelike.engagementsdk.utils.isNetworkConnected
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.flushPublishedMessage
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
@@ -401,6 +402,7 @@ internal class ContentSession(
             ?.apply {
                 msgListener = proxyMsgListener
                 // check issue here
+                flushPublishedMessage(chatChannel)
                 if (!privateGroupsChat) {
                     subscribe(listOf(chatChannel))
                 }
