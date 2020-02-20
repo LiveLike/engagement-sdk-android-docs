@@ -33,6 +33,7 @@ import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.combineLatestOnce
 import com.livelike.engagementsdk.utils.isNetworkConnected
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.flushPublishedMessage
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
@@ -143,7 +144,8 @@ internal class ContentSession(
                     pair.first.accessToken,
                     pair.first.id,
                     analyticService,
-                    configuration.pubnubPublishKey
+                    configuration.pubnubPublishKey,
+                    origin = configuration.pubnubOrigin
                 )
                 analyticService =
                     MixpanelAnalytics(
@@ -168,8 +170,10 @@ internal class ContentSession(
                             chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
                             chatViewModel.chatRepository = chatRepository
                             contentSessionScope.launch { chatViewModel.chatReactionRepository?.preloadImages(applicationContext) }
-                            chatViewModel.currentChatRoom = program.defaultChatRoom
-                            if (privateChatRoomID.isEmpty()) initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
+                            if (privateChatRoomID.isEmpty()) {
+                                chatViewModel.currentChatRoom = program.defaultChatRoom
+                                initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
+                            }
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -400,10 +404,12 @@ internal class ContentSession(
             ?.apply {
                 msgListener = proxyMsgListener
                 // check issue here
+                flushPublishedMessage(chatChannel)
                 if (!privateGroupsChat) {
                     subscribe(listOf(chatChannel))
                 }
                 this.renderer = chatViewModel
+                chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
             }
     }

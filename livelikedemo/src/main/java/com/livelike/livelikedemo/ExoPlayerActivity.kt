@@ -169,6 +169,12 @@ class ExoPlayerActivity : AppCompatActivity() {
         } else {
             checkForNetworkToRecreateActivity()
         }
+        if (themeCurrent == R.style.TurnerChatTheme) {
+            val emptyView =
+                LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
+            chat_view.emptyChatBackgroundView = emptyView
+            chat_view.allowMediaFromKeyboard = false
+        }
     }
 
     private fun testKeyboardDismissUseCase(themeCurrent: Int) {
@@ -340,12 +346,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
 
-            if (themeCurrent == R.style.TurnerChatTheme) {
-                val emptyView =
-                    LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
-                chat_view.emptyChatBackgroundView = emptyView
-                chat_view.allowMediaFromKeyboard = false
-            }
+
             chat_view.setSession(session)
             widget_view.setSession(session)
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
