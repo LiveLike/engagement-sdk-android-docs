@@ -72,8 +72,9 @@ internal class PubnubChatMessagingClient(
     uuid: String,
     private val analyticsService: AnalyticsService,
     publishKey: String? = null,
-    val isDiscardOwnPublishInSubcription: Boolean = true
-) : MessagingClient {
+    val isDiscardOwnPublishInSubcription: Boolean = true,
+    val origin: String? = null
+    ) : MessagingClient {
 
     private val PREF_CHAT_ROOM_MSG_RECEIVED = "pubnub message received"
     @Volatile
@@ -191,6 +192,9 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
+        if (origin != null) {
+            pubnubConfiguration.origin = origin
+        }
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this
