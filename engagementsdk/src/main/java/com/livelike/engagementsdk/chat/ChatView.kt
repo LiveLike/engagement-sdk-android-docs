@@ -54,6 +54,7 @@ import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_border
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
+import kotlinx.android.synthetic.main.chat_input.view.txt_hint_for_chat_msg
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.gamification_badge_iv
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.pointView
@@ -606,6 +607,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
                     override fun afterTextChanged(s: Editable) {
                         if (s.isNotEmpty()) {
+//                            val hasExternalImage = s.toString().findImages().countMatches() > 0
+//                            txt_hint_for_chat_msg.text = if (hasExternalImage) {
+//                                "Image"
+//                            } else {
+//                                s.toString()
+//                            }
                             buttonChat.isEnabled = true
                             buttonChat.visibility = View.VISIBLE
                         } else {
