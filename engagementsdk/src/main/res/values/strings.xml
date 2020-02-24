@@ -18,4 +18,5 @@
     <string name="recent_sticker">Recent Stickers</string>
     <string name="reactions_panel_opened">Reactions panel opened</string>
     <string name="you_can_add_reaction_hint">you can add reaction here</string>
+    <string name="image">Image</string>
 </resources>
