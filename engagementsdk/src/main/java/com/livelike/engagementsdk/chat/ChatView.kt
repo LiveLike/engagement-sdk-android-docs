@@ -19,6 +19,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -54,7 +55,6 @@ import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_border
 import kotlinx.android.synthetic.main.chat_input.view.edittext_chat_message
-import kotlinx.android.synthetic.main.chat_input.view.txt_hint_for_chat_msg
 import kotlinx.android.synthetic.main.chat_input.view.user_profile_display_LL
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.gamification_badge_iv
 import kotlinx.android.synthetic.main.chat_user_profile_bar.view.pointView
@@ -374,6 +374,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
                         // Move to end of line
                         edittext_chat_message.setSelection(edittext_chat_message.text?.length ?: 0)
+                        wouldUpdateChatInputAccessibiltyFocus(100)
                     } else if (containsImage) {
                         containsImage = false
                         s?.length?.let { edittext_chat_message.text?.delete(0, it) }
@@ -607,12 +608,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
                     override fun afterTextChanged(s: Editable) {
                         if (s.isNotEmpty()) {
-//                            val hasExternalImage = s.toString().findImages().countMatches() > 0
-//                            txt_hint_for_chat_msg.text = if (hasExternalImage) {
-//                                "Image"
-//                            } else {
-//                                s.toString()
-//                            }
                             buttonChat.isEnabled = true
                             buttonChat.visibility = View.VISIBLE
                         } else {
@@ -664,10 +659,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         wouldUpdateChatInputAccessibiltyFocus()
     }
 
-    private fun wouldUpdateChatInputAccessibiltyFocus() {
+    private fun wouldUpdateChatInputAccessibiltyFocus(time:Long=500) {
         chatInput.postDelayed({
             edittext_chat_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-        }, 500)
+        }, time)
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {
