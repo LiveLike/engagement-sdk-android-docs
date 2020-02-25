@@ -11,6 +11,7 @@ import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.stickerKeyboard.findImages
 
@@ -38,7 +39,7 @@ class RichContentEditText : AppCompatEditText {
                         info.hintText=""
                     }
                     info.text = if (hasExternalImage)
-                        "Image"
+                        context.getString(R.string.image)
                     else
                         s
                 }
