@@ -19,6 +19,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -373,6 +374,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
                         // Move to end of line
                         edittext_chat_message.setSelection(edittext_chat_message.text?.length ?: 0)
+                        wouldUpdateChatInputAccessibiltyFocus(100)
                     } else if (containsImage) {
                         containsImage = false
                         s?.length?.let { edittext_chat_message.text?.delete(0, it) }
@@ -657,10 +659,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         wouldUpdateChatInputAccessibiltyFocus()
     }
 
-    private fun wouldUpdateChatInputAccessibiltyFocus() {
+    private fun wouldUpdateChatInputAccessibiltyFocus(time:Long=500) {
         chatInput.postDelayed({
             edittext_chat_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
-        }, 500)
+        }, time)
     }
 
     private fun hideKeyboard(reason: KeyboardHideReason) {

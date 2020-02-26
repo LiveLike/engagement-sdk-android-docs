@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                 setTitle("Choose a theme!")
                 setItems(channels.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
-                    (application as LiveLikeApplication).setTheme()
+                    (application as LiveLikeApplication).removeSession()
                     themes_label.text = channels[which]
                     EngagementSDK.enableDebug = false
                     player.theme = when (which) {

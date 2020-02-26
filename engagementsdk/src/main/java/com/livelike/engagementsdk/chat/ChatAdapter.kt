@@ -58,7 +58,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
-import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import pl.droidsonroids.gif.MultiCallback
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -519,6 +518,11 @@ internal class ChatRecyclerAdapter(
 
                         chatMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                         callback.addView(chatMessage)
+                        chatMessage.contentDescription = if (isExternalImage) {
+                            context.getString(R.string.image)
+                        } else {
+                            message.message
+                        }
                         when {
                             isExternalImage -> {
                                 val s = SpannableString(message.message)

@@ -7,8 +7,13 @@ import android.support.v13.view.inputmethod.InputConnectionCompat
 import android.support.v7.widget.AppCompatEditText
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
+import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
+import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.stickerKeyboard.findImages
 
 
 class RichContentEditText : AppCompatEditText {
@@ -19,6 +24,28 @@ class RichContentEditText : AppCompatEditText {
         attrs,
         defStyleAttr
     )
+
+    init {
+        setAccessibilityDelegate(object : AccessibilityDelegate() {
+            override fun onInitializeAccessibilityNodeInfo(
+                host: View?,
+                info: AccessibilityNodeInfo?
+            ) {
+                super.onInitializeAccessibilityNodeInfo(host, info)
+                info?.text?.let { s ->
+                    val hasExternalImage = s.toString().findImages().countMatches() > 0
+                    info.contentDescription = ""
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        info.hintText=""
+                    }
+                    info.text = if (hasExternalImage)
+                        context.getString(R.string.image)
+                    else
+                        s
+                }
+            }
+        })
+    }
 
     override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection {
         val ic: InputConnection = super.onCreateInputConnection(editorInfo)
@@ -45,7 +72,6 @@ class RichContentEditText : AppCompatEditText {
                                 return@OnCommitContentListener false
                             }
                         }
-
                     setText(":${inputContentInfo.contentUri}:")
                     true
                 }
