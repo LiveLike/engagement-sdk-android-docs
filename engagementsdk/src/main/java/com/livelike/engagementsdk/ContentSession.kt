@@ -204,6 +204,7 @@ internal class ContentSession(
                             chatRoomMap[chatRoomId] = chatRoomResult.data
                             chatRoomResultCall.invoke(chatRoomResult.data)
                         } else if (chatRoomResult is Result.Error) {
+                            errorDelegate?.onError("error in fetching room id $chatRoomId")
                             logError {
                                 chatRoomResult.exception?.message
                                     ?: "error in fetching room id resource"
