@@ -35,12 +35,11 @@ internal fun PubnubChatMessage.toChatMessage(
         senderNickname,
         senderImageUrl,
         messageId,
-        pubnubMessageToken = messageToken,
-        timetoken = timetoken,
         emojiCountMap = emojiCountMap,
         myChatMessageReaction = myReaction,
         imageUrl = imageUrl,
         image_width = image_width,
-        image_height = image_height
+        image_height = image_height,
+        timetoken = timetoken
     )
 }
