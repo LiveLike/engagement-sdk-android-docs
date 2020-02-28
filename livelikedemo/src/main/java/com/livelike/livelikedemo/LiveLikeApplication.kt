@@ -28,7 +28,9 @@ class LiveLikeApplication : Application() {
             return EpochTime(player.getPDT())
         }
     }
-    private var session: LiveLikeContentSession? = null
+    private var publicSession: LiveLikeContentSession? = null
+    private var privateGroupChatsession: LiveLikeContentSession? = null
+
     lateinit var sdk: EngagementSDK
     lateinit var sdk2: EngagementSDK
 
@@ -47,13 +49,17 @@ class LiveLikeApplication : Application() {
             PREF_USER_ACCESS_TOKEN,
             null
         )
-        sdk = EngagementSDK(BuildConfig.APP_CLIENT_ID, applicationContext, accessToken, object : ErrorDelegate() {
-            override fun onError(error: String) {
-            android.os.Handler(Looper.getMainLooper()).postDelayed({
-                initSDK()
-            }, 1000)
-            }
-        })
+        sdk = EngagementSDK(
+            BuildConfig.APP_CLIENT_ID,
+            applicationContext,
+            accessToken,
+            object : ErrorDelegate() {
+                override fun onError(error: String) {
+                    android.os.Handler(Looper.getMainLooper()).postDelayed({
+                        initSDK()
+                    }, 1000)
+                }
+            })
         if (accessToken == null) {
             fetchAndPersisToken(sdk)
         }
@@ -75,21 +81,39 @@ class LiveLikeApplication : Application() {
         return player
     }
 
-    fun removeSession() {
-        session?.close()
-        session = null
+    fun removePublicSession() {
+        publicSession?.close()
+        publicSession = null
     }
 
-    fun createSession(
+    fun removePrivateSession() {
+        privateGroupChatsession?.close()
+        privateGroupChatsession = null
+    }
+
+    fun createPublicSession(
         sessionId: String,
         widgetInterceptor: WidgetInterceptor? = null
     ): LiveLikeContentSession {
-        if (session == null || session?.contentSessionId() != sessionId) {
-            session?.close()
-            session = sdk.createContentSession(sessionId, timecodeGetter)
+        if (publicSession == null || publicSession?.contentSessionId() != sessionId) {
+            publicSession?.close()
+            publicSession = sdk.createContentSession(sessionId, timecodeGetter)
         }
-        session!!.widgetInterceptor = widgetInterceptor
-        return session as LiveLikeContentSession
+        publicSession!!.widgetInterceptor = widgetInterceptor
+        return publicSession as LiveLikeContentSession
+    }
+
+    fun createPrivateSession(
+        sessionId: String,
+        widgetInterceptor: WidgetInterceptor? = null,
+        errorDelegate: ErrorDelegate?=null
+    ): LiveLikeContentSession {
+        if (privateGroupChatsession == null || privateGroupChatsession?.contentSessionId() != sessionId) {
+            privateGroupChatsession?.close()
+            privateGroupChatsession = sdk.createContentSession(sessionId, timecodeGetter,errorDelegate)
+        }
+        privateGroupChatsession!!.widgetInterceptor = widgetInterceptor
+        return privateGroupChatsession as LiveLikeContentSession
     }
 }
 
