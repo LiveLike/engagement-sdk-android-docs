@@ -19,7 +19,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -374,7 +373,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
                         // Move to end of line
                         edittext_chat_message.setSelection(edittext_chat_message.text?.length ?: 0)
-                        wouldUpdateChatInputAccessibiltyFocus(100)
+                        if (edittext_chat_message.text?.isNotEmpty() == true)
+                            wouldUpdateChatInputAccessibiltyFocus(100)
                     } else if (containsImage) {
                         containsImage = false
                         s?.length?.let { edittext_chat_message.text?.delete(0, it) }
