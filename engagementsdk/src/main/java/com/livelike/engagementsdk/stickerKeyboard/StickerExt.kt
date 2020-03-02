@@ -14,13 +14,12 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.livelike.engagementsdk.utils.AndroidResource
-import pl.droidsonroids.gif.GifDrawable
-import pl.droidsonroids.gif.MultiCallback
 import java.io.IOException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
-
+import pl.droidsonroids.gif.GifDrawable
+import pl.droidsonroids.gif.MultiCallback
 
 fun String.findStickers(): Matcher {
     val regex = ":[^ :\\s]*:"
@@ -47,9 +46,9 @@ fun Matcher.countMatches(): Int {
     return counter
 }
 
-const val stickerSize=100
+const val stickerSize = 100
 
-fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?,callback: MultiCallback?, size: Int = 50, onMatch: (() -> Unit)? = null) {
+fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, callback: MultiCallback?, size: Int = 50, onMatch: (() -> Unit)? = null) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
     existingSpans?.forEach { imageSpan ->
@@ -127,7 +126,7 @@ fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: 
 var targetDrawables = mutableMapOf<String, CustomTarget<Drawable>?>()
 var targetByteArrays = mutableMapOf<String, CustomTarget<ByteArray>?>()
 
-fun clearTarget(id: String, context: Context){
+fun clearTarget(id: String, context: Context) {
     Glide.with(context).clear(targetByteArrays[id])
     Glide.with(context).clear(targetDrawables[id])
 }
@@ -155,7 +154,7 @@ fun replaceWithImages(
     while (matcher.find()) {
 
         val fullUrl = matcher.group()
-        val url = matcher.group().substring(1, fullUrl.length -1)
+        val url = matcher.group().substring(1, fullUrl.length - 1)
 
         val startIndex = matcher.start()
         val end = matcher.end()
@@ -234,25 +233,25 @@ internal fun setupBounds(
     val w = drawable.intrinsicWidth
     val h = drawable.intrinsicHeight
 
-    val overrideSize = if(edittext_chat_message!=null){
+    val overrideSize = if (edittext_chat_message != null) {
         AndroidResource.dpToPx(smallStickerSize)
-    }else{
+    } else {
         AndroidResource.dpToPx(size)
     }
     var height = 0
     var width = 0
-    when{
+    when {
         w == h -> {
             height = overrideSize
             width = overrideSize
         }
         w > h -> {
-            height = (overrideSize.toFloat()*h/w).roundToInt()
+            height = (overrideSize.toFloat() * h / w).roundToInt()
             width = overrideSize
         }
         w < h -> {
             height = overrideSize
-            width = (overrideSize.toFloat()*w/h).roundToInt()
+            width = (overrideSize.toFloat() * w / h).roundToInt()
         }
     }
 
@@ -260,7 +259,7 @@ internal fun setupBounds(
         0,
         padding,
         width,
-        height+padding
+        height + padding
     )
 }
 
@@ -273,19 +272,19 @@ internal fun setupBounds(
 ) {
     val padding = AndroidResource.dpToPx(8)
 
-    val overrideSize = if(inEditText){
+    val overrideSize = if (inEditText) {
         AndroidResource.dpToPx(smallStickerSize)
-    }else{
+    } else {
         AndroidResource.dpToPx(stickerSize)
     }
     val height = overrideSize
-    val width = (overrideSize.toFloat()*w/h).roundToInt()
+    val width = (overrideSize.toFloat() * w / h).roundToInt()
 
     drawable.setBounds(
         0,
         padding,
         width,
-        height+padding
+        height + padding
     )
 }
 

@@ -106,11 +106,11 @@ class LiveLikeApplication : Application() {
     fun createPrivateSession(
         sessionId: String,
         widgetInterceptor: WidgetInterceptor? = null,
-        errorDelegate: ErrorDelegate?=null
+        errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         if (privateGroupChatsession == null || privateGroupChatsession?.contentSessionId() != sessionId) {
             privateGroupChatsession?.close()
-            privateGroupChatsession = sdk.createContentSession(sessionId, timecodeGetter,errorDelegate)
+            privateGroupChatsession = sdk.createContentSession(sessionId, timecodeGetter, errorDelegate)
         }
         privateGroupChatsession!!.widgetInterceptor = widgetInterceptor
         return privateGroupChatsession as LiveLikeContentSession
