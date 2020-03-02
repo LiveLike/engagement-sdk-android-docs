@@ -180,6 +180,7 @@ interface RVPagerStateListener {
 open class RVPagerSnapHelperListenable(private val maxPages: Int = 3) {
     fun attachToRecyclerView(recyclerView: RecyclerView, listener: RVPagerStateListener) {
         assertRecyclerViewSetup(recyclerView)
+        recyclerView.onFlingListener = null
         setUpSnapHelper(recyclerView, listener)
         setUpScrollListener(recyclerView, listener)
     }
