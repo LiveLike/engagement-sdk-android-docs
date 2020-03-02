@@ -707,8 +707,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.userPic,
             isFromMe = true,
             image_width = 100,
-            image_height = 100,
-            timeStamp = timeData.timeSinceEpochInMs.toString()
+            image_height = 100
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
