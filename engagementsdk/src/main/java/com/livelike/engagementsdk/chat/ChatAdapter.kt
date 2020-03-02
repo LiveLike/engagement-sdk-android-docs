@@ -43,7 +43,6 @@ import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
 import com.livelike.engagementsdk.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
-import com.livelike.engagementsdk.stickerKeyboard.stickerSize
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
@@ -546,42 +545,21 @@ internal class ChatRecyclerAdapter(
                         when {
                             isExternalImage -> {
                                 val s = SpannableString(message.message)
-                                replaceWithImages(
-                                    s,
-                                    context,
-                                    callback,
-                                    false,
-                                    message.id,
-                                    message.image_width ?: 100,
-                                    message.image_height ?: 100
-                                ) {
+                                replaceWithImages(s, context, callback, false, message.id, message.image_width ?: largerStickerSize, message.image_height ?: largerStickerSize) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             (isOnlyStickers && numberOfStickers < 2) -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(
-                                    s,
-                                    context,
-                                    stickerPackRepository,
-                                    null,
-                                    callback,
-                                    AndroidResource.dpToPx(stickerSize)
-                                ) {
+                                replaceWithStickers(s, context, stickerPackRepository, null, callback, largerStickerSize) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(
-                                    s,
-                                    context,
-                                    stickerPackRepository,
-                                    null,
-                                    callback
-                                ) {
+                                replaceWithStickers(s, context, stickerPackRepository, null, callback, mediumStickerSize) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
@@ -650,3 +628,6 @@ internal class ChatRecyclerAdapter(
         }
     }
 }
+
+private const val largerStickerSize = 100
+private const val mediumStickerSize = 50

@@ -124,12 +124,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver(state: String?) {
         when (state) {
             "results" -> {
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
-                    }
-                }
                 listOf(textEggTimer).forEach { v -> v?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
@@ -166,6 +160,12 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         resumeAnimation()
                     }
                     visibility = View.VISIBLE
+                }
+                viewModel?.points?.let {
+                    if (!shouldShowPointTutorial() && it > 0) {
+                        pointView.startAnimation(it, true)
+                        wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
+                    }
                 }
             }
         }
