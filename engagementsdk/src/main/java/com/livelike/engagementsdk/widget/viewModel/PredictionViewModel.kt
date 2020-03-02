@@ -43,6 +43,7 @@ internal class PredictionViewModel(
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
+    private var followUp: Boolean =false
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository.programGamificationProfileStream
@@ -110,11 +111,6 @@ internal class PredictionViewModel(
                         delay(if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
                         dismissWidget(DismissAction.TIMEOUT)
                     }
-                    followupState(
-                        selectedPredictionId,
-                        resource.correct_option_id,
-                        widgetViewThemeAttributes
-                    )
                 }
             } else {
                 uiScope.launch {
@@ -143,11 +139,14 @@ internal class PredictionViewModel(
         interactionData.incrementInteraction()
     }
 
-    private fun followupState(
+    internal fun followupState(
         selectedPredictionId: String,
         correctOptionId: String,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
+        if(followUp)
+            return
+        followUp = true
         adapter?.correctOptionId = correctOptionId
         adapter?.userSelectedOptionId = selectedPredictionId
         adapter?.selectionLocked = true
