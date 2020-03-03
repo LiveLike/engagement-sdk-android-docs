@@ -91,7 +91,7 @@ internal class ChatRecyclerAdapter(
 
     internal var isPublicChat: Boolean = true
 
-    internal var messageTimeFormatter: ((time: Long) -> String)? = null
+    internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     private var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
 
@@ -432,9 +432,7 @@ internal class ChatRecyclerAdapter(
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
                                 val pdt = message.timeStamp?.toLong() ?: 0
-                                val createdAt = (
-                                        message.getUnixTimeStamp()
-                                            ?: Calendar.getInstance().timeInMillis).toTimeString()
+                                val createdAt = message.getUnixTimeStamp()?.toTimeString()?:""
                                 val syncedTime = pdt.toTimeString()
 
                                 v.message_date_time.text =
@@ -442,13 +440,12 @@ internal class ChatRecyclerAdapter(
                             } else {
                                 v.message_date_time.text = messageTimeFormatter?.invoke(
                                     message.getUnixTimeStamp()
-                                        ?: Calendar.getInstance().timeInMillis
                                 )
                             }
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }
-
+                
                         val topBorderLP = v.border_top.layoutParams
                         topBorderLP.height = chatMessageTopBorderHeight
                         v.border_top.layoutParams = topBorderLP

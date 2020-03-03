@@ -243,8 +243,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      * unix timestamp is passed as param
      * returns the formatted string to display
      */
-    open fun formatMessageDateTime(messageTimeStamp: Long): String {
-        var dateTime = Date()
+    open fun formatMessageDateTime(messageTimeStamp: Long?): String {
+        if (messageTimeStamp == null || messageTimeStamp == 0L) {
+            return ""
+        }
+        val dateTime = Date()
         dateTime.time = messageTimeStamp
         return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
     }
