@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
@@ -39,8 +40,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
         set(value) {
             field = value
             viewModel = value as PredictionViewModel
-            viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
-            viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
         }
 
     // Refresh the view when re-attached to the activity
@@ -78,6 +77,14 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
             val isFollowUp = resource.kind.contains("follow-up")
             viewModel?.startDismissTimout(resource.timeout, isFollowUp, widgetViewThemeAttributes)
+            if (isFollowUp) {
+                val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+                viewModel?.followupState(
+                    selectedPredictionId,
+                    resource.correct_option_id,
+                    widgetViewThemeAttributes
+                )
+            }
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
