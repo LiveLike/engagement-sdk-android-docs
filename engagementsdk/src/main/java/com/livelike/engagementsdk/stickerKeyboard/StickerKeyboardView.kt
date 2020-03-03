@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.TabLayout
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -77,18 +78,50 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                 pager.layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 pager.adapter = stickerCollectionPagerAdapter
+                val pageListener= object : TabLayout.TabLayoutOnPageChangeListener(pager_tab) {
+                    override fun onPageScrollStateChanged(state: Int) {
+                        super.onPageScrollStateChanged(state)
+                    }
+
+                    override fun onPageScrolled(
+                        position: Int,
+                        positionOffset: Float,
+                        positionOffsetPixels: Int
+                    ) {
+                        super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+
+                    }
+
+                    override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
+                    }
+                }
                 RVPagerSnapHelperListenable().attachToRecyclerView(
                     pager,
                     object : RVPagerStateListener {
                         override fun onPageScroll(pagesState: List<VisiblePageState>) {
-
+                            for (pos in pagesState.indices){
+                                val state=pagesState[pos]
+                                if (pos == 0) {
+                                    pageListener.onPageScrolled(
+                                        state.index,
+                                        1.0f-state.distanceToSettled,
+                                        state.distanceToSettledPixels
+                                    )
+                                }
+                            }
                         }
 
                         override fun onScrollStateChanged(state: RVPageScrollState) {
+                            pageListener.onPageScrollStateChanged(when(state){
+                                RVPageScrollState.Idle -> ViewPager.SCROLL_STATE_IDLE
+                                RVPageScrollState.Dragging -> ViewPager.SCROLL_STATE_DRAGGING
+                                RVPageScrollState.Settling -> ViewPager.SCROLL_STATE_SETTLING
+                            })
                         }
 
                         override fun onPageSelected(index: Int) {
-                            pager_tab.getTabAt(index)?.select()
+                            pageListener.onPageSelected(index)
                         }
                     })
 
