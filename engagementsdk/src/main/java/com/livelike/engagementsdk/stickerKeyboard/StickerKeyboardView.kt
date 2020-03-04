@@ -89,7 +89,6 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                         positionOffsetPixels: Int
                     ) {
                         super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-
                     }
 
                     override fun onPageSelected(position: Int) {
@@ -102,10 +101,16 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                         override fun onPageScroll(pagesState: List<VisiblePageState>) {
                             for (pos in pagesState.indices){
                                 val state=pagesState[pos]
+                                var diff = (1.0f - state.distanceToSettled)
+                                if (diff < 0.0f) {
+                                    diff = 0.0f
+                                } else if (diff > 1.0f) {
+                                    diff = 1.0f
+                                }
                                 if (pos == 0) {
                                     pageListener.onPageScrolled(
                                         state.index,
-                                        1.0f-state.distanceToSettled,
+                                        diff,
                                         state.distanceToSettledPixels
                                     )
                                 }
@@ -114,7 +119,10 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
                         override fun onScrollStateChanged(state: RVPageScrollState) {
                             pageListener.onPageScrollStateChanged(when(state){
-                                RVPageScrollState.Idle -> ViewPager.SCROLL_STATE_IDLE
+                                RVPageScrollState.Idle -> {
+                                    pager_tab.getTabAt(pager_tab.selectedTabPosition)?.select()
+                                    ViewPager.SCROLL_STATE_IDLE
+                                }
                                 RVPageScrollState.Dragging -> ViewPager.SCROLL_STATE_DRAGGING
                                 RVPageScrollState.Settling -> ViewPager.SCROLL_STATE_SETTLING
                             })
@@ -142,7 +150,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
                 }
                 pager_tab.addOnTabSelectedListener(listener)
-                for (i in 0..stickerPacks.size) {
+                for (i in stickerPacks.indices) {
                     val tab = pager_tab.newTab()
                     if (i == 0) {
                         tab.customView = createTabItemView()
