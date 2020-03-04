@@ -30,6 +30,7 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
 
     val lifetimePoints: Stream<Int> = SubscriptionManager()
     val rank: Stream<Int> = SubscriptionManager()
+    private var profileUrl: String = ""
 
     /**
      * Create or init user according to passed access token.
@@ -37,6 +38,7 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
      * If invalid token passed then also new user created with error.
      */
     fun initUser(userAccessToken: String?, profileUrl: String) {
+        this.profileUrl = profileUrl
         if (userAccessToken == null) {
             dataClient.createUserData(profileUrl) {
                 publishUser(it)
@@ -79,7 +81,7 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
         val jsonObject = JsonObject()
         jsonObject.addProperty("id", liveLikeUser.id)
         jsonObject.addProperty("nickname", liveLikeUser.nickname)
-        dataClient.patchUser(liveLikeUser.url, jsonObject, userAccessToken)
+        dataClient.patchUser(profileUrl, jsonObject, userAccessToken)
     }
 
     var rewardType = "none"
