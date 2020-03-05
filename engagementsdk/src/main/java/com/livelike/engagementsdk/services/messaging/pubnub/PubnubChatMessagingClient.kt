@@ -95,6 +95,7 @@ internal class PubnubChatMessagingClient(
             subscribe(listOf(value))
         }
 
+    @Synchronized
     fun addChannelSubscription(channel: String, startTimestamp: Long) {
         if (!connectedChannels.contains(channel)) {
             connectedChannels.add(channel)
