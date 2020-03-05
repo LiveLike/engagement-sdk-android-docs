@@ -123,7 +123,7 @@ class PagerSnapScrollListener(private val recyclerView: RecyclerView, private va
 
         val firstPos = layoutManager.findFirstVisibleItemPosition()
         val lastPos = layoutManager.findLastVisibleItemPosition()
-        val screenEndX = recyclerView.context.resources.displayMetrics.widthPixels
+        val screenEndX = recyclerView.width
         val midScreen = (screenEndX / 2)
 
         for (position in firstPos..lastPos) {
