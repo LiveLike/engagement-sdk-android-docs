@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 
 
 class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) : ConstraintLayout(context, attributes) {
-    private lateinit var viewModel: StickerKeyboardViewModel
+    private var viewModel: StickerKeyboardViewModel?=null
     private var chatViewThemeAttributes:ChatViewThemeAttributes?=null
     init {
         LayoutInflater.from(context).inflate(R.layout.livelike_sticker_keyboard_pager, this, true)
@@ -66,7 +66,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
     fun setProgram(stickerPackRepository: StickerPackRepository, onLoaded: ((List<StickerPack>?) -> Unit)? = null) {
         viewModel = StickerKeyboardViewModel(stickerPackRepository)
-        viewModel.stickerPacks.subscribe(javaClass) {
+        viewModel?.stickerPacks?.subscribe(javaClass) {
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
                 val stickerCollectionPagerAdapter = StickerCollectionAdapter(
@@ -160,8 +160,13 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     pager_tab.addTab(tab)
                 }
             }
-            viewModel.preload(context)
+            viewModel?.preload(context)
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.stickerPacks?.unsubscribe(javaClass)
     }
 
     private var listener: FragmentClickListener? = null
