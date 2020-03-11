@@ -39,7 +39,7 @@ internal class UserRepository(private val clientId: String) : BaseRepository() {
      */
     fun initUser(userAccessToken: String?, profileUrl: String) {
         this.profileUrl = profileUrl
-        if (userAccessToken == null) {
+        if (userAccessToken == null || userAccessToken.isEmpty()) {
             dataClient.createUserData(profileUrl) {
                 publishUser(it)
             }
