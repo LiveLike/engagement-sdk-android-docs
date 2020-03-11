@@ -47,6 +47,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val SHOWING_DIALOG = "showingDialog"
         const val POSITION = "position"
         const val CHANNEL_NAME = "channelName"
+        var privateGroupRoomId: String? = null
     }
 
     private var showNotification: Boolean = true
@@ -370,7 +371,12 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
 
-            chat_view.setSession(session)
+            if (privateGroupRoomId != null) {
+                privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
+                chat_view.setSession(privateGroupChatsession!!)
+            } else {
+                chat_view.setSession(session)
+            }
             widget_view.setSession(session)
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
                 getString("UserNickname", "").let {
