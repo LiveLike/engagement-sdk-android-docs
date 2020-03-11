@@ -5,7 +5,6 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import com.livelike.engagementsdk.R
 import kotlinx.android.synthetic.main.atom_widget_confirmation_message.view.confirmMessageAnimation
-import kotlinx.android.synthetic.main.atom_widget_confirmation_message.view.confirmMessageText
 
 class ConfirmMessageView(context: Context, attr: AttributeSet) : ConstraintLayout(context, attr) {
     init {
@@ -15,7 +14,7 @@ class ConfirmMessageView(context: Context, attr: AttributeSet) : ConstraintLayou
     var text: String = ""
         set(value) {
             field = value
-            confirmMessageText.text = value
+//            confirmMessageText.text = value
         }
 
     fun startAnimation(animationPath: String, progress: Float) {

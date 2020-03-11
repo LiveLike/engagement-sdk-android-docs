@@ -182,7 +182,7 @@ internal class PredictionViewModel(
         }
 
         adapter?.selectionLocked = true
-        animationPath = AndroidResource.selectRandomLottieAnimation("confirmMessage", appContext) ?: ""
+        animationPath = AndroidResource.selectRandomLottieAnimation("staytuned", appContext) ?: ""
 
         uiScope.launch {
             vote()
