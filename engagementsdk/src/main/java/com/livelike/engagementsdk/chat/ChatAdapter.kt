@@ -111,8 +111,7 @@ internal class ChatRecyclerAdapter(
     }
 
     override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        if (isAccessibilityEnabled(holder.v.context))
-            holder.hideFloatingUI()
+        holder.hideFloatingUI()
         super.onViewDetachedFromWindow(holder)
     }
 
