@@ -33,7 +33,7 @@ internal class WidgetManager(
     private val dataClient: WidgetDataClient,
     private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>,
     private val context: Context,
-    private val widgetInterceptorStream: Stream<WidgetInterceptor>,
+    private val widgetInterceptor: WidgetInterceptor?,
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     private val userRepository: UserRepository,
@@ -60,8 +60,8 @@ internal class WidgetManager(
 
     init {
         // TODO BUG : unsubscribe old widget interceptor events. ANDSDK-468
-        widgetInterceptorStream.subscribe(javaClass) { wi ->
-            wi?.events?.subscribe(javaClass.simpleName) {
+        widgetInterceptor?.let { wi ->
+            wi.events.subscribe(javaClass.simpleName) {
                 when (it) {
                     WidgetInterceptor.Decision.Show -> showPendingMessage()
                     WidgetInterceptor.Decision.Dismiss -> dismissPendingMessage()
@@ -115,14 +115,14 @@ internal class WidgetManager(
     private fun notifyIntegrator(message: MessageHolder) {
         val widgetType =
             WidgetType.fromString(message.clientMessage.message.get("event").asString ?: "")
-        if (widgetInterceptorStream.latest() == null || widgetType == WidgetType.POINTS_TUTORIAL || widgetType == WidgetType.COLLECT_BADGE) {
+        if (widgetInterceptor == null || widgetType == WidgetType.POINTS_TUTORIAL || widgetType == WidgetType.COLLECT_BADGE) {
             showWidgetOnScreen(message)
         } else {
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
                     try {
-                        widgetInterceptorStream.latest()?.widgetWantsToShow()
+                        widgetInterceptor.widgetWantsToShow()
                     } catch (e: Exception) {
                         logError { "Widget interceptor encountered a problem: $e \n Dismissing the widget" }
                         dismissPendingMessage()
@@ -214,7 +214,7 @@ internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
     widgetInfosStream: SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>,
     context: Context,
-    widgetInterceptorStream: Stream<WidgetInterceptor>,
+    widgetInterceptor: WidgetInterceptor?,
     analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     userRepository: UserRepository,
@@ -227,7 +227,7 @@ internal fun MessagingClient.asWidgetManager(
         dataClient,
         widgetInfosStream,
         context,
-        widgetInterceptorStream,
+        widgetInterceptor,
         analyticsService,
         sdkConfiguration,
         userRepository,

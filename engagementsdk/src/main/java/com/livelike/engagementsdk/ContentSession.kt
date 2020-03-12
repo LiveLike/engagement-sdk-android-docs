@@ -70,10 +70,6 @@ internal class ContentSession(
     private var chatRepository: ChatRepository? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
-        set(value) {
-            field = value
-            widgetInterceptorStream.onNext(value)
-        }
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
 
@@ -81,8 +77,6 @@ internal class ContentSession(
         widgetThemeAttributes = widgetViewThemeAttributes
     }
 
-    private val widgetInterceptorStream:
-            Stream<WidgetInterceptor> = SubscriptionManager()
     override var analyticService: AnalyticsService =
         MockAnalyticsService(programId)
     private val llDataClient = EngagementDataClientImpl()
@@ -375,7 +369,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptor, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
