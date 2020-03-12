@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag_l
  */
 internal class ChatActionsPopupView(
     val context: Context,
-    private val chatReactionRepository: ChatReactionRepository,
+    private val chatReactionRepository: ChatReactionRepository?,
     flagClick: View.OnClickListener,
     hideFloatingUi: () -> Unit,
     isOwnMessage: Boolean,
@@ -98,7 +98,7 @@ internal class ChatActionsPopupView(
         val reactionsBox =
             contentView.findViewById<LinearLayout>(R.id.reaction_panel_interaction_box)
         reactionsBox.removeAllViews()
-        chatReactionRepository.reactionList?.forEach { reaction ->
+        chatReactionRepository?.reactionList?.forEach { reaction ->
             val cardView = CardView(context)
             cardView.cardElevation = 0f
             cardView.setContentPadding(5,5,8,5)
@@ -162,7 +162,7 @@ internal class ChatActionsPopupView(
             reactionsBox.addView(cardView, LinearLayout.LayoutParams(AndroidResource.dpToPx(35), AndroidResource.dpToPx(35)))
         }
         contentView.chat_reaction_background_card.visibility =
-            if ((chatReactionRepository.reactionList?.size ?: 0) > 0) {
+            if ((chatReactionRepository?.reactionList?.size ?: 0) > 0) {
                 View.VISIBLE
             } else {
                 View.INVISIBLE
