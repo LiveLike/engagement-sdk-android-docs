@@ -39,6 +39,7 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
@@ -70,6 +71,10 @@ internal class ContentSession(
     private var chatRepository: ChatRepository? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
+        set(value) {
+            field = value
+            (widgetClient as? WidgetManager)?.widgetInterceptor = value
+        }
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
 

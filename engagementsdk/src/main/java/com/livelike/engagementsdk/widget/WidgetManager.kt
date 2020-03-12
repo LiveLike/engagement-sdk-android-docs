@@ -33,12 +33,12 @@ internal class WidgetManager(
     private val dataClient: WidgetDataClient,
     private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>,
     private val context: Context,
-    private val widgetInterceptor: WidgetInterceptor?,
+    var widgetInterceptor: WidgetInterceptor?,
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
-    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+    private val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     private val widgetThemeAttributes: WidgetViewThemeAttributes?
 ) :
     MessagingClientProxy(upstream) {
@@ -122,7 +122,7 @@ internal class WidgetManager(
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
                     try {
-                        widgetInterceptor.widgetWantsToShow()
+                        widgetInterceptor?.widgetWantsToShow()
                     } catch (e: Exception) {
                         logError { "Widget interceptor encountered a problem: $e \n Dismissing the widget" }
                         dismissPendingMessage()
