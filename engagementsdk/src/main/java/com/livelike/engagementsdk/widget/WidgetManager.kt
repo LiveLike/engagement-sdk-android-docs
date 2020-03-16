@@ -21,19 +21,19 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
-import java.util.PriorityQueue
-import java.util.Queue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.PriorityQueue
+import java.util.Queue
 
 internal class WidgetManager(
     upstream: MessagingClient,
     private val dataClient: WidgetDataClient,
     private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>,
     private val context: Context,
-    var widgetInterceptor: WidgetInterceptor?,
+    widgetInterceptor: WidgetInterceptor?,
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     private val userRepository: UserRepository,
@@ -57,9 +57,13 @@ internal class WidgetManager(
     private val messageQueue: Queue<MessageHolder> = PriorityQueue()
     private var widgetOnScreen = false
     private var pendingMessage: MessageHolder? = null
+    var widgetInterceptor: WidgetInterceptor? = widgetInterceptor
+        set(value) {
+            field = value
+            widgetInterceptorSubscribe()
+        }
 
-    init {
-        // TODO BUG : unsubscribe old widget interceptor events. ANDSDK-468
+    private fun widgetInterceptorSubscribe() {
         widgetInterceptor?.let { wi ->
             wi.events.subscribe(javaClass.simpleName) {
                 when (it) {
@@ -68,6 +72,10 @@ internal class WidgetManager(
                 }
             }
         }
+    }
+
+    init {
+        widgetInterceptorSubscribe()
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {

@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                 setTitle("Select a private group")
                 setItems(chatRoomIds.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
-                    (application as LiveLikeApplication).removePublicSession()
+                    (application as LiveLikeApplication).removePrivateSession()
                     private_group_label.text = chatRoomIds[which]
                     ExoPlayerActivity.privateGroupRoomId = chatRoomIds[which]
                 }
