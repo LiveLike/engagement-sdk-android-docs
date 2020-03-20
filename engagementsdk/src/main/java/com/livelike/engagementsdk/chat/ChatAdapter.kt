@@ -59,7 +59,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Matcher
@@ -84,7 +83,7 @@ internal class ChatRecyclerAdapter(
     private var lastFloatingUiAnchorView: View? = null
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
-    lateinit var chatReactionRepository: ChatReactionRepository
+    var chatReactionRepository: ChatReactionRepository? = null
 
     lateinit var checkListIsAtTop: (position: Int) -> Boolean
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
@@ -164,7 +163,7 @@ internal class ChatRecyclerAdapter(
             }
             lastFloatingUiAnchorView = view
             val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
-            val reactionsAvailable = (chatReactionRepository.reactionList?.size ?: 0) > 0
+            val reactionsAvailable = (chatReactionRepository?.reactionList?.size ?: 0) > 0
             if (reactionsAvailable || !isOwnMessage) {
                 showFloatingUI(
                     isOwnMessage,
@@ -279,7 +278,7 @@ internal class ChatRecyclerAdapter(
                                         emojiCountMap[myChatMessageReaction.emojiId] =
                                             (emojiCountMap[myChatMessageReaction.emojiId] ?: 0) - 1
                                         myChatMessageReaction.pubnubActionToken?.let { pubnubActionToken ->
-                                            timetoken?.let {
+                                            timetoken.let {
                                                 chatRepository?.removeMessageReaction(
                                                     channel,
                                                     it,
@@ -295,10 +294,10 @@ internal class ChatRecyclerAdapter(
                                         emojiCountMap[it.emojiId] =
                                             (emojiCountMap[it.emojiId] ?: 0) - 1
                                         it.pubnubActionToken?.let { pubnubActionToken ->
-                                            timetoken?.let {
+                                            timetoken.let { it1 ->
                                                 chatRepository?.removeMessageReaction(
                                                     channel,
-                                                    it,
+                                                    it1,
                                                     pubnubActionToken
                                                 )
                                             }
@@ -308,7 +307,7 @@ internal class ChatRecyclerAdapter(
                                     myChatMessageReaction = ChatMessageReaction(reaction.id)
                                     emojiCountMap[reaction.id] =
                                         (emojiCountMap[reaction.id] ?: 0) + 1
-                                    timetoken?.let { pubnubMessageToken ->
+                                    timetoken.let { pubnubMessageToken ->
                                         chatRepository?.addMessageReaction(
                                             channel,
                                             pubnubMessageToken,
@@ -579,7 +578,7 @@ internal class ChatRecyclerAdapter(
                             .forEachIndexed { index, reactionId ->
                                 if ((emojiCountMap[reactionId] ?: 0) > 0) {
                                     imageView = ImageView(context)
-                                    val reaction = chatReactionRepository.getReaction(reactionId)
+                                    val reaction = chatReactionRepository?.getReaction(reactionId)
                                     reaction?.let { reaction ->
                                         imageView.contentDescription = reaction.name
                                         imageView.loadImage(reaction.file, size)
@@ -603,7 +602,7 @@ internal class ChatRecyclerAdapter(
                         txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
                         val sumCount = emojiCountMap.values.sum()
                         val isReactionsAvaiable =
-                            (chatReactionRepository.reactionList?.size ?: 0) > 0
+                            (chatReactionRepository?.reactionList?.size ?: 0) > 0
 
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.VISIBLE

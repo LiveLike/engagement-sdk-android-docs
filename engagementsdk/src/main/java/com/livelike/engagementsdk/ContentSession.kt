@@ -39,6 +39,7 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
@@ -72,7 +73,7 @@ internal class ContentSession(
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
             field = value
-            widgetInterceptorStream.onNext(value)
+            (widgetClient as? WidgetManager)?.widgetInterceptor = value
         }
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
@@ -81,8 +82,6 @@ internal class ContentSession(
         widgetThemeAttributes = widgetViewThemeAttributes
     }
 
-    private val widgetInterceptorStream:
-            Stream<WidgetInterceptor> = SubscriptionManager()
     override var analyticService: AnalyticsService =
         MockAnalyticsService(programId)
     private val llDataClient = EngagementDataClientImpl()
@@ -375,7 +374,7 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptor, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
