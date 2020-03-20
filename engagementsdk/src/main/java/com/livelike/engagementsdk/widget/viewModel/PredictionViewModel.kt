@@ -21,8 +21,6 @@ import com.livelike.engagementsdk.services.messaging.Error
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClientReplay
-import com.livelike.engagementsdk.services.messaging.pubnub.asBehaviourSubject
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -30,7 +28,7 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
-import com.livelike.engagementsdk.utils.logDebug
+import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
@@ -65,13 +63,13 @@ internal class PredictionViewModel(
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
     var state: Stream<String?> = SubscriptionManager() // confirmation, followup
-
+    var results: Stream<Resource> = SubscriptionManager()
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
     var animationProgress = 0f
     var animationEggTimerProgress = 0f
     var animationPath = ""
-    private var pubnub: PubnubMessagingClientReplay? = null
+    private var pubnub: PubnubMessagingClient? = null
 
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
@@ -79,16 +77,16 @@ internal class PredictionViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)?.asBehaviourSubject()
+            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""
-                    logDebug { "type is : $widgetType" }
+                    logVerbose { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
                     Handler(Looper.getMainLooper()).post {
-//                        results.onNext(
-//                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
-//                        )
+                        results.onNext(
+                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
+                        )
                     }
                 }
 
@@ -114,6 +112,7 @@ internal class PredictionViewModel(
             ) {
                 val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
                 resource?.apply {
+                    pubnub?.subscribe(listOf(resource.subscribe_channel))
                     data.onNext(PredictionWidget(type, resource))
                 }
 
@@ -172,6 +171,9 @@ internal class PredictionViewModel(
     }
 
     fun onOptionClicked() {
+        uiScope.launch {
+            vote()
+        }
         interactionData.incrementInteraction()
     }
 
