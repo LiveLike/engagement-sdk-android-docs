@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionV
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
@@ -47,6 +48,25 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
         viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+    }
+
+    private fun resultsObserver(resource: Resource?) {
+        resource?.apply {
+            val optionResults = resource.getMergedOptions() ?: return
+            val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
+            val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
+            options.forEach { opt ->
+                optionResults.find {
+                    it.id == opt.id
+                }?.apply {
+                    opt.updateCount(this)
+                    opt.percentage = opt.getPercent(totalVotes.toFloat())
+                }
+            }
+            viewModel?.adapter?.myDataset = options
+            textRecyclerView.swapAdapter(viewModel?.adapter, false)
+        }
     }
 
     private fun widgetObserver(widget: PredictionWidget?) {
@@ -63,6 +83,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
                 {
+                    viewModel?.adapter?.showPercentage = true
+                    viewModel?.adapter?.notifyDataSetChanged()
                     viewModel?.onOptionClicked()
                 },
                 widget.type,
@@ -132,7 +154,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
             "followup" -> {
                 followupAnimation?.apply {
-                    setAnimation(viewModel?.animationPath)
+                    setAnimation(viewModel?.
+                    animationPath)
                     progress = viewModel?.animationProgress!!
                     addAnimatorUpdateListener { valueAnimator ->
                         viewModel?.animationProgress = valueAnimator.animatedFraction
@@ -155,4 +178,5 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
         }
     }
+
 }

@@ -81,6 +81,7 @@ internal class WidgetProvider {
                     widgetInfos,
                     context,
                     analyticsService,
+                    sdkConfiguration,
                     onDismiss,
                     userRepository,
                     programRepository,
