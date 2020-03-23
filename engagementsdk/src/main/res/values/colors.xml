@@ -64,6 +64,8 @@
     <color name="livelike_quiz_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
     <color name="livelike_poll_bar_gradient_left">#e69650be</color>
     <color name="livelike_poll_bar_gradient_right">#e6c864c8</color>
+    <color name="livelike_prediction_bar_gradient_left">#e69650be</color>
+    <color name="livelike_prediction_bar_gradient_right">#e6c864c8</color>
     <color name="livelike_correct_bar_gradient_left">#e681ca00</color>
     <color name="livelike_correct_bar_gradient_right">#e6429321</color>
     <color name="livelike_incorrect_bar_gradient_left">#e6dc0028</color>

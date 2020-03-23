@@ -82,6 +82,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         if (itemIsSelected) {
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
                 WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
+                    updateViewProgressBar(R.drawable.progress_bar_prediction)
                     updateViewButtonBackground(
                         R.drawable.answer_outline_selected_prediction
                     )

@@ -8,6 +8,7 @@ class WidgetViewThemeAttributes {
     var widgetWinAnimation: String = "winAnimation"
     var widgetLoseAnimation: String = "loseAnimation"
     var widgetDrawAnimation: String = "drawAnimation"
+    var stayTunedAnimation:String = "staytuned"
 
     fun init(typedArray: TypedArray?) {
         typedArray?.apply {
@@ -17,6 +18,8 @@ class WidgetViewThemeAttributes {
                 getString(R.styleable.LiveLike_WidgetView_loseAnimation) ?: "loseAnimation"
             widgetDrawAnimation =
                 getString(R.styleable.LiveLike_WidgetView_drawAnimation) ?: "drawAnimation"
+            stayTunedAnimation =
+                getString(R.styleable.LiveLike_WidgetView_stayTunedAnimation) ?: "staytuned"
         }
     }
 }
