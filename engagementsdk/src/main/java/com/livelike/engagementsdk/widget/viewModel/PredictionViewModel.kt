@@ -83,7 +83,6 @@ internal class PredictionViewModel(
                     val widgetType = event.message.get("event").asString ?: ""
                     logVerbose { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
-                    println("PredictionViewModel.onClientMessageEvent->$payload")
                     Handler(Looper.getMainLooper()).post {
                         results.onNext(
                             gson.fromJson(payload.toString(), Resource::class.java) ?: null
