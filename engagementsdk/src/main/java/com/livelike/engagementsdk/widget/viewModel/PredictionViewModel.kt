@@ -236,6 +236,7 @@ internal class PredictionViewModel(
             }
             pubnub?.stop()
             pubnub?.unsubscribeAll()
+            state.onNext("result")
             delay(3000)
             state.onNext("confirmation")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
