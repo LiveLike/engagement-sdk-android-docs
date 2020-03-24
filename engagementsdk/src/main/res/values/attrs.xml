@@ -27,6 +27,7 @@
         <attr name="winAnimation" format="string"/>
         <attr name="loseAnimation" format="string"/>
         <attr name="drawAnimation" format="string"/>
+        <attr name="stayTunedAnimation" format="string"/>
     </declare-styleable>
 
     <declare-styleable name="LiveLike_ChatView">

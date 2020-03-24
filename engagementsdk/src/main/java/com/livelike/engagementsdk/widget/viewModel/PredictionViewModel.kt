@@ -150,7 +150,7 @@ internal class PredictionViewModel(
             } else {
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
-                    confirmationState()
+                    confirmationState(widgetViewThemeAttributes)
                 }
             }
         }
@@ -212,7 +212,7 @@ internal class PredictionViewModel(
         }
     }
 
-    private fun confirmationState() {
+    private fun confirmationState(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
@@ -220,7 +220,8 @@ internal class PredictionViewModel(
         }
 
         adapter?.selectionLocked = true
-        animationPath = AndroidResource.selectRandomLottieAnimation("staytuned", appContext) ?: ""
+        val rootPath = widgetViewThemeAttributes.stayTunedAnimation
+        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
 
         uiScope.launch {
             vote()
@@ -232,6 +233,10 @@ internal class PredictionViewModel(
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
+            pubnub?.stop()
+            pubnub?.unsubscribeAll()
+            state.onNext("result")
+            delay(3000)
             state.onNext("confirmation")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(3000)
@@ -250,7 +255,6 @@ internal class PredictionViewModel(
         state.onNext("")
         data.onNext(null)
         animationEggTimerProgress = 0f
-
         currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()

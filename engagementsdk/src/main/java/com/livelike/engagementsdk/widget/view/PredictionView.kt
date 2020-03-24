@@ -48,7 +48,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
         viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
-        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+//        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
     }
 
     private fun resultsObserver(resource: Resource?) {
@@ -130,6 +130,9 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
     private fun stateObserver(state: String?) {
         when (state) {
+            "result" -> {
+                resultsObserver(viewModel?.results?.latest())
+            }
             "confirmation" -> {
                 titleView?.alpha = 0.2f
                 textEggTimer?.alpha = 0.2f
