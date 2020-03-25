@@ -29,7 +29,8 @@ class EngagementSDK(
     private val clientId: String,
     private val applicationContext: Context,
     accessToken: String? = null,
-    private val errorDelegate: ErrorDelegate? = null
+    private val errorDelegate: ErrorDelegate? = null,
+    private val originURL: String? = null
 ) : IEngagement {
 
     companion object {
@@ -54,7 +55,12 @@ class EngagementSDK(
         BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(applicationContext)
-        dataClient.getEngagementSdkConfig(BuildConfig.CONFIG_URL.plus("applications/$clientId")) {
+        var url = if (originURL != null) {
+            originURL.plus("/api/v1/applications/$clientId")
+        } else {
+            BuildConfig.CONFIG_URL.plus("applications/$clientId")
+        }
+        dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)
                 userRepository.initUser(accessToken, it.data.profileUrl)
