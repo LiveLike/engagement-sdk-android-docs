@@ -130,13 +130,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
     private fun stateObserver(state: String?) {
         when (state) {
-            "result" -> {
-                resultsObserver(viewModel?.results?.latest())
-            }
             "confirmation" -> {
-                titleView?.alpha = 0.2f
-                textEggTimer?.alpha = 0.2f
-                textRecyclerView?.alpha = 0.2f
+                resultsObserver(viewModel?.results?.latest())
                 confirmationMessage?.apply {
                     text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
                     viewModel?.animationPath?.let { viewModel?.animationProgress?.let { it1 -> startAnimation(it, it1) } }
