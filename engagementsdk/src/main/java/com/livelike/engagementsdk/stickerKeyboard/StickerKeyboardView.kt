@@ -160,7 +160,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     pager_tab.addTab(tab)
                 }
             }
-            viewModel?.preload(context)
+            viewModel?.preload(context.applicationContext)
         }
     }
 
