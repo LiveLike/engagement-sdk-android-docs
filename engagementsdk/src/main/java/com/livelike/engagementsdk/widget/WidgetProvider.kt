@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.WidgetType.ALERT
 import com.livelike.engagementsdk.widget.WidgetType.CHEER_METER
 import com.livelike.engagementsdk.widget.WidgetType.COLLECT_BADGE
@@ -136,6 +137,7 @@ internal class WidgetProvider {
             }
             else -> null
         }
+        logDebug { "Widget created from provider, type: ${WidgetType.fromString(widgetInfos.type)}" }
         specifiedWidgetView?.widgetId = widgetInfos.widgetId
         return specifiedWidgetView
     }

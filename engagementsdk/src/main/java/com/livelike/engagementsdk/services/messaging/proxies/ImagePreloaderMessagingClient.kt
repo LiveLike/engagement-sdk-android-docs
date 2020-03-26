@@ -16,6 +16,7 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logVerbose
 
 internal class ImagePreloaderMessagingClient(
@@ -59,6 +60,7 @@ internal class ImagePreloaderMessagingClient(
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        logDebug { "Message received at ImagePreloaderMessagingClient" }
         val imageList = getImagesFromJson(event.message, mutableListOf())
 
         if (imageList.isEmpty()) {

@@ -4,6 +4,7 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.utils.Queue
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logVerbose
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -52,6 +53,7 @@ internal class SynchronizedMessagingClient(
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        logDebug { "Message received at SynchronizedMessagingClient" }
         when {
             shouldPublishEvent(event) -> publishEvent(event)
             shouldDismissEvent(event) -> {

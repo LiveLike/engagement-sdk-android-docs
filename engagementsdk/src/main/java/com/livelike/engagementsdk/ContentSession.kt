@@ -146,12 +146,14 @@ internal class ContentSession(
                     configuration.pubnubPublishKey,
                     origin = configuration.pubnubOrigin
                 )
+                logDebug { "chatRepository created" }
                 analyticService =
                     MixpanelAnalytics(
                         applicationContext,
                         configuration.mixpanelToken,
                         programId
                     )
+                logDebug { "analyticService created" }
                 widgetContainer.analyticsService = analyticService
                 analyticService.trackSession(pair.first.id)
                 analyticService.trackUsername(pair.first.nickname)
@@ -378,6 +380,7 @@ internal class ContentSession(
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
+        logDebug { "initialized Widget Messaging" }
     }
 
     // ///// Chat. ///////
@@ -412,6 +415,7 @@ internal class ContentSession(
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
             }
+        logDebug { "initialized Chat Messaging , isPrivateGroupChat:$privateGroupsChat" }
     }
 
     // ////// Global Session Controls ////////

@@ -5,6 +5,7 @@ import com.livelike.engagementsdk.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.services.messaging.Error
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.utils.logDebug
 
 internal abstract class MessagingClientProxy(val upstream: MessagingClient) : MessagingClient, MessagingEventListener {
 
@@ -31,6 +32,7 @@ internal abstract class MessagingClientProxy(val upstream: MessagingClient) : Me
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        logDebug { "Message received at MessagingClientProxy" }
         listener?.onClientMessageEvent(client, event)
     }
 
