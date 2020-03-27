@@ -145,6 +145,7 @@ internal class QuizViewModel(
                 delay(AndroidResource.parseDuration(timeout))
                 debouncedVoteId.unsubscribe(javaClass)
                 adapter?.selectionLocked = true
+                state.onNext(WidgetState.LOCK_INTERACTION.name)
                 vote()
                 delay(500)
                 resultsState(widgetViewThemeAttributes)

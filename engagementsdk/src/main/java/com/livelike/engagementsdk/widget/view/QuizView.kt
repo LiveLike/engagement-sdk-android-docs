@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
@@ -123,6 +124,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun stateObserver(state: String?) {
         when (state) {
+            WidgetState.LOCK_INTERACTION.name -> {
+                onWidgetInteractionCompleted()
+            }
             "results" -> {
                 listOf(textEggTimer).forEach { v -> v?.showCloseButton() {
                     viewModel?.dismissWidget(it)

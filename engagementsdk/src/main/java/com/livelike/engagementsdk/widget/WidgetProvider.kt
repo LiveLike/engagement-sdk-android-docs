@@ -151,7 +151,7 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     var widgetId: String = ""
-    lateinit var widgetInfos : WidgetInfos
+    lateinit var widgetInfos: WidgetInfos
     open var widgetViewModel: ViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
     open var widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()
@@ -160,12 +160,15 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        widgetLifeCycleEventsListener?.onWidgetPresented(gson.fromJson(widgetInfos.payload.toString(),LiveLikeWidgetEntity::class.java))
+        widgetLifeCycleEventsListener?.onWidgetPresented(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        widgetLifeCycleEventsListener?.onWidgetDismissed(gson.fromJson(widgetInfos.payload.toString(),LiveLikeWidgetEntity::class.java))
+        widgetLifeCycleEventsListener?.onWidgetDismissed(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
     }
 
+    fun onWidgetInteractionCompleted() {
+        widgetLifeCycleEventsListener?.onWidgetInteractionCompleted(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
+    }
 }
