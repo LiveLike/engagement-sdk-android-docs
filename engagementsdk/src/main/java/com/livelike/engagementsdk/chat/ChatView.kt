@@ -46,6 +46,7 @@ import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
@@ -269,6 +270,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             if (chatLoaded)
                 checkEmptyChat()
             eventStream.subscribe(javaClass.simpleName) {
+                logDebug { "Chat event stream : $it" }
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
@@ -733,6 +735,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideSnapToLive() {
+        logDebug { "Chat hide Snap to Live: $showingSnapToLive" }
         if (!showingSnapToLive)
             return
         showingSnapToLive = false
@@ -741,6 +744,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun showSnapToLive() {
+        logDebug { "Chat show Snap to Live: $showingSnapToLive" }
         if (showingSnapToLive)
             return
         showingSnapToLive = true

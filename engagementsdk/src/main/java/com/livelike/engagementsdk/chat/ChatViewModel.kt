@@ -24,6 +24,7 @@ import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
@@ -96,6 +97,7 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
+        logDebug { "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)} check blocked:${getBlockedUsers().contains(message.senderId)}" }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         if (getBlockedUsers().contains(message.senderId)) {
             return
@@ -197,8 +199,10 @@ internal class ChatViewModel(
     }
 
     override fun loadingCompleted() {
+        logDebug { "Chat loading Completed : $chatLoaded" }
         if (!chatLoaded) {
             chatLoaded = true
+            logDebug { "Chat retrieving message from local cache ${cacheList.size} , MessageList :${messageList.size}" }
             if (messageList.isEmpty() && cacheList.isNotEmpty()) {
                 messageList.addAll(cacheList)
             }
@@ -223,6 +227,7 @@ internal class ChatViewModel(
     fun loadPreviousMessages() {
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
             if (chatRepository != null) {
+                logDebug { "Chat loading previous messages size:${messageList.size}" }
                 if (messageList.size > 0)
                     chatRepository?.loadPreviousMessages(
                         channel,
@@ -271,6 +276,7 @@ internal class ChatViewModel(
                             }
                         } catch (e: IOException) {
                             e.printStackTrace()
+                            logError { e.message }
                         }
                     }
                 })
