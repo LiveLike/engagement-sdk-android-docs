@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
@@ -64,6 +65,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     opt.percentage = opt.getPercent(totalVotes.toFloat())
                 }
             }
+            logDebug { "PredictionWidget Showing result total:$totalVotes" }
             viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
         }
@@ -119,6 +121,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     }
                 }
             }
+            logDebug { "showing PredictionView Widget" }
         }
 
         if (widget == null) {

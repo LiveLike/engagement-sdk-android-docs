@@ -16,13 +16,13 @@ import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import kotlin.math.max
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
@@ -40,6 +40,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_ti
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple_demo
+import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
@@ -301,6 +302,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             showEggerView(animationLength)
             viewModel?.startDismissTimout(resource.timeout)
+            logDebug { "Showing CheerMeter Widget" }
         }
 
         if (widget == null) {
@@ -424,6 +426,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             }
             viewModel?.startDismissTimout(10000.toString(), isVotingStarted = true)
         }
+        logDebug { "CheerMeter voting start" }
         viewModel?.sendVote(voteUrl)
     }
 
@@ -450,7 +453,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                 viewModel?.voteEnd()
                 fl_result_team.visibility = View.VISIBLE
-
+                logDebug { "CheerMeter voting stop,result: Team1:${team1.vote_count},Team2:${team2.vote_count}" }
                 fl_result_team.postDelayed({
                     img_logo_team_2.visibility = View.GONE
                     img_logo_team_1.visibility = View.GONE
@@ -528,6 +531,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                 playDrawAnimation()
                             }
                         }
+                        else -> {
+                            logDebug { "CheerMeter: No Result" }
+                        }
                     }
                 }, 500)
             }
@@ -535,6 +541,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun playLoserAnimation() {
+        logDebug { "CheerMeter user lose" }
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
             val rootPath = widgetViewThemeAttributes.widgetLoseAnimation
@@ -561,6 +568,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun playWinnerAnimation() {
+        logDebug { "CheerMeter user win" }
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
             val rootPath = widgetViewThemeAttributes.widgetWinAnimation
@@ -587,6 +595,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun playDrawAnimation() {
+        logDebug { "CheerMeter user draw" }
         viewModel?.animationProgress = 0f
         img_winner_anim.apply {
             val rootPath = widgetViewThemeAttributes.widgetDrawAnimation

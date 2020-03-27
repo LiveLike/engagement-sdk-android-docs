@@ -28,6 +28,7 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
@@ -166,6 +167,7 @@ internal class PredictionViewModel(
                 action
             )
         }
+        logDebug { "dismiss Prediction Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
     }
@@ -208,8 +210,8 @@ internal class PredictionViewModel(
                 }
             }
             state.onNext("followup")
-//            programRepository.fetchProgramRank()
         }
+        logDebug { "Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
     }
 
     private fun confirmationState(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
@@ -222,7 +224,7 @@ internal class PredictionViewModel(
         adapter?.selectionLocked = true
         val rootPath = widgetViewThemeAttributes.stayTunedAnimation
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
-
+        logDebug { "Prediction Widget selected Position:${adapter?.selectedPosition}" }
         uiScope.launch {
             vote()
             data.currentData?.resource?.rewards_url?.let {

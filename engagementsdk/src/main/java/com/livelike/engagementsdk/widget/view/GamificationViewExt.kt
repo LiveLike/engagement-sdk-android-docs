@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.data.models.Badge
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.data.models.RewardsType
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.view.components.ProgressionMeterView
 
@@ -20,6 +21,7 @@ internal fun SpecifiedWidgetView.wouldShowProgressionMeter(
     progressionMeterView: ProgressionMeterView
 ) {
     latest?.let {
+        logDebug { "showing Gamification Meter ,Reward Type:$rewardsType newBadge:${it.newBadges} currentBadge:${it.currentBadge} points:${it.points} newPoints:${it.newPoints}" }
         if (rewardsType!! == RewardsType.BADGES) {
             val nextBadgeToDisplay: Badge? = if (it.newBadges == null || it.newBadges.isEmpty()) {
                 it.nextBadge

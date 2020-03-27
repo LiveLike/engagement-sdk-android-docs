@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
 import com.livelike.engagementsdk.widget.view.components.imageslider.ImageSlider
 import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawable
@@ -45,6 +46,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     override fun showResults() {
         val result = viewModel.results.latest()
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
+        logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }
 
     override fun dataModelObserver(entity: ImageSliderEntity?) {
@@ -93,6 +95,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                 }
             }
         }
+        logDebug { "showing EmojiSliderWidget" }
         super.dataModelObserver(entity)
     }
 }

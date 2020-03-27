@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClien
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
@@ -93,6 +94,7 @@ internal class EmojiSliderWidgetViewModel(
                 false,
                 action
             )
+            logDebug { "dismiss EmojiSlider Widget, reason:${action.name}" }
         }
     }
 

@@ -79,7 +79,7 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Pair<
         if (view != null) {
             dismissWidget = view.dismissFunc
             (view.parent as ViewGroup?)?.removeAllViews() // Clean the view parent in case of reuse
-            view?.widgetViewThemeAttributes?.apply {
+            view.widgetViewThemeAttributes.apply {
                 widgetWinAnimation = widgetViewThemeAttributes.widgetWinAnimation
                 widgetLoseAnimation = widgetViewThemeAttributes.widgetLoseAnimation
                 widgetDrawAnimation = widgetViewThemeAttributes.widgetDrawAnimation
