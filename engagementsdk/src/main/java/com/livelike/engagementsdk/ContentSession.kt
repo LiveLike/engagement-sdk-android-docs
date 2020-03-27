@@ -91,7 +91,7 @@ internal class ContentSession(
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
-    private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
+    internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
     private val programRepository = ProgramRepository(programId, userRepository)
 
