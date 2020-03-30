@@ -221,7 +221,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         callback.addView(edittext_chat_message)
 
         swipeToRefresh.setOnRefreshListener {
-            viewModel?.loadPreviousMessages()
+            if (viewModel?.chatLoaded == true)
+                viewModel?.loadPreviousMessages()
+            else
+                swipeToRefresh.isRefreshing = false
         }
     }
 
@@ -280,15 +283,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
                         uiScope.launch {
-                            if (swipeToRefresh.isRefreshing) {
-                                swipeToRefresh.isRefreshing = false
-                            } else {
-                                // Add delay to avoid UI glitch when recycler view is loading
-                                delay(500)
-                                hideLoadingSpinner()
-                                checkEmptyChat()
+                            // Add delay to avoid UI glitch when recycler view is loading
+                            delay(500)
+                            hideLoadingSpinner()
+                            checkEmptyChat()
+                            if (!swipeToRefresh.isRefreshing)
                                 snapToLive()
-                            }
+                            swipeToRefresh.isRefreshing = false
                         }
                     }
                     ChatViewModel.EVENT_LOADING_STARTED -> {
