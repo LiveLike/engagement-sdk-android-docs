@@ -58,7 +58,7 @@ class LiveLikeWidgetEntity {
 
     var options: List<Option>? = null
 
-    var timeout: String? = null
+    internal var timeout: String? = null
         set(value) {
             field = value
             interactionTime = AndroidResource.parseDuration(value ?: "")
@@ -76,17 +76,10 @@ class LiveLikeWidgetEntity {
 
         val description: String = "",
 
-        val is_correct: Boolean = false,
-
-        val answer_url: String? = "",
-
-        val vote_url: String? = "",
-
-        val image_url: String? = "",
-
-        var answer_count: Int? = 0,
-
-        var vote_count: Int? = 0
-
+        val is_correct: Boolean = false
     )
+
+    init {
+        interactionTime = AndroidResource.parseDuration(timeout ?: "")
+    }
 }
