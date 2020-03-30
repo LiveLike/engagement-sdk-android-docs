@@ -19,7 +19,9 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.utils.isNetworkConnected
 import com.livelike.engagementsdk.utils.registerLogsHandler
 import com.livelike.livelikedemo.channel.Channel
@@ -200,7 +202,9 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     private val dialog = object : WidgetInterceptor() {
-        override fun widgetWantsToShow() {
+        override fun widgetWantsToShow(widgetData: LiveLikeWidgetEntity) {
+            val widgetDataJson = GsonBuilder().create().toJson(widgetData)
+            addLogs("widgetWantsToShow : $widgetDataJson")
             showDialog(this@ExoPlayerActivity)
         }
     }
@@ -378,6 +382,22 @@ class ExoPlayerActivity : AppCompatActivity() {
                 chat_view.setSession(session)
             }
             widget_view.setSession(session)
+            widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
+                override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
+                    val widgetDataJson = GsonBuilder().create().toJson(widgetData)
+                    addLogs("onWidgetPresented : $widgetDataJson")
+                }
+
+                override fun onWidgetInteractionCompleted(widgetData: LiveLikeWidgetEntity) {
+                    val widgetDataJson = GsonBuilder().create().toJson(widgetData)
+                    addLogs("onWidgetInteractionCompleted : $widgetDataJson")
+                }
+
+                override fun onWidgetDismissed(widgetData: LiveLikeWidgetEntity) {
+                    val widgetDataJson = GsonBuilder().create().toJson(widgetData)
+                    addLogs("onWidgetDismissed : $widgetDataJson")
+                }
+            }
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
                 getString("UserNickname", "").let {
                     if (!it.isNullOrEmpty()) {
@@ -393,6 +413,11 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
+    }
+
+    private fun addLogs(logs: String?) {
+        logsPreview.text = "$logs \n\n ${logsPreview.text}"
+        fullLogs.text = "$logs \n\n ${fullLogs.text}"
     }
 
     private fun checkForNetworkToRecreateActivity() {
