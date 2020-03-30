@@ -11,6 +11,8 @@ import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.data.models.Badge
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.services.messaging.proxies.LiveLikeWidgetEntity
+import com.livelike.engagementsdk.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.logDebug
@@ -139,6 +141,7 @@ internal class WidgetProvider {
         }
         logDebug { "Widget created from provider, type: ${WidgetType.fromString(widgetInfos.type)}" }
         specifiedWidgetView?.widgetId = widgetInfos.widgetId
+        specifiedWidgetView?.widgetInfos = widgetInfos
         return specifiedWidgetView
     }
 }
@@ -150,7 +153,24 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     var widgetId: String = ""
+    lateinit var widgetInfos: WidgetInfos
     open var widgetViewModel: ViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
     open var widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()
+
+    var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        widgetLifeCycleEventsListener?.onWidgetPresented(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        widgetLifeCycleEventsListener?.onWidgetDismissed(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
+    }
+
+    fun onWidgetInteractionCompleted() {
+        widgetLifeCycleEventsListener?.onWidgetInteractionCompleted(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
+    }
 }

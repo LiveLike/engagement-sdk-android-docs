@@ -440,6 +440,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun stopVoting() {
+        onWidgetInteractionCompleted()
         view_ripple.isClickable = false
         txt_cheer_meter_team_1.alpha = 1F
         txt_cheer_meter_team_2.alpha = 1F
