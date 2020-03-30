@@ -14,19 +14,21 @@ import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
+import com.livelike.engagementsdk.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.SubscriptionManager
+import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.utils.logError
+import java.util.PriorityQueue
+import java.util.Queue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.PriorityQueue
-import java.util.Queue
 
 internal class WidgetManager(
     upstream: MessagingClient,
@@ -130,7 +132,7 @@ internal class WidgetManager(
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
                     try {
-                        widgetInterceptor?.widgetWantsToShow()
+                        widgetInterceptor?.widgetWantsToShow(gson.fromJson(message.clientMessage.message["payload"], LiveLikeWidgetEntity::class.java))
                     } catch (e: Exception) {
                         logError { "Widget interceptor encountered a problem: $e \n Dismissing the widget" }
                         dismissPendingMessage()

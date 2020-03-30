@@ -39,6 +39,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         session.setWidgetContainer(this, widgetViewThemeAttributes)
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
+        widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
     }
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthDp = AndroidResource.pxToDp(width)
