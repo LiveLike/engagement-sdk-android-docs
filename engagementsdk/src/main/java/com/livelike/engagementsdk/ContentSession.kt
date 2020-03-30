@@ -146,12 +146,14 @@ internal class ContentSession(
                     configuration.pubnubPublishKey,
                     origin = configuration.pubnubOrigin
                 )
+                logDebug { "chatRepository created" }
                 analyticService =
                     MixpanelAnalytics(
                         applicationContext,
                         configuration.mixpanelToken,
                         programId
                     )
+                logDebug { "analyticService created" }
                 widgetContainer.analyticsService = analyticService
                 analyticService.trackSession(pair.first.id)
                 analyticService.trackUsername(pair.first.nickname)
@@ -232,7 +234,7 @@ internal class ContentSession(
     }
 
     override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
-        Log.v("Here", "joinChatRoom: $chatRoomId  timestamp:$timestamp")
+        logDebug { "joinChatRoom: $chatRoomId  timestamp:$timestamp" }
         if (chatRoomMap.size > 50) {
             return logError {
                 "subscribing  count for pubnub channels cannot be greater than 50"
@@ -259,6 +261,7 @@ internal class ContentSession(
     }
 
     override fun enterChatRoom(chatRoomId: String) {
+        logDebug { "Entering chatRoom $chatRoomId , currentChatRoom:$privateChatRoomID" }
         if (privateChatRoomID == chatRoomId) return // Already in the room
         val lastChatRoomId = privateChatRoomID
         privateChatRoomID = chatRoomId
@@ -268,9 +271,11 @@ internal class ContentSession(
             delay(500)
             wouldInitPrivateGroupSession(channel)
             chatViewModel.apply {
+                logDebug { "Chat caching message for chatRoom:$lastChatRoomId" }
                 chatRoomMsgMap[lastChatRoomId] = messageList.takeLast(CHAT_HISTORY_LIMIT)
                 flushMessages()
                 if (chatRoomMsgMap.containsKey(chatRoomId)) {
+                    logDebug { "Chat getting cache message from chatRoom:$chatRoomId" }
                     chatRoomMsgMap[chatRoomId]?.let {
                         this.cacheList.addAll(it)
                     }
@@ -378,6 +383,7 @@ internal class ContentSession(
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
+        logDebug { "initialized Widget Messaging" }
     }
 
     // ///// Chat. ///////
@@ -412,6 +418,7 @@ internal class ContentSession(
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
             }
+        logDebug { "initialized Chat Messaging , isPrivateGroupChat:$privateGroupsChat" }
     }
 
     // ////// Global Session Controls ////////

@@ -112,7 +112,7 @@ internal class PollViewModel(
 
     private fun vote() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
-
+        logDebug { "PollWidget Vote: position:${adapter?.selectedPosition}" }
         uiScope.launch {
             adapter?.run {
                 val url = myDataset[selectedPosition].getMergedVoteUrl()
@@ -169,6 +169,7 @@ internal class PollViewModel(
                 action
             )
         }
+        logDebug { "dismiss Poll Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
     }

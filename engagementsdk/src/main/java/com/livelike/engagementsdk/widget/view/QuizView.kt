@@ -94,7 +94,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 }
             }
         }
-
+        logDebug { "showing QuizWidget" }
         if (widget == null) {
             inflated = false
             removeAllViews()
@@ -118,6 +118,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
             viewModel?.adapter?.showPercentage = false
+            logDebug { "QuizWidget Showing result total:$totalVotes" }
         }
     }
 

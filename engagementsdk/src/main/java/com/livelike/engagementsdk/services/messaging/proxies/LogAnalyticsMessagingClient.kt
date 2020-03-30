@@ -4,6 +4,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
+import com.livelike.engagementsdk.utils.logDebug
 
 /**
  * Meessaging Proxy/Pipe for adding analytics for our widgets received.
@@ -26,6 +27,7 @@ internal class LogAnalyticsMessagingClient(
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        logDebug { "Message received at LogAnalyticsMessagingClient" }
         listener?.onClientMessageEvent(client, event)
     }
 }

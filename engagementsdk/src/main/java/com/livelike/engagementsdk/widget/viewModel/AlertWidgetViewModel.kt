@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Alert
@@ -47,6 +48,7 @@ internal class AlertWidgetViewModel(
                 action
             )
         }
+        logDebug { "dismiss Alert Widget, reason:${action.name}" }
         onDismiss()
         cleanup()
         viewModelJob.cancel()

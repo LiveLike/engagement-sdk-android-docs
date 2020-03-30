@@ -5,6 +5,8 @@ import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
+import com.livelike.engagementsdk.utils.logDebug
+import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Resource
 /**
@@ -28,6 +30,7 @@ internal class FilteringWidgetsMessagingClient(
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         try {
+            logDebug { "Message received at FilterWidgetMessagingClient" }
             val widgetType = WidgetType.fromString(event.message.get("event").asString ?: "")
             val payload = event.message.get("payload").asJsonObject
             val resource = gson.fromJson(payload, Resource::class.java) ?: null
@@ -58,6 +61,7 @@ internal class FilteringWidgetsMessagingClient(
                 }
             }
         } catch (e: IllegalStateException) {
+            logError { e.message }
             listener?.onClientMessageEvent(client, event)
         }
     }

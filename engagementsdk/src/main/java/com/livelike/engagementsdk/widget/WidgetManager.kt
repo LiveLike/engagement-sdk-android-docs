@@ -20,6 +20,7 @@ import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -94,6 +95,7 @@ internal class WidgetManager(
     private val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        logDebug { "Message received at WidgetManager" }
         messageQueue.add(MessageHolder(client, event))
         if (!widgetOnScreen) {
             publishNextInQueue()
