@@ -34,7 +34,7 @@
     <color name="livelike_alert_background_gradient_left">#282828</color>
     <color name="livelike_alert_background_gradient_right">#121212</color>
     <color name="livelike_alert_notification_label_gradient_left">#9f041b</color>
-    <color name="livelike_alert_notification_label_gradient_right">#9f041b</color>
+    <color name="livelike_alert_notification_label_gradient_right">#f5515f</color>
     <color name="livelike_alert_label_background_shadow">#000000</color>
 
     <color name="livelike_default_title_gradient_left">#003264</color>

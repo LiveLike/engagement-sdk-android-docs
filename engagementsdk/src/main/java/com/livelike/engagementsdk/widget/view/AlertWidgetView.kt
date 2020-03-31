@@ -21,7 +21,6 @@ import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
 import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
 import kotlinx.android.synthetic.main.widget_alert.view.bodyText
-import kotlinx.android.synthetic.main.widget_alert.view.labelBackground
 import kotlinx.android.synthetic.main.widget_alert.view.labelText
 import kotlinx.android.synthetic.main.widget_alert.view.linkArrow
 import kotlinx.android.synthetic.main.widget_alert.view.linkBackground
@@ -92,7 +91,6 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             }
 
         if (resourceAlert.title.isNullOrEmpty()) {
-            labelBackground.visibility = View.GONE
             labelText.visibility = View.GONE
             val params = bodyBackground.layoutParams as LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
