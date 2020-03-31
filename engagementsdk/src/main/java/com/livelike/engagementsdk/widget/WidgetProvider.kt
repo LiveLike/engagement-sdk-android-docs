@@ -160,17 +160,25 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
 
+    lateinit var widgetData: LiveLikeWidgetEntity
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        widgetLifeCycleEventsListener?.onWidgetPresented(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
+        widgetData =
+            gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java)
+        postDelayed({
+            measure(MeasureSpec.AT_MOST, MeasureSpec.AT_MOST)
+            widgetData.height = height
+            widgetLifeCycleEventsListener?.onWidgetPresented(widgetData)
+        }, 500)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        widgetLifeCycleEventsListener?.onWidgetDismissed(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
+        widgetLifeCycleEventsListener?.onWidgetDismissed(widgetData)
     }
 
     fun onWidgetInteractionCompleted() {
-        widgetLifeCycleEventsListener?.onWidgetInteractionCompleted(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java))
+        widgetLifeCycleEventsListener?.onWidgetInteractionCompleted(widgetData)
     }
 }

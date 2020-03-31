@@ -11,7 +11,7 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
  */
 abstract class WidgetInterceptor {
     /** Called when a widget is received from the CMS */
-    abstract fun widgetWantsToShow()
+    abstract fun widgetWantsToShow(widgetData: LiveLikeWidgetEntity)
 
     /** Unlock the widget and show it on screen */
     fun showWidget() {
@@ -54,23 +54,19 @@ class LiveLikeWidgetEntity {
     var height: Int? = null
 
     @SerializedName("question")
-
     var title: String = ""
 
     var options: List<Option>? = null
 
-    var timeout: String? = null
-
+    internal var timeout: String? = null
         set(value) {
-
             field = value
-
             interactionTime = AndroidResource.parseDuration(value ?: "")
         }
 
     var interactionTime: Long? = null
 
-    var payload: String? = null
+    var customData: String? = null
 
     data class Option(
 
@@ -80,17 +76,10 @@ class LiveLikeWidgetEntity {
 
         val description: String = "",
 
-        val is_correct: Boolean = false,
-
-        val answer_url: String? = "",
-
-        val vote_url: String? = "",
-
-        val image_url: String? = "",
-
-        var answer_count: Int? = 0,
-
-        var vote_count: Int? = 0
-
+        val is_correct: Boolean = false
     )
+
+    init {
+        interactionTime = AndroidResource.parseDuration(timeout ?: "")
+    }
 }

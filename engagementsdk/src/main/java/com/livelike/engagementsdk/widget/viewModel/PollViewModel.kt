@@ -54,6 +54,7 @@ internal class PollViewModel(
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
+    lateinit var onWidgetInteractionCompleted: () -> Unit
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream
     var points: SubscriptionManager<Int?> = SubscriptionManager(false)
     val gamificationProfile: Stream<ProgramGamificationProfile>
@@ -182,6 +183,7 @@ internal class PollViewModel(
         }
 
         adapter?.selectionLocked = true
+        onWidgetInteractionCompleted.invoke()
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
