@@ -97,7 +97,6 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             bodyBackground.requestLayout()
         } else {
             val params = bodyBackground.layoutParams as LayoutParams
-            params.topMargin = AndroidResource.dpToPx(12)
             bodyBackground.requestLayout()
         }
 
