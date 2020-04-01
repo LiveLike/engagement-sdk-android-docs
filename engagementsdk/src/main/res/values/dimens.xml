@@ -25,7 +25,6 @@
     <dimen name="livelike_percent_bar_corner_radius">4dp</dimen>
     <dimen name="livelike_percent_bar_corner_radius_image">2dp</dimen>
     <dimen name="livelike_header_corner_radius">6dp</dimen>
-    <dimen name="livelike_header_background_notification_label_radius">3dp</dimen>
     <dimen name="livelike_chat_rounded_rect_radius">12dp</dimen>
     <dimen name="livelike_button_corner_radius">6dp</dimen>
     <dimen name="livelike_button_outline_stroke_width">2dp</dimen>
