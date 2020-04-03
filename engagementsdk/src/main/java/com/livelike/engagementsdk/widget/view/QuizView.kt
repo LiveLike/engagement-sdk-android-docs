@@ -8,12 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
-import com.livelike.engagementsdk.utils.logDebug
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel

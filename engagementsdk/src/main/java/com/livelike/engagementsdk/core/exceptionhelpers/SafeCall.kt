@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.core.exceptionhelpers
 
-import com.livelike.engagementsdk.services.network.Result
+import com.livelike.engagementsdk.core.services.network.Result
 import java.io.IOException
 
 @Suppress("UNUSED_PARAMETER")

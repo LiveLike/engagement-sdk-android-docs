@@ -4,7 +4,7 @@ import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import java.util.Calendar
 

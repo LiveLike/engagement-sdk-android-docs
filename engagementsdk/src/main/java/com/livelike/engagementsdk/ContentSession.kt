@@ -1,47 +1,47 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
-import android.util.Log
 import android.widget.FrameLayout
-import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.chat.ChatMessage
-import com.livelike.engagementsdk.chat.ChatRepository
+import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.toChatQueue
 import com.livelike.engagementsdk.core.ServerDataValidationException
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
-import com.livelike.engagementsdk.services.messaging.proxies.filter
-import com.livelike.engagementsdk.services.messaging.proxies.logAnalytics
-import com.livelike.engagementsdk.services.messaging.proxies.syncTo
-import com.livelike.engagementsdk.services.messaging.proxies.withPreloader
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubChatMessagingClient
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.services.network.Result
-import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.combineLatestOnce
-import com.livelike.engagementsdk.utils.isNetworkConnected
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.flushPublishedMessage
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.logError
-import com.livelike.engagementsdk.utils.logVerbose
-import com.livelike.engagementsdk.utils.validateUuid
+import com.livelike.engagementsdk.core.services.messaging.MessagingClient
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.core.services.messaging.proxies.filter
+import com.livelike.engagementsdk.core.services.messaging.proxies.logAnalytics
+import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
+import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
+import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.flushPublishedMessage
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.combineLatestOnce
+import com.livelike.engagementsdk.core.utils.isNetworkConnected
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.core.utils.logVerbose
+import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,18 +84,28 @@ internal class ContentSession(
 
     override var analyticService: AnalyticsService =
         MockAnalyticsService(programId)
-    private val llDataClient = EngagementDataClientImpl()
+    private val llDataClient =
+        EngagementDataClientImpl()
+    private val widgetDataClient=WidgetDataClientImpl()
 
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(analyticService, userRepository.currentUserStream, programRepository, animationEventsStream) }
     override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
-    private val currentWidgetViewStream = SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
+    private val currentWidgetViewStream =
+        SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
-    private val programRepository = ProgramRepository(programId, userRepository)
+    private val programRepository =
+        ProgramRepository(
+            programId,
+            userRepository
+        )
 
-    private val animationEventsStream = SubscriptionManager<ViewAnimationEvents>(false)
+    private val animationEventsStream =
+        SubscriptionManager<ViewAnimationEvents>(
+            false
+        )
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
@@ -138,14 +148,15 @@ internal class ContentSession(
         userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode()).subscribe(this) {
             it?.let { pair ->
                 val configuration = pair.second
-                chatRepository = ChatRepository(
-                    configuration.pubNubKey,
-                    pair.first.accessToken,
-                    pair.first.id,
-                    analyticService,
-                    configuration.pubnubPublishKey,
-                    origin = configuration.pubnubOrigin
-                )
+                chatRepository =
+                    ChatRepository(
+                        configuration.pubNubKey,
+                        pair.first.accessToken,
+                        pair.first.id,
+                        analyticService,
+                        configuration.pubnubPublishKey,
+                        origin = configuration.pubnubOrigin
+                    )
                 logDebug { "chatRepository created" }
                 analyticService =
                     MixpanelAnalytics(
@@ -374,12 +385,15 @@ internal class ContentSession(
         }
         analyticService.trackLastWidgetStatus(true)
         widgetClient =
-            PubnubMessagingClient(config.pubNubKey, uuid)
+            PubnubMessagingClient(
+                config.pubNubKey,
+                uuid
+            )
                 .filter()
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptor, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
+                .asWidgetManager(widgetDataClient, currentWidgetViewStream, applicationContext, widgetInterceptor, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }

@@ -6,10 +6,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel

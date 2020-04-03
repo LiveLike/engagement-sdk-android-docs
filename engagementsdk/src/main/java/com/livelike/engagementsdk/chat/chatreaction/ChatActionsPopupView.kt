@@ -20,7 +20,7 @@ import android.widget.TextView
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
-import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.chat_reaction_background_card
 import kotlinx.android.synthetic.main.popup_chat_reaction.view.moderation_flag

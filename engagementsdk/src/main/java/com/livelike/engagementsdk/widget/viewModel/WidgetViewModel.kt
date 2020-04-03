@@ -7,13 +7,13 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.domain.GamificationManager
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.widget.domain.GamificationManager
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Resource
@@ -51,11 +51,15 @@ internal abstract class WidgetViewModel<T : Resource>(
 
     var timeoutStarted = false
 
-    val data: SubscriptionManager<T> = SubscriptionManager()
-    val results: SubscriptionManager<T> = SubscriptionManager()
+    val data: SubscriptionManager<T> =
+        SubscriptionManager()
+    val results: SubscriptionManager<T> =
+        SubscriptionManager()
 
-    val state: Stream<WidgetState> = SubscriptionManager()
-    val currentVote: SubscriptionManager<String?> = SubscriptionManager()
+    val state: Stream<WidgetState> =
+        SubscriptionManager()
+    val currentVote: SubscriptionManager<String?> =
+        SubscriptionManager()
 
     val gamificationProfile: Stream<ProgramGamificationProfile>?
         get() = programRepository?.programGamificationProfileStream

@@ -6,9 +6,9 @@ import android.widget.FrameLayout
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetLifeCycleEventsListener
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 

@@ -8,25 +8,25 @@ import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.services.messaging.Error
-import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.services.network.RequestType
-import com.livelike.engagementsdk.services.network.WidgetDataClient
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.services.messaging.ClientMessage
+import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
+import com.livelike.engagementsdk.core.services.messaging.Error
+import com.livelike.engagementsdk.core.services.messaging.MessagingClient
+import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.core.services.network.RequestType
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -57,15 +57,18 @@ internal class CheerMeterViewModel(
     private var voteUrl: String? = null
     private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
-    val results: SubscriptionManager<Resource> = SubscriptionManager()
-    val voteEnd: SubscriptionManager<Boolean> = SubscriptionManager()
-    val data: SubscriptionManager<CheerMeterWidget> = SubscriptionManager()
+    val results: SubscriptionManager<Resource> =
+        SubscriptionManager()
+    val voteEnd: SubscriptionManager<Boolean> =
+        SubscriptionManager()
+    val data: SubscriptionManager<CheerMeterWidget> =
+        SubscriptionManager()
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
     var animationEggTimerProgress = 0f
     var animationProgress = 0f
-    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
+    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
 
     init {
         sdkConfiguration.pubNubKey.let {

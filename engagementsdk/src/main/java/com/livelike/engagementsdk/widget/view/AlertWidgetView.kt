@@ -13,8 +13,8 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.logDebug
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel

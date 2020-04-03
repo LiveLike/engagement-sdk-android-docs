@@ -11,7 +11,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.widget.LinearLayout
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.AndroidResource
 
 class ChatViewThemeAttributes {
     fun initAttributes(context: Context, typedArray: TypedArray?) {

@@ -9,10 +9,10 @@ import android.widget.FrameLayout
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetLifeCycleEventsListener
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.logError
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes

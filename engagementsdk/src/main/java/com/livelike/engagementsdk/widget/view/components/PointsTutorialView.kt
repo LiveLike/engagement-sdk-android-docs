@@ -5,10 +5,10 @@ import android.util.AttributeSet
 import android.view.View
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.pointTutorialSeen
+import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getTotalPoints
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.pointTutorialSeen
 import com.livelike.engagementsdk.widget.view.wouldShowProgressionMeter
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.ViewModel

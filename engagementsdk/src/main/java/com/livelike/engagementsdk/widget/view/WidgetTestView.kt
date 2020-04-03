@@ -7,9 +7,9 @@ import android.widget.FrameLayout
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import kotlinx.android.synthetic.main.widget_test_view.view.buttonRefresh
@@ -88,8 +88,13 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
     private val predictionTextData =
         { """{"timeout":"P0DT00H00M03S","kind":"text-prediction","program_date_time":null,"subscribe_channel":"text_prediction_710a9bef_9932_493b_a414_e9a37abf49d6","question":"${textTitle.first()}","confirmation_message":"${textOptions.first()}","options":[{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.first()}","is_correct":false,"vote_count":0,"vote_url":""},{"image_url":"${imageUrl()}", "url":"","description":"${textOptions.first()}","is_correct":false,"vote_count":0,"vote_url":""}]}""" }
 
-    private var userRepository = UserRepository("")
-    private var programRepository = ProgramRepository("", userRepository)
+    private var userRepository =
+        UserRepository("")
+    private var programRepository =
+        ProgramRepository(
+            "",
+            userRepository
+        )
     init {
         ConstraintLayout.inflate(context, R.layout.widget_test_view, this)
 
