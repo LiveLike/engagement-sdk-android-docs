@@ -212,8 +212,8 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var showingDialog = false
 
     private fun WidgetInterceptor.showDialog(context: Context) {
-        showingDialog = true
         if((context as ExoPlayerActivity).isFinishing.not()) {
+            showingDialog = true
             AlertDialog.Builder(context).apply {
                 setMessage("You received a Widget, what do you want to do?")
                 setPositiveButton("Show") { _, _ ->
