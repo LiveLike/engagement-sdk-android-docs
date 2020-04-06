@@ -167,7 +167,6 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
         widgetData =
             gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java)
         postDelayed({
-            measure(MeasureSpec.AT_MOST, MeasureSpec.AT_MOST)
             widgetData.height = height
             widgetLifeCycleEventsListener?.onWidgetPresented(widgetData)
         }, 500)
