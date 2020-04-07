@@ -32,7 +32,8 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
     }
 
     override fun unsubscribe(key: Any) {
-        observerMap.remove(key)
+        if (observerMap.containsKey(key))
+            observerMap.remove(key)
     }
 
     override fun clear() {

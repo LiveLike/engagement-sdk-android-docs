@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
@@ -94,7 +95,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 }
             }
         }
-
+        logDebug { "showing QuizWidget" }
         if (widget == null) {
             inflated = false
             removeAllViews()
@@ -118,18 +119,16 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.adapter?.myDataset = options
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
             viewModel?.adapter?.showPercentage = false
+            logDebug { "QuizWidget Showing result total:$totalVotes" }
         }
     }
 
     private fun stateObserver(state: String?) {
         when (state) {
+            WidgetState.LOCK_INTERACTION.name -> {
+                onWidgetInteractionCompleted()
+            }
             "results" -> {
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
-                    }
-                }
                 listOf(textEggTimer).forEach { v -> v?.showCloseButton() {
                     viewModel?.dismissWidget(it)
                 } }
@@ -166,6 +165,12 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         resumeAnimation()
                     }
                     visibility = View.VISIBLE
+                }
+                viewModel?.points?.let {
+                    if (!shouldShowPointTutorial() && it > 0) {
+                        pointView.startAnimation(it, true)
+                        wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
+                    }
                 }
             }
         }

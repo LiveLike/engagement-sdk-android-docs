@@ -8,7 +8,13 @@
             android:type="linear"
             android:angle="@integer/header_default_background_gradient_angle"/>
 
-    <corners
-            android:radius="@dimen/livelike_header_background_notification_label_radius"/>
+    <padding
+        android:left="16dp"
+        android:right="34dp"
+        android:top="10dp"
+        android:bottom="10dp"
+        />
+    <corners android:topLeftRadius="@dimen/livelike_button_corner_radius"
+        android:topRightRadius="@dimen/livelike_button_corner_radius"/>
 
 </shape>

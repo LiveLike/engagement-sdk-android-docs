@@ -14,12 +14,15 @@ import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
+import com.livelike.engagementsdk.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.SubscriptionManager
+import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import java.util.PriorityQueue
 import java.util.Queue
@@ -33,12 +36,12 @@ internal class WidgetManager(
     private val dataClient: WidgetDataClient,
     private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>,
     private val context: Context,
-    private val widgetInterceptorStream: Stream<WidgetInterceptor>,
+    widgetInterceptor: WidgetInterceptor?,
     private val analyticsService: AnalyticsService,
     private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
-    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
+    private val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     private val widgetThemeAttributes: WidgetViewThemeAttributes?
 ) :
     MessagingClientProxy(upstream) {
@@ -57,17 +60,25 @@ internal class WidgetManager(
     private val messageQueue: Queue<MessageHolder> = PriorityQueue()
     private var widgetOnScreen = false
     private var pendingMessage: MessageHolder? = null
+    var widgetInterceptor: WidgetInterceptor? = widgetInterceptor
+        set(value) {
+            field = value
+            widgetInterceptorSubscribe()
+        }
 
-    init {
-        // TODO BUG : unsubscribe old widget interceptor events. ANDSDK-468
-        widgetInterceptorStream.subscribe(javaClass) { wi ->
-            wi?.events?.subscribe(javaClass.simpleName) {
+    private fun widgetInterceptorSubscribe() {
+        widgetInterceptor?.let { wi ->
+            wi.events.subscribe(javaClass.simpleName) {
                 when (it) {
                     WidgetInterceptor.Decision.Show -> showPendingMessage()
                     WidgetInterceptor.Decision.Dismiss -> dismissPendingMessage()
                 }
             }
         }
+    }
+
+    init {
+        widgetInterceptorSubscribe()
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -86,6 +97,7 @@ internal class WidgetManager(
     private val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        logDebug { "Message received at WidgetManager" }
         messageQueue.add(MessageHolder(client, event))
         if (!widgetOnScreen) {
             publishNextInQueue()
@@ -115,14 +127,14 @@ internal class WidgetManager(
     private fun notifyIntegrator(message: MessageHolder) {
         val widgetType =
             WidgetType.fromString(message.clientMessage.message.get("event").asString ?: "")
-        if (widgetInterceptorStream.latest() == null || widgetType == WidgetType.POINTS_TUTORIAL || widgetType == WidgetType.COLLECT_BADGE) {
+        if (widgetInterceptor == null || widgetType == WidgetType.POINTS_TUTORIAL || widgetType == WidgetType.COLLECT_BADGE) {
             showWidgetOnScreen(message)
         } else {
             GlobalScope.launch {
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
                     try {
-                        widgetInterceptorStream.latest()?.widgetWantsToShow()
+                        widgetInterceptor?.widgetWantsToShow(gson.fromJson(message.clientMessage.message["payload"], LiveLikeWidgetEntity::class.java))
                     } catch (e: Exception) {
                         logError { "Widget interceptor encountered a problem: $e \n Dismissing the widget" }
                         dismissPendingMessage()
@@ -214,7 +226,7 @@ internal fun MessagingClient.asWidgetManager(
     dataClient: WidgetDataClient,
     widgetInfosStream: SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>,
     context: Context,
-    widgetInterceptorStream: Stream<WidgetInterceptor>,
+    widgetInterceptor: WidgetInterceptor?,
     analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     userRepository: UserRepository,
@@ -227,7 +239,7 @@ internal fun MessagingClient.asWidgetManager(
         dataClient,
         widgetInfosStream,
         context,
-        widgetInterceptorStream,
+        widgetInterceptor,
         analyticsService,
         sdkConfiguration,
         userRepository,

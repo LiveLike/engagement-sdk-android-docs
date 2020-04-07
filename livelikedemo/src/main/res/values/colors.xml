@@ -5,9 +5,6 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorDivider">#8BBDBDBD</color>
     <color name="text_color">#ffffff</color>
-<!-- ALERT -->
-    <color name="livelike_alert_notification_label_gradient_left">#FFEB3B</color>
-    <color name="livelike_alert_notification_label_gradient_right">#53C018</color>
 <!-- POLL -->
     <color name="livelike_poll_title_gradient_left">#5290E8</color>
     <color name="livelike_poll_title_gradient_right">#5290E8</color>
@@ -20,11 +17,14 @@
     <color name="livelike_quiz_option_selected_border">#5290E8</color>
     <color name="livelike_quiz_bar_gradient_left">#5290E8</color>
     <color name="livelike_quiz_bar_gradient_right">#5290E8</color>
-   <!-- PREDICTION -->
+    <!-- PREDICTION -->
     <color name="livelike_prediction_option_selected_border">#5290E8</color>
     <color name="livelike_prediction_image_option_selected_border">#5290E8</color>
     <color name="livelike_prediction_title_gradient_left">#5290E8</color>
     <color name="livelike_prediction_title_gradient_right">#5290E8</color>
+    <color name="livelike_prediction_bar_gradient_left">#5290E8</color>
+    <color name="livelike_prediction_bar_gradient_right">#5290E8</color>
+
 
     <color name="livelike_correct_bar_gradient_left">#5290E8</color>
     <color name="livelike_correct_bar_gradient_right">#5290E8</color>

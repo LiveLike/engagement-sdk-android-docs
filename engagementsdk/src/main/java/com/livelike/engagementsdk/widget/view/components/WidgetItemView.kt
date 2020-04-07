@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
@@ -79,9 +80,11 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         option: Option,
         itemIsLast: Boolean
     ) {
+        logDebug { "WidgetItemView setbackground widgetType:$widgetType , isSelected:$itemIsSelected , isItemLast:$itemIsLast" }
         if (itemIsSelected) {
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
                 WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
+                    updateViewProgressBar(R.drawable.progress_bar_prediction)
                     updateViewButtonBackground(
                         R.drawable.answer_outline_selected_prediction
                     )

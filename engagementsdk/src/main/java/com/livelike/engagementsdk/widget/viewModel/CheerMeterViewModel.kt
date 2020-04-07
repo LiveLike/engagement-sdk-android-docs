@@ -201,6 +201,7 @@ internal class CheerMeterViewModel(
                 action
             )
         }
+        logDebug { "dismiss Alert Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
     }

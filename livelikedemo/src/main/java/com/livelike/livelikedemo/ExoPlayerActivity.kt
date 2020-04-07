@@ -19,13 +19,19 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.utils.isNetworkConnected
 import com.livelike.engagementsdk.utils.registerLogsHandler
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -36,10 +42,6 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -47,6 +49,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val SHOWING_DIALOG = "showingDialog"
         const val POSITION = "position"
         const val CHANNEL_NAME = "channelName"
+        var privateGroupRoomId: String? = null
     }
 
     private var showNotification: Boolean = true
@@ -199,7 +202,9 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     private val dialog = object : WidgetInterceptor() {
-        override fun widgetWantsToShow() {
+        override fun widgetWantsToShow(widgetData: LiveLikeWidgetEntity) {
+            val widgetDataJson = GsonBuilder().create().toJson(widgetData)
+            addLogs("widgetWantsToShow : $widgetDataJson")
             showDialog(this@ExoPlayerActivity)
         }
     }
@@ -207,20 +212,22 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var showingDialog = false
 
     private fun WidgetInterceptor.showDialog(context: Context) {
-        showingDialog = true
-        AlertDialog.Builder(context).apply {
-            setMessage("You received a Widget, what do you want to do?")
-            setPositiveButton("Show") { _, _ ->
-                showingDialog = false
-                showWidget()
-            }
-            setNegativeButton("Dismiss") { _, _ ->
-                showingDialog = false
-                dismissWidget()
-            }
-            setCancelable(false)
-            create()
-        }.show()
+        if((context as ExoPlayerActivity).isFinishing.not()) {
+            showingDialog = true
+            AlertDialog.Builder(context).apply {
+                setMessage("You received a Widget, what do you want to do?")
+                setPositiveButton("Show") { _, _ ->
+                    showingDialog = false
+                    showWidget()
+                }
+                setNegativeButton("Dismiss") { _, _ ->
+                    showingDialog = false
+                    dismissWidget()
+                }
+                setCancelable(false)
+                create()
+            }.show()
+        }
     }
 
     var messageCount: MutableMap<String, Long> = mutableMapOf()
@@ -236,7 +243,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         })
 
         if (channel != ChannelManager.NONE_CHANNEL) {
-            val session = (application as LiveLikeApplication).createSession(
+            val session = (application as LiveLikeApplication).createPublicSession(
                 channel.llProgram.toString(),
                 when (showNotification) {
                     true -> dialog
@@ -245,10 +252,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             )
             if (privateGroupChatsession == null) {
                 privateGroupChatsession =
-                    (application as LiveLikeApplication).sdk.createContentSession(
+                    (application as LiveLikeApplication).createPrivateSession(
                         channel.llProgram.toString(),
-                        (application as LiveLikeApplication).timecodeGetter,
-                        object : ErrorDelegate() {
+                        errorDelegate = object : ErrorDelegate() {
                             override fun onError(error: String) {
                                 checkForNetworkToRecreateActivity()
                             }
@@ -353,7 +359,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                                     "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
                                 fullLogs.text =
                                     "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${fullLogs.text}"
-                                Log.v("Here", "Count Read channel : $chatRoomId lasttimestamp:$timestamp count: $result")
+                                Log.v(
+                                    "Here",
+                                    "Count Read channel : $chatRoomId lasttimestamp:$timestamp count: $result"
+                                )
                                 result?.let {
                                     messageCount[chatRoomId] =
                                         (messageCount[chatRoomId] ?: 0) + result
@@ -368,9 +377,29 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }
             }
 
-
-            chat_view.setSession(session)
+            if (privateGroupRoomId != null) {
+                privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
+                chat_view.setSession(privateGroupChatsession!!)
+            } else {
+                chat_view.setSession(session)
+            }
             widget_view.setSession(session)
+            widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
+                override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
+                    val widgetDataJson = GsonBuilder().create().toJson(widgetData)
+                    addLogs("onWidgetPresented : $widgetDataJson")
+                }
+
+                override fun onWidgetInteractionCompleted(widgetData: LiveLikeWidgetEntity) {
+                    val widgetDataJson = GsonBuilder().create().toJson(widgetData)
+                    addLogs("onWidgetInteractionCompleted : $widgetDataJson")
+                }
+
+                override fun onWidgetDismissed(widgetData: LiveLikeWidgetEntity) {
+                    val widgetDataJson = GsonBuilder().create().toJson(widgetData)
+                    addLogs("onWidgetDismissed : $widgetDataJson")
+                }
+            }
             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
                 getString("UserNickname", "").let {
                     if (!it.isNullOrEmpty()) {
@@ -386,6 +415,11 @@ class ExoPlayerActivity : AppCompatActivity() {
 
             player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
+    }
+
+    private fun addLogs(logs: String?) {
+        logsPreview.text = "$logs \n\n ${logsPreview.text}"
+        fullLogs.text = "$logs \n\n ${fullLogs.text}"
     }
 
     private fun checkForNetworkToRecreateActivity() {
@@ -416,11 +450,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         timer.cancel()
         timer.purge()
         player?.release()
-        session?.close()
-        session = null
-        (application as LiveLikeApplication).removeSession()
-        privateGroupChatsession?.close()
-        privateGroupChatsession = null
         session?.widgetInterceptor = null
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onDestroy()

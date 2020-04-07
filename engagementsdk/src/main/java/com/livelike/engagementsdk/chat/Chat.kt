@@ -13,7 +13,12 @@ internal interface ChatRenderer {
     fun deleteChatMessage(messageId: String)
     fun updateChatMessageTimeToken(messageId: String, timetoken: String)
     fun loadingCompleted()
-    fun addMessageReaction(isOwnReaction: Boolean, messagePubnubToken: Long, chatMessageReaction: ChatMessageReaction)
+    fun addMessageReaction(
+        isOwnReaction: Boolean,
+        messagePubnubToken: Long,
+        chatMessageReaction: ChatMessageReaction
+    )
+
     fun removeMessageReaction(messagePubnubToken: Long, emojiId: String)
 }
 
@@ -35,7 +40,6 @@ internal data class ChatMessage(
     var id: String = UUID.randomUUID().toString(),
     // PDT video time //NOt using right now for later use FYI @shivansh @Willis
     var timeStamp: String? = null,
-    var pubnubMessageToken: Long? = null,
     var imageUrl: String? = null,
     var badgeUrlImage: String? = null,
     var isFromMe: Boolean = false,
@@ -80,4 +84,5 @@ internal data class ChatMessageReaction(
     val emojiId: String,
     var pubnubActionToken: Long? = null
 )
+
 internal const val CHAT_MESSAGE_IMAGE_TEMPLATE = ":message:"

@@ -24,6 +24,8 @@ import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.nicknameText
+import kotlinx.android.synthetic.main.activity_main.private_group_button
+import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
@@ -49,6 +51,16 @@ class MainActivity : AppCompatActivity() {
                 channelManager.loadClientConfig()
             }
         }
+    }
+    private var chatRoomIds: List<String> = if (BuildConfig.DEBUG) {
+        listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+    } else {
+        listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        ExoPlayerActivity.privateGroupRoomId = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,13 +118,27 @@ class MainActivity : AppCompatActivity() {
                 create()
             }.show()
         }
+
+        private_group_button.setOnClickListener {
+            AlertDialog.Builder(this).apply {
+                setTitle("Select a private group")
+                setItems(chatRoomIds.toTypedArray()) { _, which ->
+                    // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
+                    (application as LiveLikeApplication).removePrivateSession()
+                    private_group_label.text = chatRoomIds[which]
+                    ExoPlayerActivity.privateGroupRoomId = chatRoomIds[which]
+                }
+                create()
+            }.show()
+        }
+
         themes_button.setOnClickListener {
             val channels = arrayListOf("Default", "Turner", "Custom Chat Reaction")
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a theme!")
                 setItems(channels.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
-                    (application as LiveLikeApplication).removeSession()
+                    (application as LiveLikeApplication).removePublicSession()
                     themes_label.text = channels[which]
                     EngagementSDK.enableDebug = false
                     player.theme = when (which) {

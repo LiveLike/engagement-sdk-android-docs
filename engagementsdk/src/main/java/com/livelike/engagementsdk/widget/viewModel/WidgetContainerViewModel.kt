@@ -9,6 +9,7 @@ import android.widget.FrameLayout
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.toAnalyticsString
@@ -21,6 +22,7 @@ import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 
 class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
+    var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
     private lateinit var widgetViewThemeAttributes: WidgetViewThemeAttributes
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
     private var widgetContainer: FrameLayout? = null
@@ -79,11 +81,12 @@ class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Pair<
         if (view != null) {
             dismissWidget = view.dismissFunc
             (view.parent as ViewGroup?)?.removeAllViews() // Clean the view parent in case of reuse
-            view?.widgetViewThemeAttributes?.apply {
+            view.widgetViewThemeAttributes.apply {
                 widgetWinAnimation = widgetViewThemeAttributes.widgetWinAnimation
                 widgetLoseAnimation = widgetViewThemeAttributes.widgetLoseAnimation
                 widgetDrawAnimation = widgetViewThemeAttributes.widgetDrawAnimation
             }
+            view.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
             widgetContainer?.addView(view)
             logDebug { "NOW - Show WidgetInfos" }
         } else {

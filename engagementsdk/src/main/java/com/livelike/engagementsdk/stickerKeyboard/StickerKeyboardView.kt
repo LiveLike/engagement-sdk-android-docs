@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.TabLayout
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -22,7 +23,7 @@ import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 
 
 class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) : ConstraintLayout(context, attributes) {
-    private lateinit var viewModel: StickerKeyboardViewModel
+    private var viewModel: StickerKeyboardViewModel?=null
     private var chatViewThemeAttributes:ChatViewThemeAttributes?=null
     init {
         LayoutInflater.from(context).inflate(R.layout.livelike_sticker_keyboard_pager, this, true)
@@ -65,7 +66,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
     fun setProgram(stickerPackRepository: StickerPackRepository, onLoaded: ((List<StickerPack>?) -> Unit)? = null) {
         viewModel = StickerKeyboardViewModel(stickerPackRepository)
-        viewModel.stickerPacks.subscribe(javaClass) {
+        viewModel?.stickerPacks?.subscribe(javaClass) {
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
                 val stickerCollectionPagerAdapter = StickerCollectionAdapter(
@@ -77,18 +78,58 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                 pager.layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 pager.adapter = stickerCollectionPagerAdapter
+                val pageListener= object : TabLayout.TabLayoutOnPageChangeListener(pager_tab) {
+                    override fun onPageScrollStateChanged(state: Int) {
+                        super.onPageScrollStateChanged(state)
+                    }
+
+                    override fun onPageScrolled(
+                        position: Int,
+                        positionOffset: Float,
+                        positionOffsetPixels: Int
+                    ) {
+                        super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                    }
+
+                    override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
+                    }
+                }
                 RVPagerSnapHelperListenable().attachToRecyclerView(
                     pager,
                     object : RVPagerStateListener {
                         override fun onPageScroll(pagesState: List<VisiblePageState>) {
-
+                            for (pos in pagesState.indices){
+                                val state=pagesState[pos]
+                                var diff = (1.0f - state.distanceToSettled)
+                                if (diff < 0.0f) {
+                                    diff = 0.0f
+                                } else if (diff > 1.0f) {
+                                    diff = 1.0f
+                                }
+                                if (pos == 0) {
+                                    pageListener.onPageScrolled(
+                                        state.index,
+                                        diff,
+                                        state.distanceToSettledPixels
+                                    )
+                                }
+                            }
                         }
 
                         override fun onScrollStateChanged(state: RVPageScrollState) {
+                            pageListener.onPageScrollStateChanged(when(state){
+                                RVPageScrollState.Idle -> {
+                                    pager_tab.getTabAt(pager_tab.selectedTabPosition)?.select()
+                                    ViewPager.SCROLL_STATE_IDLE
+                                }
+                                RVPageScrollState.Dragging -> ViewPager.SCROLL_STATE_DRAGGING
+                                RVPageScrollState.Settling -> ViewPager.SCROLL_STATE_SETTLING
+                            })
                         }
 
                         override fun onPageSelected(index: Int) {
-                            pager_tab.getTabAt(index)?.select()
+                            pageListener.onPageSelected(index)
                         }
                     })
 
@@ -109,7 +150,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
                 }
                 pager_tab.addOnTabSelectedListener(listener)
-                for (i in 0..stickerPacks.size) {
+                for (i in stickerPacks.indices) {
                     val tab = pager_tab.newTab()
                     if (i == 0) {
                         tab.customView = createTabItemView()
@@ -119,8 +160,13 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     pager_tab.addTab(tab)
                 }
             }
-            viewModel.preload(context)
+            viewModel?.preload(context.applicationContext)
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.stickerPacks?.unsubscribe(javaClass)
     }
 
     private var listener: FragmentClickListener? = null

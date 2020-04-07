@@ -27,6 +27,7 @@ import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.debounce
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
@@ -106,6 +107,7 @@ internal class QuizViewModel(
     }
 
     private fun vote() {
+        logDebug { "Quiz Widget selectedPosition:${adapter?.selectedPosition}" }
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
 
         uiScope.launch {
@@ -145,6 +147,7 @@ internal class QuizViewModel(
                 delay(AndroidResource.parseDuration(timeout))
                 debouncedVoteId.unsubscribe(javaClass)
                 adapter?.selectionLocked = true
+                state.onNext(WidgetState.LOCK_INTERACTION.name)
                 vote()
                 delay(500)
                 resultsState(widgetViewThemeAttributes)
@@ -162,6 +165,7 @@ internal class QuizViewModel(
                 action
             )
         }
+        logDebug { "dismiss Quiz Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
         viewModelJob.cancel()
@@ -178,7 +182,7 @@ internal class QuizViewModel(
         val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
         adapter?.selectionLocked = true
-
+        logDebug { "Quiz View ,showing result isUserCorrect:$isUserCorrect" }
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->

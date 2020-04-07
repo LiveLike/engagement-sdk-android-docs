@@ -4,6 +4,7 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.services.messaging.ClientMessage
 import com.livelike.engagementsdk.services.messaging.MessagingClient
 import com.livelike.engagementsdk.utils.Queue
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logVerbose
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -19,9 +20,9 @@ internal class SynchronizedMessagingClient(
 ) :
     MessagingClientProxy(upstream) {
 
-    private val queueMap:MutableMap<String,Queue<ClientMessage>> = mutableMapOf()
+    private val queueMap: MutableMap<String, Queue<ClientMessage>> = mutableMapOf()
     private var coroutineTimer: Job
-
+    private var isQueueProcess:Boolean=false
     init {
         coroutineTimer = MainScope().launch {
             publishTimeSynchronizedMessageFromQueue()
@@ -52,8 +53,15 @@ internal class SynchronizedMessagingClient(
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        logDebug { "Message received at SynchronizedMessagingClient" }
         when {
-            shouldPublishEvent(event) -> publishEvent(event)
+            shouldPublishEvent(event) -> {
+                val queue = queueMap[event.channel] ?: Queue()
+                if (queue.isEmpty().not()) {
+                    processQueueForScheduledEvent()
+                }
+                publishEvent(event)
+            }
             shouldDismissEvent(event) -> {
                 logDismissedEvent(event)
                 return
@@ -78,25 +86,33 @@ internal class SynchronizedMessagingClient(
     }
 
     fun processQueueForScheduledEvent() {
-        queueMap.keys.forEach {
-            val queue = queueMap[it]
-            queue?.let {
-                val event = queue.peek()
-                event?.let {
-                    when {
-                        shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
-                        shouldDismissEvent(event) -> {
-                            logDismissedEvent(event)
-                            queue.dequeue()
+        if (isQueueProcess.not()) {
+            isQueueProcess = true
+            queueMap.keys.forEach {
+                val queue = queueMap[it]
+                queue?.let {
+                    val count = queue.count()
+                    var check = 0
+                    while (check < count) {
+                        val event = queue.peek()
+                        event?.let {
+                            when {
+                                shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
+                                shouldDismissEvent(event) -> {
+                                    logDismissedEvent(event)
+                                    queue.dequeue()
+                                }
+                                else -> {
+                                }
+                            }
                         }
-                        else -> {
-                        }
+                        check++
                     }
                 }
             }
+            isQueueProcess = false
         }
-
-     }
+    }
 
     private fun publishEvent(event: ClientMessage) {
         listener?.onClientMessageEvent(this, event)

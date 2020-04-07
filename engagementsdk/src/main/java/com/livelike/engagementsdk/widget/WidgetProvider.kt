@@ -11,8 +11,11 @@ import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.data.models.Badge
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.services.messaging.proxies.LiveLikeWidgetEntity
+import com.livelike.engagementsdk.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.WidgetType.ALERT
 import com.livelike.engagementsdk.widget.WidgetType.CHEER_METER
 import com.livelike.engagementsdk.widget.WidgetType.COLLECT_BADGE
@@ -81,6 +84,7 @@ internal class WidgetProvider {
                     widgetInfos,
                     context,
                     analyticsService,
+                    sdkConfiguration,
                     onDismiss,
                     userRepository,
                     programRepository,
@@ -135,7 +139,9 @@ internal class WidgetProvider {
             }
             else -> null
         }
+        logDebug { "Widget created from provider, type: ${WidgetType.fromString(widgetInfos.type)}" }
         specifiedWidgetView?.widgetId = widgetInfos.widgetId
+        specifiedWidgetView?.widgetInfos = widgetInfos
         return specifiedWidgetView
     }
 }
@@ -147,7 +153,31 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     var widgetId: String = ""
+    lateinit var widgetInfos: WidgetInfos
     open var widgetViewModel: ViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
     open var widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()
+
+    var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
+
+    lateinit var widgetData: LiveLikeWidgetEntity
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        widgetData =
+            gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidgetEntity::class.java)
+        postDelayed({
+            widgetData.height = height
+            widgetLifeCycleEventsListener?.onWidgetPresented(widgetData)
+        }, 500)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        widgetLifeCycleEventsListener?.onWidgetDismissed(widgetData)
+    }
+
+    fun onWidgetInteractionCompleted() {
+        widgetLifeCycleEventsListener?.onWidgetInteractionCompleted(widgetData)
+    }
 }

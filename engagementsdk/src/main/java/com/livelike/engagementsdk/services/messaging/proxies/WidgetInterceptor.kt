@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk.services.messaging.proxies
 
+import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.SubscriptionManager
 
 /**
@@ -9,7 +11,7 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
  */
 abstract class WidgetInterceptor {
     /** Called when a widget is received from the CMS */
-    abstract fun widgetWantsToShow()
+    abstract fun widgetWantsToShow(widgetData: LiveLikeWidgetEntity)
 
     /** Unlock the widget and show it on screen */
     fun showWidget() {
@@ -28,4 +30,56 @@ abstract class WidgetInterceptor {
 
     internal val events: Stream<Decision> =
         SubscriptionManager(false)
+}
+
+abstract class WidgetLifeCycleEventsListener {
+
+    abstract fun onWidgetPresented(widgetData: LiveLikeWidgetEntity)
+    abstract fun onWidgetInteractionCompleted(widgetData: LiveLikeWidgetEntity)
+    abstract fun onWidgetDismissed(widgetData: LiveLikeWidgetEntity)
+// TODO    abstract fun onWidgetCancelled(reason: WidgetCancelReason, widgetData: LiveLikeWidgetEntity)
+}
+
+enum class WidgetCancelReason {
+    TIME_EXPIRED,
+    MANUALLY_DISMISSED
+}
+
+class LiveLikeWidgetEntity {
+
+    var id: String? = null
+
+    var kind: String = ""
+
+    var height: Int? = null
+
+    @SerializedName("question")
+    var title: String = ""
+
+    var options: List<Option>? = null
+
+    internal var timeout: String? = null
+        set(value) {
+            field = value
+            interactionTime = AndroidResource.parseDuration(value ?: "")
+        }
+
+    var interactionTime: Long? = null
+
+    var customData: String? = null
+
+    data class Option(
+
+        val id: String,
+
+        val url: String = "",
+
+        val description: String = "",
+
+        val is_correct: Boolean = false
+    )
+
+    init {
+        interactionTime = AndroidResource.parseDuration(timeout ?: "")
+    }
 }

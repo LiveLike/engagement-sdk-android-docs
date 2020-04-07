@@ -10,9 +10,12 @@ import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
@@ -39,8 +42,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
         set(value) {
             field = value
             viewModel = value as PredictionViewModel
-            viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
-            viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
         }
 
     // Refresh the view when re-attached to the activity
@@ -48,6 +49,25 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
         viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+    }
+
+    private fun resultsObserver(resource: Resource?) {
+        resource?.apply {
+            val optionResults = resource.getMergedOptions() ?: return
+            val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
+            val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
+            options.forEach { opt ->
+                optionResults.find {
+                    it.id == opt.id
+                }?.apply {
+                    opt.updateCount(this)
+                    opt.percentage = opt.getPercent(totalVotes.toFloat())
+                }
+            }
+            logDebug { "PredictionWidget Showing result total:$totalVotes" }
+            viewModel?.adapter?.myDataset = options
+            textRecyclerView.swapAdapter(viewModel?.adapter, false)
+        }
     }
 
     private fun widgetObserver(widget: PredictionWidget?) {
@@ -64,6 +84,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
                 {
+                    viewModel?.adapter?.showPercentage = true
+                    viewModel?.adapter?.notifyDataSetChanged()
                     viewModel?.onOptionClicked()
                 },
                 widget.type,
@@ -78,6 +100,14 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
             val isFollowUp = resource.kind.contains("follow-up")
             viewModel?.startDismissTimout(resource.timeout, isFollowUp, widgetViewThemeAttributes)
+            if (isFollowUp) {
+                val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+                viewModel?.followupState(
+                    selectedPredictionId,
+                    resource.correct_option_id,
+                    widgetViewThemeAttributes
+                )
+            }
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
@@ -90,6 +120,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                     }
                 }
             }
+            logDebug { "showing PredictionView Widget" }
         }
 
         if (widget == null) {
@@ -102,9 +133,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
     private fun stateObserver(state: String?) {
         when (state) {
             "confirmation" -> {
-                titleView?.alpha = 0.2f
-                textEggTimer?.alpha = 0.2f
-                textRecyclerView?.alpha = 0.2f
+                resultsObserver(viewModel?.results?.latest())
                 confirmationMessage?.apply {
                     text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
                     viewModel?.animationPath?.let { viewModel?.animationProgress?.let { it1 -> startAnimation(it, it1) } }
@@ -125,7 +154,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
             "followup" -> {
                 followupAnimation?.apply {
-                    setAnimation(viewModel?.animationPath)
+                    setAnimation(viewModel?.
+                    animationPath)
                     progress = viewModel?.animationProgress!!
                     addAnimatorUpdateListener { valueAnimator ->
                         viewModel?.animationProgress = valueAnimator.animatedFraction
@@ -148,4 +178,5 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
         }
     }
+
 }

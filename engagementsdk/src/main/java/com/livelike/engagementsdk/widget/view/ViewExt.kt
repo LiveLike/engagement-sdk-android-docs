@@ -31,7 +31,7 @@ fun View.getLocationOnScreen(): Point {
 }
 
 fun ImageView.loadImage(url: String, size: Int) {
-    Glide.with(context)
+    Glide.with(context.applicationContext)
         .load(url)
         .apply(
             RequestOptions().override(size, size)

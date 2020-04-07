@@ -49,5 +49,6 @@
     <string name="theme_btn_label">Themes</string>
 
     <string name="win_animation_turner">winAnimationTurner</string>
+    <string name="stay_tuned_animation_fan_code">stayTunedFanCode</string>
     <string name="lose_animation_turner">loseAnimationTurner</string>
 </resources>

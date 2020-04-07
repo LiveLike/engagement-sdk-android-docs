@@ -1,10 +1,13 @@
 package com.livelike.engagementsdk.widget.viewModel
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
@@ -12,6 +15,12 @@ import com.livelike.engagementsdk.data.models.RewardsType
 import com.livelike.engagementsdk.data.repository.ProgramRepository
 import com.livelike.engagementsdk.data.repository.UserRepository
 import com.livelike.engagementsdk.domain.GamificationManager
+import com.livelike.engagementsdk.services.messaging.ClientMessage
+import com.livelike.engagementsdk.services.messaging.ConnectionStatus
+import com.livelike.engagementsdk.services.messaging.Error
+import com.livelike.engagementsdk.services.messaging.MessagingClient
+import com.livelike.engagementsdk.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.services.network.WidgetDataClient
 import com.livelike.engagementsdk.utils.AndroidResource
@@ -19,6 +28,8 @@ import com.livelike.engagementsdk.utils.SubscriptionManager
 import com.livelike.engagementsdk.utils.gson
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
+import com.livelike.engagementsdk.utils.logDebug
+import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
@@ -38,11 +49,13 @@ internal class PredictionViewModel(
     widgetInfos: WidgetInfos,
     private val appContext: Context,
     private val analyticsService: AnalyticsService,
+    sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
+    private var followUp: Boolean =false
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository.programGamificationProfileStream
@@ -51,18 +64,41 @@ internal class PredictionViewModel(
     val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
     private val dataClient: WidgetDataClient = EngagementDataClientImpl()
     var state: Stream<String?> = SubscriptionManager() // confirmation, followup
-
+    var results: Stream<Resource> = SubscriptionManager()
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
     var animationProgress = 0f
     var animationEggTimerProgress = 0f
     var animationPath = ""
+    private var pubnub: PubnubMessagingClient? = null
 
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     init {
+        sdkConfiguration.pubNubKey.let {
+            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
+            pubnub?.addMessagingEventListener(object : MessagingEventListener {
+                override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+                    val widgetType = event.message.get("event").asString ?: ""
+                    logVerbose { "type is : $widgetType" }
+                    val payload = event.message["payload"].asJsonObject
+                    Handler(Looper.getMainLooper()).post {
+                        results.onNext(
+                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
+                        )
+                    }
+                }
+
+                override fun onClientMessageError(client: MessagingClient, error: Error) {}
+                override fun onClientMessageStatus(
+                    client: MessagingClient,
+                    status: ConnectionStatus
+                ) {
+                }
+            })
+        }
         widgetObserver(widgetInfos)
     }
 
@@ -77,6 +113,7 @@ internal class PredictionViewModel(
             ) {
                 val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
                 resource?.apply {
+                    pubnub?.subscribe(listOf(resource.subscribe_channel))
                     data.onNext(PredictionWidget(type, resource))
                 }
 
@@ -110,16 +147,11 @@ internal class PredictionViewModel(
                         delay(if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
                         dismissWidget(DismissAction.TIMEOUT)
                     }
-                    followupState(
-                        selectedPredictionId,
-                        resource.correct_option_id,
-                        widgetViewThemeAttributes
-                    )
                 }
             } else {
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
-                    confirmationState()
+                    confirmationState(widgetViewThemeAttributes)
                 }
             }
         }
@@ -135,19 +167,26 @@ internal class PredictionViewModel(
                 action
             )
         }
+        logDebug { "dismiss Prediction Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
     }
 
     fun onOptionClicked() {
+        uiScope.launch {
+            vote()
+        }
         interactionData.incrementInteraction()
     }
 
-    private fun followupState(
+    internal fun followupState(
         selectedPredictionId: String,
         correctOptionId: String,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
+        if(followUp)
+            return
+        followUp = true
         adapter?.correctOptionId = correctOptionId
         adapter?.userSelectedOptionId = selectedPredictionId
         adapter?.selectionLocked = true
@@ -171,11 +210,11 @@ internal class PredictionViewModel(
                 }
             }
             state.onNext("followup")
-//            programRepository.fetchProgramRank()
         }
+        logDebug { "Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
     }
 
-    private fun confirmationState() {
+    private fun confirmationState(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
@@ -183,8 +222,9 @@ internal class PredictionViewModel(
         }
 
         adapter?.selectionLocked = true
-        animationPath = AndroidResource.selectRandomLottieAnimation("confirmMessage", appContext) ?: ""
-
+        val rootPath = widgetViewThemeAttributes.stayTunedAnimation
+        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
+        logDebug { "Prediction Widget selected Position:${adapter?.selectedPosition}" }
         uiScope.launch {
             vote()
             data.currentData?.resource?.rewards_url?.let {
@@ -195,6 +235,8 @@ internal class PredictionViewModel(
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
+            pubnub?.stop()
+            pubnub?.unsubscribeAll()
             state.onNext("confirmation")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(3000)
@@ -213,7 +255,6 @@ internal class PredictionViewModel(
         state.onNext("")
         data.onNext(null)
         animationEggTimerProgress = 0f
-
         currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()

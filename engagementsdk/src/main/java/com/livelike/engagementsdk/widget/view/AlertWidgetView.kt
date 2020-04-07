@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
@@ -21,7 +22,6 @@ import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
 import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
 import kotlinx.android.synthetic.main.widget_alert.view.bodyText
-import kotlinx.android.synthetic.main.widget_alert.view.labelBackground
 import kotlinx.android.synthetic.main.widget_alert.view.labelText
 import kotlinx.android.synthetic.main.widget_alert.view.linkArrow
 import kotlinx.android.synthetic.main.widget_alert.view.linkBackground
@@ -49,6 +49,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             viewModel = value as AlertWidgetViewModel
             viewModel?.data?.subscribe(javaClass) {
                 if (it != null) {
+                    logDebug { "showing the Alert WidgetView" }
                     inflate(context, it)
                     viewModel?.startDismissTimout(it.timeout) { removeAllViews() }
                 } else {
@@ -92,14 +93,12 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             }
 
         if (resourceAlert.title.isNullOrEmpty()) {
-            labelBackground.visibility = View.GONE
             labelText.visibility = View.GONE
             val params = bodyBackground.layoutParams as LayoutParams
             params.topMargin = AndroidResource.dpToPx(0)
             bodyBackground.requestLayout()
         } else {
             val params = bodyBackground.layoutParams as LayoutParams
-            params.topMargin = AndroidResource.dpToPx(12)
             bodyBackground.requestLayout()
         }
 

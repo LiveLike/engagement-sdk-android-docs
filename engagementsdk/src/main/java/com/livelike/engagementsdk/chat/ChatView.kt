@@ -19,7 +19,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -47,6 +46,7 @@ import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.utils.AndroidResource
 import com.livelike.engagementsdk.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
+import com.livelike.engagementsdk.utils.logDebug
 import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.scanForActivity
 import com.livelike.engagementsdk.widget.view.loadImage
@@ -222,7 +222,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         callback.addView(edittext_chat_message)
 
         swipeToRefresh.setOnRefreshListener {
-            viewModel?.loadPreviousMessages()
+            if (viewModel?.chatLoaded == true)
+                viewModel?.loadPreviousMessages()
+            else
+                swipeToRefresh.isRefreshing = false
         }
     }
 
@@ -244,8 +247,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      * unix timestamp is passed as param
      * returns the formatted string to display
      */
-    open fun formatMessageDateTime(messageTimeStamp: Long): String {
-        var dateTime = Date()
+    open fun formatMessageDateTime(messageTimeStamp: Long?): String {
+        if (messageTimeStamp == null || messageTimeStamp == 0L) {
+            return ""
+        }
+        val dateTime = Date()
         dateTime.time = messageTimeStamp
         return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
     }
@@ -267,6 +273,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             if (chatLoaded)
                 checkEmptyChat()
             eventStream.subscribe(javaClass.simpleName) {
+                logDebug { "Chat event stream : $it" }
                 when (it) {
                     ChatViewModel.EVENT_NEW_MESSAGE -> {
                         // Auto scroll if user is looking at the latest messages
@@ -278,15 +285,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
                         uiScope.launch {
-                            if (swipeToRefresh.isRefreshing) {
-                                swipeToRefresh.isRefreshing = false
-                            } else {
-                                // Add delay to avoid UI glitch when recycler view is loading
-                                delay(500)
-                                hideLoadingSpinner()
-                                checkEmptyChat()
+                            // Add delay to avoid UI glitch when recycler view is loading
+                            delay(500)
+                            hideLoadingSpinner()
+                            checkEmptyChat()
+                            if (!swipeToRefresh.isRefreshing)
                                 snapToLive()
-                            }
+                            swipeToRefresh.isRefreshing = false
                         }
                     }
                     ChatViewModel.EVENT_LOADING_STARTED -> {
@@ -374,7 +379,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
                         // Move to end of line
                         edittext_chat_message.setSelection(edittext_chat_message.text?.length ?: 0)
-                        wouldUpdateChatInputAccessibiltyFocus(100)
+                        if (edittext_chat_message.text?.isNotEmpty() == true)
+                            wouldUpdateChatInputAccessibiltyFocus(100)
                     } else if (containsImage) {
                         containsImage = false
                         s?.length?.let { edittext_chat_message.text?.delete(0, it) }
@@ -707,8 +713,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             currentUser?.userPic,
             isFromMe = true,
             image_width = 100,
-            image_height = 100,
-            timeStamp = timeData.timeSinceEpochInMs.toString()
+            image_height = 100
         ).let {
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
@@ -731,6 +736,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun hideSnapToLive() {
+        logDebug { "Chat hide Snap to Live: $showingSnapToLive" }
         if (!showingSnapToLive)
             return
         showingSnapToLive = false
@@ -739,6 +745,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     }
 
     private fun showSnapToLive() {
+        logDebug { "Chat show Snap to Live: $showingSnapToLive" }
         if (showingSnapToLive)
             return
         showingSnapToLive = true

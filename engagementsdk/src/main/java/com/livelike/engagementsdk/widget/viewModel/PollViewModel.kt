@@ -54,6 +54,7 @@ internal class PollViewModel(
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
 ) : ViewModel() {
+    lateinit var onWidgetInteractionCompleted: () -> Unit
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream
     var points: SubscriptionManager<Int?> = SubscriptionManager(false)
     val gamificationProfile: Stream<ProgramGamificationProfile>
@@ -112,7 +113,7 @@ internal class PollViewModel(
 
     private fun vote() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) return // Nothing has been clicked
-
+        logDebug { "PollWidget Vote: position:${adapter?.selectedPosition}" }
         uiScope.launch {
             adapter?.run {
                 val url = myDataset[selectedPosition].getMergedVoteUrl()
@@ -169,6 +170,7 @@ internal class PollViewModel(
                 action
             )
         }
+        logDebug { "dismiss Poll Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
     }
@@ -181,6 +183,7 @@ internal class PollViewModel(
         }
 
         adapter?.selectionLocked = true
+        onWidgetInteractionCompleted.invoke()
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {

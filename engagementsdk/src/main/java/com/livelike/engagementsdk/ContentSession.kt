@@ -39,6 +39,7 @@ import com.livelike.engagementsdk.utils.logError
 import com.livelike.engagementsdk.utils.logVerbose
 import com.livelike.engagementsdk.utils.validateUuid
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
@@ -72,7 +73,7 @@ internal class ContentSession(
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
             field = value
-            widgetInterceptorStream.onNext(value)
+            (widgetClient as? WidgetManager)?.widgetInterceptor = value
         }
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
@@ -81,8 +82,6 @@ internal class ContentSession(
         widgetThemeAttributes = widgetViewThemeAttributes
     }
 
-    private val widgetInterceptorStream:
-            Stream<WidgetInterceptor> = SubscriptionManager()
     override var analyticService: AnalyticsService =
         MockAnalyticsService(programId)
     private val llDataClient = EngagementDataClientImpl()
@@ -92,7 +91,7 @@ internal class ContentSession(
     private var chatClient: MessagingClient? = null
     private var widgetClient: MessagingClient? = null
     private val currentWidgetViewStream = SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
-    private val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
+    internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
 
     private val programRepository = ProgramRepository(programId, userRepository)
 
@@ -147,12 +146,14 @@ internal class ContentSession(
                     configuration.pubnubPublishKey,
                     origin = configuration.pubnubOrigin
                 )
+                logDebug { "chatRepository created" }
                 analyticService =
                     MixpanelAnalytics(
                         applicationContext,
                         configuration.mixpanelToken,
                         programId
                     )
+                logDebug { "analyticService created" }
                 widgetContainer.analyticsService = analyticService
                 analyticService.trackSession(pair.first.id)
                 analyticService.trackUsername(pair.first.nickname)
@@ -233,7 +234,7 @@ internal class ContentSession(
     }
 
     override fun joinChatRoom(chatRoomId: String, timestamp: Long) {
-        Log.v("Here", "joinChatRoom: $chatRoomId  timestamp:$timestamp")
+        logDebug { "joinChatRoom: $chatRoomId  timestamp:$timestamp" }
         if (chatRoomMap.size > 50) {
             return logError {
                 "subscribing  count for pubnub channels cannot be greater than 50"
@@ -260,6 +261,7 @@ internal class ContentSession(
     }
 
     override fun enterChatRoom(chatRoomId: String) {
+        logDebug { "Entering chatRoom $chatRoomId , currentChatRoom:$privateChatRoomID" }
         if (privateChatRoomID == chatRoomId) return // Already in the room
         val lastChatRoomId = privateChatRoomID
         privateChatRoomID = chatRoomId
@@ -269,9 +271,11 @@ internal class ContentSession(
             delay(500)
             wouldInitPrivateGroupSession(channel)
             chatViewModel.apply {
+                logDebug { "Chat caching message for chatRoom:$lastChatRoomId" }
                 chatRoomMsgMap[lastChatRoomId] = messageList.takeLast(CHAT_HISTORY_LIMIT)
                 flushMessages()
                 if (chatRoomMsgMap.containsKey(chatRoomId)) {
+                    logDebug { "Chat getting cache message from chatRoom:$chatRoomId" }
                     chatRoomMsgMap[chatRoomId]?.let {
                         this.cacheList.addAll(it)
                     }
@@ -375,10 +379,11 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptorStream, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
+                .asWidgetManager(llDataClient, currentWidgetViewStream, applicationContext, widgetInterceptor, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
+        logDebug { "initialized Widget Messaging" }
     }
 
     // ///// Chat. ///////
@@ -413,6 +418,7 @@ internal class ContentSession(
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
             }
+        logDebug { "initialized Chat Messaging , isPrivateGroupChat:$privateGroupsChat" }
     }
 
     // ////// Global Session Controls ////////
