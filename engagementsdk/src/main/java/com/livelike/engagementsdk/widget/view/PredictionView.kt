@@ -66,6 +66,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
             logDebug { "PredictionWidget Showing result total:$totalVotes" }
             viewModel?.adapter?.myDataset = options
+            viewModel?.adapter?.showPercentage = true
             textRecyclerView.swapAdapter(viewModel?.adapter, false)
         }
     }
@@ -84,7 +85,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(
                 optionList,
                 {
-                    viewModel?.adapter?.showPercentage = true
                     viewModel?.adapter?.notifyDataSetChanged()
                     viewModel?.onOptionClicked()
                 },
