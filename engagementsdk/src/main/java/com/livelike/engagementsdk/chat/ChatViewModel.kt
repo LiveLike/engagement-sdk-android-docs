@@ -18,14 +18,15 @@ import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.services.network.ChatDataClient
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getBlockedUsers
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.chat.data.repository.ChatRepository
+import com.livelike.engagementsdk.chat.services.network.ChatDataClient
+import com.livelike.engagementsdk.chat.services.network.ChatDataClientImpl
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -44,7 +45,8 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     var messageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
-    internal val eventStream: Stream<String> = SubscriptionManager(false)
+    internal val eventStream: Stream<String> =
+        SubscriptionManager(false)
     var currentChatRoom: ChatRoom? = null
         set(value) {
             field = value
@@ -84,7 +86,7 @@ internal class ChatViewModel(
                 eventStream.onNext(EVENT_LOADING_STARTED)
             }
         }
-    private val dataClient: ChatDataClient = EngagementDataClientImpl()
+    private val dataClient: ChatDataClient = ChatDataClientImpl()
 
     companion object {
         const val EVENT_NEW_MESSAGE = "new-message"
@@ -97,9 +99,11 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
-        logDebug { "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)} check blocked:${getBlockedUsers().contains(message.senderId)}" }
+        logDebug { "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)} check blocked:${getBlockedUsers()
+            .contains(message.senderId)}" }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
-        if (getBlockedUsers().contains(message.senderId)) {
+        if (getBlockedUsers()
+                .contains(message.senderId)) {
             return
         }
 

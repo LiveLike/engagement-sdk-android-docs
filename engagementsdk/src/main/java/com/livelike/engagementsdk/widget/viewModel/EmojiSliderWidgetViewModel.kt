@@ -4,22 +4,22 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.services.messaging.Error
-import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.services.network.WidgetDataClient
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.services.messaging.ClientMessage
+import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
+import com.livelike.engagementsdk.core.services.messaging.Error
+import com.livelike.engagementsdk.core.services.messaging.MessagingClient
+import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
 
@@ -33,7 +33,7 @@ internal class EmojiSliderWidgetViewModel(
     widgetMessagingClient: WidgetManager
 ) : WidgetViewModel<ImageSliderEntity>(widgetInfos, sdkConfiguration, userRepository, programRepository, widgetMessagingClient, onDismiss, analyticsService) {
 
-    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
+    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
 
     private var pubnub: MessagingClient? = null
 
@@ -44,7 +44,7 @@ internal class EmojiSliderWidgetViewModel(
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val payload = event.message["payload"].asJsonObject
                     uiScope.launch {
-                        val data=gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
+                        val data= gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
                         results.onNext(data)
                     }
                 }

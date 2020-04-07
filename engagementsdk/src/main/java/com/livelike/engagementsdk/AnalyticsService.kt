@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.Log
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
-import com.livelike.engagementsdk.analytics.AnalyticsSuperProperties
-import com.livelike.engagementsdk.stickerKeyboard.countMatches
-import com.livelike.engagementsdk.stickerKeyboard.findStickers
+import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
 import java.text.SimpleDateFormat

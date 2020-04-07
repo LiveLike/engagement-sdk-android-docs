@@ -7,7 +7,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
 import com.livelike.engagementsdk.widget.view.components.imageslider.ImageSlider
 import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawable

@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.publicapis
 
-import com.livelike.engagementsdk.services.network.Result
+import com.livelike.engagementsdk.core.services.network.Result
 
 abstract class LiveLikeCallback<T : Any> {
 

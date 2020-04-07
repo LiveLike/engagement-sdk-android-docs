@@ -9,7 +9,7 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer

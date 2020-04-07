@@ -12,8 +12,8 @@ import android.view.accessibility.AccessibilityNodeInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.stickerKeyboard.countMatches
-import com.livelike.engagementsdk.stickerKeyboard.findImages
+import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 
 
 class RichContentEditText : AppCompatEditText {

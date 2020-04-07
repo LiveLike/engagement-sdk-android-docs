@@ -84,7 +84,7 @@
         android:scaleType="fitXY"
         tools:translationY="0dp" />
 
-    <com.livelike.engagementsdk.stickerKeyboard.StickerKeyboardView
+    <com.livelike.engagementsdk.chat.stickerKeyboard.StickerKeyboardView
         android:layout_width="0dp"
         android:id="@+id/sticker_keyboard"
         android:visibility="gone"

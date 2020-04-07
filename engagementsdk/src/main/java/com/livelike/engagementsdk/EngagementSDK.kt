@@ -5,15 +5,15 @@ import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
-import com.livelike.engagementsdk.data.repository.UserRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.services.network.Result
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
-import com.livelike.engagementsdk.utils.map
+import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
+import com.livelike.engagementsdk.core.utils.map
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,10 +38,13 @@ class EngagementSDK(
         var enableDebug: Boolean = false
     }
 
-    private var configurationStream: Stream<SdkConfiguration> = SubscriptionManager()
-    private val dataClient = EngagementDataClientImpl()
+    private var configurationStream: Stream<SdkConfiguration> =
+        SubscriptionManager()
+    private val dataClient =
+        EngagementDataClientImpl()
 
-    private val userRepository = UserRepository(clientId)
+    private val userRepository =
+        UserRepository(clientId)
 
     private val job = SupervisorJob()
     // by default sdk calls will run on Default pool and further data layer calls will run o
@@ -54,12 +57,11 @@ class EngagementSDK(
         EnagagementSdkUncaughtExceptionHandler
         BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
-        initLiveLikeSharedPrefs(applicationContext)
-        var url = if (originURL != null) {
-            originURL.plus("/api/v1/applications/$clientId")
-        } else {
-            BuildConfig.CONFIG_URL.plus("applications/$clientId")
-        }
+        initLiveLikeSharedPrefs(
+            applicationContext
+        )
+        val url = originURL?.plus("/api/v1/applications/$clientId")
+            ?: BuildConfig.CONFIG_URL.plus("applications/$clientId")
         dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)

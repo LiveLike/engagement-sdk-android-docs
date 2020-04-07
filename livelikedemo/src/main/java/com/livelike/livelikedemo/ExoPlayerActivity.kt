@@ -19,11 +19,11 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.services.messaging.proxies.LiveLikeWidgetEntity
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetLifeCycleEventsListener
-import com.livelike.engagementsdk.utils.isNetworkConnected
-import com.livelike.engagementsdk.utils.registerLogsHandler
+import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
+import com.livelike.engagementsdk.core.utils.isNetworkConnected
+import com.livelike.engagementsdk.core.utils.registerLogsHandler
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
@@ -233,7 +233,8 @@ class ExoPlayerActivity : AppCompatActivity() {
     var messageCount: MutableMap<String, Long> = mutableMapOf()
 
     private fun initializeLiveLikeSDK(channel: Channel) {
-        registerLogsHandler(object : (String) -> Unit {
+        registerLogsHandler(object :
+                (String) -> Unit {
             override fun invoke(text: String) {
                 Handler(mainLooper).post {
                     logsPreview.text = "$text \n\n ${logsPreview.text}"

@@ -1,7 +1,7 @@
 package com.livelike.engagementsdk
 
 import android.text.TextUtils
-import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.core.utils.logError
 import java.math.BigDecimal
 import java.util.regex.Pattern
 import org.threeten.bp.ZoneId

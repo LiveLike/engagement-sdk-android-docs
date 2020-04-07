@@ -35,16 +35,17 @@ import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
-import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
-import com.livelike.engagementsdk.stickerKeyboard.clearTarget
-import com.livelike.engagementsdk.stickerKeyboard.countMatches
-import com.livelike.engagementsdk.stickerKeyboard.findImages
-import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
-import com.livelike.engagementsdk.stickerKeyboard.findStickers
-import com.livelike.engagementsdk.stickerKeyboard.replaceWithImages
-import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
+import com.livelike.engagementsdk.chat.data.repository.ChatRepository
+import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.chat.stickerKeyboard.clearTarget
+import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
+import com.livelike.engagementsdk.chat.stickerKeyboard.findIsOnlyStickers
+import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
+import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
+import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -136,7 +137,9 @@ internal class ChatRecyclerAdapter(
                     )
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackBlockingUser()
-                        blockUser(msg.senderId)
+                        blockUser(
+                            msg.senderId
+                        )
                     }
                     create()
                 }.show()

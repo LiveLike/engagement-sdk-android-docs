@@ -4,11 +4,11 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Alert
 import kotlinx.coroutines.delay
@@ -20,7 +20,8 @@ internal class AlertWidgetViewModel(
     private val onDismiss: () -> Unit
 ) : ViewModel() {
     private var timeoutStarted = false
-    var data: SubscriptionManager<Alert?> = SubscriptionManager()
+    var data: SubscriptionManager<Alert?> =
+        SubscriptionManager()
 
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null

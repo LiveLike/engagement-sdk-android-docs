@@ -13,7 +13,7 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.view.clipParents
 import kotlinx.android.synthetic.main.atom_widget_point.view.coinDroppingView
 import kotlinx.android.synthetic.main.atom_widget_point.view.coinView
