@@ -37,6 +37,10 @@ kotlindoc:
         itemTitleType: 'NAME'
         includeItems: false
 
+assets:
+  sourceDirs:
+    - 'assets/media'
+
 services:
   publications:
     stages:
