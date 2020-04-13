@@ -33,9 +33,6 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.chat.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerKeyboardView
@@ -49,7 +46,13 @@ import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.scanForActivity
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -76,9 +79,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -314,7 +314,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-            programRepository.programGamificationProfileStream.subscribe(javaClass.simpleName) {
+            programRepository?.programGamificationProfileStream.subscribe(javaClass.simpleName) {
                 it?.let { programRank ->
                     if (programRank.newPoints == 0 || pointView.visibility == View.GONE) {
                         pointView.showPoints(programRank.points)
@@ -343,9 +343,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-            animationEventsStream.subscribe(javaClass.simpleName) {
+            animationEventsStream?.subscribe(javaClass.simpleName) {
                 if (it == ViewAnimationEvents.BADGE_COLLECTED) {
-                    programRepository.programGamificationProfileStream.latest()
+                    programRepository?.programGamificationProfileStream.latest()
                         ?.let { programGamificationProfile ->
                             wouldShowBadge(programGamificationProfile, true)
                         }
@@ -665,7 +665,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         wouldUpdateChatInputAccessibiltyFocus()
     }
 
-    private fun wouldUpdateChatInputAccessibiltyFocus(time:Long=500) {
+    private fun wouldUpdateChatInputAccessibiltyFocus(time: Long = 500) {
         chatInput.postDelayed({
             edittext_chat_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
         }, time)
