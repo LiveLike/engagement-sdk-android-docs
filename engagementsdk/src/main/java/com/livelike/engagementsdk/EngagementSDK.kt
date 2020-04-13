@@ -3,6 +3,8 @@ package com.livelike.engagementsdk
 import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.livelike.engagementsdk.chat.ChatSession
+import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
@@ -123,6 +125,20 @@ class EngagementSDK(
             userRepository,
             applicationContext,
             programId,
+            errorDelegate) { timecodeGetter.getTimecode() }
+    }
+
+    /**
+     *  Creates a chat session.
+     *  @param programId Backend generated identifier for current program
+     *  @param timecodeGetter returns the video timecode
+     */
+    fun createChatSession(programId: String, timecodeGetter: TimecodeGetter, errorDelegate: ErrorDelegate? = null): LiveLikeChatSession {
+        return ChatSession(
+            configurationStream,
+            userRepository,
+            applicationContext,
+            null,
             errorDelegate) { timecodeGetter.getTimecode() }
     }
 
