@@ -47,7 +47,7 @@ internal class ChatSession(
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
     // TODO get analytics service by moving it to SDK level instewad of program
-    val analyticService: AnalyticsService = MockAnalyticsService()
+    override val analyticService: AnalyticsService = MockAnalyticsService()
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(MockAnalyticsService(), userRepository.currentUserStream, publicRoom != null, null) }
     override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
@@ -90,10 +90,6 @@ internal class ChatSession(
                             applicationContext
                         )
                     }
-//                    if (privateChatRoomID.isEmpty()) {
-//                        chatViewModel.currentChatRoom = program.defaultChatRoom
-//                        initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
-//                    }
                     initializeChatMessaging(publicRoom, currentPlayheadTime)
                 }
             }

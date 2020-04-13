@@ -2,6 +2,8 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.livelike.engagementsdk.chat.ChatSession
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.ServerDataValidationException
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
@@ -54,6 +56,7 @@ internal class ContentSession(
         userRepository.setProfilePicUrl(url)
     }
 
+    private var chatSession: ChatSession? = null
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
     private var isGamificationEnabled: Boolean = false
@@ -131,6 +134,7 @@ internal class ContentSession(
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
+                            initializeChatMessaging(sdkConfiguration, program.defaultChatRoom)
 //                            chatViewModel.reportUrl = program.reportUrl
 //                            chatViewModel.stickerPackRepository = StickerPackRepository(programId, program.stickerPacksUrl)
 //                            chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
@@ -138,7 +142,6 @@ internal class ContentSession(
 //                            contentSessionScope.launch { chatViewModel.chatReactionRepository?.preloadImages(applicationContext) }
 //                            if (privateChatRoomID.isEmpty()) {
 //                                chatViewModel.currentChatRoom = program.defaultChatRoom
-//                                initializeChatMessaging(program.defaultChatRoom?.channels?.chat?.get("pubnub"))
 //                            }
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
@@ -246,40 +249,19 @@ internal class ContentSession(
         logDebug { "initialized Widget Messaging" }
     }
 
-    // ///// Chat. ///////
-//    @Synchronized
-//    private fun initializeChatMessaging(
-//        chatChannel: String?,
-//        syncEnabled: Boolean = true,
-//        privateGroupsChat: Boolean = false
-//    ) {
-//        if (chatChannel == null)
-//            return
-//
-//        analyticService.trackLastChatStatus(true)
-//        chatClient = chatRepository?.establishChatMessagingConnection()
-//        if (privateGroupsChat) {
-//            privateGroupPubnubClient = chatClient as PubnubChatMessagingClient
-//        }
-//
-//        if (syncEnabled) {
-//            chatClient =
-//                chatClient?.syncTo(currentPlayheadTime)
-//        }
-//        chatClient = chatClient?.toChatQueue()
-//            ?.apply {
-//                msgListener = proxyMsgListener
-//                // check issue here
-//                flushPublishedMessage(chatChannel)
-//                if (!privateGroupsChat) {
-//                    subscribe(listOf(chatChannel))
-//                }
-//                this.renderer = chatViewModel
-//                chatViewModel.chatLoaded = false
-//                chatViewModel.chatListener = this
-//            }
-//        logDebug { "initialized Chat Messaging , isPrivateGroupChat:$privateGroupsChat" }
-//    }
+    @Synchronized
+    private fun initializeChatMessaging(
+        sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+        chatRoom: ChatRoom?
+    ) {
+        chatSession = ChatSession(
+            sdkConfiguration,
+            userRepository,
+            applicationContext,
+            chatRoom,
+            errorDelegate, currentPlayheadTime
+        )
+    }
 
     // ////// Global Session Controls ////////
 

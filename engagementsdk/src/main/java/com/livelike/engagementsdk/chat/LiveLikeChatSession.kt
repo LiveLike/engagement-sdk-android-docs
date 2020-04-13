@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import java.util.Calendar
@@ -8,6 +9,9 @@ import java.util.Calendar
  * Created by Shivansh Mittal on 2020-04-08.
  */
 interface LiveLikeChatSession {
+
+    /** The analytics services **/
+    val analyticService: AnalyticsService
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
