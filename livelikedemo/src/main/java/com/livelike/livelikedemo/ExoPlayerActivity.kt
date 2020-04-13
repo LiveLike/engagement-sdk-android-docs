@@ -383,7 +383,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
                 chat_view.setSession(privateGroupChatsession!!)
             } else {
-                chat_view.setSession(session.chatSession!!)
+                chat_view.setSession(session.chatSession)
             }
             widget_view.setSession(session)
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {

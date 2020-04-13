@@ -3,7 +3,6 @@ package com.livelike.engagementsdk
 import android.content.Context
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.chat.ChatSession
-import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.ServerDataValidationException
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
@@ -56,7 +55,14 @@ internal class ContentSession(
         userRepository.setProfilePicUrl(url)
     }
 
-    override var chatSession: ChatSession? = null
+    override var chatSession: ChatSession = ChatSession(
+        sdkConfiguration,
+        userRepository,
+        applicationContext,
+        true,
+        errorDelegate, currentPlayheadTime
+    )
+
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
     private var isGamificationEnabled: Boolean = false
@@ -134,7 +140,8 @@ internal class ContentSession(
                             userRepository.rewardType = program.rewardsType
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            initializeChatMessaging(sdkConfiguration, program.defaultChatRoom)
+                            chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
+//                            initializeChatMessaging(sdkConfiguration, program.defaultChatRoom)
 //                            chatViewModel.reportUrl = program.reportUrl
 //                            chatViewModel.stickerPackRepository = StickerPackRepository(programId, program.stickerPacksUrl)
 //                            chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
@@ -247,20 +254,6 @@ internal class ContentSession(
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
         logDebug { "initialized Widget Messaging" }
-    }
-
-    @Synchronized
-    private fun initializeChatMessaging(
-        sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
-        chatRoom: ChatRoom?
-    ) {
-        chatSession = ChatSession(
-            sdkConfiguration,
-            userRepository,
-            applicationContext,
-            chatRoom,
-            errorDelegate, currentPlayheadTime
-        )
     }
 
     // ////// Global Session Controls ////////

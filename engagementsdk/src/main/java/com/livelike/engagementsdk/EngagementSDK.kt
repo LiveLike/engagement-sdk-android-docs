@@ -138,7 +138,7 @@ class EngagementSDK(
             configurationStream,
             userRepository,
             applicationContext,
-            null,
+            false,
             errorDelegate) { timecodeGetter.getTimecode() }
     }
 

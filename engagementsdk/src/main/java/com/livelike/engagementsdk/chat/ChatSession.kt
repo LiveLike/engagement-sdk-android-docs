@@ -39,7 +39,7 @@ internal class ChatSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
-    private val publicRoom: ChatRoom? = null,
+    private val isPublicRoom: Boolean = true,
     private val errorDelegate: ErrorDelegate? = null,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {
@@ -52,7 +52,7 @@ internal class ChatSession(
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
     // TODO get analytics service by moving it to SDK level instewad of program
     override val analyticService: AnalyticsService = MockAnalyticsService()
-    val chatViewModel: ChatViewModel by lazy { ChatViewModel(MockAnalyticsService(), userRepository.currentUserStream, publicRoom != null, null) }
+    val chatViewModel: ChatViewModel by lazy { ChatViewModel(MockAnalyticsService(), userRepository.currentUserStream, isPublicRoom, null) }
     override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -94,7 +94,7 @@ internal class ChatSession(
                             applicationContext
                         )
                     }
-                    initializeChatMessaging(publicRoom, currentPlayheadTime)
+                    initializeChatMessaging(currentPlayheadTime)
                 }
             }
     }
@@ -132,7 +132,6 @@ internal class ChatSession(
     private var msgListener: MessageListener? = null
 
     private fun initializeChatMessaging(
-        chatRoom: ChatRoom?,
         currentPlayheadTime: () -> EpochTime
     ) {
         analyticService.trackLastChatStatus(true)
@@ -147,15 +146,15 @@ internal class ChatSession(
         chatClient = chatClient?.toChatQueue()
             ?.apply {
                 msgListener = proxyMsgListener
-                chatRoom?.channels?.chat?.get("pubnub")?.let {
-                    subscribe(listOf(it))
-                    chatViewModel.currentChatRoom = chatRoom
-                }
+//                chatRoom?.channels?.chat?.get("pubnub")?.let {
+//                    subscribe(listOf(it))
+//                    chatViewModel.currentChatRoom = chatRoom
+//                }
                 this.renderer = chatViewModel
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
             }
-        logDebug { "initialized Chat Messaging , isPrivateGroupChat:${chatRoom == null}" }
+        logDebug { "initialized Chat Messaging , isPrivateGroupChat:$isPublicRoom" }
     }
 
     private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit) {
