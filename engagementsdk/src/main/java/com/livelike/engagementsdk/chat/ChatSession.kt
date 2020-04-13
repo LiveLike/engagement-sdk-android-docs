@@ -44,6 +44,10 @@ internal class ChatSession(
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {
 
+    override fun getPlayheadTime(): EpochTime {
+        return currentPlayheadTime.invoke()
+    }
+
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
     // TODO get analytics service by moving it to SDK level instewad of program

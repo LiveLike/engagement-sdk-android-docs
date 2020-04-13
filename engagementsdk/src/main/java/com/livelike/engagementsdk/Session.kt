@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
+import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
@@ -14,6 +15,9 @@ interface LiveLikeContentSession {
 
     /** The analytics services **/
     val analyticService: AnalyticsService
+
+    /** The analytics services **/
+    val chatSession: LiveLikeChatSession?
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()

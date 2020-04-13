@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat
 
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import java.util.Calendar
@@ -12,6 +13,9 @@ interface LiveLikeChatSession {
 
     /** The analytics services **/
     val analyticService: AnalyticsService
+
+    /** Return the playheadTime for this session.*/
+    fun getPlayheadTime(): EpochTime
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()

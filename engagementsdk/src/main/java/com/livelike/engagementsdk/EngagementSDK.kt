@@ -133,7 +133,7 @@ class EngagementSDK(
      *  @param programId Backend generated identifier for current program
      *  @param timecodeGetter returns the video timecode
      */
-    fun createChatSession(programId: String, timecodeGetter: TimecodeGetter, errorDelegate: ErrorDelegate? = null): LiveLikeChatSession {
+    fun createChatSession(timecodeGetter: TimecodeGetter, errorDelegate: ErrorDelegate? = null): LiveLikeChatSession {
         return ChatSession(
             configurationStream,
             userRepository,

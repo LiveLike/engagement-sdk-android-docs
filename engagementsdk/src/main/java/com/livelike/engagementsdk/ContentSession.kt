@@ -56,7 +56,7 @@ internal class ContentSession(
         userRepository.setProfilePicUrl(url)
     }
 
-    private var chatSession: ChatSession? = null
+    override var chatSession: ChatSession? = null
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
     private var isGamificationEnabled: Boolean = false

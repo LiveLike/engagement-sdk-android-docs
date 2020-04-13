@@ -312,7 +312,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-            programRepository?.programGamificationProfileStream.subscribe(javaClass.simpleName) {
+            programRepository?.programGamificationProfileStream?.subscribe(javaClass.simpleName) {
                 it?.let { programRank ->
                     if (programRank.newPoints == 0 || pointView.visibility == View.GONE) {
                         pointView.showPoints(programRank.points)
@@ -343,7 +343,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             }
             animationEventsStream?.subscribe(javaClass.simpleName) {
                 if (it == ViewAnimationEvents.BADGE_COLLECTED) {
-                    programRepository?.programGamificationProfileStream.latest()
+                    programRepository?.programGamificationProfileStream?.latest()
                         ?.let { programGamificationProfile ->
                             wouldShowBadge(programGamificationProfile, true)
                         }

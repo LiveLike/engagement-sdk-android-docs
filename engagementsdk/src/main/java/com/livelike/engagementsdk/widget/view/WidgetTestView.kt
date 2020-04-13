@@ -4,7 +4,6 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.data.models.RewardsType
@@ -20,7 +19,7 @@ import kotlinx.android.synthetic.main.widget_test_view.view.testThird
 
 class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
 
-    private val mockConfig = EngagementSDK.SdkConfiguration("", "", "", "", "sub-c-016db434-d156-11e8-b5de-7a9ddb77e130", "", "", "", "", "", "", "", mapOf(), "", "", "")
+//    private val mockConfig = EngagementSDK.SdkConfiguration("", "", "", "", "sub-c-016db434-d156-11e8-b5de-7a9ddb77e130", "", "", "", "", "", "", "", mapOf(), "", "", "")
 
     private val textLabels = listOf(
         "NEW RECORD",
