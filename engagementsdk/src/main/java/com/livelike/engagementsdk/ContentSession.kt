@@ -141,15 +141,6 @@ internal class ContentSession(
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
                             chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
-//                            initializeChatMessaging(sdkConfiguration, program.defaultChatRoom)
-//                            chatViewModel.reportUrl = program.reportUrl
-//                            chatViewModel.stickerPackRepository = StickerPackRepository(programId, program.stickerPacksUrl)
-//                            chatViewModel.chatReactionRepository = ChatReactionRepository(program.reactionPacksUrl)
-//                            chatViewModel.chatRepository = chatRepository
-//                            contentSessionScope.launch { chatViewModel.chatReactionRepository?.preloadImages(applicationContext) }
-//                            if (privateChatRoomID.isEmpty()) {
-//                                chatViewModel.currentChatRoom = program.defaultChatRoom
-//                            }
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
@@ -169,14 +160,6 @@ internal class ContentSession(
             errorDelegate?.onError("Network error please create the session again")
         }
     }
-
-//
-//    @Synchronized
-//    private fun wouldInitPrivateGroupSession(channel: String) {
-//        if (privateGroupPubnubClient == null) {
-//            initializeChatMessaging(channel, syncEnabled = true, privateGroupsChat = true)
-//        }
-//    }
 
     private fun startObservingForGamificationAnalytics(
         analyticService: AnalyticsService,
