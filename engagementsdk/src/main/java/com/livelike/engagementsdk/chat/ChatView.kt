@@ -33,9 +33,6 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.chat.stickerKeyboard.FragmentClickListener
 import com.livelike.engagementsdk.chat.stickerKeyboard.Sticker
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerKeyboardView
@@ -49,6 +46,9 @@ import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.scanForActivity
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
@@ -790,9 +790,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
+                    logDebug { "snap auto scroll to position: $it ,lastVisiblePosition:$lastVisiblePosition" }
                     rv.smoothScrollToPosition(it)
                 } else {
-                    rv.scrollToPosition(it - 1)
+                    logDebug { "snap auto scroll to position above limit: ${it - 1} ,lastVisiblePosition:$lastVisiblePosition" }
+                    chatdisplay.postDelayed( {
+                        rv.scrollToPosition(it - 1)
+                    },200)
                 }
             }
         }
