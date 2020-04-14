@@ -17,7 +17,7 @@
 
         <!-- Menu -->
         <nav id="siteNav" class="menu">
-                <img src={{ 'assets/media/livelikelogo.png'|asset }} >
+                <img src={{ 'assets/media/livelikelogo.png'|asset|scale(0.85) }} >
             <ul class="top-level">
                 {% for menuItem in theme.menu.getMenuItems(page) %}
                     {% include 'includes/menuItem' with {"menuItem": menuItem} %}

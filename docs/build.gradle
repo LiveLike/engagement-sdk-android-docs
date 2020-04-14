@@ -16,10 +16,9 @@ repositories {
     maven { url = "https://kotlin.bintray.com/kotlinx/" }
 }
 
-// 3. Use the 'Editorial' theme, and view the site locally at 'http://localhost:8080'
 orchid {
     theme = "Editorial"
-    baseUrl = "https://willis-pinaud.github.io/orchid-ll/"
+    baseUrl = "https://livelike.github.io/engagement-sdk-android-docs/"
     version = "1.0.0"
     args = ["--experimentalSourceDoc"]
 }

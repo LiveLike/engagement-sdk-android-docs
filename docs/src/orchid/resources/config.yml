@@ -8,7 +8,7 @@ theme:
   primaryColor: '#45c68d'
   legacySearch: false
   social:
-    github: 'willis-pinaud/orchid-ll'
+    github: 'livelike/engagement-sdk-android-docs'
   metaComponents:
     - type: 'orchidSearch'
   menu:
@@ -46,5 +46,5 @@ services:
     stages:
       - type: 'githubPages'
         branch: gh-pages
-        repo: 'orchid-ll'
-        username: 'willis-pinaud'
+        repo: 'engagement-sdk-android-docs'
+        username: 'livelike'
