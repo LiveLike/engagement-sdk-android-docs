@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.MixpanelAnalytics
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -51,7 +52,7 @@ internal class ChatSession(
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
     // TODO get analytics service by moving it to SDK level instewad of program
-    override val analyticService: AnalyticsService = MockAnalyticsService()
+    override var analyticService: AnalyticsService = MockAnalyticsService()
     val chatViewModel: ChatViewModel by lazy { ChatViewModel(MockAnalyticsService(), userRepository.currentUserStream, isPublicRoom, null) }
     override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
@@ -72,6 +73,11 @@ internal class ChatSession(
         sdkConfiguration
             .subscribe(this.hashCode()) {
                 it?.let {
+                    analyticService = MixpanelAnalytics(
+                        applicationContext,
+                        it.mixpanelToken,
+                        it.clientId
+                    )
                     val liveLikeUser = userRepository.currentUserStream.latest()!!
                     chatRepository =
                         ChatRepository(

@@ -2,8 +2,6 @@ package com.mixpanel.android.mpmetrics;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.mixpanel.android.mpmetrics.MPConfig;
-import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -11,7 +9,7 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 public class MixpanelExtension {
-    public static MixpanelAPI getUniqueInstance(Context context, String token, String programId) {
+    public static MixpanelAPI getUniqueInstance(Context context, String token, String clientID) {
         if (null == token || null == context) {
             return null;
         }
@@ -22,10 +20,10 @@ public class MixpanelExtension {
                 sReferrerPrefs = sPrefsLoader.loadPreferences(context, MPConfig.REFERRER_PREFS_NAME, null);
             }
 
-            Map<Context, MixpanelAPI> instances = sInstanceMap.get(programId);
+            Map<Context, MixpanelAPI> instances = sInstanceMap.get(clientID);
             if (null == instances) {
                 instances = new HashMap<Context, MixpanelAPI>();
-                sInstanceMap.put(programId, instances);
+                sInstanceMap.put(clientID, instances);
             }
 
             MixpanelAPI instance = instances.get(appContext);

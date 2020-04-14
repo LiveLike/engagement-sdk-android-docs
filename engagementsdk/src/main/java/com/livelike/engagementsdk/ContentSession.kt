@@ -125,7 +125,7 @@ internal class ContentSession(
                     MixpanelAnalytics(
                         applicationContext,
                         configuration.mixpanelToken,
-                        programId
+                        configuration.clientId
                     )
                 logDebug { "analyticService created" }
                 widgetContainer.analyticsService = analyticService
