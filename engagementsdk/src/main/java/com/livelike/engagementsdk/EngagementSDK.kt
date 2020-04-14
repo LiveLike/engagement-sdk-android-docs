@@ -3,17 +3,19 @@ package com.livelike.engagementsdk
 import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.livelike.engagementsdk.chat.ChatSession
+import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
-import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.IEngagement
-import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.map
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.IEngagement
+import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -126,6 +128,20 @@ class EngagementSDK(
             errorDelegate) { timecodeGetter.getTimecode() }
     }
 
+    /**
+     *  Creates a chat session.
+     *  @param programId Backend generated identifier for current program
+     *  @param timecodeGetter returns the video timecode
+     */
+    fun createChatSession(timecodeGetter: TimecodeGetter, errorDelegate: ErrorDelegate? = null): LiveLikeChatSession {
+        return ChatSession(
+            configurationStream,
+            userRepository,
+            applicationContext,
+            false,
+            errorDelegate) { timecodeGetter.getTimecode() }
+    }
+
     internal data class SdkConfiguration(
         val url: String,
         val name: String?,
@@ -147,6 +163,8 @@ class EngagementSDK(
         val sessionsUrl: String,
         @SerializedName("sticker_packs_url")
         val stickerPackUrl: String,
+        @SerializedName("reaction_packs_url")
+        val reactionPacksUrl: String,
         @SerializedName("mixpanel_token")
         val mixpanelToken: String,
         @SerializedName("analytics_properties")

@@ -21,24 +21,25 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.network.ChatDataClient
 import com.livelike.engagementsdk.chat.services.network.ChatDataClientImpl
-import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
     val userStream: Stream<LiveLikeUser>,
-    val programRepository: ProgramRepository,
-    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>
+    val isPublicRoom: Boolean,
+    val animationEventsStream: SubscriptionManager<ViewAnimationEvents>? = null,
+    val programRepository: ProgramRepository? = null
 ) : ChatRenderer, ViewModel() {
 
     var chatListener: ChatEventListener? = null
@@ -50,7 +51,7 @@ internal class ChatViewModel(
     var currentChatRoom: ChatRoom? = null
         set(value) {
             field = value
-            chatAdapter.isPublicChat = currentChatRoom?.id == programRepository?.program?.defaultChatRoom?.id
+            chatAdapter.isPublicChat = isPublicRoom
         }
 
     var stickerPackRepository: StickerPackRepository? = null

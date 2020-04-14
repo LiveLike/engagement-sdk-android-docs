@@ -8,8 +8,9 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeContentSession
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
@@ -29,7 +30,7 @@ class LiveLikeApplication : Application() {
         }
     }
     private var publicSession: LiveLikeContentSession? = null
-    private var privateGroupChatsession: LiveLikeContentSession? = null
+    private var privateGroupChatsession: LiveLikeChatSession? = null
 
     lateinit var sdk: EngagementSDK
     lateinit var sdk2: EngagementSDK
@@ -107,13 +108,12 @@ class LiveLikeApplication : Application() {
         sessionId: String,
         widgetInterceptor: WidgetInterceptor? = null,
         errorDelegate: ErrorDelegate? = null
-    ): LiveLikeContentSession {
-        if (privateGroupChatsession == null || privateGroupChatsession?.contentSessionId() != sessionId) {
+    ): LiveLikeChatSession {
+        if (privateGroupChatsession == null) {
             privateGroupChatsession?.close()
-            privateGroupChatsession = sdk.createContentSession(sessionId, timecodeGetter, errorDelegate)
+            privateGroupChatsession = sdk.createChatSession(timecodeGetter, errorDelegate)
         }
-        privateGroupChatsession!!.widgetInterceptor = widgetInterceptor
-        return privateGroupChatsession as LiveLikeContentSession
+        return privateGroupChatsession as LiveLikeChatSession
     }
 }
 

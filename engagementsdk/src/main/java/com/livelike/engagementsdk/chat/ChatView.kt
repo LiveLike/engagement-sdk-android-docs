@@ -23,12 +23,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.CHAT_PROVIDER
-import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.KeyboardHideReason
 import com.livelike.engagementsdk.KeyboardType
-import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.ViewAnimationEvents
@@ -50,6 +48,9 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -76,9 +77,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -104,7 +102,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
-    private var session: LiveLikeContentSession? = null
+    private var session: LiveLikeChatSession? = null
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
     private var currentUser: LiveLikeUser? = null
@@ -133,7 +131,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
     private val viewModel: ChatViewModel?
-        get() = (session as ContentSession?)?.chatViewModel
+        get() = (session as ChatSession?)?.chatViewModel
 
     val callback = MultiCallback(true)
 
@@ -256,7 +254,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
     }
 
-    fun setSession(session: LiveLikeContentSession) {
+    fun setSession(session: LiveLikeChatSession) {
         if (this.session === session) return // setting it multiple times same view with same session have a weird behaviour will debug later.
         hideGamification()
         this.session = session.apply {
@@ -314,7 +312,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-            programRepository.programGamificationProfileStream.subscribe(javaClass.simpleName) {
+            programRepository?.programGamificationProfileStream?.subscribe(javaClass.simpleName) {
                 it?.let { programRank ->
                     if (programRank.newPoints == 0 || pointView.visibility == View.GONE) {
                         pointView.showPoints(programRank.points)
@@ -343,9 +341,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     }
                 }
             }
-            animationEventsStream.subscribe(javaClass.simpleName) {
+            animationEventsStream?.subscribe(javaClass.simpleName) {
                 if (it == ViewAnimationEvents.BADGE_COLLECTED) {
-                    programRepository.programGamificationProfileStream.latest()
+                    programRepository?.programGamificationProfileStream?.latest()
                         ?.let { programGamificationProfile ->
                             wouldShowBadge(programGamificationProfile, true)
                         }
@@ -665,7 +663,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         wouldUpdateChatInputAccessibiltyFocus()
     }
 
-    private fun wouldUpdateChatInputAccessibiltyFocus(time:Long=500) {
+    private fun wouldUpdateChatInputAccessibiltyFocus(time: Long = 500) {
         chatInput.postDelayed({
             edittext_chat_message.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
         }, time)
