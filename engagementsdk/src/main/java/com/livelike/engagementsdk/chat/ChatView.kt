@@ -790,10 +790,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
-                    logDebug { "snap auto scroll to position: $it ,lastVisiblePosition:$lastVisiblePosition" }
                     rv.smoothScrollToPosition(it)
                 } else {
-                    logDebug { "snap auto scroll to position above limit: ${it - 1} ,lastVisiblePosition:$lastVisiblePosition" }
                     chatdisplay.postDelayed( {
                         rv.scrollToPosition(it - 1)
                     },200)
