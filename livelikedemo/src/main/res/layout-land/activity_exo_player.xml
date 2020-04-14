@@ -110,5 +110,16 @@
             app:layout_constraintVertical_bias="1.0"
             app:layout_constraintEnd_toStartOf="@+id/chatWidget"
     />
+    <Button
+        android:id="@+id/live_blog"
+        android:text="Live B"
+        android:layout_height="35dp"
+        android:layout_width="wrap_content"
+        android:visibility="visible"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/chatWidget"
+        app:layout_constraintBottom_toTopOf="@+id/openLogs"
+        android:textSize="13sp"
+        android:layout_marginLeft="8dp"/>
 
 </android.support.constraint.ConstraintLayout>
