@@ -21,10 +21,9 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
 
-
 class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) : ConstraintLayout(context, attributes) {
-    private var viewModel: StickerKeyboardViewModel?=null
-    private var chatViewThemeAttributes:ChatViewThemeAttributes?=null
+    private var viewModel: StickerKeyboardViewModel? = null
+    private var chatViewThemeAttributes: ChatViewThemeAttributes? = null
     init {
         LayoutInflater.from(context).inflate(R.layout.livelike_sticker_keyboard_pager, this, true)
         layoutTransition = LayoutTransition()
@@ -75,10 +74,11 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     emptyRecentTextColor = chatViewThemeAttributes?.stickerRecentEmptyTextColor
                         ?: Color.WHITE
                 ) { s -> listener?.onClick(s) }
+                pager_tab.removeAllTabs()
                 pager.layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
                 pager.adapter = stickerCollectionPagerAdapter
-                val pageListener= object : TabLayout.TabLayoutOnPageChangeListener(pager_tab) {
+                val pageListener = object : TabLayout.TabLayoutOnPageChangeListener(pager_tab) {
                     override fun onPageScrollStateChanged(state: Int) {
                         super.onPageScrollStateChanged(state)
                     }
@@ -99,8 +99,8 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     pager,
                     object : RVPagerStateListener {
                         override fun onPageScroll(pagesState: List<VisiblePageState>) {
-                            for (pos in pagesState.indices){
-                                val state=pagesState[pos]
+                            for (pos in pagesState.indices) {
+                                val state = pagesState[pos]
                                 var diff = (1.0f - state.distanceToSettled)
                                 if (diff < 0.0f) {
                                     diff = 0.0f
@@ -118,7 +118,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                         }
 
                         override fun onScrollStateChanged(state: RVPageScrollState) {
-                            pageListener.onPageScrollStateChanged(when(state){
+                            pageListener.onPageScrollStateChanged(when (state) {
                                 RVPageScrollState.Idle -> {
                                     pager_tab.getTabAt(pager_tab.selectedTabPosition)?.select()
                                     ViewPager.SCROLL_STATE_IDLE
@@ -135,11 +135,9 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
                 val listener = object : TabLayout.BaseOnTabSelectedListener<TabLayout.Tab> {
                     override fun onTabReselected(p0: TabLayout.Tab?) {
-
                     }
 
                     override fun onTabUnselected(p0: TabLayout.Tab?) {
-
                     }
 
                     override fun onTabSelected(p0: TabLayout.Tab?) {
@@ -147,7 +145,6 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                             pager.smoothScrollToPosition(p0.position)
                         }
                     }
-
                 }
                 pager_tab.addOnTabSelectedListener(listener)
                 for (i in stickerPacks.indices) {
