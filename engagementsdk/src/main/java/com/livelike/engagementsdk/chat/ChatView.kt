@@ -790,7 +790,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
                     rv.smoothScrollToPosition(it)
                 } else {
-                    rv.scrollToPosition(it - 1)
+                    chatdisplay.postDelayed( {
+                        rv.scrollToPosition(it - 1)
+                    },200)
                 }
             }
         }
