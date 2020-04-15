@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -35,6 +36,7 @@ import java.util.Timer
 import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
+import kotlinx.android.synthetic.main.activity_exo_player.live_blog
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
 import kotlinx.android.synthetic.main.activity_exo_player.openLogs
 import kotlinx.android.synthetic.main.activity_exo_player.playerView
@@ -110,6 +112,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                     if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
             }
             fullLogs.movementMethod = ScrollingMovementMethod()
+
+            live_blog.setOnClickListener {
+                startActivity(Intent(this, LiveBlogActivity::class.java))
+            }
 
             showNotification = intent.getBooleanExtra("showNotification", true)
 
