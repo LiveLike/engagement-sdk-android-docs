@@ -106,7 +106,7 @@ internal class ChatSession(
     }
 
     override fun pause() {
-        chatClient?.start()
+        chatClient?.stop()
     }
 
     override fun resume() {
