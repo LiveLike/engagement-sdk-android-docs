@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -16,14 +17,15 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
@@ -34,6 +36,7 @@ import java.util.Timer
 import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
+import kotlinx.android.synthetic.main.activity_exo_player.live_blog
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
 import kotlinx.android.synthetic.main.activity_exo_player.openLogs
 import kotlinx.android.synthetic.main.activity_exo_player.playerView
@@ -57,7 +60,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var isChatRoomJoined: Boolean = false
     private var player: VideoPlayer? = null
     private var session: LiveLikeContentSession? = null
-    private var privateGroupChatsession: LiveLikeContentSession? = null
+    private var privateGroupChatsession: LiveLikeChatSession? = null
     private var startingState: PlayerState? = null
     private var channelManager: ChannelManager? = null
 
@@ -109,6 +112,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                     if (fullLogs.visibility == View.GONE) View.VISIBLE else View.GONE
             }
             fullLogs.movementMethod = ScrollingMovementMethod()
+
+            live_blog.setOnClickListener {
+                startActivity(Intent(this, LiveBlogActivity::class.java))
+            }
 
             showNotification = intent.getBooleanExtra("showNotification", true)
 
@@ -212,7 +219,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var showingDialog = false
 
     private fun WidgetInterceptor.showDialog(context: Context) {
-        if((context as ExoPlayerActivity).isFinishing.not()) {
+        if ((context as ExoPlayerActivity).isFinishing.not()) {
             showingDialog = true
             AlertDialog.Builder(context).apply {
                 setMessage("You received a Widget, what do you want to do?")
@@ -382,7 +389,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
                 chat_view.setSession(privateGroupChatsession!!)
             } else {
-                chat_view.setSession(session)
+                chat_view.setSession(session.chatSession)
             }
             widget_view.setSession(session)
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
