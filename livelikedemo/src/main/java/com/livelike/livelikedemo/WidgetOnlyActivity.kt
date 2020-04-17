@@ -97,9 +97,7 @@ class HeaderAdapter(
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    init {
-        println("HeaderAdapter.->${data.size}--->$programId")
-    }
+    val question = "Who will win?"
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -184,47 +182,12 @@ class HeaderAdapter(
                                 )
                             }
                         }
-                        "text-polls" -> {
+                        "text-polls", "text-predictions" -> {
                             for (i in 0 until type.count) {
                                 options.add(Option(description = "Option $i"))
                             }
                         }
-                        "image-polls" -> {
-                            for (i in 0 until type.count) {
-                                options.add(
-                                    Option(
-                                        description = "Option $i",
-                                        image_url = images[i]
-                                    )
-                                )
-                            }
-                        }
-                        "text-predictions" -> {
-                            for (i in 0 until type.count) {
-                                options.add(Option(description = "Option $i"))
-                            }
-                        }
-                        "image-predictions" -> {
-                            for (i in 0 until type.count) {
-                                options.add(
-                                    Option(
-                                        description = "Option $i",
-                                        image_url = images[i]
-                                    )
-                                )
-                            }
-                        }
-                        "emoji-sliders" -> {
-                            for (i in 0 until type.count) {
-                                options.add(
-                                    Option(
-                                        description = "Option $i",
-                                        image_url = images[i]
-                                    )
-                                )
-                            }
-                        }
-                        "cheer-meters" -> {
+                        "image-polls", "image-predictions", "cheer-meters", "emoji-sliders" -> {
                             for (i in 0 until type.count) {
                                 options.add(
                                     Option(
@@ -268,14 +231,14 @@ class HeaderAdapter(
                             choices,
                             null,
                             programId,
-                            "Who will win?",
+                            question,
                             "PT10S"
                         )
                         "text-polls", "image-polls" -> PollRequest(
                             options,
                             null,
                             programId,
-                            "Who will win?",
+                            question,
                             "PT10S"
                         )
                         "text-predictions", "image-predictions" -> PredictionRequest(
@@ -283,7 +246,7 @@ class HeaderAdapter(
                             options,
                             null,
                             programId,
-                            "Woo will win?",
+                            question,
                             "PT10S"
                         )
                         "emoji-sliders" -> EmojiSliderRequest(
@@ -291,7 +254,7 @@ class HeaderAdapter(
                             options,
                             null,
                             programId,
-                            "Who will win?",
+                            question,
                             "PT10S"
                         )
                         "cheer-meters" -> CheerMeterRequest(
@@ -299,7 +262,7 @@ class HeaderAdapter(
                             options,
                             null,
                             programId,
-                            "Who will win?",
+                            question,
                             "PT10S"
                         )
                         else -> null
@@ -355,7 +318,6 @@ class HeaderAdapter(
                                         option.is_correct = true
                                         option.vote_count = 0
                                         val body = patchAPI(option.url, option)
-                                        println("VHItem.-->$body")
                                     } else if (i == 1) {
                                         option.is_correct = false
                                         option.vote_count = 1
@@ -370,13 +332,11 @@ class HeaderAdapter(
                                     it.scheduled_at,
                                     "P0DT00H00M07S"
                                 )
-                                println("VHItem.-->${it.follow_up_url}${it.follow_ups[0].id}")
                                 val res =
                                     patchAPI(
                                         "${it.follow_up_url}${it.follow_ups[0].id}",
                                         followRequest
                                     )
-                                println("VHItem._---->>$res")
                                 val resp = gson.fromJson(res, FollowUpResponse::class.java)
                                 resp?.let { r ->
                                     putAPI(r.schedule_url)
