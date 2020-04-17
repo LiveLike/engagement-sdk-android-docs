@@ -330,7 +330,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                         if (i == 0) {
                                             option.is_correct = true
                                             option.vote_count = 0
-                                            val body = patchAPI(option.url, option)
+                                            patchAPI(option.url, option)
                                         } else if (i == 1) {
                                             option.is_correct = false
                                             option.vote_count = 1
@@ -361,8 +361,6 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 is EmojiSliderResponse -> {
                                     putAPI(it.schedule_url)
                                 }
-                                else -> {
-                                }
                             }
                             scope.launch {
                                 progressBar.visibility = View.GONE
@@ -377,8 +375,8 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     .url(url)
                     .method("PUT", RequestBody.create(mediaType, ""))
                     .addHeader(
-                        "Authorization",
-                        "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                        authorization,
+                        accessToken
                     )
                     .addHeader("Content-Type", "application/json")
                     .build()
@@ -395,14 +393,18 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     .url(url)
                     .method("PATCH", body)
                     .addHeader(
-                        "Authorization",
-                        "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                        authorization,
+                        accessToken
                     )
                     .addHeader("Content-Type", "application/json")
                     .build()
                 val response: Response = client.newCall(request).execute()
                 return response.body()?.string()
             }
+
+            private val authorization = "Authorization"
+            private val accessToken =
+                "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
 
             private suspend fun postAPI(
                 url: String,
@@ -416,8 +418,8 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     .url("https://cf-blast-staging.livelikecdn.com/api/v1/$url/")
                     .method("POST", body)
                     .addHeader(
-                        "Authorization",
-                        "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                        authorization,
+                        accessToken
                     )
                     .addHeader("Content-Type", "application/json")
                     .build()
