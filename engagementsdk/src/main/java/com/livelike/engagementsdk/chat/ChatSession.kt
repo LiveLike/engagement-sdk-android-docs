@@ -70,30 +70,30 @@ internal class ChatSession(
     }
 
     init {
-        sdkConfiguration
-            .subscribe(this.hashCode()) {
-                it?.let {
+
+        contentSessionScope.launch {
+            configurationUserPairFlow.collect { pair ->
                     analyticService = MixpanelAnalytics(
                         applicationContext,
-                        it.mixpanelToken,
-                        it.clientId
+                        pair.first.mixpanelToken,
+                        pair.first.clientId
                     )
-                    val liveLikeUser = userRepository.currentUserStream.latest()!!
+                    val liveLikeUser = pair.second
                     chatRepository =
                         ChatRepository(
-                            it.pubNubKey,
+                            pair.first.pubNubKey,
                             liveLikeUser.accessToken,
                             liveLikeUser.id,
                             MockAnalyticsService(),
-                            it.pubnubPublishKey,
-                            origin = it.pubnubOrigin
+                            pair.first.pubnubPublishKey,
+                            origin = pair.first.pubnubOrigin
                         )
                     logDebug { "chatRepository created" }
                     chatViewModel.reportUrl = null
                     chatViewModel.stickerPackRepository =
-                        StickerPackRepository(it.clientId, it.stickerPackUrl)
+                        StickerPackRepository(pair.first.clientId, pair.first.stickerPackUrl)
                     chatViewModel.chatReactionRepository =
-                        ChatReactionRepository(it.reactionPacksUrl)
+                        ChatReactionRepository(pair.first.reactionPacksUrl)
                     chatViewModel.chatRepository = chatRepository
                     contentSessionScope.launch {
                         chatViewModel.chatReactionRepository?.preloadImages(
