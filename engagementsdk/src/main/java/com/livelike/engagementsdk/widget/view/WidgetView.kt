@@ -3,7 +3,9 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.ContentSession
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
@@ -49,5 +51,18 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             return
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    }
+
+    /** displays the widget in the container
+        throws error if json invalid
+        clears the previous displayed widget (if any)
+        only clears if json is valid
+     */
+    fun displayWidget(sdk: EngagementSDK, widgetResourceJson: JsonObject) {
+    }
+
+    // clears the displayed widget (if any)
+    fun clearWidget() {
+        removeAllViews()
     }
 }
