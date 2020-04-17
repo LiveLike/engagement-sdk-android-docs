@@ -1,1 +1,1 @@
-include ':livelikedemo', ':engagementsdk', ':pluginexoplayer'
+include ':livelikedemo', ':engagementsdk', ':pluginexoplayer', ':docs'

@@ -1,0 +1,50 @@
+
+site:
+  about:
+    siteName: Android EngagementSDK
+    siteDescription: The Android API documentation
+
+theme:
+  primaryColor: '#45c68d'
+  legacySearch: false
+  social:
+    github: 'livelike/engagement-sdk-android-docs'
+  metaComponents:
+    - type: 'orchidSearch'
+  menu:
+    - type: 'separator'
+      title: 'API Docs'
+    - type: 'sourcedocPages'
+      moduleType: 'kotlindoc'
+      node: 'classes'
+      asSubmenu: true
+      submenuTitle: 'Classes'
+      transform: '{{ title|replace({"com.livelike.engagementsdk": "c.l.e"}) }}'
+    - type: 'sourcedocPages'
+      moduleType: 'kotlindoc'
+      node: 'packages'
+      asSubmenu: true
+      submenuTitle: 'Packages'
+      transform: '{{ title|replace({"com.livelike.engagementsdk": "c.l.e"}) }}'
+
+kotlindoc:
+  sourceDirs:
+    - './../../../../engagementsdk/src/main/java/com/livelike'
+  pages:
+    menu:
+      - type: 'sourcedocPageLinks'
+        moduleType: 'kotlindoc'
+        itemTitleType: 'NAME'
+        includeItems: false
+
+assets:
+  sourceDirs:
+    - 'assets/media'
+
+services:
+  publications:
+    stages:
+      - type: 'githubPages'
+        branch: gh-pages
+        repo: 'engagement-sdk-android-docs'
+        username: 'livelike'
