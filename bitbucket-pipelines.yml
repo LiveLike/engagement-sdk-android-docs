@@ -16,12 +16,6 @@ definitions:
           - ./gradlew build sonarqube
         artifacts:
           - build/libs/**
-    - step: &build-documentation-and-publish-to-github
-        name: Build the LiveLike documentation and publish it to github pages :)
-        caches:
-          - gradle
-        script:
-          - ./gradlew :docs:orchidDeploy # Need to define githubToken env var to work
 
 pipelines:                 # More info here: https://confluence.atlassian.com/bitbucket/configure-bitbucket-pipelines-yml-792298910.html
   branches:
@@ -34,7 +28,6 @@ pipelines:                 # More info here: https://confluence.atlassian.com/bi
                 API_KEY: 'abb12b7b7d7868c07733e3e3808656c8'
     develop:
       - step: *build-test-sonarcloud
-      - step: *build-documentation-and-publish-to-github
       - step:
           script:
             - pipe: bugsnag-integrations/bugsnag-build-report:0.2.2
