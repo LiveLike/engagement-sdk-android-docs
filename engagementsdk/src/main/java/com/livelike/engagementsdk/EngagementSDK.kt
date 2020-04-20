@@ -40,7 +40,7 @@ class EngagementSDK(
         var enableDebug: Boolean = false
     }
 
-    private var configurationStream: Stream<SdkConfiguration> =
+    internal var configurationStream: Stream<SdkConfiguration> =
         SubscriptionManager()
     private val dataClient =
         EngagementDataClientImpl()

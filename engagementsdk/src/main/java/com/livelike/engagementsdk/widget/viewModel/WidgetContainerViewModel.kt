@@ -12,15 +12,15 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 
 // TODO remove view references from this view model, also clean content session for same.
 
-class WidgetContainerViewModel(private val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
+class WidgetContainerViewModel(internal val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
     private lateinit var widgetViewThemeAttributes: WidgetViewThemeAttributes
