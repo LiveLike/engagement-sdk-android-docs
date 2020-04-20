@@ -94,11 +94,15 @@ class LiveLikeApplication : Application() {
 
     fun createPublicSession(
         sessionId: String,
-        widgetInterceptor: WidgetInterceptor? = null
+        widgetInterceptor: WidgetInterceptor? = null,
+        allowTimeCodeGetter: Boolean = true
     ): LiveLikeContentSession {
         if (publicSession == null || publicSession?.contentSessionId() != sessionId) {
             publicSession?.close()
-            publicSession = sdk.createContentSession(sessionId, timecodeGetter)
+            publicSession = if (allowTimeCodeGetter)
+                sdk.createContentSession(sessionId, timecodeGetter)
+            else
+                sdk.createContentSession(sessionId)
         }
         publicSession!!.widgetInterceptor = widgetInterceptor
         return publicSession as LiveLikeContentSession
