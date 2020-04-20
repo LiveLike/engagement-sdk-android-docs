@@ -43,6 +43,7 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
      */
     fun initUser(userAccessToken: String?, profileUrl: String) {
         this.profileUrl = profileUrl
+        println("UserRepository.initUser->$userAccessToken ->$profileUrl")
         if (userAccessToken == null || userAccessToken.isEmpty()) {
             dataClient.createUserData(profileUrl) {
                 publishUser(it)
@@ -61,6 +62,7 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
     }
 
     private fun publishUser(it: LiveLikeUser) {
+        println("UserRepository.publishUser->${it.toString()}")
         val nickname =
             getNickename() // Checking again the saved nickname as it could have changed during the web request.
         if (nickname.isNotEmpty() && !it.nickname.equals(nickname)) {

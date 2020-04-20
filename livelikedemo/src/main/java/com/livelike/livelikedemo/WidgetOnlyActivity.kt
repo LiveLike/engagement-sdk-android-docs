@@ -14,14 +14,12 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
-import com.livelike.livelikedemo.models.CheerMeterRequest
-import com.livelike.livelikedemo.models.CheerMeterResponse
+import com.livelike.livelikedemo.models.CheerMeterRequestResponse
 import com.livelike.livelikedemo.models.EmojiSliderRequest
 import com.livelike.livelikedemo.models.EmojiSliderResponse
 import com.livelike.livelikedemo.models.FollowUpRequest
 import com.livelike.livelikedemo.models.FollowUpResponse
-import com.livelike.livelikedemo.models.PollRequest
-import com.livelike.livelikedemo.models.PollResponse
+import com.livelike.livelikedemo.models.PollRequestResponse
 import com.livelike.livelikedemo.models.PredictionRequest
 import com.livelike.livelikedemo.models.PredictionResponse
 import com.livelike.livelikedemo.models.QuizRequest
@@ -264,7 +262,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 question,
                                 "PT10S"
                             )
-                            txtPoll, imgPoll -> PollRequest(
+                            txtPoll, imgPoll -> PollRequestResponse(
                                 options,
                                 null,
                                 programId,
@@ -287,7 +285,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 question,
                                 "PT10S"
                             )
-                            cheerMeter -> CheerMeterRequest(
+                            cheerMeter -> CheerMeterRequestResponse(
                                 "tap",
                                 options,
                                 null,
@@ -300,7 +298,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         scope.launch {
                             progressBar.visibility = View.VISIBLE
                         }
+                        println("VHItem.->$request")
                         val responseString = postAPI(type.url!!, request)
+                        println("VHItem.-->$responseString")
                         val gson = Gson()
                         val response = when (type.url) {
                             alerts -> gson.fromJson(responseString, AlertResponse::class.java)
@@ -310,7 +310,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                             )
                             txtPoll, imgPoll -> gson.fromJson(
                                 responseString,
-                                PollResponse::class.java
+                                PollRequestResponse::class.java
                             )
                             txtPrediction, imgPrediction -> gson.fromJson(
                                 responseString,
@@ -321,7 +321,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 EmojiSliderResponse::class.java
                             )
                             cheerMeter -> gson.fromJson(
-                                responseString, CheerMeterResponse::class.java
+                                responseString, CheerMeterRequestResponse::class.java
                             )
                             else -> null
                         }
@@ -330,8 +330,8 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 is AlertResponse -> {
                                     putAPI(it.schedule_url)
                                 }
-                                is PollResponse -> {
-                                    putAPI(it.schedule_url)
+                                is PollRequestResponse -> {
+                                    putAPI(it.schedule_url!!)
                                 }
                                 is QuizResponse -> {
                                     putAPI(it.schedule_url)
@@ -372,8 +372,8 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                         putAPI(r.schedule_url)
                                     }
                                 }
-                                is CheerMeterResponse -> {
-                                    putAPI(it.schedule_url)
+                                is CheerMeterRequestResponse -> {
+                                    putAPI(it.schedule_url!!)
                                 }
                                 is EmojiSliderResponse -> {
                                     putAPI(it.schedule_url)
@@ -477,8 +477,6 @@ data class CreatedBy(
     val image_url: String,
     val name: String
 )
-
-
 
 
 data class Option(
