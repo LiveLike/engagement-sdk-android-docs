@@ -38,7 +38,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel = value as PollViewModel
 //            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
             viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
-            viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
+//            viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
             viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
         }
@@ -48,7 +48,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.adapter?.showPercentage = true
             viewModel?.adapter?.notifyDataSetChanged()
             viewModel?.onOptionClicked()
-            viewModel?.widgetState?.onNext(WidgetStates.VOTED)
         }
     }
 
@@ -57,7 +56,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         super.onAttachedToWindow()
 //        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
         viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
-        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
+//        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
         viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
     }
@@ -71,6 +70,9 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 viewModel?.data?.latest()?.let {
                     viewModel?.startDismissTimout(it.resource.timeout)
                 }
+            }
+            WidgetStates.RESULTS -> {
+                resultsObserver(viewModel?.results?.latest())
             }
             WidgetStates.FINISHED -> {
                 resourceObserver(null)

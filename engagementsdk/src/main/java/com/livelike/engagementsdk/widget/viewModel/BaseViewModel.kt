@@ -14,6 +14,4 @@ enum class WidgetStates {
     INTERACTING,//the data is injected into view and shown
     RESULTS,// interaction completed and result to be shown
     FINISHED,//dismiss the widget
-    VOTED,// user has done the voting
-    EARN_REWARDS,//user earned rewards
 }

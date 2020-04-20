@@ -41,7 +41,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 //            viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
             viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
             viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
-            viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+//            viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
         }
 
@@ -58,6 +58,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.FINISHED -> {
                 resourceObserver(null)
             }
+            WidgetStates.RESULTS -> {
+                stateObserver(viewModel?.state?.latest())
+            }
         }
     }
 
@@ -65,7 +68,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun onClickObserver() {
         viewModel?.onOptionClicked()
-        viewModel?.widgetState?.onNext(WidgetStates.VOTED)
     }
 
     // Refresh the view when re-attached to the activity
@@ -74,7 +76,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 //        viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
         viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
         viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
-        viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+//        viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
     }
 
@@ -152,7 +154,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 onWidgetInteractionCompleted()
             }
             "results" -> {
-                viewModel?.widgetState?.onNext(WidgetStates.RESULTS)
                 listOf(textEggTimer).forEach { v ->
                     v?.showCloseButton() {
                         viewModel?.dismissWidget(it)

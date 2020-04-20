@@ -46,7 +46,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     protected open fun stateObserver(widgetState: WidgetState) {
         when (widgetState) {
             WidgetState.LOCK_INTERACTION -> confirmInteraction()
-            WidgetState.SHOW_RESULTS -> showResults()
+            WidgetState.SHOW_RESULTS -> viewModel.widgetState.onNext(WidgetStates.RESULTS)
             WidgetState.SHOW_GAMIFICATION -> rewardsObserver()
             WidgetState.DISMISS -> {
             }
@@ -91,7 +91,6 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             if (!shouldShowPointTutorial() && it.newPoints > 0) {
                 pointView.startAnimation(it.newPoints, true)
                 wouldShowProgressionMeter(viewModel?.rewardsType, it, progressionMeterView)
-                viewModel.widgetState.onNext(WidgetStates.EARN_REWARDS)
             }
         }
     }
@@ -114,8 +113,11 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                         viewModel.startInteractionTimeout(timeout)
                     }
                 }
-                WidgetStates.FINISHED->{
+                WidgetStates.FINISHED -> {
                     dataModelObserver(null)
+                }
+                WidgetStates.RESULTS -> {
+                    showResults()
                 }
             }
         }

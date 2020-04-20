@@ -51,7 +51,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
         super.onAttachedToWindow()
 //        viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
         viewModel?.widgetState?.subscribe(javaClass) { widgetStateObserver(it) }
-        viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+//        viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
     }
 
     private fun widgetStateObserver(widgetStates: WidgetStates?) {
@@ -67,6 +67,9 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             }
             WidgetStates.FINISHED -> {
                 widgetObserver(null)
+            }
+            WidgetStates.RESULTS->{
+                stateObserver(viewModel?.state?.latest())
             }
         }
     }

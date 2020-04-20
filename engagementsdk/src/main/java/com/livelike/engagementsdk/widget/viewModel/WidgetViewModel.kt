@@ -37,8 +37,8 @@ internal abstract class WidgetViewModel<T : Resource>(
         widgetInfos: WidgetInfos,
         sdkConfiguration: EngagementSDK.SdkConfiguration,
         userRepository: UserRepository,
-        programRepository: ProgramRepository,
-        widgetMessagingClient: WidgetManager,
+        programRepository: ProgramRepository? = null,
+        widgetMessagingClient: WidgetManager? = null,
         onDismiss: () -> Unit,
         analyticsService: AnalyticsService
     ) : this(onDismiss, analyticsService) {
@@ -61,10 +61,10 @@ internal abstract class WidgetViewModel<T : Resource>(
     val currentVote: SubscriptionManager<String?> =
         SubscriptionManager()
 
-    val gamificationProfile: Stream<ProgramGamificationProfile>?
-        get() = programRepository?.programGamificationProfileStream
-    val rewardsType: RewardsType?
-        get() = programRepository?.rewardType
+    val gamificationProfile: Stream<ProgramGamificationProfile>
+        get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
+    val rewardsType: RewardsType
+        get() = programRepository?.rewardType ?: RewardsType.NONE
 
     var animationEggTimerProgress = 0f
 
