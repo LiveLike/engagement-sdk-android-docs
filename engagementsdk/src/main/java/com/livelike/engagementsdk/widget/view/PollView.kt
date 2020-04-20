@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPoi
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
@@ -35,7 +36,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         set(value) {
             field = value
             viewModel = value as PollViewModel
-            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+//            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
             viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
             viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
@@ -46,23 +48,45 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.adapter?.showPercentage = true
             viewModel?.adapter?.notifyDataSetChanged()
             viewModel?.onOptionClicked()
+            viewModel?.widgetState?.onNext(WidgetStates.VOTED)
         }
     }
 
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+//        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+        viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
         viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
         viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
+    }
+
+    private fun stateObserver(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                resourceObserver(viewModel?.data?.latest())
+            }
+            WidgetStates.INTERACTING -> {
+                viewModel?.data?.latest()?.let {
+                    viewModel?.startDismissTimout(it.resource.timeout)
+                }
+            }
+            WidgetStates.FINISHED -> {
+                resourceObserver(null)
+            }
+        }
     }
 
     private fun rewardsObserver(points: Int?) {
         points?.let {
             if (!shouldShowPointTutorial() && it > 0) {
                 pointView.startAnimation(it, true)
-                wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
+                wouldShowProgressionMeter(
+                    viewModel?.rewardsType,
+                    viewModel?.gamificationProfile?.latest(),
+                    progressionMeterView
+                )
             }
         }
     }
@@ -80,7 +104,9 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             titleTextView.gravity = Gravity.START
 
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
-                val selectedId = viewModel?.adapter?.myDataset?.get(viewModel?.adapter?.selectedPosition ?: -1)?.id ?: ""
+                val selectedId = viewModel?.adapter?.myDataset?.get(
+                    viewModel?.adapter?.selectedPosition ?: -1
+                )?.id ?: ""
                 viewModel?.currentVoteId?.onNext(selectedId)
             }, type)
             viewModel?.onWidgetInteractionCompleted = { onWidgetInteractionCompleted() }
@@ -88,9 +114,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
             }
-
-            viewModel?.startDismissTimout(resource.timeout)
-
+            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f) {
                 listOf(textEggTimer).forEach { v ->

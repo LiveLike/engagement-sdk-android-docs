@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
 import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
 import kotlinx.android.synthetic.main.widget_alert.view.bodyText
@@ -31,7 +32,11 @@ import kotlinx.android.synthetic.main.widget_alert.view.widgetContainer
 internal class AlertWidgetView : SpecifiedWidgetView {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
 
     private var inflated = false
 
@@ -47,14 +52,32 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         set(value) {
             field = value
             viewModel = value as AlertWidgetViewModel
-            viewModel?.data?.subscribe(javaClass) {
-                if (it != null) {
-                    logDebug { "showing the Alert WidgetView" }
-                    inflate(context, it)
-                    viewModel?.startDismissTimout(it.timeout) { removeAllViews() }
-                } else {
-                    removeAllViews()
-                    parent?.let { par -> (par as ViewGroup).removeAllViews() }
+            viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
+                logDebug { "Current State: $widgetStates" }
+                widgetStates?.let {
+                    when (widgetStates) {
+                        WidgetStates.READY -> {
+                            viewModel?.data?.latest()?.let {
+                                logDebug { "showing the Alert WidgetView" }
+                                inflate(context, it)
+                                viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
+                            }
+                        }
+                        WidgetStates.INTERACTING -> {
+                            viewModel?.data?.latest()?.let {
+                                viewModel?.startDismissTimout(it.timeout) {
+                                    viewModel?.widgetState?.onNext(WidgetStates.FINISHED)
+                                }
+                            }
+                        }
+                        WidgetStates.RESULTS, WidgetStates.FINISHED -> {
+                            //viewModel?.dismissWidget(DismissAction.TAP_X)
+                            // TODO Need to add new action for state change to finished
+                            removeAllViews()
+                            parent?.let { par -> (par as ViewGroup).removeAllViews() }
+                        }
+                        else -> {}
+                    }
                 }
             }
         }
@@ -62,7 +85,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
             inflated = true
-            LayoutInflater.from(context).inflate(R.layout.widget_alert, this, true) as ConstraintLayout
+            LayoutInflater.from(context)
+                .inflate(R.layout.widget_alert, this, true) as ConstraintLayout
         }
 
         bodyText.text = resourceAlert.text
@@ -89,8 +113,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 Glide.with(context)
                     .load(resourceAlert.image_url)
                     .into(bodyImage)
-                }
             }
+        }
 
         if (resourceAlert.title.isNullOrEmpty()) {
             labelText.visibility = View.GONE
@@ -115,7 +139,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
     private fun openBrowser(context: Context, linkUrl: String) {
         viewModel?.onClickLink()
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl)).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val browserIntent =
+            Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl)).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(context, browserIntent, Bundle.EMPTY)
     }
 }

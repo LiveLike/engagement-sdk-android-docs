@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
@@ -47,7 +48,8 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             WidgetState.LOCK_INTERACTION -> confirmInteraction()
             WidgetState.SHOW_RESULTS -> showResults()
             WidgetState.SHOW_GAMIFICATION -> rewardsObserver()
-            WidgetState.DISMISS -> {}
+            WidgetState.DISMISS -> {
+            }
         }
     }
 
@@ -60,16 +62,20 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             val timeout = AndroidResource.parseDuration(entity.timeout)
             if (!isViewInflated) {
                 isViewInflated = true
-                viewModel.startInteractionTimeout(timeout)
+                viewModel.widgetState.onNext(WidgetStates.INTERACTING);
             }
             val animationLength = timeout.toFloat()
             if (viewModel.animationEggTimerProgress < 1f) {
                 viewModel.animationEggTimerProgress.let {
-                    textEggTimer?.startAnimationFrom(it, animationLength, { animationTimerProgress ->
-                        viewModel.animationEggTimerProgress = animationTimerProgress
-                    }, { dismissAction ->
-                        viewModel.dismissWidget(dismissAction)
-                    })
+                    textEggTimer?.startAnimationFrom(
+                        it,
+                        animationLength,
+                        { animationTimerProgress ->
+                            viewModel.animationEggTimerProgress = animationTimerProgress
+                        },
+                        { dismissAction ->
+                            viewModel.dismissWidget(dismissAction)
+                        })
                 }
             }
         }
@@ -85,6 +91,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             if (!shouldShowPointTutorial() && it.newPoints > 0) {
                 pointView.startAnimation(it.newPoints, true)
                 wouldShowProgressionMeter(viewModel?.rewardsType, it, progressionMeterView)
+                viewModel.widgetState.onNext(WidgetStates.EARN_REWARDS)
             }
         }
     }
@@ -93,14 +100,30 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         viewModel.state.subscribe(javaClass.name) {
             it?.let { stateObserver(it) }
         }
-        viewModel.data.subscribe(javaClass.simpleName) {
-            dataModelObserver(it)
+//        viewModel.data.subscribe(javaClass.simpleName) {
+//            dataModelObserver(it)
+//        }
+        viewModel.widgetState.subscribe(javaClass.simpleName) {
+            when (it) {
+                WidgetStates.READY -> {
+                    dataModelObserver(viewModel.data.latest())
+                }
+                WidgetStates.INTERACTING -> {
+                    viewModel.data.latest()?.let { entity ->
+                        val timeout = AndroidResource.parseDuration(entity.timeout)
+                        viewModel.startInteractionTimeout(timeout)
+                    }
+                }
+                WidgetStates.FINISHED->{
+                    dataModelObserver(null)
+                }
+            }
         }
     }
 
     protected open fun unsubscribeCalls() {
         viewModel.state.unsubscribe(javaClass.name)
-        viewModel.state.unsubscribe(javaClass.name)
+//        viewModel.state.unsubscribe(javaClass.name)
     }
 
     override fun onAttachedToWindow() {

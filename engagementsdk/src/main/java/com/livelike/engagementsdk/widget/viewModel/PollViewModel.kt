@@ -53,7 +53,7 @@ internal class PollViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
-) : ViewModel() {
+) : BaseViewModel() {
     lateinit var onWidgetInteractionCompleted: () -> Unit
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream
     var points: SubscriptionManager<Int?> =
@@ -147,6 +147,7 @@ internal class PollViewModel(
                         resource
                     )
                 })
+                widgetState.onNext(WidgetStates.READY)
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -174,6 +175,7 @@ internal class PollViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Poll Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
@@ -185,7 +187,7 @@ internal class PollViewModel(
             dismissWidget(DismissAction.TIMEOUT)
             return
         }
-
+        widgetState.onNext(WidgetStates.RESULTS)
         adapter?.selectionLocked = true
         onWidgetInteractionCompleted.invoke()
 
@@ -196,6 +198,7 @@ internal class PollViewModel(
                     publishPoints(pts.newPoints)
                     GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     interactionData.addGamificationAnalyticsData(pts)
+                    widgetState.onNext(WidgetStates.EARN_REWARDS)
                 }
             }
 

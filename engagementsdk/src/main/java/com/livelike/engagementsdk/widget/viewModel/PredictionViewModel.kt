@@ -54,7 +54,7 @@ internal class PredictionViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
     val widgetMessagingClient: WidgetManager
-) : ViewModel() {
+) : BaseViewModel() {
     private var followUp: Boolean =false
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
@@ -118,6 +118,7 @@ internal class PredictionViewModel(
                 resource?.apply {
                     pubnub?.subscribe(listOf(resource.subscribe_channel))
                     data.onNext(PredictionWidget(type, resource))
+                    widgetState.onNext(WidgetStates.READY)
                 }
 
                 currentWidgetId = widgetInfos.widgetId
@@ -170,6 +171,7 @@ internal class PredictionViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Prediction Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
@@ -202,6 +204,7 @@ internal class PredictionViewModel(
 
         val isUserCorrect = adapter?.myDataset?.find { it.id == selectedPredictionId }?.is_correct ?: false
         val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
+        widgetState.onNext(WidgetStates.RESULTS)
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
@@ -210,6 +213,7 @@ internal class PredictionViewModel(
                     points = pts.newPoints
                     GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     interactionData.pointEarned = points ?: 0
+                    widgetState.onNext(WidgetStates.EARN_REWARDS)
                 }
             }
             state.onNext("followup")
@@ -236,6 +240,7 @@ internal class PredictionViewModel(
                     points = pts.newPoints
                     GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     interactionData.addGamificationAnalyticsData(pts)
+                    widgetState.onNext(WidgetStates.EARN_REWARDS)
                 }
             }
             pubnub?.stop()
@@ -277,6 +282,7 @@ internal class PredictionViewModel(
 
                     // Save widget id and voted option for followup widget
                     addWidgetPredictionVoted(it.resource.id ?: "", selectedOption?.id ?: "")
+                    widgetState.onNext(WidgetStates.VOTED)
                 }
             }
         }

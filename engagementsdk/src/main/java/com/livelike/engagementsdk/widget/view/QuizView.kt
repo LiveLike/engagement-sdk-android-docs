@@ -18,6 +18,7 @@ import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
@@ -37,22 +38,41 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         set(value) {
             field = value
             viewModel = value as QuizViewModel
-            viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
+//            viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
+            viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
             viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
             viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
         }
 
+    private fun stateWidgetObserver(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                resourceObserver(viewModel?.data?.latest())
+            }
+            WidgetStates.INTERACTING -> {
+                viewModel?.data?.latest()?.let {
+                    viewModel?.startDismissTimout(it.resource.timeout, widgetViewThemeAttributes)
+                }
+            }
+            WidgetStates.FINISHED -> {
+                resourceObserver(null)
+            }
+        }
+    }
+
     private var inflated = false
 
     private fun onClickObserver() {
         viewModel?.onOptionClicked()
+        viewModel?.widgetState?.onNext(WidgetStates.VOTED)
     }
 
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
+//        viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
+        viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
         viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
         viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
@@ -82,14 +102,17 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 setHasFixedSize(true)
             }
 
-            viewModel?.startDismissTimout(resource.timeout, widgetViewThemeAttributes!!)
+            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
 
             val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
             if (viewModel?.animationEggTimerProgress!! < 1f) {
                 listOf(textEggTimer).forEach { v ->
-                    v?.startAnimationFrom(viewModel?.animationEggTimerProgress ?: 0f, animationLength, {
-                        viewModel?.animationEggTimerProgress = it
-                    }) {
+                    v?.startAnimationFrom(
+                        viewModel?.animationEggTimerProgress ?: 0f,
+                        animationLength,
+                        {
+                            viewModel?.animationEggTimerProgress = it
+                        }) {
                         viewModel?.dismissWidget(it)
                     }
                 }
@@ -129,13 +152,18 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 onWidgetInteractionCompleted()
             }
             "results" -> {
-                listOf(textEggTimer).forEach { v -> v?.showCloseButton() {
-                    viewModel?.dismissWidget(it)
-                } }
-                viewModel?.adapter?.correctOptionId = viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
-                viewModel?.adapter?.userSelectedOptionId = viewModel?.adapter?.selectedPosition?.let { it1 ->
-                    viewModel?.adapter?.myDataset?.get(it1)?.id
-                } ?: ""
+                viewModel?.widgetState?.onNext(WidgetStates.RESULTS)
+                listOf(textEggTimer).forEach { v ->
+                    v?.showCloseButton() {
+                        viewModel?.dismissWidget(it)
+                    }
+                }
+                viewModel?.adapter?.correctOptionId =
+                    viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
+                viewModel?.adapter?.userSelectedOptionId =
+                    viewModel?.adapter?.selectedPosition?.let { it1 ->
+                        viewModel?.adapter?.myDataset?.get(it1)?.id
+                    } ?: ""
 
                 textRecyclerView.swapAdapter(viewModel?.adapter, false)
                 textRecyclerView.adapter?.notifyItemChanged(0)
@@ -169,7 +197,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 viewModel?.points?.let {
                     if (!shouldShowPointTutorial() && it > 0) {
                         pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
+                        wouldShowProgressionMeter(
+                            viewModel?.rewardsType,
+                            viewModel?.gamificationProfile?.latest(),
+                            progressionMeterView
+                        )
                     }
                 }
             }

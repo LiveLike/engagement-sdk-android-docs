@@ -52,8 +52,8 @@ internal class QuizViewModel(
     var onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
-    val widgetMessagingClient: WidgetManager
-) : ViewModel() {
+    private val widgetMessagingClient: WidgetManager
+) : BaseViewModel() {
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository.programGamificationProfileStream
@@ -132,6 +132,7 @@ internal class QuizViewModel(
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let { QuizWidget(it, resource) })
+                widgetState.onNext(WidgetStates.READY)
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -169,6 +170,7 @@ internal class QuizViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Quiz Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
@@ -194,6 +196,7 @@ internal class QuizViewModel(
                     points = pts.newPoints
                     GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     interactionData.addGamificationAnalyticsData(pts)
+                    widgetState.onNext(WidgetStates.EARN_REWARDS)
                 }
             }
             state.onNext("results")

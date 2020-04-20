@@ -7,16 +7,16 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
-import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 internal abstract class WidgetViewModel<T : Resource>(
     private val onDismiss: () -> Unit,
     val analyticsService: AnalyticsService
-) : ViewModel() {
+) : BaseViewModel() {
 
     var widgetInfos: WidgetInfos? = null
     var sdkConfiguration: EngagementSDK.SdkConfiguration? = null
@@ -75,13 +75,19 @@ internal abstract class WidgetViewModel<T : Resource>(
     val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
     protected open fun confirmInteraction() {
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
+        currentWidgetType?.let {
+            analyticsService.trackWidgetInteraction(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                interactionData
+            )
+        }
         uiScope.launch {
             data.currentData?.rewards_url?.let {
                 userRepository?.getGamificationReward(it, analyticsService)?.let { pts ->
                     programRepository?.programGamificationProfileStream?.onNext(pts)
-                    widgetMessagingClient?.let {
-                            widgetMessagingClient -> GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    widgetMessagingClient?.let { widgetMessagingClient ->
+                        GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
                     }
                     interactionData.addGamificationAnalyticsData(pts)
                 }

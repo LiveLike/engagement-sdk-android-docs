@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawab
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import java.math.RoundingMode
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
@@ -45,6 +46,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     }
 
     override fun showResults() {
+        viewModel.widgetState.onNext(WidgetStates.RESULTS)
         val result = viewModel.results.latest()
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
