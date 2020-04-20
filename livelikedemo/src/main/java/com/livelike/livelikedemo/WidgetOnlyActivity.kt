@@ -12,6 +12,20 @@ import android.widget.TextView
 import com.google.gson.Gson
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.models.AlertRequest
+import com.livelike.livelikedemo.models.AlertResponse
+import com.livelike.livelikedemo.models.CheerMeterRequest
+import com.livelike.livelikedemo.models.CheerMeterResponse
+import com.livelike.livelikedemo.models.EmojiSliderRequest
+import com.livelike.livelikedemo.models.EmojiSliderResponse
+import com.livelike.livelikedemo.models.FollowUpRequest
+import com.livelike.livelikedemo.models.FollowUpResponse
+import com.livelike.livelikedemo.models.PollRequest
+import com.livelike.livelikedemo.models.PollResponse
+import com.livelike.livelikedemo.models.PredictionRequest
+import com.livelike.livelikedemo.models.PredictionResponse
+import com.livelike.livelikedemo.models.QuizRequest
+import com.livelike.livelikedemo.models.QuizResponse
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.progress_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rcyl_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.widget_view
@@ -448,44 +462,6 @@ data class PostType(
     val count: Int = 0
 )
 
-data class QuizRequest(
-    val choices: List<Choice>? = null,
-    val program_date_time: String? = null,
-    val program_id: String? = null,
-    val question: String? = null,
-    val timeout: String? = null
-)
-
-data class QuizResponse(
-    val choices: List<Choice>,
-    val created_at: String,
-    val created_by: CreatedBy,
-    val custom_data: Any,
-    val engagement_count: Int,
-    val engagement_percent: String,
-    val id: String,
-    val impression_count: Int,
-    val impression_url: String,
-    val interaction_url: String,
-    val kind: String,
-    val program_date_time: String,
-    val program_id: String,
-    val publish_delay: String,
-    val published_at: Any,
-    val question: String,
-    val reactions: List<Any>,
-    val rewards_url: Any,
-    val schedule_url: String,
-    val scheduled_at: Any,
-    val status: String,
-    val subscribe_channel: String,
-    val timeout: String,
-    val translatable_fields: List<String>,
-    val translations: TranslationsX,
-    val unique_impression_count: Int,
-    val url: String
-)
-
 data class Choice(
     val answer_count: Int? = null,
     val answer_url: String? = null,
@@ -493,7 +469,6 @@ data class Choice(
     val id: String? = null,
     val is_correct: Boolean? = null,
     val translatable_fields: List<String>? = null,
-    val translations: Translations? = null,
     val image_url: String? = null
 )
 
@@ -503,53 +478,13 @@ data class CreatedBy(
     val name: String
 )
 
-class TranslationsX
 
-class Translations
 
-data class PollRequest(
-    val options: List<Option>,
-    val program_date_time: String? = null,
-    val program_id: String,
-    val question: String,
-    val timeout: String
-)
-
-data class PollResponse(
-    val created_at: String,
-    val created_by: CreatedBy,
-    val custom_data: Any,
-    val engagement_count: Int,
-    val engagement_percent: String,
-    val id: String,
-    val impression_count: Int,
-    val impression_url: String,
-    val interaction_url: String,
-    val kind: String,
-    val options: List<Option>,
-    val program_date_time: String,
-    val program_id: String,
-    val publish_delay: String,
-    val published_at: Any,
-    val question: String,
-    val reactions: List<Any>,
-    val rewards_url: Any,
-    val schedule_url: String,
-    val scheduled_at: Any,
-    val status: String,
-    val subscribe_channel: String,
-    val timeout: String,
-    val translatable_fields: List<String>,
-    val translations: TranslationsX,
-    val unique_impression_count: Int,
-    val url: String
-)
 
 data class Option(
     val description: String,
     val id: String? = null,
     val translatable_fields: List<String>? = null,
-    val translations: Translations? = null,
     val vote_count: Int? = null,
     val vote_url: String? = null,
     val image_url: String? = null,
@@ -557,266 +492,15 @@ data class Option(
     val url: String? = null
 )
 
-data class PredictionRequest(
-    val confirmation_message: String,
-    val options: List<Option>,
-    val program_date_time: String? = null,
-    val program_id: String,
-    val question: String,
-    val timeout: String
-)
 
-data class PredictionResponse(
-    val confirmation_message: String,
-    val created_at: String,
-    val created_by: CreatedBy,
-    val custom_data: Any,
-    val engagement_count: Int,
-    val engagement_percent: String,
-    val follow_up_url: String,
-    val follow_ups: List<FollowUp>,
-    val id: String,
-    val impression_count: Int,
-    val impression_url: String,
-    val interaction_url: String,
-    val kind: String,
-    val options: ArrayList<OptionX>,
-    val program_date_time: String,
-    val program_id: String,
-    val publish_delay: String,
-    val published_at: Any,
-    val question: String,
-    val reactions: List<Any>,
-    val rewards_url: Any,
-    val schedule_url: String,
-    val scheduled_at: Any,
-    val status: String,
-    val subscribe_channel: String,
-    val timeout: String,
-    val translatable_fields: List<String>,
-    val translations: TranslationsXXX,
-    val unique_impression_count: Int,
-    val url: String
-)
 
-data class FollowUpRequest(
-    val options: List<OptionX>?,
-    val program_date_time: String?,
-    val question: String?,
-    val scheduled_at: Any?,
-    val timeout: String?
-)
 
-data class FollowUp(
-    val correct_option_id: Any,
-    val created_at: String,
-    val created_by: CreatedByX,
-    val custom_data: Any,
-    val engagement_count: Any,
-    val engagement_percent: Any,
-    val id: String,
-    val image_prediction_id: String,
-    val image_prediction_url: String,
-    val impression_count: Int,
-    val impression_url: String,
-    val interaction_url: String,
-    val kind: String,
-    val options: List<Option>,
-    val program_date_time: Any,
-    val program_id: String,
-    val publish_delay: String,
-    val published_at: Any,
-    val question: String,
-    val reactions: List<Any>,
-    val rewards_url: Any,
-    val schedule_url: String,
-    val scheduled_at: Any,
-    val status: String,
-    val subscribe_channel: String,
-    val timeout: String,
-    val translatable_fields: List<Any>,
-    val translations: TranslationsX,
-    val unique_impression_count: Int,
-    val url: String
-)
 
-data class OptionX(
-    val description: String,
-    val id: String,
-    val image_url: String,
-    var is_correct: Boolean,
-    val translatable_fields: List<String>,
-    val translations: TranslationsXX,
-    val url: String,
-    var vote_count: Int,
-    val vote_url: String
-)
 
-data class FollowUpResponse(
-    val correct_option_id: String,
-    val created_at: String,
-    val created_by: CreatedBy,
-    val custom_data: Any,
-    val engagement_count: Any,
-    val engagement_percent: Any,
-    val id: String,
-    val image_prediction_id: String,
-    val image_prediction_url: String,
-    val impression_count: Int,
-    val impression_url: String,
-    val interaction_url: String,
-    val kind: String,
-    val options: List<Option>,
-    val program_date_time: String,
-    val program_id: String,
-    val publish_delay: String,
-    val published_at: String,
-    val question: String,
-    val reactions: List<Any>,
-    val rewards_url: Any,
-    val schedule_url: String,
-    val scheduled_at: String,
-    val status: String,
-    val subscribe_channel: String,
-    val timeout: String,
-    val translatable_fields: List<Any>,
-    val translations: TranslationsX,
-    val unique_impression_count: Int,
-    val url: String
-)
 
-class TranslationsXXX
 
-data class CreatedByX(
-    val id: String,
-    val image_url: String,
-    val name: String
-)
 
-class TranslationsXX
 
-data class AlertRequest(
-    val image_url: String? = null,
-    val link_label: String? = null,
-    val link_url: String? = null,
-    val program_date_time: String? = null,
-    val program_id: String,
-    val text: String? = null,
-    val timeout: String,
-    val title: String? = null
-)
 
-data class AlertResponse(
-    val created_at: String,
-    val created_by: CreatedBy,
-    val custom_data: Any,
-    val engagement_count: Any,
-    val engagement_percent: Any,
-    val id: String,
-    val image_url: String,
-    val impression_count: Int,
-    val impression_url: String,
-    val interaction_url: String,
-    val kind: String,
-    val link_label: String,
-    val link_url: String,
-    val program_date_time: String,
-    val program_id: String,
-    val publish_delay: String,
-    val published_at: Any,
-    val reactions: List<Any>,
-    val rewards_url: Any,
-    val schedule_url: String,
-    val scheduled_at: Any,
-    val status: String,
-    val subscribe_channel: String,
-    val text: String,
-    val timeout: String,
-    val title: String,
-    val translatable_fields: List<String>,
-    val translations: Translations,
-    val unique_impression_count: Int,
-    val url: String
-)
 
-data class EmojiSliderRequest(
-    val initial_magnitude: Double,
-    val options: List<Option>,
-    val program_date_time: String? = null,
-    val program_id: String,
-    val question: String,
-    val timeout: String
-)
 
-data class EmojiSliderResponse(
-    val average_magnitude: String,
-    val created_at: String,
-    val created_by: CreatedBy,
-    val custom_data: Any,
-    val engagement_count: Int,
-    val engagement_percent: String,
-    val id: String,
-    val impression_count: Int,
-    val impression_url: String,
-    val initial_magnitude: String,
-    val interaction_url: String,
-    val kind: String,
-    val options: List<Option>,
-    val program_date_time: String,
-    val program_id: String,
-    val publish_delay: String,
-    val published_at: Any,
-    val question: String,
-    val reactions: List<Any>,
-    val rewards_url: Any,
-    val schedule_url: String,
-    val scheduled_at: Any,
-    val status: String,
-    val subscribe_channel: String,
-    val timeout: String,
-    val translatable_fields: List<String>,
-    val translations: TranslationsX,
-    val unique_impression_count: Int,
-    val url: String,
-    val vote_url: String
-)
-
-data class CheerMeterRequest(
-    val cheer_type: String,
-    val options: List<Option>,
-    val program_date_time: String? = null,
-    val program_id: String,
-    val question: String,
-    val timeout: String
-)
-
-data class CheerMeterResponse(
-    val cheer_type: String,
-    val created_at: String,
-    val created_by: CreatedBy,
-    val custom_data: Any,
-    val engagement_count: Int,
-    val engagement_percent: String,
-    val id: String,
-    val impression_count: Int,
-    val impression_url: String,
-    val interaction_url: String,
-    val kind: String,
-    val options: List<Option>,
-    val program_date_time: String,
-    val program_id: String,
-    val publish_delay: String,
-    val published_at: Any,
-    val question: String,
-    val reactions: List<Any>,
-    val rewards_url: Any,
-    val schedule_url: String,
-    val scheduled_at: Any,
-    val status: String,
-    val subscribe_channel: String,
-    val timeout: String,
-    val translatable_fields: List<String>,
-    val translations: TranslationsX,
-    val unique_impression_count: Int,
-    val url: String
-)
