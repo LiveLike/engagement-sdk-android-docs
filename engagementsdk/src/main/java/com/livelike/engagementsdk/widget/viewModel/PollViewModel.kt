@@ -10,31 +10,31 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClientReplay
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.asBehaviourSubject
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.debounce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClientReplay
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.asBehaviourSubject
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -51,17 +51,17 @@ internal class PollViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository,
-    val widgetMessagingClient: WidgetManager
+    private val programRepository: ProgramRepository? = null,
+    val widgetMessagingClient: WidgetManager? = null
 ) : ViewModel() {
     lateinit var onWidgetInteractionCompleted: () -> Unit
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream
     var points: SubscriptionManager<Int?> =
         SubscriptionManager(false)
     val gamificationProfile: Stream<ProgramGamificationProfile>
-        get() = programRepository.programGamificationProfileStream
+        get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
     val rewardsType: RewardsType
-        get() = programRepository.rewardType
+        get() = programRepository?.rewardType ?: RewardsType.NONE
     val data: SubscriptionManager<PollWidget> =
         SubscriptionManager()
     val results: SubscriptionManager<Resource> =
@@ -192,9 +192,11 @@ internal class PollViewModel(
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
-                    programRepository.programGamificationProfileStream.onNext(pts)
+                    programRepository?.programGamificationProfileStream?.onNext(pts)
                     publishPoints(pts.newPoints)
-                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    widgetMessagingClient?.let { widgetMessagingClient ->
+                        GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    }
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }

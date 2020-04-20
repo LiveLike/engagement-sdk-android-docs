@@ -8,7 +8,7 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.widget.data.models.Badge
+import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_QUIZ
+import com.livelike.engagementsdk.widget.data.models.Badge
 import com.livelike.engagementsdk.widget.view.AlertWidgetView
 import com.livelike.engagementsdk.widget.view.CheerMeterView
 import com.livelike.engagementsdk.widget.view.CollectBadgeWidgetView
@@ -49,14 +50,14 @@ import com.livelike.engagementsdk.widget.viewModel.ViewModel
 
 internal class WidgetProvider {
     fun get(
-        widgetMessagingClient: WidgetManager,
+        widgetMessagingClient: WidgetManager? = null,
         widgetInfos: WidgetInfos,
         context: Context,
         analyticsService: AnalyticsService,
         sdkConfiguration: EngagementSDK.SdkConfiguration,
         onDismiss: () -> Unit,
         userRepository: UserRepository,
-        programRepository: ProgramRepository,
+        programRepository: ProgramRepository? = null,
         animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
         widgetThemeAttributes: WidgetViewThemeAttributes
     ): SpecifiedWidgetView? {
@@ -107,8 +108,8 @@ internal class WidgetProvider {
                 widgetViewModel = PointTutorialWidgetViewModel(
                     onDismiss,
                     analyticsService,
-                    programRepository.rewardType,
-                    programRepository.programGamificationProfileStream.latest()
+                    programRepository?.rewardType ?: RewardsType.NONE,
+                    programRepository?.programGamificationProfileStream?.latest()
                 )
             }
             COLLECT_BADGE -> CollectBadgeWidgetView(context).apply {

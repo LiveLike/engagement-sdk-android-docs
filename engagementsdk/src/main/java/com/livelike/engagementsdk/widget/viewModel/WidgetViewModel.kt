@@ -7,16 +7,16 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
-import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -37,8 +37,8 @@ internal abstract class WidgetViewModel<T : Resource>(
         widgetInfos: WidgetInfos,
         sdkConfiguration: EngagementSDK.SdkConfiguration,
         userRepository: UserRepository,
-        programRepository: ProgramRepository,
-        widgetMessagingClient: WidgetManager,
+        programRepository: ProgramRepository? = null,
+        widgetMessagingClient: WidgetManager? = null,
         onDismiss: () -> Unit,
         analyticsService: AnalyticsService
     ) : this(onDismiss, analyticsService) {
@@ -61,10 +61,10 @@ internal abstract class WidgetViewModel<T : Resource>(
     val currentVote: SubscriptionManager<String?> =
         SubscriptionManager()
 
-    val gamificationProfile: Stream<ProgramGamificationProfile>?
-        get() = programRepository?.programGamificationProfileStream
-    val rewardsType: RewardsType?
-        get() = programRepository?.rewardType
+    val gamificationProfile: Stream<ProgramGamificationProfile>
+        get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
+    val rewardsType: RewardsType
+        get() = programRepository?.rewardType ?: RewardsType.NONE
 
     var animationEggTimerProgress = 0f
 
