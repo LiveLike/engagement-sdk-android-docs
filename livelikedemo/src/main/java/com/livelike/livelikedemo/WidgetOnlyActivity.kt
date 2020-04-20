@@ -163,7 +163,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
             var button: Button = itemView.button
             private val client = OkHttpClient().newBuilder()
                 .build()
-            private val mediaType: MediaType? = MediaType.parse("application/json")
+            private val contentType = "Content-Type"
+            private val applicationJSON: String = "application/json"
+            private val mediaType: MediaType? = MediaType.parse(applicationJSON)
+
             private val images = arrayListOf<String>(
                 "https://cf-blast-storage-staging.livelikecdn.com/assets/e38f0089-00be-4236-830a-6989e8298b50.jpg",
                 "https://cf-blast-storage-staging.livelikecdn.com/assets/3c4db954-216b-40a8-ac34-9d43036b009d.jpg",
@@ -378,7 +381,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         authorization,
                         accessToken
                     )
-                    .addHeader("Content-Type", "application/json")
+                    .addHeader(contentType, "application/json")
                     .build()
                 val response: Response = client.newCall(request).execute()
                 return response.isSuccessful
@@ -396,7 +399,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         authorization,
                         accessToken
                     )
-                    .addHeader("Content-Type", "application/json")
+                    .addHeader(contentType, applicationJSON)
                     .build()
                 val response: Response = client.newCall(request).execute()
                 return response.body()?.string()
@@ -421,7 +424,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         authorization,
                         accessToken
                     )
-                    .addHeader("Content-Type", "application/json")
+                    .addHeader(contentType, applicationJSON)
                     .build()
                 val response: Response = client.newCall(request).execute()
                 return response.body()?.string()
