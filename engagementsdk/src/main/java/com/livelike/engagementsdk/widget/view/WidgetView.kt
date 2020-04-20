@@ -3,12 +3,18 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.ContentSession
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 
@@ -49,5 +55,40 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             return
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+    }
+
+    /** displays the widget in the container
+        throws error if json invalid
+        clears the previous displayed widget (if any)
+        only clears if json is valid
+     */
+    fun displayWidget(sdk: EngagementSDK, widgetResourceJson: JsonObject) {
+        val widgetType = widgetResourceJson.get("event").asString ?: ""
+
+        val payload = widgetResourceJson["payload"].asJsonObject
+        val widgetId = payload["id"].asString
+        widgetContainerViewModel?.currentWidgetViewStream?.onNext(
+            Pair(widgetType,
+                WidgetProvider()
+                    .get(
+                        null,
+                        WidgetInfos(widgetType, payload, widgetId),
+                        context,
+                        MockAnalyticsService(),
+                        sdk.configurationStream.latest()!!,
+                        {
+                        },
+                        sdk.userRepository,
+                        null,
+                        SubscriptionManager(),
+                        WidgetViewThemeAttributes()
+                    )
+            )
+        )
+    }
+
+    // clears the displayed widget (if any)
+    fun clearWidget() {
+        removeAllViews()
     }
 }

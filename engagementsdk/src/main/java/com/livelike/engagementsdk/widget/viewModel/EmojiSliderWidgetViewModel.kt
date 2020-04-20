@@ -11,15 +11,15 @@ import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
 
@@ -29,8 +29,8 @@ internal class EmojiSliderWidgetViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     onDismiss: () -> Unit,
     userRepository: UserRepository,
-    programRepository: ProgramRepository,
-    widgetMessagingClient: WidgetManager
+    programRepository: ProgramRepository? = null,
+    widgetMessagingClient: WidgetManager? = null
 ) : WidgetViewModel<ImageSliderEntity>(widgetInfos, sdkConfiguration, userRepository, programRepository, widgetMessagingClient, onDismiss, analyticsService) {
 
     private val dataClient: WidgetDataClient = WidgetDataClientImpl()
@@ -44,7 +44,7 @@ internal class EmojiSliderWidgetViewModel(
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val payload = event.message["payload"].asJsonObject
                     uiScope.launch {
-                        val data= gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
+                        val data = gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
                         results.onNext(data)
                     }
                 }

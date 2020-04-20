@@ -15,18 +15,18 @@ import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -46,8 +46,8 @@ internal class CheerMeterViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository,
-    val widgetMessagingClient: WidgetManager
+    private val programRepository: ProgramRepository? = null,
+    val widgetMessagingClient: WidgetManager? = null
 ) : ViewModel() {
 
     var teamSelected = 0
