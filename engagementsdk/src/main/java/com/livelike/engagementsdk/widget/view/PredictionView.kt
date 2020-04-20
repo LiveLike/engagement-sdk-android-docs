@@ -59,17 +59,21 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.READY -> {
                 widgetObserver(viewModel?.data?.latest())
             }
-            WidgetStates.INTERACTING->{
+            WidgetStates.INTERACTING -> {
                 viewModel?.data?.latest()?.let {
                     val isFollowUp = it.resource.kind.contains("follow-up")
-                    viewModel?.startDismissTimout(it.resource.timeout, isFollowUp, widgetViewThemeAttributes)
+                    viewModel?.startDismissTimout(
+                        it.resource.timeout,
+                        isFollowUp,
+                        widgetViewThemeAttributes
+                    )
                 }
             }
             WidgetStates.FINISHED -> {
                 widgetObserver(null)
             }
-            WidgetStates.RESULTS->{
-                stateObserver(viewModel?.state?.latest())
+            WidgetStates.RESULTS -> {
+                stateObserver()
             }
         }
     }
@@ -155,9 +159,38 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
         }
     }
 
-    private fun stateObserver(state: String?) {
-        when (state) {
-            "confirmation" -> {
+    private fun stateObserver() {
+        viewModel?.apply {
+            if (followUp) {
+                followupAnimation?.apply {
+                    setAnimation(
+                        viewModel?.animationPath
+                    )
+                    progress = viewModel?.animationProgress!!
+                    addAnimatorUpdateListener { valueAnimator ->
+                        viewModel?.animationProgress = valueAnimator.animatedFraction
+                    }
+                    if (progress != 1f) {
+                        resumeAnimation()
+                    }
+                    visibility = View.VISIBLE
+                }
+                listOf(textEggTimer).forEach {
+                    it?.showCloseButton() {
+                        viewModel?.dismissWidget(it)
+                    }
+                }
+                viewModel?.points?.let {
+                    if (!shouldShowPointTutorial() && it > 0) {
+                        pointView.startAnimation(it, true)
+                        wouldShowProgressionMeter(
+                            viewModel?.rewardsType,
+                            viewModel?.gamificationProfile?.latest(),
+                            progressionMeterView
+                        )
+                    }
+                }
+            } else {
                 resultsObserver(viewModel?.results?.latest())
                 confirmationMessage?.apply {
                     text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
@@ -179,37 +212,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                         viewModel?.dismissWidget(it)
                     }
                 }
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(
-                            viewModel?.rewardsType,
-                            viewModel?.gamificationProfile?.latest(),
-                            progressionMeterView
-                        )
-                    }
-                }
-            }
-            "followup" -> {
-                followupAnimation?.apply {
-                    setAnimation(
-                        viewModel?.animationPath
-                    )
-                    progress = viewModel?.animationProgress!!
-                    addAnimatorUpdateListener { valueAnimator ->
-                        viewModel?.animationProgress = valueAnimator.animatedFraction
-                    }
-                    if (progress != 1f) {
-                        resumeAnimation()
-                    }
-                    visibility = View.VISIBLE
-                }
-                listOf(textEggTimer).forEach {
-                    it?.showCloseButton() {
-                        viewModel?.dismissWidget(it)
-                    }
-                }
-
                 viewModel?.points?.let {
                     if (!shouldShowPointTutorial() && it > 0) {
                         pointView.startAnimation(it, true)

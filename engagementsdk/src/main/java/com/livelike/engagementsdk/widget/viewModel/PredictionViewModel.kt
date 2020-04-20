@@ -55,7 +55,7 @@ internal class PredictionViewModel(
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
 ) : BaseViewModel() {
-    private var followUp: Boolean = false
+    var followUp: Boolean = false
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
@@ -64,8 +64,8 @@ internal class PredictionViewModel(
     val data: SubscriptionManager<PredictionWidget?> =
         SubscriptionManager()
     private val dataClient: WidgetDataClient = WidgetDataClientImpl()
-    var state: Stream<String?> =
-        SubscriptionManager() // confirmation, followup
+//    var state: Stream<String?> =
+//        SubscriptionManager() // confirmation, followup
     var results: Stream<Resource> =
         SubscriptionManager()
     var adapter: WidgetOptionsViewAdapter? = null
@@ -216,7 +216,7 @@ internal class PredictionViewModel(
                     interactionData.pointEarned = points ?: 0
                 }
             }
-            state.onNext("followup")
+//            state.onNext("followup")
             widgetState.onNext(WidgetStates.RESULTS)
         }
         logDebug { "Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
@@ -247,7 +247,7 @@ internal class PredictionViewModel(
             }
             pubnub?.stop()
             pubnub?.unsubscribeAll()
-            state.onNext("confirmation")
+//            state.onNext("confirmation")
             widgetState.onNext(WidgetStates.RESULTS)
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(3000)
@@ -263,7 +263,7 @@ internal class PredictionViewModel(
         adapter = null
         animationProgress = 0f
         animationPath = ""
-        state.onNext("")
+//        state.onNext("")
         data.onNext(null)
         animationEggTimerProgress = 0f
         currentWidgetType = null
