@@ -70,7 +70,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                                 }
                             }
                         }
-                        WidgetStates.RESULTS, WidgetStates.FINISHED -> {
+                        WidgetStates.FINISHED -> {
                             //viewModel?.dismissWidget(DismissAction.TAP_X)
                             // TODO Need to add new action for state change to finished
                             removeAllViews()

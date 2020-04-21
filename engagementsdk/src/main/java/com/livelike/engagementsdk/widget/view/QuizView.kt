@@ -17,7 +17,6 @@ import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPoi
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
@@ -29,6 +28,7 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleVie
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+    private var isInteracting: Boolean=false
     private var viewModel: QuizViewModel? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
@@ -51,15 +51,73 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 resourceObserver(viewModel?.data?.latest())
             }
             WidgetStates.INTERACTING -> {
-                viewModel?.data?.latest()?.let {
-                    viewModel?.startDismissTimout(it.resource.timeout, widgetViewThemeAttributes)
+                if (!isInteracting) {
+                    viewModel?.data?.latest()?.let {
+                        viewModel?.startDismissTimout(
+                            it.resource.timeout,
+                            widgetViewThemeAttributes
+                        )
+                    }
+                    isInteracting = true
+                } else {
+                    onWidgetInteractionCompleted()
                 }
             }
             WidgetStates.FINISHED -> {
                 resourceObserver(null)
             }
             WidgetStates.RESULTS -> {
-                stateObserver(viewModel?.state?.latest())
+                listOf(textEggTimer).forEach { v ->
+                    v?.showCloseButton() {
+                        viewModel?.dismissWidget(it)
+                    }
+                }
+                viewModel?.adapter?.correctOptionId =
+                    viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
+                viewModel?.adapter?.userSelectedOptionId =
+                    viewModel?.adapter?.selectedPosition?.let { it1 ->
+                        viewModel?.adapter?.myDataset?.get(it1)?.id
+                    } ?: ""
+
+                textRecyclerView.swapAdapter(viewModel?.adapter, false)
+                textRecyclerView.adapter?.notifyItemChanged(0)
+
+                followupAnimation.apply {
+                    setAnimation(viewModel?.animationPath)
+                    progress = viewModel?.animationProgress ?: 0f
+                    logDebug { "Animation: ${viewModel?.animationPath}" }
+                    addAnimatorUpdateListener { valueAnimator ->
+                        viewModel?.animationProgress = valueAnimator.animatedFraction
+                    }
+                    addAnimatorListener(object : Animator.AnimatorListener {
+                        override fun onAnimationRepeat(animation: Animator?) {
+                        }
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            viewModel?.dismissWidget(DismissAction.TAP_X)
+                        }
+
+                        override fun onAnimationCancel(animation: Animator?) {
+                        }
+
+                        override fun onAnimationStart(animation: Animator?) {
+                        }
+                    })
+                    if (progress != 1f) {
+                        resumeAnimation()
+                    }
+                    visibility = View.VISIBLE
+                }
+                viewModel?.points?.let {
+                    if (!shouldShowPointTutorial() && it > 0) {
+                        pointView.startAnimation(it, true)
+                        wouldShowProgressionMeter(
+                            viewModel?.rewardsType,
+                            viewModel?.gamificationProfile?.latest(),
+                            progressionMeterView
+                        )
+                    }
+                }
             }
         }
     }
@@ -148,64 +206,14 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         }
     }
 
-    private fun stateObserver(state: String?) {
-        when (state) {
-            WidgetState.LOCK_INTERACTION.name -> {
-                onWidgetInteractionCompleted()
-            }
-            "results" -> {
-                listOf(textEggTimer).forEach { v ->
-                    v?.showCloseButton() {
-                        viewModel?.dismissWidget(it)
-                    }
-                }
-                viewModel?.adapter?.correctOptionId =
-                    viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
-                viewModel?.adapter?.userSelectedOptionId =
-                    viewModel?.adapter?.selectedPosition?.let { it1 ->
-                        viewModel?.adapter?.myDataset?.get(it1)?.id
-                    } ?: ""
-
-                textRecyclerView.swapAdapter(viewModel?.adapter, false)
-                textRecyclerView.adapter?.notifyItemChanged(0)
-
-                followupAnimation.apply {
-                    setAnimation(viewModel?.animationPath)
-                    progress = viewModel?.animationProgress ?: 0f
-                    logDebug { "Animation: ${viewModel?.animationPath}" }
-                    addAnimatorUpdateListener { valueAnimator ->
-                        viewModel?.animationProgress = valueAnimator.animatedFraction
-                    }
-                    addAnimatorListener(object : Animator.AnimatorListener {
-                        override fun onAnimationRepeat(animation: Animator?) {
-                        }
-
-                        override fun onAnimationEnd(animation: Animator?) {
-                            viewModel?.dismissWidget(DismissAction.TAP_X)
-                        }
-
-                        override fun onAnimationCancel(animation: Animator?) {
-                        }
-
-                        override fun onAnimationStart(animation: Animator?) {
-                        }
-                    })
-                    if (progress != 1f) {
-                        resumeAnimation()
-                    }
-                    visibility = View.VISIBLE
-                }
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(
-                            viewModel?.rewardsType,
-                            viewModel?.gamificationProfile?.latest(),
-                            progressionMeterView
-                        )
-                    }
-                }
-            }
-        }
-    }
+//    private fun stateObserver(state: String?) {
+//        when (state) {
+//            WidgetState.LOCK_INTERACTION.name -> {
+//                onWidgetInteractionCompleted()
+//            }
+//            "results" -> {
+//
+//            }
+//        }
+//    }
 }
