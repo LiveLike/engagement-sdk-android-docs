@@ -71,7 +71,70 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 widgetObserver(null)
             }
             WidgetStates.RESULTS -> {
-                stateObserver()
+                viewModel?.apply {
+                    if (followUp) {
+                        followupAnimation?.apply {
+                            setAnimation(
+                                viewModel?.animationPath
+                            )
+                            progress = viewModel?.animationProgress!!
+                            addAnimatorUpdateListener { valueAnimator ->
+                                viewModel?.animationProgress = valueAnimator.animatedFraction
+                            }
+                            if (progress != 1f) {
+                                resumeAnimation()
+                            }
+                            visibility = View.VISIBLE
+                        }
+                        listOf(textEggTimer).forEach {
+                            it?.showCloseButton() {
+                                viewModel?.dismissWidget(it)
+                            }
+                        }
+                        viewModel?.points?.let {
+                            if (!shouldShowPointTutorial() && it > 0) {
+                                pointView.startAnimation(it, true)
+                                wouldShowProgressionMeter(
+                                    viewModel?.rewardsType,
+                                    viewModel?.gamificationProfile?.latest(),
+                                    progressionMeterView
+                                )
+                            }
+                        }
+                    } else {
+                        resultsObserver(viewModel?.results?.latest())
+                        confirmationMessage?.apply {
+                            text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
+                            viewModel?.animationPath?.let {
+                                viewModel?.animationProgress?.let { it1 ->
+                                    startAnimation(
+                                        it,
+                                        it1
+                                    )
+                                }
+                            }
+                            subscribeToAnimationUpdates { value ->
+                                viewModel?.animationProgress = value
+                            }
+                            visibility = View.VISIBLE
+                        }
+                        listOf(textEggTimer).forEach {
+                            it?.showCloseButton() {
+                                viewModel?.dismissWidget(it)
+                            }
+                        }
+                        viewModel?.points?.let {
+                            if (!shouldShowPointTutorial() && it > 0) {
+                                pointView.startAnimation(it, true)
+                                wouldShowProgressionMeter(
+                                    viewModel?.rewardsType,
+                                    viewModel?.gamificationProfile?.latest(),
+                                    progressionMeterView
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -157,70 +220,4 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
         }
     }
 
-    private fun stateObserver() {
-        viewModel?.apply {
-            if (followUp) {
-                followupAnimation?.apply {
-                    setAnimation(
-                        viewModel?.animationPath
-                    )
-                    progress = viewModel?.animationProgress!!
-                    addAnimatorUpdateListener { valueAnimator ->
-                        viewModel?.animationProgress = valueAnimator.animatedFraction
-                    }
-                    if (progress != 1f) {
-                        resumeAnimation()
-                    }
-                    visibility = View.VISIBLE
-                }
-                listOf(textEggTimer).forEach {
-                    it?.showCloseButton() {
-                        viewModel?.dismissWidget(it)
-                    }
-                }
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(
-                            viewModel?.rewardsType,
-                            viewModel?.gamificationProfile?.latest(),
-                            progressionMeterView
-                        )
-                    }
-                }
-            } else {
-                resultsObserver(viewModel?.results?.latest())
-                confirmationMessage?.apply {
-                    text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
-                    viewModel?.animationPath?.let {
-                        viewModel?.animationProgress?.let { it1 ->
-                            startAnimation(
-                                it,
-                                it1
-                            )
-                        }
-                    }
-                    subscribeToAnimationUpdates { value ->
-                        viewModel?.animationProgress = value
-                    }
-                    visibility = View.VISIBLE
-                }
-                listOf(textEggTimer).forEach {
-                    it?.showCloseButton() {
-                        viewModel?.dismissWidget(it)
-                    }
-                }
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(
-                            viewModel?.rewardsType,
-                            viewModel?.gamificationProfile?.latest(),
-                            progressionMeterView
-                        )
-                    }
-                }
-            }
-        }
-    }
 }
