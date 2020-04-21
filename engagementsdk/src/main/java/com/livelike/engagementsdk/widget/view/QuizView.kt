@@ -38,10 +38,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         set(value) {
             field = value
             viewModel = value as QuizViewModel
-//            viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
             viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
             viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
-//            viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
         }
 
@@ -131,10 +129,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-//        viewModel?.data?.subscribe(javaClass) { resourceObserver(it) }
         viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
         viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
-//        viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
     }
 
@@ -205,15 +201,4 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             logDebug { "QuizWidget Showing result total:$totalVotes" }
         }
     }
-
-//    private fun stateObserver(state: String?) {
-//        when (state) {
-//            WidgetState.LOCK_INTERACTION.name -> {
-//                onWidgetInteractionCompleted()
-//            }
-//            "results" -> {
-//
-//            }
-//        }
-//    }
 }
