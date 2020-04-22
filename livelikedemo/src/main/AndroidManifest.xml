@@ -20,12 +20,13 @@
         android:versionCode="1"
         android:versionName="1"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".LiveBlogActivity"></activity>
-        <activity android:name=".ChatOnlyActivity"></activity>
-        <activity android:name=".WidgetOnlyActivity"></activity>
-        <activity android:name=".WidgetStandaloneActivity"></activity>
-        <activity android:name=".ExoPlayerActivity"></activity>
-        <activity android:name=".TwoSessionActivity"></activity>
+        <activity android:name=".WidgetFrameworkActivity"></activity>
+        <activity android:name=".LiveBlogActivity" />
+        <activity android:name=".ChatOnlyActivity" />
+        <activity android:name=".WidgetOnlyActivity" />
+        <activity android:name=".WidgetStandaloneActivity" />
+        <activity android:name=".ExoPlayerActivity" />
+        <activity android:name=".TwoSessionActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
