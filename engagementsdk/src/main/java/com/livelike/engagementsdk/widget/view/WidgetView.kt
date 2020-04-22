@@ -20,7 +20,7 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 
 class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
-    private var widgetContainerViewModel: WidgetContainerViewModel? = null
+    private var widgetContainerViewModel: WidgetContainerViewModel? = WidgetContainerViewModel(SubscriptionManager())
     private val widgetViewThemeAttributes = WidgetViewThemeAttributes()
 
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
@@ -90,5 +90,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     // clears the displayed widget (if any)
     fun clearWidget() {
         removeAllViews()
+    }
+
+    fun moveToNextState() {
     }
 }
