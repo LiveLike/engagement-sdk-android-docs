@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawab
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
-import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import java.math.RoundingMode
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
@@ -38,6 +37,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
     override fun stateObserver(widgetState: WidgetState) {
         super.stateObserver(widgetState)
+    }
+
+    override fun moveToNextState() {
+        super.moveToNextState()
     }
 
     override fun confirmInteraction() {

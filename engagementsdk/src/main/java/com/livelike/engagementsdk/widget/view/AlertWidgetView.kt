@@ -18,7 +18,7 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.widget_alert.view.bodyBackground
 import kotlinx.android.synthetic.main.widget_alert.view.bodyImage
@@ -48,7 +48,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
             removeAllViews()
         }
 
-    override var widgetViewModel: ViewModel? = null
+    override var widgetViewModel: BaseViewModel? = null
         set(value) {
             field = value
             viewModel = value as AlertWidgetViewModel
@@ -71,7 +71,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                             }
                         }
                         WidgetStates.FINISHED -> {
-                            //viewModel?.dismissWidget(DismissAction.TAP_X)
+                            // viewModel?.dismissWidget(DismissAction.TAP_X)
                             // TODO Need to add new action for state change to finished
                             removeAllViews()
                             parent?.let { par -> (par as ViewGroup).removeAllViews() }
@@ -135,6 +135,10 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 widgetContainer.requestLayout()
             }
         }
+    }
+
+    override fun moveToNextState() {
+        super.moveToNextState()
     }
 
     private fun openBrowser(context: Context, linkUrl: String) {

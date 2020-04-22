@@ -16,9 +16,9 @@ import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionWidget
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
@@ -39,7 +39,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    override var widgetViewModel: ViewModel? = null
+    override var widgetViewModel: BaseViewModel? = null
         get() = super.widgetViewModel
         set(value) {
             field = value
@@ -219,5 +219,4 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             parent?.let { (it as ViewGroup).removeAllViews() }
         }
     }
-
 }

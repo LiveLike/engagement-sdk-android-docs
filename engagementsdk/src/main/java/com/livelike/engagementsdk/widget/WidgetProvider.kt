@@ -39,6 +39,7 @@ import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
@@ -46,7 +47,7 @@ import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
 internal class WidgetProvider {
     fun get(
@@ -147,7 +148,7 @@ internal class WidgetProvider {
     }
 }
 
-open class SpecifiedWidgetView @JvmOverloads constructor(
+abstract class SpecifiedWidgetView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -155,7 +156,7 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 
     var widgetId: String = ""
     lateinit var widgetInfos: WidgetInfos
-    open var widgetViewModel: ViewModel? = null
+    open var widgetViewModel: BaseViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
     open var widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()
 
@@ -171,6 +172,15 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
             widgetData.height = height
             widgetLifeCycleEventsListener?.onWidgetPresented(widgetData)
         }, 500)
+        subscribeWidgetStateAndPublishToLifecycleListener()
+    }
+
+    private fun subscribeWidgetStateAndPublishToLifecycleListener() {
+        widgetViewModel?.widgetState?.subscribe(this) {
+            it?.let {
+                widgetLifeCycleEventsListener?.onWidgetStateChange(it, widgetData)
+            }
+        }
     }
 
     override fun onDetachedFromWindow() {
@@ -180,5 +190,10 @@ open class SpecifiedWidgetView @JvmOverloads constructor(
 
     fun onWidgetInteractionCompleted() {
         widgetLifeCycleEventsListener?.onWidgetInteractionCompleted(widgetData)
+    }
+
+    open fun moveToNextState() {
+        val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
+        widgetViewModel?.widgetState?.onNext(WidgetStates.values()[nextStateOrdinal])
     }
 }

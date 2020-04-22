@@ -12,9 +12,9 @@ import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollWidget
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
@@ -25,13 +25,14 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleVie
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
 class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+
     private var viewModel: PollViewModel? = null
 
     private var inflated = false
 
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    override var widgetViewModel: ViewModel? = null
+    override var widgetViewModel: BaseViewModel? = null
         get() = super.widgetViewModel
         set(value) {
             field = value
@@ -49,6 +50,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             viewModel?.adapter?.notifyDataSetChanged()
             viewModel?.onOptionClicked()
         }
+    }
+
+    override fun moveToNextState() {
+        super.moveToNextState()
     }
 
     // Refresh the view when re-attached to the activity

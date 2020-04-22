@@ -14,9 +14,9 @@ import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizWidget
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
@@ -28,12 +28,13 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleVie
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
-    private var isInteracting: Boolean=false
+
+    private var isInteracting: Boolean = false
     private var viewModel: QuizViewModel? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    override var widgetViewModel: ViewModel? = null
+    override var widgetViewModel: BaseViewModel? = null
         get() = super.widgetViewModel
         set(value) {
             field = value

@@ -15,6 +15,7 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
@@ -105,5 +106,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     }
 
     fun moveToNextState() {
+        if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
+            (getChildAt(0) as SpecifiedWidgetView).moveToNextState()
+        }
     }
 }

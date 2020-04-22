@@ -10,7 +10,7 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
@@ -35,7 +35,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
 
     var isViewInflated = false
 
-    override var widgetViewModel: ViewModel? = null
+    override var widgetViewModel: BaseViewModel? = null
         get() = super.widgetViewModel
         set(value) {
             field = value
@@ -62,7 +62,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             val timeout = AndroidResource.parseDuration(entity.timeout)
             if (!isViewInflated) {
                 isViewInflated = true
-                viewModel.widgetState.onNext(WidgetStates.INTERACTING);
+                viewModel.widgetState.onNext(WidgetStates.INTERACTING)
             }
             val animationLength = timeout.toFloat()
             if (viewModel.animationEggTimerProgress < 1f) {
