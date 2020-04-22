@@ -29,7 +29,6 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitle
 
 class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
 
-    private var isInteracting: Boolean = false
     private var viewModel: QuizViewModel? = null
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
@@ -50,22 +49,18 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 resourceObserver(viewModel?.data?.latest())
             }
             WidgetStates.INTERACTING -> {
-                if (!isInteracting) {
-                    viewModel?.data?.latest()?.let {
-                        viewModel?.startDismissTimout(
-                            it.resource.timeout,
-                            widgetViewThemeAttributes
-                        )
-                    }
-                    isInteracting = true
-                } else {
-                    onWidgetInteractionCompleted()
+                viewModel?.data?.latest()?.let {
+                    viewModel?.startDismissTimout(
+                        it.resource.timeout,
+                        widgetViewThemeAttributes
+                    )
                 }
             }
             WidgetStates.FINISHED -> {
                 resourceObserver(null)
             }
             WidgetStates.RESULTS -> {
+                onWidgetInteractionCompleted()
                 listOf(textEggTimer).forEach { v ->
                     v?.showCloseButton() {
                         viewModel?.dismissWidget(it)

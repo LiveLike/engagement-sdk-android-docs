@@ -153,7 +153,6 @@ internal class QuizViewModel(
                 debouncedVoteId.unsubscribe(javaClass)
                 adapter?.selectionLocked = true
 //                state.onNext(WidgetState.LOCK_INTERACTION.name)
-                widgetState.onNext(WidgetStates.INTERACTING)
                 vote()
                 delay(500)
                 resultsState(widgetViewThemeAttributes)
