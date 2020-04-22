@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="32dp"
     android:orientation="vertical"
-    tools:context="com.livelike.livelikedemo.WidgetFrameworkActivity">
+    tools:context="com.livelike.livelikedemo.WidgetFrameworkTestActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"

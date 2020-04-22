@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.activity_widget_framework.move_to_next_sta
 import kotlinx.android.synthetic.main.activity_widget_framework.show_widget
 import kotlinx.android.synthetic.main.activity_widget_framework.widget_view
 
-class WidgetFrameworkActivity : AppCompatActivity() {
+class WidgetFrameworkTestActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
