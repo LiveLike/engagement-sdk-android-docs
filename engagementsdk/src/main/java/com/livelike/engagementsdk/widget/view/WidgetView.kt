@@ -90,7 +90,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             sdk.userRepository,
                             null,
                             SubscriptionManager(),
-                            WidgetViewThemeAttributes()
+                            widgetViewThemeAttributes
                         )
                 )
             )
