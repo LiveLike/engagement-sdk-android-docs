@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
 /**
  * Integrator will pass implementation of this proxy to intercept widgets,
@@ -37,6 +38,7 @@ abstract class WidgetLifeCycleEventsListener {
     abstract fun onWidgetPresented(widgetData: LiveLikeWidgetEntity)
     abstract fun onWidgetInteractionCompleted(widgetData: LiveLikeWidgetEntity)
     abstract fun onWidgetDismissed(widgetData: LiveLikeWidgetEntity)
+    abstract fun onWidgetStateChange(state: WidgetStates, widgetData: LiveLikeWidgetEntity)
 // TODO    abstract fun onWidgetCancelled(reason: WidgetCancelReason, widgetData: LiveLikeWidgetEntity)
 }
 

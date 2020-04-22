@@ -26,6 +26,7 @@ import com.livelike.engagementsdk.core.utils.registerLogsHandler
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
@@ -393,6 +394,13 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
             widget_view.setSession(session)
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
+                override fun onWidgetStateChange(
+                    state: WidgetStates,
+                    widgetData: LiveLikeWidgetEntity
+                ) {
+                    TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+                }
+
                 override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
                     val widgetDataJson = GsonBuilder().create().toJson(widgetData)
                     addLogs("onWidgetPresented : $widgetDataJson")
