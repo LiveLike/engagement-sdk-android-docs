@@ -31,7 +31,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             widgetContainerViewModel?.widgetLifeCycleEventsListener = value
         }
 
-    fun setSession(session: LiveLikeContentSession) {
+    init {
         context.obtainStyledAttributes(
             attr,
             R.styleable.LiveLike_WidgetView,
@@ -39,11 +39,15 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         ).apply {
             try {
                 widgetViewThemeAttributes.init(this)
-                session.setWidgetViewThemeAttribute(widgetViewThemeAttributes)
             } finally {
                 recycle()
             }
         }
+        widgetContainerViewModel?.setWidgetContainer(this, widgetViewThemeAttributes)
+    }
+
+    fun setSession(session: LiveLikeContentSession) {
+        session.setWidgetViewThemeAttribute(widgetViewThemeAttributes)
         session.setWidgetContainer(this, widgetViewThemeAttributes)
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
