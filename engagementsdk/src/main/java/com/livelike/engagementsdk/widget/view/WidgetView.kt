@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
@@ -20,14 +21,15 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 
 class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
-    private var widgetContainerViewModel: WidgetContainerViewModel? = WidgetContainerViewModel(SubscriptionManager())
+    private var widgetContainerViewModel: WidgetContainerViewModel? =
+        WidgetContainerViewModel(SubscriptionManager())
     private val widgetViewThemeAttributes = WidgetViewThemeAttributes()
 
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
-    set(value) {
-        field = value
-        widgetContainerViewModel?.widgetLifeCycleEventsListener = value
-    }
+        set(value) {
+            field = value
+            widgetContainerViewModel?.widgetLifeCycleEventsListener = value
+        }
 
     fun setSession(session: LiveLikeContentSession) {
         context.obtainStyledAttributes(
@@ -47,6 +49,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
     }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthDp = AndroidResource.pxToDp(width)
         if (widthDp < 292 && widthDp != 0) {
@@ -58,33 +61,38 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     }
 
     /** displays the widget in the container
-        throws error if json invalid
-        clears the previous displayed widget (if any)
-        only clears if json is valid
+    throws error if json invalid
+    clears the previous displayed widget (if any)
+    only clears if json is valid
      */
     fun displayWidget(sdk: EngagementSDK, widgetResourceJson: JsonObject) {
-        val widgetType = widgetResourceJson.get("event").asString ?: ""
-
-        val payload = widgetResourceJson["payload"].asJsonObject
-        val widgetId = payload["id"].asString
-        widgetContainerViewModel?.currentWidgetViewStream?.onNext(
-            Pair(widgetType,
-                WidgetProvider()
-                    .get(
-                        null,
-                        WidgetInfos(widgetType, payload, widgetId),
-                        context,
-                        MockAnalyticsService(),
-                        sdk.configurationStream.latest()!!,
-                        {
-                        },
-                        sdk.userRepository,
-                        null,
-                        SubscriptionManager(),
-                        WidgetViewThemeAttributes()
-                    )
+        try {
+            val widgetType = widgetResourceJson.get("event").asString ?: ""
+            val payload = widgetResourceJson["payload"].asJsonObject
+            val widgetId = payload["id"].asString
+            widgetContainerViewModel?.currentWidgetViewStream?.onNext(
+                Pair(
+                    widgetType,
+                    WidgetProvider()
+                        .get(
+                            null,
+                            WidgetInfos(widgetType, payload, widgetId),
+                            context,
+                            MockAnalyticsService(),
+                            sdk.configurationStream.latest()!!,
+                            {
+                            },
+                            sdk.userRepository,
+                            null,
+                            SubscriptionManager(),
+                            WidgetViewThemeAttributes()
+                        )
+                )
             )
-        )
+        } catch (ex: Exception) {
+            logDebug { "Invalid json passed for displayWidget" }
+            ex.printStackTrace()
+        }
     }
 
     // clears the displayed widget (if any)
