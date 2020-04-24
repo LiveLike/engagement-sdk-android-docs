@@ -12,6 +12,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:gravity="center_horizontal">
 
         <android.support.design.widget.TextInputLayout
@@ -42,11 +43,19 @@
         android:layout_margin="16dp" />
 
 
+
+    <TextView
+        android:id="@+id/current_state_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="current state : finished" />
+
+
     <Button
         android:id="@+id/move_to_next_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
         android:text="move to next state" />
 
 
