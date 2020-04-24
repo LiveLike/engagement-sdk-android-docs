@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
@@ -61,6 +62,8 @@ internal class ChatSession(
     private val chatRoomMsgMap = mutableMapOf<String, List<ChatMessage>>()
     private var chatRepository: ChatRepository? = null
     private var privateChatRoomID = ""
+    private val chatSessionIdleStream: Stream<Boolean> =
+        SubscriptionManager(true)
 
     private val configurationUserPairFlow = flow {
         while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
@@ -70,7 +73,6 @@ internal class ChatSession(
     }
 
     init {
-
         contentSessionScope.launch {
             configurationUserPairFlow.collect { pair ->
                     analyticService = MixpanelAnalytics(
@@ -101,6 +103,7 @@ internal class ChatSession(
                         )
                     }
                     initializeChatMessaging(currentPlayheadTime)
+                    chatSessionIdleStream.onNext(true)
                 }
             }
     }
@@ -160,24 +163,28 @@ internal class ChatSession(
                 chatViewModel.chatLoaded = false
                 chatViewModel.chatListener = this
             }
-        logDebug { "initialized Chat Messaging , isPrivateGroupChat:$isPublicRoom" }
+        logDebug { "initialized Chat Messaging , PrivateGroupChatId:$privateChatRoomID" }
     }
 
     private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit) {
-        contentSessionScope.launch {
-            configurationUserPairFlow.collect { pair ->
-                chatRepository?.let { chatRepository ->
-                    val chatRoomResult =
-                        chatRepository.fetchChatRoom(chatRoomId, pair.first.chatRoomUrlTemplate)
-                    if (chatRoomResult is Result.Success) {
-                        chatRoomMap[chatRoomId] = chatRoomResult.data
-                        chatRoomResultCall.invoke(chatRoomResult.data)
-                    } else if (chatRoomResult is Result.Error) {
-                        errorDelegate?.onError("error in fetching room id $chatRoomId")
-                        logError {
-                            chatRoomResult.exception?.message
-                                ?: "error in fetching room id resource"
+        chatSessionIdleStream.subscribe(this@ChatSession.javaClass){
+            contentSessionScope.launch {
+                configurationUserPairFlow.collect { pair ->
+                    logDebug { "fetch ChatRoom" }
+                    chatRepository?.let { chatRepository ->
+                        val chatRoomResult =
+                            chatRepository.fetchChatRoom(chatRoomId, pair.first.chatRoomUrlTemplate)
+                        if (chatRoomResult is Result.Success) {
+                            chatRoomMap[chatRoomId] = chatRoomResult.data
+                            chatRoomResultCall.invoke(chatRoomResult.data)
+                        } else if (chatRoomResult is Result.Error) {
+                            errorDelegate?.onError("error in fetching room id $chatRoomId")
+                            logError {
+                                chatRoomResult.exception?.message
+                                    ?: "error in fetching room id resource"
+                            }
                         }
+                        chatSessionIdleStream.unsubscribe(this@ChatSession.javaClass)
                     }
                 }
             }
@@ -188,6 +195,7 @@ internal class ChatSession(
         startTimestamp: Long,
         callback: LiveLikeCallback<Long>
     ) {
+        logDebug { "messageCount $chatRoomId ,$startTimestamp" }
         fetchChatRoom(chatRoomId) { chatRoom ->
             chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
                 if (pubnubClientForMessageCount == null) {
