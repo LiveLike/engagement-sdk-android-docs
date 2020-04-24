@@ -5,8 +5,10 @@ import com.livelike.engagementsdk.core.utils.SubscriptionManager
 
 abstract class BaseViewModel : ViewModel() {
 
-    val widgetState: Stream<WidgetStates> =
+    internal val widgetState: Stream<WidgetStates> =
         SubscriptionManager<WidgetStates>(emitOnSubscribe = true)
+    internal var enableDefaultWidgetTransition = true
+
 }
 
 enum class WidgetStates {

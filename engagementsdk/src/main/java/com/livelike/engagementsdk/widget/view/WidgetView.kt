@@ -32,6 +32,12 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             widgetContainerViewModel?.widgetLifeCycleEventsListener = value
         }
 
+    var enableDefaultWidgetTransition = true
+        set(value) {
+            field = value
+            widgetContainerViewModel?.enableDefaultWidgetTransition = value
+        }
+
     init {
         context.obtainStyledAttributes(
             attr,
