@@ -29,35 +29,47 @@ class StickerCollectionAdapter(
     private val emptyRecentTextColor: Int = R.color.livelike_sticker_recent_empty_text_color,
     private val onClickCallback: (Sticker) -> Unit
 ) : RecyclerView.Adapter<StickerCollectionViewHolder>() {
-    private val RECENT_STICKERS_POSITION = 0
-
+    val RECENT_STICKERS_POSITION = 0
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, index: Int): StickerCollectionViewHolder {
-        return StickerCollectionViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.livelike_sticker_keyboard_rv,viewGroup,false),emptyRecentTextColor) { sticker->
+        return StickerCollectionViewHolder(
+            LayoutInflater.from(viewGroup.context)
+                .inflate(R.layout.livelike_sticker_keyboard_rv, viewGroup, false),
+            emptyRecentTextColor
+        ) { sticker ->
             notifyDataSetChanged()
             onClickCallback(sticker)
         }
     }
 
-    override fun getItemCount(): Int = stickerPacks.size
+    override fun getItemCount(): Int {
+        return when (stickerPacks.isEmpty()) {
+            true -> 0
+            else -> stickerPacks.size + 1
+        }
+    }
 
     override fun onBindViewHolder(viewHolder: StickerCollectionViewHolder, index: Int) {
-        viewHolder.bind(stickerPacks[index],index == RECENT_STICKERS_POSITION,programId)
+        val pack = when (index) {
+            RECENT_STICKERS_POSITION -> null
+            else -> stickerPacks[index - 1]
+        }
+        viewHolder.bind(pack, index == RECENT_STICKERS_POSITION, programId)
     }
 }
 
 class StickerCollectionViewHolder(
     itemView: View,
-    emptyRecentTextColor:Int,
+    emptyRecentTextColor: Int,
     var onClickCallback: (Sticker) -> Unit
-):RecyclerView.ViewHolder(itemView){
+) : RecyclerView.ViewHolder(itemView) {
 
     init {
         itemView.rvStickers.layoutManager = GridLayoutManager(itemView.context, 6)
         itemView.empty_recent_text.setTextColor(emptyRecentTextColor)
     }
 
-    fun bind(stickerPack: StickerPack, isRecent: Boolean, programId: String) {
+    fun bind(stickerPack: StickerPack?, isRecent: Boolean, programId: String) {
         val adapter = StickerAdapter { sticker -> onClickCallback(sticker) }
         itemView.rvStickers.adapter = adapter
         if (isRecent) {
@@ -70,7 +82,7 @@ class StickerCollectionViewHolder(
             adapter.submitList(stickers)
         } else {
             itemView.empty_recent_text?.visibility = View.GONE
-            adapter.submitList(stickerPack.stickers)
+            adapter.submitList(stickerPack!!.stickers)
         }
     }
 }
@@ -89,9 +101,13 @@ class StickerDiffCallback : DiffUtil.ItemCallback<Sticker>() {
     }
 }
 
-class StickerAdapter(private val onClick: (Sticker) -> Unit) : ListAdapter<Sticker, StickerAdapter.StickerViewHolder>(StickerDiffCallback()) {
+class StickerAdapter(private val onClick: (Sticker) -> Unit) :
+    ListAdapter<Sticker, StickerAdapter.StickerViewHolder>(StickerDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StickerViewHolder {
-        return StickerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.livelike_sticker_keyboard_item, parent, false))
+        return StickerViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.livelike_sticker_keyboard_item, parent, false)
+        )
     }
 
     override fun onBindViewHolder(holder: StickerViewHolder, position: Int) {
@@ -100,7 +116,8 @@ class StickerAdapter(private val onClick: (Sticker) -> Unit) : ListAdapter<Stick
 
     class StickerViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         fun onBind(sticker: Sticker, onClick: (Sticker) -> Unit) {
-            Glide.with(view).load(sticker.file).diskCacheStrategy(DiskCacheStrategy.ALL).into(view.itemImage)
+            Glide.with(view).load(sticker.file).diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(view.itemImage)
             view.itemImage.contentDescription = sticker.shortcode
             view.itemImage.setOnClickListener {
                 onClick(sticker)
@@ -110,7 +127,11 @@ class StickerAdapter(private val onClick: (Sticker) -> Unit) : ListAdapter<Stick
     }
 }
 
-class PagerSnapScrollListener(private val recyclerView: RecyclerView, private val externalListener: RVPagerStateListener, maxPages: Int) : RecyclerView.OnScrollListener() {
+class PagerSnapScrollListener(
+    private val recyclerView: RecyclerView,
+    private val externalListener: RVPagerStateListener,
+    maxPages: Int
+) : RecyclerView.OnScrollListener() {
     var pageStates: MutableList<VisiblePageState> = ArrayList(maxPages)
     var pageStatesPool = List(maxPages) { VisiblePageState(0, recyclerView, 0, 0, 0f) }
 
@@ -139,7 +160,8 @@ class PagerSnapScrollListener(private val recyclerView: RecyclerView, private va
                 pageState.view = view
                 pageState.viewCenterX = (viewStartX + viewWidth / 2f).toInt()
                 pageState.distanceToSettledPixels = (pageState.viewCenterX - midScreen)
-                pageState.distanceToSettled = (pageState.viewCenterX + viewHalfWidth) / (midScreen + viewHalfWidth)
+                pageState.distanceToSettled =
+                    (pageState.viewCenterX + viewHalfWidth) / (midScreen + viewHalfWidth)
                 pageStates.add(pageState)
             }
         }
@@ -154,7 +176,8 @@ class PagerSnapScrollListener(private val recyclerView: RecyclerView, private va
     }
 
     companion object {
-        val statesArray = listOf(RVPageScrollState.Idle, RVPageScrollState.Dragging, RVPageScrollState.Settling)
+        val statesArray =
+            listOf(RVPageScrollState.Idle, RVPageScrollState.Dragging, RVPageScrollState.Settling)
     }
 }
 
@@ -169,7 +192,8 @@ data class VisiblePageState(
     var view: View,
     @Px var viewCenterX: Int,
     @Px var distanceToSettledPixels: Int,
-    var distanceToSettled: Float)
+    var distanceToSettled: Float
+)
 
 interface RVPagerStateListener {
     fun onPageScroll(pagesState: List<VisiblePageState>) {}
@@ -202,8 +226,10 @@ open class RVPagerSnapHelperListenable(private val maxPages: Int = 3) {
     }
 }
 
-class PagerSnapHelperVerbose(private val recyclerView: RecyclerView, private val externalListener: RVPagerStateListener)
-    : PagerSnapHelper()
+class PagerSnapHelperVerbose(
+    private val recyclerView: RecyclerView,
+    private val externalListener: RVPagerStateListener
+) : PagerSnapHelper()
     , ViewTreeObserver.OnGlobalLayoutListener {
 
     private var lastPage = RecyclerView.NO_POSITION
@@ -213,7 +239,8 @@ class PagerSnapHelperVerbose(private val recyclerView: RecyclerView, private val
     }
 
     override fun onGlobalLayout() {
-        val position = (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+        val position =
+            (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
         if (position != RecyclerView.NO_POSITION) {
             notifyNewPageIfNeeded(position)
             recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -228,10 +255,14 @@ class PagerSnapHelperVerbose(private val recyclerView: RecyclerView, private val
         return view
     }
 
-    override fun findTargetSnapPosition(layoutManager: RecyclerView.LayoutManager?, velocityX: Int, velocityY: Int): Int {
+    override fun findTargetSnapPosition(
+        layoutManager: RecyclerView.LayoutManager?,
+        velocityX: Int,
+        velocityY: Int
+    ): Int {
         val position = super.findTargetSnapPosition(layoutManager, velocityX, velocityY)
 
-        if (position < recyclerView.adapter?.itemCount?:0) { // Making up for a "bug" in the original snap-helper.
+        if (position < recyclerView.adapter?.itemCount ?: 0) { // Making up for a "bug" in the original snap-helper.
             notifyNewPageIfNeeded(position)
         }
         return position

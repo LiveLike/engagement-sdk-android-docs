@@ -18,12 +18,15 @@ import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.ChatViewThemeAttributes
 import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.logDebug
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
 
-class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) : ConstraintLayout(context, attributes) {
+class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
+    ConstraintLayout(context, attributes) {
     private var viewModel: StickerKeyboardViewModel? = null
     private var chatViewThemeAttributes: ChatViewThemeAttributes? = null
+
     init {
         LayoutInflater.from(context).inflate(R.layout.livelike_sticker_keyboard_pager, this, true)
         layoutTransition = LayoutTransition()
@@ -48,7 +51,8 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
 
     private fun createTabItemView(stickerPack: StickerPack? = null): View {
         val imageView = ImageView(context)
-        imageView.contentDescription = stickerPack?.name ?: context.getString(R.string.recent_sticker)
+        imageView.contentDescription =
+            stickerPack?.name ?: context.getString(R.string.recent_sticker)
         chatViewThemeAttributes?.let {
             if (stickerPack?.file == null)
                 imageView.setColorFilter(
@@ -58,16 +62,21 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
         }
         imageView.layoutParams = ViewGroup.LayoutParams(
             AndroidResource.dpToPx(24),
-            AndroidResource.dpToPx(24))
+            AndroidResource.dpToPx(24)
+        )
         Glide.with(this).load((stickerPack?.file) ?: R.drawable.keyboard_ic_recent).into(imageView)
         return imageView
     }
 
-    fun setProgram(stickerPackRepository: StickerPackRepository, onLoaded: ((List<StickerPack>?) -> Unit)? = null) {
+    fun setProgram(
+        stickerPackRepository: StickerPackRepository,
+        onLoaded: ((List<StickerPack>?) -> Unit)? = null
+    ) {
         viewModel = StickerKeyboardViewModel(stickerPackRepository)
         viewModel?.stickerPacks?.subscribe(javaClass) {
             onLoaded?.invoke(it)
             it?.let { stickerPacks ->
+                logDebug { "sticker pack: ${stickerPacks.size}" }
                 val stickerCollectionPagerAdapter = StickerCollectionAdapter(
                     stickerPacks,
                     stickerPackRepository.programId,
@@ -118,14 +127,16 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                         }
 
                         override fun onScrollStateChanged(state: RVPageScrollState) {
-                            pageListener.onPageScrollStateChanged(when (state) {
-                                RVPageScrollState.Idle -> {
-                                    pager_tab.getTabAt(pager_tab.selectedTabPosition)?.select()
-                                    ViewPager.SCROLL_STATE_IDLE
+                            pageListener.onPageScrollStateChanged(
+                                when (state) {
+                                    RVPageScrollState.Idle -> {
+                                        pager_tab.getTabAt(pager_tab.selectedTabPosition)?.select()
+                                        ViewPager.SCROLL_STATE_IDLE
+                                    }
+                                    RVPageScrollState.Dragging -> ViewPager.SCROLL_STATE_DRAGGING
+                                    RVPageScrollState.Settling -> ViewPager.SCROLL_STATE_SETTLING
                                 }
-                                RVPageScrollState.Dragging -> ViewPager.SCROLL_STATE_DRAGGING
-                                RVPageScrollState.Settling -> ViewPager.SCROLL_STATE_SETTLING
-                            })
+                            )
                         }
 
                         override fun onPageSelected(index: Int) {
@@ -147,12 +158,12 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     }
                 }
                 pager_tab.addOnTabSelectedListener(listener)
-                for (i in stickerPacks.indices) {
+                for (i in 0 until stickerCollectionPagerAdapter.itemCount) {
                     val tab = pager_tab.newTab()
-                    if (i == 0) {
+                    if (i == stickerCollectionPagerAdapter.RECENT_STICKERS_POSITION) {
                         tab.customView = createTabItemView()
                     } else {
-                        tab.customView = createTabItemView(stickerPacks[i])
+                        tab.customView = createTabItemView(stickerPacks[i-1])
                     }
                     pager_tab.addTab(tab)
                 }
