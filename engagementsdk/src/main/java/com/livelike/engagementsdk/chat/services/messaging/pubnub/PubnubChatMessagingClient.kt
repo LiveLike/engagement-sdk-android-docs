@@ -54,15 +54,15 @@ import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.message_actions.PNRemoveMessageActionResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
 
@@ -77,6 +77,7 @@ internal class PubnubChatMessagingClient(
 ) : MessagingClient {
 
     private val PREF_CHAT_ROOM_MSG_RECEIVED = "pubnub message received"
+
     @Volatile
     private var lastActionTimeToken: Long = 0
     private var connectedChannels: MutableSet<String> = mutableSetOf()
@@ -225,13 +226,19 @@ internal class PubnubChatMessagingClient(
                             PNStatusCategory.PNDisconnectedCategory -> {
                                 // this is the expected category for an unsubscribe. This means there
                                 // was no error in unsubscribing from everything
-                                listener?.onClientMessageStatus(client, ConnectionStatus.DISCONNECTED)
+                                listener?.onClientMessageStatus(
+                                    client,
+                                    ConnectionStatus.DISCONNECTED
+                                )
                             }
 
                             PNStatusCategory.PNAccessDeniedCategory -> {
                                 // this means that PAM does allow this client to subscribe to this
                                 // channel and channel group configuration. This is another explicit error
-                                listener?.onClientMessageError(client, Error("Access Denied", "Access Denied"))
+                                listener?.onClientMessageError(
+                                    client,
+                                    Error("Access Denied", "Access Denied")
+                                )
                             }
 
                             PNStatusCategory.PNTimeoutCategory, PNStatusCategory.PNNetworkIssuesCategory, PNStatusCategory.PNUnexpectedDisconnectCategory -> {
@@ -257,14 +264,16 @@ internal class PubnubChatMessagingClient(
                     pubnubChatRoomLastMessageTime = GsonBuilder().create().fromJson(
                         getSharedPreferences()
                             .getString(
-                            PREF_CHAT_ROOM_MSG_RECEIVED,
-                            null
-                        ),
+                                PREF_CHAT_ROOM_MSG_RECEIVED,
+                                null
+                            ),
                         object : TypeToken<MutableMap<String, ArrayList<String>>>() {}.type
-                ) ?: mutableMapOf()
+                    ) ?: mutableMapOf()
                 pubnubChatRoomLastMessageTime?.let {
-                    val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(message.message.asJsonObject,
-                    object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
+                    val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> =
+                        gson.fromJson(message.message.asJsonObject,
+                            object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type
+                        )
                     val msgId = pubnubChatEvent.payload.messageId
 
                     val list =
@@ -328,21 +337,22 @@ internal class PubnubChatMessagingClient(
                 )
                 listener?.onClientMessageEvent(client, clientMessage)
             } else {
-                    clientMessage = ClientMessage(
-                        JsonObject().apply {
-                            addProperty("event", ChatViewModel.EVENT_REACTION_REMOVED)
-                            addProperty(
-                                "messagePubnubToken",
-                                pnMessageActionResult.messageAction.messageTimetoken
-                            )
-                            addProperty("emojiId", pnMessageActionResult.messageAction.value)
-                        },
-                        pnMessageActionResult.channel
-                    )
-                    listener?.onClientMessageEvent(client, clientMessage)
-                }
+                clientMessage = ClientMessage(
+                    JsonObject().apply {
+                        addProperty("event", ChatViewModel.EVENT_REACTION_REMOVED)
+                        addProperty(
+                            "messagePubnubToken",
+                            pnMessageActionResult.messageAction.messageTimetoken
+                        )
+                        addProperty("emojiId", pnMessageActionResult.messageAction.value)
+                    },
+                    pnMessageActionResult.channel
+                )
+                listener?.onClientMessageEvent(client, clientMessage)
             }
         }
+    }
+
     private fun processPubnubChatEvent(
         jsonObject: JsonObject,
         channel: String,
@@ -353,11 +363,15 @@ internal class PubnubChatMessagingClient(
         val event = jsonObject.extractStringOrEmpty("event").toPubnubChatEventType()
         if (event != null) {
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
-                object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type)
+                object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type
+            )
             var clientMessage: ClientMessage? = null
             when (event) {
                 MESSAGE_CREATED, IMAGE_CREATED -> {
-                    if (isDiscardOwnPublishInSubcription && getPublishedMessages(channel).contains(pubnubChatEvent.payload.messageId)) {
+                    if (isDiscardOwnPublishInSubcription && getPublishedMessages(channel).contains(
+                            pubnubChatEvent.payload.messageId
+                        )
+                    ) {
                         logError { "discarding as its own recently published message which is broadcasted by pubnub on that channel." }
                         clientMessage = ClientMessage(
                             JsonObject().apply {
@@ -378,7 +392,15 @@ internal class PubnubChatMessagingClient(
 
                     try {
                         clientMessage = ClientMessage(
-                            gson.toJsonTree(pubnubChatEvent.payload.toChatMessage(channel, timeToken, processReactionCounts(actions), getOwnReaction(actions), event)).asJsonObject.apply {
+                            gson.toJsonTree(
+                                pubnubChatEvent.payload.toChatMessage(
+                                    channel,
+                                    timeToken,
+                                    processReactionCounts(actions),
+                                    getOwnReaction(actions),
+                                    event
+                                )
+                            ).asJsonObject.apply {
                                 addProperty("event", ChatViewModel.EVENT_NEW_MESSAGE)
                                 addProperty("pubnubMessageToken", pubnubChatEvent.pubnubToken)
                             },
@@ -391,10 +413,11 @@ internal class PubnubChatMessagingClient(
                     }
                 }
                 MESSAGE_DELETED, IMAGE_DELETED -> {
-                    clientMessage = ClientMessage(JsonObject().apply {
-                        addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
-                        addProperty("id", pubnubChatEvent.payload.messageId)
-                    },
+                    clientMessage = ClientMessage(
+                        JsonObject().apply {
+                            addProperty("event", ChatViewModel.EVENT_MESSAGE_DELETED)
+                            addProperty("id", pubnubChatEvent.payload.messageId)
+                        },
                         channel,
                         EpochTime(0)
                     )
@@ -438,19 +461,24 @@ internal class PubnubChatMessagingClient(
         if (timeToken == 0L)
             pubnub.time().async(object : PNCallback<PNTimeResult>() {
                 override fun onResponse(result: PNTimeResult?, status: PNStatus) {
-                    loadMessagesWithReactions(channel, result?.timetoken ?: timeToken, chatHistoyLimit)
+                    loadMessagesWithReactions(
+                        channel,
+                        result?.timetoken ?: timeToken,
+                        chatHistoyLimit
+                    )
                 }
             }) else {
-            val updatedTimeToke: Long =
+            val updatedTimeToken: Long =
                 if (timeToken == -1L)
                     firstTimeToken ?: Calendar.getInstance().timeInMillis
                 else
                     timeToken
+            logDebug { "LoadMessages from History for channel $channel ,time:$updatedTimeToken" }
             pubnub.fetchMessages()
                 .channels(listOf(channel))
                 .includeMeta(true)
                 .maximumPerChannel(chatHistoyLimit)
-                .start(updatedTimeToke)
+                .start(updatedTimeToken)
                 .includeMessageActions(true)
                 .async(object : PNCallback<PNFetchMessagesResult>() {
                     override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
@@ -583,14 +611,14 @@ internal class PubnubChatMessagingClient(
             .messageTimetoken(messageTimetoken)
             .actionTimetoken(actionTimetoken)
             .async(object : PNCallback<PNRemoveMessageActionResult>() {
-            override fun onResponse(result: PNRemoveMessageActionResult?, status: PNStatus) {
-                if (!status.isError) {
-                    logDebug { "own message action removed" }
-                } else {
-                    status.errorData.throwable.printStackTrace()
+                override fun onResponse(result: PNRemoveMessageActionResult?, status: PNStatus) {
+                    if (!status.isError) {
+                        logDebug { "own message action removed" }
+                    } else {
+                        status.errorData.throwable.printStackTrace()
+                    }
                 }
-            }
-        })
+            })
     }
 
     internal fun getMessageCount(
@@ -602,7 +630,11 @@ internal class PubnubChatMessagingClient(
                 .channels(listOf(channel))
                 .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
                 .sync()
-            logDebug { "Count Read channel : $channel lasttimestamp:${convertToTimeToken(startTimestamp)} count:${countResult?.channels?.get(channel) ?: 0}" }
+            logDebug {
+                "Count Read channel : $channel lasttimestamp:${convertToTimeToken(
+                    startTimestamp
+                )} count:${countResult?.channels?.get(channel) ?: 0}"
+            }
             Result.Success(countResult?.channels?.get(channel) ?: 0)
         } catch (ex: PubNubException) {
             ex.printStackTrace()

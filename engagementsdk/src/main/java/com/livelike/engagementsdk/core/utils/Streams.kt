@@ -18,6 +18,7 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
 
     override fun onNext(data1: T?) {
         // TODO add debug log with class name appended
+        logDebug { "subscription Manger: ${observerMap.size},data:$data1" }
         safeCodeBlockCall({
             observerMap.forEach {
                 it.value.invoke(data1)
