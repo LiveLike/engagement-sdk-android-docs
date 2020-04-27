@@ -113,6 +113,15 @@ class WidgetOnlyActivity : AppCompatActivity() {
         widget_view.setSession(session)
     }
 
+    override fun onResume() {
+        super.onResume()
+        session.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        session.pause()
+    }
 
     inner class HeaderAdapter(
         val progressBar: ProgressBar,
