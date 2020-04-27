@@ -18,7 +18,10 @@ internal fun safeCodeBlockCall(call: () -> Unit, errorMessage: String? = null) {
  * Wrap a suspending API [call] in try/catch. In case an exception is thrown, a [Result.Error] is
  * created based on the [errorMessage].
  */
-internal suspend fun <T : Any> safeRemoteApiCall(call: suspend () -> Result<T>, errorMessage: String? = null): Result<T> {
+internal suspend fun <T : Any> safeRemoteApiCall(
+    call: suspend () -> Result<T>,
+    errorMessage: String? = null
+): Result<T> {
     return try {
         call()
     } catch (e: Exception) {

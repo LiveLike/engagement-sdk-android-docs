@@ -81,6 +81,7 @@ internal class ChatViewModel(
     internal var chatLoaded = false
         set(value) {
             field = value
+            logDebug { "chatload:$field" }
             if (field) {
                 eventStream.onNext(EVENT_LOADING_COMPLETE)
             } else {
