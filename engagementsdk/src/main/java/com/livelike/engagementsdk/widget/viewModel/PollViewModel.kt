@@ -147,7 +147,6 @@ internal class PollViewModel(
                         resource
                     )
                 })
-                widgetState.onNext(WidgetStates.READY)
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -160,7 +159,7 @@ internal class PollViewModel(
             timeoutStarted = true
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                confirmationState()
+                widgetState.onNext(WidgetStates.RESULTS)
             }
         }
     }
@@ -181,13 +180,12 @@ internal class PollViewModel(
         cleanUp()
     }
 
-    private fun confirmationState() {
+    internal fun confirmationState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
             return
         }
-        widgetState.onNext(WidgetStates.RESULTS)
         adapter?.selectionLocked = true
         onWidgetInteractionCompleted.invoke()
 

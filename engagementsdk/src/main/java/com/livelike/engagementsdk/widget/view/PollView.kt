@@ -59,7 +59,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-//        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
         viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
 //        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
@@ -69,7 +69,39 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
-                resourceObserver(viewModel?.data?.latest())
+                lockInteraction()
+            }
+            WidgetStates.INTERACTING -> {
+                unLockInteraction()
+//                viewModel?.data?.latest()?.let {
+//                    viewModel?.startDismissTimout(it.resource.timeout)
+//                }
+            }
+            WidgetStates.RESULTS -> {
+                lockInteraction()
+                resultsObserver(viewModel?.results?.latest())
+            }
+            WidgetStates.FINISHED -> {
+                resourceObserver(null)
+            }
+        }
+        if (viewModel?.enableDefaultWidgetTransition == true) {
+            defaultStateTransitionManager(widgetStates)
+        }
+    }
+
+    private fun lockInteraction() {
+        viewModel?.adapter?.selectionLocked = false
+    }
+
+    private fun unLockInteraction() {
+        viewModel?.adapter?.selectionLocked = true
+    }
+
+    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                moveToNextState()
             }
             WidgetStates.INTERACTING -> {
                 viewModel?.data?.latest()?.let {
@@ -77,6 +109,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 }
             }
             WidgetStates.RESULTS -> {
+                viewModel?.confirmationState()
                 resultsObserver(viewModel?.results?.latest())
             }
             WidgetStates.FINISHED -> {
@@ -136,6 +169,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
         }
         logDebug { "showing PollWidget" }
+        widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
         if (widget == null) {
             inflated = false
             removeAllViews()

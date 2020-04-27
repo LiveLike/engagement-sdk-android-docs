@@ -60,15 +60,9 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                             viewModel?.data?.latest()?.let {
                                 logDebug { "showing the Alert WidgetView" }
                                 inflate(context, it)
-                                viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
                             }
                         }
                         WidgetStates.INTERACTING -> {
-                            viewModel?.data?.latest()?.let {
-                                viewModel?.startDismissTimout(it.timeout) {
-                                    viewModel?.widgetState?.onNext(WidgetStates.FINISHED)
-                                }
-                            }
                         }
                         WidgetStates.FINISHED -> {
                             // viewModel?.dismissWidget(DismissAction.TAP_X)
@@ -78,9 +72,32 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                         }
                         else -> {}
                     }
+                    if (viewModel?.enableDefaultWidgetTransition == true) {
+                        defaultStateTransitionManager(widgetStates)
+                    }
                 }
             }
         }
+
+    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                moveToNextState()
+                viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
+            }
+            WidgetStates.INTERACTING -> {
+                viewModel?.data?.latest()?.let {
+                    viewModel?.startDismissTimout(it.timeout) {
+                        viewModel?.widgetState?.onNext(WidgetStates.FINISHED)
+                    }
+                }
+            }
+            WidgetStates.RESULTS -> {
+            }
+            WidgetStates.FINISHED -> {
+            }
+        }
+    }
 
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
