@@ -206,7 +206,12 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         when (type.url) {
                             textQuiz -> {
                                 for (i in 0 until type.count) {
-                                    choices.add(Choice(description = "Choice ${i + 1}"))
+                                    choices.add(
+                                        Choice(
+                                            description = "Choice ${i + 1}",
+                                            is_correct = i == 0
+                                        )
+                                    )
                                 }
                             }
                             imgQuiz -> {
@@ -214,7 +219,8 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                     choices.add(
                                         Choice(
                                             description = "Choice ${i + 1}",
-                                            image_url = images[i]
+                                            image_url = images[i],
+                                            is_correct = i == 0
                                         )
                                     )
                                 }
