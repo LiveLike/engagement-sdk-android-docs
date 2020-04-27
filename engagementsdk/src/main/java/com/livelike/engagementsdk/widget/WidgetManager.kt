@@ -86,12 +86,16 @@ internal class WidgetManager(
     }
 
     override fun stop() {
-        currentWidgetViewStream.onNext(null)
         upstream.stop()
     }
 
     override fun start() {
         upstream.start()
+    }
+
+    override fun destroy() {
+        super.destroy()
+        currentWidgetViewStream.onNext(null)
     }
 
     private val handler = Handler(Looper.getMainLooper())
