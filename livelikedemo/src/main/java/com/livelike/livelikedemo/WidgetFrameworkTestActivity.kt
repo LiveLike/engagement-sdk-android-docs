@@ -37,6 +37,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
         move_to_next_state.setOnClickListener {
             widget_view.moveToNextState()
         }
+        widget_view.enableDefaultWidgetTransition = false
         widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
             override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
             }

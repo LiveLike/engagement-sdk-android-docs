@@ -33,7 +33,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
     override var widgetViewModel: BaseViewModel? = null
-        get() = super.widgetViewModel
         set(value) {
             field = value
             viewModel = value as PollViewModel
@@ -82,7 +81,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 resultsObserver(viewModel?.results?.latest())
             }
             WidgetStates.FINISHED -> {
-                resourceObserver(null)
+//                resourceObserver(null)
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
@@ -91,11 +90,11 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun lockInteraction() {
-        viewModel?.adapter?.selectionLocked = false
+        viewModel?.adapter?.selectionLocked = true
     }
 
     private fun unLockInteraction() {
-        viewModel?.adapter?.selectionLocked = true
+        viewModel?.adapter?.selectionLocked = false
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {

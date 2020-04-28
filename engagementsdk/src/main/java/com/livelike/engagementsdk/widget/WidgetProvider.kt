@@ -48,6 +48,7 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlin.math.min
 
 internal class WidgetProvider {
     fun get(
@@ -194,6 +195,11 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 
     open fun moveToNextState() {
         val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
-        widgetViewModel?.widgetState?.onNext(WidgetStates.values()[nextStateOrdinal])
+        widgetViewModel?.widgetState?.onNext(
+            WidgetStates.values()[min(
+                nextStateOrdinal,
+                WidgetStates.FINISHED.ordinal
+            )]
+        )
     }
 }
