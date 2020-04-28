@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
