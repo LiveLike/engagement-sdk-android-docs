@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
@@ -34,33 +33,27 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
     override var widgetViewModel: BaseViewModel? = null
-        get() = super.widgetViewModel
         set(value) {
             field = value
             viewModel = value as QuizViewModel
+            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
             viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
-            viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+//            viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
         }
 
     private fun stateWidgetObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
-                resourceObserver(viewModel?.data?.latest())
+                lockInteraction()
             }
             WidgetStates.INTERACTING -> {
-                viewModel?.data?.latest()?.let {
-                    viewModel?.startDismissTimout(
-                        it.resource.timeout,
-                        widgetViewThemeAttributes
-                    )
-                }
-            }
-            WidgetStates.FINISHED -> {
-                resourceObserver(null)
+                unLockInteraction()
             }
             WidgetStates.RESULTS -> {
+                lockInteraction()
                 onWidgetInteractionCompleted()
+                resultsObserver(viewModel?.results?.latest())
                 listOf(textEggTimer).forEach { v ->
                     v?.showCloseButton() {
                         viewModel?.dismissWidget(it)
@@ -113,6 +106,12 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     }
                 }
             }
+            WidgetStates.FINISHED -> {
+                resourceObserver(null)
+            }
+        }
+        if (viewModel?.enableDefaultWidgetTransition == true) {
+            defaultStateTransitionManager(widgetStates)
         }
     }
 
@@ -153,28 +152,48 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
-
-            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
-
-            val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
-            if (viewModel?.animationEggTimerProgress!! < 1f) {
-                listOf(textEggTimer).forEach { v ->
-                    v?.startAnimationFrom(
-                        viewModel?.animationEggTimerProgress ?: 0f,
-                        animationLength,
-                        {
-                            viewModel?.animationEggTimerProgress = it
-                        }) {
-                        viewModel?.dismissWidget(it)
-                    }
-                }
-            }
+//            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
+            showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+                viewModel?.animationEggTimerProgress = it
+            }, {
+                viewModel?.dismissWidget(it)
+            })
+            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
+            logDebug { "showing QuizWidget" }
         }
-        logDebug { "showing QuizWidget" }
         if (widget == null) {
             inflated = false
             removeAllViews()
             parent?.let { (it as ViewGroup).removeAllViews() }
+        }
+    }
+
+    private fun lockInteraction() {
+        viewModel?.adapter?.selectionLocked = true
+    }
+
+    private fun unLockInteraction() {
+        viewModel?.adapter?.selectionLocked = false
+    }
+
+    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                moveToNextState()
+            }
+            WidgetStates.INTERACTING -> {
+                viewModel?.data?.latest()?.let {
+                    viewModel?.startDismissTimout(
+                        it.resource.timeout,
+                        widgetViewThemeAttributes
+                    )
+                }
+            }
+            WidgetStates.RESULTS -> {
+            }
+            WidgetStates.FINISHED -> {
+                resourceObserver(null)
+            }
         }
     }
 

@@ -132,7 +132,6 @@ internal class QuizViewModel(
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let { QuizWidget(it, resource) })
-                widgetState.onNext(WidgetStates.READY)
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)

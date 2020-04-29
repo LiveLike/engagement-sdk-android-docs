@@ -6,7 +6,6 @@ import android.view.Gravity
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
@@ -78,6 +77,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.RESULTS -> {
                 lockInteraction()
+                onWidgetInteractionCompleted()
                 resultsObserver(viewModel?.results?.latest())
             }
             WidgetStates.FINISHED -> {
@@ -109,7 +109,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.RESULTS -> {
                 viewModel?.confirmationState()
-                resultsObserver(viewModel?.results?.latest())
             }
             WidgetStates.FINISHED -> {
                 resourceObserver(null)
@@ -153,27 +152,23 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
             }
-            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
-            val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
-            if (viewModel?.animationEggTimerProgress!! < 1f) {
-                listOf(textEggTimer).forEach { v ->
-                    viewModel?.animationEggTimerProgress?.let {
-                        v?.startAnimationFrom(it, animationLength, {
-                            viewModel?.animationEggTimerProgress = it
-                        }, {
-                            viewModel?.dismissWidget(it)
-                        })
-                    }
-                }
-            }
+            showTimer()
+            logDebug { "showing PollWidget" }
+            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
         }
-        logDebug { "showing PollWidget" }
-        widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
         if (widget == null) {
             inflated = false
             removeAllViews()
             parent?.let { (it as ViewGroup).removeAllViews() }
         }
+    }
+
+    private fun PollWidget.showTimer() {
+        showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+            viewModel?.animationEggTimerProgress = it
+        }, {
+            viewModel?.dismissWidget(it)
+        })
     }
 
     private fun resultsObserver(resource: Resource?) {

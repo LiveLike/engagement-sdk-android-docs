@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.widget
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
+import android.view.View
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
@@ -13,6 +14,7 @@ import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -37,6 +39,7 @@ import com.livelike.engagementsdk.widget.view.EmojiSliderWidgetView
 import com.livelike.engagementsdk.widget.view.PollView
 import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
+import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
@@ -191,6 +194,19 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 
     fun onWidgetInteractionCompleted() {
         widgetLifeCycleEventsListener?.onWidgetInteractionCompleted(widgetData)
+    }
+
+    internal fun showTimer(time: String, animationEggTimerProgress: Float?, v: EggTimerCloseButtonView?, onUpdate: (Float) -> Unit, dismissAction: (action: DismissAction) -> Unit) {
+        if (widgetViewModel?.enableDefaultWidgetTransition == false) {
+            v?.visibility = View.GONE
+            return
+        }
+        val animationLength = AndroidResource.parseDuration(time).toFloat()
+        if ((animationEggTimerProgress ?: 0f) < 1f) {
+            animationEggTimerProgress?.let {
+                v?.startAnimationFrom(it, animationLength, onUpdate, dismissAction)
+            }
+        }
     }
 
     open fun moveToNextState() {
