@@ -29,7 +29,7 @@ class StickerCollectionAdapter(
     private val emptyRecentTextColor: Int = R.color.livelike_sticker_recent_empty_text_color,
     private val onClickCallback: (Sticker) -> Unit
 ) : RecyclerView.Adapter<StickerCollectionViewHolder>() {
-    private val RECENT_STICKERS_POSITION = 0
+    val RECENT_STICKERS_POSITION = 0
 
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, index: Int): StickerCollectionViewHolder {
@@ -39,10 +39,21 @@ class StickerCollectionAdapter(
         }
     }
 
-    override fun getItemCount(): Int = stickerPacks.size
+    override fun getItemCount(): Int {
+        return when (stickerPacks.isEmpty()) {
+            true -> 0
+            else -> stickerPacks.size + 1
+        }
+    }
+
 
     override fun onBindViewHolder(viewHolder: StickerCollectionViewHolder, index: Int) {
-        viewHolder.bind(stickerPacks[index],index == RECENT_STICKERS_POSITION,programId)
+        val pack = when (index) {
+            RECENT_STICKERS_POSITION -> null
+            else -> stickerPacks[index - 1]
+        }
+        viewHolder.bind(pack, index == RECENT_STICKERS_POSITION, programId)
+
     }
 }
 
@@ -57,7 +68,7 @@ class StickerCollectionViewHolder(
         itemView.empty_recent_text.setTextColor(emptyRecentTextColor)
     }
 
-    fun bind(stickerPack: StickerPack, isRecent: Boolean, programId: String) {
+    fun bind(stickerPack: StickerPack?, isRecent: Boolean, programId: String) {
         val adapter = StickerAdapter { sticker -> onClickCallback(sticker) }
         itemView.rvStickers.adapter = adapter
         if (isRecent) {
@@ -70,7 +81,7 @@ class StickerCollectionViewHolder(
             adapter.submitList(stickers)
         } else {
             itemView.empty_recent_text?.visibility = View.GONE
-            adapter.submitList(stickerPack.stickers)
+            adapter.submitList(stickerPack!!.stickers)
         }
     }
 }
