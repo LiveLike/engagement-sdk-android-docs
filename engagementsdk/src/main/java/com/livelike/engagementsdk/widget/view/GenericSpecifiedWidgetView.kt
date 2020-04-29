@@ -36,7 +36,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     var isViewInflated = false
 
     override var widgetViewModel: BaseViewModel? = null
-        get() = super.widgetViewModel
+        get() = viewModel
         set(value) {
             field = value
             viewModel = value as T
@@ -46,7 +46,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     protected open fun stateObserver(widgetState: WidgetState) {
         when (widgetState) {
             WidgetState.LOCK_INTERACTION -> confirmInteraction()
-            WidgetState.SHOW_RESULTS -> viewModel.widgetState.onNext(WidgetStates.RESULTS)
+            WidgetState.SHOW_RESULTS -> showResults()
             WidgetState.SHOW_GAMIFICATION -> rewardsObserver()
             WidgetState.DISMISS -> {
             }
@@ -59,25 +59,29 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
 
     protected open fun dataModelObserver(entity: Entity?) {
         entity?.let { _ ->
-            val timeout = AndroidResource.parseDuration(entity.timeout)
             if (!isViewInflated) {
                 isViewInflated = true
-                viewModel.widgetState.onNext(WidgetStates.INTERACTING)
+                widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
             }
-            val animationLength = timeout.toFloat()
-            if (viewModel.animationEggTimerProgress < 1f) {
-                viewModel.animationEggTimerProgress.let {
-                    textEggTimer?.startAnimationFrom(
-                        it,
-                        animationLength,
-                        { animationTimerProgress ->
-                            viewModel.animationEggTimerProgress = animationTimerProgress
-                        },
-                        { dismissAction ->
-                            viewModel.dismissWidget(dismissAction)
-                        })
-                }
-            }
+            showTimer(entity.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+                viewModel?.animationEggTimerProgress = it
+            }, {
+                viewModel?.dismissWidget(it)
+            })
+//            val animationLength = timeout.toFloat()
+//            if (viewModel.animationEggTimerProgress < 1f) {
+//                viewModel.animationEggTimerProgress.let {
+//                    textEggTimer?.startAnimationFrom(
+//                        it,
+//                        animationLength,
+//                        { animationTimerProgress ->
+//                            viewModel.animationEggTimerProgress = animationTimerProgress
+//                        },
+//                        { dismissAction ->
+//                            viewModel.dismissWidget(dismissAction)
+//                        })
+//                }
+//            }
         }
         if (entity == null) {
             isViewInflated = false
@@ -99,29 +103,58 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         viewModel.state.subscribe(javaClass.name) {
             it?.let { stateObserver(it) }
         }
-//        viewModel.data.subscribe(javaClass.simpleName) {
-//            dataModelObserver(it)
-//        }
-        viewModel.widgetState.subscribe(javaClass.simpleName) {
+        viewModel.data.subscribe(javaClass.simpleName) {
+            dataModelObserver(it)
+        }
+        widgetViewModel?.widgetState?.subscribe(javaClass.simpleName) {
             when (it) {
                 WidgetStates.READY -> {
-                    dataModelObserver(viewModel.data.latest())
+                    lockInteraction()
                 }
                 WidgetStates.INTERACTING -> {
-                    viewModel.data.latest()?.let { entity ->
-                        val timeout = AndroidResource.parseDuration(entity.timeout)
-                        viewModel.startInteractionTimeout(timeout)
-                    }
-                }
-                WidgetStates.FINISHED -> {
-                    dataModelObserver(null)
+                    unLockInteraction()
                 }
                 WidgetStates.RESULTS -> {
+                    lockInteraction()
                     showResults()
+                    viewModel.confirmInteraction()
                 }
+                WidgetStates.FINISHED -> {
+                }
+            }
+
+            if (viewModel?.enableDefaultWidgetTransition) {
+                defaultStateTransitionManager(it)
             }
         }
     }
+
+internal abstract fun lockInteraction()
+
+internal abstract fun unLockInteraction()
+
+private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+    when (widgetStates) {
+        WidgetStates.READY -> {
+            moveToNextState()
+        }
+        WidgetStates.INTERACTING -> {
+            viewModel.data.latest()?.let { entity ->
+                val timeout = AndroidResource.parseDuration(entity.timeout)
+                viewModel.startInteractionTimeout(timeout)
+            }
+//            viewModel?.data?.latest()?.let {
+//                viewModel?.startDismissTimout(it.resource.timeout)
+//            }
+        }
+        WidgetStates.RESULTS -> {
+//            viewModel?.confirmationState()
+        }
+        WidgetStates.FINISHED -> {
+            dataModelObserver(null)
+        }
+    }
+}
 
     protected open fun unsubscribeCalls() {
         viewModel.state.unsubscribe(javaClass.name)

@@ -398,7 +398,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                     state: WidgetStates,
                     widgetData: LiveLikeWidgetEntity
                 ) {
-                    TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
                 }
 
                 override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {

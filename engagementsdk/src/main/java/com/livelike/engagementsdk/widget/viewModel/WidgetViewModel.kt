@@ -74,30 +74,32 @@ internal abstract class WidgetViewModel<T : Resource>(
     val interactionData = AnalyticsWidgetInteractionInfo()
     val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
-    protected open fun confirmInteraction() {
-        currentWidgetType?.let {
-            analyticsService.trackWidgetInteraction(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData
-            )
-        }
-        uiScope.launch {
-            data.currentData?.rewards_url?.let {
-                userRepository?.getGamificationReward(it, analyticsService)?.let { pts ->
-                    programRepository?.programGamificationProfileStream?.onNext(pts)
-                    widgetMessagingClient?.let { widgetMessagingClient ->
-                        GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
-                    }
-                    interactionData.addGamificationAnalyticsData(pts)
-                }
+    internal open fun confirmInteraction() {
+        if (currentVote.latest() == null) {
+            currentWidgetType?.let {
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    interactionData
+                )
             }
-            delay(2000)
-            state.onNext(WidgetState.SHOW_RESULTS)
-            delay(1000)
-            state.onNext(WidgetState.SHOW_GAMIFICATION)
-            delay(3000)
-            dismissWidget(DismissAction.TIMEOUT)
+            uiScope.launch {
+                data.currentData?.rewards_url?.let {
+                    userRepository?.getGamificationReward(it, analyticsService)?.let { pts ->
+                        programRepository?.programGamificationProfileStream?.onNext(pts)
+                        widgetMessagingClient?.let { widgetMessagingClient ->
+                            GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                        }
+                        interactionData.addGamificationAnalyticsData(pts)
+                    }
+                }
+                delay(2000)
+                state.onNext(WidgetState.SHOW_RESULTS)
+                delay(1000)
+                state.onNext(WidgetState.SHOW_GAMIFICATION)
+                delay(3000)
+                dismissWidget(DismissAction.TIMEOUT)
+            }
         }
     }
 
@@ -113,8 +115,8 @@ internal abstract class WidgetViewModel<T : Resource>(
                     function?.invoke()
                 } else {
                     state.onNext(WidgetState.LOCK_INTERACTION)
-                    confirmInteraction()
                 }
+                widgetState.onNext(WidgetStates.RESULTS)
                 timeoutStarted = false
             }
         }
