@@ -28,8 +28,10 @@ android {
             applicationIdSuffix ".debug"
         }
         release {
-            buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+//            buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+//            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+            buildConfigField "String", "APP_CLIENT_ID", '"Bu81PFNVktGzmyiKoJx3ITJ1hpGWVGAO9np4LuD1"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=Bu81PFNVktGzmyiKoJx3ITJ1hpGWVGAO9np4LuD1"'
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
