@@ -118,7 +118,6 @@ internal class PredictionViewModel(
                 resource?.apply {
                     pubnub?.subscribe(listOf(resource.subscribe_channel))
                     data.onNext(PredictionWidget(type, resource))
-                    widgetState.onNext(WidgetStates.READY)
                 }
 
                 currentWidgetId = widgetInfos.widgetId
@@ -156,6 +155,7 @@ internal class PredictionViewModel(
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
                     confirmationState(widgetViewThemeAttributes)
+                    widgetState.onNext(WidgetStates.RESULTS)
                 }
             }
         }
@@ -230,8 +230,6 @@ internal class PredictionViewModel(
         }
 
         adapter?.selectionLocked = true
-        val rootPath = widgetViewThemeAttributes.stayTunedAnimation
-        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
         logDebug { "Prediction Widget selected Position:${adapter?.selectedPosition}" }
         uiScope.launch {
             vote()
@@ -248,7 +246,6 @@ internal class PredictionViewModel(
             pubnub?.stop()
             pubnub?.unsubscribeAll()
 //            state.onNext("confirmation")
-            widgetState.onNext(WidgetStates.RESULTS)
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)

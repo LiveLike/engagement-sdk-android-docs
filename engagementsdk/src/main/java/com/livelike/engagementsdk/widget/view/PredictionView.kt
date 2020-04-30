@@ -40,7 +40,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
     override var widgetViewModel: BaseViewModel? = null
-        get() = super.widgetViewModel
+        get() = viewModel
         set(value) {
             field = value
             viewModel = value as PredictionViewModel
@@ -50,27 +50,19 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewModel?.widgetState?.subscribe(javaClass) { widgetStateObserver(it) }
+        widgetObserver(viewModel?.data?.latest())
     }
 
     private fun widgetStateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
-                widgetObserver(viewModel?.data?.latest())
+                lockInteraction()
             }
             WidgetStates.INTERACTING -> {
-                viewModel?.data?.latest()?.let {
-                    val isFollowUp = it.resource.kind.contains("follow-up")
-                    viewModel?.startDismissTimout(
-                        it.resource.timeout,
-                        isFollowUp,
-                        widgetViewThemeAttributes
-                    )
-                }
-            }
-            WidgetStates.FINISHED -> {
-                widgetObserver(null)
+                unLockInteraction()
             }
             WidgetStates.RESULTS -> {
+                onWidgetInteractionCompleted()
                 viewModel?.apply {
                     if (followUp) {
                         followupAnimation?.apply {
@@ -136,6 +128,48 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     }
                 }
             }
+            WidgetStates.FINISHED -> {
+            }
+        }
+        if (viewModel?.enableDefaultWidgetTransition == true) {
+            defaultStateTransitionManager(widgetStates)
+        }
+    }
+
+    private fun lockInteraction() {
+        viewModel?.adapter?.selectionLocked = true
+    }
+
+    private fun unLockInteraction() {
+        viewModel?.data?.latest()?.let {
+            val isFollowUp = it.resource.kind.contains("follow-up")
+            if (!isFollowUp) {
+                viewModel?.adapter?.selectionLocked = false
+            }
+        }
+    }
+
+    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                moveToNextState()
+            }
+            WidgetStates.INTERACTING -> {
+                viewModel?.data?.latest()?.let {
+                    val isFollowUp = it.resource.kind.contains("follow-up")
+                    viewModel?.startDismissTimout(
+                        it.resource.timeout,
+                        isFollowUp,
+                        widgetViewThemeAttributes
+                    )
+                }
+            }
+            WidgetStates.RESULTS -> {
+//                viewModel?.confirmationState()
+            }
+            WidgetStates.FINISHED -> {
+                widgetObserver(null)
+            }
         }
     }
 
@@ -181,6 +215,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 (if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
                     ?: ""
             )
+            viewModel?.apply {
+                val rootPath = widgetViewThemeAttributes.stayTunedAnimation
+                animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context.applicationContext) ?: ""
+            }
 
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
@@ -188,7 +226,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             }
 
             val isFollowUp = resource.kind.contains("follow-up")
-            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
+//            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
             if (isFollowUp) {
                 val selectedPredictionId =
                     getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
@@ -199,18 +237,23 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 )
             }
 
-            val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
-            if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
-                listOf(textEggTimer).forEach { v ->
-                    viewModel?.animationEggTimerProgress?.let { time ->
-                        v?.startAnimationFrom(time, animationLength, {
-                            viewModel?.animationEggTimerProgress = it
-                        }) {
+            if (widgetViewModel?.enableDefaultWidgetTransition == true) {
+                val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
+                if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
+                    listOf(textEggTimer).forEach { v ->
+                        viewModel?.animationEggTimerProgress?.let { time ->
+                            v?.startAnimationFrom(time, animationLength, {
+                                viewModel?.animationEggTimerProgress = it
+                            }) {
+                            }
                         }
                     }
                 }
+            } else {
+                textEggTimer?.visibility = View.GONE
             }
             logDebug { "showing PredictionView Widget" }
+            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
         }
 
         if (widget == null) {
