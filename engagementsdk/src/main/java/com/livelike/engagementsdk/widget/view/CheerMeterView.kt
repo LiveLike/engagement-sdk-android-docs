@@ -20,9 +20,10 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import kotlin.math.max
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
@@ -40,10 +41,10 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_ti
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple_demo
-import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
+
     private var lastResult: Resource? = null
     private lateinit var selectedTeam: Option
     private var viewModel: CheerMeterViewModel? = null
@@ -52,7 +53,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    override var widgetViewModel: ViewModel? = null
+    override var widgetViewModel: BaseViewModel? = null
         get() = super.widgetViewModel
         set(value) {
             field = value

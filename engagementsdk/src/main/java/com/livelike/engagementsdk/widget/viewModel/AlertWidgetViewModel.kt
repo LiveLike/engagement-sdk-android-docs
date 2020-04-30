@@ -8,9 +8,9 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Alert
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -18,7 +18,7 @@ internal class AlertWidgetViewModel(
     widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     private val onDismiss: () -> Unit
-) : ViewModel() {
+) : BaseViewModel() {
     private var timeoutStarted = false
     var data: SubscriptionManager<Alert?> =
         SubscriptionManager()
@@ -29,6 +29,7 @@ internal class AlertWidgetViewModel(
 
     init {
         data.onNext(gson.fromJson(widgetInfos.payload.toString(), Alert::class.java) ?: null)
+        widgetState.onNext(WidgetStates.READY)
         interactionData.widgetDisplayed()
         currentWidgetId = widgetInfos.widgetId
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -36,7 +37,13 @@ internal class AlertWidgetViewModel(
 
     fun onClickLink() {
         interactionData.incrementInteraction()
-        currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
+        currentWidgetType?.let {
+            analyticsService.trackWidgetInteraction(
+                it.toAnalyticsString(),
+                currentWidgetId,
+                interactionData
+            )
+        }
     }
 
     internal fun dismissWidget(action: DismissAction) {
@@ -74,4 +81,5 @@ internal class AlertWidgetViewModel(
         currentWidgetId = ""
         interactionData.reset()
     }
+
 }

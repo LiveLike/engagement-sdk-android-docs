@@ -53,7 +53,7 @@ internal class QuizViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository ? = null,
     val widgetMessagingClient: WidgetManager ? = null
-) : ViewModel() {
+) : BaseViewModel() {
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
@@ -67,8 +67,8 @@ internal class QuizViewModel(
         SubscriptionManager()
     private val debouncedVoteId = currentVoteId.debounce()
     private val dataClient: WidgetDataClient = WidgetDataClientImpl()
-    var state: Stream<String> =
-        SubscriptionManager() // results
+//    var state: Stream<String> =
+//        SubscriptionManager() // results
 
     var adapter: WidgetOptionsViewAdapter? = null
     private var timeoutStarted = false
@@ -151,10 +151,11 @@ internal class QuizViewModel(
                 delay(AndroidResource.parseDuration(timeout))
                 debouncedVoteId.unsubscribe(javaClass)
                 adapter?.selectionLocked = true
-                state.onNext(WidgetState.LOCK_INTERACTION.name)
+//                state.onNext(WidgetState.LOCK_INTERACTION.name)
                 vote()
                 delay(500)
                 resultsState(widgetViewThemeAttributes)
+                widgetState.onNext(WidgetStates.RESULTS)
             }
         }
     }
@@ -169,6 +170,7 @@ internal class QuizViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Quiz Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
@@ -187,6 +189,7 @@ internal class QuizViewModel(
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
         adapter?.selectionLocked = true
         logDebug { "Quiz View ,showing result isUserCorrect:$isUserCorrect" }
+        println("QuizViewModel.resultsState->$animationPath")
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
@@ -198,7 +201,7 @@ internal class QuizViewModel(
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
-            state.onNext("results")
+//            state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
         }
     }
@@ -213,7 +216,7 @@ internal class QuizViewModel(
         voteUrl = null
         data.onNext(null)
         results.onNext(null)
-        state.onNext(null)
+//        state.onNext(null)
         animationEggTimerProgress = 0f
 
         currentWidgetType = null

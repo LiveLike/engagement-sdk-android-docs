@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#1e2328"
+    android:orientation="vertical"
+    android:padding="32dp"
+    tools:context="com.livelike.livelikedemo.WidgetFrameworkTestActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/input_widget_json"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/livelike_white"
+                android:hint="Input widget json received here"
+                android:singleLine="true" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/show_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="show widget" />
+    </LinearLayout>
+
+
+    <com.livelike.engagementsdk.widget.view.WidgetView
+        android:id="@+id/widget_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp" />
+
+
+
+    <TextView
+        android:id="@+id/current_state_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/livelike_white"
+        android:layout_marginTop="64dp"
+        android:text="Current state : NA" />
+
+
+    <Button
+        android:id="@+id/move_to_next_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="move to next state" />
+
+
+</LinearLayout>

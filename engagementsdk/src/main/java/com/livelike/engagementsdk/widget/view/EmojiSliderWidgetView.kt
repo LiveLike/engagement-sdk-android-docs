@@ -26,6 +26,13 @@ import kotlinx.coroutines.withContext
 
 internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = null) :
     GenericSpecifiedWidgetView<ImageSliderEntity, EmojiSliderWidgetViewModel>(context, attr) {
+    override fun lockInteraction() {
+        image_slider.isUserSeekable = false
+    }
+
+    override fun unLockInteraction() {
+        image_slider.isUserSeekable = true
+    }
 
     override fun subscribeCalls() {
         super.subscribeCalls()
@@ -37,6 +44,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
     override fun stateObserver(widgetState: WidgetState) {
         super.stateObserver(widgetState)
+    }
+
+    override fun moveToNextState() {
+        super.moveToNextState()
     }
 
     override fun confirmInteraction() {
