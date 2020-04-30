@@ -30,6 +30,10 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -41,10 +45,6 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -436,9 +436,9 @@ class ExoPlayerActivity : AppCompatActivity() {
     private fun checkForNetworkToRecreateActivity() {
         playerView.postDelayed({
             if (isNetworkConnected()) {
-                onBackPressed()
                 playerView.post {
                     startActivity(intent)
+                    finish()
                 }
             } else {
                 checkForNetworkToRecreateActivity()
