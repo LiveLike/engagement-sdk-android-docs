@@ -438,8 +438,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             if (isNetworkConnected()) {
                 playerView.post {
                     startActivity(intent)
+                    finish()
                 }
-                finish()
             } else {
                 checkForNetworkToRecreateActivity()
             }
