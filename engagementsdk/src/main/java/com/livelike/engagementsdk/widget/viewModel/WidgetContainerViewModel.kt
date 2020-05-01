@@ -22,6 +22,7 @@ import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 
 class WidgetContainerViewModel(internal val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
+    var enableDefaultWidgetTransition: Boolean = true
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
     private lateinit var widgetViewThemeAttributes: WidgetViewThemeAttributes
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
@@ -64,6 +65,7 @@ class WidgetContainerViewModel(internal val currentWidgetViewStream: Stream<Pair
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
         removeViews()
         if (widgetView != null) {
+            widgetView.widgetViewModel?.enableDefaultWidgetTransition = enableDefaultWidgetTransition
             displayWidget(widgetView)
         }
         if (widgetContainer != null) {

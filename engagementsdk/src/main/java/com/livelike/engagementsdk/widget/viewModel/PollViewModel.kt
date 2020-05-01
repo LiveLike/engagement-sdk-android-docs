@@ -51,9 +51,9 @@ internal class PollViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository? = null,
-    val widgetMessagingClient: WidgetManager? = null
-) : ViewModel() {
+    private val programRepository: ProgramRepository?=null,
+    val widgetMessagingClient: WidgetManager?=null
+) : BaseViewModel() {
     lateinit var onWidgetInteractionCompleted: () -> Unit
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream
     var points: SubscriptionManager<Int?> =
@@ -159,7 +159,7 @@ internal class PollViewModel(
             timeoutStarted = true
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                confirmationState()
+                widgetState.onNext(WidgetStates.RESULTS)
             }
         }
     }
@@ -174,18 +174,18 @@ internal class PollViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Poll Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
     }
 
-    private fun confirmationState() {
+    internal fun confirmationState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
             return
         }
-
         adapter?.selectionLocked = true
         onWidgetInteractionCompleted.invoke()
 

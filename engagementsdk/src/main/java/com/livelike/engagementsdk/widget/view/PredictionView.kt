@@ -16,9 +16,10 @@ import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionWidget
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.confirmationMessage
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.followupAnimation
@@ -29,7 +30,8 @@ import kotlinx.android.synthetic.main.widget_text_option_selection.view.textRecy
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
-class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+class PredictionView(context: Context, attr: AttributeSet? = null) :
+    SpecifiedWidgetView(context, attr) {
 
     private var viewModel: PredictionViewModel? = null
 
@@ -37,8 +39,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
 
     override var dismissFunc: ((action: DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
-    override var widgetViewModel: ViewModel? = null
-        get() = super.widgetViewModel
+    override var widgetViewModel: BaseViewModel? = null
+        get() = viewModel
         set(value) {
             field = value
             viewModel = value as PredictionViewModel
@@ -47,8 +49,128 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.data?.subscribe(javaClass) { widgetObserver(it) }
-        viewModel?.state?.subscribe(javaClass) { stateObserver(it) }
+        viewModel?.widgetState?.subscribe(javaClass) { widgetStateObserver(it) }
+        widgetObserver(viewModel?.data?.latest())
+    }
+
+    private fun widgetStateObserver(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                lockInteraction()
+            }
+            WidgetStates.INTERACTING -> {
+                unLockInteraction()
+            }
+            WidgetStates.RESULTS -> {
+                onWidgetInteractionCompleted()
+                viewModel?.apply {
+                    if (followUp) {
+                        followupAnimation?.apply {
+                            setAnimation(
+                                viewModel?.animationPath
+                            )
+                            progress = viewModel?.animationProgress!!
+                            addAnimatorUpdateListener { valueAnimator ->
+                                viewModel?.animationProgress = valueAnimator.animatedFraction
+                            }
+                            if (progress != 1f) {
+                                resumeAnimation()
+                            }
+                            visibility = View.VISIBLE
+                        }
+                        listOf(textEggTimer).forEach {
+                            it?.showCloseButton() {
+                                viewModel?.dismissWidget(it)
+                            }
+                        }
+                        viewModel?.points?.let {
+                            if (!shouldShowPointTutorial() && it > 0) {
+                                pointView.startAnimation(it, true)
+                                wouldShowProgressionMeter(
+                                    viewModel?.rewardsType,
+                                    viewModel?.gamificationProfile?.latest(),
+                                    progressionMeterView
+                                )
+                            }
+                        }
+                    } else {
+                        resultsObserver(viewModel?.results?.latest())
+                        confirmationMessage?.apply {
+                            text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
+                            viewModel?.animationPath?.let {
+                                viewModel?.animationProgress?.let { it1 ->
+                                    startAnimation(
+                                        it,
+                                        it1
+                                    )
+                                }
+                            }
+                            subscribeToAnimationUpdates { value ->
+                                viewModel?.animationProgress = value
+                            }
+                            visibility = View.VISIBLE
+                        }
+                        listOf(textEggTimer).forEach {
+                            it?.showCloseButton() {
+                                viewModel?.dismissWidget(it)
+                            }
+                        }
+                        viewModel?.points?.let {
+                            if (!shouldShowPointTutorial() && it > 0) {
+                                pointView.startAnimation(it, true)
+                                wouldShowProgressionMeter(
+                                    viewModel?.rewardsType,
+                                    viewModel?.gamificationProfile?.latest(),
+                                    progressionMeterView
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            WidgetStates.FINISHED -> {
+            }
+        }
+        if (viewModel?.enableDefaultWidgetTransition == true) {
+            defaultStateTransitionManager(widgetStates)
+        }
+    }
+
+    private fun lockInteraction() {
+        viewModel?.adapter?.selectionLocked = true
+    }
+
+    private fun unLockInteraction() {
+        viewModel?.data?.latest()?.let {
+            val isFollowUp = it.resource.kind.contains("follow-up")
+            if (!isFollowUp) {
+                viewModel?.adapter?.selectionLocked = false
+            }
+        }
+    }
+
+    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                moveToNextState()
+            }
+            WidgetStates.INTERACTING -> {
+                viewModel?.data?.latest()?.let {
+                    val isFollowUp = it.resource.kind.contains("follow-up")
+                    viewModel?.startDismissTimout(
+                        it.resource.timeout,
+                        isFollowUp,
+                        widgetViewThemeAttributes
+                    )
+                }
+            }
+            WidgetStates.RESULTS -> {
+//                viewModel?.confirmationState()
+            }
+            WidgetStates.FINISHED -> {
+                widgetObserver(null)
+            }
+        }
     }
 
     private fun resultsObserver(resource: Resource?) {
@@ -90,8 +212,13 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 },
                 widget.type,
                 resource.correct_option_id,
-                (if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id) ?: ""
+                (if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+                    ?: ""
             )
+            viewModel?.apply {
+                val rootPath = widgetViewThemeAttributes.stayTunedAnimation
+                animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context.applicationContext) ?: ""
+            }
 
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
@@ -99,9 +226,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             }
 
             val isFollowUp = resource.kind.contains("follow-up")
-            viewModel?.startDismissTimout(resource.timeout, isFollowUp, widgetViewThemeAttributes)
+//            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
             if (isFollowUp) {
-                val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+                val selectedPredictionId =
+                    getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
                 viewModel?.followupState(
                     selectedPredictionId,
                     resource.correct_option_id,
@@ -109,18 +237,23 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
                 )
             }
 
-            val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
-            if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
-                listOf(textEggTimer).forEach { v ->
-                    viewModel?.animationEggTimerProgress?.let { time ->
-                        v?.startAnimationFrom(time, animationLength, {
-                            viewModel?.animationEggTimerProgress = it
-                        }) {
+            if (widgetViewModel?.enableDefaultWidgetTransition == true) {
+                val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
+                if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
+                    listOf(textEggTimer).forEach { v ->
+                        viewModel?.animationEggTimerProgress?.let { time ->
+                            v?.startAnimationFrom(time, animationLength, {
+                                viewModel?.animationEggTimerProgress = it
+                            }) {
+                            }
                         }
                     }
                 }
+            } else {
+                textEggTimer?.visibility = View.GONE
             }
             logDebug { "showing PredictionView Widget" }
+            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
         }
 
         if (widget == null) {
@@ -129,54 +262,4 @@ class PredictionView(context: Context, attr: AttributeSet? = null) : SpecifiedWi
             parent?.let { (it as ViewGroup).removeAllViews() }
         }
     }
-
-    private fun stateObserver(state: String?) {
-        when (state) {
-            "confirmation" -> {
-                resultsObserver(viewModel?.results?.latest())
-                confirmationMessage?.apply {
-                    text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
-                    viewModel?.animationPath?.let { viewModel?.animationProgress?.let { it1 -> startAnimation(it, it1) } }
-                    subscribeToAnimationUpdates { value ->
-                        viewModel?.animationProgress = value
-                    }
-                    visibility = View.VISIBLE
-                }
-                listOf(textEggTimer).forEach { it?.showCloseButton() {
-                    viewModel?.dismissWidget(it)
-                } }
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
-                    }
-                }
-            }
-            "followup" -> {
-                followupAnimation?.apply {
-                    setAnimation(viewModel?.
-                    animationPath)
-                    progress = viewModel?.animationProgress!!
-                    addAnimatorUpdateListener { valueAnimator ->
-                        viewModel?.animationProgress = valueAnimator.animatedFraction
-                    }
-                    if (progress != 1f) {
-                        resumeAnimation()
-                    }
-                    visibility = View.VISIBLE
-                }
-                listOf(textEggTimer).forEach { it?.showCloseButton() {
-                    viewModel?.dismissWidget(it)
-                } }
-
-                viewModel?.points?.let {
-                    if (!shouldShowPointTutorial() && it > 0) {
-                        pointView.startAnimation(it, true)
-                        wouldShowProgressionMeter(viewModel?.rewardsType, viewModel?.gamificationProfile?.latest(), progressionMeterView)
-                    }
-                }
-            }
-        }
-    }
-
 }

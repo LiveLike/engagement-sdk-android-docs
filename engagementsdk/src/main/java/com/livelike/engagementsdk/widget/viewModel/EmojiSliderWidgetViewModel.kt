@@ -78,6 +78,7 @@ internal class EmojiSliderWidgetViewModel(
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
                 data.onNext(resource)
+                widgetState.onNext(WidgetStates.READY)
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)

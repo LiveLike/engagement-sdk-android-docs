@@ -48,7 +48,7 @@ internal class CheerMeterViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : ViewModel() {
+) : BaseViewModel() {
 
     var teamSelected = 0
     var localVoteCount = 0
@@ -220,4 +220,6 @@ internal class CheerMeterViewModel(
         currentWidgetType = null
         viewModelJob.cancel("Widget Cleanup")
     }
+
+
 }

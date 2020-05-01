@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
+import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
 class MainActivity : AppCompatActivity() {
@@ -195,6 +196,15 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
+
+        widgets_framework_button.setOnClickListener {
+            startActivity(
+                Intent(
+                    this,
+                    WidgetFrameworkTestActivity::class.java
+                )
+            )
+        }
 
         widgets_only_button.setOnClickListener {
             startActivity(

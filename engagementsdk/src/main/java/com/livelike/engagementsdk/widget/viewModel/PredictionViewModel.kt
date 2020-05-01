@@ -54,8 +54,8 @@ internal class PredictionViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : ViewModel() {
-    private var followUp: Boolean = false
+) : BaseViewModel() {
+    var followUp: Boolean = false
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
@@ -64,8 +64,8 @@ internal class PredictionViewModel(
     val data: SubscriptionManager<PredictionWidget?> =
         SubscriptionManager()
     private val dataClient: WidgetDataClient = WidgetDataClientImpl()
-    var state: Stream<String?> =
-        SubscriptionManager() // confirmation, followup
+//    var state: Stream<String?> =
+//        SubscriptionManager() // confirmation, followup
     var results: Stream<Resource> =
         SubscriptionManager()
     var adapter: WidgetOptionsViewAdapter? = null
@@ -155,6 +155,7 @@ internal class PredictionViewModel(
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
                     confirmationState(widgetViewThemeAttributes)
+                    widgetState.onNext(WidgetStates.RESULTS)
                 }
             }
         }
@@ -170,6 +171,7 @@ internal class PredictionViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Prediction Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
@@ -214,7 +216,8 @@ internal class PredictionViewModel(
                     interactionData.pointEarned = points ?: 0
                 }
             }
-            state.onNext("followup")
+//            state.onNext("followup")
+            widgetState.onNext(WidgetStates.RESULTS)
         }
         logDebug { "Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
     }
@@ -227,8 +230,6 @@ internal class PredictionViewModel(
         }
 
         adapter?.selectionLocked = true
-        val rootPath = widgetViewThemeAttributes.stayTunedAnimation
-        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
         logDebug { "Prediction Widget selected Position:${adapter?.selectedPosition}" }
         uiScope.launch {
             vote()
@@ -244,7 +245,7 @@ internal class PredictionViewModel(
             }
             pubnub?.stop()
             pubnub?.unsubscribeAll()
-            state.onNext("confirmation")
+//            state.onNext("confirmation")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
@@ -259,7 +260,7 @@ internal class PredictionViewModel(
         adapter = null
         animationProgress = 0f
         animationPath = ""
-        state.onNext("")
+//        state.onNext("")
         data.onNext(null)
         animationEggTimerProgress = 0f
         currentWidgetType = null
