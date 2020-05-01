@@ -52,32 +52,36 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         set(value) {
             field = value
             viewModel = value as AlertWidgetViewModel
-            viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
-                logDebug { "Current State: $widgetStates" }
-                widgetStates?.let {
-                    when (widgetStates) {
-                        WidgetStates.READY -> {
-                            viewModel?.data?.latest()?.let {
-                                logDebug { "showing the Alert WidgetView" }
-                                inflate(context, it)
-                            }
+        }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
+            logDebug { "Current State: $widgetStates" }
+            widgetStates?.let {
+                when (widgetStates) {
+                    WidgetStates.READY -> {
+                        viewModel?.data?.latest()?.let {
+                            logDebug { "showing the Alert WidgetView" }
+                            inflate(context, it)
                         }
-                        WidgetStates.INTERACTING -> {
-                        }
-                        WidgetStates.FINISHED -> {
-                            // viewModel?.dismissWidget(DismissAction.TAP_X)
-                            // TODO Need to add new action for state change to finished
-                            removeAllViews()
-                            parent?.let { par -> (par as ViewGroup).removeAllViews() }
-                        }
-                        else -> {}
                     }
-                    if (viewModel?.enableDefaultWidgetTransition == true) {
-                        defaultStateTransitionManager(widgetStates)
+                    WidgetStates.INTERACTING -> {
                     }
+                    WidgetStates.FINISHED -> {
+                        // viewModel?.dismissWidget(DismissAction.TAP_X)
+                        // TODO Need to add new action for state change to finished
+                        removeAllViews()
+                        parent?.let { par -> (par as ViewGroup).removeAllViews() }
+                    }
+                    else -> {}
+                }
+                if (viewModel?.enableDefaultWidgetTransition == true) {
+                    defaultStateTransitionManager(widgetStates)
                 }
             }
         }
+    }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
         when (widgetStates) {

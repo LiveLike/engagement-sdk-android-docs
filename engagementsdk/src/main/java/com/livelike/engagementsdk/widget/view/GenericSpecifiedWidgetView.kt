@@ -40,7 +40,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         set(value) {
             field = value
             viewModel = value as T
-            subscribeCalls()
+//            subscribeCalls()
         }
 
     protected open fun stateObserver(widgetState: WidgetState) {
@@ -100,11 +100,11 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     }
 
     protected open fun subscribeCalls() {
-        viewModel.state.subscribe(javaClass.name) {
-            it?.let { stateObserver(it) }
-        }
         viewModel.data.subscribe(javaClass.simpleName) {
             dataModelObserver(it)
+        }
+        viewModel.state.subscribe(javaClass.name) {
+            it?.let { stateObserver(it) }
         }
         widgetViewModel?.widgetState?.subscribe(javaClass.simpleName) {
             when (it) {
@@ -164,6 +164,9 @@ private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         subscribeCalls()
+//        viewModel.data.subscribe(javaClass.simpleName) {
+//            dataModelObserver(it)
+//        }
     }
 
     override fun onDetachedFromWindow() {
