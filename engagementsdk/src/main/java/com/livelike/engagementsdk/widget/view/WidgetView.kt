@@ -78,16 +78,15 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
      */
     fun displayWidget(sdk: EngagementSDK, widgetResourceJson: JsonObject) {
         try {
-            val widgetType = widgetResourceJson.get("event").asString ?: ""
-            val payload = widgetResourceJson["payload"].asJsonObject
-            val widgetId = payload["id"].asString
+            val widgetType = widgetResourceJson.get("kind").asString + "-created"
+            val widgetId = widgetResourceJson["id"].asString
             widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                 Pair(
                     widgetType,
                     WidgetProvider()
                         .get(
                             null,
-                            WidgetInfos(widgetType, payload, widgetId),
+                            WidgetInfos(widgetType, widgetResourceJson, widgetId),
                             context,
                             MockAnalyticsService(),
                             sdk.configurationStream.latest()!!,
