@@ -94,7 +94,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                             }
                         }
                     } else {
-                        resultsObserver(viewModel?.results?.latest())
+                        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
                         confirmationMessage?.apply {
                             text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
                             viewModel?.animationPath?.let {
