@@ -78,7 +78,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.RESULTS -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
-                resultsObserver(viewModel?.results?.latest())
+                viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
             }
             WidgetStates.FINISHED -> {
 //                resourceObserver(null)
