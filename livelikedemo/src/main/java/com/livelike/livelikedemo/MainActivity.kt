@@ -14,9 +14,9 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.livelikedemo.channel.ChannelManager
-import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
@@ -27,10 +27,16 @@ import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.themes_button
+import kotlinx.android.synthetic.main.activity_main.themes_json_button
+import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,7 +45,8 @@ class MainActivity : AppCompatActivity() {
         val cls: KClass<out Activity>,
         var theme: Int,
         var keyboardClose: Boolean = true,
-        var showNotification: Boolean = true
+        var showNotification: Boolean = true,
+        var jsonTheme: String? = null
     )
 
     private lateinit var channelManager: ChannelManager
@@ -91,7 +98,13 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class, R.style.Default, true)
+        val player = PlayerInfo(
+            "Exo Player",
+            ExoPlayerActivity::class,
+            R.style.Default,
+            true
+
+        )
         val drawerDemoActivity =
             PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.Default, false)
 
@@ -158,6 +171,40 @@ class MainActivity : AppCompatActivity() {
                 create()
             }.show()
         }
+
+        themes_json_button.setOnClickListener {
+            val channels = arrayListOf("None", "Default")
+            AlertDialog.Builder(this).apply {
+                setTitle("Choose a theme!")
+                setItems(channels.toTypedArray()) { _, which ->
+                    // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
+                    themes_json_label.text = channels[which]
+                    EngagementSDK.enableDebug = false
+                    val files = assets.list("themes")
+                    files?.let {
+                        when (which) {
+                            1 -> {
+                                val path = files[0]
+                                val theme = getFileFromAsset(context, "themes/$path")
+                                if (theme != null) {
+                                    player.jsonTheme = theme
+                                } else
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Unable to get the theme json",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                            }
+                            0 -> {
+                                player.jsonTheme = null
+                            }
+                        }
+                    }
+                }
+                create()
+            }.show()
+        }
+
         events_label.text = channelManager.selectedChannel.name
 
         getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
@@ -228,6 +275,7 @@ class MainActivity : AppCompatActivity() {
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent = Intent(this, player.cls.java)
     intent.putExtra("theme", player.theme)
+    intent.putExtra("jsonTheme", player.jsonTheme)
     intent.putExtra("showNotification", player.showNotification)
     intent.putExtra(
         "keyboardClose", when (player.theme) {
@@ -236,4 +284,25 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
         }
     )
     return intent
+}
+
+fun getFileFromAsset(context: Context, path: String): String? {
+    try {
+        val asset = context.assets
+        val br = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            BufferedReader(InputStreamReader(asset.open(path), StandardCharsets.UTF_8))
+        } else {
+            BufferedReader(InputStreamReader(asset.open(path)))
+        }
+        val sb = StringBuilder()
+        var str: String?
+        while (br.readLine().also { str = it } != null) {
+            sb.append(str)
+        }
+        br.close()
+        return sb.toString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null
 }

@@ -29,7 +29,7 @@ class LiveLikeApplication : Application() {
             return EpochTime(player.getPDT())
         }
     }
-    private var publicSession: LiveLikeContentSession? = null
+    var publicSession: LiveLikeContentSession? = null
     private var privateGroupChatsession: LiveLikeChatSession? = null
 
     lateinit var sdk: EngagementSDK

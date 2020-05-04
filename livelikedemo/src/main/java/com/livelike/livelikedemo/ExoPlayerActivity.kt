@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
@@ -31,10 +32,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -46,6 +43,10 @@ import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -56,6 +57,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         var privateGroupRoomId: String? = null
     }
 
+    private var jsonTheme: String? = null
     private var showNotification: Boolean = true
     private var themeCurrent: Int? = null
     private var isChatRoomJoined: Boolean = false
@@ -95,6 +97,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         themeCurrent = intent.getIntExtra("theme", R.style.AppTheme)
         this.setTheme(themeCurrent!!)
         setContentView(R.layout.activity_exo_player)
+        jsonTheme = intent.getStringExtra("jsonTheme")
         if (isNetworkConnected()) {
             chatRoomLastTimeStampMap = GsonBuilder().create().fromJson(
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
@@ -387,14 +390,19 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                 }
             }
-
+            if (jsonTheme != null) {
+                try {
+                    session.setTheme(jsonTheme!!)
+                } catch (e: Exception) {
+                    Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
             if (privateGroupRoomId != null) {
                 privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
                 chat_view.setSession(privateGroupChatsession!!)
             } else {
                 chat_view.setSession(session.chatSession)
             }
-            println("ExoPlayerActivity.initializeLiveLikeSDK->$session")
             widget_view.setSession(session)
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(

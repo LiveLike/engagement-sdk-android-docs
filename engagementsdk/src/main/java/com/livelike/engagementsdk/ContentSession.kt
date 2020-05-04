@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.google.gson.Gson
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -17,7 +18,6 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
@@ -56,6 +56,7 @@ internal class ContentSession(
         userRepository.setProfilePicUrl(url)
     }
 
+    private var engagementSDKTheme: EngagementSDKTheme? = null
     override var chatSession: ChatSession = ChatSession(
         sdkConfiguration,
         userRepository,
@@ -77,6 +78,16 @@ internal class ContentSession(
 
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
+    }
+
+    @Throws(Exception::class)
+    override fun setTheme(json: String) {
+        val gson = Gson()
+        engagementSDKTheme = gson.fromJson(json, EngagementSDKTheme::class.java)
+        val validateString = engagementSDKTheme!!.validate()
+        if (validateString != null) {
+            throw Exception("$validateString")
+        }
     }
 
     override var analyticService: AnalyticsService =
@@ -103,6 +114,7 @@ internal class ContentSession(
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
+
     // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
     private val configurationUserPairFlow = flow {
         while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
@@ -119,44 +131,59 @@ internal class ContentSession(
             }
         }
 
-        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode()).subscribe(this) {
-            it?.let { pair ->
-                val configuration = pair.second
-                analyticService =
-                    MixpanelAnalytics(
-                        applicationContext,
-                        configuration.mixpanelToken,
-                        configuration.clientId
-                    )
-                logDebug { "analyticService created" }
-                widgetContainer.analyticsService = analyticService
-                analyticService.trackSession(pair.first.id)
-                analyticService.trackUsername(pair.first.nickname)
-                analyticService.trackConfiguration(configuration.name ?: "")
+        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode())
+            .subscribe(this) {
+                it?.let { pair ->
+                    val configuration = pair.second
+                    analyticService =
+                        MixpanelAnalytics(
+                            applicationContext,
+                            configuration.mixpanelToken,
+                            configuration.clientId
+                        )
+                    logDebug { "analyticService created" }
+                    widgetContainer.analyticsService = analyticService
+                    analyticService.trackSession(pair.first.id)
+                    analyticService.trackUsername(pair.first.nickname)
+                    analyticService.trackConfiguration(configuration.name ?: "")
 
-                if (programId.isNotEmpty()) {
-                    llDataClient.getProgramData(configuration.programDetailUrlTemplate.replace(TEMPLATE_PROGRAM_ID, programId)) { program ->
-                        if (program !== null) {
-                            programRepository.program = program
-                            userRepository.rewardType = program.rewardsType
-                            isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
-                            initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
-                            program.analyticsProps.forEach { map ->
-                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                    if (programId.isNotEmpty()) {
+                        llDataClient.getProgramData(
+                            configuration.programDetailUrlTemplate.replace(
+                                TEMPLATE_PROGRAM_ID,
+                                programId
+                            )
+                        ) { program ->
+                            if (program !== null) {
+                                programRepository.program = program
+                                userRepository.rewardType = program.rewardsType
+                                isGamificationEnabled =
+                                    !program.rewardsType.equals(RewardsType.NONE.key)
+                                initializeWidgetMessaging(
+                                    program.subscribeChannel,
+                                    configuration,
+                                    pair.first.id
+                                )
+                                chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
+                                program.analyticsProps.forEach { map ->
+                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                }
+                                configuration.analyticsProps.forEach { map ->
+                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                }
+                                contentSessionScope.launch {
+                                    if (isGamificationEnabled) programRepository.fetchProgramRank()
+                                }
+                                startObservingForGamificationAnalytics(
+                                    analyticService,
+                                    programRepository.programGamificationProfileStream,
+                                    programRepository.rewardType
+                                )
                             }
-                            configuration.analyticsProps.forEach { map ->
-                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
-                            }
-                            contentSessionScope.launch {
-                                if (isGamificationEnabled) programRepository.fetchProgramRank()
-                            }
-                            startObservingForGamificationAnalytics(analyticService, programRepository.programGamificationProfileStream, programRepository.rewardType)
                         }
                     }
                 }
             }
-        }
         if (!applicationContext.isNetworkConnected()) {
             errorDelegate?.onError("Network error please create the session again")
         }
@@ -233,7 +260,18 @@ internal class ContentSession(
                 .logAnalytics(analyticService)
                 .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(widgetDataClient, currentWidgetViewStream, applicationContext, widgetInterceptor, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
+                .asWidgetManager(
+                    widgetDataClient,
+                    currentWidgetViewStream,
+                    applicationContext,
+                    widgetInterceptor,
+                    analyticService,
+                    config,
+                    userRepository,
+                    programRepository,
+                    animationEventsStream,
+                    widgetThemeAttributes
+                )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }
