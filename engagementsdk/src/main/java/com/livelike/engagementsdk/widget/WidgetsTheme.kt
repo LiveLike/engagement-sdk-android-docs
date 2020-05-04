@@ -2,17 +2,6 @@ package com.livelike.engagementsdk.widget
 
 import android.content.res.Resources
 import android.graphics.Color
-import com.livelike.engagementsdk.widget.view.themes.AlertTheme
-import com.livelike.engagementsdk.widget.view.themes.CheerMeterTheme
-import com.livelike.engagementsdk.widget.view.themes.ImagePollTheme
-import com.livelike.engagementsdk.widget.view.themes.ImagePredictionFollowUpTheme
-import com.livelike.engagementsdk.widget.view.themes.ImagePredictionTheme
-import com.livelike.engagementsdk.widget.view.themes.ImageQuizTheme
-import com.livelike.engagementsdk.widget.view.themes.ImageSliderTheme
-import com.livelike.engagementsdk.widget.view.themes.TextPollTheme
-import com.livelike.engagementsdk.widget.view.themes.TextPredictionFollowUpTheme
-import com.livelike.engagementsdk.widget.view.themes.TextPredictionTheme
-import com.livelike.engagementsdk.widget.view.themes.TextQuizTheme
 
 abstract class BaseTheme {
     abstract fun validate(): String?
@@ -35,18 +24,55 @@ abstract class BaseTheme {
     }
 }
 
+data class ImageSliderTheme(
+    val body: Component? = null,
+    val dismiss: Component? = null,
+    val footer: Component? = null,
+    val header: Component? = null,
+    val marker: Component? = null,
+    val timer: Component? = null,
+    val title: Component? = null,
+    val track: Component? = null
+) : BaseTheme() {
+    override fun validate(): String? {
+        return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
+        ?: header?.validate() ?: marker?.validate() ?: timer?.validate() ?: timer?.validate()
+        ?: track?.validate()
+    }
+}
+
+data class CheerMeterTheme(
+    val body: Component? = null,
+    val dismiss: Component? = null,
+    val footer: Component? = null,
+    val header: Component? = null,
+    val sideABar: Component? = null,
+    val sideAButton: Component? = null,
+    val sideBBar: Component? = null,
+    val sideBButton: Component? = null,
+    val timer: Component? = null,
+    val title: Component? = null,
+    val versus: Component? = null
+) : BaseTheme() {
+    override fun validate(): String? {
+        return body?.validate() ?: dismiss?.validate() ?: footer?.validate() ?: header?.validate()
+        ?: sideABar?.validate() ?: sideAButton?.validate() ?: sideBBar?.validate()
+        ?: sideAButton?.validate() ?: timer?.validate() ?: title?.validate() ?: versus?.validate()
+    }
+}
+
 data class WidgetsTheme(
-    val alert: AlertTheme? = null,
+    val alert: LayoutComponent? = null,
     val cheerMeter: CheerMeterTheme? = null,
-    val imagePoll: ImagePollTheme? = null,
-    val imagePrediction: ImagePredictionTheme? = null,
-    val imagePredictionFollowUp: ImagePredictionFollowUpTheme? = null,
-    val imageQuiz: ImageQuizTheme? = null,
+    val imagePoll: LayoutPickerComponent? = null,
+    val imagePrediction: LayoutPickerComponent? = null,
+    val imagePredictionFollowUp: LayoutPickerComponent? = null,
+    val imageQuiz: LayoutPickerComponent? = null,
     val imageSlider: ImageSliderTheme? = null,
-    val textPoll: TextPollTheme? = null,
-    val textPrediction: TextPredictionTheme? = null,
-    val textPredictionFollowUp: TextPredictionFollowUpTheme? = null,
-    val textQuiz: TextQuizTheme? = null
+    val textPoll: LayoutPickerComponent? = null,
+    val textPrediction: LayoutPickerComponent? = null,
+    val textPredictionFollowUp: LayoutPickerComponent? = null,
+    val textQuiz: LayoutPickerComponent? = null
 ) : BaseTheme() {
     override fun validate(): String? {
         return alert?.validate() ?: cheerMeter?.validate() ?: imagePoll?.validate()
@@ -74,6 +100,64 @@ data class Component(
         if (getColorFromString(fontColor) == null)
             return "Unable to parse Font Color"
         return background?.validate()
+    }
+}
+
+data class LayoutComponent(
+    val body: Component? = null,
+    val dismiss: Component? = null,
+    val footer: Component? = null,
+    val header: Component? = null,
+    val timer: Component? = null,
+    val title: Component? = null
+) : BaseTheme() {
+    override fun validate(): String? {
+        return body?.validate() ?: dismiss?.validate() ?: footer?.validate() ?: header?.validate()
+        ?: timer?.validate() ?: title?.validate()
+    }
+}
+
+data class LayoutPickerComponent(
+    val body: Component? = null,
+    val correctOption: Component? = null,
+    val correctOptionBar: Component? = null,
+    val correctOptionDescription: Component? = null,
+    val correctOptionImage: Component? = null,
+    val correctOptionPercentage: Component? = null,
+    val dismiss: Component? = null,
+    val footer: Component? = null,
+    val header: Component? = null,
+    val incorrectOption: Component? = null,
+    val incorrectOptionBar: Component? = null,
+    val incorrectOptionDescription: Component? = null,
+    val incorrectOptionImage: Component? = null,
+    val incorrectOptionPercentage: Component? = null,
+    val selectedOption: Component? = null,
+    val selectedOptionBar: Component? = null,
+    val selectedOptionDescription: Component? = null,
+    val selectedOptionImage: Component? = null,
+    val selectedOptionPercentage: Component? = null,
+    val timer: Component? = null,
+    val title: Component? = null,
+    val unselectedOption: Component? = null,
+    val unselectedOptionBar: Component? = null,
+    val unselectedOptionDescription: Component? = null,
+    val unselectedOptionImage: Component? = null,
+    val unselectedOptionPercentage: Component? = null
+) : BaseTheme() {
+    override fun validate(): String? {
+        return body?.validate() ?: correctOption?.validate() ?: correctOptionBar?.validate()
+        ?: correctOptionDescription?.validate() ?: correctOptionImage?.validate()
+        ?: correctOptionPercentage?.validate() ?: dismiss?.validate() ?: footer?.validate()
+        ?: header?.validate()
+        ?: incorrectOption?.validate() ?: incorrectOptionBar?.validate()
+        ?: incorrectOptionDescription?.validate() ?: incorrectOptionImage?.validate()
+        ?: incorrectOptionPercentage?.validate() ?: selectedOption?.validate()
+        ?: selectedOptionBar?.validate() ?: selectedOptionDescription?.validate()
+        ?: selectedOptionImage?.validate() ?: selectedOptionPercentage?.validate()
+        ?: timer?.validate() ?: title?.validate() ?: unselectedOption?.validate()
+        ?: unselectedOptionBar?.validate() ?: unselectedOptionDescription?.validate()
+        ?: unselectedOptionImage?.validate() ?: unselectedOptionPercentage?.validate()
     }
 }
 
