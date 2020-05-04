@@ -62,6 +62,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 unLockInteraction()
             }
             WidgetStates.RESULTS -> {
+                lockInteraction()
                 onWidgetInteractionCompleted()
                 viewModel?.apply {
                     if (followUp) {
