@@ -102,6 +102,14 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         }
     }
 
+    override fun moveToNextState() {
+        if (widgetViewModel?.widgetState?.latest() == WidgetStates.INTERACTING) {
+            widgetViewModel?.widgetState?.onNext(WidgetStates.FINISHED)
+        } else {
+            super.moveToNextState()
+        }
+    }
+
     private fun inflate(context: Context, resourceAlert: Alert) {
         if (!inflated) {
             inflated = true
@@ -154,14 +162,6 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 params.height = AndroidResource.dpToPx(200)
                 widgetContainer.requestLayout()
             }
-        }
-    }
-
-    override fun moveToNextState() {
-        if (widgetViewModel?.widgetState?.latest() == WidgetStates.INTERACTING) {
-            widgetViewModel?.widgetState?.onNext(WidgetStates.FINISHED)
-        } else {
-            super.moveToNextState()
         }
     }
 
