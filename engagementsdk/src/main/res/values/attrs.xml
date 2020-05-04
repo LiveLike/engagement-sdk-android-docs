@@ -153,7 +153,7 @@
         <attr name="bar_progress_color_end" format="color" />
         <attr name="bar_result_color_center" format="color" />
         <attr name="bar_result_color_end" format="color" />
-        <attr name="bar_track_color" />
+        <attr name="bar_track_color" format="color" />
         <attr name="allow_reselection" format="boolean" />
         <attr name="is_touch_disabled" format="boolean" />
         <attr name="register_touches_outside_thumb" format="boolean" />
