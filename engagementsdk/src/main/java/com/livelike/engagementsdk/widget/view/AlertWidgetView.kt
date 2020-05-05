@@ -74,7 +74,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                         removeAllViews()
                         parent?.let { par -> (par as ViewGroup).removeAllViews() }
                     }
-                    else -> {}
+                    else -> {
+                    }
                 }
                 if (viewModel?.enableDefaultWidgetTransition == true) {
                     defaultStateTransitionManager(widgetStates)
@@ -96,10 +97,16 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                     }
                 }
             }
-            WidgetStates.RESULTS -> {
-            }
             WidgetStates.FINISHED -> {
             }
+        }
+    }
+
+    override fun moveToNextState() {
+        if (widgetViewModel?.widgetState?.latest() == WidgetStates.INTERACTING) {
+            widgetViewModel?.widgetState?.onNext(WidgetStates.FINISHED)
+        } else {
+            super.moveToNextState()
         }
     }
 
@@ -156,10 +163,6 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 widgetContainer.requestLayout()
             }
         }
-    }
-
-    override fun moveToNextState() {
-        super.moveToNextState()
     }
 
     private fun openBrowser(context: Context, linkUrl: String) {
