@@ -392,7 +392,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
             if (jsonTheme != null) {
                 try {
-                    session.setTheme(jsonTheme!!)
+                    widget_view.setTheme(jsonTheme!!)
                 } catch (e: Exception) {
                     Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
                 }

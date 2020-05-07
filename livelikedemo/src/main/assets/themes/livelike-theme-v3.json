@@ -1,0 +1,8033 @@
+{
+  "widgets": {
+    "imageSlider": {
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "interactiveTrackRight": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "interactiveTrackLeft": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          10,
+          10,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "resultsTrackRight": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "resultsTrackLeft": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "AAA111",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "marker": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "imagePoll": {
+      "selectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "3123ae",
+            "c96dd7"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOption": {
+        "borderColor": "c86dd7",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "imagePrediction": {
+      "selectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "textPrediction": {
+      "selectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOption": {
+        "borderColor": "0bd0e6",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 2,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "3b0ac2",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "00000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          0,
+          0
+        ],
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 15,
+        "borderWidth": 0,
+        "background": {
+          "color": "ebb810",
+          "format": "fill"
+        },
+        "fontColor": "dde026",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "780d13",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "d91cc9",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOption": {
+        "borderColor": "0ee323",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 2,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOption": {
+        "borderColor": "ed5345",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 2,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "imageQuiz": {
+      "selectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOption": {
+        "borderColor": "d911bb",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 2,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionBar": {
+        "borderColor": "00000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "6574AA",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+
+      "correctOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+
+      "incorrectOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 17,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "510AFE",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "ed1713",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOption": {
+        "borderColor": "ed1713",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 2,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+
+      "unselectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 15,
+        "borderWidth": 0,
+        "background": {
+          "color": "DD0088",
+          "format": "fill"
+        },
+        "fontColor": "AAFFAA",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "alert": {
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "textPoll": {
+      "selectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOption": {
+        "borderColor": "22db1f",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [],
+        "fontSize": 0,
+        "borderWidth": 2,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionBar": {
+        "borderColor": "00000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "3123ae",
+            "c86dd7"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOption": {
+        "borderColor": "F23ADD",
+        "fontWeight": "normal",
+        "borderRadius": [
+          3,
+          3,
+          3,
+          3
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          5,
+          5,
+          0,
+          0
+        ],
+        "padding": [
+          10,
+          10,
+          10,
+          10
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "3123ae",
+            "c96dd7"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          10,
+          10,
+          0,
+          0
+        ],
+        "padding": [
+          20,
+          20,
+          20,
+          20
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "3C87F5",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "imagePredictionFollowUp": {
+      "selectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "textPredictionFollowUp": {
+      "selectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "0ee351",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "bf0f0b",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOption": {
+        "borderColor": "0ee351",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 2,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "textQuiz": {
+      "selectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOptionPercentage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "selectedOptionBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "unselectedOptionImage": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "incorrectOption": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "correctOptionDescription": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "socialEmbed": {
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "richText": {
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "cheerMeter": {
+      "body": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "versus": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "sideBBar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "54f216",
+            "1887db"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "sideABar": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "e6c50e",
+            "b211ba"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "footer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "dismiss": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "sideAButton": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "10cc78",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "timer": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "header": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "colors": [
+            "9f041b",
+            "f5515f"
+          ],
+          "direction": 0,
+          "format": "uniformGradient"
+        },
+        "fontColor": "ffffff",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "title": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "00000000",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "sideBButton": {
+        "borderColor": "000000",
+        "fontWeight": "normal",
+        "borderRadius": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fontFamily": [
+          "sans-serif"
+        ],
+        "fontSize": 12,
+        "borderWidth": 0,
+        "background": {
+          "color": "ed5f13",
+          "format": "fill"
+        },
+        "fontColor": "000000",
+        "margin": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "version": 1
+}

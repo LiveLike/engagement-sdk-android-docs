@@ -200,6 +200,13 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 inflated = true
                 inflate(context, R.layout.widget_text_option_selection, this@PredictionView)
             }
+            when (optionList.map { it.image_url.isNullOrEmpty().not() }
+                .reduce { a, b -> a && b }) {
+                true -> widgetsTheme?.imagePrediction
+                else -> widgetsTheme?.textPrediction
+            }?.let {
+                updateTitleView(it)
+            }
 
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_prediciton)
@@ -213,7 +220,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 widget.type,
                 resource.correct_option_id,
                 (if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                    ?: ""
+                    ?: "",component = when(optionList.map { it.image_url.isNullOrEmpty().not() }.reduce { a, b -> a&&b }){
+                    true -> widgetsTheme?.imagePrediction
+                    else -> widgetsTheme?.textPrediction
+                }
             )
             viewModel?.apply {
                 val rootPath = widgetViewThemeAttributes.stayTunedAnimation

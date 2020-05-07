@@ -6,7 +6,9 @@ import android.view.Gravity
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.LayoutPickerComponent
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
@@ -136,9 +138,18 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 inflated = true
                 inflate(context, R.layout.widget_text_option_selection, this@PollView)
             }
+            txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
+
+            when (optionList.map { it.image_url.isNullOrEmpty().not() }
+                .reduce { a, b -> a && b }) {
+                true -> widgetsTheme?.imagePoll
+                else -> widgetsTheme?.textPoll
+            }?.let {
+                updateTitleView(it)
+            }
 
             titleView.title = resource.question
-            txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_poll)
+            //TODO: update header background with margin or padding
             titleTextView.gravity = Gravity.START
 
             viewModel?.adapter = viewModel?.adapter ?: WidgetOptionsViewAdapter(optionList, {
@@ -146,7 +157,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.selectedPosition ?: -1
                 )?.id ?: ""
                 viewModel?.currentVoteId?.onNext(selectedId)
-            }, type)
+            }, type, component = when(optionList.map { it.image_url.isNullOrEmpty().not() }.reduce { a, b -> a&&b }){
+                true -> widgetsTheme?.imagePoll
+                else -> widgetsTheme?.textPoll
+            })
             viewModel?.onWidgetInteractionCompleted = { onWidgetInteractionCompleted() }
 
             textRecyclerView.apply {

@@ -3,9 +3,11 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.EngagementSDKTheme
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
@@ -22,10 +24,10 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 
 class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
+    private var engagementSDKTheme: EngagementSDKTheme? = null
     private var widgetContainerViewModel: WidgetContainerViewModel? =
         WidgetContainerViewModel(SubscriptionManager())
     private val widgetViewThemeAttributes = WidgetViewThemeAttributes()
-
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
         set(value) {
             field = value
@@ -53,12 +55,27 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel?.setWidgetContainer(this, widgetViewThemeAttributes)
     }
 
+    private var session: LiveLikeContentSession? = null;
+
     fun setSession(session: LiveLikeContentSession) {
+        this.session = session
         session.setWidgetViewThemeAttribute(widgetViewThemeAttributes)
         session.setWidgetContainer(this, widgetViewThemeAttributes)
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
+        session.widgetThemeStream.onNext(engagementSDKTheme?.widgets)
+    }
+
+    @Throws(Exception::class)
+    fun setTheme(json: String) {
+        val gson = Gson()
+        engagementSDKTheme = gson.fromJson(json, EngagementSDKTheme::class.java)
+        val validateString = engagementSDKTheme!!.validate()
+        if (validateString != null) {
+            throw Exception("$validateString")
+        }
+        (session as? ContentSession)?.widgetThemeStream?.onNext(engagementSDKTheme?.widgets)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -96,7 +113,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             sdk.userRepository,
                             null,
                             SubscriptionManager(),
-                            widgetViewThemeAttributes
+                            widgetViewThemeAttributes,
+                            engagementSDKTheme?.widgets
                         )
                 )
             )

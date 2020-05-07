@@ -1,27 +1,10 @@
 package com.livelike.engagementsdk.widget
 
-import android.content.res.Resources
-import android.graphics.Color
+import com.livelike.engagementsdk.core.utils.AndroidResource
+
 
 abstract class BaseTheme {
     abstract fun validate(): String?
-
-    fun getColorFromString(color: String?): Int? {
-        try {
-            var checkedColor = color
-            if (checkedColor?.contains("#") == false) {
-                checkedColor = "#$checkedColor"
-            }
-            return Color.parseColor(checkedColor)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
-    }
-
-    fun pxToDp(px: Int): Int {
-        return (px / Resources.getSystem().displayMetrics.density).toInt()
-    }
 }
 
 data class ImageSliderTheme(
@@ -55,9 +38,11 @@ data class CheerMeterTheme(
     val versus: Component? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-        return body?.validate() ?: dismiss?.validate() ?: footer?.validate() ?: header?.validate()
+        return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
+        ?: header?.validate()
         ?: sideABar?.validate() ?: sideAButton?.validate() ?: sideBBar?.validate()
-        ?: sideAButton?.validate() ?: timer?.validate() ?: title?.validate() ?: versus?.validate()
+        ?: sideAButton?.validate() ?: timer?.validate() ?: title?.validate()
+        ?: versus?.validate()
     }
 }
 
@@ -78,7 +63,8 @@ data class WidgetsTheme(
         return alert?.validate() ?: cheerMeter?.validate() ?: imagePoll?.validate()
         ?: imagePrediction?.validate() ?: imagePredictionFollowUp?.validate()
         ?: imageQuiz?.validate() ?: imageSlider?.validate() ?: textPoll?.validate()
-        ?: textPrediction?.validate() ?: textPredictionFollowUp?.validate() ?: textQuiz?.validate()
+        ?: textPrediction?.validate() ?: textPredictionFollowUp?.validate()
+        ?: textQuiz?.validate()
     }
 }
 
@@ -95,9 +81,9 @@ data class Component(
     val padding: List<Double>? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-        if (getColorFromString(borderColor) == null)
+        if (AndroidResource.getColorFromString(borderColor) == null)
             return "Unable to parse Border Color"
-        if (getColorFromString(fontColor) == null)
+        if (AndroidResource.getColorFromString(fontColor) == null)
             return "Unable to parse Font Color"
         return background?.validate()
     }
@@ -112,7 +98,8 @@ data class LayoutComponent(
     val title: Component? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-        return body?.validate() ?: dismiss?.validate() ?: footer?.validate() ?: header?.validate()
+        return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
+        ?: header?.validate()
         ?: timer?.validate() ?: title?.validate()
     }
 }
@@ -168,11 +155,11 @@ data class BackgroundProperty(
     val direction: Double? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-        val colorCheck = getColorFromString(color)
+        val colorCheck = AndroidResource.getColorFromString(color)
         var colorsCheck: String? = null
         colors?.let {
             for (color in it) {
-                if (getColorFromString(color) == null) {
+                if (AndroidResource.getColorFromString(color) == null) {
                     colorsCheck = "Unable to parse Colors"
                     break
                 }

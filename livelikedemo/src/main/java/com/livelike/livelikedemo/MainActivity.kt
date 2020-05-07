@@ -105,6 +105,13 @@ class MainActivity : AppCompatActivity() {
             true
 
         )
+
+        val onlyWidget = PlayerInfo(
+            "Widget Only",
+            WidgetOnlyActivity::class,
+            R.style.Default,
+            true
+        )
         val drawerDemoActivity =
             PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.Default, false)
 
@@ -167,36 +174,50 @@ class MainActivity : AppCompatActivity() {
                         }
                         else -> R.style.Default
                     }
+                    onlyWidget.theme = when (which) {
+                        0 -> R.style.Default
+                        1 -> {
+                            EngagementSDK.enableDebug = true
+                            R.style.TurnerChatTheme
+                        }
+                        2 -> {
+                            EngagementSDK.enableDebug = false
+                            R.style.CustomChatReactionTheme
+                        }
+                        else -> R.style.Default
+                    }
                 }
                 create()
             }.show()
         }
 
         themes_json_button.setOnClickListener {
-            val channels = arrayListOf("None", "Default")
+            val files: ArrayList<String> =
+                ArrayList(assets.list("themes")?.toList() ?: arrayListOf())
+            files.add(0, "None")
             AlertDialog.Builder(this).apply {
                 setTitle("Choose a theme!")
-                setItems(channels.toTypedArray()) { _, which ->
+                setItems(files.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
-                    themes_json_label.text = channels[which]
+                    themes_json_label.text = files[which]
                     EngagementSDK.enableDebug = false
-                    val files = assets.list("themes")
-                    files?.let {
+                    files.let {
                         when (which) {
-                            1 -> {
-                                val path = files[0]
+                            0 -> {
+                                player.jsonTheme = null
+                            }
+                            else -> {
+                                val path = files[which]
                                 val theme = getFileFromAsset(context, "themes/$path")
                                 if (theme != null) {
                                     player.jsonTheme = theme
+                                    onlyWidget.jsonTheme = theme
                                 } else
                                     Toast.makeText(
                                         applicationContext,
                                         "Unable to get the theme json",
                                         Toast.LENGTH_LONG
                                     ).show()
-                            }
-                            0 -> {
-                                player.jsonTheme = null
                             }
                         }
                     }
@@ -254,12 +275,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         widgets_only_button.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    WidgetOnlyActivity::class.java
-                )
-            )
+            startActivity(playerDetailIntent(onlyWidget))
         }
         chat_only_button.setOnClickListener {
             startActivity(

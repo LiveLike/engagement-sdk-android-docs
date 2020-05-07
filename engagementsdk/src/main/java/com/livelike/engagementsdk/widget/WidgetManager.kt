@@ -42,7 +42,8 @@ internal class WidgetManager(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
     private val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
-    private val widgetThemeAttributes: WidgetViewThemeAttributes?
+    private val widgetThemeAttributes: WidgetViewThemeAttributes?,
+    private val widgetTheme: Stream<WidgetsTheme>
 ) :
     MessagingClientProxy(upstream) {
 
@@ -172,7 +173,8 @@ internal class WidgetManager(
                         userRepository,
                         programRepository,
                         animationEventsStream,
-                        widgetThemeAttributes ?: WidgetViewThemeAttributes()
+                        widgetThemeAttributes ?: WidgetViewThemeAttributes(),
+                            widgetTheme.latest()
                     )
                 )
             )
@@ -236,7 +238,8 @@ internal fun MessagingClient.asWidgetManager(
     userRepository: UserRepository,
     programRepository: ProgramRepository,
     animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
-    widgetThemeAttributes: WidgetViewThemeAttributes?
+    widgetThemeAttributes: WidgetViewThemeAttributes?,
+    widgets: Stream<WidgetsTheme>
 ): WidgetManager {
     return WidgetManager(
         this,
@@ -249,6 +252,7 @@ internal fun MessagingClient.asWidgetManager(
         userRepository,
         programRepository,
         animationEventsStream,
-        widgetThemeAttributes
+        widgetThemeAttributes,
+        widgets
     )
 }

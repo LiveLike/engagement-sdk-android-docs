@@ -2,7 +2,6 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
-import com.google.gson.Gson
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -29,6 +28,7 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
+import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
@@ -56,7 +56,6 @@ internal class ContentSession(
         userRepository.setProfilePicUrl(url)
     }
 
-    private var engagementSDKTheme: EngagementSDKTheme? = null
     override var chatSession: ChatSession = ChatSession(
         sdkConfiguration,
         userRepository,
@@ -78,16 +77,6 @@ internal class ContentSession(
 
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
-    }
-
-    @Throws(Exception::class)
-    override fun setTheme(json: String) {
-        val gson = Gson()
-        engagementSDKTheme = gson.fromJson(json, EngagementSDKTheme::class.java)
-        val validateString = engagementSDKTheme!!.validate()
-        if (validateString != null) {
-            throw Exception("$validateString")
-        }
     }
 
     override var analyticService: AnalyticsService =
@@ -123,6 +112,7 @@ internal class ContentSession(
         emit(Pair(sdkConfiguration.latest()!!, userRepository.currentUserStream.latest()!!))
     }
     private var privateChatRoomID = ""
+    val widgetThemeStream: Stream<WidgetsTheme> = SubscriptionManager()
 
     init {
         userRepository.currentUserStream.subscribe(this) {
@@ -236,7 +226,11 @@ internal class ContentSession(
         widgetView: FrameLayout,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
-        widgetContainer.setWidgetContainer(widgetView, widgetViewThemeAttributes)
+        println("ContentSession.setWidgetContainer")
+        widgetContainer.setWidgetContainer(
+            widgetView,
+            widgetViewThemeAttributes
+        )
     }
 
     private fun initializeWidgetMessaging(
@@ -255,10 +249,7 @@ internal class ContentSession(
             PubnubMessagingClient(
                 config.pubNubKey,
                 uuid
-            )
-                .filter()
-                .logAnalytics(analyticService)
-                .withPreloader(applicationContext)
+            ).filter().logAnalytics(analyticService).withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .asWidgetManager(
                     widgetDataClient,
@@ -270,7 +261,8 @@ internal class ContentSession(
                     userRepository,
                     programRepository,
                     animationEventsStream,
-                    widgetThemeAttributes
+                    widgetThemeAttributes,
+                    widgetThemeStream
                 )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
