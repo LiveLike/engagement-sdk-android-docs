@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat.startActivity
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -65,16 +64,6 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                             logDebug { "showing the Alert WidgetView" }
                             inflate(context, it)
                         }
-                    }
-                    WidgetStates.INTERACTING -> {
-                    }
-                    WidgetStates.FINISHED -> {
-                        // viewModel?.dismissWidget(DismissAction.TAP_X)
-                        // TODO Need to add new action for state change to finished
-                        removeAllViews()
-                        parent?.let { par -> (par as ViewGroup).removeAllViews() }
-                    }
-                    else -> {
                     }
                 }
                 if (viewModel?.enableDefaultWidgetTransition == true) {

@@ -78,7 +78,12 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
      */
     fun displayWidget(sdk: EngagementSDK, widgetResourceJson: JsonObject) {
         try {
-            val widgetType = widgetResourceJson.get("kind").asString + "-created"
+            var widgetType = widgetResourceJson.get("kind").asString
+            if (widgetType.contains("follow-up")) {
+                widgetType = "$widgetType-updated"
+            } else {
+                widgetType = "$widgetType-created"
+            }
             val widgetId = widgetResourceJson["id"].asString
             widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                 Pair(
