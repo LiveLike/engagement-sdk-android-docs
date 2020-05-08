@@ -137,6 +137,14 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 inflate(context, R.layout.widget_text_option_selection, this@QuizView)
             }
 
+            when (optionList.map { it.image_url.isNullOrEmpty().not() }
+                .reduce { a, b -> a && b }) {
+                true -> widgetsTheme?.imageQuiz
+                else -> widgetsTheme?.textQuiz
+            }?.let {
+                updateTitleView(it)
+            }
+
             titleView.title = resource.question
             txtTitleBackground.setBackgroundResource(R.drawable.header_rounded_corner_quiz)
 
@@ -146,7 +154,10 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                 }
-            }, type)
+            }, type, component = when(optionList.map { it.image_url.isNullOrEmpty().not() }.reduce { a, b -> a&&b }){
+                true -> widgetsTheme?.imageQuiz
+                else -> widgetsTheme?.textQuiz
+            })
 
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter

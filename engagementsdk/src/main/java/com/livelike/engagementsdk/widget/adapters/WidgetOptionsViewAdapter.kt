@@ -3,6 +3,8 @@ package com.livelike.engagementsdk.widget.adapters
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import com.livelike.engagementsdk.widget.Component
+import com.livelike.engagementsdk.widget.LayoutPickerComponent
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.view.components.WidgetItemView
@@ -12,7 +14,8 @@ internal class WidgetOptionsViewAdapter(
     private val onClick: (selectedOption: Option) -> Unit,
     private val widgetType: WidgetType,
     var correctOptionId: String? = null,
-    var userSelectedOptionId: String = ""
+    var userSelectedOptionId: String = "",
+    var component: LayoutPickerComponent? = null
 ) :
     RecyclerView.Adapter<WidgetOptionsViewAdapter.TextOptionViewHolder>() {
 
@@ -26,7 +29,10 @@ internal class WidgetOptionsViewAdapter(
             field = value
         }
 
-    inner class TextOptionViewHolder(val textItemView: WidgetItemView, val onClick: (selectedOption: Option) -> Unit) :
+    inner class TextOptionViewHolder(
+        val textItemView: WidgetItemView,
+        val onClick: (selectedOption: Option) -> Unit
+    ) :
         RecyclerView.ViewHolder(textItemView),
         View.OnClickListener {
         init {
@@ -56,7 +62,15 @@ internal class WidgetOptionsViewAdapter(
         val itemIsSelected = selectedPosition == position
         val itemIsLast = myDataset.size - 1 == position
 
-        holder.textItemView.setData(item, itemIsSelected, widgetType, correctOptionId, userSelectedOptionId, itemIsLast)
+        holder.textItemView.setData(
+            item,
+            itemIsSelected,
+            widgetType,
+            correctOptionId,
+            userSelectedOptionId,
+            itemIsLast,
+            component
+        )
         if (showPercentage) {
             holder.textItemView.setProgressVisibility(showPercentage)
         }
