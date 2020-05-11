@@ -91,7 +91,8 @@ internal class ChatSession(
                             origin = pair.first.pubnubOrigin
                         )
                     logDebug { "chatRepository created" }
-                    chatViewModel.reportUrl = null
+                //TODO: add report Url from the chatroom details
+                //chatViewModel.reportUrl = null
                     chatViewModel.stickerPackRepository =
                         StickerPackRepository(pair.first.clientId, pair.first.stickerPackUrl)
                     chatViewModel.chatReactionRepository =

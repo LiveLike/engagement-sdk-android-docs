@@ -49,7 +49,7 @@ internal class ChatDataClientImpl : EngagementDataClientImpl(), ChatDataClient {
         message: ChatMessage,
         accessToken: String?
     ) {
-        remoteCall<LiveLikeUser>(
+        val result = remoteCall<LiveLikeUser>(
             remoteUrl,
             RequestType.POST,
             RequestBody.create(
@@ -57,6 +57,7 @@ internal class ChatDataClientImpl : EngagementDataClientImpl(), ChatDataClient {
             ),
             accessToken
         )
+        println("Reprt->${result}")
     }
 
 

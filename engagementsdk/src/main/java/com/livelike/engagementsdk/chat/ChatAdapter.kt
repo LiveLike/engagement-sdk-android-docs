@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Context.ACCESSIBILITY_SERVICE
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
@@ -423,7 +424,11 @@ internal class ChatRecyclerAdapter(
 
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
-
+                        if (message.isDeleted) {
+                            chatMessage.setTypeface(null, Typeface.ITALIC)
+                        } else {
+                            chatMessage.setTypeface(null, Typeface.NORMAL)
+                        }
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text =
@@ -436,7 +441,7 @@ internal class ChatRecyclerAdapter(
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
                                 val pdt = message.timeStamp?.toLong() ?: 0
-                                val createdAt = message.getUnixTimeStamp()?.toTimeString()?:""
+                                val createdAt = message.getUnixTimeStamp()?.toTimeString() ?: ""
                                 val syncedTime = pdt.toTimeString()
 
                                 v.message_date_time.text =
@@ -449,7 +454,7 @@ internal class ChatRecyclerAdapter(
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }
-                
+
                         val topBorderLP = v.border_top.layoutParams
                         topBorderLP.height = chatMessageTopBorderHeight
                         v.border_top.layoutParams = topBorderLP
@@ -530,9 +535,11 @@ internal class ChatRecyclerAdapter(
                         val inputNoString = spaceRemover.matcher(message.message)
                             .replaceAll(Matcher.quoteReplacement(""))
                         val isOnlyStickers =
-                            inputNoString.findIsOnlyStickers().matches() || message.message.findImages().matches()
+                            inputNoString.findIsOnlyStickers()
+                                .matches() || message.message.findImages().matches()
                         val atLeastOneSticker =
-                            inputNoString.findStickers().find() || message.message.findImages().matches()
+                            inputNoString.findStickers().find() || message.message.findImages()
+                                .matches()
                         val numberOfStickers = message.message.findStickers().countMatches()
                         val isExternalImage = message.message.findImages().matches()
 
@@ -546,21 +553,43 @@ internal class ChatRecyclerAdapter(
                         when {
                             isExternalImage -> {
                                 val s = SpannableString(message.message)
-                                replaceWithImages(s, context, callback, false, message.id, message.image_width ?: largerStickerSize, message.image_height ?: largerStickerSize) {
+                                replaceWithImages(
+                                    s,
+                                    context,
+                                    callback,
+                                    false,
+                                    message.id,
+                                    message.image_width ?: largerStickerSize,
+                                    message.image_height ?: largerStickerSize
+                                ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             (isOnlyStickers && numberOfStickers < 2) -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null, callback, largerStickerSize) {
+                                replaceWithStickers(
+                                    s,
+                                    context,
+                                    stickerPackRepository,
+                                    null,
+                                    callback,
+                                    largerStickerSize
+                                ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null, callback, mediumStickerSize) {
+                                replaceWithStickers(
+                                    s,
+                                    context,
+                                    stickerPackRepository,
+                                    null,
+                                    callback,
+                                    mediumStickerSize
+                                ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }

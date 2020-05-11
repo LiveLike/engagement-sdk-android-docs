@@ -28,11 +28,11 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -43,9 +43,12 @@ internal class ChatViewModel(
 ) : ChatRenderer, ViewModel() {
 
     var chatListener: ChatEventListener? = null
-    var chatAdapter: ChatRecyclerAdapter = ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
+    var chatAdapter: ChatRecyclerAdapter =
+        ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     var messageList = mutableListOf<ChatMessage>()
+    var allMessageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
+    var deletedMessages = hashSetOf<String>()
     internal val eventStream: Stream<String> =
         SubscriptionManager(false)
     var currentChatRoom: ChatRoom? = null
@@ -69,7 +72,8 @@ internal class ChatViewModel(
         set(value) {
             field = value
             value?.let {
-                chatAdapter.chatReactionRepository = value }
+                chatAdapter.chatReactionRepository = value
+            }
         }
     var chatRepository: ChatRepository? = null
         set(value) {
@@ -101,14 +105,25 @@ internal class ChatViewModel(
     }
 
     override fun displayChatMessage(message: ChatMessage) {
-        logDebug { "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)} check blocked:${getBlockedUsers()
-            .contains(message.senderId)}" }
+        logDebug {
+            "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(
+                CHAT_PROVIDER
+            )} check blocked:${getBlockedUsers()
+                .contains(message.senderId)} check deleted:${deletedMessages.contains(message.id)}"
+        }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
+        //Now the message is belongs to my currentChat Room
+        allMessageList.add(0,message)
         if (getBlockedUsers()
-                .contains(message.senderId)) {
+                .contains(message.senderId)
+        ) {
+            logDebug { "user is blocked" }
             return
         }
-
+        if (deletedMessages.contains(message.id)) {
+            logDebug { "the message is deleted by producer" }
+            return
+        }
         val imageUrl = message.imageUrl
 
         if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
@@ -170,7 +185,8 @@ internal class ChatViewModel(
                 if (this.timetoken == messagePubnubToken) {
                     if (isOwnReaction) {
                         if (chatMessage?.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
-                            chatMessage?.myChatMessageReaction?.pubnubActionToken = chatMessageReaction.pubnubActionToken
+                            chatMessage?.myChatMessageReaction?.pubnubActionToken =
+                                chatMessageReaction.pubnubActionToken
                         }
                     } else {
                         val emojiId = chatMessageReaction.emojiId
@@ -184,11 +200,22 @@ internal class ChatViewModel(
     }
 
     override fun deleteChatMessage(messageId: String) {
-        messageList.find { it.id == messageId }?.apply {
-            message = "Redacted"
+        deletedMessages.add(messageId)
+        if (chatLoaded) {
+            logDebug { "message is deleted from producer to change its text" }
+            messageList.find { it.id == messageId }?.apply {
+                message = "This message has been removed."
+                isDeleted = true
+            }
+            uiScope.launch {
+                chatAdapter.submitList(ArrayList(messageList.toSet()))
+                val index = messageList.indexOfFirst { it.id == messageId }
+                if (index != -1 && index < chatAdapter.itemCount) {
+                    chatAdapter.notifyItemChanged(index)
+                }
+                eventStream.onNext(EVENT_MESSAGE_DELETED)
+            }
         }
-        chatAdapter.submitList(ArrayList(messageList.toSet()))
-        eventStream.onNext(EVENT_MESSAGE_DELETED)
     }
 
     override fun updateChatMessageTimeToken(messageId: String, timetoken: String) {
@@ -220,12 +247,26 @@ internal class ChatViewModel(
 
     private fun reportChatMessage(message: ChatMessage) {
         uiScope.launch {
-            reportUrl?.let { reportUrl -> dataClient.reportMessage(reportUrl, message, userStream.latest()?.accessToken) }
+            reportUrl?.let { reportUrl ->
+                dataClient.reportMessage(
+                    reportUrl,
+                    message,
+                    userStream.latest()?.accessToken
+                )
+            }
+        }
+    }
+
+    internal fun refreshWithDeletedMessage() {
+        messageList.removeAll { deletedMessages.contains(it.id) }
+        uiScope.launch {
+            chatAdapter.submitList(ArrayList(messageList))
         }
     }
 
     fun flushMessages() {
         cacheList = mutableListOf()
+        deletedMessages = hashSetOf()
         messageList = mutableListOf()
         chatAdapter.submitList(messageList)
     }
@@ -233,11 +274,11 @@ internal class ChatViewModel(
     fun loadPreviousMessages() {
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
             if (chatRepository != null) {
-                logDebug { "Chat loading previous messages size:${messageList.size}" }
-                if (messageList.size > 0)
+                logDebug { "Chat loading previous messages size:${messageList.size},all Message size:${allMessageList.size},deleted Message:${deletedMessages.size}," }
+                if (allMessageList.size > 0)
                     chatRepository?.loadPreviousMessages(
                         channel,
-                        messageList.first().timetoken
+                        allMessageList.first().timetoken
                     )
                 else
                     chatRepository?.loadPreviousMessages(
@@ -253,38 +294,42 @@ internal class ChatViewModel(
 
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
 
-            val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length - 1))
+        val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length - 1))
 
-            Glide.with(context)
-                .`as`(ByteArray::class.java)
-                .load(url)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(object : CustomTarget<ByteArray>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                    }
+        Glide.with(context)
+            .`as`(ByteArray::class.java)
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(object : CustomTarget<ByteArray>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
+                override fun onLoadCleared(placeholder: Drawable?) {
+                }
 
-                    override fun onResourceReady(
-                        fileBytes: ByteArray,
-                        transition: Transition<in ByteArray>?
-                    ) {
-                        try {
-                            uiScope.launch(Dispatchers.IO) {
-                                val imageUrl = dataClient.uploadImage(currentChatRoom!!.uploadUrl, userStream.latest()!!.accessToken, fileBytes!!)
-                                chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                                chatMessage.imageUrl = imageUrl
-                                val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                                chatMessage.image_width = bitmap.width
-                                chatMessage.image_height = bitmap.height
-                                val m = chatMessage.copy()
-                                m.message = ""
-                                chatListener?.onChatMessageSend(m, timedata)
-                                bitmap.recycle()
-                            }
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                            logError { e.message }
+                override fun onResourceReady(
+                    fileBytes: ByteArray,
+                    transition: Transition<in ByteArray>?
+                ) {
+                    try {
+                        uiScope.launch(Dispatchers.IO) {
+                            val imageUrl = dataClient.uploadImage(
+                                currentChatRoom!!.uploadUrl,
+                                userStream.latest()!!.accessToken,
+                                fileBytes!!
+                            )
+                            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                            chatMessage.imageUrl = imageUrl
+                            val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                            chatMessage.image_width = bitmap.width
+                            chatMessage.image_height = bitmap.height
+                            val m = chatMessage.copy()
+                            m.message = ""
+                            chatListener?.onChatMessageSend(m, timedata)
+                            bitmap.recycle()
                         }
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        logError { e.message }
                     }
-                })
+                }
+            })
     }
 }
