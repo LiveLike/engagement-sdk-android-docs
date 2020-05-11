@@ -28,6 +28,7 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
+import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
@@ -102,6 +103,7 @@ internal class ContentSession(
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
+
     // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
     private val configurationUserPairFlow = flow {
         while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
@@ -110,6 +112,7 @@ internal class ContentSession(
         emit(Pair(sdkConfiguration.latest()!!, userRepository.currentUserStream.latest()!!))
     }
     private var privateChatRoomID = ""
+    val widgetThemeStream: Stream<WidgetsTheme> = SubscriptionManager()
 
     init {
         userRepository.currentUserStream.subscribe(this) {
@@ -118,20 +121,21 @@ internal class ContentSession(
             }
         }
 
-        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode()).subscribe(this) {
-            it?.let { pair ->
-                val configuration = pair.second
-                analyticService =
-                    MixpanelAnalytics(
-                        applicationContext,
-                        configuration.mixpanelToken,
-                        configuration.clientId
-                    )
-                logDebug { "analyticService created" }
-                widgetContainer.analyticsService = analyticService
-                analyticService.trackSession(pair.first.id)
-                analyticService.trackUsername(pair.first.nickname)
-                analyticService.trackConfiguration(configuration.name ?: "")
+        userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode())
+            .subscribe(this) {
+                it?.let { pair ->
+                    val configuration = pair.second
+                    analyticService =
+                        MixpanelAnalytics(
+                            applicationContext,
+                            configuration.mixpanelToken,
+                            configuration.clientId
+                        )
+                    logDebug { "analyticService created" }
+                    widgetContainer.analyticsService = analyticService
+                    analyticService.trackSession(pair.first.id)
+                    analyticService.trackUsername(pair.first.nickname)
+                    analyticService.trackConfiguration(configuration.name ?: "")
 
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(configuration.programDetailUrlTemplate.replace(TEMPLATE_PROGRAM_ID, programId)) { program ->
@@ -228,12 +232,21 @@ internal class ContentSession(
             PubnubMessagingClient(
                 config.pubNubKey,
                 uuid
-            )
-                .filter()
-                .logAnalytics(analyticService)
-                .withPreloader(applicationContext)
+            ).filter().logAnalytics(analyticService).withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
-                .asWidgetManager(widgetDataClient, currentWidgetViewStream, applicationContext, widgetInterceptor, analyticService, config, userRepository, programRepository, animationEventsStream, widgetThemeAttributes)
+                .asWidgetManager(
+                    widgetDataClient,
+                    currentWidgetViewStream,
+                    applicationContext,
+                    widgetInterceptor,
+                    analyticService,
+                    config,
+                    userRepository,
+                    programRepository,
+                    animationEventsStream,
+                    widgetThemeAttributes,
+                    widgetThemeStream
+                )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
                 }

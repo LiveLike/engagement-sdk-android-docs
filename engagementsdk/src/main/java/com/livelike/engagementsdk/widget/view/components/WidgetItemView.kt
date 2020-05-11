@@ -4,6 +4,10 @@ import android.animation.LayoutTransition
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.ScaleDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
@@ -12,7 +16,10 @@ import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.Component
+import com.livelike.engagementsdk.widget.LayoutPickerComponent
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
@@ -27,7 +34,9 @@ import kotlinx.android.synthetic.main.atom_widget_text_item.view.percentageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
 import kotlin.math.roundToInt
 
-internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : ConstraintLayout(context, attr) {
+
+internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
+    ConstraintLayout(context, attr) {
     private var inflated = false
     var clickListener: OnClickListener? = null
 
@@ -37,7 +46,8 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         widgetType: WidgetType,
         correctOptionId: String?,
         selectedPredictionId: String = "",
-        itemIsLast: Boolean
+        itemIsLast: Boolean,
+        component: LayoutPickerComponent?
     ) {
         if (!inflated) {
             if (!option.image_url.isNullOrEmpty()) {
@@ -51,7 +61,15 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
             imagePercentage?.text = "${option.percentage}%"
         }
 
-        setItemBackground(itemIsSelected, widgetType, correctOptionId, selectedPredictionId, option, itemIsLast)
+        setItemBackground(
+            itemIsSelected,
+            widgetType,
+            correctOptionId,
+            selectedPredictionId,
+            option,
+            itemIsLast,
+            component
+        )
         animateProgress(option)
     }
 
@@ -78,56 +96,144 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         correctOptionId: String?,
         userSelectedOptionId: String,
         option: Option,
-        itemIsLast: Boolean
+        itemIsLast: Boolean,
+        layoutPickerComponent: LayoutPickerComponent?
     ) {
         logDebug { "WidgetItemView setbackground widgetType:$widgetType , isSelected:$itemIsSelected , isItemLast:$itemIsLast" }
+        var optionDescTheme: Component?
         if (itemIsSelected) {
+            optionDescTheme = layoutPickerComponent?.selectedOptionDescription
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
                 WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
-                    updateViewProgressBar(R.drawable.progress_bar_prediction)
-                    updateViewButtonBackground(
-                        R.drawable.answer_outline_selected_prediction
+                    if (layoutPickerComponent?.selectedOption != null) {
+                        updateViewButtonBackground(
+                            drawable2 = AndroidResource.createUpdateDrawable(
+                                layoutPickerComponent.selectedOption
+                            )
+                        )
+                    } else {
+                        updateViewButtonBackground(
+                            drawableId = R.drawable.answer_outline_selected_prediction
+                        )
+                    }
+                    updateViewProgressBar(
+                        drawableId = R.drawable.progress_bar_prediction,
+                        component = layoutPickerComponent?.selectedOptionBar
                     )
                 }
                 WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> {
-                    updateViewProgressBar(R.drawable.progress_bar_poll)
-                    updateViewButtonBackground(
-                        R.drawable.answer_outline_selected_poll
+                    updateViewProgressBar(
+                        drawableId = R.drawable.progress_bar_poll,
+                        component = layoutPickerComponent?.selectedOptionBar
                     )
+                    if (layoutPickerComponent?.selectedOption != null) {
+                        updateViewButtonBackground(
+                            drawable2 = AndroidResource.createUpdateDrawable(
+                                layoutPickerComponent.selectedOption
+                            )
+                        )
+                    } else {
+                        updateViewButtonBackground(
+                            drawableId = R.drawable.answer_outline_selected_poll
+                        )
+                    }
                 }
                 WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> {
-                    updateViewProgressBar(R.drawable.progress_bar_quiz)
-                    updateViewButtonBackground(
-                        R.drawable.answer_outline_selected_quiz
+                    updateViewProgressBar(
+                        R.drawable.progress_bar_quiz,
+                        component = layoutPickerComponent?.selectedOptionBar
                     )
+                    if (layoutPickerComponent?.selectedOption != null) {
+                        updateViewButtonBackground(
+                            drawable2 = AndroidResource.createUpdateDrawable(
+                                layoutPickerComponent.selectedOption
+                            )
+                        )
+                    } else {
+                        updateViewButtonBackground(
+                            drawableId = R.drawable.answer_outline_selected_quiz
+                        )
+                    }
                 }
                 else -> {
-                    updateViewProgressBar(R.drawable.progress_bar_neutral)
-                    updateViewButtonBackground(
-                        R.drawable.answer_outline_selected_poll
+                    updateViewProgressBar(
+                        R.drawable.progress_bar_neutral,
+                        component = layoutPickerComponent?.unselectedOptionBar
                     )
+                    if (layoutPickerComponent?.unselectedOption != null) {
+                        updateViewButtonBackground(
+                            drawable2 = AndroidResource.createUpdateDrawable(
+                                layoutPickerComponent.unselectedOption
+                            )
+                        )
+                    } else
+                        updateViewButtonBackground(R.color.livelike_transparent)
                 }
             }
         } else {
-            updateViewProgressBar(R.drawable.progress_bar_neutral)
-            updateViewButtonBackground(R.color.livelike_transparent)
+            optionDescTheme = layoutPickerComponent?.unselectedOptionDescription
+            updateViewProgressBar(
+                R.drawable.progress_bar_neutral,
+                component = layoutPickerComponent?.unselectedOptionBar
+            )
+            if (layoutPickerComponent?.unselectedOption != null) {
+                updateViewButtonBackground(
+                    drawable2 = AndroidResource.createUpdateDrawable(
+                        layoutPickerComponent.unselectedOption
+                    )
+                )
+            } else
+                updateViewButtonBackground(R.color.livelike_transparent)
         }
 
         if (!correctOptionId.isNullOrEmpty()) {
-            updateViewProgressBar(R.drawable.progress_bar_neutral)
+            updateViewProgressBar(
+                R.drawable.progress_bar_neutral,
+                component = layoutPickerComponent?.unselectedOptionBar
+            )
+            optionDescTheme = layoutPickerComponent?.unselectedOptionDescription
             if (userSelectedOptionId == option.id && !option.is_correct) {
-                updateViewProgressBar(R.drawable.progress_bar_wrong)
-                updateViewButtonBackground(R.drawable.answer_outline_wrong)
+                optionDescTheme = layoutPickerComponent?.incorrectOptionDescription
+                updateViewProgressBar(
+                    R.drawable.progress_bar_wrong,
+                    component = layoutPickerComponent?.incorrectOptionBar
+                )
+                if (layoutPickerComponent?.incorrectOption != null)
+                    updateViewButtonBackground(
+                        drawable2 = AndroidResource.createUpdateDrawable(
+                            layoutPickerComponent.incorrectOption
+                        )
+                    )
+                else
+                    updateViewButtonBackground(R.drawable.answer_outline_wrong)
             }
             if (option.is_correct) {
-                updateViewProgressBar(R.drawable.progress_bar_correct)
-                updateViewButtonBackground(R.drawable.answer_outline_correct)
+                optionDescTheme = layoutPickerComponent?.correctOptionDescription
+                updateViewProgressBar(
+                    R.drawable.progress_bar_correct,
+                    component = layoutPickerComponent?.correctOptionBar
+                )
+                if (layoutPickerComponent?.correctOption != null) {
+                    updateViewButtonBackground(
+                        drawable2 = AndroidResource.createUpdateDrawable(
+                            layoutPickerComponent.correctOption
+                        )
+                    )
+                } else
+                    updateViewButtonBackground(R.drawable.answer_outline_correct)
             }
         }
         if (itemIsLast) {
             updateViewBackground(R.drawable.answer_background_last_item)
         } else {
             updateViewBackground(R.drawable.answer_background_default)
+        }
+        if (!option.image_url.isNullOrEmpty()) {
+            AndroidResource.updateThemeForView(imageText, optionDescTheme)
+            AndroidResource.updateThemeForView(imagePercentage, optionDescTheme)
+        } else {
+            AndroidResource.updateThemeForView(text_button, optionDescTheme)
+            AndroidResource.updateThemeForView(percentageText, optionDescTheme)
         }
         setProgressVisibility(!correctOptionId.isNullOrEmpty())
     }
@@ -161,6 +267,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
             inflate(context, R.layout.atom_widget_image_item, this)
             layoutTransition = LayoutTransition()
         }
+
         imageText.text = option.description
 
         Glide.with(context)
@@ -175,8 +282,24 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         )
     }
 
-    private fun updateViewProgressBar(drawableId: Int) {
+    private fun updateDescViewTheme(isImage: Boolean, component: Component?) {
+        component?.let {
+            if (isImage) {
+                AndroidResource.updateThemeForView(imageText, it)
+            } else {
+                AndroidResource.updateThemeForView(text_button, it)
+            }
+        }
+    }
+
+    private fun updateViewProgressBar(drawableId: Int, component: Component? = null) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
+        component?.let {
+            val scaleDrawable: ScaleDrawable = (drawable as LayerDrawable)
+                .findDrawableByLayerId(android.R.id.progress) as ScaleDrawable
+            val gradientDrawable: GradientDrawable = scaleDrawable.drawable as GradientDrawable
+            AndroidResource.createUpdateDrawable(component, shape = gradientDrawable)
+        }
         if (determinateBar != null && determinateBar?.tag != drawableId) {
             determinateBar?.progressDrawable = drawable
             determinateBar?.tag = drawableId
@@ -187,15 +310,20 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) : Co
         }
     }
 
-    private fun updateViewButtonBackground(drawableId: Int) {
-        val drawable = AppCompatResources.getDrawable(context, drawableId)
-        if (text_button != null && text_button?.tag != drawableId) {
-            text_button?.background = drawable
-            text_button?.tag = drawableId
+    private fun updateViewButtonBackground(drawableId: Int? = null, drawable2: Drawable? = null) {
+        val drawable = when {
+            drawableId != null -> AppCompatResources.getDrawable(context, drawableId)
+            else -> drawable2
         }
-        if (imageButtonBackground != null && imageButtonBackground?.tag != drawableId) {
-            imageButtonBackground?.background = drawable
-            imageButtonBackground?.tag = drawableId
+        drawable?.let {
+            if (text_button != null && text_button?.tag != drawableId ?: drawable2) {
+                text_button?.background = drawable
+                text_button?.tag = drawableId ?: drawable2
+            }
+            if (imageButtonBackground != null && imageButtonBackground?.tag != drawableId ?: drawable2) {
+                imageButtonBackground?.background = drawable
+                imageButtonBackground?.tag = drawableId ?: drawable2
+            }
         }
     }
 

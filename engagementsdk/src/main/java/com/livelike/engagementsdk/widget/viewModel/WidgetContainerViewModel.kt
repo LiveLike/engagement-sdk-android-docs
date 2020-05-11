@@ -65,7 +65,8 @@ class WidgetContainerViewModel(internal val currentWidgetViewStream: Stream<Pair
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
         removeViews()
         if (widgetView != null) {
-            widgetView.widgetViewModel?.enableDefaultWidgetTransition = enableDefaultWidgetTransition
+            widgetView.widgetViewModel?.enableDefaultWidgetTransition =
+                enableDefaultWidgetTransition
             displayWidget(widgetView)
         }
         if (widgetContainer != null) {

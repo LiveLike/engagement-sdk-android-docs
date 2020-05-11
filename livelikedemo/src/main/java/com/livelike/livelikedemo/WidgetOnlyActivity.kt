@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import com.google.gson.Gson
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.ChannelManager
@@ -110,6 +111,14 @@ class WidgetOnlyActivity : AppCompatActivity() {
             )
         )
         rcyl_view.adapter = adapter
+        val jsonTheme = intent.getStringExtra("jsonTheme")
+        if (jsonTheme != null) {
+            try {
+                widget_view.setTheme(jsonTheme)
+            } catch (e: Exception) {
+                Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
         widget_view.setSession(session)
     }
 

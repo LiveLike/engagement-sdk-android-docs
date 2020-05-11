@@ -3,6 +3,9 @@ package com.livelike.engagementsdk.widget.view
 import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.RippleDrawable
+import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -17,13 +20,13 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.Component
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
-import kotlin.math.max
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
@@ -41,6 +44,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_ti
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple_demo
+import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
@@ -111,7 +115,17 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 inflated = true
                 inflate(context, R.layout.widget_cheer_meter, this@CheerMeterView)
             }
+            widgetsTheme?.cheerMeter?.let { cheerMeterTheme ->
+                AndroidResource.updateThemeForView(txt_cheer_meter_title, cheerMeterTheme.title)
+                AndroidResource.updateThemeForView(txt_cheer_meter_team_1, cheerMeterTheme.sideABar)
+                AndroidResource.updateThemeForView(txt_cheer_meter_team_2, cheerMeterTheme.sideBBar)
+                txt_cheer_meter_team_1.background =
+                    AndroidResource.createUpdateDrawable(cheerMeterTheme.sideABar)
 
+                txt_cheer_meter_team_2.background =
+                    AndroidResource.createUpdateDrawable(cheerMeterTheme.sideBBar)
+
+            }
             txt_cheer_meter_title.text = resource.question
             if (optionList.size == 2) {
                 txt_cheer_meter_team_1.text = optionList[0].description
@@ -153,6 +167,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                         view_ripple.isClickable = true
                                         img_logo_team_1.isClickable = false
                                         img_logo_team_2.isClickable = false
+                                        widgetsTheme?.cheerMeter?.sideAButton?.let {
+                                            updateRippleView(it)
+                                        }
                                         optionList[0].vote_url?.let { url ->
                                             startDemo(url, optionList[0])
                                         }
@@ -190,6 +207,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                         view_ripple.isClickable = true
                                         img_logo_team_1.isClickable = false
                                         img_logo_team_2.isClickable = false
+                                        widgetsTheme?.cheerMeter?.sideBButton?.let {
+                                            updateRippleView(it)
+                                        }
                                         optionList[1].vote_url?.let { url ->
                                             startDemo(url, optionList[1])
                                         }
@@ -323,6 +343,24 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     }, {
                         viewModel?.dismissWidget(it)
                     })
+                }
+            }
+        }
+    }
+
+    private fun updateRippleView(component: Component) {
+        val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            view_ripple.background as? RippleDrawable
+        } else {
+            view_ripple.background as? GradientDrawable
+        }
+        drawable?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (drawable is RippleDrawable) {
+                    val drawable2 = drawable.findDrawableByLayerId(android.R.id.mask)
+                    if (drawable2 is GradientDrawable) {
+                        AndroidResource.createUpdateDrawable(component, drawable2)
+                    }
                 }
             }
         }

@@ -51,6 +51,8 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
+import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 import kotlin.math.min
 
 internal class WidgetProvider {
@@ -64,14 +66,17 @@ internal class WidgetProvider {
         userRepository: UserRepository,
         programRepository: ProgramRepository? = null,
         animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
-        widgetThemeAttributes: WidgetViewThemeAttributes
+        widgetThemeAttributes: WidgetViewThemeAttributes,
+        widgetsTheme: WidgetsTheme?
     ): SpecifiedWidgetView? {
         val specifiedWidgetView = when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
+                this.widgetsTheme = widgetsTheme
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
+                this.widgetsTheme = widgetsTheme
                 widgetViewModel = QuizViewModel(
                     widgetInfos,
                     analyticsService,
@@ -86,6 +91,7 @@ internal class WidgetProvider {
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
+                this.widgetsTheme = widgetsTheme
                 widgetViewModel = PredictionViewModel(
                     widgetInfos,
                     context,
@@ -99,6 +105,7 @@ internal class WidgetProvider {
             }
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
+                this.widgetsTheme = widgetsTheme
                 widgetViewModel = PollViewModel(
                     widgetInfos,
                     analyticsService,
@@ -110,6 +117,7 @@ internal class WidgetProvider {
                 )
             }
             POINTS_TUTORIAL -> PointsTutorialView(context).apply {
+                this.widgetsTheme = widgetsTheme
                 widgetViewModel = PointTutorialWidgetViewModel(
                     onDismiss,
                     analyticsService,
@@ -118,6 +126,7 @@ internal class WidgetProvider {
                 )
             }
             COLLECT_BADGE -> CollectBadgeWidgetView(context).apply {
+                this.widgetsTheme = widgetsTheme
                 widgetViewModel = CollectBadgeWidgetViewModel(
                     gson.fromJson(
                         widgetInfos.payload,
@@ -126,6 +135,7 @@ internal class WidgetProvider {
                 )
             }
             CHEER_METER -> CheerMeterView(context).apply {
+                this.widgetsTheme = widgetsTheme
                 widgetViewThemeAttributes = widgetThemeAttributes
                 widgetViewModel = CheerMeterViewModel(
                     widgetInfos,
@@ -138,6 +148,7 @@ internal class WidgetProvider {
                 )
             }
             IMAGE_SLIDER -> EmojiSliderWidgetView(context).apply {
+                this.widgetsTheme = widgetsTheme
                 widgetViewModel = EmojiSliderWidgetViewModel(
                     widgetInfos, analyticsService, sdkConfiguration, onDismiss,
                     userRepository, programRepository, widgetMessagingClient
@@ -163,6 +174,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     open var widgetViewModel: BaseViewModel? = null
     open var dismissFunc: ((action: DismissAction) -> Unit)? = null
     open var widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()
+    open var widgetsTheme: WidgetsTheme? = null
 
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
 
@@ -196,7 +208,13 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         widgetLifeCycleEventsListener?.onWidgetInteractionCompleted(widgetData)
     }
 
-    internal fun showTimer(time: String, animationEggTimerProgress: Float?, v: EggTimerCloseButtonView?, onUpdate: (Float) -> Unit, dismissAction: (action: DismissAction) -> Unit) {
+    internal fun showTimer(
+        time: String,
+        animationEggTimerProgress: Float?,
+        v: EggTimerCloseButtonView?,
+        onUpdate: (Float) -> Unit,
+        dismissAction: (action: DismissAction) -> Unit
+    ) {
         if (widgetViewModel?.enableDefaultWidgetTransition == false) {
             v?.visibility = View.GONE
             return
@@ -209,6 +227,14 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         }
     }
 
+    protected fun updateTitleView(it: LayoutPickerComponent) {
+        titleView.componentTheme = it.title
+        if (it.header?.background != null) {
+            txtTitleBackground.background = AndroidResource.createUpdateDrawable(it.header)
+        }
+        AndroidResource.setPaddingForView(txtTitleBackground, it.header?.padding)
+    }
+    
     open fun moveToNextState() {
         val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
         widgetViewModel?.widgetState?.onNext(
