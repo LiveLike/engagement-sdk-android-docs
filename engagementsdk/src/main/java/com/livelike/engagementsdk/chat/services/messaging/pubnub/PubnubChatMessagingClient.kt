@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
+import com.livelike.engagementsdk.chat.data.ChatModerationFilter
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
@@ -195,7 +196,8 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
-        pubnubConfiguration.filterExpression = "!(filtered CONTAINS profanity)"
+        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || " +
+                "!(${ChatModerationFilter.values().joinToString { it.name.toLowerCase() }}) CONTAINS content_filter"
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
@@ -361,6 +363,10 @@ internal class PubnubChatMessagingClient(
         timeToken: Long,
         actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>? = null
     ) {
+        if (isMessageModerated(jsonObject)) {
+            return // discarding moderated message
+        }
+
         val event = jsonObject.extractStringOrEmpty("event").toPubnubChatEventType()
         if (event != null) {
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
@@ -429,6 +435,10 @@ internal class PubnubChatMessagingClient(
         } else {
             logError { "We don't know how to handle this message" }
         }
+    }
+
+    private fun isMessageModerated(jsonObject: JsonObject): Boolean {
+        return (jsonObject.getAsJsonArray("content_filter")?.size() ?: 0) > 0
     }
 
     private fun getOwnReaction(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
