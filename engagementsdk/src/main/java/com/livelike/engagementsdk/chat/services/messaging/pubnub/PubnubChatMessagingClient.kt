@@ -9,7 +9,6 @@ import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
-import com.livelike.engagementsdk.chat.data.ChatModerationFilter
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
@@ -196,8 +195,7 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
-        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || " +
-                "!(${ChatModerationFilter.values().joinToString { it.name.toLowerCase() }}) CONTAINS content_filter"
+        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || !(content_filter contains 'profanity')"
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
@@ -363,10 +361,6 @@ internal class PubnubChatMessagingClient(
         timeToken: Long,
         actions: HashMap<String, HashMap<String, List<PNFetchMessageItem.Action>>>? = null
     ) {
-        if (isMessageModerated(jsonObject)) {
-            return // discarding moderated message
-        }
-
         val event = jsonObject.extractStringOrEmpty("event").toPubnubChatEventType()
         if (event != null) {
             val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
@@ -438,7 +432,7 @@ internal class PubnubChatMessagingClient(
     }
 
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {
-        return (jsonObject.getAsJsonArray("content_filter")?.size() ?: 0) > 0
+        return jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")?.size() ?: 0 > 0
     }
 
     private fun getOwnReaction(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
@@ -501,13 +495,15 @@ internal class PubnubChatMessagingClient(
                                         firstTimeToken = it.timetoken
                                     addProperty("pubnubToken", it.timetoken)
                                 }
-                                processPubnubChatEvent(
-                                    jsonObject,
-                                    channel,
-                                    this@PubnubChatMessagingClient,
-                                    it.timetoken,
-                                    it.actions
-                                )
+                                if (!isMessageModerated(jsonObject)) {
+                                    processPubnubChatEvent(
+                                        jsonObject,
+                                        channel,
+                                        this@PubnubChatMessagingClient,
+                                        it.timetoken,
+                                        it.actions
+                                    )
+                                }
                             }
                         }
                         sendLoadingCompletedEvent(channel)
