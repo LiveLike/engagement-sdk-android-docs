@@ -271,7 +271,8 @@ internal class PubnubChatMessagingClient(
                     ) ?: mutableMapOf()
                 pubnubChatRoomLastMessageTime?.let {
                     val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> =
-                        gson.fromJson(message.message.asJsonObject,
+                        gson.fromJson(
+                            message.message.asJsonObject,
                             object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type
                         )
                     val msgId = pubnubChatEvent.payload.messageId
@@ -281,18 +282,29 @@ internal class PubnubChatMessagingClient(
                             it.containsKey(channel) -> it[channel]
                             else -> ArrayList()
                         } ?: ArrayList()
-                    if (!list.contains(msgId)) {
-                        list.add(msgId)
-                        it[channel] = list
-                        getSharedPreferences()
-                            .edit()
-                            .putString(
-                                PREF_CHAT_ROOM_MSG_RECEIVED,
-                                GsonBuilder().create().toJson(it)
-                            ).apply()
-                        processPubnubChatEvent(message.message.asJsonObject.apply {
-                            addProperty("pubnubToken", message.timetoken)
-                        }, channel, client, message.timetoken)
+                    val event = message.message.asJsonObject.extractStringOrEmpty("event")
+                        .toPubnubChatEventType()
+                    when (event) {
+                        MESSAGE_CREATED -> {
+                            if (!list.contains(msgId)) {
+                                list.add(msgId)
+                                it[channel] = list
+                                getSharedPreferences()
+                                    .edit()
+                                    .putString(
+                                        PREF_CHAT_ROOM_MSG_RECEIVED,
+                                        GsonBuilder().create().toJson(it)
+                                    ).apply()
+                                processPubnubChatEvent(message.message.asJsonObject.apply {
+                                    addProperty("pubnubToken", message.timetoken)
+                                }, channel, client, message.timetoken)
+                            }
+                        }
+                        else -> {
+                            processPubnubChatEvent(message.message.asJsonObject.apply {
+                                addProperty("pubnubToken", message.timetoken)
+                            }, channel, client, message.timetoken)
+                        }
                     }
                 }
             }
@@ -362,7 +374,8 @@ internal class PubnubChatMessagingClient(
     ) {
         val event = jsonObject.extractStringOrEmpty("event").toPubnubChatEventType()
         if (event != null) {
-            val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(jsonObject,
+            val pubnubChatEvent: PubnubChatEvent<PubnubChatMessage> = gson.fromJson(
+                jsonObject,
                 object : TypeToken<PubnubChatEvent<PubnubChatMessage>>() {}.type
             )
             var clientMessage: ClientMessage? = null
@@ -485,6 +498,7 @@ internal class PubnubChatMessagingClient(
                         if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
                             firstTimeToken = null
                             result.channels?.get(channel)?.reversed()?.forEach {
+
                                 val jsonObject = it.message.asJsonObject.apply {
                                     if (firstTimeToken == null)
                                         firstTimeToken = it.timetoken

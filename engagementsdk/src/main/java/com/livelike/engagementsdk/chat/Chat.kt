@@ -48,7 +48,8 @@ internal data class ChatMessage(
     // time of the message
     var timetoken: Long = 0L,
     var image_width: Int? = 100,
-    var image_height: Int? = 100
+    var image_height: Int? = 100,
+    var isDeleted: Boolean = false
 ) {
     fun toReportMessageJson(): String {
         return """{

@@ -48,9 +48,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -77,6 +74,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -267,6 +267,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 formatMessageDateTime(time)
             }
             initStickerKeyboard(sticker_keyboard, this)
+            refreshWithDeletedMessage()
             setDataSource(chatAdapter)
             if (chatLoaded)
                 checkEmptyChat()

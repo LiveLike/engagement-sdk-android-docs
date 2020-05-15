@@ -137,43 +137,30 @@ internal class ContentSession(
                     analyticService.trackUsername(pair.first.nickname)
                     analyticService.trackConfiguration(configuration.name ?: "")
 
-                    if (programId.isNotEmpty()) {
-                        llDataClient.getProgramData(
-                            configuration.programDetailUrlTemplate.replace(
-                                TEMPLATE_PROGRAM_ID,
-                                programId
-                            )
-                        ) { program ->
-                            if (program !== null) {
-                                programRepository.program = program
-                                userRepository.rewardType = program.rewardsType
-                                isGamificationEnabled =
-                                    !program.rewardsType.equals(RewardsType.NONE.key)
-                                initializeWidgetMessaging(
-                                    program.subscribeChannel,
-                                    configuration,
-                                    pair.first.id
-                                )
-                                chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
-                                program.analyticsProps.forEach { map ->
-                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
-                                }
-                                configuration.analyticsProps.forEach { map ->
-                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
-                                }
-                                contentSessionScope.launch {
-                                    if (isGamificationEnabled) programRepository.fetchProgramRank()
-                                }
-                                startObservingForGamificationAnalytics(
-                                    analyticService,
-                                    programRepository.programGamificationProfileStream,
-                                    programRepository.rewardType
-                                )
+                if (programId.isNotEmpty()) {
+                    llDataClient.getProgramData(configuration.programDetailUrlTemplate.replace(TEMPLATE_PROGRAM_ID, programId)) { program ->
+                        if (program !== null) {
+                            programRepository.program = program
+                            userRepository.rewardType = program.rewardsType
+                            isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
+                            initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
+                            chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
+                            chatSession.chatViewModel.reportUrl = program.reportUrl
+                            program.analyticsProps.forEach { map ->
+                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
+                            configuration.analyticsProps.forEach { map ->
+                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                            }
+                            contentSessionScope.launch {
+                                if (isGamificationEnabled) programRepository.fetchProgramRank()
+                            }
+                            startObservingForGamificationAnalytics(analyticService, programRepository.programGamificationProfileStream, programRepository.rewardType)
                         }
                     }
                 }
             }
+        }
         if (!applicationContext.isNetworkConnected()) {
             errorDelegate?.onError("Network error please create the session again")
         }
@@ -226,11 +213,7 @@ internal class ContentSession(
         widgetView: FrameLayout,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
-        println("ContentSession.setWidgetContainer")
-        widgetContainer.setWidgetContainer(
-            widgetView,
-            widgetViewThemeAttributes
-        )
+        widgetContainer.setWidgetContainer(widgetView, widgetViewThemeAttributes)
     }
 
     private fun initializeWidgetMessaging(
