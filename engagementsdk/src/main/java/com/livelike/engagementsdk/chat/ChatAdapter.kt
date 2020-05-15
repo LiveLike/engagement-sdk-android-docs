@@ -167,8 +167,9 @@ internal class ChatRecyclerAdapter(
             }
             lastFloatingUiAnchorView = view
             val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
+            val isDeletedMessage = (view?.tag as ChatMessage?)?.isDeleted ?: false
             val reactionsAvailable = (chatReactionRepository?.reactionList?.size ?: 0) > 0
-            if (reactionsAvailable || !isOwnMessage) {
+            if ((reactionsAvailable || !isOwnMessage) && !isDeletedMessage) {
                 showFloatingUI(
                     isOwnMessage,
                     message?.myChatMessageReaction,

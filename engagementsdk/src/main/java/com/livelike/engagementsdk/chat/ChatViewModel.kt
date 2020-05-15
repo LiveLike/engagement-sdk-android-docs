@@ -202,7 +202,7 @@ internal class ChatViewModel(
     override fun deleteChatMessage(messageId: String) {
         deletedMessages.add(messageId)
         if (chatLoaded) {
-            logDebug { "message is deleted from producer to change its text" }
+            logDebug { "message is deleted from producer so changing its text" }
             messageList.find { it.id == messageId }?.apply {
                 message = "This message has been removed."
                 isDeleted = true
