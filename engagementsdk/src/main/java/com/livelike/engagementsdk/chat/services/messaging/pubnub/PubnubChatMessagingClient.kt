@@ -259,7 +259,6 @@ internal class PubnubChatMessagingClient(
             }
 
             override fun message(pubnub: PubNub, message: PNMessageResult) {
-                println("PubnubChatMessagingClient.message->${message.message.asJsonObject}")
                 val channel = message.channel
                 if (pubnubChatRoomLastMessageTime == null)
                     pubnubChatRoomLastMessageTime = GsonBuilder().create().fromJson(
@@ -285,19 +284,27 @@ internal class PubnubChatMessagingClient(
                         } ?: ArrayList()
                     val event = message.message.asJsonObject.extractStringOrEmpty("event")
                         .toPubnubChatEventType()
-                    if ((!list.contains(msgId) && event == MESSAGE_CREATED) || event != MESSAGE_CREATED) {
-                        if (!list.contains(msgId))
-                            list.add(msgId)
-                        it[channel] = list
-                        getSharedPreferences()
-                            .edit()
-                            .putString(
-                                PREF_CHAT_ROOM_MSG_RECEIVED,
-                                GsonBuilder().create().toJson(it)
-                            ).apply()
-                        processPubnubChatEvent(message.message.asJsonObject.apply {
-                            addProperty("pubnubToken", message.timetoken)
-                        }, channel, client, message.timetoken)
+                    when (event) {
+                        MESSAGE_CREATED -> {
+                            if (!list.contains(msgId)) {
+                                list.add(msgId)
+                                it[channel] = list
+                                getSharedPreferences()
+                                    .edit()
+                                    .putString(
+                                        PREF_CHAT_ROOM_MSG_RECEIVED,
+                                        GsonBuilder().create().toJson(it)
+                                    ).apply()
+                                processPubnubChatEvent(message.message.asJsonObject.apply {
+                                    addProperty("pubnubToken", message.timetoken)
+                                }, channel, client, message.timetoken)
+                            }
+                        }
+                        else -> {
+                            processPubnubChatEvent(message.message.asJsonObject.apply {
+                                addProperty("pubnubToken", message.timetoken)
+                            }, channel, client, message.timetoken)
+                        }
                     }
                 }
             }
