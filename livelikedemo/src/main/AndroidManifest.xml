@@ -19,8 +19,9 @@
         android:theme="@style/AppTheme"
         android:versionCode="1"
         android:versionName="1"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".WidgetFrameworkTestActivity"></activity>
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:allowBackup">
+        <activity android:name=".WidgetFrameworkTestActivity" />
         <activity android:name=".LiveBlogActivity" />
         <activity android:name=".ChatOnlyActivity" />
         <activity android:name=".WidgetOnlyActivity" />
