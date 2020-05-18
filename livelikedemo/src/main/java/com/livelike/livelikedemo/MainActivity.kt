@@ -225,38 +225,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             dialog.show()
-//            val files: ArrayList<String> =
-//                ArrayList(assets.list("themes")?.toList() ?: arrayListOf())
-//            files.add(0, "None")
-//            AlertDialog.Builder(this).apply {
-//                setTitle("Choose a theme!")
-//                setItems(files.toTypedArray()) { _, which ->
-//                    // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
-//                    themes_json_label.text = files[which]
-//                    EngagementSDK.enableDebug = false
-//                    files.let {
-//                        when (which) {
-//                            0 -> {
-//                                player.jsonTheme = null
-//                            }
-//                            else -> {
-//                                val path = files[which]
-//                                val theme = getFileFromAsset(context, "themes/$path")
-//                                if (theme != null) {
-//                                    player.jsonTheme = theme
-//                                    onlyWidget.jsonTheme = theme
-//                                } else
-//                                    Toast.makeText(
-//                                        applicationContext,
-//                                        "Unable to get the theme json",
-//                                        Toast.LENGTH_LONG
-//                                    ).show()
-//                            }
-//                        }
-//                    }
-//                }
-//                create()
-//            }.show()
         }
 
         events_label.text = channelManager.selectedChannel.name
