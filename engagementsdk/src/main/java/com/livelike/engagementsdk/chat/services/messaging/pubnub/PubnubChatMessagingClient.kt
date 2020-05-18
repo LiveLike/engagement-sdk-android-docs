@@ -195,7 +195,7 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
-        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || !(content_filter contains 'profanity')"
+        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || !(content_filter contains 'filtered')"
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
