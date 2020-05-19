@@ -52,9 +52,17 @@ internal class ChatSession(
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
+
     // TODO get analytics service by moving it to SDK level instewad of program
     override var analyticService: AnalyticsService = MockAnalyticsService()
-    val chatViewModel: ChatViewModel by lazy { ChatViewModel(MockAnalyticsService(), userRepository.currentUserStream, isPublicRoom, null) }
+    val chatViewModel: ChatViewModel by lazy {
+        ChatViewModel(
+            MockAnalyticsService(),
+            userRepository.currentUserStream,
+            isPublicRoom,
+            null
+        )
+    }
     override var getActiveChatRoom: () -> String = { chatViewModel.currentChatRoom?.id ?: "" }
     private var chatClient: MessagingClient? = null
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -75,38 +83,51 @@ internal class ChatSession(
     init {
         contentSessionScope.launch {
             configurationUserPairFlow.collect { pair ->
-                    analyticService = MixpanelAnalytics(
-                        applicationContext,
-                        pair.first.mixpanelToken,
-                        pair.first.clientId
+                analyticService = MixpanelAnalytics(
+                    applicationContext,
+                    pair.first.mixpanelToken,
+                    pair.first.clientId
+                )
+                val liveLikeUser = pair.second
+                chatRepository =
+                    ChatRepository(
+                        pair.first.pubNubKey,
+                        liveLikeUser.accessToken,
+                        liveLikeUser.id,
+                        MockAnalyticsService(),
+                        pair.first.pubnubPublishKey,
+                        origin = pair.first.pubnubOrigin
                     )
-                    val liveLikeUser = pair.second
-                    chatRepository =
-                        ChatRepository(
-                            pair.first.pubNubKey,
-                            liveLikeUser.accessToken,
-                            liveLikeUser.id,
-                            MockAnalyticsService(),
-                            pair.first.pubnubPublishKey,
-                            origin = pair.first.pubnubOrigin
-                        )
-                    logDebug { "chatRepository created" }
-                //TODO: add report Url from the chatroom details
-                //chatViewModel.reportUrl = null
-                    chatViewModel.stickerPackRepository =
-                        StickerPackRepository(pair.first.clientId, pair.first.stickerPackUrl)
-                    chatViewModel.chatReactionRepository =
-                        ChatReactionRepository(pair.first.reactionPacksUrl)
-                    chatViewModel.chatRepository = chatRepository
-                    contentSessionScope.launch {
-                        chatViewModel.chatReactionRepository?.preloadImages(
-                            applicationContext
-                        )
-                    }
-                    initializeChatMessaging(currentPlayheadTime)
-                    chatSessionIdleStream.onNext(true)
+                logDebug { "chatRepository created" }
+                //updating urls value will be added in enterChat Room
+                chatViewModel.chatRepository = chatRepository
+                initializeChatMessaging(currentPlayheadTime)
+                chatSessionIdleStream.onNext(true)
+            }
+        }
+    }
+
+    private fun updatingURls(
+        clientId: String,
+        stickerPackUrl: String,
+        reactionPacksUrl: String,
+        reportUrl: String?
+    ) {
+        println("ChatSession.updatingURls->$stickerPackUrl ->$reactionPacksUrl ->$reportUrl")
+        contentSessionScope.launch {
+            configurationUserPairFlow.collect { pair ->
+                chatViewModel.stickerPackRepository =
+                    StickerPackRepository(clientId, stickerPackUrl)
+                chatViewModel.chatReactionRepository =
+                    ChatReactionRepository(reactionPacksUrl, pair.second.accessToken)
+                chatViewModel.reportUrl = reportUrl
+                contentSessionScope.launch {
+                    chatViewModel.chatReactionRepository?.preloadImages(
+                        applicationContext
+                    )
                 }
             }
+        }
     }
 
     override fun pause() {
@@ -167,8 +188,11 @@ internal class ChatSession(
         logDebug { "initialized Chat Messaging , PrivateGroupChatId:$privateChatRoomID" }
     }
 
-    private fun fetchChatRoom(chatRoomId: String, chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit) {
-        chatSessionIdleStream.subscribe(this@ChatSession.javaClass){
+    private fun fetchChatRoom(
+        chatRoomId: String,
+        chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit
+    ) {
+        chatSessionIdleStream.subscribe(this@ChatSession.javaClass) {
             contentSessionScope.launch {
                 configurationUserPairFlow.collect { pair ->
                     logDebug { "fetch ChatRoom" }
@@ -191,6 +215,7 @@ internal class ChatSession(
             }
         }
     }
+
     override fun getMessageCount(
         chatRoomId: String,
         startTimestamp: Long,
@@ -255,6 +280,12 @@ internal class ChatSession(
                         this.cacheList.addAll(it)
                     }
                 }
+                updatingURls(
+                    chatRoom.clientId,
+                    chatRoom.stickerPacksUrl,
+                    chatRoom.reactionPacksUrl,
+                    chatRoom.reportMessageUrl
+                )
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }

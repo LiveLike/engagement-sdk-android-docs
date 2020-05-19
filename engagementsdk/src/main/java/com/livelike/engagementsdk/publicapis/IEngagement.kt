@@ -23,4 +23,6 @@ interface IEngagement {
 
     /** Override the default auto-generated chat userpic **/
     fun updateChatUserPic(url: String?)
+
+    fun createChatRoom(title: String? = null, liveLikeCallback: LiveLikeCallback<String>)
 }

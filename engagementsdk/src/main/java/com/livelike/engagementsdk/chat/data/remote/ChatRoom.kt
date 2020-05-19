@@ -17,7 +17,22 @@ internal data class ChatRoom(
     @SerializedName("url")
     val url: String,
     @SerializedName("upload_url")
-    val uploadUrl: String
+    val uploadUrl: String,
+    @SerializedName("title")
+    val title: String,
+    @SerializedName("content_filter")
+    val contentFilter: String,
+    @SerializedName("report_message_url")
+    val reportMessageUrl: String,
+    @SerializedName("reported_messages_url")
+    val reportedMessagesUrl: String,
+    @SerializedName("memberships_url")
+    val membershipsUrl: String,
+    @SerializedName("sticker_packs_url")
+    val stickerPacksUrl: String,
+    @SerializedName("reaction_packs_url")
+    val reactionPacksUrl: String
+
 )
 
 internal data class Channels(

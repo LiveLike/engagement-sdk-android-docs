@@ -5,16 +5,19 @@ import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
+import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +52,7 @@ class EngagementSDK(
         UserRepository(clientId)
 
     private val job = SupervisorJob()
+
     // by default sdk calls will run on Default pool and further data layer calls will run o
     private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
@@ -69,7 +73,10 @@ class EngagementSDK(
                 configurationStream.onNext(it.data)
                 userRepository.initUser(accessToken, it.data.profileUrl)
             } else {
-                errorDelegate?.onError((it as Result.Error).exception.message ?: "Some Error occurred, used sdk logger for more details")
+                errorDelegate?.onError(
+                    (it as Result.Error).exception.message
+                        ?: "Some Error occurred, used sdk logger for more details"
+                )
             }
         }
     }
@@ -93,17 +100,61 @@ class EngagementSDK(
         }
     }
 
+    override fun createChatRoom(title: String?, liveLikeCallback: LiveLikeCallback<String>) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) { it ->
+                it?.let { pair ->
+                    val checkValidUrl =
+                        if (pair.second.chatRoomUrlTemplate.contains(TEMPLATE_CHAT_ROOM_ID)) {
+                            true
+                        } else {
+                            liveLikeCallback.onResponse(null, "Invalid Chat Room Template Url")
+                            false
+                        }
+                    if (checkValidUrl) {
+                        val chatRepository =
+                            ChatRepository(
+                                pair.second.pubNubKey,
+                                pair.first.accessToken,
+                                pair.first.id,
+                                MockAnalyticsService(),
+                                pair.second.pubnubPublishKey,
+                                origin = pair.second.pubnubOrigin
+                            )
+
+                        sdkScope.launch {
+                            println("EngagementSDK.createChatRoom->${pair.first.accessToken}")
+                            val chatRoomResult = chatRepository.createChatRoom(
+                                title, pair.second.chatRoomUrlTemplate.replace(
+                                    "${TEMPLATE_CHAT_ROOM_ID}/", ""
+                                )
+                            )
+                            if (chatRoomResult is Result.Success) {
+                                liveLikeCallback.onResponse(chatRoomResult.data.id, null)
+                            } else if (chatRoomResult is Result.Error) {
+                                liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
     /**
      *  Creates a content session without sync.
      *  @param programId Backend generated unique identifier for current program
      */
-    fun createContentSession(programId: String, errorDelegate: ErrorDelegate? = null): LiveLikeContentSession {
+    fun createContentSession(
+        programId: String,
+        errorDelegate: ErrorDelegate? = null
+    ): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
             userRepository,
             applicationContext,
             programId,
-            errorDelegate) { EpochTime(0) }
+            errorDelegate
+        ) { EpochTime(0) }
     }
 
     /**
@@ -119,13 +170,18 @@ class EngagementSDK(
      *  @param programId Backend generated identifier for current program
      *  @param timecodeGetter returns the video timecode
      */
-    fun createContentSession(programId: String, timecodeGetter: TimecodeGetter, errorDelegate: ErrorDelegate? = null): LiveLikeContentSession {
+    fun createContentSession(
+        programId: String,
+        timecodeGetter: TimecodeGetter,
+        errorDelegate: ErrorDelegate? = null
+    ): LiveLikeContentSession {
         return ContentSession(
             configurationStream,
             userRepository,
             applicationContext,
             programId,
-            errorDelegate) { timecodeGetter.getTimecode() }
+            errorDelegate
+        ) { timecodeGetter.getTimecode() }
     }
 
     /**
@@ -133,13 +189,17 @@ class EngagementSDK(
      *  @param programId Backend generated identifier for current program
      *  @param timecodeGetter returns the video timecode
      */
-    fun createChatSession(timecodeGetter: TimecodeGetter, errorDelegate: ErrorDelegate? = null): LiveLikeChatSession {
+    fun createChatSession(
+        timecodeGetter: TimecodeGetter,
+        errorDelegate: ErrorDelegate? = null
+    ): LiveLikeChatSession {
         return ChatSession(
             configurationStream,
             userRepository,
             applicationContext,
             false,
-            errorDelegate) { timecodeGetter.getTimecode() }
+            errorDelegate
+        ) { timecodeGetter.getTimecode() }
     }
 
     internal data class SdkConfiguration(

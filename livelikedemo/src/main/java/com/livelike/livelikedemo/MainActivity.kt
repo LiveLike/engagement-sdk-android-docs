@@ -14,10 +14,14 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.Toast
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
+import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
+import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
@@ -26,6 +30,8 @@ import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
+import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_label
@@ -60,10 +66,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private var chatRoomIds: List<String> = if (BuildConfig.DEBUG) {
-        listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+    private var chatRoomIds: ArrayList<String> = if (BuildConfig.DEBUG) {
+        arrayListOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
     } else {
-        listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
+        arrayListOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
     }
 
     override fun onDestroy() {
@@ -244,6 +250,22 @@ class MainActivity : AppCompatActivity() {
                     edit().putString("userPic", it).apply()
                 }
             }
+        }
+
+        btn_create.setOnClickListener {
+            val title = chatroomText.text.toString()
+            progressBar.visibility= View.VISIBLE
+            (application as LiveLikeApplication).sdk.createChatRoom(title, object : LiveLikeCallback<String>() {
+                override fun onResponse(result: String?, error: String?) {
+                    runOnUiThread {
+                        textView2.text = result ?: error
+                        result?.let {
+                            chatRoomIds.add(it)
+                        }
+                        progressBar.visibility= View.GONE
+                    }
+                }
+            })
         }
 
         toggle_auto_keyboard_hide.setOnCheckedChangeListener { buttonView, isChecked ->
