@@ -17,6 +17,10 @@ import android.text.TextWatcher
 import android.widget.Toast
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.livelikedemo.channel.ChannelManager
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
@@ -33,10 +37,6 @@ import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,10 +60,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private var chatRoomIds: List<String> = if (BuildConfig.DEBUG) {
-        listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
-    } else {
-        listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
+
+    private var chatRoomIds: List<String> = when {
+        BuildConfig.DEBUG -> {
+            listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+        }
+        BuildConfig.BUILD_TYPE == "qa" -> {
+            listOf("dd4582e4-d558-4f56-96d7-0b2d8bb0a115", "143ef6fc-8f88-474a-bee9-e0e660bcc265")
+        }
+        else -> {
+            listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
+        }
     }
 
     override fun onDestroy() {
