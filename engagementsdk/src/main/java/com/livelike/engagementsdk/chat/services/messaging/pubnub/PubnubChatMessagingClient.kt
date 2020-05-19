@@ -54,15 +54,15 @@ import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.message_actions.PNRemoveMessageActionResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
 
@@ -195,6 +195,7 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
+        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || !(content_filter contains 'filtered')"
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
@@ -443,6 +444,10 @@ internal class PubnubChatMessagingClient(
         }
     }
 
+    private fun isMessageModerated(jsonObject: JsonObject): Boolean {
+        return jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")?.size() ?: 0 > 0
+    }
+
     private fun getOwnReaction(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
         actions?.get(REACTION_CREATED)?.let { reactions ->
             for (value in reactions.keys) {
@@ -504,13 +509,15 @@ internal class PubnubChatMessagingClient(
                                         firstTimeToken = it.timetoken
                                     addProperty("pubnubToken", it.timetoken)
                                 }
-                                processPubnubChatEvent(
-                                    jsonObject,
-                                    channel,
-                                    this@PubnubChatMessagingClient,
-                                    it.timetoken,
-                                    it.actions
-                                )
+                                if (!isMessageModerated(jsonObject)) {
+                                    processPubnubChatEvent(
+                                        jsonObject,
+                                        channel,
+                                        this@PubnubChatMessagingClient,
+                                        it.timetoken,
+                                        it.actions
+                                    )
+                                }
                             }
                         }
                         sendLoadingCompletedEvent(channel)
