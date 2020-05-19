@@ -36,11 +36,16 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         set(value) {
             field = value
             viewModel = value as QuizViewModel
-            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
             viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
-//            viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
         }
+
+    // Refresh the view when re-attached to the activity
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
+    }
 
     private fun stateWidgetObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
@@ -121,14 +126,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         viewModel?.onOptionClicked()
     }
 
-    // Refresh the view when re-attached to the activity
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        viewModel?.widgetState?.subscribe(javaClass) { stateWidgetObserver(it) }
-        viewModel?.results?.subscribe(javaClass) { resultsObserver(it) }
-        viewModel?.currentVoteId?.subscribe(javaClass) { onClickObserver() }
-    }
-
     private fun resourceObserver(widget: QuizWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return
@@ -154,7 +151,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                 }
-            }, type, component = when(optionList.map { it.image_url.isNullOrEmpty().not() }.reduce { a, b -> a&&b }){
+            }, type, component = when (optionList.map { it.image_url.isNullOrEmpty().not() }.reduce { a, b -> a && b }) {
                 true -> widgetsTheme?.imageQuiz
                 else -> widgetsTheme?.textQuiz
             })
