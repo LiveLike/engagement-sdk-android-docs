@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
@@ -58,6 +59,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.RESULTS -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
+                viewModel?.apply {
+                    val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
+                    val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
+                    animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+                }
                 resultsObserver(viewModel?.results?.latest())
                 listOf(textEggTimer).forEach { v ->
                     v?.showCloseButton() {
@@ -112,7 +118,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 }
             }
             WidgetStates.FINISHED -> {
-                resourceObserver(null)
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
@@ -160,7 +165,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
-//            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
             showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
