@@ -67,11 +67,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private var chatRoomIds: MutableSet<String> = mutableSetOf()
-//            = if (BuildConfig.DEBUG) {
-//        arrayListOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
-//    } else {
-//        arrayListOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
-//    }
 
     override fun onDestroy() {
         super.onDestroy()
