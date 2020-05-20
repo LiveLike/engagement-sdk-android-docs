@@ -102,38 +102,26 @@ class EngagementSDK(
 
     override fun createChatRoom(title: String?, liveLikeCallback: LiveLikeCallback<String>) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) { it ->
+            .subscribe(this) {
                 it?.let { pair ->
-                    val checkValidUrl =
-                        if (pair.second.chatRoomUrlTemplate.contains(TEMPLATE_CHAT_ROOM_ID)) {
-                            true
-                        } else {
-                            liveLikeCallback.onResponse(null, "Invalid Chat Room Template Url")
-                            false
-                        }
-                    if (checkValidUrl) {
-                        val chatRepository =
-                            ChatRepository(
-                                pair.second.pubNubKey,
-                                pair.first.accessToken,
-                                pair.first.id,
-                                MockAnalyticsService(),
-                                pair.second.pubnubPublishKey,
-                                origin = pair.second.pubnubOrigin
-                            )
+                    val chatRepository =
+                        ChatRepository(
+                            pair.second.pubNubKey,
+                            pair.first.accessToken,
+                            pair.first.id,
+                            MockAnalyticsService(),
+                            pair.second.pubnubPublishKey,
+                            origin = pair.second.pubnubOrigin
+                        )
 
-                        sdkScope.launch {
-                            println("EngagementSDK.createChatRoom->${pair.first.accessToken}")
-                            val chatRoomResult = chatRepository.createChatRoom(
-                                title, pair.second.chatRoomUrlTemplate.replace(
-                                    "${TEMPLATE_CHAT_ROOM_ID}/", ""
-                                )
-                            )
-                            if (chatRoomResult is Result.Success) {
-                                liveLikeCallback.onResponse(chatRoomResult.data.id, null)
-                            } else if (chatRoomResult is Result.Error) {
-                                liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
-                            }
+                    sdkScope.launch {
+                        val chatRoomResult = chatRepository.createChatRoom(
+                            title, pair.second.createChatRoomUrl
+                        )
+                        if (chatRoomResult is Result.Success) {
+                            liveLikeCallback.onResponse(chatRoomResult.data.id, null)
+                        } else if (chatRoomResult is Result.Error) {
+                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
                         }
                     }
                 }
@@ -231,6 +219,8 @@ class EngagementSDK(
         val analyticsProps: Map<String, String>,
         @SerializedName("chat_room_detail_url_template")
         val chatRoomUrlTemplate: String,
+        @SerializedName("create_chat_room_url")
+        val createChatRoomUrl: String,
         @SerializedName("profile_url")
         val profileUrl: String,
         @SerializedName("program_detail_url_template")

@@ -113,7 +113,6 @@ internal class ChatSession(
         reactionPacksUrl: String,
         reportUrl: String?
     ) {
-        println("ChatSession.updatingURls->$stickerPackUrl ->$reactionPacksUrl ->$reportUrl")
         contentSessionScope.launch {
             configurationUserPairFlow.collect { pair ->
                 chatViewModel.stickerPackRepository =

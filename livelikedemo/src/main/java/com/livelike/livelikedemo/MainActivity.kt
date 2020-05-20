@@ -66,11 +66,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private var chatRoomIds: ArrayList<String> = if (BuildConfig.DEBUG) {
-        arrayListOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
-    } else {
-        arrayListOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
-    }
+    private var chatRoomIds: MutableSet<String> = mutableSetOf()
+//            = if (BuildConfig.DEBUG) {
+//        arrayListOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+//    } else {
+//        arrayListOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -152,8 +153,8 @@ class MainActivity : AppCompatActivity() {
                 setItems(chatRoomIds.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
                     (application as LiveLikeApplication).removePrivateSession()
-                    private_group_label.text = chatRoomIds[which]
-                    ExoPlayerActivity.privateGroupRoomId = chatRoomIds[which]
+                    private_group_label.text = chatRoomIds.elementAt(which)
+                    ExoPlayerActivity.privateGroupRoomId = chatRoomIds.elementAt(which)
                 }
                 create()
             }.show()
@@ -250,22 +251,27 @@ class MainActivity : AppCompatActivity() {
                     edit().putString("userPic", it).apply()
                 }
             }
+            chatRoomIds = getStringSet("chatRoomList", mutableSetOf())
         }
 
         btn_create.setOnClickListener {
             val title = chatroomText.text.toString()
-            progressBar.visibility= View.VISIBLE
-            (application as LiveLikeApplication).sdk.createChatRoom(title, object : LiveLikeCallback<String>() {
-                override fun onResponse(result: String?, error: String?) {
-                    runOnUiThread {
-                        textView2.text = result ?: error
-                        result?.let {
-                            chatRoomIds.add(it)
+            progressBar.visibility = View.VISIBLE
+            (application as LiveLikeApplication).sdk.createChatRoom(
+                title,
+                object : LiveLikeCallback<String>() {
+                    override fun onResponse(result: String?, error: String?) {
+                        runOnUiThread {
+                            textView2.text = result ?: error
+                            result?.let {
+                                chatRoomIds.add(it)
+                                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                                    .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                            }
+                            progressBar.visibility = View.GONE
                         }
-                        progressBar.visibility= View.GONE
                     }
-                }
-            })
+                })
         }
 
         toggle_auto_keyboard_hide.setOnCheckedChangeListener { buttonView, isChecked ->

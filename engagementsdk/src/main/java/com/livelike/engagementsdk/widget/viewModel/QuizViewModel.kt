@@ -189,7 +189,6 @@ internal class QuizViewModel(
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
         adapter?.selectionLocked = true
         logDebug { "Quiz View ,showing result isUserCorrect:$isUserCorrect" }
-        println("QuizViewModel.resultsState->$animationPath")
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
