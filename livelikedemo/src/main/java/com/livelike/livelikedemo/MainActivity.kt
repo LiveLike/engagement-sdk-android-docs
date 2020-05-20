@@ -15,11 +15,10 @@ import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
-import com.github.angads25.filepicker.model.DialogConfigs
-import com.github.angads25.filepicker.model.DialogProperties
-import com.github.angads25.filepicker.view.FilePickerDialog
+import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.utils.DialogUtils
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
@@ -36,7 +35,6 @@ import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 import java.io.BufferedReader
-import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -66,10 +64,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private var chatRoomIds: List<String> = if (BuildConfig.DEBUG) {
-        listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
-    } else {
-        listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
+
+    private var chatRoomIds: List<String> = when {
+        BuildConfig.DEBUG -> {
+            listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
+        }
+        BuildConfig.BUILD_TYPE == "qa" -> {
+            listOf("dd4582e4-d558-4f56-96d7-0b2d8bb0a115", "143ef6fc-8f88-474a-bee9-e0e660bcc265")
+        }
+        else -> {
+            listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
+        }
     }
 
     override fun onDestroy() {
@@ -198,33 +203,24 @@ class MainActivity : AppCompatActivity() {
         }
 
         themes_json_button.setOnClickListener {
-            val properties = DialogProperties()
-            properties.selection_mode = DialogConfigs.SINGLE_MODE
-            properties.selection_type = DialogConfigs.FILE_SELECT
-            properties.root = File(DialogConfigs.DEFAULT_DIR)
-            properties.error_dir = File(DialogConfigs.DEFAULT_DIR)
-            properties.offset = File(DialogConfigs.DEFAULT_DIR)
-            properties.extensions = null
-            val dialog = FilePickerDialog(this@MainActivity, properties)
-            dialog.setTitle("Select JSON File")
-            dialog.setDialogSelectionListener {
-                it.forEach { file ->
-                    val fin = FileInputStream(file)
-                    val theme: String? = convertStreamToString(fin)
-                    //Make sure you close all streams.
-                    fin.close()
-                    if (theme != null) {
-                        player.jsonTheme = theme
-                        onlyWidget.jsonTheme = theme
-                    } else
-                        Toast.makeText(
-                            applicationContext,
-                            "Unable to get the theme json",
-                            Toast.LENGTH_LONG
-                        ).show()
-                }
-            }
-            dialog.show()
+            DialogUtils.showFilePicker(this,
+                DialogSelectionListener { files ->
+                    files?.forEach { file ->
+                        val fin = FileInputStream(file)
+                        val theme: String? = convertStreamToString(fin)
+                        //Make sure you close all streams.
+                        fin.close()
+                        if (theme != null) {
+                            player.jsonTheme = theme
+                            onlyWidget.jsonTheme = theme
+                        } else
+                            Toast.makeText(
+                                applicationContext,
+                                "Unable to get the theme json",
+                                Toast.LENGTH_LONG
+                            ).show()
+                    }
+                })
         }
 
         events_label.text = channelManager.selectedChannel.name
