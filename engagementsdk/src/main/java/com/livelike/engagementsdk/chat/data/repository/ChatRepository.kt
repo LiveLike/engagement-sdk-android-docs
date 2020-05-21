@@ -3,11 +3,13 @@ package com.livelike.engagementsdk.chat.data.repository
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.data.respository.BaseRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
+import okhttp3.MediaType
+import okhttp3.RequestBody
 
 internal class ChatRepository(
     private val subscribeKey: String,
@@ -40,8 +42,27 @@ internal class ChatRepository(
         return dataClient.remoteCall<ChatRoom>(remoteURL, RequestType.GET, accessToken = null)
     }
 
+    suspend fun createChatRoom(
+        title: String?,
+        chatRoomTemplateUrl: String
+    ): Result<ChatRoom> {
+        val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "")
+        val titleRequest = when (title.isNullOrEmpty()) {
+            true -> RequestBody.create(null,byteArrayOf())
+            else -> RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"), """{"title":"$title"}"""
+            )
+        }
+        return dataClient.remoteCall<ChatRoom>(
+            remoteURL,
+            RequestType.POST,
+            accessToken = authKey,
+            requestBody = titleRequest
+        )
+    }
+
     fun addMessageReaction(channel: String, messagePubnubToken: Long, emojiId: String) {
-            pubnubChatMessagingClient?.addMessageAction(channel, messagePubnubToken, emojiId)
+        pubnubChatMessagingClient?.addMessageAction(channel, messagePubnubToken, emojiId)
     }
 
     fun removeMessageReaction(

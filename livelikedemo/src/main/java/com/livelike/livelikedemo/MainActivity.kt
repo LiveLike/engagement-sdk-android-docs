@@ -14,14 +14,15 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.Toast
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.chat.ChatRoom
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
+import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
+import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
@@ -30,6 +31,8 @@ import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
+import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_label
@@ -37,6 +40,10 @@ import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -60,18 +67,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    private var chatRoomIds: List<String> = when {
-        BuildConfig.DEBUG -> {
-            listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
-        }
-        BuildConfig.BUILD_TYPE == "qa" -> {
-            listOf("dd4582e4-d558-4f56-96d7-0b2d8bb0a115", "143ef6fc-8f88-474a-bee9-e0e660bcc265")
-        }
-        else -> {
-            listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
-        }
-    }
+    private var chatRoomIds: MutableSet<String> = mutableSetOf()
 
     override fun onDestroy() {
         super.onDestroy()
@@ -153,8 +149,8 @@ class MainActivity : AppCompatActivity() {
                 setItems(chatRoomIds.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
                     (application as LiveLikeApplication).removePrivateSession()
-                    private_group_label.text = chatRoomIds[which]
-                    ExoPlayerActivity.privateGroupRoomId = chatRoomIds[which]
+                    private_group_label.text = chatRoomIds.elementAt(which)
+                    ExoPlayerActivity.privateGroupRoomId = chatRoomIds.elementAt(which)
                 }
                 create()
             }.show()
@@ -251,6 +247,30 @@ class MainActivity : AppCompatActivity() {
                     edit().putString("userPic", it).apply()
                 }
             }
+            chatRoomIds = getStringSet("chatRoomList", mutableSetOf())
+        }
+
+        btn_create.setOnClickListener {
+            val title = chatroomText.text.toString()
+            progressBar.visibility = View.VISIBLE
+            (application as LiveLikeApplication).sdk.createChatRoom(
+                title,
+                object : LiveLikeCallback<ChatRoom>() {
+                    override fun onResponse(result: ChatRoom?, error: String?) {
+                        runOnUiThread {
+                            textView2.text = when {
+                                result != null -> "${result.title ?: "No Title"}(${result.id})"
+                                else -> error
+                            }
+                            result?.let {
+                                chatRoomIds.add(it.id)
+                                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                                    .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                            }
+                            progressBar.visibility = View.GONE
+                        }
+                    }
+                })
         }
 
         toggle_auto_keyboard_hide.setOnCheckedChangeListener { buttonView, isChecked ->

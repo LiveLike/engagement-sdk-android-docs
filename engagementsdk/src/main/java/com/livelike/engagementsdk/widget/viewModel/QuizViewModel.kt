@@ -187,7 +187,6 @@ internal class QuizViewModel(
         val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
         adapter?.selectionLocked = true
         logDebug { "Quiz View ,showing result isUserCorrect:$isUserCorrect" }
-        println("QuizViewModel.resultsState->$animationPath")
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->

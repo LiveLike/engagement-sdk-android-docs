@@ -145,7 +145,6 @@ internal class ContentSession(
                             isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
                             initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
                             chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
-                            chatSession.chatViewModel.reportUrl = program.reportUrl
                             program.analyticsProps.forEach { map ->
                                 analyticService.registerSuperAndPeopleProperty(map.key to map.value)
                             }
