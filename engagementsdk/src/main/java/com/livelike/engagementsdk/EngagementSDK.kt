@@ -3,6 +3,7 @@ package com.livelike.engagementsdk
 import android.content.Context
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
@@ -100,7 +101,7 @@ class EngagementSDK(
         }
     }
 
-    override fun createChatRoom(title: String?, liveLikeCallback: LiveLikeCallback<String>) {
+    override fun createChatRoom(title: String?, liveLikeCallback: LiveLikeCallback<ChatRoom>) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -119,7 +120,35 @@ class EngagementSDK(
                             title, pair.second.createChatRoomUrl
                         )
                         if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(chatRoomResult.data.id, null)
+                            liveLikeCallback.onResponse(ChatRoom(chatRoomResult.data.id,chatRoomResult.data.title), null)
+                        } else if (chatRoomResult is Result.Error) {
+                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                        }
+                    }
+                }
+            }
+    }
+
+    override fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoom>) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream,this.hashCode())
+            .subscribe(this){
+                it?.let { pair->
+                    val chatRepository =
+                        ChatRepository(
+                            pair.second.pubNubKey,
+                            pair.first.accessToken,
+                            pair.first.id,
+                            MockAnalyticsService(),
+                            pair.second.pubnubPublishKey,
+                            origin = pair.second.pubnubOrigin
+                        )
+
+                    sdkScope.launch {
+                        val chatRoomResult = chatRepository.fetchChatRoom(
+                            id, pair.second.chatRoomUrlTemplate
+                        )
+                        if (chatRoomResult is Result.Success) {
+                            liveLikeCallback.onResponse(ChatRoom(chatRoomResult.data.id,chatRoomResult.data.title), null)
                         } else if (chatRoomResult is Result.Error) {
                             liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
                         }

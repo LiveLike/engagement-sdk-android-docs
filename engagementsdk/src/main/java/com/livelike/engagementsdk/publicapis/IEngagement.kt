@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.publicapis
 
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.chat.ChatRoom
 
 interface IEngagement {
 
@@ -24,5 +25,7 @@ interface IEngagement {
     /** Override the default auto-generated chat userpic **/
     fun updateChatUserPic(url: String?)
 
-    fun createChatRoom(title: String? = null, liveLikeCallback: LiveLikeCallback<String>)
+    fun createChatRoom(title: String? = null, liveLikeCallback: LiveLikeCallback<ChatRoom>)
+
+    fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoom>)
 }

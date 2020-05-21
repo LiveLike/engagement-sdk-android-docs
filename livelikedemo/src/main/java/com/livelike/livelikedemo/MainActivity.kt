@@ -17,6 +17,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import kotlinx.android.synthetic.main.activity_main.btn_create
@@ -254,12 +255,15 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
-                object : LiveLikeCallback<String>() {
-                    override fun onResponse(result: String?, error: String?) {
+                object : LiveLikeCallback<ChatRoom>() {
+                    override fun onResponse(result: ChatRoom?, error: String?) {
                         runOnUiThread {
-                            textView2.text = result ?: error
+                            textView2.text = when {
+                                result != null -> "${result.title ?: "No Title"}(${result.id})"
+                                else -> error
+                            }
                             result?.let {
-                                chatRoomIds.add(it)
+                                chatRoomIds.add(it.id)
                                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
                                     .edit().putStringSet("chatRoomList", chatRoomIds).apply()
                             }
