@@ -257,18 +257,16 @@ class MainActivity : AppCompatActivity() {
                 title,
                 object : LiveLikeCallback<ChatRoom>() {
                     override fun onResponse(result: ChatRoom?, error: String?) {
-                        runOnUiThread {
-                            textView2.text = when {
-                                result != null -> "${result.title ?: "No Title"}(${result.id})"
-                                else -> error
-                            }
-                            result?.let {
-                                chatRoomIds.add(it.id)
-                                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                                    .edit().putStringSet("chatRoomList", chatRoomIds).apply()
-                            }
-                            progressBar.visibility = View.GONE
+                        textView2.text = when {
+                            result != null -> "${result.title ?: "No Title"}(${result.id})"
+                            else -> error
                         }
+                        result?.let {
+                            chatRoomIds.add(it.id)
+                            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                                .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                        }
+                        progressBar.visibility = View.GONE
                     }
                 })
         }

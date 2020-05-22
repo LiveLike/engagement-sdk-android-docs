@@ -18,6 +18,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
@@ -32,10 +33,6 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -46,7 +43,13 @@ import kotlinx.android.synthetic.main.activity_exo_player.selectChannelButton
 import kotlinx.android.synthetic.main.activity_exo_player.startAd
 import kotlinx.android.synthetic.main.activity_exo_player.videoTimestamp
 import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
+import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
+import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -270,145 +273,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                     else -> null
                 }
             )
-            if (privateGroupChatsession == null) {
-                privateGroupChatsession =
-                    (application as LiveLikeApplication).createPrivateSession(
-                        channel.llProgram.toString(),
-                        errorDelegate = object : ErrorDelegate() {
-                            override fun onError(error: String) {
-                                checkForNetworkToRecreateActivity()
-                            }
-                        }
-                    )
-                privateGroupChatsession?.setMessageListener(object : MessageListener {
-                    override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
-                        Log.v(
-                            "Here$chatRoom",
-                            "onNewMessage: ${message.message}  timestamp:${message.timestamp}"
-                        )
-                        logsPreview.text =
-                            "New Message :${message.message} timestamp:${message.timestamp} \n\n ${logsPreview.text}"
-                        fullLogs.text =
-                            "New Message :${message.message} timestamp:${message.timestamp} \n\n ${fullLogs.text}"
-                        if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
-                            messageCount[chatRoom] = 0 // reset unread message count
-                            // Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
-                            if (message.timestamp.isEmpty()) {
-                                chatRoomLastTimeStampMap[chatRoom] =
-                                    Calendar.getInstance().timeInMillis
-                            } else {
-                                // Added 1 into time //this is done only for those cases when user is watching the chatroom
-                                // if it is not watching the chatroom then no need to add the 1 in the time
-                                if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < message.timestamp.toLong())
-                                    chatRoomLastTimeStampMap[chatRoom] =
-                                        (message.timestamp.toLong() + 1)
-                            }
-                            Log.v(
-                                "Here$chatRoom",
-                                "onNewMessage2: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}"
-                            )
-                            getSharedPreferences(
-                                PREFERENCES_APP_ID,
-                                Context.MODE_PRIVATE
-                            ).edit()
-                                .putString(
-                                    PREF_CHAT_ROOM_LAST_TIME,
-                                    GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
-                                ).apply()
-                        } else {
-                            if (chatRoomLastTimeStampMap[chatRoom] == 0L) {
-                                chatRoomLastTimeStampMap[chatRoom] = message.timestamp.toLong()
-                                if (messageCount[chatRoom] == null) {
-                                    messageCount[chatRoom] = 1
-                                }
-                                Log.v(
-                                    "Here$chatRoom",
-                                    "onNewMessage3: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}"
-                                )
-                                getSharedPreferences(
-                                    PREFERENCES_APP_ID,
-                                    Context.MODE_PRIVATE
-                                ).edit()
-                                    .putString(
-                                        PREF_CHAT_ROOM_LAST_TIME,
-                                        GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
-                                    ).apply()
-                            }
-                            Log.v(
-                                "Here$chatRoom",
-                                "onNewMessage4: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}"
-                            )
-                            if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < message.timestamp.toLong())
-                                if (messageCount[chatRoom] == null) {
-                                    messageCount[chatRoom] = 1
-                                } else {
-                                    messageCount[chatRoom] = (messageCount[chatRoom] ?: 0) + 1
-                                }
-                        }
-                        messageCount.forEach {
-                            logsPreview.text =
-                                "channel : ${it.key}, unread : ${it.value} \n\n ${logsPreview.text}"
-                            fullLogs.text =
-                                "channel : ${it.key}, unread : ${it.value} \n\n ${fullLogs.text}"
-                            Log.v(
-                                "Here$chatRoom",
-                                "channel : ${it.key}, unread : ${it.value} lasttimestamp:${chatRoomLastTimeStampMap[chatRoom]}"
-                            )
-                        }
-                    }
-                })
-                chatRoomIds.forEach {
-                    privateGroupChatsession?.joinChatRoom(it)
-                }
-                for (pair in chatRoomLastTimeStampMap) {
-                    val chatRoomId = pair.key
-                    val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
-                        ?: Calendar.getInstance().timeInMillis))
-                    logsPreview.text =
-                        "Get Count: $timestamp roomId: $chatRoomId \n\n ${logsPreview.text}"
-                    fullLogs.text =
-                        "Get Count: $timestamp roomId: $chatRoomId \n\n ${fullLogs.text}"
-                    Log.v("Here", "Getting Count Read channel : $chatRoomId timestamp: $timestamp")
-                    privateGroupChatsession?.getMessageCount(
-                        chatRoomId,
-                        timestamp,
-                        object :
-                            LiveLikeCallback<Long>() {
-                            override fun onResponse(result: Long?, error: String?) {
-                                logsPreview.text =
-                                    "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
-                                fullLogs.text =
-                                    "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${fullLogs.text}"
-                                Log.v(
-                                    "Here",
-                                    "Count Read channel : $chatRoomId lasttimestamp:$timestamp count: $result"
-                                )
-                                result?.let {
-                                    messageCount[chatRoomId] =
-                                        (messageCount[chatRoomId] ?: 0) + result
-                                }
-                            }
-                        })
-                }
-                if (chatRoomLastTimeStampMap.isEmpty()) {
-                    chatRoomIds.forEach {
-                        chatRoomLastTimeStampMap[it] = 0L
-                    }
-                }
-            }
-            if (jsonTheme != null) {
-                try {
-                    widget_view.setTheme(jsonTheme!!)
-                } catch (e: Exception) {
-                    Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-            if (privateGroupRoomId != null) {
-                privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
-                chat_view.setSession(privateGroupChatsession!!)
-            } else {
-                chat_view.setSession(session.chatSession)
-            }
             widget_view.setSession(session)
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(
@@ -432,20 +296,173 @@ class ExoPlayerActivity : AppCompatActivity() {
                     addLogs("onWidgetDismissed : $widgetDataJson")
                 }
             }
-            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
-                getString("UserNickname", "").let {
-                    if (!it.isNullOrEmpty()) {
-                        (application as LiveLikeApplication).sdk.updateChatNickname(it)
-                    }
-                }
-                getString("userPic", null).let {
-                    (application as LiveLikeApplication).sdk.updateChatUserPic(it)
+            this.session = session
+            player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
+        }
+
+        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
+            getString("UserNickname", "").let {
+                if (!it.isNullOrEmpty()) {
+                    (application as LiveLikeApplication).sdk.updateChatNickname(it)
                 }
             }
+            getString("userPic", null).let {
+                (application as LiveLikeApplication).sdk.updateChatUserPic(it)
+            }
+        }
 
-            this.session = session
+        if (jsonTheme != null) {
+            try {
+                widget_view.setTheme(jsonTheme!!)
+            } catch (e: Exception) {
+                Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
 
-            player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
+        if (privateGroupChatsession == null) {
+            privateGroupChatsession =
+                (application as LiveLikeApplication).createPrivateSession(
+                    errorDelegate = object : ErrorDelegate() {
+                        override fun onError(error: String) {
+                            checkForNetworkToRecreateActivity()
+                        }
+                    }
+                )
+            privateGroupChatsession?.setMessageListener(object : MessageListener {
+                override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
+                    Log.v(
+                        "Here$chatRoom",
+                        "onNewMessage: ${message.message}  timestamp:${message.timestamp}"
+                    )
+                    logsPreview.text =
+                        "New Message :${message.message} timestamp:${message.timestamp} \n\n ${logsPreview.text}"
+                    fullLogs.text =
+                        "New Message :${message.message} timestamp:${message.timestamp} \n\n ${fullLogs.text}"
+                    if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
+                        messageCount[chatRoom] = 0 // reset unread message count
+                        // Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
+                        if (message.timestamp.isEmpty()) {
+                            chatRoomLastTimeStampMap[chatRoom] =
+                                Calendar.getInstance().timeInMillis
+                        } else {
+                            // Added 1 into time //this is done only for those cases when user is watching the chatroom
+                            // if it is not watching the chatroom then no need to add the 1 in the time
+                            if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < message.timestamp.toLong())
+                                chatRoomLastTimeStampMap[chatRoom] =
+                                    (message.timestamp.toLong() + 1)
+                        }
+                        Log.v(
+                            "Here$chatRoom",
+                            "onNewMessage2: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}"
+                        )
+                        getSharedPreferences(
+                            PREFERENCES_APP_ID,
+                            Context.MODE_PRIVATE
+                        ).edit()
+                            .putString(
+                                PREF_CHAT_ROOM_LAST_TIME,
+                                GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
+                            ).apply()
+                    } else {
+                        if (chatRoomLastTimeStampMap[chatRoom] == 0L) {
+                            chatRoomLastTimeStampMap[chatRoom] = message.timestamp.toLong()
+                            if (messageCount[chatRoom] == null) {
+                                messageCount[chatRoom] = 1
+                            }
+                            Log.v(
+                                "Here$chatRoom",
+                                "onNewMessage3: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}"
+                            )
+                            getSharedPreferences(
+                                PREFERENCES_APP_ID,
+                                Context.MODE_PRIVATE
+                            ).edit()
+                                .putString(
+                                    PREF_CHAT_ROOM_LAST_TIME,
+                                    GsonBuilder().create().toJson(chatRoomLastTimeStampMap)
+                                ).apply()
+                        }
+                        Log.v(
+                            "Here$chatRoom",
+                            "onNewMessage4: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}"
+                        )
+                        if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < message.timestamp.toLong())
+                            if (messageCount[chatRoom] == null) {
+                                messageCount[chatRoom] = 1
+                            } else {
+                                messageCount[chatRoom] = (messageCount[chatRoom] ?: 0) + 1
+                            }
+                    }
+                    messageCount.forEach {
+                        logsPreview.text =
+                            "channel : ${it.key}, unread : ${it.value} \n\n ${logsPreview.text}"
+                        fullLogs.text =
+                            "channel : ${it.key}, unread : ${it.value} \n\n ${fullLogs.text}"
+                        Log.v(
+                            "Here$chatRoom",
+                            "channel : ${it.key}, unread : ${it.value} lasttimestamp:${chatRoomLastTimeStampMap[chatRoom]}"
+                        )
+                    }
+                }
+            })
+            chatRoomIds.forEach {
+                privateGroupChatsession?.joinChatRoom(it)
+            }
+            for (pair in chatRoomLastTimeStampMap) {
+                val chatRoomId = pair.key
+                val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
+                    ?: Calendar.getInstance().timeInMillis))
+                logsPreview.text =
+                    "Get Count: $timestamp roomId: $chatRoomId \n\n ${logsPreview.text}"
+                fullLogs.text =
+                    "Get Count: $timestamp roomId: $chatRoomId \n\n ${fullLogs.text}"
+                Log.v("Here", "Getting Count Read channel : $chatRoomId timestamp: $timestamp")
+                privateGroupChatsession?.getMessageCount(
+                    chatRoomId,
+                    timestamp,
+                    object :
+                        LiveLikeCallback<Long>() {
+                        override fun onResponse(result: Long?, error: String?) {
+                            logsPreview.text =
+                                "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
+                            fullLogs.text =
+                                "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${fullLogs.text}"
+                            Log.v(
+                                "Here",
+                                "Count Read channel : $chatRoomId lasttimestamp:$timestamp count: $result"
+                            )
+                            result?.let {
+                                messageCount[chatRoomId] =
+                                    (messageCount[chatRoomId] ?: 0) + result
+                            }
+                        }
+                    })
+            }
+            if (chatRoomLastTimeStampMap.isEmpty()) {
+                chatRoomIds.forEach {
+                    chatRoomLastTimeStampMap[it] = 0L
+                }
+            }
+        }
+
+        if (privateGroupRoomId != null) {
+            privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
+            txt_chat_room_id.visibility = View.VISIBLE
+            txt_chat_room_title.visibility = View.VISIBLE
+            (application as LiveLikeApplication).sdk.getChatRoom(privateGroupRoomId!!,
+                object : LiveLikeCallback<ChatRoom>() {
+                    override fun onResponse(result: ChatRoom?, error: String?) {
+                        result?.let {
+                            txt_chat_room_title.text = it.title ?: "No Title"
+                            txt_chat_room_id.text = it.id
+                        }
+                    }
+                })
+            chat_view.setSession(privateGroupChatsession!!)
+        } else if (session != null) {
+            txt_chat_room_id.visibility = View.INVISIBLE
+            txt_chat_room_title.visibility = View.INVISIBLE
+            chat_view.setSession(session!!.chatSession)
         }
     }
 
