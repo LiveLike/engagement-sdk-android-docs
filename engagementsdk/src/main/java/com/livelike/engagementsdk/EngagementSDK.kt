@@ -57,6 +57,8 @@ class EngagementSDK(
     // by default sdk calls will run on Default pool and further data layer calls will run o
     private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
+    private val uiScope = CoroutineScope(Dispatchers.Main + job)
+
     /**
      * SDK Initialization logic.
      */
@@ -115,12 +117,17 @@ class EngagementSDK(
                             origin = pair.second.pubnubOrigin
                         )
 
-                    sdkScope.launch {
+                    uiScope.launch {
                         val chatRoomResult = chatRepository.createChatRoom(
                             title, pair.second.createChatRoomUrl
                         )
                         if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(ChatRoom(chatRoomResult.data.id,chatRoomResult.data.title), null)
+                            liveLikeCallback.onResponse(
+                                ChatRoom(
+                                    chatRoomResult.data.id,
+                                    chatRoomResult.data.title
+                                ), null
+                            )
                         } else if (chatRoomResult is Result.Error) {
                             liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
                         }
@@ -130,9 +137,9 @@ class EngagementSDK(
     }
 
     override fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoom>) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream,this.hashCode())
-            .subscribe(this){
-                it?.let { pair->
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) {
+                it?.let { pair ->
                     val chatRepository =
                         ChatRepository(
                             pair.second.pubNubKey,
@@ -143,12 +150,17 @@ class EngagementSDK(
                             origin = pair.second.pubnubOrigin
                         )
 
-                    sdkScope.launch {
+                    uiScope.launch {
                         val chatRoomResult = chatRepository.fetchChatRoom(
                             id, pair.second.chatRoomUrlTemplate
                         )
                         if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(ChatRoom(chatRoomResult.data.id,chatRoomResult.data.title), null)
+                            liveLikeCallback.onResponse(
+                                ChatRoom(
+                                    chatRoomResult.data.id,
+                                    chatRoomResult.data.title
+                                ), null
+                            )
                         } else if (chatRoomResult is Result.Error) {
                             liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
                         }
