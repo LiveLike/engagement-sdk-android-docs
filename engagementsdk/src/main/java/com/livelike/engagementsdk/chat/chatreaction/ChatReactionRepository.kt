@@ -8,7 +8,7 @@ import com.livelike.engagementsdk.core.services.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class ChatReactionRepository(private val remoteUrl: String) :
+internal class ChatReactionRepository(private val remoteUrl: String,private val accessToken:String?) :
     BaseRepository() {
 
     var reactionList: List<Reaction>? = null
@@ -22,7 +22,7 @@ internal class ChatReactionRepository(private val remoteUrl: String) :
                     val result = dataClient.remoteCall<ReactionPackResults>(
                         remoteUrl,
                         RequestType.GET,
-                        accessToken = null
+                        accessToken = accessToken
                     )
                     if (result is Result.Success) {
                         val reactionPack = result.data

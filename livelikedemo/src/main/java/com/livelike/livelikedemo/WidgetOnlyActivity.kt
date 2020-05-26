@@ -323,9 +323,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         scope.launch {
                             progressBar.visibility = View.VISIBLE
                         }
-                        println("VHItem.->$request")
                         val responseString = postAPI(type.url!!, request)
-                        println("VHItem.-->$responseString")
                         val gson = Gson()
                         val response = when (type.url) {
                             alerts -> gson.fromJson(responseString, AlertResponse::class.java)

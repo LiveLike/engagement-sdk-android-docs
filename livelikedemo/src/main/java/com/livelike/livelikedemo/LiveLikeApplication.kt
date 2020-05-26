@@ -109,8 +109,6 @@ class LiveLikeApplication : Application() {
     }
 
     fun createPrivateSession(
-        sessionId: String,
-        widgetInterceptor: WidgetInterceptor? = null,
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeChatSession {
         if (privateGroupChatsession == null) {
