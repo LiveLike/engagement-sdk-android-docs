@@ -3,6 +3,8 @@ package com.livelike.livelikedemo
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -21,8 +23,10 @@ import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import kotlinx.android.synthetic.main.activity_main.btn_create
+import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
+import kotlinx.android.synthetic.main.activity_main.chatroomText1
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
@@ -44,6 +48,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -151,6 +156,14 @@ class MainActivity : AppCompatActivity() {
                     (application as LiveLikeApplication).removePrivateSession()
                     private_group_label.text = chatRoomIds.elementAt(which)
                     ExoPlayerActivity.privateGroupRoomId = chatRoomIds.elementAt(which)
+
+                    //Copy to clipboard
+                    val clipboard: ClipboardManager =
+                        getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
+                    clipboard.primaryClip = clip
+                    Toast.makeText(applicationContext, "Room Id Copy To Clipboard", Toast.LENGTH_LONG)
+                        .show()
                 }
                 create()
             }.show()
@@ -269,6 +282,16 @@ class MainActivity : AppCompatActivity() {
                         progressBar.visibility = View.GONE
                     }
                 })
+        }
+
+        btn_join.setOnClickListener {
+            val chatRoomId = chatroomText1.text.toString()
+            if (chatRoomId.isEmpty().not()) {
+                chatRoomIds.add(chatRoomId)
+                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                    .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                chatroomText1.setText("")
+            }
         }
 
         toggle_auto_keyboard_hide.setOnCheckedChangeListener { buttonView, isChecked ->
