@@ -3,7 +3,7 @@ package com.livelike.engagementsdk
 import com.livelike.engagementsdk.widget.BaseTheme
 import com.livelike.engagementsdk.widget.WidgetsTheme
 
-data class EngagementSDKTheme(
+internal data class EngagementSDKTheme(
     val chat: Map<String, Any?>? = null,
     val version: Double,
     val widgets: WidgetsTheme
