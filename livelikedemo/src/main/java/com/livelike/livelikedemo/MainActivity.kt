@@ -18,12 +18,14 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
+import com.livelike.livelikedemo.utils.DialogUtils
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
@@ -39,12 +41,13 @@ import kotlinx.android.synthetic.main.activity_main.progressBar
 import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_button
-import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
@@ -208,38 +211,24 @@ class MainActivity : AppCompatActivity() {
         }
 
         themes_json_button.setOnClickListener {
-            val files: ArrayList<String> =
-                ArrayList(assets.list("themes")?.toList() ?: arrayListOf())
-            files.add(0, "None")
-            AlertDialog.Builder(this).apply {
-                setTitle("Choose a theme!")
-                setItems(files.toTypedArray()) { _, which ->
-                    // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
-                    themes_json_label.text = files[which]
-                    EngagementSDK.enableDebug = false
-                    files.let {
-                        when (which) {
-                            0 -> {
-                                player.jsonTheme = null
-                            }
-                            else -> {
-                                val path = files[which]
-                                val theme = getFileFromAsset(context, "themes/$path")
-                                if (theme != null) {
-                                    player.jsonTheme = theme
-                                    onlyWidget.jsonTheme = theme
-                                } else
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Unable to get the theme json",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                            }
-                        }
+            DialogUtils.showFilePicker(this,
+                DialogSelectionListener { files ->
+                    files?.forEach { file ->
+                        val fin = FileInputStream(file)
+                        val theme: String? = convertStreamToString(fin)
+                        //Make sure you close all streams.
+                        fin.close()
+                        if (theme != null) {
+                            player.jsonTheme = theme
+                            onlyWidget.jsonTheme = theme
+                        } else
+                            Toast.makeText(
+                                applicationContext,
+                                "Unable to get the theme json",
+                                Toast.LENGTH_LONG
+                            ).show()
                     }
-                }
-                create()
-            }.show()
+                })
         }
 
         events_label.text = channelManager.selectedChannel.name
@@ -335,6 +324,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
+@Throws(java.lang.Exception::class)
+fun convertStreamToString(`is`: InputStream?): String? {
+    val reader = BufferedReader(InputStreamReader(`is`))
+    val sb = java.lang.StringBuilder()
+    var line: String? = null
+    while (reader.readLine().also { line = it } != null) {
+        sb.append(line).append("\n")
+    }
+    reader.close()
+    return sb.toString()
+}
+
 
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent = Intent(this, player.cls.java)

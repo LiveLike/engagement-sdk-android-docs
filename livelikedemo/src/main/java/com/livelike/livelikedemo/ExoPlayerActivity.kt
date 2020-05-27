@@ -300,25 +300,6 @@ class ExoPlayerActivity : AppCompatActivity() {
             player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
 
-        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
-            getString("UserNickname", "").let {
-                if (!it.isNullOrEmpty()) {
-                    (application as LiveLikeApplication).sdk.updateChatNickname(it)
-                }
-            }
-            getString("userPic", null).let {
-                (application as LiveLikeApplication).sdk.updateChatUserPic(it)
-            }
-        }
-
-        if (jsonTheme != null) {
-            try {
-                widget_view.setTheme(jsonTheme!!)
-            } catch (e: Exception) {
-                Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-
         if (privateGroupChatsession == null) {
             privateGroupChatsession =
                 (application as LiveLikeApplication).createPrivateSession(
@@ -443,6 +424,27 @@ class ExoPlayerActivity : AppCompatActivity() {
                     chatRoomLastTimeStampMap[it] = 0L
                 }
             }
+
+        }
+
+        if (jsonTheme != null) {
+            Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
+//                try {
+//                    widget_view.setTheme(jsonTheme!!)
+//                } catch (e: Exception) {
+//                    Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
+//                }
+        }
+
+        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
+            getString("UserNickname", "").let {
+                if (!it.isNullOrEmpty()) {
+                    (application as LiveLikeApplication).sdk.updateChatNickname(it)
+                }
+            }
+            getString("userPic", null).let {
+                (application as LiveLikeApplication).sdk.updateChatUserPic(it)
+            }
         }
 
         if (privateGroupRoomId != null) {
@@ -464,6 +466,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             txt_chat_room_title.visibility = View.INVISIBLE
             chat_view.setSession(session!!.chatSession)
         }
+        this.session = session
+        player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
+
     }
 
     private fun addLogs(logs: String?) {
