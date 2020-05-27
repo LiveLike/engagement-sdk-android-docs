@@ -33,6 +33,10 @@ import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -46,10 +50,6 @@ import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
     companion object {
@@ -108,7 +108,8 @@ class ExoPlayerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_exo_player)
         jsonTheme = intent.getStringExtra("jsonTheme")
         if (isNetworkConnected()) {
-            chatRoomLastTimeStampMap = GsonBuilder().create().fromJson(
+            chatRoomLastTimeStampMap = GsonBuilder().create().fro
+            mJson(
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                     PREF_CHAT_ROOM_LAST_TIME,
                     null
@@ -300,25 +301,6 @@ class ExoPlayerActivity : AppCompatActivity() {
             player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
         }
 
-        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
-            getString("UserNickname", "").let {
-                if (!it.isNullOrEmpty()) {
-                    (application as LiveLikeApplication).sdk.updateChatNickname(it)
-                }
-            }
-            getString("userPic", null).let {
-                (application as LiveLikeApplication).sdk.updateChatUserPic(it)
-            }
-        }
-
-        if (jsonTheme != null) {
-            try {
-                widget_view.setTheme(jsonTheme!!)
-            } catch (e: Exception) {
-                Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-
         if (privateGroupChatsession == null) {
             privateGroupChatsession =
                 (application as LiveLikeApplication).createPrivateSession(
@@ -445,6 +427,26 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         }
 
+        if (jsonTheme != null) {
+            Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
+//                try {
+//                    widget_view.setTheme(jsonTheme!!)
+//                } catch (e: Exception) {
+//                    Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
+//                }
+        }
+
+        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
+            getString("UserNickname", "").let {
+                if (!it.isNullOrEmpty()) {
+                    (application as LiveLikeApplication).sdk.updateChatNickname(it)
+                }
+            }
+            getString("userPic", null).let {
+                (application as LiveLikeApplication).sdk.updateChatUserPic(it)
+            }
+        }
+
         if (privateGroupRoomId != null) {
             privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
             txt_chat_room_id.visibility = View.VISIBLE
@@ -464,6 +466,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             txt_chat_room_title.visibility = View.INVISIBLE
             chat_view.setSession(session!!.chatSession)
         }
+        this.session = session
+        player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
     }
 
     private fun addLogs(logs: String?) {

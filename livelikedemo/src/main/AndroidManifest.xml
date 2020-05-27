@@ -19,6 +19,7 @@
         android:theme="@style/AppTheme"
         android:versionCode="1"
         android:versionName="1"
+        tools:replace="android:allowBackup"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".WidgetFrameworkTestActivity"
             android:exported="true"/>

@@ -55,7 +55,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel?.setWidgetContainer(this, widgetViewThemeAttributes)
     }
 
-    private var session: LiveLikeContentSession? = null;
+    private var session: LiveLikeContentSession? = null
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
@@ -68,7 +68,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     }
 
     @Throws(Exception::class)
-    fun setTheme(json: String) {
+    internal fun setTheme(json: String) {
         val gson = Gson()
         engagementSDKTheme = gson.fromJson(json, EngagementSDKTheme::class.java)
         val validateString = engagementSDKTheme!!.validate()
