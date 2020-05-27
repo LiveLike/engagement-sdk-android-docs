@@ -192,23 +192,28 @@ internal class ChatSession(
         chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit
     ) {
         chatSessionIdleStream.subscribe(this@ChatSession.javaClass) {
-            contentSessionScope.launch {
-                configurationUserPairFlow.collect { pair ->
-                    logDebug { "fetch ChatRoom" }
-                    chatRepository?.let { chatRepository ->
-                        val chatRoomResult =
-                            chatRepository.fetchChatRoom(chatRoomId, pair.first.chatRoomUrlTemplate)
-                        if (chatRoomResult is Result.Success) {
-                            chatRoomMap[chatRoomId] = chatRoomResult.data
-                            chatRoomResultCall.invoke(chatRoomResult.data)
-                        } else if (chatRoomResult is Result.Error) {
-                            errorDelegate?.onError("error in fetching room id $chatRoomId")
-                            logError {
-                                chatRoomResult.exception?.message
-                                    ?: "error in fetching room id resource"
+            if (it == true) {
+                contentSessionScope.launch {
+                    configurationUserPairFlow.collect { pair ->
+                        logDebug { "fetch ChatRoom" }
+                        chatRepository?.let { chatRepository ->
+                            val chatRoomResult =
+                                chatRepository.fetchChatRoom(
+                                    chatRoomId,
+                                    pair.first.chatRoomUrlTemplate
+                                )
+                            if (chatRoomResult is Result.Success) {
+                                chatRoomMap[chatRoomId] = chatRoomResult.data
+                                chatRoomResultCall.invoke(chatRoomResult.data)
+                            } else if (chatRoomResult is Result.Error) {
+                                errorDelegate?.onError("error in fetching room id $chatRoomId")
+                                logError {
+                                    chatRoomResult.exception?.message
+                                        ?: "error in fetching room id resource"
+                                }
                             }
+                            chatSessionIdleStream.unsubscribe(this@ChatSession.javaClass)
                         }
-                        chatSessionIdleStream.unsubscribe(this@ChatSession.javaClass)
                     }
                 }
             }
@@ -270,7 +275,7 @@ internal class ChatSession(
             val channel = chatRoom.channels.chat[CHAT_PROVIDER] ?: ""
             delay(500)
             chatViewModel.apply {
-                logDebug { "Chat caching message for chatRoom:$lastChatRoomId" }
+                logDebug { "Chat caching message for chatRoom:$lastChatRoomId ,current:$chatRoomId" }
                 chatRoomMsgMap[lastChatRoomId] = messageList.takeLast(CHAT_HISTORY_LIMIT)
                 flushMessages()
                 if (chatRoomMsgMap.containsKey(chatRoomId)) {
