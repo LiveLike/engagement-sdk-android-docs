@@ -11,13 +11,13 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.google.gson.Gson
+import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
 import com.livelike.livelikedemo.models.CheerMeterRequestResponse
 import com.livelike.livelikedemo.models.EmojiSliderRequest
-import com.livelike.livelikedemo.models.EmojiSliderResponse
 import com.livelike.livelikedemo.models.FollowUpRequest
 import com.livelike.livelikedemo.models.FollowUpResponse
 import com.livelike.livelikedemo.models.PollRequestResponse
@@ -212,6 +212,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     val options: ArrayList<Option> = ArrayList()
                     val choices: ArrayList<Choice> = ArrayList()
                     val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+                    accessToken =
+                        when (com.livelike.livelikedemo.BuildConfig.BUILD_TYPE == "release") {
+                            true -> "Bearer DblPy3BVfqj_aatq6N5kFpNcH08LKObqEbnlLWc-3NlFInKTfsVxEg"
+                            else -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                        }
                     scope.launch(Dispatchers.IO) {
                         when (type.url) {
                             textQuiz -> {
@@ -325,81 +330,92 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         }
                         val responseString = postAPI(type.url!!, request)
                         val gson = Gson()
-                        val response = when (type.url) {
-                            alerts -> gson.fromJson(responseString, AlertResponse::class.java)
-                            textQuiz, imgQuiz -> gson.fromJson(
-                                responseString,
-                                QuizResponse::class.java
-                            )
-                            txtPoll, imgPoll -> gson.fromJson(
-                                responseString,
-                                PollRequestResponse::class.java
-                            )
-                            txtPrediction, imgPrediction -> gson.fromJson(
-                                responseString,
-                                PredictionResponse::class.java
-                            )
-                            emojiSlider -> gson.fromJson(
-                                responseString,
-                                EmojiSliderResponse::class.java
-                            )
-                            cheerMeter -> gson.fromJson(
-                                responseString, CheerMeterRequestResponse::class.java
-                            )
-                            else -> null
+                        var response: Any? = null
+                        try {
+                            response = when (type.url) {
+                                alerts -> gson.fromJson(responseString, AlertResponse::class.java)
+                                textQuiz, imgQuiz -> gson.fromJson(
+                                    responseString,
+                                    QuizResponse::class.java
+                                )
+                                txtPoll, imgPoll -> gson.fromJson(
+                                    responseString,
+                                    PollRequestResponse::class.java
+                                )
+                                txtPrediction, imgPrediction -> gson.fromJson(
+                                    responseString,
+                                    PredictionResponse::class.java
+                                )
+                                emojiSlider -> gson.fromJson(
+                                    responseString,
+                                    PredictionResponse::class.java
+                                )
+                                cheerMeter -> gson.fromJson(
+                                    responseString, CheerMeterRequestResponse::class.java
+                                )
+                                else -> null
+                            }
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                            response = null
                         }
                         response?.let {
                             when (it) {
                                 is AlertResponse -> {
-                                    putAPI(it.schedule_url)
+                                    it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                                 is PollRequestResponse -> {
-                                    putAPI(it.schedule_url!!)
+                                    it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                                 is QuizResponse -> {
-                                    putAPI(it.schedule_url)
+                                    it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                                 is PredictionResponse -> {
-                                    putAPI(it.schedule_url)
+                                    it.schedule_url?.let { it1 -> putAPI(it1) }
                                     scope.launch {
                                         progressBar.visibility = View.GONE
                                     }
-                                    delay(10000)
-                                    for (i in it.options.indices) {
-                                        val option = it.options[i]
-                                        if (i == 0) {
-                                            option.is_correct = true
-                                            option.vote_count = 0
-                                            patchAPI(option.url, option)
-                                        } else if (i == 1) {
-                                            option.is_correct = false
-                                            option.vote_count = 1
+                                    if (it.kind?.contains("prediction") == true) {
+                                        delay(10000)
+                                        it.options?.let { list ->
+                                            for (i in list.indices) {
+                                                val option = list[i]
+                                                if (i == 0) {
+                                                    option.is_correct = true
+                                                    option.vote_count = 0
+                                                    patchAPI(option.url, option)
+                                                } else if (i == 1) {
+                                                    option.is_correct = false
+                                                    option.vote_count = 1
+                                                }
+                                                list[i] = option
+                                            }
                                         }
-                                        it.options[i] = option
-                                    }
-                                    delay(5000)
-                                    val followRequest = FollowUpRequest(
-                                        it.options,
-                                        it.program_date_time,
-                                        it.question,
-                                        it.scheduled_at,
-                                        "P0DT00H00M07S"
-                                    )
-                                    val res =
-                                        patchAPI(
-                                            "${it.follow_up_url}${it.follow_ups[0].id}",
-                                            followRequest
+
+                                        delay(5000)
+                                        val followRequest = FollowUpRequest(
+                                            it.options,
+                                            it.program_date_time,
+                                            it.question,
+                                            it.scheduled_at,
+                                            "P0DT00H00M07S"
                                         )
-                                    val resp = gson.fromJson(res, FollowUpResponse::class.java)
-                                    resp?.let { r ->
-                                        putAPI(r.schedule_url)
+                                        it.follow_ups?.let { followups ->
+                                            val res =
+                                                patchAPI(
+                                                    "${followups[0].url}",
+                                                    followRequest
+                                                )
+                                            val resp =
+                                                gson.fromJson(res, FollowUpResponse::class.java)
+                                            resp?.let { r ->
+                                                r.schedule_url?.let { it1 -> putAPI(it1) }
+                                            }
+                                        }
                                     }
                                 }
                                 is CheerMeterRequestResponse -> {
-                                    putAPI(it.schedule_url!!)
-                                }
-                                is EmojiSliderResponse -> {
-                                    putAPI(it.schedule_url)
+                                    it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                             }
                             scope.launch {
@@ -443,7 +459,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
 
             private val authorization = "Authorization"
-            private val accessToken =
+            private var accessToken: String =
                 "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
 
             private suspend fun postAPI(
@@ -455,7 +471,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     Gson().toJson(post)
                 )
                 val request: Request = Request.Builder()
-                    .url("https://cf-blast-staging.livelikecdn.com/api/v1/$url/")
+                    .url("${BuildConfig.CONFIG_URL}$url/")
                     .method("POST", body)
                     .addHeader(
                         authorization,
