@@ -55,7 +55,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel?.setWidgetContainer(this, widgetViewThemeAttributes)
     }
 
-    private var session: LiveLikeContentSession? = null;
+    private var session: LiveLikeContentSession? = null
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session

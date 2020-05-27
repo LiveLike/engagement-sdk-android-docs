@@ -494,5 +494,44 @@
                     </LinearLayout>
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
+
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/version_details_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <android.support.constraint.ConstraintLayout
+                    android:paddingBottom="12dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/build_label"
+                        style="@style/TestAppLabel"
+                        android:text="@string/build_details"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Build details" />
+
+                    <TextView
+                        android:id="@+id/sdk_version"
+                        style="@style/TestAppButtonSubLabel"
+                        android:text="@string/build_details"
+                        app:layout_constraintTop_toBottomOf="@id/build_label"
+                        app:layout_constraintLeft_toLeftOf="@id/build_label"
+                        tools:text="Build details" />
+
+                    <TextView
+                        android:id="@+id/build_no"
+                        style="@style/TestAppButtonSubLabel"
+                        android:text="Bitrise build : NA"
+                        app:layout_constraintTop_toBottomOf="@id/sdk_version"
+                        app:layout_constraintLeft_toLeftOf="@id/sdk_version"
+                        tools:text="Bitrise build : NA" />
+
+                </android.support.constraint.ConstraintLayout>
+            </android.support.v7.widget.CardView>
         </LinearLayout>
     </ScrollView>
