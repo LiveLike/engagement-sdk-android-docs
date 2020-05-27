@@ -4,12 +4,12 @@ import com.livelike.livelikedemo.CreatedBy
 import com.livelike.livelikedemo.Option
 
 data class CheerMeterRequestResponse(
-    val cheer_type: String?=null,
-    val options: List<Option>?=null,
+    val cheer_type: String,
+    val options: List<Option>,
     val program_date_time: String? = null,
-    val program_id: String?=null,
-    val question: String?=null,
-    val timeout: String?=null,
+    val program_id: String,
+    val question: String,
+    val timeout: String,
     val created_at: String? = null,
     val created_by: CreatedBy? = null,
     val custom_data: Any? = null,

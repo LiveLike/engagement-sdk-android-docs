@@ -356,8 +356,8 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 else -> null
                             }
                         } catch (e: java.lang.Exception) {
-                            Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG)
-                                .show()
+                            e.printStackTrace()
+                            response = null
                         }
                         response?.let {
                             when (it) {
