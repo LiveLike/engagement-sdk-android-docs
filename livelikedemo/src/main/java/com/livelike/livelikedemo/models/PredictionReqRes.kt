@@ -41,6 +41,9 @@ data class PredictionResponse(
     val timeout: String? = null,
     val translatable_fields: List<String>? = null,
     val unique_impression_count: Int? = null,
-    val url: String? = null
+    val url: String? = null,
+    val average_magnitude: String? = null,
+    val initial_magnitude: String? = null,
+    val vote_url: String? = null
 )
 

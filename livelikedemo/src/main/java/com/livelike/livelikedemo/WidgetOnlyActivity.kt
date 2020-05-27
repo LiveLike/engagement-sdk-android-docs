@@ -18,7 +18,6 @@ import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
 import com.livelike.livelikedemo.models.CheerMeterRequestResponse
 import com.livelike.livelikedemo.models.EmojiSliderRequest
-import com.livelike.livelikedemo.models.EmojiSliderResponse
 import com.livelike.livelikedemo.models.FollowUpRequest
 import com.livelike.livelikedemo.models.FollowUpResponse
 import com.livelike.livelikedemo.models.PollRequestResponse
@@ -348,7 +347,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 )
                                 emojiSlider -> gson.fromJson(
                                     responseString,
-                                    EmojiSliderResponse::class.java
+                                    PredictionResponse::class.java
                                 )
                                 cheerMeter -> gson.fromJson(
                                     responseString, CheerMeterRequestResponse::class.java
@@ -375,46 +374,49 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                     scope.launch {
                                         progressBar.visibility = View.GONE
                                     }
-                                    delay(10000)
-                                    it.options?.let { list ->
-                                        for (i in list.indices) {
-                                            val option = list[i]
-                                            if (i == 0) {
-                                                option.is_correct = true
-                                                option.vote_count = 0
-                                                patchAPI(option.url, option)
-                                            } else if (i == 1) {
-                                                option.is_correct = false
-                                                option.vote_count = 1
+                                    if (it.kind?.contains("prediction") == true) {
+                                        delay(10000)
+                                        it.options?.let { list ->
+                                            for (i in list.indices) {
+                                                val option = list[i]
+                                                if (i == 0) {
+                                                    option.is_correct = true
+                                                    option.vote_count = 0
+                                                    patchAPI(option.url, option)
+                                                } else if (i == 1) {
+                                                    option.is_correct = false
+                                                    option.vote_count = 1
+                                                }
+                                                list[i] = option
                                             }
-                                            list[i] = option
                                         }
-                                    }
 
-                                    delay(5000)
-                                    val followRequest = FollowUpRequest(
-                                        it.options,
-                                        it.program_date_time,
-                                        it.question,
-                                        it.scheduled_at,
-                                        "P0DT00H00M07S"
-                                    )
-                                    it.follow_ups?.let { followups ->
-                                        val res =
-                                            patchAPI(
-                                                "${followups}${followups[0].id}",
-                                                followRequest
-                                            )
-                                        val resp = gson.fromJson(res, FollowUpResponse::class.java)
-                                        resp?.let { r ->
-                                            r.schedule_url?.let { it1 -> putAPI(it1) }
+                                        delay(5000)
+                                        val followRequest = FollowUpRequest(
+                                            it.options,
+                                            it.program_date_time,
+                                            it.question,
+                                            it.scheduled_at,
+                                            "P0DT00H00M07S"
+                                        )
+                                        it.follow_ups?.let { followups ->
+                                            val res =
+                                                patchAPI(
+                                                    "${followups[0].url}",
+                                                    followRequest
+                                                )
+                                            val resp =
+                                                gson.fromJson(res, FollowUpResponse::class.java)
+                                            resp?.let { r ->
+                                                r.schedule_url?.let { it1 -> putAPI(it1) }
+                                            }
                                         }
                                     }
                                 }
                                 is CheerMeterRequestResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
-                                is EmojiSliderResponse -> {
+                                is PredictionResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                             }
