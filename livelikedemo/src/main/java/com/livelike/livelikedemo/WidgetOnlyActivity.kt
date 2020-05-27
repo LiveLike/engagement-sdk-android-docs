@@ -41,7 +41,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 
-
 class WidgetOnlyActivity : AppCompatActivity() {
     private lateinit var session: LiveLikeContentSession
     private lateinit var channelManager: ChannelManager
@@ -147,13 +146,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
             viewType: Int
         ): RecyclerView.ViewHolder {
             if (viewType == TYPE_ITEM) {
-                //inflate your layout and pass it to view holder
+                // inflate your layout and pass it to view holder
                 return VHItem(
                     LayoutInflater.from(parent.context)
                         .inflate(R.layout.rcyl_list_item, parent, false)
                 )
             } else if (viewType == TYPE_HEADER) {
-                //inflate your layout and pass it to view holder
+                // inflate your layout and pass it to view holder
                 return VHHeader(
                     LayoutInflater.from(parent.context)
                         .inflate(R.layout.rcyl_item_header, parent, false)
@@ -491,7 +490,6 @@ class WidgetOnlyActivity : AppCompatActivity() {
         private val TYPE_HEADER = 0
         private val TYPE_ITEM = 1
     }
-
 }
 
 data class PostType(
@@ -517,7 +515,6 @@ data class CreatedBy(
     val name: String
 )
 
-
 data class Option(
     val description: String,
     val id: String? = null,
@@ -528,16 +525,3 @@ data class Option(
     val is_correct: Boolean? = null,
     val url: String? = null
 )
-
-
-
-
-
-
-
-
-
-
-
-
-

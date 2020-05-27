@@ -21,8 +21,15 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
-import kotlinx.android.synthetic.main.activity_main.btn_create
 import com.livelike.livelikedemo.utils.DialogUtils
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
+import kotlinx.android.synthetic.main.activity_main.btn_create
+import kotlinx.android.synthetic.main.activity_main.build_no
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
@@ -34,6 +41,7 @@ import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.activity_main.sdk_version
 import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_button
@@ -41,12 +49,6 @@ import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -103,6 +105,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
+
+        sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
+        if (BuildConfig.VERSION_CODE > 1) {
+            build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
+        }
 
         val player = PlayerInfo(
             "Exo Player",
@@ -203,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                     files?.forEach { file ->
                         val fin = FileInputStream(file)
                         val theme: String? = convertStreamToString(fin)
-                        //Make sure you close all streams.
+                        // Make sure you close all streams.
                         fin.close()
                         if (theme != null) {
                             player.jsonTheme = theme
@@ -313,7 +320,6 @@ fun convertStreamToString(`is`: InputStream?): String? {
     reader.close()
     return sb.toString()
 }
-
 
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent = Intent(this, player.cls.java)
