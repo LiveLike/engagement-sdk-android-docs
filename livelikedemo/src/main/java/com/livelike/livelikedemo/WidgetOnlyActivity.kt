@@ -416,9 +416,6 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 is CheerMeterRequestResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
-                                is PredictionResponse -> {
-                                    it.schedule_url?.let { it1 -> putAPI(it1) }
-                                }
                             }
                             scope.launch {
                                 progressBar.visibility = View.GONE
