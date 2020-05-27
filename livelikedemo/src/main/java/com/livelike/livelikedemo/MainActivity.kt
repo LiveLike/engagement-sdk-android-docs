@@ -55,7 +55,6 @@ import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
-
 class MainActivity : AppCompatActivity() {
 
     data class PlayerInfo(
