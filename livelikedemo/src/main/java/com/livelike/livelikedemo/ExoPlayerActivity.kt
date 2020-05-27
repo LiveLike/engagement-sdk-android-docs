@@ -108,8 +108,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_exo_player)
         jsonTheme = intent.getStringExtra("jsonTheme")
         if (isNetworkConnected()) {
-            chatRoomLastTimeStampMap = GsonBuilder().create().fro
-            mJson(
+            chatRoomLastTimeStampMap = GsonBuilder().create().fromJson(
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                     PREF_CHAT_ROOM_LAST_TIME,
                     null
