@@ -642,6 +642,34 @@ internal class PubnubChatMessagingClient(
             })
     }
 
+    /**
+     * returns the message count between start and end time
+     * max count can returned is 100
+     **/
+    internal fun getMessageCountV1(
+        channel: String,
+        startTimestamp: Long,
+        endTimeStamp: Long = Calendar.getInstance().timeInMillis
+    ): Byte {
+
+        val pnHistoryResult = pubnub.history()
+            .channel(channel)
+            .start(convertToTimeToken(startTimestamp))
+            .end(convertToTimeToken(endTimeStamp))
+            .includeMeta(true)
+            .includeTimetoken(true)
+            .reverse(false)
+            .sync()
+
+        var count: Byte = 0
+        pnHistoryResult?.messages?.forEach {
+            if (it.meta.asJsonObject.get("content-filter")?.asString?.contains("filtered") == true)
+                count++
+        }
+        return count
+    }
+
+    @Deprecated("use getMessageCountV1()")
     internal fun getMessageCount(
         channel: String,
         startTimestamp: Long
