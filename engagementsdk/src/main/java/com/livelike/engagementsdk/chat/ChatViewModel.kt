@@ -113,7 +113,16 @@ internal class ChatViewModel(
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         //Now the message is belongs to my currentChat Room
-        allMessageList.add(0,message)
+        if (allMessageList.isEmpty())
+            allMessageList.add(message)
+        else
+            allMessageList.first().let {
+                if (message.timetoken != 0L && it.timetoken > message.timetoken) {
+                    allMessageList.add(0, message)
+                } else {
+                    allMessageList.add(message)
+                }
+            }
         if (getBlockedUsers()
                 .contains(message.senderId)
         ) {
