@@ -25,6 +25,7 @@ import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -191,7 +192,8 @@ internal class ChatSession(
         chatRoomId: String,
         chatRoomResultCall: suspend (chatRoom: ChatRoom) -> Unit
     ) {
-        chatSessionIdleStream.subscribe(this@ChatSession.javaClass) {
+        val requestId = UUID.randomUUID()
+        chatSessionIdleStream.subscribe(requestId) {
             if (it == true) {
                 contentSessionScope.launch {
                     configurationUserPairFlow.collect { pair ->
@@ -212,7 +214,7 @@ internal class ChatSession(
                                         ?: "error in fetching room id resource"
                                 }
                             }
-                            chatSessionIdleStream.unsubscribe(this@ChatSession.javaClass)
+                            chatSessionIdleStream.unsubscribe(requestId)
                         }
                     }
                 }
