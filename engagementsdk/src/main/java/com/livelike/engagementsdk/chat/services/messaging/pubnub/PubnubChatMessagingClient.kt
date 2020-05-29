@@ -650,7 +650,7 @@ internal class PubnubChatMessagingClient(
         channel: String,
         startTimestamp: Long,
         endTimeStamp: Long = Calendar.getInstance().timeInMillis
-    ): Byte {
+    ): Result<Byte> {
 
         val pnHistoryResult = pubnub.history()
             .channel(channel)
@@ -663,10 +663,10 @@ internal class PubnubChatMessagingClient(
 
         var count: Byte = 0
         pnHistoryResult?.messages?.forEach {
-            if (it.meta.asJsonObject.get("content-filter")?.asString?.contains("filtered") == true)
+            if (it.meta.asJsonObject.get("content_filter")?.asString?.contains("filtered") == false)
                 count++
         }
-        return count
+        return Result.Success(count)
     }
 
     @Deprecated("use getMessageCountV1()")

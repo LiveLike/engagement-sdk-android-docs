@@ -38,7 +38,7 @@ interface LiveLikeChatSession {
     /** Exit all the Connected Chat Rooms */
     fun exitAllConnectedChatRooms()
     /** Returns the number of messages published on a chatroom since a given time*/
-    fun getMessageCount(chatRoomId: String, startTimestamp: Long, callback: LiveLikeCallback<Long>)
+    fun getMessageCount(chatRoomId: String, startTimestamp: Long, callback: LiveLikeCallback<Byte>)
     /** Register a message count listner for the specified Chat Room */
     fun setMessageListener(messageListener: MessageListener)
 }

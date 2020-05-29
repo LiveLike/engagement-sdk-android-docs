@@ -99,7 +99,7 @@ internal class ChatSession(
                         origin = pair.first.pubnubOrigin
                     )
                 logDebug { "chatRepository created" }
-                //updating urls value will be added in enterChat Room
+                // updating urls value will be added in enterChat Room
                 chatViewModel.chatRepository = chatRepository
                 initializeChatMessaging(currentPlayheadTime)
                 chatSessionIdleStream.onNext(true)
@@ -223,7 +223,7 @@ internal class ChatSession(
     override fun getMessageCount(
         chatRoomId: String,
         startTimestamp: Long,
-        callback: LiveLikeCallback<Long>
+        callback: LiveLikeCallback<Byte>
     ) {
         logDebug { "messageCount $chatRoomId ,$startTimestamp" }
         fetchChatRoom(chatRoomId) { chatRoom ->
@@ -232,7 +232,7 @@ internal class ChatSession(
                     pubnubClientForMessageCount =
                         chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
                 }
-                pubnubClientForMessageCount?.getMessageCount(channel, startTimestamp)?.run {
+                pubnubClientForMessageCount?.getMessageCountV1(channel, startTimestamp)?.run {
                     callback.processResult(this)
                 }
             }
