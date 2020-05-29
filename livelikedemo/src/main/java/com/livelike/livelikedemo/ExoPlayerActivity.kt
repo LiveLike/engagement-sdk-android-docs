@@ -402,8 +402,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                     chatRoomId,
                     timestamp,
                     object :
-                        LiveLikeCallback<Long>() {
-                        override fun onResponse(result: Long?, error: String?) {
+                        LiveLikeCallback<Byte>() {
+                        override fun onResponse(result: Byte?, error: String?) {
                             logsPreview.text =
                                 "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
                             fullLogs.text =
