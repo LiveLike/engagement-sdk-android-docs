@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:background="#1e2328"
     android:orientation="vertical"
-    android:padding="32dp"
+    android:padding="16dp"
+    android:paddingTop="32dp"
     tools:context="com.livelike.livelikedemo.WidgetFrameworkTestActivity">
 
     <LinearLayout

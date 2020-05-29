@@ -87,20 +87,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     addAnimatorUpdateListener { valueAnimator ->
                         viewModel?.animationProgress = valueAnimator.animatedFraction
                     }
-                    addAnimatorListener(object : Animator.AnimatorListener {
-                        override fun onAnimationRepeat(animation: Animator?) {
-                        }
-
-                        override fun onAnimationEnd(animation: Animator?) {
-                            viewModel?.dismissWidget(DismissAction.TAP_X)
-                        }
-
-                        override fun onAnimationCancel(animation: Animator?) {
-                        }
-
-                        override fun onAnimationStart(animation: Animator?) {
-                        }
-                    })
                     if (progress != 1f) {
                         resumeAnimation()
                     }
@@ -202,6 +188,22 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 }
             }
             WidgetStates.RESULTS -> {
+                followupAnimation.apply {
+                    addAnimatorListener(object : Animator.AnimatorListener {
+                        override fun onAnimationRepeat(animation: Animator?) {
+                        }
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            viewModel?.dismissWidget(DismissAction.TAP_X)
+                        }
+
+                        override fun onAnimationCancel(animation: Animator?) {
+                        }
+
+                        override fun onAnimationStart(animation: Animator?) {
+                        }
+                    })
+                }
             }
             WidgetStates.FINISHED -> {
                 resourceObserver(null)
