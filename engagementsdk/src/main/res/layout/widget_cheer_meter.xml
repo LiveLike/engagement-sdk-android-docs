@@ -37,20 +37,22 @@
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-            <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
-                android:id="@+id/textEggTimer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:visibility="visible" />
+
                 <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
-                android:id="@+id/textEggTimer1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:visibility="gone" />
+                    android:id="@+id/textEggTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:visibility="visible" />
+
+                <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
+                    android:id="@+id/textEggTimer1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:visibility="gone" />
 
             </FrameLayout>
         </LinearLayout>
@@ -81,12 +83,14 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:padding="5dp" />
+
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottie_vs_animation"
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp" />
+
                 <ImageView
                     android:id="@+id/img_logo_team_2"
                     android:layout_width="0dp"
@@ -95,43 +99,42 @@
                     android:padding="5dp" />
 
 
-
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/view_ripple_demo"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:gravity="center"
-                android:orientation="vertical">
+            <!--            <LinearLayout-->
+            <!--                android:id="@+id/view_ripple_demo"-->
+            <!--                android:layout_width="250dp"-->
+            <!--                android:layout_height="250dp"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                android:visibility="gone"-->
+            <!--                android:gravity="center"-->
+            <!--                android:orientation="vertical">-->
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Tap to win the game!"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+            <!--                <TextView-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:gravity="center"-->
+            <!--                    android:text="Tap to win the game!"-->
+            <!--                    android:textColor="@android:color/white"-->
+            <!--                    android:textSize="20sp"-->
+            <!--                    android:textStyle="bold" />-->
 
-                <TextView
-                    android:id="@+id/txt_cheer_meter_timer_demo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:textSize="30sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            <!--                <TextView-->
+            <!--                    android:id="@+id/txt_cheer_meter_timer_demo"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:textColor="@android:color/white"-->
+            <!--                    android:textSize="30sp"-->
+            <!--                    android:textStyle="bold" />-->
+            <!--            </LinearLayout>-->
 
             <LinearLayout
                 android:id="@+id/ll_cheer_meter_teams"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:layout_gravity="top"
                 android:animateLayoutChanges="true"
-                android:background="@android:color/white"
-                android:layout_gravity="top">
+                android:background="@android:color/white">
 
                 <TextView
                     android:id="@+id/txt_cheer_meter_team_1"
@@ -154,40 +157,33 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse" />
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/img_tap_demo"
-                android:layout_width="50dp"
-                android:layout_gravity="right|bottom|end"
-                android:layout_marginRight="45dp"
-                android:layout_marginBottom="25dp"
-                android:visibility="gone"
-                app:srcCompat="@drawable/ic_cheermeter_tapping"
-                android:layout_height="50dp" />
+            <!--            <ImageView-->
+            <!--                android:id="@+id/img_tap_demo"-->
+            <!--                android:layout_width="50dp"-->
+            <!--                android:layout_gravity="right|bottom|end"-->
+            <!--                android:layout_marginRight="45dp"-->
+            <!--                android:layout_marginBottom="25dp"-->
+            <!--                android:visibility="gone"-->
+            <!--                app:srcCompat="@drawable/ic_cheermeter_tapping"-->
+            <!--                android:layout_height="50dp" />-->
 
             <LinearLayout
                 android:id="@+id/ll_my_score"
-                android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:visibility="gone"
-                android:gravity="center"
-                android:layout_gravity="right|bottom|end"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|center_horizontal"
                 android:layout_margin="15dp"
-                android:layout_height="wrap_content">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="visible">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="MY SCORE"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/txt_my_score"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
-                    android:textStyle="bold"
                     android:textSize="25sp"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </FrameLayout>
@@ -197,20 +193,20 @@
     <FrameLayout
         android:id="@+id/fl_result_team"
         android:layout_width="match_parent"
-        android:layout_gravity="center"
-        android:layout_height="350dp" >
+        android:layout_height="350dp"
+        android:layout_gravity="center">
 
         <ImageView
             android:id="@+id/img_winner_team"
             android:layout_width="125dp"
-            android:layout_gravity="center"
-            android:layout_height="125dp" />
+            android:layout_height="125dp"
+            android:layout_gravity="center" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/img_winner_anim"
             android:layout_width="300dp"
-            android:layout_gravity="center"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            android:layout_gravity="center" />
     </FrameLayout>
 
 </FrameLayout>

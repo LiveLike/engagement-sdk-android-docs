@@ -30,7 +30,6 @@ import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_tap_demo
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_anim
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_winner_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.ll_cheer_meter_teams
@@ -39,11 +38,10 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.lottie_vs_animatio
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.textEggTimer
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_team_2
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_timer_demo
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_title
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
-import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple_demo
+
 import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
@@ -74,6 +72,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         viewModel?.results?.subscribe(javaClass.simpleName) { resultObserver(it) }
         viewModel?.voteEnd?.subscribe(javaClass.simpleName) { endObserver(it) }
     }
+
 
     private fun resultObserver(resource: Resource?) {
         resource?.let {
@@ -366,82 +365,92 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         }
     }
 
+
     private fun startDemo(voteUrl: String, option: Option) {
-        view_ripple.isClickable = false
-        view_ripple_demo.visibility = View.VISIBLE
-        img_tap_demo.visibility = View.VISIBLE
-        view_ripple_demo.isClickable = true
-        view_ripple_demo.post {
-            view_ripple_demo.setBackgroundResource(
-                when (viewModel?.teamSelected) {
-                    1 -> R.drawable.ripple_effect_team_1
-                    2 -> R.drawable.ripple_effect_team_2
-                    else -> android.R.color.transparent
-                }
-            )
-            val durationMs = 3000F
-            val cycleDurationMs = 1000F
 
-            val listener = object : Animator.AnimatorListener {
-                private lateinit var runnable: Runnable
 
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
+        // Removed tutorial animation from this method
+        viewModel?.sendVote(voteUrl)
+        startVoting(voteUrl, option)
 
-                override fun onAnimationEnd(animation: Animator?) {
-                    viewModel?.timer = 0
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
-                    // Init Vote to get Vote Url
-                    viewModel?.sendVote(voteUrl)
-                    txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
-                    view_ripple_demo.isPressed = true
-                    view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
-                    runnable = Runnable {
-                        viewModel?.timer = (viewModel?.timer ?: 0) - 1
-                        if ((viewModel?.timer ?: 0) >= 0) {
-                            view_ripple_demo.isPressed = true
-                            view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
-                            txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
-                            view_ripple_demo.postDelayed(runnable, 1000L)
-                        } else {
-                            txt_cheer_meter_timer_demo.text = "GO!"
-                            // Finish with Demo
-                            // Start Voting
-                            view_ripple_demo.postDelayed({
-                                startVoting(voteUrl, option)
-                            }, 700)
-                        }
-                    }
-
-                    view_ripple_demo.postDelayed(runnable, 1000L)
-                }
-            }
-            if ((viewModel?.timer ?: 0) > 0) {
-                img_tap_demo.animate()
-                    .setStartDelay(300L)
-                    .setDuration(durationMs.toLong())
-                    .scaleX(0.5F).scaleY(0.5F)
-                    .setInterpolator(CycleInterpolator(durationMs / cycleDurationMs))
-                    .setListener(listener)
-                    .withLayer()
-                    .start()
-            } else {
-                view_ripple_demo.postDelayed({
-                    startVoting(voteUrl, option)
-                }, 700)
-            }
-        }
+//        view_ripple.isClickable = false
+//        view_ripple_demo.visibility = View.VISIBLE
+//        img_tap_demo.visibility = View.VISIBLE
+//        view_ripple_demo.isClickable = true
+//        view_ripple_demo.post {
+//            view_ripple_demo.setBackgroundResource(
+//                when (viewModel?.teamSelected) {
+//                    1 -> R.drawable.ripple_effect_team_1
+//                    2 -> R.drawable.ripple_effect_team_2
+//                    else -> android.R.color.transparent
+//                }
+//            )
+//            val durationMs = 3000F
+//            val cycleDurationMs = 1000F
+//
+//            val listener = object : Animator.AnimatorListener {
+//                private lateinit var runnable: Runnable
+//
+//                override fun onAnimationRepeat(animation: Animator?) {
+//                }
+//
+//                override fun onAnimationEnd(animation: Animator?) {
+//                    viewModel?.timer = 0
+//                }
+//
+//                override fun onAnimationCancel(animation: Animator?) {
+//                }
+//
+//                override fun onAnimationStart(animation: Animator?) {
+//                    // Init Vote to get Vote Url
+//                    viewModel?.sendVote(voteUrl)
+//                    txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
+//                    view_ripple_demo.isPressed = true
+//                    view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
+//                    runnable = Runnable {
+//                        viewModel?.timer = (viewModel?.timer ?: 0) - 1
+//                        if ((viewModel?.timer ?: 0) >= 0) {
+//                            view_ripple_demo.isPressed = true
+//                            view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
+//                            txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
+//                            view_ripple_demo.postDelayed(runnable, 1000L)
+//                        } else {
+//                            txt_cheer_meter_timer_demo.text = "GO!"
+//                            // Finish with Demo
+//                            // Start Voting
+//                            view_ripple_demo.postDelayed({
+//                                startVoting(voteUrl, option)
+//                            }, 700)
+//                        }
+//                    }
+//
+//                    view_ripple_demo.postDelayed(runnable, 1000L)
+//                }
+//            }
+//            if ((viewModel?.timer ?: 0) > 0) {
+//                img_tap_demo.animate()
+//                    .setStartDelay(300L)
+//                    .setDuration(durationMs.toLong())
+//                    .scaleX(0.5F).scaleY(0.5F)
+//                    .setInterpolator(CycleInterpolator(durationMs / cycleDurationMs))
+//                    .setListener(listener)
+//                    .withLayer()
+//                    .start()
+//            } else {
+//                view_ripple_demo.postDelayed({
+//                    startVoting(voteUrl, option)
+//                }, 700)
+//            }
+//        }
     }
 
     private fun startVoting(voteUrl: String, id: Option) {
-        img_tap_demo.visibility = View.GONE
-        view_ripple_demo.isClickable = false
-        view_ripple_demo.visibility = View.GONE
+
+
+        // Below code not needed as tutorial animation has been removed
+//        img_tap_demo.visibility = View.GONE
+//        view_ripple_demo.isClickable = false
+//        view_ripple_demo.visibility = View.GONE
         ll_my_score.visibility = View.VISIBLE
         txt_my_score.visibility = View.VISIBLE
         view_ripple.isClickable = true
