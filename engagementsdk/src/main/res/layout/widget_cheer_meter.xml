@@ -101,32 +101,6 @@
 
             </LinearLayout>
 
-            <!--            <LinearLayout-->
-            <!--                android:id="@+id/view_ripple_demo"-->
-            <!--                android:layout_width="250dp"-->
-            <!--                android:layout_height="250dp"-->
-            <!--                android:layout_gravity="center"-->
-            <!--                android:visibility="gone"-->
-            <!--                android:gravity="center"-->
-            <!--                android:orientation="vertical">-->
-
-            <!--                <TextView-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:gravity="center"-->
-            <!--                    android:text="Tap to win the game!"-->
-            <!--                    android:textColor="@android:color/white"-->
-            <!--                    android:textSize="20sp"-->
-            <!--                    android:textStyle="bold" />-->
-
-            <!--                <TextView-->
-            <!--                    android:id="@+id/txt_cheer_meter_timer_demo"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:textColor="@android:color/white"-->
-            <!--                    android:textSize="30sp"-->
-            <!--                    android:textStyle="bold" />-->
-            <!--            </LinearLayout>-->
 
             <LinearLayout
                 android:id="@+id/ll_cheer_meter_teams"
@@ -156,16 +130,6 @@
                     android:padding="3dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse" />
             </LinearLayout>
-
-            <!--            <ImageView-->
-            <!--                android:id="@+id/img_tap_demo"-->
-            <!--                android:layout_width="50dp"-->
-            <!--                android:layout_gravity="right|bottom|end"-->
-            <!--                android:layout_marginRight="45dp"-->
-            <!--                android:layout_marginBottom="25dp"-->
-            <!--                android:visibility="gone"-->
-            <!--                app:srcCompat="@drawable/ic_cheermeter_tapping"-->
-            <!--                android:layout_height="50dp" />-->
 
             <LinearLayout
                 android:id="@+id/ll_my_score"

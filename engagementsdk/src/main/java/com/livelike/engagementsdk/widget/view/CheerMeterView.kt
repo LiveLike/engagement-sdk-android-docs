@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.view.animation.CycleInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
@@ -170,7 +169,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                             updateRippleView(it)
                                         }
                                         optionList[0].vote_url?.let { url ->
-                                            startDemo(url, optionList[0])
+                                            initializaVoting(url, optionList[0])
                                         }
                                     }, 400)
                                 }
@@ -210,7 +209,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                             updateRippleView(it)
                                         }
                                         optionList[1].vote_url?.let { url ->
-                                            startDemo(url, optionList[1])
+                                            initializaVoting(url, optionList[1])
                                         }
                                     }, 400)
                                 }
@@ -366,91 +365,12 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
 
-    private fun startDemo(voteUrl: String, option: Option) {
-
-
-        // Removed tutorial animation from this method
+    private fun initializaVoting(voteUrl: String, option: Option) {
         viewModel?.sendVote(voteUrl)
         startVoting(voteUrl, option)
-
-//        view_ripple.isClickable = false
-//        view_ripple_demo.visibility = View.VISIBLE
-//        img_tap_demo.visibility = View.VISIBLE
-//        view_ripple_demo.isClickable = true
-//        view_ripple_demo.post {
-//            view_ripple_demo.setBackgroundResource(
-//                when (viewModel?.teamSelected) {
-//                    1 -> R.drawable.ripple_effect_team_1
-//                    2 -> R.drawable.ripple_effect_team_2
-//                    else -> android.R.color.transparent
-//                }
-//            )
-//            val durationMs = 3000F
-//            val cycleDurationMs = 1000F
-//
-//            val listener = object : Animator.AnimatorListener {
-//                private lateinit var runnable: Runnable
-//
-//                override fun onAnimationRepeat(animation: Animator?) {
-//                }
-//
-//                override fun onAnimationEnd(animation: Animator?) {
-//                    viewModel?.timer = 0
-//                }
-//
-//                override fun onAnimationCancel(animation: Animator?) {
-//                }
-//
-//                override fun onAnimationStart(animation: Animator?) {
-//                    // Init Vote to get Vote Url
-//                    viewModel?.sendVote(voteUrl)
-//                    txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
-//                    view_ripple_demo.isPressed = true
-//                    view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
-//                    runnable = Runnable {
-//                        viewModel?.timer = (viewModel?.timer ?: 0) - 1
-//                        if ((viewModel?.timer ?: 0) >= 0) {
-//                            view_ripple_demo.isPressed = true
-//                            view_ripple_demo.postDelayed({ view_ripple_demo.isPressed = false }, 50)
-//                            txt_cheer_meter_timer_demo.text = "${viewModel?.timer}"
-//                            view_ripple_demo.postDelayed(runnable, 1000L)
-//                        } else {
-//                            txt_cheer_meter_timer_demo.text = "GO!"
-//                            // Finish with Demo
-//                            // Start Voting
-//                            view_ripple_demo.postDelayed({
-//                                startVoting(voteUrl, option)
-//                            }, 700)
-//                        }
-//                    }
-//
-//                    view_ripple_demo.postDelayed(runnable, 1000L)
-//                }
-//            }
-//            if ((viewModel?.timer ?: 0) > 0) {
-//                img_tap_demo.animate()
-//                    .setStartDelay(300L)
-//                    .setDuration(durationMs.toLong())
-//                    .scaleX(0.5F).scaleY(0.5F)
-//                    .setInterpolator(CycleInterpolator(durationMs / cycleDurationMs))
-//                    .setListener(listener)
-//                    .withLayer()
-//                    .start()
-//            } else {
-//                view_ripple_demo.postDelayed({
-//                    startVoting(voteUrl, option)
-//                }, 700)
-//            }
-//        }
     }
 
     private fun startVoting(voteUrl: String, id: Option) {
-
-
-        // Below code not needed as tutorial animation has been removed
-//        img_tap_demo.visibility = View.GONE
-//        view_ripple_demo.isClickable = false
-//        view_ripple_demo.visibility = View.GONE
         ll_my_score.visibility = View.VISIBLE
         txt_my_score.visibility = View.VISIBLE
         view_ripple.isClickable = true
