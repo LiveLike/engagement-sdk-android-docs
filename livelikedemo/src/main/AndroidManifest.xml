@@ -19,20 +19,24 @@
         android:theme="@style/AppTheme"
         android:versionCode="1"
         android:versionName="1"
-        tools:replace="android:allowBackup"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".WidgetFrameworkTestActivity"
-            android:exported="true"/>
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:allowBackup">
+        <activity
+            android:name=".WidgetFrameworkTestActivity"
+            android:exported="true" />
         <activity android:name=".LiveBlogActivity" />
         <activity android:name=".ChatOnlyActivity" />
-        <activity android:name=".WidgetOnlyActivity" />
+        <activity
+            android:name=".WidgetOnlyActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity android:name=".WidgetStandaloneActivity" />
-        <activity android:name=".ExoPlayerActivity" />
+        <activity
+            android:name=".ExoPlayerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" />
         <activity android:name=".TwoSessionActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
