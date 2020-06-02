@@ -213,7 +213,6 @@ internal class ChatViewModel(
         if (chatLoaded) {
             logDebug { "message is deleted from producer so changing its text" }
             messageList.find {
-                println("ChatViewModel.deleteChatMessage->${it.id} ->$messageId")
                 it.id.toLowerCase() == messageId
             }?.apply {
                 message = "This message has been removed."
