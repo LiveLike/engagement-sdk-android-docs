@@ -18,10 +18,10 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_cheer_meter_minigame" />
+<!--            <ImageView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:srcCompat="@drawable/ic_cheer_meter_minigame" />-->
 
             <TextView
                 android:id="@+id/txt_cheer_meter_title"
@@ -29,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="5dp"
+                android:gravity="center"
                 android:text="@string/minigame_pick_a_side"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
                 android:textColor="@color/livelike_cheer_meter_title_color"
@@ -37,20 +38,22 @@
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
-            <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
-                android:id="@+id/textEggTimer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:visibility="visible" />
+
                 <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
-                android:id="@+id/textEggTimer1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:visibility="gone" />
+                    android:id="@+id/textEggTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:visibility="visible" />
+
+                <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
+                    android:id="@+id/textEggTimer1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:visibility="gone" />
 
             </FrameLayout>
         </LinearLayout>
@@ -81,19 +84,20 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:padding="5dp" />
+
                 <com.airbnb.lottie.LottieAnimationView
                     android:id="@+id/lottie_vs_animation"
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp" />
+
                 <ImageView
                     android:id="@+id/img_logo_team_2"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:padding="5dp" />
-
 
 
             </LinearLayout>
@@ -103,9 +107,9 @@
                 android:id="@+id/ll_cheer_meter_teams"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
+                android:layout_gravity="top"
                 android:animateLayoutChanges="true"
-                android:background="@android:color/white"
-                android:layout_gravity="top">
+                android:background="@android:color/white">
 
                 <TextView
                     android:id="@+id/txt_cheer_meter_team_1"
@@ -131,28 +135,29 @@
 
             <LinearLayout
                 android:id="@+id/ll_my_score"
-                android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:visibility="gone"
-                android:gravity="center"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_margin="15dp"
-                android:layout_height="wrap_content">
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="MY SCORE"
                     android:textColor="@android:color/white"
-                    android:textStyle="bold"
                     android:textSize="15sp"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/txt_my_score"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
-                    android:textStyle="bold"
                     android:textSize="25sp"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </FrameLayout>
