@@ -122,7 +122,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@android:color/white"
             android:textStyle="bold"
-            android:textSize="11sp"
+            android:textSize="11dp"
             app:layout_constraintEnd_toEndOf="@+id/chatBackground"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
