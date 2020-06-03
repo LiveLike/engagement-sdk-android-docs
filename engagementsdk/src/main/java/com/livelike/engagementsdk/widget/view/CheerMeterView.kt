@@ -8,6 +8,8 @@ import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -192,69 +194,77 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     // this method setup the ripple view which animates on tapping up/cheering the team
     @SuppressLint("ClickableViewAccessibility")
     private fun setupTeamCheerRipple(viewRipple: View, teamView: View, teamIndex: Int) {
-        viewRipple.setOnTouchListener { v, event ->
-            // when tapped for first time
-            if (viewModel?.localVoteCount == 0) {
-                clearStartingAnimations()
-            }
-            when (event.action) {
-                MotionEvent.ACTION_UP -> {
-                    if (v.isClickable) {
-                        if (angle) {
-                            angle = false
-                            teamView.animate().rotation(0F).setDuration(50)
-                                .start()
-                            if (teamIndex == 0) {
-                                txt_cheer_meter_team_1.animate().alpha(1F).setDuration(30)
-                                    .start()
-                            } else {
-                                txt_cheer_meter_team_2.animate().alpha(1F).setDuration(30)
-                                    .start()
-                            }
-                            txt_my_score.visibility = View.INVISIBLE // add debounce here as per design instructions by shu
-                        }
-                    }
-                    return@setOnTouchListener false
+        viewRipple.setOnTouchListener(object : OnTouchListener {
+            var handler = Handler(Looper.getMainLooper())
+            override fun onTouch(v: View, event: MotionEvent): Boolean {
+                // when tapped for first time
+                if (viewModel?.localVoteCount == 0) {
+                    this@CheerMeterView.clearStartingAnimations()
                 }
-                MotionEvent.ACTION_DOWN -> {
-                    if (v.isClickable) {
-                        if (!angle) {
-                            angle = true
-                            var txtTeamView = if (teamIndex == 0) {
-                                txt_cheer_meter_team_1
-                            } else {
-                                txt_cheer_meter_team_2
-                            }
-                            teamView.animate().rotation(35F).setDuration(50)
-                                .start()
-                            val listener = object : AnimatorListenerAdapter() {
-                                override fun onAnimationEnd(animation: Animator?) {
-                                    txtTeamView.animate().alpha(1F)
-                                        .setDuration(30)
+                when (event.action) {
+                    MotionEvent.ACTION_UP -> {
+                        if (v.isClickable) {
+                            if (angle) {
+                                angle = false
+                                teamView.animate().rotation(0F).setDuration(50)
+                                    .start()
+                                if (teamIndex == 0) {
+                                    txt_cheer_meter_team_1.animate().alpha(1F).setDuration(30)
+                                        .start()
+                                } else {
+                                    txt_cheer_meter_team_2.animate().alpha(1F).setDuration(30)
                                         .start()
                                 }
+                                handler.removeCallbacksAndMessages(null)
+                                handler.postDelayed({
+                                    txt_my_score.visibility = View.INVISIBLE
+                                }, 500)
                             }
-                            txtTeamView.animate().alpha(0F).setDuration(30)
-                                .setListener(listener)
-                                .start()
-
-                            viewModel?.incrementVoteCount(teamIndex)
-                            txt_my_score.visibility = View.VISIBLE
-                            txt_my_score.text = "${viewModel?.localVoteCount}"
                         }
+                        return false
                     }
-                    return@setOnTouchListener false
+                    MotionEvent.ACTION_DOWN -> {
+                        if (v.isClickable) {
+                            if (!angle) {
+                                angle = true
+                                var txtTeamView = if (teamIndex == 0) {
+                                    txt_cheer_meter_team_1
+                                } else {
+                                    txt_cheer_meter_team_2
+                                }
+                                teamView.animate().rotation(35F).setDuration(50)
+                                    .start()
+                                val listener = object : AnimatorListenerAdapter() {
+                                    override fun onAnimationEnd(animation: Animator?) {
+                                        txtTeamView.animate().alpha(1F)
+                                            .setDuration(30)
+                                            .start()
+                                    }
+                                }
+                                txtTeamView.animate().alpha(0F).setDuration(30)
+                                    .setListener(listener)
+                                    .start()
+
+                                viewModel?.incrementVoteCount(teamIndex)
+                                txt_my_score.visibility = View.VISIBLE
+                                txt_my_score.text = "${viewModel?.localVoteCount}"
+                            }
+                        }
+                        return false
+                    }
+                    else -> return false
                 }
-                else -> false
             }
         }
+        )
     }
 
     // all animations which run before user start interactions
     private fun clearStartingAnimations() {
         img_logo_team_1.clearAnimation()
         img_logo_team_2.clearAnimation()
-        collapse(lottie_vs_animation, 500, 0)
+        lottie_vs_animation.visibility = View.INVISIBLE
+//        collapse(lottie_vs_animation, 500, 0)
     }
 
     private fun updateRippleView(viewRipple: View, component: Component) {
@@ -281,30 +291,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun startVoting(voteUrl: String, id: Option) {
-//        ll_my_score.visibility = View.VISIBLE
-//        txt_my_score.visibility = View.VISIBLE
-//        view_ripple.isClickable = true
-//        view_ripple2.isClickable = true
 
         viewModel?.animationEggTimerProgress = 0f
         selectedTeam = id
         txt_my_score.text = "0"
-        if (viewModel?.animationEggTimerProgress!! < 1f) {
-//            listOf(textEggTimer).forEach { v ->
-//                viewModel?.animationEggTimerProgress?.let {
-//                    v?.startAnimationFrom(it, 10000F, { t ->
-//                        viewModel?.animationEggTimerProgress = t
-//                    }, {
-//                        // stop voting
-//                        // Added in order to get the updated voteCount at the voting end
-//                        viewModel?.pushVoteData(0)
-//                        stopVoting()
-//                        viewModel?.dismissWidget(it)
-//                    })
-//                }
-//            }
-//            viewModel?.startDismissTimout(10000.toString(), isVotingStarted = true)
-        }
+
         logDebug { "CheerMeter voting start" }
 //        viewModel?.sendVote(voteUrl)
     }

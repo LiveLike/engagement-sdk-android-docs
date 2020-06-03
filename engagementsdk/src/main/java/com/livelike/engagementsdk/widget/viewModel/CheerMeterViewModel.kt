@@ -108,77 +108,38 @@ internal class CheerMeterViewModel(
     fun incrementVoteCount(teamIndex : Int) {
         interactionData.incrementInteraction()
         localVoteCount++
-        voteState[teamIndex]?.apply {
-            voteCount++
+        voteState.getOrNull(teamIndex)?.let {
+            it.voteCount++
         }
         wouldSendVote()
+        Log.d("vote state ", voteState.getOrNull(teamIndex).toString())
     }
 
     private fun wouldSendVote() {
-
         voteState.forEach {
             if (it.voteCount > VOTE_THRASHHOLD) {
                 uiScope.launch { pushVoteStateData(it) }
-            } else {
-             if(pushVoteJob == null || pushVoteJob?.isCompleted == false){
-                 pushVoteJob?.cancel()
-                 pushVoteJob = uiScope.launch {
-                     delay(1000L)
-                     pushVoteStateData(it)
-                 }
-             }
-           }
+            }
+        }
+        if(pushVoteJob == null || pushVoteJob?.isCompleted == false){
+            pushVoteJob?.cancel()
+            pushVoteJob = uiScope.launch {
+                delay(1000L)
+                voteState.forEach {
+                    pushVoteStateData(it)
+                }
+            }
         }
     }
 
     private suspend fun pushVoteStateData(voteState : CheerMeterVoteState){
-        voteUrl = dataClient.voteAsync(voteState.voteUrl, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":${voteState.voteCount}}"), accessToken =  userRepository.userAccessToken, type = voteState.requestType)
-        voteUrl?.let { voteState.voteUrl = it }
+        if(voteState.voteCount>0){
+            voteUrl = dataClient.voteAsync(voteState.voteUrl, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":${voteState.voteCount}}"), accessToken =  userRepository.userAccessToken, type = voteState.requestType)
+            voteUrl?.let {
+                voteState.voteUrl = it
+                voteState.requestType = RequestType.PATCH }
+        }
     }
-
-
-//    fun sendVote(url: String) {
-//        if (voteUrl == null) {
-//            if (url.isNotEmpty())
-//                initVote(url)
-//            else
-//                Log.e("Error", "Unable to initiate voting : $url")
-//        } else {
-//            interactionData.incrementInteraction()
-//            localVoteCount++
-//            voteCount++
-//            if (voteCount > VOTE_THRASHHOLD) {
-//                // api call
-//                pushVoteData(voteCount)
-//                voteCount = 0
-//            } else {
-//                uiScope.launch {
-//                    if (debounceJob == null || debounceJob?.isCompleted != false) {
-//                        debounceJob = CoroutineScope(coroutineContext).launch {
-//                            delay(1000L)
-//                            pushVoteData(voteCount)
-//                            voteCount = 0
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    fun pushVoteData(voteCount: Int) {
-//        voteUrl?.let {
-//            uiScope.launch {
-//                if (voteCount > 0)
-//                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":$voteCount}"), accessToken =  userRepository.userAccessToken, type = RequestType.PATCH)
-//            }
-//        }
-//    }
-//
-//    private fun initVote(url: String) {
-//        uiScope.launch {
-//            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":0}"), accessToken =  userRepository.userAccessToken, type = RequestType.POST)
-//        }
-//    }
 
     fun voteEnd() {
         currentWidgetType?.let {
@@ -265,5 +226,5 @@ internal class CheerMeterViewModel(
 }
 
 
-class CheerMeterVoteState(var voteCount: Int, var voteUrl: String, var requestType: RequestType) {
+data class CheerMeterVoteState(var voteCount: Int, var voteUrl: String, var requestType: RequestType) {
 }
