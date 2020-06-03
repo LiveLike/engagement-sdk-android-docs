@@ -2,8 +2,6 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import com.airbnb.lottie.model.MutablePair
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
@@ -28,7 +26,6 @@ import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagi
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -51,13 +48,13 @@ internal class CheerMeterViewModel(
     val widgetMessagingClient: WidgetManager? = null
 ) : BaseViewModel() {
 
-    var localVoteCount = 0
+    var totalVoteCount = 0
 
     /**
      *this is equal to size of list of options containing vote count to synced with server for each option
      *first request is post to create the vote then after to update the count on that option, patch request will be used
      **/
-     var voteState: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
+     var voteStateList: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
 
     private var pushVoteJob: Job? = null
     private var voteUrl: String? = null
@@ -103,20 +100,18 @@ internal class CheerMeterViewModel(
         widgetObserver(widgetInfos)
     }
 
-    private var voteCount = 0
-
     fun incrementVoteCount(teamIndex : Int) {
         interactionData.incrementInteraction()
-        localVoteCount++
-        voteState.getOrNull(teamIndex)?.let {
+        totalVoteCount++
+        voteStateList.getOrNull(teamIndex)?.let {
             it.voteCount++
         }
         wouldSendVote()
-        Log.d("vote state ", voteState.getOrNull(teamIndex).toString())
+        println("vote state ${voteStateList.getOrNull(teamIndex).toString()}")
     }
 
     private fun wouldSendVote() {
-        voteState.forEach {
+        voteStateList.forEach {
             if (it.voteCount > VOTE_THRASHHOLD) {
                 uiScope.launch { pushVoteStateData(it) }
             }
@@ -125,7 +120,7 @@ internal class CheerMeterViewModel(
             pushVoteJob?.cancel()
             pushVoteJob = uiScope.launch {
                 delay(1000L)
-                voteState.forEach {
+                voteStateList.forEach {
                     pushVoteStateData(it)
                 }
             }
@@ -133,11 +128,13 @@ internal class CheerMeterViewModel(
     }
 
     private suspend fun pushVoteStateData(voteState : CheerMeterVoteState){
-        if(voteState.voteCount>0){
+        if (voteState.voteCount > 0) {
             voteUrl = dataClient.voteAsync(voteState.voteUrl, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":${voteState.voteCount}}"), accessToken =  userRepository.userAccessToken, type = voteState.requestType)
             voteUrl?.let {
                 voteState.voteUrl = it
                 voteState.requestType = RequestType.PATCH }
+            voteState.voteCount = 0
+            println("vote state request ${voteState.toString()}")
         }
     }
 
@@ -158,7 +155,7 @@ internal class CheerMeterViewModel(
             resource?.apply {
 
                 resource.getMergedOptions()?.forEach { option ->
-                    voteState.add(CheerMeterVoteState(0, option.vote_url ?: "", RequestType.POST))
+                    voteStateList.add(CheerMeterVoteState(0, option.vote_url ?: "", RequestType.POST))
                 }
 
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
@@ -187,7 +184,7 @@ internal class CheerMeterViewModel(
         if (timeout.isNotEmpty()) {
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                    if (localVoteCount == 0) {
+                    if (totalVoteCount == 0) {
                         dismissWidget(DismissAction.TIMEOUT)
                     }else{
                         voteEnd.onNext(true)

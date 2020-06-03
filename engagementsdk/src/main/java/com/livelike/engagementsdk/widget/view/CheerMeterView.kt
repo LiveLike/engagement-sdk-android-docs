@@ -25,7 +25,6 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.Component
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
-import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
@@ -50,7 +49,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
 
     private var lastResult: Resource? = null
-    private lateinit var selectedTeam: Option
     private var viewModel: CheerMeterViewModel? = null
 
     private var inflated = false
@@ -179,7 +177,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             }, {
                 viewModel?.dismissWidget(it)
             })
-//            showEggerView(animationLength)
             viewModel?.startDismissTimout(resource.timeout)
             logDebug { "Showing CheerMeter Widget" }
         }
@@ -198,7 +195,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             var handler = Handler(Looper.getMainLooper())
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 // when tapped for first time
-                if (viewModel?.localVoteCount == 0) {
+                if (viewModel?.totalVoteCount == 0) {
                     this@CheerMeterView.clearStartingAnimations()
                 }
                 when (event.action) {
@@ -247,7 +244,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                                 viewModel?.incrementVoteCount(teamIndex)
                                 txt_my_score.visibility = View.VISIBLE
-                                txt_my_score.text = "${viewModel?.localVoteCount}"
+                                txt_my_score.text = "${viewModel?.totalVoteCount}"
                             }
                         }
                         return false
@@ -285,21 +282,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         }
     }
 
-    private fun initializaVoting(voteUrl: String, option: Option) {
-//        viewModel?.sendVote(voteUrl)
-        startVoting(voteUrl, option)
-    }
-
-    private fun startVoting(voteUrl: String, id: Option) {
-
-        viewModel?.animationEggTimerProgress = 0f
-        selectedTeam = id
-        txt_my_score.text = "0"
-
-        logDebug { "CheerMeter voting start" }
-//        viewModel?.sendVote(voteUrl)
-    }
-
     private fun endObserver(it: Boolean?) {
         if (it == true) {
             // stop voting
@@ -316,7 +298,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         txt_cheer_meter_team_1.alpha = 1F
         txt_cheer_meter_team_2.alpha = 1F
         lastResult?.let {
-            val options = it.options ?: return
+            val options = viewModel?.data?.latest()?.resource?.options ?: return
             if (options.size == 2) {
 
                 val team1 = options[0]
@@ -327,6 +309,16 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 fl_result_team.visibility = View.VISIBLE
                 logDebug { "CheerMeter voting stop,result: Team1:${team1.vote_count},Team2:${team2.vote_count}" }
                 fl_result_team.postDelayed({
+                    if (team1.vote_count == team2.vote_count) {
+                        playDrawAnimation()
+                        return@postDelayed
+                    }
+
+                    var winnerTeam = if (team1.vote_count ?: 0 > team2.vote_count ?: 0) {
+                        team1
+                    } else {
+                        team2
+                    }
                     img_logo_team_2.visibility = View.GONE
                     img_logo_team_1.visibility = View.GONE
                     val animation =
@@ -334,11 +326,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                             context,
                             R.anim.cheer_meter_winner_scale_animation
                         )
-                    var winnerTeam = if (team1.vote_count ?: 0 > team2.vote_count ?: 0) {
-                        team1
-                    } else {
-                        team2
-                    }
                     img_winner_team.visibility = View.VISIBLE
                     Glide.with(context)
                         .load(winnerTeam.image_url)
@@ -356,80 +343,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         }
                     })
                     img_winner_team.startAnimation(animation)
-
-//                    when (selectedTeam.id) {
-//                        team1.id -> when {
-//                            (team1.vote_count ?: 0) > (team2.vote_count
-//                                ?: 0) -> {
-//                                // Winner
-//                                img_winner_team.visibility = View.VISIBLE
-//                                Glide.with(context)
-//                                    .load(selectedTeam.image_url)
-//                                    .into(img_winner_team)
-//                                animation.setAnimationListener(object :
-//                                    Animation.AnimationListener {
-//                                    override fun onAnimationRepeat(animation: Animation?) {
-//                                    }
-//
-//                                    override fun onAnimationStart(animation: Animation?) {
-//                                    }
-//
-//                                    override fun onAnimationEnd(animation: Animation?) {
-//                                        playWinnerAnimation()
-//                                    }
-//                                })
-//                                img_winner_team.startAnimation(animation)
-//                            }
-//                            (team1.vote_count ?: 0) < (team2.vote_count
-//                                ?: 0) -> {
-//                                // Loser
-//                                img_winner_team.visibility = View.GONE
-//                                playLoserAnimation()
-//                            }
-//                            else -> {
-//                                // Draw
-//                                img_winner_team.visibility = View.GONE
-//                                playDrawAnimation()
-//                            }
-//                        }
-//                        team2.id -> when {
-//                            (team1.vote_count ?: 0) > (team2.vote_count
-//                                ?: 0) -> {
-//                                // Loser
-//                                img_winner_team.visibility = View.GONE
-//                                playLoserAnimation()
-//                            }
-//                            (team1.vote_count ?: 0) < (team2.vote_count
-//                                ?: 0) -> {
-//                                // Winner
-//                                img_winner_team.visibility = View.VISIBLE
-//                                Glide.with(context)
-//                                    .load(selectedTeam.image_url)
-//                                    .into(img_winner_team)
-//                                animation.setAnimationListener(object :
-//                                    Animation.AnimationListener {
-//                                    override fun onAnimationRepeat(animation: Animation?) {
-//                                    }
-//
-//                                    override fun onAnimationStart(animation: Animation?) {
-//                                    }
-//
-//                                    override fun onAnimationEnd(animation: Animation?) {
-//                                        playWinnerAnimation()
-//                                    }
-//                                })
-//                                img_winner_team.startAnimation(animation)
-//                            }
-//                            else -> {
-//                                // Draw
-//                                img_winner_team.visibility = View.GONE
-//                                playDrawAnimation()
-//                            }
-//                        }
-//                        else -> {
-//                            logDebug { "CheerMeter: No Result" }
-//                        }
-//                    }
                 }, 500)
             }
         }
