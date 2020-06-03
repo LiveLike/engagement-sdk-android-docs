@@ -57,7 +57,6 @@ internal class CheerMeterViewModel(
      var voteStateList: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
 
     private var pushVoteJob: Job? = null
-    private var voteUrl: String? = null
     private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
     val results: SubscriptionManager<Resource> =
@@ -129,7 +128,7 @@ internal class CheerMeterViewModel(
 
     private suspend fun pushVoteStateData(voteState : CheerMeterVoteState){
         if (voteState.voteCount > 0) {
-            voteUrl = dataClient.voteAsync(voteState.voteUrl, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":${voteState.voteCount}}"), accessToken =  userRepository.userAccessToken, type = voteState.requestType)
+            val voteUrl = dataClient.voteAsync(voteState.voteUrl, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":${voteState.voteCount}}"), accessToken =  userRepository.userAccessToken, type = voteState.requestType, useVoteUrl = false)
             voteUrl?.let {
                 voteState.voteUrl = it
                 voteState.requestType = RequestType.PATCH }
@@ -211,7 +210,6 @@ internal class CheerMeterViewModel(
 
     private fun cleanUp() {
         pubnub?.unsubscribeAll()
-        voteUrl = null
         data.onNext(null)
         results.onNext(null)
         animationEggTimerProgress = 0f

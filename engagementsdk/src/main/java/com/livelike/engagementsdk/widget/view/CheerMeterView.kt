@@ -284,9 +284,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
     private fun endObserver(it: Boolean?) {
         if (it == true) {
-            // stop voting
-            // Added in order to get the updated voteCount at the voting end
-//            viewModel?.pushVoteData(0)
             stopVoting()
         }
     }
@@ -303,6 +300,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
                 val team1 = options[0]
                 val team2 = options[1]
+                team1.vote_count = it.options?.find { option -> option.id == team1.id }?.vote_count
+                team2.vote_count = it.options?.find { option -> option.id == team2.id }?.vote_count
                 resultObserver(it)
 
                 viewModel?.voteEnd()
@@ -357,18 +356,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
-            addAnimatorListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
+            addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     viewModel?.dismissWidget(DismissAction.TAP_X)
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
                 }
             })
             playAnimation()
@@ -384,18 +374,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
-            addAnimatorListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
+            addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     viewModel?.dismissWidget(DismissAction.TAP_X)
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
                 }
             })
             playAnimation()
@@ -411,18 +392,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             setAnimation(animationPath)
             progress = viewModel?.animationProgress ?: 0f
             repeatCount = 0
-            addAnimatorListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
+            addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     viewModel?.dismissWidget(DismissAction.TAP_X)
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
                 }
             })
             playAnimation()

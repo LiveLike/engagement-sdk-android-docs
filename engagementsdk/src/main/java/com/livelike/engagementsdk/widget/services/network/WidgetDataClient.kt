@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addPoints
+import java.io.IOException
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -18,7 +19,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import java.io.IOException
 
 internal interface WidgetDataClient {
     suspend fun voteAsync(
@@ -26,7 +26,8 @@ internal interface WidgetDataClient {
         voteId: String? = null,
         accessToken: String? = null,
         body: RequestBody? = null,
-        type: RequestType? = null
+        type: RequestType? = null,
+        useVoteUrl: Boolean = true
     ): String?
 
     fun registerImpression(impressionUrl: String, accessToken: String?)
@@ -46,10 +47,11 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         voteId: String?,
         accessToken: String?,
         body: RequestBody?,
-        type: RequestType?
+        type: RequestType?,
+        useVoteUrl: Boolean
     ): String? {
         return singleRunner.afterPrevious {
-            if (voteUrl.isEmpty()) {
+            if (voteUrl.isEmpty() || !useVoteUrl) {
                 voteUrl =
                     postAsync(
                         widgetVotingUrl,
@@ -112,5 +114,4 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
             e.printStackTrace()
         }
     }
-
 }
