@@ -193,17 +193,15 @@ internal class CheerMeterViewModel(
         }
     }
 
-    fun startDismissTimout(timeout: String, isVotingStarted: Boolean = false) {
+    fun startDismissTimout(timeout: String) {
         if (timeout.isNotEmpty()) {
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                if (isVotingStarted) {
-                    voteEnd.onNext(true)
-                    voteEnd()
-                } else {
                     if (localVoteCount == 0) {
                         dismissWidget(DismissAction.TIMEOUT)
-                    }
+                    }else{
+                        voteEnd.onNext(true)
+                        voteEnd()
                 }
             }
         }
