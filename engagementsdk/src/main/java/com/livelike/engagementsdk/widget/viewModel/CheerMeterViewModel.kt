@@ -52,14 +52,21 @@ internal class CheerMeterViewModel(
 
     var teamSelected = 0
     var localVoteCount = 0
-    var timer = 3
+
+    /**
+     *this is equal to size of list of options containing vote count to synced with server for each option
+     *first request is podt to create the vote then after to update the count on that option, patch request will be used
+     **/
+    val voteState: Array<Triple<Int,String,RequestType>?> = arrayOfNulls(2)
+
     private var debounceJob: Job? = null
     private var voteUrl: String? = null
     private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
     val results: SubscriptionManager<Resource> =
         SubscriptionManager()
-    val voteEnd: SubscriptionManager<Boolean> =
+    val
+            voteEnd: SubscriptionManager<Boolean> =
         SubscriptionManager()
     val data: SubscriptionManager<CheerMeterWidget> =
         SubscriptionManager()
@@ -130,14 +137,14 @@ internal class CheerMeterViewModel(
         voteUrl?.let {
             uiScope.launch {
                 if (voteCount > 0)
-                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":$voteCount}"), type = RequestType.PATCH)
+                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":$voteCount}"), accessToken =  userRepository.userAccessToken, type = RequestType.PATCH)
             }
         }
     }
 
     private fun initVote(url: String) {
         uiScope.launch {
-            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":0}"), type = RequestType.POST)
+            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":0}"), accessToken =  userRepository.userAccessToken, type = RequestType.POST)
         }
     }
 
@@ -156,6 +163,14 @@ internal class CheerMeterViewModel(
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
+
+                resource.getMergedOptions()?.forEachIndexed { index, option ->
+                    if (index > 1) {
+                        return
+                    }
+                    voteState[index] = Triple(0, option.vote_url ?: "", RequestType.POST)
+                }
+
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
                     CheerMeterWidget(
@@ -186,7 +201,7 @@ internal class CheerMeterViewModel(
                     voteEnd.onNext(true)
                     voteEnd()
                 } else {
-                    if (teamSelected == 0) {
+                    if (localVoteCount == 0) {
                         dismissWidget(DismissAction.TIMEOUT)
                     }
                 }

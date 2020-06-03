@@ -47,14 +47,6 @@
                     android:layout_marginRight="8dp"
                     android:visibility="visible" />
 
-                <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
-                    android:id="@+id/textEggTimer1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:visibility="gone" />
-
             </FrameLayout>
         </LinearLayout>
 
@@ -62,12 +54,17 @@
             android:layout_width="match_parent"
             android:layout_height="200dp">
 
-            <LinearLayout
+            <View
                 android:id="@+id/view_ripple"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_gravity="center"
-                android:orientation="horizontal" />
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="left" />
+
+            <View
+                android:id="@+id/view_ripple2"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="right" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,7 +73,9 @@
                 android:paddingLeft="@dimen/livelike_cheer_meter_padding"
                 android:paddingTop="35dp"
                 android:paddingRight="@dimen/livelike_cheer_meter_padding"
-                android:paddingBottom="35dp">
+                android:paddingBottom="35dp"
+                android:clickable="false"
+                android:descendantFocusability="blocksDescendants">
 
                 <ImageView
                     android:id="@+id/img_logo_team_1"
@@ -140,24 +139,23 @@
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:layout_margin="15dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="MY SCORE"
-                    android:textColor="@android:color/white"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="MY SCORE"-->
+<!--                    android:textColor="@android:color/white"-->
+<!--                    android:textSize="15sp"-->
+<!--                    android:textStyle="bold" />-->
 
                 <TextView
                     android:id="@+id/txt_my_score"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
-                    android:textSize="25sp"
-                    android:textStyle="bold" />
+                    android:visibility="gone"
+                    android:textSize="25sp" />
             </LinearLayout>
 
         </FrameLayout>
