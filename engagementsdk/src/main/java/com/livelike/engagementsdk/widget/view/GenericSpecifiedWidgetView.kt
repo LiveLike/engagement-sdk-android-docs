@@ -17,6 +17,8 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * For now creating separate class, will mere it with specified widget view after full assessment of other widget views and then move all widget views to inherit this
@@ -47,7 +49,15 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         when (widgetState) {
             WidgetState.LOCK_INTERACTION -> confirmInteraction()
             WidgetState.SHOW_RESULTS -> showResults()
-            WidgetState.SHOW_GAMIFICATION -> rewardsObserver()
+            WidgetState.SHOW_GAMIFICATION -> {
+                rewardsObserver()
+                if (viewModel?.enableDefaultWidgetTransition) {
+                    viewModel?.uiScope.launch {
+                        delay(2000)
+                        viewModel?.dismissWidget(DismissAction.TIMEOUT)
+                    }
+                }
+            }
             WidgetState.DISMISS -> {
             }
         }
@@ -68,20 +78,6 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             }, {
                 viewModel?.dismissWidget(it)
             })
-//            val animationLength = timeout.toFloat()
-//            if (viewModel.animationEggTimerProgress < 1f) {
-//                viewModel.animationEggTimerProgress.let {
-//                    textEggTimer?.startAnimationFrom(
-//                        it,
-//                        animationLength,
-//                        { animationTimerProgress ->
-//                            viewModel.animationEggTimerProgress = animationTimerProgress
-//                        },
-//                        { dismissAction ->
-//                            viewModel.dismissWidget(dismissAction)
-//                        })
-//                }
-//            }
         }
         if (entity == null) {
             isViewInflated = false
