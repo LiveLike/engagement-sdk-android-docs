@@ -58,12 +58,12 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                         type ?: RequestType.POST
                     ).extractStringOrEmpty("url")
             } else {
-                postAsync(
+                voteUrl = postAsync(
                     voteUrl, accessToken, (body ?: FormBody.Builder()
                         .add("option_id", voteId)
                         .add("choice_id", voteId)
-                        .build()), type ?: RequestType.PUT
-                )
+                        .build()), type ?: RequestType.PATCH
+                ).extractStringOrEmpty("url")
             }
             return@afterPrevious voteUrl
         }

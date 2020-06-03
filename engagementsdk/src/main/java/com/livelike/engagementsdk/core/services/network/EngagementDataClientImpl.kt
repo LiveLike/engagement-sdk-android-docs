@@ -108,8 +108,10 @@ internal open class EngagementDataClientImpl : DataClient,
     ) {
         GlobalScope.launch {
             val result =
-                remoteCall<EngagementSDK.SdkConfiguration>(url,
-                    RequestType.GET, null, null)
+                remoteCall<EngagementSDK.SdkConfiguration>(
+                    url,
+                    RequestType.GET, null, null
+                )
             responseCallback.invoke(result)
             if (result is Result.Error) {
                 logError { "The client id is incorrect. Check your configuration." }
@@ -259,7 +261,8 @@ internal open class EngagementDataClientImpl : DataClient,
             call.enqueue(object : Callback {
                 override fun onResponse(call: Call?, response: Response) {
                     try {
-                        it.resume(JsonParser().parse(response.body()?.string()).asJsonObject)
+                        val s = response.body()?.string()
+                        it.resume(JsonParser().parse(s).asJsonObject)
                     } catch (e: Exception) {
                         logError { e }
                         it.resume(JsonObject())
