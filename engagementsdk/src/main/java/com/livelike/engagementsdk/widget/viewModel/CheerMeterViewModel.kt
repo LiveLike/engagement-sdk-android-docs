@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.widget.viewModel
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.airbnb.lottie.model.MutablePair
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
@@ -50,16 +51,15 @@ internal class CheerMeterViewModel(
     val widgetMessagingClient: WidgetManager? = null
 ) : BaseViewModel() {
 
-    var teamSelected = 0
     var localVoteCount = 0
 
     /**
      *this is equal to size of list of options containing vote count to synced with server for each option
-     *first request is podt to create the vote then after to update the count on that option, patch request will be used
+     *first request is post to create the vote then after to update the count on that option, patch request will be used
      **/
-    val voteState: Array<Triple<Int,String,RequestType>?> = arrayOfNulls(2)
+     var voteState: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
 
-    private var debounceJob: Job? = null
+    private var pushVoteJob: Job? = null
     private var voteUrl: String? = null
     private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
@@ -105,48 +105,80 @@ internal class CheerMeterViewModel(
 
     private var voteCount = 0
 
-    fun sendVote(url: String) {
-        if (voteUrl == null) {
-            if (url.isNotEmpty())
-                initVote(url)
-            else
-                Log.e("Error", "Unable to initiate voting : $url")
-        } else {
-            interactionData.incrementInteraction()
-            localVoteCount++
+    fun incrementVoteCount(teamIndex : Int) {
+        interactionData.incrementInteraction()
+        localVoteCount++
+        voteState[teamIndex]?.apply {
             voteCount++
-            if (voteCount > VOTE_THRASHHOLD) {
-                // api call
-                pushVoteData(voteCount)
-                voteCount = 0
+        }
+        wouldSendVote()
+    }
+
+    private fun wouldSendVote() {
+
+        voteState.forEach {
+            if (it.voteCount > VOTE_THRASHHOLD) {
+                uiScope.launch { pushVoteStateData(it) }
             } else {
-                uiScope.launch {
-                    if (debounceJob == null || debounceJob?.isCompleted != false) {
-                        debounceJob = CoroutineScope(coroutineContext).launch {
-                            delay(1000L)
-                            pushVoteData(voteCount)
-                            voteCount = 0
-                        }
-                    }
-                }
-            }
+             if(pushVoteJob == null || pushVoteJob?.isCompleted == false){
+                 pushVoteJob?.cancel()
+                 pushVoteJob = uiScope.launch {
+                     delay(1000L)
+                     pushVoteStateData(it)
+                 }
+             }
+           }
         }
     }
 
-    fun pushVoteData(voteCount: Int) {
-        voteUrl?.let {
-            uiScope.launch {
-                if (voteCount > 0)
-                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":$voteCount}"), accessToken =  userRepository.userAccessToken, type = RequestType.PATCH)
-            }
-        }
+    private suspend fun pushVoteStateData(voteState : CheerMeterVoteState){
+        voteUrl = dataClient.voteAsync(voteState.voteUrl, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":${voteState.voteCount}}"), accessToken =  userRepository.userAccessToken, type = voteState.requestType)
+        voteUrl?.let { voteState.voteUrl = it }
     }
 
-    private fun initVote(url: String) {
-        uiScope.launch {
-            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":0}"), accessToken =  userRepository.userAccessToken, type = RequestType.POST)
-        }
-    }
+
+//    fun sendVote(url: String) {
+//        if (voteUrl == null) {
+//            if (url.isNotEmpty())
+//                initVote(url)
+//            else
+//                Log.e("Error", "Unable to initiate voting : $url")
+//        } else {
+//            interactionData.incrementInteraction()
+//            localVoteCount++
+//            voteCount++
+//            if (voteCount > VOTE_THRASHHOLD) {
+//                // api call
+//                pushVoteData(voteCount)
+//                voteCount = 0
+//            } else {
+//                uiScope.launch {
+//                    if (debounceJob == null || debounceJob?.isCompleted != false) {
+//                        debounceJob = CoroutineScope(coroutineContext).launch {
+//                            delay(1000L)
+//                            pushVoteData(voteCount)
+//                            voteCount = 0
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    fun pushVoteData(voteCount: Int) {
+//        voteUrl?.let {
+//            uiScope.launch {
+//                if (voteCount > 0)
+//                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":$voteCount}"), accessToken =  userRepository.userAccessToken, type = RequestType.PATCH)
+//            }
+//        }
+//    }
+//
+//    private fun initVote(url: String) {
+//        uiScope.launch {
+//            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":0}"), accessToken =  userRepository.userAccessToken, type = RequestType.POST)
+//        }
+//    }
 
     fun voteEnd() {
         currentWidgetType?.let {
@@ -164,11 +196,8 @@ internal class CheerMeterViewModel(
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
 
-                resource.getMergedOptions()?.forEachIndexed { index, option ->
-                    if (index > 1) {
-                        return
-                    }
-                    voteState[index] = Triple(0, option.vote_url ?: "", RequestType.POST)
+                resource.getMergedOptions()?.forEach { option ->
+                    voteState.add(CheerMeterVoteState(0, option.vote_url ?: "", RequestType.POST))
                 }
 
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
@@ -233,6 +262,8 @@ internal class CheerMeterViewModel(
         currentWidgetType = null
         viewModelJob.cancel("Widget Cleanup")
     }
+}
 
 
+class CheerMeterVoteState(var voteCount: Int, var voteUrl: String, var requestType: RequestType) {
 }

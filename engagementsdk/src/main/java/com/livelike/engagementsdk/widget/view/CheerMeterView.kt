@@ -238,7 +238,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                                 .setListener(listener)
                                 .start()
 
-                            viewModel?.sendVote("")
+                            viewModel?.incrementVoteCount(teamIndex)
                             txt_my_score.visibility = View.VISIBLE
                             txt_my_score.text = "${viewModel?.localVoteCount}"
                         }
@@ -276,7 +276,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun initializaVoting(voteUrl: String, option: Option) {
-        viewModel?.sendVote(voteUrl)
+//        viewModel?.sendVote(voteUrl)
         startVoting(voteUrl, option)
     }
 
@@ -306,14 +306,14 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 //            viewModel?.startDismissTimout(10000.toString(), isVotingStarted = true)
         }
         logDebug { "CheerMeter voting start" }
-        viewModel?.sendVote(voteUrl)
+//        viewModel?.sendVote(voteUrl)
     }
 
     private fun endObserver(it: Boolean?) {
         if (it == true) {
             // stop voting
             // Added in order to get the updated voteCount at the voting end
-            viewModel?.pushVoteData(0)
+//            viewModel?.pushVoteData(0)
             stopVoting()
         }
     }
