@@ -552,7 +552,7 @@ internal class ChatRecyclerAdapter(
                             message.message
                         }
                         when {
-                            isExternalImage -> {
+                            !isDeleted && isExternalImage -> {
                                 val s = SpannableString(message.message)
                                 replaceWithImages(
                                     s,
@@ -567,7 +567,7 @@ internal class ChatRecyclerAdapter(
                                     chatMessage.text = s
                                 }
                             }
-                            (isOnlyStickers && numberOfStickers < 2) -> {
+                            !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -581,7 +581,7 @@ internal class ChatRecyclerAdapter(
                                     chatMessage.text = s
                                 }
                             }
-                            atLeastOneSticker -> {
+                            !isDeleted && atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,

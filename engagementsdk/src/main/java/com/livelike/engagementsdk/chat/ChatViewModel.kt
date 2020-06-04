@@ -129,7 +129,7 @@ internal class ChatViewModel(
             logDebug { "user is blocked" }
             return
         }
-        if (deletedMessages.contains(message.id)) {
+        if (deletedMessages.contains(message.id.toLowerCase())) {
             logDebug { "the message is deleted by producer" }
             return
         }
@@ -212,7 +212,9 @@ internal class ChatViewModel(
         deletedMessages.add(messageId)
         if (chatLoaded) {
             logDebug { "message is deleted from producer so changing its text" }
-            messageList.find { it.id == messageId }?.apply {
+            messageList.find {
+                it.id.toLowerCase() == messageId
+            }?.apply {
                 message = "This message has been removed."
                 isDeleted = true
             }
@@ -267,7 +269,7 @@ internal class ChatViewModel(
     }
 
     internal fun refreshWithDeletedMessage() {
-        messageList.removeAll { deletedMessages.contains(it.id) }
+        messageList.removeAll { deletedMessages.contains(it.id.toLowerCase()) }
         uiScope.launch {
             chatAdapter.submitList(ArrayList(messageList))
         }
