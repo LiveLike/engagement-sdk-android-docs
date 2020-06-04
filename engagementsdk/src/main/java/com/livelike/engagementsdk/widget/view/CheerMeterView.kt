@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlin.math.max
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
@@ -56,13 +57,10 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     override var dismissFunc: ((DismissAction) -> Unit)? = { viewModel?.dismissWidget(it) }
 
     override var widgetViewModel: BaseViewModel? = null
-        get() = super.widgetViewModel
         set(value) {
             field = value
             viewModel = value as CheerMeterViewModel
-            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-            viewModel?.results?.subscribe(javaClass.simpleName) { resultObserver(it) }
-            viewModel?.voteEnd?.subscribe(javaClass.simpleName) { endObserver(it) }
+            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
         }
 
     // Refresh the view when re-attached to the activity
@@ -71,6 +69,58 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
         viewModel?.results?.subscribe(javaClass.simpleName) { resultObserver(it) }
         viewModel?.voteEnd?.subscribe(javaClass.simpleName) { endObserver(it) }
+    }
+
+    private fun stateObserver(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                lockInteraction()
+            }
+            WidgetStates.INTERACTING -> {
+                unLockInteraction()
+            }
+            WidgetStates.RESULTS -> {
+                lockInteraction()
+                onWidgetInteractionCompleted()
+                if ((viewModel?.totalVoteCount ?: 0) > 0) {
+                    viewModel?.voteEnd?.onNext(true)
+                    viewModel?.voteEnd()
+                }
+            }
+            WidgetStates.FINISHED -> {
+            }
+        }
+        if (viewModel?.enableDefaultWidgetTransition == true) {
+            defaultStateTransitionManager(widgetStates)
+        }
+    }
+
+    private fun lockInteraction() {
+        view_ripple.isClickable = false
+        view_ripple2.isClickable = false
+    }
+
+    private fun unLockInteraction() {
+        view_ripple.isClickable = true
+        view_ripple2.isClickable = true
+    }
+
+    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                moveToNextState()
+            }
+            WidgetStates.INTERACTING -> {
+                viewModel?.data?.latest()?.let {
+                    viewModel?.startDismissTimout(it.resource.timeout)
+                }
+            }
+            WidgetStates.RESULTS -> {
+            }
+            WidgetStates.FINISHED -> {
+                resourceObserver(null)
+            }
+        }
     }
 
     private fun resultObserver(resource: Resource?) {
@@ -177,7 +227,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             }, {
                 viewModel?.dismissWidget(it)
             })
-            viewModel?.startDismissTimout(resource.timeout)
+            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
             logDebug { "Showing CheerMeter Widget" }
         }
 
@@ -289,9 +339,6 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun stopVoting() {
-        onWidgetInteractionCompleted()
-        view_ripple.isClickable = false
-        view_ripple2.isClickable = false
         txt_cheer_meter_team_1.alpha = 1F
         txt_cheer_meter_team_2.alpha = 1F
         lastResult?.let {
@@ -376,7 +423,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             repeatCount = 0
             addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
-                    viewModel?.dismissWidget(DismissAction.TAP_X)
+                    if (viewModel?.enableDefaultWidgetTransition == true)
+                        viewModel?.dismissWidget(DismissAction.TAP_X)
                 }
             })
             playAnimation()
@@ -394,7 +442,8 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             repeatCount = 0
             addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
-                    viewModel?.dismissWidget(DismissAction.TAP_X)
+                    if (viewModel?.enableDefaultWidgetTransition == true)
+                        viewModel?.dismissWidget(DismissAction.TAP_X)
                 }
             })
             playAnimation()

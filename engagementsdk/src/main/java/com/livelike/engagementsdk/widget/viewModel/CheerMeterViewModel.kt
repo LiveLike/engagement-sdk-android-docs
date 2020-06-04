@@ -186,8 +186,7 @@ internal class CheerMeterViewModel(
                     if (totalVoteCount == 0) {
                         dismissWidget(DismissAction.TIMEOUT)
                     }else{
-                        voteEnd.onNext(true)
-                        voteEnd()
+                        widgetState.onNext(WidgetStates.RESULTS)
                 }
             }
         }
