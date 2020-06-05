@@ -75,7 +75,7 @@ internal abstract class WidgetViewModel<T : Resource>(
     val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
     internal open fun confirmInteraction() {
-        if (currentVote.latest() == null) {
+        if (currentVote.latest() != null) {
             currentWidgetType?.let {
                 analyticsService.trackWidgetInteraction(
                     it.toAnalyticsString(),
@@ -97,8 +97,6 @@ internal abstract class WidgetViewModel<T : Resource>(
                 state.onNext(WidgetState.SHOW_RESULTS)
                 delay(1000)
                 state.onNext(WidgetState.SHOW_GAMIFICATION)
-                delay(3000)
-                dismissWidget(DismissAction.TIMEOUT)
             }
         }
     }
