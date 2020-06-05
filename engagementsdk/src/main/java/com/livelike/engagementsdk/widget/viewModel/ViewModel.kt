@@ -17,4 +17,5 @@ open class ViewModel {
      * launched by uiScope by calling viewModelJob.cancel()
      */
     val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
 }

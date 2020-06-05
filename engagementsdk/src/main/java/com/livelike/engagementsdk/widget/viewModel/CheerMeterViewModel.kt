@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
@@ -27,7 +26,6 @@ import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagi
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -50,16 +48,21 @@ internal class CheerMeterViewModel(
     val widgetMessagingClient: WidgetManager? = null
 ) : BaseViewModel() {
 
-    var teamSelected = 0
-    var localVoteCount = 0
-    var timer = 3
-    private var debounceJob: Job? = null
-    private var voteUrl: String? = null
+    var totalVoteCount = 0
+
+    /**
+     *this is equal to size of list of options containing vote count to synced with server for each option
+     *first request is post to create the vote then after to update the count on that option, patch request will be used
+     **/
+     var voteStateList: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
+
+    private var pushVoteJob: Job? = null
     private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
     val results: SubscriptionManager<Resource> =
         SubscriptionManager()
-    val voteEnd: SubscriptionManager<Boolean> =
+    val
+            voteEnd: SubscriptionManager<Boolean> =
         SubscriptionManager()
     val data: SubscriptionManager<CheerMeterWidget> =
         SubscriptionManager()
@@ -96,48 +99,41 @@ internal class CheerMeterViewModel(
         widgetObserver(widgetInfos)
     }
 
-    private var voteCount = 0
+    fun incrementVoteCount(teamIndex : Int) {
+        interactionData.incrementInteraction()
+        totalVoteCount++
+        voteStateList.getOrNull(teamIndex)?.let {
+            it.voteCount++
+        }
+        wouldSendVote()
+        println("vote state ${voteStateList.getOrNull(teamIndex).toString()}")
+    }
 
-    fun sendVote(url: String) {
-        if (voteUrl == null) {
-            if (url.isNotEmpty())
-                initVote(url)
-            else
-                Log.e("Error", "Unable to initiate voting : $url")
-        } else {
-            interactionData.incrementInteraction()
-            localVoteCount++
-            voteCount++
-            if (voteCount > VOTE_THRASHHOLD) {
-                // api call
-                pushVoteData(voteCount)
-                voteCount = 0
-            } else {
-                uiScope.launch {
-                    if (debounceJob == null || debounceJob?.isCompleted != false) {
-                        debounceJob = CoroutineScope(coroutineContext).launch {
-                            delay(1000L)
-                            pushVoteData(voteCount)
-                            voteCount = 0
-                        }
-                    }
+    private fun wouldSendVote() {
+        voteStateList.forEach {
+            if (it.voteCount > VOTE_THRASHHOLD) {
+                uiScope.launch { pushVoteStateData(it) }
+            }
+        }
+        if(pushVoteJob == null || pushVoteJob?.isCompleted == false){
+            pushVoteJob?.cancel()
+            pushVoteJob = uiScope.launch {
+                delay(1000L)
+                voteStateList.forEach {
+                    pushVoteStateData(it)
                 }
             }
         }
     }
 
-    fun pushVoteData(voteCount: Int) {
-        voteUrl?.let {
-            uiScope.launch {
-                if (voteCount > 0)
-                    dataClient.voteAsync(it, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":$voteCount}"), type = RequestType.PATCH)
-            }
-        }
-    }
-
-    private fun initVote(url: String) {
-        uiScope.launch {
-            voteUrl = dataClient.voteAsync(url, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":0}"), type = RequestType.POST)
+    private suspend fun pushVoteStateData(voteState : CheerMeterVoteState){
+        if (voteState.voteCount > 0) {
+            val voteUrl = dataClient.voteAsync(voteState.voteUrl, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":${voteState.voteCount}}"), accessToken =  userRepository.userAccessToken, type = voteState.requestType, useVoteUrl = false)
+            voteUrl?.let {
+                voteState.voteUrl = it
+                voteState.requestType = RequestType.PATCH }
+            voteState.voteCount = 0
+            println("vote state request ${voteState.toString()}")
         }
     }
 
@@ -156,6 +152,11 @@ internal class CheerMeterViewModel(
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
+
+                resource.getMergedOptions()?.forEach { option ->
+                    voteStateList.add(CheerMeterVoteState(0, option.vote_url ?: "", RequestType.POST))
+                }
+
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
                     CheerMeterWidget(
@@ -178,17 +179,14 @@ internal class CheerMeterViewModel(
         }
     }
 
-    fun startDismissTimout(timeout: String, isVotingStarted: Boolean = false) {
+    fun startDismissTimout(timeout: String) {
         if (timeout.isNotEmpty()) {
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                if (isVotingStarted) {
-                    voteEnd.onNext(true)
-                    voteEnd()
-                } else {
-                    if (teamSelected == 0) {
+                    if (totalVoteCount == 0) {
                         dismissWidget(DismissAction.TIMEOUT)
-                    }
+                    }else{
+                        widgetState.onNext(WidgetStates.RESULTS)
                 }
             }
         }
@@ -211,7 +209,6 @@ internal class CheerMeterViewModel(
 
     private fun cleanUp() {
         pubnub?.unsubscribeAll()
-        voteUrl = null
         data.onNext(null)
         results.onNext(null)
         animationEggTimerProgress = 0f
@@ -220,6 +217,8 @@ internal class CheerMeterViewModel(
         currentWidgetType = null
         viewModelJob.cancel("Widget Cleanup")
     }
+}
 
 
+data class CheerMeterVoteState(var voteCount: Int, var voteUrl: String, var requestType: RequestType) {
 }
