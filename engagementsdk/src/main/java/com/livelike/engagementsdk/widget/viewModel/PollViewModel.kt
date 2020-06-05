@@ -10,31 +10,31 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.domain.GamificationManager
-import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.services.messaging.Error
-import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClientReplay
-import com.livelike.engagementsdk.services.messaging.pubnub.asBehaviourSubject
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.services.network.WidgetDataClient
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.debounce
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.services.messaging.ClientMessage
+import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
+import com.livelike.engagementsdk.core.services.messaging.Error
+import com.livelike.engagementsdk.core.services.messaging.MessagingClient
+import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.debounce
+import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClientReplay
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.asBehaviourSubject
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -51,21 +51,25 @@ internal class PollViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository,
-    val widgetMessagingClient: WidgetManager
-) : ViewModel() {
+    private val programRepository: ProgramRepository?=null,
+    val widgetMessagingClient: WidgetManager?=null
+) : BaseViewModel() {
     lateinit var onWidgetInteractionCompleted: () -> Unit
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream
-    var points: SubscriptionManager<Int?> = SubscriptionManager(false)
+    var points: SubscriptionManager<Int?> =
+        SubscriptionManager(false)
     val gamificationProfile: Stream<ProgramGamificationProfile>
-        get() = programRepository.programGamificationProfileStream
+        get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
     val rewardsType: RewardsType
-        get() = programRepository.rewardType
-    val data: SubscriptionManager<PollWidget> = SubscriptionManager()
-    val results: SubscriptionManager<Resource> = SubscriptionManager()
-    val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
+        get() = programRepository?.rewardType ?: RewardsType.NONE
+    val data: SubscriptionManager<PollWidget> =
+        SubscriptionManager()
+    val results: SubscriptionManager<Resource> =
+        SubscriptionManager()
+    val currentVoteId: SubscriptionManager<String?> =
+        SubscriptionManager()
     private val debouncer = currentVoteId.debounce()
-    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
+    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
 
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
@@ -155,7 +159,7 @@ internal class PollViewModel(
             timeoutStarted = true
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-                confirmationState()
+                widgetState.onNext(WidgetStates.RESULTS)
             }
         }
     }
@@ -170,27 +174,29 @@ internal class PollViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Poll Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
     }
 
-    private fun confirmationState() {
+    internal fun confirmationState() {
         if (adapter?.selectedPosition == RecyclerView.NO_POSITION) {
             // If the user never selected an option dismiss the widget with no confirmation
             dismissWidget(DismissAction.TIMEOUT)
             return
         }
-
         adapter?.selectionLocked = true
         onWidgetInteractionCompleted.invoke()
 
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
-                    programRepository.programGamificationProfileStream.onNext(pts)
+                    programRepository?.programGamificationProfileStream?.onNext(pts)
                     publishPoints(pts.newPoints)
-                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    widgetMessagingClient?.let { widgetMessagingClient ->
+                        GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    }
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }

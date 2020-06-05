@@ -4,19 +4,18 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.content.Context
-import android.os.Handler
 import android.util.AttributeSet
 import android.view.animation.LinearInterpolator
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.data.models.Badge
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.animators.buildRotationAnimator
-import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
-import com.livelike.engagementsdk.utils.animators.buildTranslateYAnimator
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.animators.buildRotationAnimator
+import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
+import com.livelike.engagementsdk.core.utils.animators.buildTranslateYAnimator
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.data.models.Badge
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CollectBadgeWidgetViewModel
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.badge_iv
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.badge_name_tv
 import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.collect_badge_box
@@ -24,8 +23,9 @@ import kotlinx.android.synthetic.main.widget_gamification_collect_badge.view.col
 
 class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
+
     private var viewModel: CollectBadgeWidgetViewModel? = null
-    override var widgetViewModel: ViewModel? = null
+    override var widgetViewModel: BaseViewModel? = null
         set(value) {
             field = value
             viewModel = value as CollectBadgeWidgetViewModel

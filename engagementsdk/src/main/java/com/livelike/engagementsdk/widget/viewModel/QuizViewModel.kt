@@ -10,31 +10,31 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.domain.GamificationManager
-import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.services.messaging.Error
-import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.services.network.WidgetDataClient
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.debounce
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.logVerbose
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.services.messaging.ClientMessage
+import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
+import com.livelike.engagementsdk.core.services.messaging.Error
+import com.livelike.engagementsdk.core.services.messaging.MessagingClient
+import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.debounce
+import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -51,20 +51,24 @@ internal class QuizViewModel(
     val context: Context,
     var onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository,
-    val widgetMessagingClient: WidgetManager
-) : ViewModel() {
+    private val programRepository: ProgramRepository ? = null,
+    val widgetMessagingClient: WidgetManager ? = null
+) : BaseViewModel() {
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
-        get() = programRepository.programGamificationProfileStream
+        get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
     val rewardsType: RewardsType
-        get() = programRepository.rewardType
-    val data: SubscriptionManager<QuizWidget> = SubscriptionManager()
-    val results: Stream<Resource> = SubscriptionManager()
-    val currentVoteId: SubscriptionManager<String?> = SubscriptionManager()
+        get() = programRepository?.rewardType ?: RewardsType.NONE
+    val data: SubscriptionManager<QuizWidget> =
+        SubscriptionManager()
+    val results: Stream<Resource> =
+        SubscriptionManager()
+    val currentVoteId: SubscriptionManager<String?> =
+        SubscriptionManager()
     private val debouncedVoteId = currentVoteId.debounce()
-    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
-    var state: Stream<String> = SubscriptionManager() // results
+    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
+//    var state: Stream<String> =
+//        SubscriptionManager() // results
 
     var adapter: WidgetOptionsViewAdapter? = null
     private var timeoutStarted = false
@@ -147,9 +151,10 @@ internal class QuizViewModel(
                 delay(AndroidResource.parseDuration(timeout))
                 debouncedVoteId.unsubscribe(javaClass)
                 adapter?.selectionLocked = true
-                state.onNext(WidgetState.LOCK_INTERACTION.name)
+//                state.onNext(WidgetState.LOCK_INTERACTION.name)
                 vote()
                 delay(500)
+                widgetState.onNext(WidgetStates.RESULTS)
                 resultsState(widgetViewThemeAttributes)
             }
         }
@@ -165,6 +170,7 @@ internal class QuizViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Quiz Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
@@ -179,20 +185,20 @@ internal class QuizViewModel(
         }
 
         val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
-        val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
-        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
         adapter?.selectionLocked = true
         logDebug { "Quiz View ,showing result isUserCorrect:$isUserCorrect" }
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
-                    programRepository.programGamificationProfileStream.onNext(pts)
+                    programRepository?.programGamificationProfileStream?.onNext(pts)
                     points = pts.newPoints
-                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    widgetMessagingClient?.let { widgetMessagingClient ->
+                        GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    }
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
-            state.onNext("results")
+//            state.onNext("results")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
         }
     }
@@ -207,7 +213,7 @@ internal class QuizViewModel(
         voteUrl = null
         data.onNext(null)
         results.onNext(null)
-        state.onNext(null)
+//        state.onNext(null)
         animationEggTimerProgress = 0f
 
         currentWidgetType = null

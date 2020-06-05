@@ -5,21 +5,22 @@ import android.util.AttributeSet
 import android.view.View
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.pointTutorialSeen
+import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getTotalPoints
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.pointTutorialSeen
 import com.livelike.engagementsdk.widget.view.wouldShowProgressionMeter
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.pointsAnimation
 import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.pointsTutoView
 import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.points_progression_meter_switcher
 import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.progressionMeterView
 
 class PointsTutorialView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
+
     private var viewModel: PointTutorialWidgetViewModel? = null
-    override var widgetViewModel: ViewModel? = null
+    override var widgetViewModel: BaseViewModel? = null
         set(value) {
             field = value
             viewModel = value as PointTutorialWidgetViewModel

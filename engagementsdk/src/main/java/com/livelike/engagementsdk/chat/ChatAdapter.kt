@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Context.ACCESSIBILITY_SERVICE
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
@@ -35,16 +36,17 @@ import com.livelike.engagementsdk.chat.chatreaction.ChatActionsPopupView
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.chatreaction.Reaction
 import com.livelike.engagementsdk.chat.chatreaction.SelectReactionListener
-import com.livelike.engagementsdk.stickerKeyboard.StickerPackRepository
-import com.livelike.engagementsdk.stickerKeyboard.clearTarget
-import com.livelike.engagementsdk.stickerKeyboard.countMatches
-import com.livelike.engagementsdk.stickerKeyboard.findImages
-import com.livelike.engagementsdk.stickerKeyboard.findIsOnlyStickers
-import com.livelike.engagementsdk.stickerKeyboard.findStickers
-import com.livelike.engagementsdk.stickerKeyboard.replaceWithImages
-import com.livelike.engagementsdk.stickerKeyboard.replaceWithStickers
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.blockUser
+import com.livelike.engagementsdk.chat.data.repository.ChatRepository
+import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.chat.stickerKeyboard.clearTarget
+import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
+import com.livelike.engagementsdk.chat.stickerKeyboard.findIsOnlyStickers
+import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
+import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
+import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -136,7 +138,9 @@ internal class ChatRecyclerAdapter(
                     )
                     setPositiveButton("OK") { _, _ ->
                         analyticsService.trackBlockingUser()
-                        blockUser(msg.senderId)
+                        blockUser(
+                            msg.senderId
+                        )
                     }
                     create()
                 }.show()
@@ -163,8 +167,9 @@ internal class ChatRecyclerAdapter(
             }
             lastFloatingUiAnchorView = view
             val isOwnMessage = (view?.tag as ChatMessage?)?.isFromMe ?: false
+            val isDeletedMessage = (view?.tag as ChatMessage?)?.isDeleted ?: false
             val reactionsAvailable = (chatReactionRepository?.reactionList?.size ?: 0) > 0
-            if (reactionsAvailable || !isOwnMessage) {
+            if ((reactionsAvailable || !isOwnMessage) && !isDeletedMessage) {
                 showFloatingUI(
                     isOwnMessage,
                     message?.myChatMessageReaction,
@@ -420,7 +425,11 @@ internal class ChatRecyclerAdapter(
 
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
-
+                        if (message.isDeleted) {
+                            chatMessage.setTypeface(null, Typeface.ITALIC)
+                        } else {
+                            chatMessage.setTypeface(null, Typeface.NORMAL)
+                        }
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text =
@@ -433,7 +442,7 @@ internal class ChatRecyclerAdapter(
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
                                 val pdt = message.timeStamp?.toLong() ?: 0
-                                val createdAt = message.getUnixTimeStamp()?.toTimeString()?:""
+                                val createdAt = message.getUnixTimeStamp()?.toTimeString() ?: ""
                                 val syncedTime = pdt.toTimeString()
 
                                 v.message_date_time.text =
@@ -446,7 +455,7 @@ internal class ChatRecyclerAdapter(
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }
-                
+
                         val topBorderLP = v.border_top.layoutParams
                         topBorderLP.height = chatMessageTopBorderHeight
                         v.border_top.layoutParams = topBorderLP
@@ -527,9 +536,11 @@ internal class ChatRecyclerAdapter(
                         val inputNoString = spaceRemover.matcher(message.message)
                             .replaceAll(Matcher.quoteReplacement(""))
                         val isOnlyStickers =
-                            inputNoString.findIsOnlyStickers().matches() || message.message.findImages().matches()
+                            inputNoString.findIsOnlyStickers()
+                                .matches() || message.message.findImages().matches()
                         val atLeastOneSticker =
-                            inputNoString.findStickers().find() || message.message.findImages().matches()
+                            inputNoString.findStickers().find() || message.message.findImages()
+                                .matches()
                         val numberOfStickers = message.message.findStickers().countMatches()
                         val isExternalImage = message.message.findImages().matches()
 
@@ -543,21 +554,43 @@ internal class ChatRecyclerAdapter(
                         when {
                             isExternalImage -> {
                                 val s = SpannableString(message.message)
-                                replaceWithImages(s, context, callback, false, message.id, message.image_width ?: largerStickerSize, message.image_height ?: largerStickerSize) {
+                                replaceWithImages(
+                                    s,
+                                    context,
+                                    callback,
+                                    false,
+                                    message.id,
+                                    message.image_width ?: largerStickerSize,
+                                    message.image_height ?: largerStickerSize
+                                ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             (isOnlyStickers && numberOfStickers < 2) -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null, callback, largerStickerSize) {
+                                replaceWithStickers(
+                                    s,
+                                    context,
+                                    stickerPackRepository,
+                                    null,
+                                    callback,
+                                    largerStickerSize
+                                ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }
                             }
                             atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
-                                replaceWithStickers(s, context, stickerPackRepository, null, callback, mediumStickerSize) {
+                                replaceWithStickers(
+                                    s,
+                                    context,
+                                    stickerPackRepository,
+                                    null,
+                                    callback,
+                                    mediumStickerSize
+                                ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
                                 }

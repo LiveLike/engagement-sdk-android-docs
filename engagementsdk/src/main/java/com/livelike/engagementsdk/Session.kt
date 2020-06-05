@@ -2,11 +2,10 @@ package com.livelike.engagementsdk
 
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.chat.LiveLikeChatSession
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
-import java.util.Calendar
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -16,6 +15,9 @@ interface LiveLikeContentSession {
 
     /** The analytics services **/
     val analyticService: AnalyticsService
+
+    /** The analytics services **/
+    val chatSession: LiveLikeChatSession
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -34,23 +36,6 @@ interface LiveLikeContentSession {
     )
     /** Set the user profile pic. to be shown in chatting*/
     fun setProfilePicUrl(url: String?)
-    /** Enter a Chat Room */
-    /** Join a Chat Room, membership will be created for this room */
-    fun joinChatRoom(chatRoomId: String, timestamp: Long = Calendar.getInstance().timeInMillis)
-    /** Leave a Chat Room, membership will be cancelled with this room */
-    fun leaveChatRoom(chatRoomId: String)
-    /** Enter a Chat Room, the last entered Chat Room will be the active one */
-    fun enterChatRoom(chatRoomId: String)
-    /** The current active chat room, it is the last entered chat room */
-    var getActiveChatRoom: () -> String
-    /** Exit the specified Chat Room */
-    fun exitChatRoom(chatRoomId: String)
-    /** Exit all the Connected Chat Rooms */
-    fun exitAllConnectedChatRooms()
-    /** Returns the number of messages published on a chatroom since a given time*/
-    fun getMessageCount(chatRoomId: String, startTimestamp: Long, callback: LiveLikeCallback<Long>)
-    /** Register a message count listner for the specified Chat Room */
-    fun setMessageListener(messageListener: MessageListener)
     /** Intercepts the widgets and hold them until show() or dismiss() is being called */
     var widgetInterceptor: WidgetInterceptor?
     /** set value of style for widget **/

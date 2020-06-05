@@ -6,16 +6,19 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
 import com.livelike.engagementsdk.DismissAction
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.model.Resource
-import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.viewModel.WidgetViewModel
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.pointView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.progressionMeterView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * For now creating separate class, will mere it with specified widget view after full assessment of other widget views and then move all widget views to inherit this
@@ -34,20 +37,29 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
 
     var isViewInflated = false
 
-    override var widgetViewModel: ViewModel? = null
-        get() = super.widgetViewModel
+    override var widgetViewModel: BaseViewModel? = null
+        get() = viewModel
         set(value) {
             field = value
             viewModel = value as T
-            subscribeCalls()
+//            subscribeCalls()
         }
 
     protected open fun stateObserver(widgetState: WidgetState) {
         when (widgetState) {
             WidgetState.LOCK_INTERACTION -> confirmInteraction()
             WidgetState.SHOW_RESULTS -> showResults()
-            WidgetState.SHOW_GAMIFICATION -> rewardsObserver()
-            WidgetState.DISMISS -> {}
+            WidgetState.SHOW_GAMIFICATION -> {
+                rewardsObserver()
+                if (viewModel?.enableDefaultWidgetTransition) {
+                    viewModel?.uiScope.launch {
+                        delay(2000)
+                        viewModel?.dismissWidget(DismissAction.TIMEOUT)
+                    }
+                }
+            }
+            WidgetState.DISMISS -> {
+            }
         }
     }
 
@@ -57,21 +69,15 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
 
     protected open fun dataModelObserver(entity: Entity?) {
         entity?.let { _ ->
-            val timeout = AndroidResource.parseDuration(entity.timeout)
             if (!isViewInflated) {
                 isViewInflated = true
-                viewModel.startInteractionTimeout(timeout)
+                widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
             }
-            val animationLength = timeout.toFloat()
-            if (viewModel.animationEggTimerProgress < 1f) {
-                viewModel.animationEggTimerProgress.let {
-                    textEggTimer?.startAnimationFrom(it, animationLength, { animationTimerProgress ->
-                        viewModel.animationEggTimerProgress = animationTimerProgress
-                    }, { dismissAction ->
-                        viewModel.dismissWidget(dismissAction)
-                    })
-                }
-            }
+            showTimer(entity.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+                viewModel?.animationEggTimerProgress = it
+            }, {
+                viewModel?.dismissWidget(it)
+            })
         }
         if (entity == null) {
             isViewInflated = false
@@ -90,22 +96,74 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
     }
 
     protected open fun subscribeCalls() {
-        viewModel.state.subscribe(javaClass.name) {
-            it?.let { stateObserver(it) }
-        }
         viewModel.data.subscribe(javaClass.simpleName) {
             dataModelObserver(it)
         }
+        viewModel.state.subscribe(javaClass.name) {
+            it?.let { stateObserver(it) }
+        }
+        widgetViewModel?.widgetState?.subscribe(javaClass.simpleName) {
+            when (it) {
+                WidgetStates.READY -> {
+                    lockInteraction()
+                }
+                WidgetStates.INTERACTING -> {
+                    unLockInteraction()
+                }
+                WidgetStates.RESULTS -> {
+                    lockInteraction()
+                    onWidgetInteractionCompleted()
+                    showResults()
+                    viewModel.confirmInteraction()
+                }
+                WidgetStates.FINISHED -> {
+                }
+            }
+
+            if (viewModel?.enableDefaultWidgetTransition) {
+                defaultStateTransitionManager(it)
+            }
+        }
     }
+
+internal abstract fun lockInteraction()
+
+internal abstract fun unLockInteraction()
+
+private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+    when (widgetStates) {
+        WidgetStates.READY -> {
+            moveToNextState()
+        }
+        WidgetStates.INTERACTING -> {
+            viewModel.data.latest()?.let { entity ->
+                val timeout = AndroidResource.parseDuration(entity.timeout)
+                viewModel.startInteractionTimeout(timeout)
+            }
+//            viewModel?.data?.latest()?.let {
+//                viewModel?.startDismissTimout(it.resource.timeout)
+//            }
+        }
+        WidgetStates.RESULTS -> {
+//            viewModel?.confirmationState()
+        }
+        WidgetStates.FINISHED -> {
+            dataModelObserver(null)
+        }
+    }
+}
 
     protected open fun unsubscribeCalls() {
         viewModel.state.unsubscribe(javaClass.name)
-        viewModel.state.unsubscribe(javaClass.name)
+//        viewModel.state.unsubscribe(javaClass.name)
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         subscribeCalls()
+//        viewModel.data.subscribe(javaClass.simpleName) {
+//            dataModelObserver(it)
+//        }
     }
 
     override fun onDetachedFromWindow() {

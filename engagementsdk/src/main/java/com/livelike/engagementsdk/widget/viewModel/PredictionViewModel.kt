@@ -10,32 +10,32 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.domain.GamificationManager
-import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.services.messaging.Error
-import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.MessagingEventListener
-import com.livelike.engagementsdk.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.services.network.WidgetDataClient
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.addWidgetPredictionVoted
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.logVerbose
-import com.livelike.engagementsdk.utils.toAnalyticsString
+import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.services.messaging.ClientMessage
+import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
+import com.livelike.engagementsdk.core.services.messaging.Error
+import com.livelike.engagementsdk.core.services.messaging.MessagingClient
+import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.Resource
+import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addWidgetPredictionVoted
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -52,19 +52,22 @@ internal class PredictionViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository,
-    val widgetMessagingClient: WidgetManager
-) : ViewModel() {
-    private var followUp: Boolean =false
+    private val programRepository: ProgramRepository? = null,
+    val widgetMessagingClient: WidgetManager? = null
+) : BaseViewModel() {
+    var followUp: Boolean = false
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
-        get() = programRepository.programGamificationProfileStream
+        get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
     val rewardsType: RewardsType
-        get() = programRepository.rewardType
-    val data: SubscriptionManager<PredictionWidget?> = SubscriptionManager()
-    private val dataClient: WidgetDataClient = EngagementDataClientImpl()
-    var state: Stream<String?> = SubscriptionManager() // confirmation, followup
-    var results: Stream<Resource> = SubscriptionManager()
+        get() = programRepository?.rewardType ?: RewardsType.NONE
+    val data: SubscriptionManager<PredictionWidget?> =
+        SubscriptionManager()
+    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
+//    var state: Stream<String?> =
+//        SubscriptionManager() // confirmation, followup
+    var results: Stream<Resource> =
+        SubscriptionManager()
     var adapter: WidgetOptionsViewAdapter? = null
     var timeoutStarted = false
     var animationProgress = 0f
@@ -152,6 +155,7 @@ internal class PredictionViewModel(
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
                     confirmationState(widgetViewThemeAttributes)
+                    widgetState.onNext(WidgetStates.RESULTS)
                 }
             }
         }
@@ -167,6 +171,7 @@ internal class PredictionViewModel(
                 action
             )
         }
+        widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Prediction Widget, reason:${action.name}" }
         onDismiss()
         cleanUp()
@@ -184,7 +189,7 @@ internal class PredictionViewModel(
         correctOptionId: String,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
-        if(followUp)
+        if (followUp)
             return
         followUp = true
         adapter?.correctOptionId = correctOptionId
@@ -203,13 +208,16 @@ internal class PredictionViewModel(
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
-                    programRepository.programGamificationProfileStream.onNext(pts)
+                    programRepository?.programGamificationProfileStream?.onNext(pts)
                     points = pts.newPoints
-                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    widgetMessagingClient?.let { widgetMessagingClient ->
+                        GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    }
                     interactionData.pointEarned = points ?: 0
                 }
             }
-            state.onNext("followup")
+//            state.onNext("followup")
+            widgetState.onNext(WidgetStates.RESULTS)
         }
         logDebug { "Prediction Widget Follow Up isUserCorrect:$isUserCorrect" }
     }
@@ -222,22 +230,22 @@ internal class PredictionViewModel(
         }
 
         adapter?.selectionLocked = true
-        val rootPath = widgetViewThemeAttributes.stayTunedAnimation
-        animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
         logDebug { "Prediction Widget selected Position:${adapter?.selectedPosition}" }
         uiScope.launch {
             vote()
             data.currentData?.resource?.rewards_url?.let {
                 userRepository.getGamificationReward(it, analyticsService)?.let { pts ->
-                    programRepository.programGamificationProfileStream.onNext(pts)
+                    programRepository?.programGamificationProfileStream?.onNext(pts)
                     points = pts.newPoints
-                    GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    widgetMessagingClient?.let { widgetMessagingClient ->
+                        GamificationManager.checkForNewBadgeEarned(pts, widgetMessagingClient)
+                    }
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
             pubnub?.stop()
             pubnub?.unsubscribeAll()
-            state.onNext("confirmation")
+//            state.onNext("confirmation")
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
@@ -252,7 +260,7 @@ internal class PredictionViewModel(
         adapter = null
         animationProgress = 0f
         animationPath = ""
-        state.onNext("")
+//        state.onNext("")
         data.onNext(null)
         animationEggTimerProgress = 0f
         currentWidgetType = null

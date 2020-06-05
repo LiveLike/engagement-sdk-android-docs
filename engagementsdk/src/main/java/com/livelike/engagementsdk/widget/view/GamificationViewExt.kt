@@ -3,10 +3,10 @@
 package com.livelike.engagementsdk.widget.view
 
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
-import com.livelike.engagementsdk.data.models.Badge
-import com.livelike.engagementsdk.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.data.models.RewardsType
-import com.livelike.engagementsdk.utils.logDebug
+import com.livelike.engagementsdk.widget.data.models.Badge
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.core.data.models.RewardsType
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.view.components.ProgressionMeterView
 

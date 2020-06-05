@@ -4,10 +4,10 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
-import com.livelike.engagementsdk.utils.gson
+import com.livelike.engagementsdk.core.services.messaging.ClientMessage
+import com.livelike.engagementsdk.core.services.messaging.MessagingClient
+import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClientProxy
+import com.livelike.engagementsdk.core.utils.gson
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),

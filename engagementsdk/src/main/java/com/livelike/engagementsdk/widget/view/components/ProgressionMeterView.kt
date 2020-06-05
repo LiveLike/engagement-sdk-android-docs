@@ -10,9 +10,9 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
-import com.livelike.engagementsdk.utils.AndroidResource
-import com.livelike.engagementsdk.utils.animators.buildRotationAnimator
-import com.livelike.engagementsdk.utils.animators.buildScaleAnimator
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.animators.buildRotationAnimator
+import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.gamification_badge_iv
 import kotlinx.android.synthetic.main.atom_gamification_progression_meter.view.new_badge_label

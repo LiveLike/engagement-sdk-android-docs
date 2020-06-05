@@ -2,13 +2,13 @@ package com.livelike.engagementsdk.chat.chatreaction
 
 import android.content.Context
 import com.bumptech.glide.Glide
-import com.livelike.engagementsdk.data.repository.BaseRepository
-import com.livelike.engagementsdk.services.network.RequestType
-import com.livelike.engagementsdk.services.network.Result
+import com.livelike.engagementsdk.core.data.respository.BaseRepository
+import com.livelike.engagementsdk.core.services.network.RequestType
+import com.livelike.engagementsdk.core.services.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-internal class ChatReactionRepository(private val remoteUrl: String) :
+internal class ChatReactionRepository(private val remoteUrl: String,private val accessToken:String?) :
     BaseRepository() {
 
     var reactionList: List<Reaction>? = null
@@ -22,7 +22,7 @@ internal class ChatReactionRepository(private val remoteUrl: String) :
                     val result = dataClient.remoteCall<ReactionPackResults>(
                         remoteUrl,
                         RequestType.GET,
-                        accessToken = null
+                        accessToken = accessToken
                     )
                     if (result is Result.Success) {
                         val reactionPack = result.data

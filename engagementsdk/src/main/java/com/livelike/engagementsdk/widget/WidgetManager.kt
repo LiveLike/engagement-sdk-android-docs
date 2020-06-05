@@ -10,20 +10,20 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
-import com.livelike.engagementsdk.data.repository.ProgramRepository
-import com.livelike.engagementsdk.data.repository.UserRepository
-import com.livelike.engagementsdk.services.messaging.ClientMessage
-import com.livelike.engagementsdk.services.messaging.MessagingClient
-import com.livelike.engagementsdk.services.messaging.proxies.LiveLikeWidgetEntity
-import com.livelike.engagementsdk.services.messaging.proxies.MessagingClientProxy
-import com.livelike.engagementsdk.services.messaging.proxies.WidgetInterceptor
-import com.livelike.engagementsdk.services.network.WidgetDataClient
-import com.livelike.engagementsdk.utils.SubscriptionManager
-import com.livelike.engagementsdk.utils.gson
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.getTotalPoints
-import com.livelike.engagementsdk.utils.liveLikeSharedPrefs.shouldShowPointTutorial
-import com.livelike.engagementsdk.utils.logDebug
-import com.livelike.engagementsdk.utils.logError
+import com.livelike.engagementsdk.core.data.respository.ProgramRepository
+import com.livelike.engagementsdk.core.data.respository.UserRepository
+import com.livelike.engagementsdk.core.services.messaging.ClientMessage
+import com.livelike.engagementsdk.core.services.messaging.MessagingClient
+import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
+import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClientProxy
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.gson
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getTotalPoints
+import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
 import java.util.PriorityQueue
 import java.util.Queue
 import kotlinx.coroutines.Dispatchers
@@ -42,7 +42,8 @@ internal class WidgetManager(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository,
     private val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
-    private val widgetThemeAttributes: WidgetViewThemeAttributes?
+    private val widgetThemeAttributes: WidgetViewThemeAttributes?,
+    private val widgetTheme: Stream<WidgetsTheme>
 ) :
     MessagingClientProxy(upstream) {
 
@@ -86,8 +87,8 @@ internal class WidgetManager(
     }
 
     override fun stop() {
-        currentWidgetViewStream.onNext(null)
         upstream.stop()
+        currentWidgetViewStream.onNext(null)
     }
 
     override fun start() {
@@ -168,7 +169,8 @@ internal class WidgetManager(
                         userRepository,
                         programRepository,
                         animationEventsStream,
-                        widgetThemeAttributes ?: WidgetViewThemeAttributes()
+                        widgetThemeAttributes ?: WidgetViewThemeAttributes(),
+                            widgetTheme.latest()
                     )
                 )
             )
@@ -232,7 +234,8 @@ internal fun MessagingClient.asWidgetManager(
     userRepository: UserRepository,
     programRepository: ProgramRepository,
     animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
-    widgetThemeAttributes: WidgetViewThemeAttributes?
+    widgetThemeAttributes: WidgetViewThemeAttributes?,
+    widgets: Stream<WidgetsTheme>
 ): WidgetManager {
     return WidgetManager(
         this,
@@ -245,6 +248,7 @@ internal fun MessagingClient.asWidgetManager(
         userRepository,
         programRepository,
         animationEventsStream,
-        widgetThemeAttributes
+        widgetThemeAttributes,
+        widgets
     )
 }

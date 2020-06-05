@@ -13,7 +13,8 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.widget.ProgressBar
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.utils.AndroidResource
+import com.livelike.engagementsdk.core.utils.AndroidResource
+import com.livelike.engagementsdk.widget.ImageSliderTheme
 import com.livelike.engagementsdk.widget.view.getColorCompat
 import kotlin.math.roundToInt
 
@@ -43,6 +44,16 @@ internal class ImageSlider @JvmOverloads constructor(
     private var mIsDragging = false
     private val mThumbOffset: Int
     private var mTouchDownX = 0f
+
+    var imageSliderTheme: ImageSliderTheme? = null
+        set(value) {
+            field = value
+            val bgColor = AndroidResource.getColorFromString(value?.body?.background?.color)
+            bgColor?.let {
+                colorTrack = bgColor
+            }
+
+        }
 
     /**
      * Should the slider ignore touches outside of the thumb?
@@ -103,11 +114,11 @@ internal class ImageSlider @JvmOverloads constructor(
      * Drawable which will contain the emoji already converted into a drawableList.
      */
     var thumbDrawable: Drawable? = null
-    set(value) {
-        field = value
-        thumbDrawable?.callback = this
-        visibility = VISIBLE
-    }
+        set(value) {
+            field = value
+            thumbDrawable?.callback = this
+            visibility = VISIBLE
+        }
 
     /**
      * Drawable which will contain the track: both the background with help from [colorTrack]
@@ -120,7 +131,8 @@ internal class ImageSlider @JvmOverloads constructor(
     var averageProgress: Float? = null
         set(value) {
             field = value
-            resultDrawable = ResultDrawable(context, resultGradientCenterColor, resultGradientEndColor)
+            resultDrawable =
+                ResultDrawable(context, resultGradientCenterColor, resultGradientEndColor)
             resultDrawable?.bounds = trackDrawable.bounds
             resultDrawable?.totalHeight = trackDrawable.totalHeight
             resultDrawable?.trackHeight = trackDrawable.trackHeight
@@ -141,7 +153,7 @@ internal class ImageSlider @JvmOverloads constructor(
 
         desiredWidth = (DEFAULT_WIDTH_DP * density).toInt()
         desiredHeight =
-                (density * DEFAULT_HEIGHT_DP).roundToInt()
+            (density * DEFAULT_HEIGHT_DP).roundToInt()
         mThumbOffset = desiredHeight / 2
 
         this.trackDrawable.callback = this
@@ -180,8 +192,10 @@ internal class ImageSlider @JvmOverloads constructor(
             colorStart = context.getColorCompat(R.color.livelike_image_slider_gradient_start)
             colorEnd = context.getColorCompat(R.color.livelike_image_slider_gradient_end)
             colorTrack = context.getColorCompat(R.color.livelike_image_slider_bg)
-            resultGradientCenterColor = context.getColorCompat(R.color.livelike_image_slider_widget_result_center_color)
-            resultGradientEndColor = context.getColorCompat(R.color.livelike_image_slider_widget_result_end_color)
+            resultGradientCenterColor =
+                context.getColorCompat(R.color.livelike_image_slider_widget_result_center_color)
+            resultGradientEndColor =
+                context.getColorCompat(R.color.livelike_image_slider_widget_result_end_color)
         }
 
         mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
@@ -197,10 +211,10 @@ internal class ImageSlider @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
 
         this.trackDrawable.setBounds(
-                0 + Math.max(paddingLeft, mThumbOffset),
-                h / 2 - trackDrawable.intrinsicHeight / 2,
-                w - Math.max(paddingRight, mThumbOffset),
-                h / 2 + trackDrawable.intrinsicHeight / 2
+            0 + Math.max(paddingLeft, mThumbOffset),
+            h / 2 - trackDrawable.intrinsicHeight / 2,
+            w - Math.max(paddingRight, mThumbOffset),
+            h / 2 + trackDrawable.intrinsicHeight / 2
         )
     }
 
@@ -225,40 +239,40 @@ internal class ImageSlider @JvmOverloads constructor(
 
     private fun TypedArray.getProgressGradientStart(): Int {
         return this.getColor(
-                R.styleable.ImageSlider_bar_progress_color_start,
-                context.getColorCompat(R.color.livelike_image_slider_gradient_start)
+            R.styleable.ImageSlider_bar_progress_color_start,
+            context.getColorCompat(R.color.livelike_image_slider_gradient_start)
         )
     }
 
     private fun TypedArray.getProgressGradientEnd(): Int {
         return this.getColor(
-                R.styleable.ImageSlider_bar_progress_color_end,
-                context.getColorCompat(R.color.livelike_image_slider_gradient_end)
+            R.styleable.ImageSlider_bar_progress_color_end,
+            context.getColorCompat(R.color.livelike_image_slider_gradient_end)
         )
     }
 
     private fun TypedArray.getSliderTrackColor(): Int {
         return this.getColor(
-                R.styleable.ImageSlider_bar_track_color,
-                context.getColorCompat(R.color.livelike_image_slider_bg)
+            R.styleable.ImageSlider_bar_track_color,
+            context.getColorCompat(R.color.livelike_image_slider_bg)
         )
     }
 
     private fun TypedArray.getProgress(): Float =
-            this.getFloat(R.styleable.ImageSlider_progress_value, progress).limitToRange()
+        this.getFloat(R.styleable.ImageSlider_progress_value, progress).limitToRange()
 
     private fun TypedArray.getThumbAllowScrollAnywhere(): Boolean =
-            this.getBoolean(
-                    R.styleable.ImageSlider_register_touches_outside_thumb, registerTouchOnTrack
-            )
+        this.getBoolean(
+            R.styleable.ImageSlider_register_touches_outside_thumb, registerTouchOnTrack
+        )
 
     private fun TypedArray.getIsTouchDisabled(): Boolean =
-            this.getBoolean(R.styleable.ImageSlider_is_touch_disabled, isUserSeekable)
+        this.getBoolean(R.styleable.ImageSlider_is_touch_disabled, isUserSeekable)
 
     private fun Float.limitToRange() = this.coerceAtMost(1f).coerceAtLeast(0f)
 
     private fun Rect.containsXY(motionEvent: MotionEvent): Boolean =
-            this.contains(motionEvent.x.toInt(), motionEvent.y.toInt())
+        this.contains(motionEvent.x.toInt(), motionEvent.y.toInt())
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -267,7 +281,10 @@ internal class ImageSlider @JvmOverloads constructor(
         resultDrawable?.draw(canvas)
         drawThumb(canvas)
         resultDrawable?.let {
-            canvas.translate((((averageProgress ?: 0f) * trackDrawable.bounds.width()) + trackDrawable.bounds.left), 0f)
+            canvas.translate(
+                (((averageProgress
+                    ?: 0f) * trackDrawable.bounds.width()) + trackDrawable.bounds.left), 0f
+            )
             it.mLottieDrawable.draw(canvas)
         }
     }
@@ -293,10 +310,10 @@ internal class ImageSlider @JvmOverloads constructor(
         val heightPosition = trackDrawable.bounds.height() / 2
 
         this.setBounds(
-                widthPosition - customIntrinsicWidth,
-                heightPosition - customIntrinsicHeight,
-                widthPosition + customIntrinsicWidth,
-                heightPosition + customIntrinsicHeight
+            widthPosition - customIntrinsicWidth,
+            heightPosition - customIntrinsicHeight,
+            widthPosition + customIntrinsicWidth,
+            heightPosition + customIntrinsicHeight
         )
     }
 
@@ -355,7 +372,7 @@ internal class ImageSlider @JvmOverloads constructor(
         val y = event.y.toInt() - trackDrawable.bounds.top
 
         if (thumbDrawable?.bounds?.contains(x, y) == true &&
-                !(registerTouchOnTrack && trackDrawable.bounds.containsXY(event))
+            !(registerTouchOnTrack && trackDrawable.bounds.containsXY(event))
         ) return
 
         setViewPressed(true)

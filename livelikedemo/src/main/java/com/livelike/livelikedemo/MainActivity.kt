@@ -3,6 +3,8 @@ package com.livelike.livelikedemo
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -14,10 +16,27 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.widget.Toast
+import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.chat.ChatRoom
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
+import kotlinx.android.synthetic.main.activity_main.btn_create
+import kotlinx.android.synthetic.main.activity_main.btn_join
+import com.livelike.livelikedemo.utils.DialogUtils
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
+import kotlinx.android.synthetic.main.activity_main.btn_create
+import kotlinx.android.synthetic.main.activity_main.build_no
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
+import kotlinx.android.synthetic.main.activity_main.chatroomText
+import kotlinx.android.synthetic.main.activity_main.chatroomText1
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
@@ -26,9 +45,14 @@ import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
+import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.activity_main.sdk_version
+import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
+import kotlinx.android.synthetic.main.activity_main.themes_json_button
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
+import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
 class MainActivity : AppCompatActivity() {
@@ -38,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         val cls: KClass<out Activity>,
         var theme: Int,
         var keyboardClose: Boolean = true,
-        var showNotification: Boolean = true
+        var showNotification: Boolean = true,
+        var jsonTheme: String? = null
     )
 
     private lateinit var channelManager: ChannelManager
@@ -52,11 +77,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private var chatRoomIds: List<String> = if (BuildConfig.DEBUG) {
-        listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
-    } else {
-        listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
-    }
+    private var chatRoomIds: MutableSet<String> = mutableSetOf()
 
     override fun onDestroy() {
         super.onDestroy()
@@ -90,7 +111,25 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        val player = PlayerInfo("Exo Player", ExoPlayerActivity::class, R.style.Default, true)
+        sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
+        if (BuildConfig.VERSION_CODE > 1) {
+            build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
+        }
+
+        val player = PlayerInfo(
+            "Exo Player",
+            ExoPlayerActivity::class,
+            R.style.Default,
+            true
+
+        )
+
+        val onlyWidget = PlayerInfo(
+            "Widget Only",
+            WidgetOnlyActivity::class,
+            R.style.Default,
+            true
+        )
         val drawerDemoActivity =
             PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.Default, false)
 
@@ -125,8 +164,16 @@ class MainActivity : AppCompatActivity() {
                 setItems(chatRoomIds.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
                     (application as LiveLikeApplication).removePrivateSession()
-                    private_group_label.text = chatRoomIds[which]
-                    ExoPlayerActivity.privateGroupRoomId = chatRoomIds[which]
+                    private_group_label.text = chatRoomIds.elementAt(which)
+                    ExoPlayerActivity.privateGroupRoomId = chatRoomIds.elementAt(which)
+
+                    //Copy to clipboard
+                    val clipboard: ClipboardManager =
+                        getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
+                    clipboard.primaryClip = clip
+                    Toast.makeText(applicationContext, "Room Id Copy To Clipboard", Toast.LENGTH_LONG)
+                        .show()
                 }
                 create()
             }.show()
@@ -153,10 +200,44 @@ class MainActivity : AppCompatActivity() {
                         }
                         else -> R.style.Default
                     }
+                    onlyWidget.theme = when (which) {
+                        0 -> R.style.Default
+                        1 -> {
+                            EngagementSDK.enableDebug = true
+                            R.style.TurnerChatTheme
+                        }
+                        2 -> {
+                            EngagementSDK.enableDebug = false
+                            R.style.CustomChatReactionTheme
+                        }
+                        else -> R.style.Default
+                    }
                 }
                 create()
             }.show()
         }
+
+        themes_json_button.setOnClickListener {
+            DialogUtils.showFilePicker(this,
+                DialogSelectionListener { files ->
+                    files?.forEach { file ->
+                        val fin = FileInputStream(file)
+                        val theme: String? = convertStreamToString(fin)
+                        // Make sure you close all streams.
+                        fin.close()
+                        if (theme != null) {
+                            player.jsonTheme = theme
+                            onlyWidget.jsonTheme = theme
+                        } else
+                            Toast.makeText(
+                                applicationContext,
+                                "Unable to get the theme json",
+                                Toast.LENGTH_LONG
+                            ).show()
+                    }
+                })
+        }
+
         events_label.text = channelManager.selectedChannel.name
 
         getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
@@ -174,6 +255,38 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     edit().putString("userPic", it).apply()
                 }
+            }
+            chatRoomIds = getStringSet("chatRoomList", mutableSetOf())
+        }
+
+        btn_create.setOnClickListener {
+            val title = chatroomText.text.toString()
+            progressBar.visibility = View.VISIBLE
+            (application as LiveLikeApplication).sdk.createChatRoom(
+                title,
+                object : LiveLikeCallback<ChatRoom>() {
+                    override fun onResponse(result: ChatRoom?, error: String?) {
+                        textView2.text = when {
+                            result != null -> "${result.title ?: "No Title"}(${result.id})"
+                            else -> error
+                        }
+                        result?.let {
+                            chatRoomIds.add(it.id)
+                            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                                .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                        }
+                        progressBar.visibility = View.GONE
+                    }
+                })
+        }
+
+        btn_join.setOnClickListener {
+            val chatRoomId = chatroomText1.text.toString()
+            if (chatRoomId.isEmpty().not()) {
+                chatRoomIds.add(chatRoomId)
+                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                    .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                chatroomText1.setText("")
             }
         }
 
@@ -196,13 +309,17 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        widgets_only_button.setOnClickListener {
+        widgets_framework_button.setOnClickListener {
             startActivity(
                 Intent(
                     this,
-                    WidgetOnlyActivity::class.java
+                    WidgetFrameworkTestActivity::class.java
                 )
             )
+        }
+
+        widgets_only_button.setOnClickListener {
+            startActivity(playerDetailIntent(onlyWidget))
         }
         chat_only_button.setOnClickListener {
             startActivity(
@@ -215,9 +332,22 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+@Throws(java.lang.Exception::class)
+fun convertStreamToString(`is`: InputStream?): String? {
+    val reader = BufferedReader(InputStreamReader(`is`))
+    val sb = java.lang.StringBuilder()
+    var line: String? = null
+    while (reader.readLine().also { line = it } != null) {
+        sb.append(line).append("\n")
+    }
+    reader.close()
+    return sb.toString()
+}
+
 fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     val intent = Intent(this, player.cls.java)
     intent.putExtra("theme", player.theme)
+    intent.putExtra("jsonTheme", player.jsonTheme)
     intent.putExtra("showNotification", player.showNotification)
     intent.putExtra(
         "keyboardClose", when (player.theme) {
@@ -226,4 +356,25 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
         }
     )
     return intent
+}
+
+fun getFileFromAsset(context: Context, path: String): String? {
+    try {
+        val asset = context.assets
+        val br = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            BufferedReader(InputStreamReader(asset.open(path), StandardCharsets.UTF_8))
+        } else {
+            BufferedReader(InputStreamReader(asset.open(path)))
+        }
+        val sb = StringBuilder()
+        var str: String?
+        while (br.readLine().also { str = it } != null) {
+            sb.append(str)
+        }
+        br.close()
+        return sb.toString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    return null
 }
