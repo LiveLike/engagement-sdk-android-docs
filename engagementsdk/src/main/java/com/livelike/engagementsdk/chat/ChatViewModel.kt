@@ -28,11 +28,11 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -112,7 +112,7 @@ internal class ChatViewModel(
                 .contains(message.senderId)} check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
-        //Now the message is belongs to my currentChat Room
+        // Now the message is belongs to my currentChat Room
         if (allMessageList.isEmpty())
             allMessageList.add(message)
         else
@@ -284,10 +284,10 @@ internal class ChatViewModel(
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
             if (chatRepository != null) {
                 logDebug { "Chat loading previous messages size:${messageList.size},all Message size:${allMessageList.size},deleted Message:${deletedMessages.size}," }
-                if (allMessageList.size > 0)
+                if (messageList.size > 0)
                     chatRepository?.loadPreviousMessages(
                         channel,
-                        allMessageList.first().timetoken
+                        messageList.first().timetoken
                     )
                 else
                     chatRepository?.loadPreviousMessages(
