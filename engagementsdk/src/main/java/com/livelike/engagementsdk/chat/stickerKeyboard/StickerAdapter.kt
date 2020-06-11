@@ -18,6 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.addRecentSticker
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.getRecentStickers
+import com.livelike.engagementsdk.core.utils.logDebug
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_item.view.itemImage
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.empty_recent_text
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.rvStickers
@@ -74,6 +75,7 @@ class StickerCollectionViewHolder(
         itemView.rvStickers.adapter = adapter
         if (isRecent) {
             val stickers = getRecentStickers(programId)
+            logDebug { "Recent Sticker Count: ${stickers.size}" }
             itemView.empty_recent_text?.visibility = if (stickers.isEmpty()) {
                 View.VISIBLE
             } else {

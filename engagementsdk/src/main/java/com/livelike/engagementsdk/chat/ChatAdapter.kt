@@ -552,7 +552,7 @@ internal class ChatRecyclerAdapter(
                             message.message
                         }
                         when {
-                            isExternalImage -> {
+                            !isDeleted && isExternalImage -> {
                                 val s = SpannableString(message.message)
                                 replaceWithImages(
                                     s,
@@ -567,7 +567,7 @@ internal class ChatRecyclerAdapter(
                                     chatMessage.text = s
                                 }
                             }
-                            (isOnlyStickers && numberOfStickers < 2) -> {
+                            !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -581,7 +581,7 @@ internal class ChatRecyclerAdapter(
                                     chatMessage.text = s
                                 }
                             }
-                            atLeastOneSticker -> {
+                            !isDeleted && atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -637,21 +637,22 @@ internal class ChatRecyclerAdapter(
                         val isReactionsAvaiable =
                             (chatReactionRepository?.reactionList?.size ?: 0) > 0
 
+                        if (chatViewThemeAttribute.chatReactionHintEnable) {
+                            val imageView = ImageView(context)
+                            imageView.contentDescription =
+                                context.getString(R.string.you_can_add_reaction_hint)
+                            imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
+                            val params: FrameLayout.LayoutParams =
+                                FrameLayout.LayoutParams(size, size)
+                            rel_reactions_lay.addView(imageView, params)
+                        }
+
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text = "$sumCount"
                         } else if (isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "
-                            if (chatViewThemeAttribute.chatReactionHintEnable) {
-                                val imageView = ImageView(context)
-                                imageView.contentDescription =
-                                    context.getString(R.string.you_can_add_reaction_hint)
-                                imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
-                                val params: FrameLayout.LayoutParams =
-                                    FrameLayout.LayoutParams(size, size)
-                                rel_reactions_lay.addView(imageView, params)
-                            }
                         }
                     }
                 }

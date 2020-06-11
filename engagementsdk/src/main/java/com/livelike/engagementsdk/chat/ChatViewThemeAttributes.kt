@@ -510,7 +510,7 @@ class ChatViewThemeAttributes {
                     R.styleable.LiveLike_ChatView_chatMessageBottomBorderHeight,
                     AndroidResource.dpToPx(0)
                 )
-            chatReactionHintEnable = getBoolean(R.styleable.LiveLike_ChatView_reaction_hint_enable, false)
+            chatReactionHintEnable = getBoolean(R.styleable.LiveLike_ChatView_reaction_hint_enable, true)
             chatReactionHintIcon = getResourceId(R.styleable.LiveLike_ChatView_reaction_icon, R.drawable.ic_chat_reaction_default)
         }
     }
