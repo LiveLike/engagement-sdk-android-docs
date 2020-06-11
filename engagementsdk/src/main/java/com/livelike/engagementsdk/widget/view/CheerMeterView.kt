@@ -49,6 +49,7 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple2
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
 
+    private var mShowTeamResults: Boolean = false
     private var lastResult: Resource? = null
     private var viewModel: CheerMeterViewModel? = null
 
@@ -150,6 +151,10 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     vote2.toFloat()
                 )
+            }
+            if (mShowTeamResults) {
+                mShowTeamResults = false
+                showTeamResults(it)
             }
         }
     }
@@ -334,64 +339,68 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
     private fun endObserver(it: Boolean?) {
         if (it == true) {
-            stopVoting()
+            txt_cheer_meter_team_1.alpha = 1F
+            txt_cheer_meter_team_2.alpha = 1F
+            if (lastResult == null) {
+                mShowTeamResults = true
+            } else {
+                showTeamResults(lastResult!!)
+            }
         }
     }
 
-    private fun stopVoting() {
-        txt_cheer_meter_team_1.alpha = 1F
-        txt_cheer_meter_team_2.alpha = 1F
-        lastResult?.let {
-            val options = viewModel?.data?.latest()?.resource?.options ?: return
-            if (options.size == 2) {
+    private fun showTeamResults(resource: Resource): Boolean {
+        val options = viewModel?.data?.latest()?.resource?.options ?: return true
+        if (options.size == 2) {
 
-                val team1 = options[0]
-                val team2 = options[1]
-                team1.vote_count = it.options?.find { option -> option.id == team1.id }?.vote_count
-                team2.vote_count = it.options?.find { option -> option.id == team2.id }?.vote_count
-                resultObserver(it)
+            val team1 = options[0]
+            val team2 = options[1]
+            team1.vote_count =
+                resource.options?.find { option -> option.id == team1.id }?.vote_count
+            team2.vote_count =
+                resource.options?.find { option -> option.id == team2.id }?.vote_count
 
-                viewModel?.voteEnd()
-                fl_result_team.visibility = View.VISIBLE
-                logDebug { "CheerMeter voting stop,result: Team1:${team1.vote_count},Team2:${team2.vote_count}" }
-                fl_result_team.postDelayed({
-                    if (team1.vote_count == team2.vote_count) {
-                        playDrawAnimation()
-                        return@postDelayed
+            viewModel?.voteEnd()
+            fl_result_team.visibility = View.VISIBLE
+            logDebug { "CheerMeter voting stop,result: Team1:${team1.vote_count},Team2:${team2.vote_count}" }
+            fl_result_team.postDelayed({
+                if (team1.vote_count == team2.vote_count) {
+                    playDrawAnimation()
+                    return@postDelayed
+                }
+
+                var winnerTeam = if (team1.vote_count ?: 0 > team2.vote_count ?: 0) {
+                    team1
+                } else {
+                    team2
+                }
+                img_logo_team_2.visibility = View.GONE
+                img_logo_team_1.visibility = View.GONE
+                val animation =
+                    AnimationUtils.loadAnimation(
+                        context,
+                        R.anim.cheer_meter_winner_scale_animation
+                    )
+                img_winner_team.visibility = View.VISIBLE
+                Glide.with(context)
+                    .load(winnerTeam.image_url)
+                    .into(img_winner_team)
+                animation.setAnimationListener(object :
+                    Animation.AnimationListener {
+                    override fun onAnimationRepeat(animation: Animation?) {
                     }
 
-                    var winnerTeam = if (team1.vote_count ?: 0 > team2.vote_count ?: 0) {
-                        team1
-                    } else {
-                        team2
+                    override fun onAnimationStart(animation: Animation?) {
                     }
-                    img_logo_team_2.visibility = View.GONE
-                    img_logo_team_1.visibility = View.GONE
-                    val animation =
-                        AnimationUtils.loadAnimation(
-                            context,
-                            R.anim.cheer_meter_winner_scale_animation
-                        )
-                    img_winner_team.visibility = View.VISIBLE
-                    Glide.with(context)
-                        .load(winnerTeam.image_url)
-                        .into(img_winner_team)
-                    animation.setAnimationListener(object :
-                        Animation.AnimationListener {
-                        override fun onAnimationRepeat(animation: Animation?) {
-                        }
 
-                        override fun onAnimationStart(animation: Animation?) {
-                        }
-
-                        override fun onAnimationEnd(animation: Animation?) {
-                            playWinnerAnimation()
-                        }
-                    })
-                    img_winner_team.startAnimation(animation)
-                }, 500)
-            }
+                    override fun onAnimationEnd(animation: Animation?) {
+                        playWinnerAnimation()
+                    }
+                })
+                img_winner_team.startAnimation(animation)
+            }, 500)
         }
+        return false
     }
 
     private fun playLoserAnimation() {
