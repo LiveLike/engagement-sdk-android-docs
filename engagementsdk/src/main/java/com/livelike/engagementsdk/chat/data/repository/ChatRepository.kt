@@ -8,7 +8,6 @@ import com.livelike.engagementsdk.core.data.respository.BaseRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
-import com.livelike.engagementsdk.core.utils.logDebug
 import okhttp3.MediaType
 import okhttp3.RequestBody
 
@@ -49,7 +48,7 @@ internal class ChatRepository(
     ): Result<ChatRoom> {
         val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "")
         val titleRequest = when (title.isNullOrEmpty()) {
-            true -> RequestBody.create(null,byteArrayOf())
+            true -> RequestBody.create(null, byteArrayOf())
             else -> RequestBody.create(
                 MediaType.parse("application/json; charset=utf-8"), """{"title":"$title"}"""
             )
@@ -78,8 +77,7 @@ internal class ChatRepository(
         )
     }
 
-    fun loadPreviousMessages(channel: String, time: Long) {
-        logDebug { "ChatRepository.loadPreviousMessages time:$time" }
-        pubnubChatMessagingClient?.loadMessagesWithReactions(channel, time, 20)
+    fun loadPreviousMessages(channel: String) {
+        pubnubChatMessagingClient?.loadMessagesWithReactions(channel, 20)
     }
 }
