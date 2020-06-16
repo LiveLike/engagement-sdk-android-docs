@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 private const val PREFERENCE_KEY_SESSION_ID = "SessionId"
+private const val PREFERENCE_KEY_ACCESS_TOKEN = "AccessToken"
 private const val PREFERENCE_KEY_NICKNAME = "Username"
 private const val PREFERENCE_KEY_USER_PIC = "Userpic"
 private const val BLOCKED_USERS = "blocked-users"
@@ -16,6 +17,15 @@ internal fun initLiveLikeSharedPrefs(appContext: Context) {
 internal fun getSharedPreferences(): SharedPreferences {
     val packageName = mAppContext?.packageName ?: ""
     return mAppContext!!.getSharedPreferences("$packageName-livelike-sdk", Context.MODE_PRIVATE)
+}
+
+internal fun setSharedAccessToken(token: String) {
+    getSharedPreferences()
+        .edit().putString(PREFERENCE_KEY_ACCESS_TOKEN, token).apply()
+}
+
+internal fun getSharedAccessToken(): String? {
+    return getSharedPreferences().getString(PREFERENCE_KEY_ACCESS_TOKEN, null);
 }
 
 internal fun getSessionId(): String {

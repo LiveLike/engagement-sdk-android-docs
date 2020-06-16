@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
+import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
@@ -14,7 +15,9 @@ import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
+import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
+import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -34,9 +37,9 @@ import kotlinx.coroutines.launch
 class EngagementSDK(
     private val clientId: String,
     private val applicationContext: Context,
-    accessToken: String? = null,
     private val errorDelegate: ErrorDelegate? = null,
-    private val originURL: String? = null
+    private val originURL: String? = null,
+    private var accessTokenDelegate: AccessTokenDelegate? = null
 ) : IEngagement {
 
     companion object {
@@ -69,12 +72,27 @@ class EngagementSDK(
         initLiveLikeSharedPrefs(
             applicationContext
         )
+        if (accessTokenDelegate == null) {
+            accessTokenDelegate = object : AccessTokenDelegate {
+                override fun getAccessToken(): String? = getSharedAccessToken()
+
+                override fun storeAccessToken(accessToken: String?) {
+                    accessToken?.let { setSharedAccessToken(accessToken) }
+                }
+            }
+        }
+        userRepository.currentUserStream.subscribe(this.javaClass.simpleName) {
+            it?.accessToken?.let { token ->
+                userRepository.currentUserStream.unsubscribe(this.javaClass.simpleName)
+                accessTokenDelegate!!.storeAccessToken(token)
+            }
+        }
         val url = originURL?.plus("/api/v1/applications/$clientId")
             ?: BuildConfig.CONFIG_URL.plus("applications/$clientId")
         dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)
-                userRepository.initUser(accessToken, it.data.profileUrl)
+                userRepository.initUser(accessTokenDelegate!!.getAccessToken(), it.data.profileUrl)
             } else {
                 errorDelegate?.onError(
                     (it as Result.Error).exception.message
