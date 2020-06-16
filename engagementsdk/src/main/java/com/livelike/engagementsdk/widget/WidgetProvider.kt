@@ -240,6 +240,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
      * override this method in respective widgets to respect runtime theme reflection
      **/
     open fun applyTheme(theme: LiveLikeEngagementTheme) {
+        widgetsTheme = theme.widgets
     }
 
     open fun moveToNextState() {

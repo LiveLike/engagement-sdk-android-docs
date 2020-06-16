@@ -19,13 +19,15 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import com.github.angads25.filepicker.controller.DialogSelectionListener
+import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.chat.ChatRoom
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
-import kotlinx.android.synthetic.main.activity_main.btn_create
-import kotlinx.android.synthetic.main.activity_main.btn_join
 import com.livelike.livelikedemo.utils.DialogUtils
+import com.livelike.livelikedemo.utils.ThemeRandomizer
 import java.io.BufferedReader
 import java.io.FileInputStream
 import java.io.InputStream
@@ -33,6 +35,8 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.btn_create
+import kotlinx.android.synthetic.main.activity_main.btn_create
+import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.build_no
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
@@ -167,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                     private_group_label.text = chatRoomIds.elementAt(which)
                     ExoPlayerActivity.privateGroupRoomId = chatRoomIds.elementAt(which)
 
-                    //Copy to clipboard
+                    // Copy to clipboard
                     val clipboard: ClipboardManager =
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
@@ -220,11 +224,19 @@ class MainActivity : AppCompatActivity() {
         themes_json_button.setOnClickListener {
             DialogUtils.showFilePicker(this,
                 DialogSelectionListener { files ->
+                    if (files.isNotEmpty()) {
+                        ThemeRandomizer.themesList.clear()
+                    }
                     files?.forEach { file ->
                         val fin = FileInputStream(file)
                         val theme: String? = convertStreamToString(fin)
                         // Make sure you close all streams.
                         fin.close()
+                        val element =
+                            LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(theme).asJsonObject)
+                        if (element is Result.Success) {
+                            ThemeRandomizer.themesList.add(element.data)
+                        }
                         if (theme != null) {
                             player.jsonTheme = theme
                             onlyWidget.jsonTheme = theme
