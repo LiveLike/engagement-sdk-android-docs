@@ -3,7 +3,6 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
@@ -13,6 +12,7 @@ import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -67,15 +67,29 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         session.widgetThemeStream.onNext(engagementSDKTheme?.widgets)
     }
 
-    @Throws(Exception::class)
-    internal fun setTheme(json: String) {
-        val gson = Gson()
-        engagementSDKTheme = gson.fromJson(json, LiveLikeEngagementTheme::class.java)
-        val validateString = engagementSDKTheme!!.validate()
-        if (validateString != null) {
-            throw Exception("$validateString")
-        }
+    /**
+     * will update the value of theme to be applied for all widgets
+     * This will update the theme on the current displayed widget as well
+     **/
+    fun applyTheme(theme: LiveLikeEngagementTheme) {
         (session as? ContentSession)?.widgetThemeStream?.onNext(engagementSDKTheme?.widgets)
+        if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
+            (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme)
+        }
+    }
+
+    /**
+     * this method parse livelike theme from json object and apply if its a valid json
+     * refer @applyTheme(theme)
+     **/
+    fun applyTheme(themeJson: JsonObject): Result<Boolean> {
+        val themeResult = LiveLikeEngagementTheme.instanceFrom(themeJson)
+        return if (themeResult is Result.Success) {
+            applyTheme(themeResult.data)
+            Result.Success(true)
+        } else {
+            themeResult as Result.Error
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
