@@ -53,4 +53,5 @@
     <string name="lose_animation_turner">loseAnimationTurner</string>
     <string name="widget_framework">Widget Framework</string>
     <string name="build_details">Build Details</string>
+    <string name="chat_list_is_empty">Chat List is Empty</string>
 </resources>

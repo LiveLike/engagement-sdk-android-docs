@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat.chatreaction
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
@@ -94,6 +95,7 @@ internal class ChatActionsPopupView(
         initReactions()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initReactions() {
         val reactionsBox =
             contentView.findViewById<LinearLayout>(R.id.reaction_panel_interaction_box)
@@ -117,6 +119,7 @@ internal class ChatActionsPopupView(
                     cardView.setCardBackgroundColor(ContextCompat.getColor(context,R.color.livelike_chat_reaction_selected_background_color))
                 }
             }
+            //On Touch we are scaling and descaling the reaction imageview to show bounce feature
             imageView.setOnTouchListener { v, event ->
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
