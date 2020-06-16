@@ -30,7 +30,7 @@ class StickerCollectionAdapter(
     private val emptyRecentTextColor: Int = R.color.livelike_sticker_recent_empty_text_color,
     private val onClickCallback: (Sticker) -> Unit
 ) : RecyclerView.Adapter<StickerCollectionViewHolder>() {
-    val RECENT_STICKERS_POSITION = 0
+
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, index: Int): StickerCollectionViewHolder {
         return StickerCollectionViewHolder(
@@ -56,6 +56,10 @@ class StickerCollectionAdapter(
             else -> stickerPacks[index - 1]
         }
         viewHolder.bind(pack, index == RECENT_STICKERS_POSITION, programId)
+    }
+
+    companion object{
+        const val RECENT_STICKERS_POSITION = 0
     }
 }
 

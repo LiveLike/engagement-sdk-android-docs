@@ -76,8 +76,6 @@ internal class PubnubChatMessagingClient(
     val origin: String? = null
 ) : MessagingClient {
 
-    private val PREF_CHAT_ROOM_MSG_RECEIVED = "pubnub message received"
-
     @Volatile
     private var lastActionTimeToken: Long = 0
     private var connectedChannels: MutableSet<String> = mutableSetOf()
@@ -167,7 +165,7 @@ internal class PubnubChatMessagingClient(
             .channel(channel)
             .async(object : PNCallback<PNPublishResult>() {
                 override fun onResponse(result: PNPublishResult?, status: PNStatus) {
-                    logDebug { "pub status code: " + status?.statusCode }
+                    logDebug { "pub status code: " + status.statusCode }
                     if (!status.isError) {
                         logDebug { "pub timetoken: " + result?.timetoken!! }
                         it.resume(true)
@@ -438,7 +436,7 @@ internal class PubnubChatMessagingClient(
                 }
             }
             logError { "Received message on $channel from pubnub: ${pubnubChatEvent.payload}" }
-            clientMessage?.let { listener?.onClientMessageEvent(client, clientMessage) }
+            clientMessage.let { listener?.onClientMessageEvent(client, clientMessage) }
         } else {
             logError { "We don't know how to handle this message" }
         }
@@ -732,5 +730,9 @@ internal class PubnubChatMessagingClient(
         unsubscribeAll()
         pubnub.destroy()
         flushPublishedMessage(*connectedChannels.toTypedArray())
+    }
+
+    companion object{
+        private const val PREF_CHAT_ROOM_MSG_RECEIVED = "pubnub message received"
     }
 }

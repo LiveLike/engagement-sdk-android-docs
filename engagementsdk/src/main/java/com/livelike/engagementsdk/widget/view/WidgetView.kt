@@ -43,7 +43,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     init {
         context.obtainStyledAttributes(
             attr,
-            R.styleable.LiveLike_WidgetView,
+            R.styleable.WidgetView,
             0, 0
         ).apply {
             try {
