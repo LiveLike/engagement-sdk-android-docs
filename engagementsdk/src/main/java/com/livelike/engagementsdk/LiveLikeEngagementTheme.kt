@@ -22,9 +22,9 @@ class LiveLikeEngagementTheme internal constructor(
         @JvmStatic
         fun instanceFrom(themeJson: JsonObject): Result<LiveLikeEngagementTheme> {
             return try {
-                val data = gson.fromJson<LiveLikeEngagementTheme>(
+                val data = gson.fromJson(
                     themeJson,
-                    LiveLikeEngagementTheme.javaClass
+                    LiveLikeEngagementTheme::class.java
                 )
                 val errorString = data.validate()
                 if (errorString == null) {

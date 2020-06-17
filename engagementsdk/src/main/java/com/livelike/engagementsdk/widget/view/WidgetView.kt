@@ -74,7 +74,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     fun applyTheme(theme: LiveLikeEngagementTheme) {
         (session as? ContentSession)?.widgetThemeStream?.onNext(engagementSDKTheme?.widgets)
         if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
-            (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme)
+            (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme.widgets)
         }
     }
 

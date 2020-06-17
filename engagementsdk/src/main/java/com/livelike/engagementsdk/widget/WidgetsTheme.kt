@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.widget
 
 import com.livelike.engagementsdk.core.utils.AndroidResource
 
-
 abstract class BaseTheme {
     abstract fun validate(): String?
 }
@@ -65,6 +64,23 @@ data class WidgetsTheme(
         ?: imageQuiz?.validate() ?: imageSlider?.validate() ?: textPoll?.validate()
         ?: textPrediction?.validate() ?: textPredictionFollowUp?.validate()
         ?: textQuiz?.validate()
+    }
+
+    fun getThemeLayoutComponent(widgetType: WidgetType): BaseTheme? {
+        return when (widgetType) {
+            WidgetType.ALERT -> alert
+            WidgetType.TEXT_POLL -> textPoll
+            WidgetType.IMAGE_POLL -> imagePoll
+            WidgetType.TEXT_QUIZ -> textQuiz
+            WidgetType.IMAGE_QUIZ -> imageQuiz
+            WidgetType.TEXT_PREDICTION -> textPrediction
+            WidgetType.TEXT_PREDICTION_FOLLOW_UP -> textPredictionFollowUp
+            WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> imagePredictionFollowUp
+            WidgetType.IMAGE_PREDICTION -> imagePrediction
+            WidgetType.IMAGE_SLIDER -> imageSlider
+            WidgetType.CHEER_METER -> cheerMeter
+            else -> null
+        }
     }
 }
 

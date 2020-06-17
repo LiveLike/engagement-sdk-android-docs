@@ -7,7 +7,6 @@ import android.view.View
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
@@ -237,10 +236,10 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     }
 
     /**
-     * override this method in respective widgets to respect runtime theme reflection
+     * override this method in respective widgets to respect runtime unified json theme updation
      **/
-    open fun applyTheme(theme: LiveLikeEngagementTheme) {
-        widgetsTheme = theme.widgets
+    open fun applyTheme(theme: WidgetsTheme) {
+        widgetsTheme = theme
     }
 
     open fun moveToNextState() {
