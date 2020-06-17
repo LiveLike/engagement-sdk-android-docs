@@ -7,6 +7,7 @@ import android.view.View
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
@@ -51,9 +52,9 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlin.math.min
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
-import kotlin.math.min
 
 internal class WidgetProvider {
     fun get(
@@ -234,7 +235,14 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         }
         AndroidResource.setPaddingForView(txtTitleBackground, it.header?.padding)
     }
-    
+
+    /**
+     * override this method in respective widgets to respect runtime theme reflection
+     **/
+    open fun applyTheme(theme: LiveLikeEngagementTheme) {
+        widgetsTheme = theme.widgets
+    }
+
     open fun moveToNextState() {
         val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
         widgetViewModel?.widgetState?.onNext(

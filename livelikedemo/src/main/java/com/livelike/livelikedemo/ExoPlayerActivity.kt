@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.support.constraint.Constraints
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -13,7 +14,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
-import android.widget.Toast
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
@@ -31,6 +31,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import java.util.Calendar
@@ -60,6 +61,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         var privateGroupRoomId: String? = null
     }
 
+    private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
     private var showNotification: Boolean = true
     private var themeCurrent: Int? = null
@@ -284,6 +286,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
                     val widgetDataJson = GsonBuilder().create().toJson(widgetData)
                     addLogs("onWidgetPresented : $widgetDataJson")
+                    playThemeRandomizer()
                 }
 
                 override fun onWidgetInteractionCompleted(widgetData: LiveLikeWidgetEntity) {
@@ -294,6 +297,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 override fun onWidgetDismissed(widgetData: LiveLikeWidgetEntity) {
                     val widgetDataJson = GsonBuilder().create().toJson(widgetData)
                     addLogs("onWidgetDismissed : $widgetDataJson")
+                    stopThemeRandomizer()
                 }
             }
             this.session = session
@@ -426,13 +430,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         }
 
-        if (jsonTheme != null) {
-            Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
-//                try {
-//                    widget_view.setTheme(jsonTheme!!)
-//                } catch (e: Exception) {
-//                    Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
-//                }
+        if (ThemeRandomizer.themesList.size > 0) {
+//            Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
+            widget_view.applyTheme(ThemeRandomizer.themesList.last())
         }
 
         getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
@@ -467,6 +467,19 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
         this.session = session
         player?.playMedia(Uri.parse(channel.video.toString()), startingState ?: PlayerState())
+    }
+
+    private fun stopThemeRandomizer() {
+        themeRadomizerHandler.removeCallbacksAndMessages(null)
+    }
+
+    private fun playThemeRandomizer() {
+        themeRadomizerHandler.postDelayed({
+            ThemeRandomizer.nextTheme()?.let {
+                widget_view.applyTheme(it)
+            }
+            playThemeRandomizer()
+        }, 5000)
     }
 
     private fun addLogs(logs: String?) {
