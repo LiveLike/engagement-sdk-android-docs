@@ -156,15 +156,16 @@
                         style="@style/TestAppButton"
                         android:id="@+id/themes_json_button"
                         android:layout_width="match_parent"
-                        android:layout_height="75dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         app:layout_constraintTop_toBottomOf="@id/themes_button"
 
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         android:paddingBottom="24dp"
-                        android:text="JSON Themes"
-
+                        android:textSize="12sp"
+                        android:lineSpacingMultiplier="0.5"
+                        android:text="JSON Themes (Select multiple for randomizer)"
                         android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
                         tools:text="JSON Themes"
                         />

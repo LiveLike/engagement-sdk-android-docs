@@ -54,6 +54,7 @@ import kotlinx.android.synthetic.main.activity_main.sdk_version
 import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_button
+import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
@@ -226,6 +227,9 @@ class MainActivity : AppCompatActivity() {
                 DialogSelectionListener { files ->
                     if (files.isNotEmpty()) {
                         ThemeRandomizer.themesList.clear()
+                        themes_json_label.text = "${files.size} selected"
+                    } else {
+                        themes_json_label.text = "None"
                     }
                     files?.forEach { file ->
                         val fin = FileInputStream(file)
