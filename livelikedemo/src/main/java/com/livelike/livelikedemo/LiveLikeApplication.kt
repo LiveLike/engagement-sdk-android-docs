@@ -105,11 +105,12 @@ class LiveLikeApplication : Application() {
     }
 
     fun createPrivateSession(
-        errorDelegate: ErrorDelegate? = null
+        errorDelegate: ErrorDelegate? = null, timecodeGetter: EngagementSDK.TimecodeGetter? = null
     ): LiveLikeChatSession {
         if (privateGroupChatsession == null) {
             privateGroupChatsession?.close()
-            privateGroupChatsession = sdk.createChatSession(timecodeGetter, errorDelegate)
+            privateGroupChatsession =
+                sdk.createChatSession(timecodeGetter ?: this.timecodeGetter, errorDelegate)
         }
         return privateGroupChatsession as LiveLikeChatSession
     }

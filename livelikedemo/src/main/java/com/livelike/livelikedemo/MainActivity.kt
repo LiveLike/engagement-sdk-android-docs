@@ -23,16 +23,9 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.utils.DialogUtils
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
-import com.livelike.livelikedemo.utils.DialogUtils
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
-import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.build_no
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
@@ -54,6 +47,12 @@ import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -172,7 +171,11 @@ class MainActivity : AppCompatActivity() {
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
                     clipboard.primaryClip = clip
-                    Toast.makeText(applicationContext, "Room Id Copy To Clipboard", Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        applicationContext,
+                        "Room Id Copy To Clipboard",
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 }
                 create()
@@ -244,16 +247,16 @@ class MainActivity : AppCompatActivity() {
             getString("UserNickname", "")
                 .let {
                     nicknameText.setText(it)
-//                edit().putString("userPic","http://lorempixel.com/200/200/?$it").apply()
+//                edit().putString("userPic","http://lorempixel.com/200/200/?$it").commit()
                 }
             getString("userPic", "").let {
                 if (it.isNullOrEmpty()) {
                     edit().putString(
                         "userPic",
                         "https://loremflickr.com/200/200?lock=${java.util.UUID.randomUUID()}"
-                    ).apply()
+                    ).commit()
                 } else {
-                    edit().putString("userPic", it).apply()
+                    edit().putString("userPic", it).commit()
                 }
             }
             chatRoomIds = getStringSet("chatRoomList", mutableSetOf())
@@ -272,8 +275,10 @@ class MainActivity : AppCompatActivity() {
                         }
                         result?.let {
                             chatRoomIds.add(it.id)
-                            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                                .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                            val check =
+                                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                                    .edit().putStringSet("chatRoomList", chatRoomIds).commit()
+                            println("Create->$check ->${chatRoomIds.size}")
                         }
                         progressBar.visibility = View.GONE
                     }
@@ -285,7 +290,7 @@ class MainActivity : AppCompatActivity() {
             if (chatRoomId.isEmpty().not()) {
                 chatRoomIds.add(chatRoomId)
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                    .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                    .edit().putStringSet("chatRoomList", chatRoomIds).commit()
                 chatroomText1.setText("")
             }
         }
@@ -299,7 +304,7 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().apply {
                     putString("UserNickname", p0?.trim().toString())
-                }.apply()
+                }.commit()
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
