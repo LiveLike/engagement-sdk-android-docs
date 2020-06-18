@@ -117,3 +117,4 @@ class LiveLikeApplication : Application() {
 }
 
 const val PREFERENCES_APP_ID = BuildConfig.APP_CLIENT_ID + "Test_Demo"
+const val CHAT_ROOM_LIST = BuildConfig.APP_CLIENT_ID + "chat_rooms"

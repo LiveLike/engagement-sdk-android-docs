@@ -31,7 +31,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_only)
         getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
-            chatRoomIds = getStringSet("chatRoomList", mutableSetOf()) ?: mutableSetOf()
+            chatRoomIds = getStringSet(CHAT_ROOM_LIST, mutableSetOf()) ?: mutableSetOf()
         }
         btn_create.setOnClickListener {
             val title = ed_chat_room_title.text.toString()
@@ -49,7 +49,9 @@ class ChatOnlyActivity : AppCompatActivity() {
                         result?.let {
                             chatRoomIds.add(it.id)
                             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                                .edit().putStringSet("chatRoomList", chatRoomIds).commit()
+                                .edit().apply {
+                                    putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
+                                }
                         }
                         ed_chat_room_title.setText("")
                         prg_create.visibility = View.INVISIBLE

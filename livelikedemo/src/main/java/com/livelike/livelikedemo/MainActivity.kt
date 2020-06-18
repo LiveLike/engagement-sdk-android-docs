@@ -254,12 +254,13 @@ class MainActivity : AppCompatActivity() {
                     edit().putString(
                         "userPic",
                         "https://loremflickr.com/200/200?lock=${java.util.UUID.randomUUID()}"
-                    ).commit()
+                    ).apply()
                 } else {
-                    edit().putString("userPic", it).commit()
+                    edit().putString("userPic", it).apply()
                 }
             }
-            chatRoomIds = getStringSet("chatRoomList", mutableSetOf())
+
+            chatRoomIds = getStringSet(CHAT_ROOM_LIST, mutableSetOf()) ?: mutableSetOf()
         }
 
         btn_create.setOnClickListener {
@@ -275,10 +276,10 @@ class MainActivity : AppCompatActivity() {
                         }
                         result?.let {
                             chatRoomIds.add(it.id)
-                            val check =
                                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                                    .edit().putStringSet("chatRoomList", chatRoomIds).commit()
-                            println("Create->$check ->${chatRoomIds.size}")
+                                    .edit().apply {
+                                        putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
+                                    }
                         }
                         progressBar.visibility = View.GONE
                     }
@@ -290,7 +291,7 @@ class MainActivity : AppCompatActivity() {
             if (chatRoomId.isEmpty().not()) {
                 chatRoomIds.add(chatRoomId)
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                    .edit().putStringSet("chatRoomList", chatRoomIds).commit()
+                    .edit().putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
                 chatroomText1.setText("")
             }
         }
@@ -304,7 +305,7 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().apply {
                     putString("UserNickname", p0?.trim().toString())
-                }.commit()
+                }.apply()
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
