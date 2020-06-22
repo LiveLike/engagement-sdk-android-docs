@@ -105,14 +105,16 @@ class LiveLikeApplication : Application() {
     }
 
     fun createPrivateSession(
-        errorDelegate: ErrorDelegate? = null
+        errorDelegate: ErrorDelegate? = null, timecodeGetter: EngagementSDK.TimecodeGetter? = null
     ): LiveLikeChatSession {
         if (privateGroupChatsession == null) {
             privateGroupChatsession?.close()
-            privateGroupChatsession = sdk.createChatSession(timecodeGetter, errorDelegate)
+            privateGroupChatsession =
+                sdk.createChatSession(timecodeGetter ?: this.timecodeGetter, errorDelegate)
         }
         return privateGroupChatsession as LiveLikeChatSession
     }
 }
 
 const val PREFERENCES_APP_ID = BuildConfig.APP_CLIENT_ID + "Test_Demo"
+const val CHAT_ROOM_LIST = BuildConfig.APP_CLIENT_ID + "chat_rooms"
