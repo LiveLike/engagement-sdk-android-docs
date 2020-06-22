@@ -80,9 +80,9 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
             postAsync(rewardUrl, accessToken),
             ProgramGamificationProfile::class.java
         )?.also {
-            addPoints(it.newPoints ?: 0)
+            addPoints(it.newPoints)
             analyticsService.registerSuperAndPeopleProperty(
-                "Lifetime Points" to (it.points.toString() ?: "0")
+                "Lifetime Points" to it.points.toString()
             )
         }
     }

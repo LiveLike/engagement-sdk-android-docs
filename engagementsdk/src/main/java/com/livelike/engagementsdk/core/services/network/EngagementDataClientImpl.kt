@@ -40,8 +40,6 @@ import kotlin.coroutines.suspendCoroutine
 internal open class EngagementDataClientImpl : DataClient,
     EngagementSdkDataClient {
 
-    private val MAX_PROGRAM_DATA_REQUESTS = 13
-
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor
 
     private val client = OkHttpClient()
@@ -275,4 +273,8 @@ internal open class EngagementDataClientImpl : DataClient,
                 }
             })
         }
+
+    companion object{
+        private const val MAX_PROGRAM_DATA_REQUESTS = 13
+    }
 }

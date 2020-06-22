@@ -193,8 +193,8 @@ internal class ChatViewModel(
             chatMessage.apply {
                 if (this.timetoken == messagePubnubToken) {
                     if (isOwnReaction) {
-                        if (chatMessage?.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
-                            chatMessage?.myChatMessageReaction?.pubnubActionToken =
+                        if (chatMessage.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
+                            chatMessage.myChatMessageReaction?.pubnubActionToken =
                                 chatMessageReaction.pubnubActionToken
                         }
                     } else {
@@ -324,7 +324,7 @@ internal class ChatViewModel(
                             val imageUrl = dataClient.uploadImage(
                                 currentChatRoom!!.uploadUrl,
                                 userStream.latest()!!.accessToken,
-                                fileBytes!!
+                                fileBytes
                             )
                             chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
                             chatMessage.imageUrl = imageUrl

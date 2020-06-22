@@ -30,7 +30,7 @@ internal fun PubnubChatMessage.toChatMessage(
     return ChatMessage(
         event,
         channel,
-        message ?: "",
+        message,
         senderId,
         senderNickname,
         senderImageUrl,
