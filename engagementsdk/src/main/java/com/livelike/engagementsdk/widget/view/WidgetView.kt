@@ -72,9 +72,10 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
      * This will update the theme on the current displayed widget as well
      **/
     fun applyTheme(theme: LiveLikeEngagementTheme) {
+        engagementSDKTheme = theme
         (session as? ContentSession)?.widgetThemeStream?.onNext(engagementSDKTheme?.widgets)
         if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
-            (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme)
+            (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme.widgets)
         }
     }
 

@@ -111,7 +111,6 @@ internal class ContentSession(
         }
         emit(Pair(sdkConfiguration.latest()!!, userRepository.currentUserStream.latest()!!))
     }
-    private var privateChatRoomID = ""
     val widgetThemeStream: Stream<WidgetsTheme> = SubscriptionManager()
 
     init {
