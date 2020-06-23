@@ -104,19 +104,19 @@ internal class ChatRepository(
     }
 
     suspend fun deleteCurrentUserFromChatRoom(
-        membershipId: String,
+        chatRoomId: String,
         chatRoomTemplateUrl: String
     ): Result<Void> {
-        val remoteURL =
-            chatRoomTemplateUrl.replace(
-                TEMPLATE_CHAT_ROOM_ID,
-                ""
-            ) + "/chat-room-memberships/$membershipId"
-        return dataClient.remoteCall<Void>(
-            remoteURL,
-            accessToken = authKey,
-            requestType = RequestType.DELETE
-        )
+        val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
+        return if (chatRoomResult is Result.Success) {
+            dataClient.remoteCall<Void>(
+                chatRoomResult.data.membershipsUrl,
+                accessToken = authKey,
+                requestType = RequestType.DELETE
+            )
+        } else {
+            chatRoomResult as Result.Error
+        }
     }
 
     fun addMessageReaction(channel: String, messagePubnubToken: Long, emojiId: String) {

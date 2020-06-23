@@ -327,15 +327,11 @@ class EngagementSDK(
                         )
                     uiScope.launch {
                         val chatRoomResult = chatRepository.deleteCurrentUserFromChatRoom(
-                            chatRoomId, pair.second.createChatRoomUrl
+                            chatRoomId, pair.second.chatRoomUrlTemplate
                         )
-                        if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(
-                                true, null
-                            )
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
-                        }
+                        liveLikeCallback.onResponse(
+                            true, null
+                        )
                     }
                 }
             }

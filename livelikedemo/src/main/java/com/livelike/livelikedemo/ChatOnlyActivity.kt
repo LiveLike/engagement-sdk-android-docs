@@ -22,12 +22,14 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.activity_chat_only.btn_change
 import kotlinx.android.synthetic.main.activity_chat_only.btn_chat_room_members
 import kotlinx.android.synthetic.main.activity_chat_only.btn_create
+import kotlinx.android.synthetic.main.activity_chat_only.btn_delete
 import kotlinx.android.synthetic.main.activity_chat_only.btn_join
 import kotlinx.android.synthetic.main.activity_chat_only.btn_refresh
 import kotlinx.android.synthetic.main.activity_chat_only.chat_view
 import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_id
 import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_title
 import kotlinx.android.synthetic.main.activity_chat_only.prg_create
+import kotlinx.android.synthetic.main.activity_chat_only.prg_delete
 import kotlinx.android.synthetic.main.activity_chat_only.prg_join
 import kotlinx.android.synthetic.main.activity_chat_only.prg_members
 import kotlinx.android.synthetic.main.activity_chat_only.prg_refresh
@@ -143,6 +145,30 @@ class ChatOnlyActivity : AppCompatActivity() {
                 showToast("Select Room")
             }
         }
+        btn_delete.setOnClickListener {
+            val id = txt_chat_room_id.text.toString()
+            if (id.isNotEmpty()) {
+                prg_delete.visibility = View.VISIBLE
+                (application as LiveLikeApplication).sdk.deleteCurrentUserFromChatRoom(id,
+                    object : LiveLikeCallback<Boolean>() {
+                        override fun onResponse(result: Boolean?, error: String?) {
+                            result?.let {
+                                showToast("Deleted ChatRoom")
+                                privateGroupChatsession.exitChatRoom(id)
+                                privateGroupChatsession.close()
+                                chat_view.visibility = View.INVISIBLE
+                                txt_chat_room_id.text = ""
+                                txt_chat_room_title.text = ""
+                                txt_chat_room_members_count.text = ""
+                            }
+                            prg_delete.visibility = View.INVISIBLE
+                            btn_refresh.callOnClick()
+                        }
+                    })
+            } else {
+                showToast("Select Room")
+            }
+        }
         btn_refresh.callOnClick()
     }
 
@@ -172,6 +198,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                     }
                 }
             })
+        chat_view.visibility = View.VISIBLE
         chat_view.setSession(privateGroupChatsession)
     }
 
