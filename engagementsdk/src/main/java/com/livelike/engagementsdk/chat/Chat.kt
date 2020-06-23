@@ -87,6 +87,6 @@ internal data class ChatMessageReaction(
     var pubnubActionToken: Long? = null
 )
 
-data class ChatRoom(val id: String, val title: String? = null)
+data class ChatRoomInfo(val id: String, val title: String? = null)
 
 internal const val CHAT_MESSAGE_IMAGE_TEMPLATE = ":message:"

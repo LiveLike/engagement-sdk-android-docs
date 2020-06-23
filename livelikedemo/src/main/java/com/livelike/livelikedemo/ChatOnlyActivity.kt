@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo
 
+import android.R.attr.label
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -10,73 +11,139 @@ import android.view.View
 import android.widget.Toast
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.chat.ChatRoom
+import com.livelike.engagementsdk.LiveLikeUser
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
+import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
+import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.activity_chat_only.btn_change
+import kotlinx.android.synthetic.main.activity_chat_only.btn_chat_room_members
 import kotlinx.android.synthetic.main.activity_chat_only.btn_create
+import kotlinx.android.synthetic.main.activity_chat_only.btn_join
+import kotlinx.android.synthetic.main.activity_chat_only.btn_refresh
 import kotlinx.android.synthetic.main.activity_chat_only.chat_view
+import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_id
 import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_title
 import kotlinx.android.synthetic.main.activity_chat_only.prg_create
+import kotlinx.android.synthetic.main.activity_chat_only.prg_join
+import kotlinx.android.synthetic.main.activity_chat_only.prg_members
+import kotlinx.android.synthetic.main.activity_chat_only.prg_refresh
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_id
+import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_members_count
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_title
+
 
 class ChatOnlyActivity : AppCompatActivity() {
     private lateinit var privateGroupChatsession: LiveLikeChatSession
-    private var chatRoomIds: MutableSet<String> = mutableSetOf()
-
+    private var chatRoomList: ArrayList<ChatRoomInfo> = arrayListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_only)
-        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).apply {
-            chatRoomIds = getStringSet(CHAT_ROOM_LIST, mutableSetOf()) ?: mutableSetOf()
-        }
+
         btn_create.setOnClickListener {
             val title = ed_chat_room_title.text.toString()
 
             prg_create.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
-                object : LiveLikeCallback<ChatRoom>() {
-                    override fun onResponse(result: ChatRoom?, error: String?) {
+                object : LiveLikeCallback<ChatRoomInfo>() {
+                    override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         val response = when {
-                            result != null -> "${result.title ?: "No Title"}(${result.id})"
+                            result != null -> "${result.title ?: "No Title"}(${result.id}),  Room Id copy to clipboard"
                             else -> error
                         }
+                        val clipboard =
+                            getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText("copied ChatRoomId", result?.id)
+                        clipboard.primaryClip = clip
                         response?.let { it1 -> showToast(it1) }
-                        result?.let {
-                            chatRoomIds.add(it.id)
-                            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                                .edit().apply {
-                                    putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
-                                }
-                        }
+
                         ed_chat_room_title.setText("")
                         prg_create.visibility = View.INVISIBLE
+                    }
+                })
+        }
+        btn_join.setOnClickListener {
+            val id = ed_chat_room_id.text.toString()
+            if (id.isEmpty()) {
+                showToast("Enter Room Id First")
+                return@setOnClickListener
+            }
+            prg_join.visibility = View.VISIBLE
+            (application as LiveLikeApplication).sdk.addCurrentUserToChatRoom(id,
+                object : LiveLikeCallback<ChatRoomMembership>() {
+                    override fun onResponse(result: ChatRoomMembership?, error: String?) {
+                        result?.let {
+                            showToast("User Added Successfully")
+                        }
+                        ed_chat_room_id.setText("")
+                        error?.let {
+                            showToast(it)
+                        }
+                        prg_join.visibility = View.INVISIBLE
                     }
                 })
         }
         btn_change.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle("Select a private group")
-                setItems(chatRoomIds.toTypedArray()) { _, which ->
+                setItems(chatRoomList.map { it.id }.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
                     (application as LiveLikeApplication).removePrivateSession()
-
-                    //Copy to clipboard
-                    val clipboard: ClipboardManager =
-                        getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
-                    clipboard.primaryClip = clip
-                    showToast("Room Id Copy To Clipboard")
-
-                    changeChatRoom(chatRoomIds.elementAt(which))
+                    changeChatRoom(chatRoomList.elementAt(which).id)
                 }
                 create()
             }.show()
         }
+        btn_refresh.setOnClickListener {
+            prg_refresh.visibility = View.VISIBLE
+            (application as LiveLikeApplication).sdk.getCurrentUserChatRoomList(
+                ChatRoomMembershipPagination.FIRST,
+                object : LiveLikeCallback<List<ChatRoomInfo>>() {
+                    override fun onResponse(result: List<ChatRoomInfo>?, error: String?) {
+                        prg_refresh.visibility = View.INVISIBLE
+                        chatRoomList.clear()
+                        result?.let { it1 ->
+                            chatRoomList.addAll(it1)
+                        }
+                        error?.let {
+                            showToast(it)
+                        }
+                    }
+                })
+        }
+        btn_chat_room_members.setOnClickListener {
+            val id = txt_chat_room_id.text.toString()
+            if (id.isNotEmpty()) {
+                prg_members.visibility = View.VISIBLE
+                (application as LiveLikeApplication).sdk.getMembersOfChatRoom(id,
+                    ChatRoomMembershipPagination.FIRST,
+                    object : LiveLikeCallback<List<LiveLikeUser>>() {
+                        override fun onResponse(result: List<LiveLikeUser>?, error: String?) {
+                            txt_chat_room_members_count?.text = "Members: ${result?.size ?: 0}"
+                            prg_members.visibility = View.INVISIBLE
+                            result?.let { list ->
+                                if (list.isNotEmpty()) {
+                                    AlertDialog.Builder(this@ChatOnlyActivity).apply {
+                                        setTitle("Room Members")
+                                        setItems(list.map { it.nickname }
+                                            .toTypedArray()) { _, which ->
+                                            // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
+                                        }
+                                        create()
+                                    }.show()
+                                }
+                            }
+                        }
+                    })
+            } else {
+                showToast("Select Room")
+            }
+        }
+        btn_refresh.callOnClick()
     }
 
     private fun changeChatRoom(chatRoomId: String) {
@@ -97,8 +164,8 @@ class ChatOnlyActivity : AppCompatActivity() {
         txt_chat_room_title.visibility = View.VISIBLE
         (application as LiveLikeApplication).sdk.getChatRoom(
             chatRoomId,
-            object : LiveLikeCallback<ChatRoom>() {
-                override fun onResponse(result: ChatRoom?, error: String?) {
+            object : LiveLikeCallback<ChatRoomInfo>() {
+                override fun onResponse(result: ChatRoomInfo?, error: String?) {
                     result?.let {
                         txt_chat_room_title.text = it.title ?: "No Title"
                         txt_chat_room_id.text = it.id

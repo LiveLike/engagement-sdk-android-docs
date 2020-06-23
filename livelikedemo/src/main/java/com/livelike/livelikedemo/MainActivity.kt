@@ -20,7 +20,7 @@ import android.view.View
 import android.widget.Toast
 import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.chat.ChatRoom
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
@@ -268,8 +268,8 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
-                object : LiveLikeCallback<ChatRoom>() {
-                    override fun onResponse(result: ChatRoom?, error: String?) {
+                object : LiveLikeCallback<ChatRoomInfo>() {
+                    override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         textView2.text = when {
                             result != null -> "${result.title ?: "No Title"}(${result.id})"
                             else -> error
