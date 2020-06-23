@@ -227,7 +227,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         }
     }
 
-    protected fun updateTitleView(it: LayoutPickerComponent) {
+    protected fun updateTitleView(it: OptionsWidgetThemeComponent) {
         titleView.componentTheme = it.title
         if (it.header?.background != null) {
             txtTitleBackground.background = AndroidResource.createUpdateDrawable(it.header)

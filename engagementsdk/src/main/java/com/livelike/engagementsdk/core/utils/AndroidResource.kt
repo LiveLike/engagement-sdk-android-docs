@@ -10,14 +10,14 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import com.google.gson.Gson
-import com.livelike.engagementsdk.widget.Component
 import com.livelike.engagementsdk.widget.FontWeight
-import org.threeten.bp.Duration
-import org.threeten.bp.format.DateTimeParseException
+import com.livelike.engagementsdk.widget.ViewStyleProps
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.util.Random
+import org.threeten.bp.Duration
+import org.threeten.bp.format.DateTimeParseException
 
 fun Any.unit() = Unit
 internal class AndroidResource {
@@ -70,7 +70,7 @@ internal class AndroidResource {
             return null
         }
 
-        fun updateThemeForView(textView: TextView, component: Component?) {
+        fun updateThemeForView(textView: TextView, component: ViewStyleProps?) {
             component?.let {
                 textView.apply {
                     it.fontSize?.let {
@@ -102,7 +102,7 @@ internal class AndroidResource {
         }
 
         fun createUpdateDrawable(
-            component: Component?,
+            component: ViewStyleProps?,
             shape: GradientDrawable = GradientDrawable()
         ): GradientDrawable? {
             component?.background?.let {
@@ -135,7 +135,6 @@ internal class AndroidResource {
                     dpToPx(component.borderWidth.toInt()),
                     getColorFromString(component.borderColor) ?: Color.TRANSPARENT
                 )
-
             }
             return shape
         }
