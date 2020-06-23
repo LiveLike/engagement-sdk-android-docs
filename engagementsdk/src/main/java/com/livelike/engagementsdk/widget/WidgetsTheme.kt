@@ -51,35 +51,25 @@ data class CheerMeterTheme(
 data class WidgetsTheme(
     val alert: WidgetBaseThemeComponent? = null,
     val cheerMeter: CheerMeterTheme? = null,
-    val imagePoll: OptionsWidgetThemeComponent? = null,
-    val imagePrediction: OptionsWidgetThemeComponent? = null,
-    val imagePredictionFollowUp: OptionsWidgetThemeComponent? = null,
-    val imageQuiz: OptionsWidgetThemeComponent? = null,
     val imageSlider: ImageSliderTheme? = null,
-    val textPoll: OptionsWidgetThemeComponent? = null,
-    val textPrediction: OptionsWidgetThemeComponent? = null,
-    val textPredictionFollowUp: OptionsWidgetThemeComponent? = null,
-    val textQuiz: OptionsWidgetThemeComponent? = null
+    val poll: OptionsWidgetThemeComponent? = null,
+    val prediction: OptionsWidgetThemeComponent? = null,
+    val predictionFollowUp: OptionsWidgetThemeComponent? = null,
+    val quiz: OptionsWidgetThemeComponent? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-        return alert?.validate() ?: cheerMeter?.validate() ?: imagePoll?.validate()
-        ?: imagePrediction?.validate() ?: imagePredictionFollowUp?.validate()
-        ?: imageQuiz?.validate() ?: imageSlider?.validate() ?: textPoll?.validate()
-        ?: textPrediction?.validate() ?: textPredictionFollowUp?.validate()
-        ?: textQuiz?.validate()
+        return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate() ?: poll?.validate()
+        ?: prediction?.validate() ?: predictionFollowUp?.validate()
+        ?: quiz?.validate()
     }
 
     fun getThemeLayoutComponent(widgetType: WidgetType): BaseTheme? {
         return when (widgetType) {
             WidgetType.ALERT -> alert
-            WidgetType.TEXT_POLL -> textPoll
-            WidgetType.IMAGE_POLL -> imagePoll
-            WidgetType.TEXT_QUIZ -> textQuiz
-            WidgetType.IMAGE_QUIZ -> imageQuiz
-            WidgetType.TEXT_PREDICTION -> textPrediction
-            WidgetType.TEXT_PREDICTION_FOLLOW_UP -> textPredictionFollowUp
-            WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> imagePredictionFollowUp
-            WidgetType.IMAGE_PREDICTION -> imagePrediction
+            WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> poll
+            WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> quiz
+            WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> prediction
+            WidgetType.TEXT_PREDICTION_FOLLOW_UP, WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> predictionFollowUp
             WidgetType.IMAGE_SLIDER -> imageSlider
             WidgetType.CHEER_METER -> cheerMeter
             else -> null
