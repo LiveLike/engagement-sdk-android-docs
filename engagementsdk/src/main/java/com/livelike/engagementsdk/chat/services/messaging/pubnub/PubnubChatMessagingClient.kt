@@ -85,12 +85,13 @@ internal class PubnubChatMessagingClient(
 
     private val coroutineScope = MainScope()
     private var isPublishRunning = false
-    private var firstTimeToken: Long? = null
+    private var firstTimeToken: Long = 0
     private var pubnubChatRoomLastMessageTime: MutableMap<String, ArrayList<String>>? = null
 
     var activeChatRoom = ""
         set(value) {
             field = value
+            firstTimeToken = 0
             subscribe(listOf(value))
             flushPublishedMessage(*connectedChannels.toTypedArray())
         }
@@ -471,40 +472,33 @@ internal class PubnubChatMessagingClient(
 
     internal fun loadMessagesWithReactions(
         channel: String,
-        timeToken: Long = 0L,
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
-        if (timeToken == 0L)
+        if (firstTimeToken == 0L)
             pubnub.time().async(object : PNCallback<PNTimeResult>() {
                 override fun onResponse(result: PNTimeResult?, status: PNStatus) {
+                    firstTimeToken = result?.timetoken ?: 0
                     loadMessagesWithReactions(
                         channel,
-                        result?.timetoken ?: timeToken,
                         chatHistoyLimit
                     )
                 }
             }) else {
-            val updatedTimeToken: Long =
-                if (timeToken == -1L)
-                    firstTimeToken ?: Calendar.getInstance().timeInMillis
-                else
-                    timeToken
-            logDebug { "LoadMessages from History for channel $channel ,time:$updatedTimeToken" }
+            logDebug { "LoadMessages from History for channel $channel ,time:$firstTimeToken" }
             pubnub.fetchMessages()
                 .channels(listOf(channel))
                 .includeMeta(true)
                 .maximumPerChannel(chatHistoyLimit)
-                .start(updatedTimeToken)
+                .start(firstTimeToken)
                 .includeMessageActions(true)
                 .async(object : PNCallback<PNFetchMessagesResult>() {
                     override fun onResponse(result: PNFetchMessagesResult?, status: PNStatus) {
                         if (!status.isError && result?.channels?.get(channel)?.isEmpty() == false) {
-                            firstTimeToken = null
+                            result.channels?.get(channel)?.first()?.timetoken?.let {
+                                firstTimeToken = it
+                            }
                             result.channels?.get(channel)?.reversed()?.forEach {
-
                                 val jsonObject = it.message.asJsonObject.apply {
-                                    if (firstTimeToken == null)
-                                        firstTimeToken = it.timetoken
                                     addProperty("pubnubToken", it.timetoken)
                                 }
                                 if (!isMessageModerated(jsonObject)) {
