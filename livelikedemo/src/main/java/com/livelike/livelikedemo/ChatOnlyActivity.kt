@@ -125,7 +125,10 @@ class ChatOnlyActivity : AppCompatActivity() {
                     ChatRoomMembershipPagination.FIRST,
                     object : LiveLikeCallback<List<LiveLikeUser>>() {
                         override fun onResponse(result: List<LiveLikeUser>?, error: String?) {
-                            txt_chat_room_members_count?.text = "Members: ${result?.size ?: 0}"
+                            if (result?.isNotEmpty() == true)
+                                txt_chat_room_members_count?.text = "Members: ${result?.size ?: 0}"
+                            else
+                                txt_chat_room_members_count?.text = ""
                             prg_members.visibility = View.INVISIBLE
                             result?.let { list ->
                                 if (list.isNotEmpty()) {
@@ -195,6 +198,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                     result?.let {
                         txt_chat_room_title.text = it.title ?: "No Title"
                         txt_chat_room_id.text = it.id
+                        txt_chat_room_members_count.text = ""
                     }
                 }
             })
