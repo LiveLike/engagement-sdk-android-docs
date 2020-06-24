@@ -6,16 +6,25 @@ abstract class BaseTheme {
     abstract fun validate(): String?
 }
 
-data class ImageSliderTheme(
-    val body: Component? = null,
-    val dismiss: Component? = null,
-    val footer: Component? = null,
-    val header: Component? = null,
-    val marker: Component? = null,
-    val timer: Component? = null,
-    val title: Component? = null,
-    val track: Component? = null
+abstract class WidgetBaseThemeComponent(
+    val body: ViewStyleProps? = null,
+    val dismiss: ViewStyleProps? = null,
+    val footer: ViewStyleProps? = null,
+    val header: ViewStyleProps? = null,
+    val timer: ViewStyleProps? = null,
+    val title: ViewStyleProps? = null
 ) : BaseTheme() {
+
+    override fun validate(): String? {
+        return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
+        ?: header?.validate() ?: timer?.validate() ?: timer?.validate()
+    }
+}
+
+data class ImageSliderTheme(
+    val marker: ViewStyleProps? = null,
+    val track: ViewStyleProps? = null
+) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
         ?: header?.validate() ?: marker?.validate() ?: timer?.validate() ?: timer?.validate()
@@ -24,18 +33,12 @@ data class ImageSliderTheme(
 }
 
 data class CheerMeterTheme(
-    val body: Component? = null,
-    val dismiss: Component? = null,
-    val footer: Component? = null,
-    val header: Component? = null,
-    val sideABar: Component? = null,
-    val sideAButton: Component? = null,
-    val sideBBar: Component? = null,
-    val sideBButton: Component? = null,
-    val timer: Component? = null,
-    val title: Component? = null,
-    val versus: Component? = null
-) : BaseTheme() {
+    val sideABar: ViewStyleProps? = null,
+    val sideAButton: ViewStyleProps? = null,
+    val sideBBar: ViewStyleProps? = null,
+    val sideBButton: ViewStyleProps? = null,
+    val versus: ViewStyleProps? = null
+) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
         ?: header?.validate()
@@ -46,37 +49,27 @@ data class CheerMeterTheme(
 }
 
 data class WidgetsTheme(
-    val alert: LayoutComponent? = null,
+    val alert: WidgetBaseThemeComponent? = null,
     val cheerMeter: CheerMeterTheme? = null,
-    val imagePoll: LayoutPickerComponent? = null,
-    val imagePrediction: LayoutPickerComponent? = null,
-    val imagePredictionFollowUp: LayoutPickerComponent? = null,
-    val imageQuiz: LayoutPickerComponent? = null,
     val imageSlider: ImageSliderTheme? = null,
-    val textPoll: LayoutPickerComponent? = null,
-    val textPrediction: LayoutPickerComponent? = null,
-    val textPredictionFollowUp: LayoutPickerComponent? = null,
-    val textQuiz: LayoutPickerComponent? = null
+    val poll: OptionsWidgetThemeComponent? = null,
+    val prediction: OptionsWidgetThemeComponent? = null,
+    val predictionFollowUp: OptionsWidgetThemeComponent? = null,
+    val quiz: OptionsWidgetThemeComponent? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-        return alert?.validate() ?: cheerMeter?.validate() ?: imagePoll?.validate()
-        ?: imagePrediction?.validate() ?: imagePredictionFollowUp?.validate()
-        ?: imageQuiz?.validate() ?: imageSlider?.validate() ?: textPoll?.validate()
-        ?: textPrediction?.validate() ?: textPredictionFollowUp?.validate()
-        ?: textQuiz?.validate()
+        return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate() ?: poll?.validate()
+        ?: prediction?.validate() ?: predictionFollowUp?.validate()
+        ?: quiz?.validate()
     }
 
     fun getThemeLayoutComponent(widgetType: WidgetType): BaseTheme? {
         return when (widgetType) {
             WidgetType.ALERT -> alert
-            WidgetType.TEXT_POLL -> textPoll
-            WidgetType.IMAGE_POLL -> imagePoll
-            WidgetType.TEXT_QUIZ -> textQuiz
-            WidgetType.IMAGE_QUIZ -> imageQuiz
-            WidgetType.TEXT_PREDICTION -> textPrediction
-            WidgetType.TEXT_PREDICTION_FOLLOW_UP -> textPredictionFollowUp
-            WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> imagePredictionFollowUp
-            WidgetType.IMAGE_PREDICTION -> imagePrediction
+            WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> poll
+            WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> quiz
+            WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> prediction
+            WidgetType.TEXT_PREDICTION_FOLLOW_UP, WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> predictionFollowUp
             WidgetType.IMAGE_SLIDER -> imageSlider
             WidgetType.CHEER_METER -> cheerMeter
             else -> null
@@ -84,7 +77,7 @@ data class WidgetsTheme(
     }
 }
 
-data class Component(
+data class ViewStyleProps(
     val background: BackgroundProperty? = null,
     val borderColor: String? = null,
     val borderRadius: List<Double>? = null,
@@ -105,60 +98,38 @@ data class Component(
     }
 }
 
-data class LayoutComponent(
-    val body: Component? = null,
-    val dismiss: Component? = null,
-    val footer: Component? = null,
-    val header: Component? = null,
-    val timer: Component? = null,
-    val title: Component? = null
-) : BaseTheme() {
+data class OptionsWidgetThemeComponent(
+    val correctOption: ViewStyleProps? = null,
+    val correctOptionBar: ViewStyleProps? = null,
+    val correctOptionDescription: ViewStyleProps? = null,
+    val correctOptionImage: ViewStyleProps? = null,
+    val correctOptionPercentage: ViewStyleProps? = null,
+    val incorrectOption: ViewStyleProps? = null,
+    val incorrectOptionBar: ViewStyleProps? = null,
+    val incorrectOptionDescription: ViewStyleProps? = null,
+    val incorrectOptionImage: ViewStyleProps? = null,
+    val incorrectOptionPercentage: ViewStyleProps? = null,
+    val selectedOption: ViewStyleProps? = null,
+    val selectedOptionBar: ViewStyleProps? = null,
+    val selectedOptionDescription: ViewStyleProps? = null,
+    val selectedOptionImage: ViewStyleProps? = null,
+    val selectedOptionPercentage: ViewStyleProps? = null,
+    val unselectedOption: ViewStyleProps? = null,
+    val unselectedOptionBar: ViewStyleProps? = null,
+    val unselectedOptionDescription: ViewStyleProps? = null,
+    val unselectedOptionImage: ViewStyleProps? = null,
+    val unselectedOptionPercentage: ViewStyleProps? = null
+) : WidgetBaseThemeComponent() {
     override fun validate(): String? {
-        return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
-        ?: header?.validate()
-        ?: timer?.validate() ?: title?.validate()
-    }
-}
-
-data class LayoutPickerComponent(
-    val body: Component? = null,
-    val correctOption: Component? = null,
-    val correctOptionBar: Component? = null,
-    val correctOptionDescription: Component? = null,
-    val correctOptionImage: Component? = null,
-    val correctOptionPercentage: Component? = null,
-    val dismiss: Component? = null,
-    val footer: Component? = null,
-    val header: Component? = null,
-    val incorrectOption: Component? = null,
-    val incorrectOptionBar: Component? = null,
-    val incorrectOptionDescription: Component? = null,
-    val incorrectOptionImage: Component? = null,
-    val incorrectOptionPercentage: Component? = null,
-    val selectedOption: Component? = null,
-    val selectedOptionBar: Component? = null,
-    val selectedOptionDescription: Component? = null,
-    val selectedOptionImage: Component? = null,
-    val selectedOptionPercentage: Component? = null,
-    val timer: Component? = null,
-    val title: Component? = null,
-    val unselectedOption: Component? = null,
-    val unselectedOptionBar: Component? = null,
-    val unselectedOptionDescription: Component? = null,
-    val unselectedOptionImage: Component? = null,
-    val unselectedOptionPercentage: Component? = null
-) : BaseTheme() {
-    override fun validate(): String? {
-        return body?.validate() ?: correctOption?.validate() ?: correctOptionBar?.validate()
+        return super.validate() ?: correctOption?.validate() ?: correctOptionBar?.validate()
         ?: correctOptionDescription?.validate() ?: correctOptionImage?.validate()
-        ?: correctOptionPercentage?.validate() ?: dismiss?.validate() ?: footer?.validate()
-        ?: header?.validate()
+        ?: correctOptionPercentage?.validate()
         ?: incorrectOption?.validate() ?: incorrectOptionBar?.validate()
         ?: incorrectOptionDescription?.validate() ?: incorrectOptionImage?.validate()
         ?: incorrectOptionPercentage?.validate() ?: selectedOption?.validate()
         ?: selectedOptionBar?.validate() ?: selectedOptionDescription?.validate()
         ?: selectedOptionImage?.validate() ?: selectedOptionPercentage?.validate()
-        ?: timer?.validate() ?: title?.validate() ?: unselectedOption?.validate()
+        ?: unselectedOption?.validate()
         ?: unselectedOptionBar?.validate() ?: unselectedOptionDescription?.validate()
         ?: unselectedOptionImage?.validate() ?: unselectedOptionPercentage?.validate()
     }

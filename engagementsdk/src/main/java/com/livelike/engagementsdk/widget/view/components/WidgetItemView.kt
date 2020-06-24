@@ -18,10 +18,11 @@ import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.widget.Component
-import com.livelike.engagementsdk.widget.LayoutPickerComponent
+import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
+import com.livelike.engagementsdk.widget.ViewStyleProps
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
+import kotlin.math.roundToInt
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButtonBackground
@@ -32,8 +33,6 @@ import kotlinx.android.synthetic.main.atom_widget_text_item.view.bkgrd
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.determinateBar
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.percentageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
-import kotlin.math.roundToInt
-
 
 internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     ConstraintLayout(context, attr) {
@@ -47,7 +46,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         correctOptionId: String?,
         selectedPredictionId: String = "",
         itemIsLast: Boolean,
-        component: LayoutPickerComponent?
+        component: OptionsWidgetThemeComponent?
     ) {
         if (!inflated) {
             if (!option.image_url.isNullOrEmpty()) {
@@ -97,10 +96,10 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         userSelectedOptionId: String,
         option: Option,
         itemIsLast: Boolean,
-        layoutPickerComponent: LayoutPickerComponent?
+        layoutPickerComponent: OptionsWidgetThemeComponent?
     ) {
         logDebug { "WidgetItemView setbackground widgetType:$widgetType , isSelected:$itemIsSelected , isItemLast:$itemIsLast" }
-        var optionDescTheme: Component?
+        var optionDescTheme: ViewStyleProps?
         if (itemIsSelected) {
             optionDescTheme = layoutPickerComponent?.selectedOptionDescription
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
@@ -282,7 +281,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         )
     }
 
-    private fun updateDescViewTheme(isImage: Boolean, component: Component?) {
+    private fun updateDescViewTheme(isImage: Boolean, component: ViewStyleProps?) {
         component?.let {
             if (isImage) {
                 AndroidResource.updateThemeForView(imageText, it)
@@ -292,7 +291,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         }
     }
 
-    private fun updateViewProgressBar(drawableId: Int, component: Component? = null) {
+    private fun updateViewProgressBar(drawableId: Int, component: ViewStyleProps? = null) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
         component?.let {
             val scaleDrawable: ScaleDrawable = (drawable as LayerDrawable)

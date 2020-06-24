@@ -23,8 +23,8 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.widget.Component
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.ViewStyleProps
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
@@ -319,7 +319,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 //        collapse(lottie_vs_animation, 500, 0)
     }
 
-    private fun updateRippleView(viewRipple: View, component: Component) {
+    private fun updateRippleView(viewRipple: View, component: ViewStyleProps) {
         val drawable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             viewRipple.background as? RippleDrawable
         } else {

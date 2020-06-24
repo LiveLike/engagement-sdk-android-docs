@@ -3,8 +3,7 @@ package com.livelike.engagementsdk.widget.adapters
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
-import com.livelike.engagementsdk.widget.Component
-import com.livelike.engagementsdk.widget.LayoutPickerComponent
+import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
 import com.livelike.engagementsdk.widget.view.components.WidgetItemView
@@ -15,7 +14,7 @@ internal class WidgetOptionsViewAdapter(
     private val widgetType: WidgetType,
     var correctOptionId: String? = null,
     var userSelectedOptionId: String = "",
-    var component: LayoutPickerComponent? = null
+    var component: OptionsWidgetThemeComponent? = null
 ) :
     RecyclerView.Adapter<WidgetOptionsViewAdapter.TextOptionViewHolder>() {
 

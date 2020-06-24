@@ -10,7 +10,7 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.widget.LayoutPickerComponent
+import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
@@ -123,7 +123,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         super.applyTheme(theme)
         viewModel?.data?.latest()?.let { widget ->
             theme.getThemeLayoutComponent(widget.type)?.let { themeComponent ->
-                if (themeComponent is LayoutPickerComponent) {
+                if (themeComponent is OptionsWidgetThemeComponent) {
                     updateTitleView(themeComponent)
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
