@@ -86,6 +86,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                             showToast(it)
                         }
                         prg_join.visibility = View.INVISIBLE
+                        btn_refresh.callOnClick()
                     }
                 })
         }
