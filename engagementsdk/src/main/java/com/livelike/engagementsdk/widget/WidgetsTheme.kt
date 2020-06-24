@@ -6,14 +6,14 @@ abstract class BaseTheme {
     abstract fun validate(): String?
 }
 
-abstract class WidgetBaseThemeComponent(
-    val body: ViewStyleProps? = null,
-    val dismiss: ViewStyleProps? = null,
-    val footer: ViewStyleProps? = null,
-    val header: ViewStyleProps? = null,
-    val timer: ViewStyleProps? = null,
+abstract class WidgetBaseThemeComponent() : BaseTheme() {
+
+    val body: ViewStyleProps? = null
+    val dismiss: ViewStyleProps? = null
+    val footer: ViewStyleProps? = null
+    val header: ViewStyleProps? = null
+    val timer: ViewStyleProps? = null
     val title: ViewStyleProps? = null
-) : BaseTheme() {
 
     override fun validate(): String? {
         return body?.validate() ?: dismiss?.validate() ?: footer?.validate()
@@ -48,8 +48,10 @@ data class CheerMeterTheme(
     }
 }
 
+class AlertWidgetThemeComponent : WidgetBaseThemeComponent()
+
 data class WidgetsTheme(
-    val alert: WidgetBaseThemeComponent? = null,
+    val alert: AlertWidgetThemeComponent? = null,
     val cheerMeter: CheerMeterTheme? = null,
     val imageSlider: ImageSliderTheme? = null,
     val poll: OptionsWidgetThemeComponent? = null,
