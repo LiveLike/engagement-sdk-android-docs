@@ -129,6 +129,8 @@ internal class AndroidResource {
                     dpToPx(component.borderRadius[3].toInt()).toFloat()
                 )
             }
+
+            //We can turn the gradient in 45 degree increments.
             shape.orientation = when (component?.background?.direction?.toInt()) {
                 0 -> GradientDrawable.Orientation.BOTTOM_TOP
                 45 -> GradientDrawable.Orientation.TOP_BOTTOM
