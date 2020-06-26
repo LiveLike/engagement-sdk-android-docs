@@ -117,7 +117,7 @@ internal class AndroidResource {
 
             shape.orientation =
                 component?.background?.direction?.toInt()
-                    ?.let { selectGradientDirection(it).orientation }
+                    ?.let { selectGradientDirection(it) }
 
             if (component?.borderRadius.isNullOrEmpty()
                     .not() && component?.borderRadius?.size == 4
@@ -145,9 +145,8 @@ internal class AndroidResource {
         }
 
 
-        private fun selectGradientDirection(direction: Int): GradientDrawable {
-            var shape = GradientDrawable()
-            shape.orientation = when (direction) {
+        internal fun selectGradientDirection(direction: Int): GradientDrawable.Orientation {
+            return when (direction) {
                 0 -> GradientDrawable.Orientation.BOTTOM_TOP
                 45 -> GradientDrawable.Orientation.TOP_BOTTOM
                 90 -> GradientDrawable.Orientation.BL_TR
@@ -159,8 +158,6 @@ internal class AndroidResource {
                     GradientDrawable.Orientation.TR_BL
                 }
             }
-
-            return shape
         }
 
         fun selectRandomLottieAnimation(path: String, context: Context): String? {
