@@ -162,7 +162,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                 pager_tab.addOnTabSelectedListener(listener)
                 for (i in 0 until stickerCollectionPagerAdapter.itemCount) {
                     val tab = pager_tab.newTab()
-                    if (i == stickerCollectionPagerAdapter.RECENT_STICKERS_POSITION) {
+                    if (i == StickerCollectionAdapter.RECENT_STICKERS_POSITION) {
                         tab.customView = createTabItemView()
                     } else {
                         tab.customView = createTabItemView(stickerPacks[i - 1])

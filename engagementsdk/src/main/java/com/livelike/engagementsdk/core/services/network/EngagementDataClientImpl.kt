@@ -40,8 +40,6 @@ import kotlin.coroutines.suspendCoroutine
 internal open class EngagementDataClientImpl : DataClient,
     EngagementSdkDataClient {
 
-    private val MAX_PROGRAM_DATA_REQUESTS = 13
-
     // TODO better error handling for network calls plus better code organisation for that  we can use retrofit if size is ok to go with or write own annotation processor
 
     private val client = OkHttpClient()
@@ -143,7 +141,8 @@ internal open class EngagementDataClientImpl : DataClient,
                         responseData.extractBoolean("widgets_enabled"),
                         responseData.extractBoolean("chat_enabled"),
                         null,
-                        responseData.extractStringOrEmpty("url")
+                        responseData.extractStringOrEmpty("url"),
+                        responseData.extractStringOrEmpty("chat_room_memberships_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -180,7 +179,8 @@ internal open class EngagementDataClientImpl : DataClient,
                         responseData.extractBoolean("widgets_enabled"),
                         responseData.extractBoolean("chat_enabled"),
                         null,
-                        responseData.extractStringOrEmpty("url")
+                        responseData.extractStringOrEmpty("url"),
+                        responseData.extractStringOrEmpty("chat_room_memberships_url")
                     )
                     logVerbose { user }
                     mainHandler.post { responseCallback.invoke(user) }
@@ -235,7 +235,7 @@ internal open class EngagementDataClientImpl : DataClient,
                     )
                 } else {
                     Result.Error(
-                        IOException("response code : {$execute.code()} - ${execute.message()}")
+                        IOException("response code : ${execute.code()} - ${execute.message()}")
                     )
                 }
             }
@@ -275,4 +275,8 @@ internal open class EngagementDataClientImpl : DataClient,
                 }
             })
         }
+
+    companion object{
+        private const val MAX_PROGRAM_DATA_REQUESTS = 13
+    }
 }

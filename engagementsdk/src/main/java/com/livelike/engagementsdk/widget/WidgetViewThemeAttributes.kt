@@ -13,13 +13,13 @@ class WidgetViewThemeAttributes {
     fun init(typedArray: TypedArray?) {
         typedArray?.apply {
             widgetWinAnimation =
-                getString(R.styleable.LiveLike_WidgetView_winAnimation) ?: "winAnimation"
+                getString(R.styleable.WidgetView_winAnimation) ?: "winAnimation"
             widgetLoseAnimation =
-                getString(R.styleable.LiveLike_WidgetView_loseAnimation) ?: "loseAnimation"
+                getString(R.styleable.WidgetView_loseAnimation) ?: "loseAnimation"
             widgetDrawAnimation =
-                getString(R.styleable.LiveLike_WidgetView_drawAnimation) ?: "drawAnimation"
+                getString(R.styleable.WidgetView_drawAnimation) ?: "drawAnimation"
             stayTunedAnimation =
-                getString(R.styleable.LiveLike_WidgetView_stayTunedAnimation) ?: "staytuned"
+                getString(R.styleable.WidgetView_stayTunedAnimation) ?: "staytuned"
         }
     }
 }

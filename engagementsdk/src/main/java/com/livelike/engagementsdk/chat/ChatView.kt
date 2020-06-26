@@ -142,12 +142,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
-            R.styleable.LiveLike_ChatView,
+            R.styleable.ChatView,
             0, 0
         ).apply {
             try {
                 displayUserProfile =
-                    getBoolean(R.styleable.LiveLike_ChatView_displayUserProfile, false)
+                    getBoolean(R.styleable.ChatView_displayUserProfile, false)
                 chatAttribute.initAttributes(context, this)
             } finally {
                 recycle()
@@ -634,9 +634,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
-            if (visibility == View.VISIBLE) {
+//            if (visibility == View.VISIBLE) {
 //                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
-            }
+//            }
             visibility = View.GONE
         }
     }

@@ -38,6 +38,7 @@
                 android:layout_gravity="bottom"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="10dp"
+                android:contentDescription="@string/user_image"
                 android:layout_marginBottom="6dp"
                 android:visibility="gone" />
 

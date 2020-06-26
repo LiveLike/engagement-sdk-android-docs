@@ -39,6 +39,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@id/user_profile_tv"
         android:visibility="gone"
+        android:contentDescription="@string/coins"
         tools:src="@drawable/coin"/>
 
     </android.support.constraint.ConstraintLayout>

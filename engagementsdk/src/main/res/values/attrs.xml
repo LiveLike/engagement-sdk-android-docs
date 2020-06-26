@@ -23,14 +23,14 @@
 
 
 
-    <declare-styleable name="LiveLike_WidgetView">
+    <declare-styleable name="WidgetView">
         <attr name="winAnimation" format="string"/>
         <attr name="loseAnimation" format="string"/>
         <attr name="drawAnimation" format="string"/>
         <attr name="stayTunedAnimation" format="string"/>
     </declare-styleable>
 
-    <declare-styleable name="LiveLike_ChatView">
+    <declare-styleable name="ChatView">
         <attr name="displayUserProfile" format="boolean" />
         <attr name="showStickerSend" format="boolean" />
         <attr name="showMessageTime" format="boolean" />

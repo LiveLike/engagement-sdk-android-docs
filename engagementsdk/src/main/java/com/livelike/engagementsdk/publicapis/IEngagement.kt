@@ -1,7 +1,10 @@
 package com.livelike.engagementsdk.publicapis
 
+import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.chat.ChatRoom
+import com.livelike.engagementsdk.chat.ChatRoomInfo
+import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
+import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
 
 interface IEngagement {
 
@@ -25,7 +28,24 @@ interface IEngagement {
     /** Override the default auto-generated chat userpic **/
     fun updateChatUserPic(url: String?)
 
-    fun createChatRoom(title: String? = null, liveLikeCallback: LiveLikeCallback<ChatRoom>)
+    fun createChatRoom(title: String? = null, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>)
 
-    fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoom>)
+    fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>)
+
+    fun addCurrentUserToChatRoom(
+        chatRoomId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomMembership>
+    )
+
+    fun getCurrentUserChatRoomList(chatRoomMembershipPagination: ChatRoomMembershipPagination,
+        liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
+    )
+    fun getMembersOfChatRoom(chatRoomId: String,chatRoomMembershipPagination: ChatRoomMembershipPagination,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeUser>>
+    )
+
+    fun deleteCurrentUserFromChatRoom(
+        chatRoomId: String,
+        liveLikeCallback: LiveLikeCallback<Boolean>
+    )
 }

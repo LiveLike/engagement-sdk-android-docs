@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.support.v13.view.inputmethod.EditorInfoCompat
@@ -83,9 +84,17 @@ class RichContentEditText : AppCompatEditText {
     var allowMediaFromKeyboard: Boolean=true
     var isTouching = false
 
+    /**
+     * this touch is override to check if the user scrolling the chat list so uneven opening of the keyboard
+     */
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         isTouching =
             event?.action == MotionEvent.ACTION_DOWN || event?.action == MotionEvent.ACTION_MOVE
         return super.onTouchEvent(event)
+    }
+
+    override fun performClick(): Boolean {
+        return super.performClick()
     }
 }

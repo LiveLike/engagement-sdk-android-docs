@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.widget.view.components.imageslider
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Canvas
@@ -317,8 +318,11 @@ internal class ImageSlider @JvmOverloads constructor(
         )
     }
 
+    @SuppressLint("ClickableViewAccessibility")
+    /**
+     * We do not require click event so perform click is not actioned in touch event
+     */
     override fun onTouchEvent(event: MotionEvent): Boolean {
-
         if (!isUserSeekable || !isEnabled) {
             return false
         }

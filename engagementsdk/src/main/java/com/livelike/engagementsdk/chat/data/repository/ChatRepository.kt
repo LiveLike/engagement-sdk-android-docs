@@ -3,6 +3,9 @@ package com.livelike.engagementsdk.chat.data.repository
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
+import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
+import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.data.respository.BaseRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
@@ -59,6 +62,60 @@ internal class ChatRepository(
             accessToken = authKey,
             requestBody = titleRequest
         )
+    }
+
+    suspend fun addCurrentUserToChatRoom(
+        chatRoomId: String,
+        chatRoomTemplateUrl: String
+    ): Result<ChatRoomMembership> {
+        val remoteURL =
+            chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "") + "/${chatRoomId}/memberships"
+        return dataClient.remoteCall<ChatRoomMembership>(
+            remoteURL,
+            accessToken = authKey,
+            requestType = RequestType.POST,
+            requestBody = RequestBody.create(null, byteArrayOf())
+        )
+    }
+
+    suspend fun getCurrentUserChatRoomList(membershipUrl: String): Result<UserChatRoomListResponse> {
+        return dataClient.remoteCall<UserChatRoomListResponse>(
+            membershipUrl,
+            accessToken = authKey,
+            requestType = RequestType.GET
+        )
+    }
+
+    suspend fun getMembersOfChatRoom(
+        chatRoomId: String,
+        chatRoomTemplateUrl: String,
+        paginationUrl: String? = null
+    ): Result<ChatRoomMemberListResponse> {
+        val remoteURL = paginationUrl ?: chatRoomTemplateUrl.replace(
+            TEMPLATE_CHAT_ROOM_ID,
+            ""
+        ) + "${chatRoomId}/memberships"
+        return dataClient.remoteCall<ChatRoomMemberListResponse>(
+            remoteURL,
+            accessToken = authKey,
+            requestType = RequestType.GET
+        )
+    }
+
+    suspend fun deleteCurrentUserFromChatRoom(
+        chatRoomId: String,
+        chatRoomTemplateUrl: String
+    ): Result<Void> {
+        val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
+        return if (chatRoomResult is Result.Success) {
+            dataClient.remoteCall<Void>(
+                chatRoomResult.data.membershipsUrl,
+                accessToken = authKey,
+                requestType = RequestType.DELETE
+            )
+        } else {
+            chatRoomResult as Result.Error
+        }
     }
 
     fun addMessageReaction(channel: String, messagePubnubToken: Long, emojiId: String) {
