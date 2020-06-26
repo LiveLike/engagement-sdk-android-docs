@@ -69,7 +69,7 @@ internal class ChatRepository(
         chatRoomTemplateUrl: String
     ): Result<ChatRoomMembership> {
         val remoteURL =
-            chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "") + "${chatRoomId}/memberships"
+            chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "") + "/${chatRoomId}/memberships"
         return dataClient.remoteCall<ChatRoomMembership>(
             remoteURL,
             accessToken = authKey,
