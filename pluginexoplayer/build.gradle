@@ -24,6 +24,15 @@ android {
         }
         qa {}
     }
+    flavorDimensions 'default'
+    productFlavors {
+        staging {
+            dimension 'default'
+        }
+        production {
+            dimension 'default'
+        }
+    }
 }
 
 dependencies {
