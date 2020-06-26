@@ -44,6 +44,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:textColor="@android:color/white"
                 android:layout_weight="1"
                 android:hint="Enter Room title" />
 
@@ -70,6 +71,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:textColor="@android:color/white"
                 android:layout_weight="1"
                 android:hint="Enter Room Id to Join" />
 
