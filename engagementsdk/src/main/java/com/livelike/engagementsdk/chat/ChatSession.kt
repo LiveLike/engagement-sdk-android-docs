@@ -170,7 +170,7 @@ internal class ChatSession(
 
         pubnubMessagingClient = chatClient as PubnubChatMessagingClient
 
-        currentPlayheadTime?.let {
+        currentPlayheadTime.let {
             chatClient =
                 chatClient?.syncTo(it)
         }
@@ -210,7 +210,7 @@ internal class ChatSession(
                             } else if (chatRoomResult is Result.Error) {
                                 errorDelegate?.onError("error in fetching room id $chatRoomId")
                                 logError {
-                                    chatRoomResult.exception?.message
+                                    chatRoomResult.exception.message
                                         ?: "error in fetching room id resource"
                                 }
                             }
@@ -253,9 +253,9 @@ internal class ChatSession(
         }
         fetchChatRoom(chatRoomId) {
             val channel = it.channels.chat[CHAT_PROVIDER]
-            channel?.let { channel ->
+            channel?.let { ch ->
                 delay(500)
-                pubnubMessagingClient?.addChannelSubscription(channel, timestamp)
+                pubnubMessagingClient.addChannelSubscription(ch, timestamp)
             }
         }
     }
@@ -295,7 +295,7 @@ internal class ChatSession(
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }
-            pubnubMessagingClient?.activeChatRoom = channel
+            pubnubMessagingClient.activeChatRoom = channel
         }
     }
 

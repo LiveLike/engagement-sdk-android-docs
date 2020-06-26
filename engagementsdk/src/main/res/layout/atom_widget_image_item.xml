@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:layout_gravity="right|center"
-            android:contentDescription="TODO"
+            android:contentDescription="@string/image"
             tools:src="@tools:sample/avatars" />
     </FrameLayout>
 
