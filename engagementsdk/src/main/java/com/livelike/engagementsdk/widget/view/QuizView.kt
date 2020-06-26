@@ -124,7 +124,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         viewModel?.data?.latest()?.let { widget ->
             theme.getThemeLayoutComponent(widget.type)?.let { themeComponent ->
                 if (themeComponent is OptionsWidgetThemeComponent) {
-                    updateTitleView(themeComponent)
+                    applyThemeOnTitleView(themeComponent)
                     viewModel?.adapter?.component = themeComponent
                     viewModel?.adapter?.notifyDataSetChanged()
                 }
