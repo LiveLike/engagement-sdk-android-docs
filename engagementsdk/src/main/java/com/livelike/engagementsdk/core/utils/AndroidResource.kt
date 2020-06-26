@@ -115,6 +115,10 @@ internal class AndroidResource {
                     shape.setColor(getColorFromString(it.color) ?: Color.TRANSPARENT)
             }
 
+            shape.orientation =
+                component?.background?.direction?.toInt()
+                    ?.let { selectGradientDirection(it).orientation }
+
             if (component?.borderRadius.isNullOrEmpty()
                     .not() && component?.borderRadius?.size == 4
             ) {
@@ -129,9 +133,21 @@ internal class AndroidResource {
                     dpToPx(component.borderRadius[3].toInt()).toFloat()
                 )
             }
+            if (component?.borderColor.isNullOrEmpty()
+                    .not() && component?.borderWidth != null
+            ) {
+                shape.setStroke(
+                    dpToPx(component.borderWidth.toInt()),
+                    getColorFromString(component.borderColor) ?: Color.TRANSPARENT
+                )
+            }
+            return shape
+        }
 
-            //We can turn the gradient in 45 degree increments.
-            shape.orientation = when (component?.background?.direction?.toInt()) {
+
+        private fun selectGradientDirection(direction: Int): GradientDrawable {
+            var shape = GradientDrawable()
+            shape.orientation = when (direction) {
                 0 -> GradientDrawable.Orientation.BOTTOM_TOP
                 45 -> GradientDrawable.Orientation.TOP_BOTTOM
                 90 -> GradientDrawable.Orientation.BL_TR
@@ -143,14 +159,7 @@ internal class AndroidResource {
                     GradientDrawable.Orientation.TR_BL
                 }
             }
-            if (component?.borderColor.isNullOrEmpty()
-                    .not() && component?.borderWidth != null
-            ) {
-                shape.setStroke(
-                    dpToPx(component.borderWidth.toInt()),
-                    getColorFromString(component.borderColor) ?: Color.TRANSPARENT
-                )
-            }
+
             return shape
         }
 
