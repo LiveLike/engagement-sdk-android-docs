@@ -11,7 +11,6 @@ import com.livelike.engagementsdk.core.data.respository.BaseRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
-import com.livelike.engagementsdk.core.utils.logDebug
 import okhttp3.MediaType
 import okhttp3.RequestBody
 
@@ -135,8 +134,7 @@ internal class ChatRepository(
         )
     }
 
-    fun loadPreviousMessages(channel: String, time: Long) {
-        logDebug { "ChatRepository.loadPreviousMessages time:$time" }
-        pubnubChatMessagingClient?.loadMessagesWithReactions(channel, time, 20)
+    fun loadPreviousMessages(channel: String) {
+        pubnubChatMessagingClient?.loadMessagesWithReactions(channel, 20)
     }
 }

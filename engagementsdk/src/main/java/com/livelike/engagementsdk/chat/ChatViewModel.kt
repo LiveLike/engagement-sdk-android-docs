@@ -286,16 +286,7 @@ internal class ChatViewModel(
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
             if (chatRepository != null) {
                 logDebug { "Chat loading previous messages size:${messageList.size},all Message size:${allMessageList.size},deleted Message:${deletedMessages.size}," }
-                if (messageList.size > 0)
-                    chatRepository?.loadPreviousMessages(
-                        channel,
-                        messageList.first().timetoken
-                    )
-                else
-                    chatRepository?.loadPreviousMessages(
-                        channel,
-                        -1L
-                    )
+                chatRepository?.loadPreviousMessages(channel)
             } else {
                 eventStream.onNext(EVENT_LOADING_COMPLETE)
                 logError { "Chat repo is null" }
