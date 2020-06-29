@@ -65,7 +65,7 @@ data class WidgetsTheme(
         ?: quiz?.validate()
     }
 
-    fun getThemeLayoutComponent(widgetType: WidgetType): BaseTheme? {
+    fun getThemeLayoutComponent(widgetType: WidgetType): WidgetBaseThemeComponent? {
         return when (widgetType) {
             WidgetType.ALERT -> alert
             WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> poll

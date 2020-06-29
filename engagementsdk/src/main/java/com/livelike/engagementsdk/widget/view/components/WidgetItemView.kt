@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
@@ -148,6 +149,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                                 layoutPickerComponent.selectedOption
                             )
                         )
+
                     } else {
                         updateViewButtonBackground(
                             drawableId = R.drawable.answer_outline_selected_quiz
