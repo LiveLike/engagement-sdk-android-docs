@@ -51,8 +51,6 @@ import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
-import kotlinx.android.synthetic.main.widget_alert.view.labelText
 import kotlin.math.min
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
@@ -235,13 +233,6 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
             txtTitleBackground.background = AndroidResource.createUpdateDrawable(it.header)
         }
         AndroidResource.setPaddingForView(txtTitleBackground, it.header?.padding)
-    }
-
-    protected fun updateTitleViewForLayoutComponent(it: LayoutComponent) {
-        if (it.header?.background != null) {
-            labelText.background = AndroidResource.createUpdateDrawable(it.header)
-        }
-        AndroidResource.setPaddingForView(labelText, it.header?.padding)
     }
 
     /**
