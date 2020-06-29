@@ -14,7 +14,12 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.LayoutComponent
+import com.livelike.engagementsdk.widget.LayoutPickerComponent
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.WidgetsTheme
+
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
@@ -91,6 +96,20 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         }
     }
 
+    override fun applyTheme(theme: WidgetsTheme) {
+        super.applyTheme(theme)
+        viewModel?.data?.latest()?.let { widget ->
+            theme.getThemeLayoutComponent(WidgetType.ALERT)?.let { themeComponent ->
+                if (themeComponent is LayoutComponent) {
+                    updateTitleViewForLayoutComponent(themeComponent)
+                    bodyText.background =
+                        AndroidResource.createUpdateDrawable(themeComponent.body)
+
+                }
+            }
+        }
+    }
+
     override fun moveToNextState() {
         if (widgetViewModel?.widgetState?.latest() == WidgetStates.INTERACTING) {
             widgetViewModel?.widgetState?.onNext(WidgetStates.FINISHED)
@@ -152,7 +171,12 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 widgetContainer.requestLayout()
             }
         }
+        widgetsTheme?.let {
+            applyTheme(it)
+        }
+
     }
+
 
     private fun openBrowser(context: Context, linkUrl: String) {
         viewModel?.onClickLink()
