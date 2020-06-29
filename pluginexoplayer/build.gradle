@@ -32,6 +32,9 @@ android {
         production {
             dimension 'default'
         }
+        qatesting {
+            dimension 'default'
+        }
     }
 }
 

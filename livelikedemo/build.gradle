@@ -17,19 +17,10 @@ android {
     buildTypes {
 
         qa{
-            buildConfigField "String", "APP_CLIENT_ID", '"pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/programs/?client_id=pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
-            applicationIdSuffix ".qa"
             signingConfig signingConfigs.debug
         }
-        debug{
-            buildConfigField "String", "APP_CLIENT_ID", '"vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
-            applicationIdSuffix ".debug"
-        }
+        debug{}
         release {
-            buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -47,11 +38,18 @@ android {
             dimension 'default'
             buildConfigField "String", "APP_CLIENT_ID", '"vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
             buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
+            applicationIdSuffix ".debug"
         }
         production {
             dimension 'default'
             buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
             buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+        }
+        qatesting {
+            dimension 'default'
+            applicationIdSuffix ".qa"
+            buildConfigField "String", "APP_CLIENT_ID", '"pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/programs/?client_id=pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
         }
     }
 }

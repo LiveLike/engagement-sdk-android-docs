@@ -29,14 +29,9 @@ android {
     }
 
     buildTypes {
-        qa{
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/"'
-        }
-        debug{
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/"'
-        }
+        qa{}
+        debug{}
         release {
-            buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/"'
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -50,6 +45,10 @@ android {
         production {
             dimension 'default'
             buildConfigField "String", "CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/"'
+        }
+        qatesting {
+            dimension 'default'
+            buildConfigField "String", "CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/"'
         }
     }
 
