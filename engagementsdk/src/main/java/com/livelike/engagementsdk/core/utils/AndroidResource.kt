@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.TextView
 import com.google.gson.Gson
 import com.livelike.engagementsdk.widget.FontWeight
+import com.livelike.engagementsdk.widget.Format
 import com.livelike.engagementsdk.widget.ViewStyleProps
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -112,13 +113,16 @@ internal class AndroidResource {
             shape: GradientDrawable = GradientDrawable()
         ): GradientDrawable? {
             component?.background?.let {
-                //                shape.shape = GradientDrawable.RECTANGLE
-                if (it.colors.isNullOrEmpty().not())
-                    shape.colors = it.colors?.map { c -> getColorFromString(c) ?: 0 }?.toIntArray()
-                else
-                    shape.colors = null
-                if (it.color != null)
-                    shape.setColor(getColorFromString(it.color) ?: Color.TRANSPARENT)
+                if (it.format == Format.Fill) {
+                    if (it.color!!.isNotEmpty())
+                        shape.setColor(getColorFromString(it.color) ?: Color.TRANSPARENT)
+                } else {
+                    if (it.colors.isNullOrEmpty().not())
+                        shape.colors =
+                            it.colors?.map { c -> getColorFromString(c) ?: 0 }?.toIntArray()
+                    else
+                        shape.colors = null
+                }
             }
 
             shape.orientation =
