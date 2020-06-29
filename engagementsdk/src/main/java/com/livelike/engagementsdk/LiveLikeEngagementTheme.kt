@@ -45,5 +45,8 @@ class LiveLikeEngagementTheme internal constructor(
 
 interface FontFamilyProvider {
 
-    fun getTypeFace(fontFamilyName: String): Typeface
+    /**
+     * if no font family associated to name then return null.
+     **/
+    fun getTypeFace(fontFamilyName: String): Typeface?
 }

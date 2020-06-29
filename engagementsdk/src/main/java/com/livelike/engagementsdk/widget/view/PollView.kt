@@ -138,6 +138,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 if (themeComponent is OptionsWidgetThemeComponent) {
                     applyThemeOnTitleView(themeComponent)
                     viewModel?.adapter?.component = themeComponent
+                    viewModel?.adapter?.fontFamilyProvider = fontFamilyProvider
                     viewModel?.adapter?.notifyDataSetChanged()
                 }
             }
