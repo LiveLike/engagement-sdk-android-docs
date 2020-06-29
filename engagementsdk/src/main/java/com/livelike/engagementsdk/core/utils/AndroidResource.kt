@@ -24,6 +24,12 @@ fun Any.unit() = Unit
 internal class AndroidResource {
 
     companion object {
+
+        fun webPxToDevicePx(px: Int): Int {
+            val scale = Resources.getSystem().displayMetrics.density
+            return ((px * 0.6F) * scale + 0.5f).toInt()
+        }
+
         fun dpToPx(dp: Int): Int {
             val scale = Resources.getSystem().displayMetrics.density
             return (dp * scale + 0.5f).toInt()
@@ -95,10 +101,10 @@ internal class AndroidResource {
 
         fun setPaddingForView(view: View, padding: List<Double>?) {
             view.setPadding(
-                dpToPx(padding?.get(0)?.toInt() ?: 0),
-                dpToPx(padding?.get(1)?.toInt() ?: 0),
-                dpToPx(padding?.get(2)?.toInt() ?: 0),
-                dpToPx(padding?.get(3)?.toInt() ?: 0)
+                webPxToDevicePx(padding?.get(0)?.toInt() ?: 0),
+                webPxToDevicePx(padding?.get(1)?.toInt() ?: 0),
+                webPxToDevicePx(padding?.get(2)?.toInt() ?: 0),
+                webPxToDevicePx(padding?.get(3)?.toInt() ?: 0)
             )
         }
 

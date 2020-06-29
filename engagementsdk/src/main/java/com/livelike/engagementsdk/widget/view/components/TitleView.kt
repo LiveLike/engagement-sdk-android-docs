@@ -20,10 +20,10 @@ class TitleView(context: Context, attr: AttributeSet) : ConstraintLayout(context
         AndroidResource.updateThemeForView(titleTextView, value)
         value?.padding?.let { padding ->
             setPadding(
-                AndroidResource.dpToPx(padding[0].toInt()),
-                AndroidResource.dpToPx(padding[1].toInt()),
-                AndroidResource.dpToPx(padding[2].toInt()),
-                AndroidResource.dpToPx(padding[3].toInt())
+                AndroidResource.webPxToDevicePx(padding[0].toInt()),
+                AndroidResource.webPxToDevicePx(padding[1].toInt()),
+                AndroidResource.webPxToDevicePx(padding[2].toInt()),
+                AndroidResource.webPxToDevicePx(padding[3].toInt())
             )
         }
     }
