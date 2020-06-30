@@ -170,18 +170,20 @@ internal class AndroidResource {
         }
 
         internal fun selectGradientDirection(direction: Int): GradientDrawable.Orientation {
-            return when (direction) {
-                0 -> GradientDrawable.Orientation.BOTTOM_TOP
-                45 -> GradientDrawable.Orientation.TOP_BOTTOM
-                90 -> GradientDrawable.Orientation.BL_TR
-                135 -> GradientDrawable.Orientation.BR_TL
-                180 -> GradientDrawable.Orientation.LEFT_RIGHT
-                225 -> GradientDrawable.Orientation.RIGHT_LEFT
-                270 -> GradientDrawable.Orientation.TL_BR
-                else -> {
-                    GradientDrawable.Orientation.TR_BL
-                }
-            }
+            return GradientDrawable.Orientation.LEFT_RIGHT
+            // commenting as direction to be implemented later
+//            return when (direction) {
+//                0 -> GradientDrawable.Orientation.BOTTOM_TOP
+//                45 -> GradientDrawable.Orientation.TOP_BOTTOM
+//                90 -> GradientDrawable.Orientation.BL_TR
+//                135 -> GradientDrawable.Orientation.BR_TL
+//                180 -> GradientDrawable.Orientation.LEFT_RIGHT
+//                225 -> GradientDrawable.Orientation.RIGHT_LEFT
+//                270 -> GradientDrawable.Orientation.TL_BR
+//                else -> {
+//                    GradientDrawable.Orientation.TR_BL
+//                }
+//            }
         }
 
         fun selectRandomLottieAnimation(path: String, context: Context): String? {
