@@ -123,12 +123,12 @@ internal class AndroidResource {
             )
         }
 
-        fun createUpdateDrawable(
-            component: ViewStyleProps?,
-            shape: GradientDrawable = GradientDrawable()
+        fun createDrawable(
+            component: ViewStyleProps?
         ): GradientDrawable? {
+            var shape: GradientDrawable = GradientDrawable()
             component?.background?.let {
-                if (it.format == Format.Fill) {
+                if (it.format == Format.Fill.name.toLowerCase()) {
                     if (it.color!!.isNotEmpty())
                         shape.setColor(getColorFromString(it.color) ?: Color.TRANSPARENT)
                 } else {

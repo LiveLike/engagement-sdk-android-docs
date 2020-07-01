@@ -342,7 +342,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 if (drawable is RippleDrawable) {
                     val drawable2 = drawable.findDrawableByLayerId(android.R.id.mask)
                     if (drawable2 is GradientDrawable) {
-                        AndroidResource.createUpdateDrawable(component, drawable2)
+//                        AndroidResource.createUpdateDrawable(component, drawable2)
                     }
                 }
             }

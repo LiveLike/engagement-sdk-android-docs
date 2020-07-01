@@ -301,7 +301,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             val scaleDrawable: ScaleDrawable = (drawable as LayerDrawable)
                 .findDrawableByLayerId(android.R.id.progress) as ScaleDrawable
             val gradientDrawable: GradientDrawable = scaleDrawable.drawable as GradientDrawable
-            AndroidResource.createUpdateDrawable(component, shape = gradientDrawable)
+           determinateBar.progressDrawable =  AndroidResource.createUpdateDrawable(component)
         }
         if (determinateBar != null && determinateBar?.tag != drawableId) {
             determinateBar?.progressDrawable = drawable

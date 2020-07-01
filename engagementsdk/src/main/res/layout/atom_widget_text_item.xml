@@ -49,7 +49,6 @@
             android:layout_margin="8dp"
             android:indeterminate="false"
             android:visibility="invisible"
-            android:progressDrawable="@drawable/progress_bar_correct"
             android:textSize="@dimen/livelike_option_text_size"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
