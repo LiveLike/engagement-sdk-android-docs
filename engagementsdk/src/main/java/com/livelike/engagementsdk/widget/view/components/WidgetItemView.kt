@@ -223,11 +223,12 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     updateViewButtonBackground(R.drawable.answer_outline_correct)
             }
         }
-        if (itemIsLast) {
-            updateViewBackground(R.drawable.answer_background_last_item)
-        } else {
-            updateViewBackground(R.drawable.answer_background_default)
-        }
+// TODO kanav and shivansh check  what are design requirements and why this is required
+//        if (itemIsLast) {
+//            updateViewBackground(R.drawable.answer_background_last_item)
+//        } else {
+//            updateViewBackground(R.drawable.answer_background_default)
+//        }
         if (!option.image_url.isNullOrEmpty()) {
             AndroidResource.updateThemeForView(imageText, optionDescTheme, fontFamilyProvider)
             AndroidResource.updateThemeForView(imagePercentage, optionDescTheme, fontFamilyProvider)
@@ -295,15 +296,18 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     private fun updateViewProgressBar(drawableId: Int, component: ViewStyleProps? = null) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
         component?.let {
-            determinateBar.progressDrawable = AndroidResource.createDrawable(component)
+            determinateBar?.progressDrawable = AndroidResource.createDrawable(component)
+            imageBar?.progressDrawable = AndroidResource.createDrawable(component)
         }
-        if (determinateBar != null && determinateBar?.tag != drawableId) {
-            determinateBar?.progressDrawable = drawable
-            determinateBar?.tag = drawableId
-        }
-        if (imageBar != null && imageBar?.tag != drawableId) {
-            imageBar?.progressDrawable = drawable
-            determinateBar?.tag = drawableId
+        if (component == null) {
+            if (determinateBar != null && determinateBar?.tag != drawableId) {
+                determinateBar?.progressDrawable = drawable
+                determinateBar?.tag = drawableId
+            }
+            if (imageBar != null && imageBar?.tag != drawableId) {
+                imageBar?.progressDrawable = drawable
+                determinateBar?.tag = drawableId
+            }
         }
     }
 
@@ -313,9 +317,9 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             else -> drawable2
         }
         drawable?.let {
-            if (text_button != null && text_button?.tag != drawableId ?: drawable2) {
-                text_button?.background = drawable
-                text_button?.tag = drawableId ?: drawable2
+            if (bkgrd != null && bkgrd?.tag != drawableId ?: drawable2) {
+                bkgrd?.background = drawable
+                bkgrd?.tag = drawableId ?: drawable2
             }
             if (imageButtonBackground != null && imageButtonBackground?.tag != drawableId ?: drawable2) {
                 imageButtonBackground?.background = drawable
