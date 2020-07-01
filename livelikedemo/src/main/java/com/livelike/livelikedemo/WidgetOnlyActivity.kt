@@ -25,6 +25,7 @@ import com.livelike.livelikedemo.models.PredictionRequest
 import com.livelike.livelikedemo.models.PredictionResponse
 import com.livelike.livelikedemo.models.QuizRequest
 import com.livelike.livelikedemo.models.QuizResponse
+import com.livelike.livelikedemo.utils.ThemeRandomizer
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.progress_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rcyl_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.widget_view
@@ -113,11 +114,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
         val jsonTheme = intent.getStringExtra("jsonTheme")
         if (jsonTheme != null) {
             Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
-//            try {
-//                widget_view.setTheme(jsonTheme)
-//            } catch (e: Exception) {
-//                Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
-//            }
+            try {
+                widget_view.applyTheme(ThemeRandomizer.themesList.last())
+            } catch (e: Exception) {
+                Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
         widget_view.setSession(session)
     }
