@@ -10,6 +10,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import com.google.gson.Gson
+import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.widget.FontWeight
 import com.livelike.engagementsdk.widget.Format
 import com.livelike.engagementsdk.widget.ViewStyleProps
@@ -77,7 +78,11 @@ internal class AndroidResource {
             return null
         }
 
-        fun updateThemeForView(textView: TextView, component: ViewStyleProps?) {
+        fun updateThemeForView(
+            textView: TextView,
+            component: ViewStyleProps?,
+            fontFamilyProvider: FontFamilyProvider? = null
+        ) {
             component?.let {
                 textView.apply {
                     it.fontSize?.let {
@@ -86,9 +91,19 @@ internal class AndroidResource {
                     it.fontColor?.let {
                         setTextColor(getColorFromString(it) ?: Color.WHITE)
                     }
+
+                    if (fontFamilyProvider != null) {
+                        it.fontFamily?.forEach {
+                            val typeFace = fontFamilyProvider.getTypeFace(it)
+                            if (typeFace != null) {
+                                typeface = typeFace
+                                return@forEach
+                            }
+                        }
+                    }
                     it.fontWeight?.let {
                         setTypeface(
-                            null, when (it) {
+                            typeface, when (it) {
                                 FontWeight.Bold -> Typeface.BOLD
                                 FontWeight.Light -> Typeface.NORMAL
                                 FontWeight.Normal -> Typeface.NORMAL
@@ -154,20 +169,21 @@ internal class AndroidResource {
             return shape
         }
 
-
         internal fun selectGradientDirection(direction: Int): GradientDrawable.Orientation {
-            return when (direction) {
-                0 -> GradientDrawable.Orientation.BOTTOM_TOP
-                45 -> GradientDrawable.Orientation.TOP_BOTTOM
-                90 -> GradientDrawable.Orientation.BL_TR
-                135 -> GradientDrawable.Orientation.BR_TL
-                180 -> GradientDrawable.Orientation.LEFT_RIGHT
-                225 -> GradientDrawable.Orientation.RIGHT_LEFT
-                270 -> GradientDrawable.Orientation.TL_BR
-                else -> {
-                    GradientDrawable.Orientation.TR_BL
-                }
-            }
+            return GradientDrawable.Orientation.LEFT_RIGHT
+            // commenting as direction to be implemented later
+//            return when (direction) {
+//                0 -> GradientDrawable.Orientation.BOTTOM_TOP
+//                45 -> GradientDrawable.Orientation.TOP_BOTTOM
+//                90 -> GradientDrawable.Orientation.BL_TR
+//                135 -> GradientDrawable.Orientation.BR_TL
+//                180 -> GradientDrawable.Orientation.LEFT_RIGHT
+//                225 -> GradientDrawable.Orientation.RIGHT_LEFT
+//                270 -> GradientDrawable.Orientation.TL_BR
+//                else -> {
+//                    GradientDrawable.Orientation.TR_BL
+//                }
+//            }
         }
 
         fun selectRandomLottieAnimation(path: String, context: Context): String? {

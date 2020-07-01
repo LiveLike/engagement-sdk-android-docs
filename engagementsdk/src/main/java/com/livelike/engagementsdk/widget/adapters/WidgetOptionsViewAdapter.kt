@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.widget.adapters
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
@@ -18,6 +19,7 @@ internal class WidgetOptionsViewAdapter(
 ) :
     RecyclerView.Adapter<WidgetOptionsViewAdapter.TextOptionViewHolder>() {
 
+    var fontFamilyProvider: FontFamilyProvider? = null
     var selectedPosition = RecyclerView.NO_POSITION
     var selectionLocked = false
     var showPercentage = false
@@ -68,7 +70,8 @@ internal class WidgetOptionsViewAdapter(
             correctOptionId,
             userSelectedOptionId,
             itemIsLast,
-            component
+            component,
+            fontFamilyProvider
         )
         if (showPercentage) {
             holder.textItemView.setProgressVisibility(showPercentage)

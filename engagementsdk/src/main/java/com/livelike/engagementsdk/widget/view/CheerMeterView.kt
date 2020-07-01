@@ -169,9 +169,21 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 inflate(context, R.layout.widget_cheer_meter, this@CheerMeterView)
             }
             widgetsTheme?.cheerMeter?.let { cheerMeterTheme ->
-                AndroidResource.updateThemeForView(txt_cheer_meter_title, cheerMeterTheme.title)
-                AndroidResource.updateThemeForView(txt_cheer_meter_team_1, cheerMeterTheme.sideABar)
-                AndroidResource.updateThemeForView(txt_cheer_meter_team_2, cheerMeterTheme.sideBBar)
+                AndroidResource.updateThemeForView(
+                    txt_cheer_meter_title,
+                    cheerMeterTheme.title,
+                    fontFamilyProvider
+                )
+                AndroidResource.updateThemeForView(
+                    txt_cheer_meter_team_1,
+                    cheerMeterTheme.sideABar,
+                    fontFamilyProvider
+                )
+                AndroidResource.updateThemeForView(
+                    txt_cheer_meter_team_2,
+                    cheerMeterTheme.sideBBar,
+                    fontFamilyProvider
+                )
                 txt_cheer_meter_team_1.background =
                     AndroidResource.createUpdateDrawable(cheerMeterTheme.sideABar)
 

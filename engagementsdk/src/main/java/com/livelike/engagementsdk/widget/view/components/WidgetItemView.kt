@@ -4,7 +4,6 @@ import android.animation.LayoutTransition
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
@@ -16,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import com.bumptech.glide.Glide
+import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -47,7 +47,8 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         correctOptionId: String?,
         selectedPredictionId: String = "",
         itemIsLast: Boolean,
-        component: OptionsWidgetThemeComponent?
+        component: OptionsWidgetThemeComponent?,
+        fontFamilyProvider: FontFamilyProvider?
     ) {
         if (!inflated) {
             if (!option.image_url.isNullOrEmpty()) {
@@ -68,7 +69,8 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             selectedPredictionId,
             option,
             itemIsLast,
-            component
+            component,
+            fontFamilyProvider
         )
         animateProgress(option)
     }
@@ -97,7 +99,8 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         userSelectedOptionId: String,
         option: Option,
         itemIsLast: Boolean,
-        layoutPickerComponent: OptionsWidgetThemeComponent?
+        layoutPickerComponent: OptionsWidgetThemeComponent?,
+        fontFamilyProvider: FontFamilyProvider?
     ) {
         logDebug { "WidgetItemView setbackground widgetType:$widgetType , isSelected:$itemIsSelected , isItemLast:$itemIsLast" }
         var optionDescTheme: ViewStyleProps?
@@ -149,7 +152,6 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                                 layoutPickerComponent.selectedOption
                             )
                         )
-
                     } else {
                         updateViewButtonBackground(
                             drawableId = R.drawable.answer_outline_selected_quiz
@@ -230,11 +232,11 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             updateViewBackground(R.drawable.answer_background_default)
         }
         if (!option.image_url.isNullOrEmpty()) {
-            AndroidResource.updateThemeForView(imageText, optionDescTheme)
-            AndroidResource.updateThemeForView(imagePercentage, optionDescTheme)
+            AndroidResource.updateThemeForView(imageText, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(imagePercentage, optionDescTheme, fontFamilyProvider)
         } else {
-            AndroidResource.updateThemeForView(text_button, optionDescTheme)
-            AndroidResource.updateThemeForView(percentageText, optionDescTheme)
+            AndroidResource.updateThemeForView(text_button, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(percentageText, optionDescTheme, fontFamilyProvider)
         }
         setProgressVisibility(!correctOptionId.isNullOrEmpty())
     }

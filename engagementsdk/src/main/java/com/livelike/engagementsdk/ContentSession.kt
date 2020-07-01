@@ -28,7 +28,6 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
-import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
@@ -111,7 +110,7 @@ internal class ContentSession(
         }
         emit(Pair(sdkConfiguration.latest()!!, userRepository.currentUserStream.latest()!!))
     }
-    val widgetThemeStream: Stream<WidgetsTheme> = SubscriptionManager()
+    val livelikeThemeStream: Stream<LiveLikeEngagementTheme> = SubscriptionManager()
 
     init {
         userRepository.currentUserStream.subscribe(this) {
@@ -243,7 +242,7 @@ internal class ContentSession(
                     programRepository,
                     animationEventsStream,
                     widgetThemeAttributes,
-                    widgetThemeStream
+                    livelikeThemeStream
                 )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())

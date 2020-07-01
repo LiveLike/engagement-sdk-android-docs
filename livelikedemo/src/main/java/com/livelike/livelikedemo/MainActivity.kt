@@ -8,6 +8,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkInfo
@@ -21,6 +22,7 @@ import android.widget.Toast
 import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.chat.ChatRoom
 import com.livelike.engagementsdk.core.services.network.Result
@@ -239,6 +241,22 @@ class MainActivity : AppCompatActivity() {
                         val element =
                             LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(theme).asJsonObject)
                         if (element is Result.Success) {
+                            element.data.fontFamilyProvider = object : FontFamilyProvider {
+                                override fun getTypeFace(fontFamilyName: String): Typeface? {
+                                    if (fontFamilyName.contains("Pangolin"))
+                                        return Typeface.createFromAsset(
+                                            resources.assets,
+                                            "fonts/Pangolin-Regular.ttf"
+                                        )
+                                    else if (fontFamilyName.contains("Raleway")) {
+                                        return Typeface.createFromAsset(
+                                            resources.assets,
+                                            "fonts/Raleway-Regular.ttf"
+                                        )
+                                    }
+                                    return null
+                                }
+                            }
                             ThemeRandomizer.themesList.add(element.data)
                         }
                         if (theme != null) {

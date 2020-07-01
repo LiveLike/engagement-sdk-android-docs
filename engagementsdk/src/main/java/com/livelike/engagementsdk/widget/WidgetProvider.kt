@@ -7,6 +7,8 @@ import android.view.View
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.FontFamilyProvider
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
@@ -52,6 +54,7 @@ import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlin.math.min
+import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 
@@ -67,16 +70,18 @@ internal class WidgetProvider {
         programRepository: ProgramRepository? = null,
         animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
         widgetThemeAttributes: WidgetViewThemeAttributes,
-        widgetsTheme: WidgetsTheme?
+        liveLikeEngagementTheme: LiveLikeEngagementTheme?
     ): SpecifiedWidgetView? {
         val specifiedWidgetView = when (WidgetType.fromString(widgetInfos.type)) {
             ALERT -> AlertWidgetView(context).apply {
-                this.widgetsTheme = widgetsTheme
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = AlertWidgetViewModel(widgetInfos, analyticsService, onDismiss)
             }
             TEXT_QUIZ, IMAGE_QUIZ -> QuizView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
-                this.widgetsTheme = widgetsTheme
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = QuizViewModel(
                     widgetInfos,
                     analyticsService,
@@ -91,7 +96,8 @@ internal class WidgetProvider {
             IMAGE_PREDICTION, IMAGE_PREDICTION_FOLLOW_UP,
             TEXT_PREDICTION, TEXT_PREDICTION_FOLLOW_UP -> PredictionView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
-                this.widgetsTheme = widgetsTheme
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = PredictionViewModel(
                     widgetInfos,
                     context,
@@ -105,7 +111,8 @@ internal class WidgetProvider {
             }
             TEXT_POLL, IMAGE_POLL -> PollView(context).apply {
                 widgetViewThemeAttributes = widgetThemeAttributes
-                this.widgetsTheme = widgetsTheme
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = PollViewModel(
                     widgetInfos,
                     analyticsService,
@@ -117,7 +124,8 @@ internal class WidgetProvider {
                 )
             }
             POINTS_TUTORIAL -> PointsTutorialView(context).apply {
-                this.widgetsTheme = widgetsTheme
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = PointTutorialWidgetViewModel(
                     onDismiss,
                     analyticsService,
@@ -126,7 +134,8 @@ internal class WidgetProvider {
                 )
             }
             COLLECT_BADGE -> CollectBadgeWidgetView(context).apply {
-                this.widgetsTheme = widgetsTheme
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = CollectBadgeWidgetViewModel(
                     gson.fromJson(
                         widgetInfos.payload,
@@ -135,7 +144,8 @@ internal class WidgetProvider {
                 )
             }
             CHEER_METER -> CheerMeterView(context).apply {
-                this.widgetsTheme = widgetsTheme
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewThemeAttributes = widgetThemeAttributes
                 widgetViewModel = CheerMeterViewModel(
                     widgetInfos,
@@ -148,7 +158,8 @@ internal class WidgetProvider {
                 )
             }
             IMAGE_SLIDER -> EmojiSliderWidgetView(context).apply {
-                this.widgetsTheme = widgetsTheme
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
                 widgetViewModel = EmojiSliderWidgetViewModel(
                     widgetInfos, analyticsService, sdkConfiguration, onDismiss,
                     userRepository, programRepository, widgetMessagingClient
@@ -168,6 +179,8 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
+
+    internal var fontFamilyProvider: FontFamilyProvider? = null
 
     var widgetId: String = ""
     lateinit var widgetInfos: WidgetInfos
@@ -229,6 +242,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 
     protected fun applyThemeOnTitleView(it: WidgetBaseThemeComponent) {
         titleView.componentTheme = it.title
+        AndroidResource.updateThemeForView(titleTextView, it.title, fontFamilyProvider)
         if (it.header?.background != null) {
             txtTitleBackground.background = AndroidResource.createUpdateDrawable(it.header)
         }
@@ -240,6 +254,11 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
      **/
     open fun applyTheme(theme: WidgetsTheme) {
         widgetsTheme = theme
+    }
+
+    fun applyTheme(theme: LiveLikeEngagementTheme) {
+        fontFamilyProvider = theme.fontFamilyProvider
+        applyTheme(theme.widgets)
     }
 
     open fun moveToNextState() {

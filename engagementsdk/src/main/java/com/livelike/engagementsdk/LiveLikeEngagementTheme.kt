@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk
 
+import android.graphics.Typeface
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.core.services.network.Result
@@ -14,13 +15,15 @@ class LiveLikeEngagementTheme internal constructor(
     val widgets: WidgetsTheme
 ) : BaseTheme() {
 
+    var fontFamilyProvider: FontFamilyProvider? = null
+
     override fun validate(): String? {
         return widgets.validate()
     }
 
     companion object {
         @JvmStatic
-        fun instanceFrom(themeJson: JsonObject): Result<LiveLikeEngagementTheme> {
+        fun instanceFrom(themeJson: JsonObject, fontFamilyProvider: FontFamilyProvider? = null): Result<LiveLikeEngagementTheme> {
             return try {
                 val data = gson.fromJson(
                     themeJson,
@@ -28,6 +31,7 @@ class LiveLikeEngagementTheme internal constructor(
                 )
                 val errorString = data.validate()
                 if (errorString == null) {
+                    data.fontFamilyProvider = fontFamilyProvider
                     Result.Success(data)
                 } else {
                     Result.Error(RuntimeException(errorString))
@@ -37,4 +41,12 @@ class LiveLikeEngagementTheme internal constructor(
             }
         }
     }
+}
+
+interface FontFamilyProvider {
+
+    /**
+     * if no font family associated to name then return null.
+     **/
+    fun getTypeFace(fontFamilyName: String): Typeface?
 }

@@ -17,7 +17,6 @@ class TitleView(context: Context, attr: AttributeSet) : ConstraintLayout(context
     var componentTheme: ViewStyleProps? = null
     set(value) {
         field = value
-        AndroidResource.updateThemeForView(titleTextView, value)
         value?.padding?.let { padding ->
             setPadding(
                 AndroidResource.webPxToDevicePx(padding[0].toInt()),

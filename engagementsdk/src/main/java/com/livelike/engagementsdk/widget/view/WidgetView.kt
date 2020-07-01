@@ -64,7 +64,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
-        session.widgetThemeStream.onNext(engagementSDKTheme?.widgets)
+        session.livelikeThemeStream.onNext(engagementSDKTheme)
     }
 
     /**
@@ -73,9 +73,9 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
      **/
     fun applyTheme(theme: LiveLikeEngagementTheme) {
         engagementSDKTheme = theme
-        (session as? ContentSession)?.widgetThemeStream?.onNext(engagementSDKTheme?.widgets)
+        (session as? ContentSession)?.livelikeThemeStream?.onNext(engagementSDKTheme)
         if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
-            (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme.widgets)
+            (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme)
         }
     }
 
@@ -133,7 +133,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             null,
                             SubscriptionManager(),
                             widgetViewThemeAttributes,
-                            engagementSDKTheme?.widgets
+                            engagementSDKTheme
                         )
                 )
             )
