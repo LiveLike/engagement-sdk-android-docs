@@ -128,7 +128,7 @@ internal class AndroidResource {
         ): GradientDrawable? {
             var shape: GradientDrawable = GradientDrawable()
             component?.background?.let {
-                if (it.format == Format.Fill.name.toLowerCase()) {
+                if (it.format == Format.Fill.key) {
                     if (it.color!!.isNotEmpty())
                         shape.setColor(getColorFromString(it.color) ?: Color.TRANSPARENT)
                 } else {

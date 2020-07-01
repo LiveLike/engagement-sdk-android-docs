@@ -185,10 +185,10 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                     fontFamilyProvider
                 )
                 txt_cheer_meter_team_1.background =
-                    AndroidResource.createUpdateDrawable(cheerMeterTheme.sideABar)
+                    AndroidResource.createDrawable(cheerMeterTheme.sideABar)
 
                 txt_cheer_meter_team_2.background =
-                    AndroidResource.createUpdateDrawable(cheerMeterTheme.sideBBar)
+                    AndroidResource.createDrawable(cheerMeterTheme.sideBBar)
                 widgetsTheme?.cheerMeter?.sideAButton?.let {
                                             updateRippleView(view_ripple, it)
                                         }

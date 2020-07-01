@@ -139,7 +139,7 @@ data class OptionsWidgetThemeComponent(
 
 data class BackgroundProperty(
     val color: String? = null,
-    val format: Format,
+    val format: String,
     val colors: List<String>? = null,
     val direction: Double? = null
 ) : BaseTheme() {
@@ -163,9 +163,9 @@ data class BackgroundProperty(
     }
 }
 
-enum class Format {
-    Fill,
-    UniformGradient
+enum class Format(val key: String) {
+    Fill("fill"),
+    UniformGradient("uniformGradient")
 }
 
 enum class FontWeight {

@@ -19,7 +19,7 @@
     />
 
     <!--suppress AndroidDomInspection -->
-    <Button
+    <TextView
             android:id="@+id/text_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

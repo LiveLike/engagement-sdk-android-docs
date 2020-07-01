@@ -5,9 +5,6 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
-import android.graphics.drawable.ScaleDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
@@ -110,7 +107,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                 WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
                     if (layoutPickerComponent?.selectedOption != null) {
                         updateViewButtonBackground(
-                            drawable2 = AndroidResource.createUpdateDrawable(
+                            drawable2 = AndroidResource.createDrawable(
                                 layoutPickerComponent.selectedOption
                             )
                         )
@@ -131,7 +128,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     )
                     if (layoutPickerComponent?.selectedOption != null) {
                         updateViewButtonBackground(
-                            drawable2 = AndroidResource.createUpdateDrawable(
+                            drawable2 = AndroidResource.createDrawable(
                                 layoutPickerComponent.selectedOption
                             )
                         )
@@ -148,7 +145,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     )
                     if (layoutPickerComponent?.selectedOption != null) {
                         updateViewButtonBackground(
-                            drawable2 = AndroidResource.createUpdateDrawable(
+                            drawable2 = AndroidResource.createDrawable(
                                 layoutPickerComponent.selectedOption
                             )
                         )
@@ -165,7 +162,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     )
                     if (layoutPickerComponent?.unselectedOption != null) {
                         updateViewButtonBackground(
-                            drawable2 = AndroidResource.createUpdateDrawable(
+                            drawable2 = AndroidResource.createDrawable(
                                 layoutPickerComponent.unselectedOption
                             )
                         )
@@ -181,7 +178,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             )
             if (layoutPickerComponent?.unselectedOption != null) {
                 updateViewButtonBackground(
-                    drawable2 = AndroidResource.createUpdateDrawable(
+                    drawable2 = AndroidResource.createDrawable(
                         layoutPickerComponent.unselectedOption
                     )
                 )
@@ -203,7 +200,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                 )
                 if (layoutPickerComponent?.incorrectOption != null)
                     updateViewButtonBackground(
-                        drawable2 = AndroidResource.createUpdateDrawable(
+                        drawable2 = AndroidResource.createDrawable(
                             layoutPickerComponent.incorrectOption
                         )
                     )
@@ -218,7 +215,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                 )
                 if (layoutPickerComponent?.correctOption != null) {
                     updateViewButtonBackground(
-                        drawable2 = AndroidResource.createUpdateDrawable(
+                        drawable2 = AndroidResource.createDrawable(
                             layoutPickerComponent.correctOption
                         )
                     )
@@ -298,10 +295,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     private fun updateViewProgressBar(drawableId: Int, component: ViewStyleProps? = null) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
         component?.let {
-            val scaleDrawable: ScaleDrawable = (drawable as LayerDrawable)
-                .findDrawableByLayerId(android.R.id.progress) as ScaleDrawable
-            val gradientDrawable: GradientDrawable = scaleDrawable.drawable as GradientDrawable
-           determinateBar.progressDrawable =  AndroidResource.createUpdateDrawable(component)
+            determinateBar.progressDrawable = AndroidResource.createDrawable(component)
         }
         if (determinateBar != null && determinateBar?.tag != drawableId) {
             determinateBar?.progressDrawable = drawable
