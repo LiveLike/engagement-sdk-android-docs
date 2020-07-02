@@ -112,14 +112,8 @@ internal class ChatRecyclerAdapter(
     }
 
     override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        if (isAccessibilityEnabled(holder.v.context))
             holder.hideFloatingUI()
         super.onViewDetachedFromWindow(holder)
-    }
-
-    private fun isAccessibilityEnabled(context: Context): Boolean {
-        val am = context.getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
-        return am.isEnabled && am.isTouchExplorationEnabled
     }
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener,

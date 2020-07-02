@@ -1,9 +1,12 @@
 package com.livelike.engagementsdk
 
+import android.os.Parcel
+import android.os.Parcelable
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 
@@ -21,23 +24,31 @@ interface LiveLikeContentSession {
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
+
     /** Resume the current Chat and widget sessions. This generally happens when ads are completed */
     fun resume()
+
     /** Closes the current session.*/
     fun close()
+
     /** Return the playheadTime for this session.*/
     fun getPlayheadTime(): EpochTime
+
     /** Return the content Session Id (Program Id) for this session.*/
     fun contentSessionId(): String
+
     /** Set the widget container. Recommended to use widgetView.SetSession(session) instead.*/
     fun setWidgetContainer(
         widgetView: FrameLayout,
         widgetViewThemeAttributes: WidgetViewThemeAttributes = WidgetViewThemeAttributes()
     )
+
     /** Set the user profile pic. to be shown in chatting*/
     fun setProfilePicUrl(url: String?)
+
     /** Intercepts the widgets and hold them until show() or dismiss() is being called */
     var widgetInterceptor: WidgetInterceptor?
+
     /** set value of style for widget **/
     fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes)
 }
@@ -57,14 +68,21 @@ interface Stream<T> {
 // TODO replace all usage of Stream by Flow
     /** Post data to the stream */
     fun onNext(data1: T?)
+
     /** Add an observable to receive future values of the stream */
     fun subscribe(key: Any, observer: (T?) -> Unit)
+
     /** Stop the observable at {key} from receiving events */
     fun unsubscribe(key: Any)
+
     /** Remove all the observable from this stream */
     fun clear()
+
     /** Get the latest value of the stream */
     fun latest(): T?
+
+    fun latestNotNull(): T?
+    fun clearLatestNotNull()
 }
 
 /** A representation of a widget */
@@ -75,4 +93,31 @@ class WidgetInfos(
     val payload: JsonObject,
     /** The id of the widget */
     val widgetId: String
-)
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
+        gson.fromJson(parcel.readString(), JsonObject::class.java),
+        parcel.readString()!!
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(type)
+        parcel.writeString(payload.toString())
+        parcel.writeString(widgetId)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<WidgetInfos> {
+        override fun createFromParcel(parcel: Parcel): WidgetInfos {
+            return WidgetInfos(parcel)
+        }
+
+        override fun newArray(size: Int): Array<WidgetInfos?> {
+            return arrayOfNulls(size)
+        }
+    }
+}

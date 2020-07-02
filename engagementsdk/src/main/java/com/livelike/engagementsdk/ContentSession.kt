@@ -27,6 +27,7 @@ import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
+import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.asWidgetManager
@@ -39,12 +40,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 
 internal class ContentSession(
-    sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
+    private val sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val programId: String,
@@ -137,29 +139,43 @@ internal class ContentSession(
                     analyticService.trackUsername(pair.first.nickname)
                     analyticService.trackConfiguration(configuration.name ?: "")
 
-                if (programId.isNotEmpty()) {
-                    llDataClient.getProgramData(configuration.programDetailUrlTemplate.replace(TEMPLATE_PROGRAM_ID, programId)) { program ->
-                        if (program !== null) {
-                            programRepository.program = program
-                            userRepository.rewardType = program.rewardsType
-                            isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
-                            initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
-                            program.analyticsProps.forEach { map ->
-                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                    if (programId.isNotEmpty()) {
+                        llDataClient.getProgramData(
+                            configuration.programDetailUrlTemplate.replace(
+                                TEMPLATE_PROGRAM_ID,
+                                programId
+                            )
+                        ) { program ->
+                            if (program !== null) {
+                                programRepository.program = program
+                                userRepository.rewardType = program.rewardsType
+                                isGamificationEnabled =
+                                    !program.rewardsType.equals(RewardsType.NONE.key)
+                                initializeWidgetMessaging(
+                                    program.subscribeChannel,
+                                    configuration,
+                                    pair.first.id
+                                )
+                                chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
+                                program.analyticsProps.forEach { map ->
+                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                }
+                                configuration.analyticsProps.forEach { map ->
+                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                }
+                                contentSessionScope.launch {
+                                    if (isGamificationEnabled) programRepository.fetchProgramRank()
+                                }
+                                startObservingForGamificationAnalytics(
+                                    analyticService,
+                                    programRepository.programGamificationProfileStream,
+                                    programRepository.rewardType
+                                )
                             }
-                            configuration.analyticsProps.forEach { map ->
-                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
-                            }
-                            contentSessionScope.launch {
-                                if (isGamificationEnabled) programRepository.fetchProgramRank()
-                            }
-                            startObservingForGamificationAnalytics(analyticService, programRepository.programGamificationProfileStream, programRepository.rewardType)
                         }
                     }
                 }
             }
-        }
         if (!applicationContext.isNetworkConnected()) {
             errorDelegate?.onError("Network error please create the session again")
         }
@@ -213,6 +229,30 @@ internal class ContentSession(
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
         widgetContainer.setWidgetContainer(widgetView, widgetViewThemeAttributes)
+    }
+
+    fun createSpecifiedView(
+        context: Context,
+        widgetInfos: WidgetInfos?,
+        widgetViewThemeAttributes: WidgetViewThemeAttributes,
+        engagementSDKTheme: EngagementSDKTheme?
+    ): SpecifiedWidgetView? {
+        return WidgetProvider()
+            .get(
+                null,
+                widgetInfos!!,
+                context,
+                MockAnalyticsService(),
+                sdkConfiguration.latest()!!,
+                {
+                    currentWidgetViewStream.clearLatestNotNull()
+                },
+                userRepository,
+                null,
+                SubscriptionManager(),
+                widgetViewThemeAttributes,
+                engagementSDKTheme?.widgets
+            )
     }
 
     private fun initializeWidgetMessaging(
