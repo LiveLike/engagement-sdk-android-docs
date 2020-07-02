@@ -25,7 +25,8 @@
             android:name=".WidgetFrameworkTestActivity"
             android:exported="true" />
         <activity android:name=".LiveBlogActivity" />
-        <activity android:name=".ChatOnlyActivity" />
+        <activity android:name=".ChatOnlyActivity"
+            android:theme="@style/Default"/>
         <activity
             android:name=".WidgetOnlyActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" />

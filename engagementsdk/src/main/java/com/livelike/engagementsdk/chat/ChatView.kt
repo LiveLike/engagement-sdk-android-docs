@@ -48,6 +48,9 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -74,9 +77,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -142,12 +142,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         ) // INFO: Adjustresize doesn't work with Fullscreen app.. See issue https://stackoverflow.com/questions/7417123/android-how-to-adjust-layout-in-full-screen-mode-when-softkeyboard-is-visible
         context.obtainStyledAttributes(
             attrs,
-            R.styleable.LiveLike_ChatView,
+            R.styleable.ChatView,
             0, 0
         ).apply {
             try {
                 displayUserProfile =
-                    getBoolean(R.styleable.LiveLike_ChatView_displayUserProfile, false)
+                    getBoolean(R.styleable.ChatView_displayUserProfile, false)
                 chatAttribute.initAttributes(context, this)
             } finally {
                 recycle()
@@ -634,9 +634,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
-            if (visibility == View.VISIBLE) {
+//            if (visibility == View.VISIBLE) {
 //                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
-            }
+//            }
             visibility = View.GONE
         }
     }
@@ -791,9 +791,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
                     rv.smoothScrollToPosition(it)
                 } else {
-                    chatdisplay.postDelayed( {
+                    chatdisplay.postDelayed({
                         rv.scrollToPosition(it - 1)
-                    },200)
+                    }, 200)
                 }
             }
         }

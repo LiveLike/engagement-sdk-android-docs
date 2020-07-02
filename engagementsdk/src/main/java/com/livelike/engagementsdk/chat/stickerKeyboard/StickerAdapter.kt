@@ -18,10 +18,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.addRecentSticker
 import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.getRecentStickers
+import com.livelike.engagementsdk.core.utils.logDebug
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_item.view.itemImage
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.empty_recent_text
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.rvStickers
-
 
 class StickerCollectionAdapter(
     private val stickerPacks: List<StickerPack>,
@@ -29,7 +29,6 @@ class StickerCollectionAdapter(
     private val emptyRecentTextColor: Int = R.color.livelike_sticker_recent_empty_text_color,
     private val onClickCallback: (Sticker) -> Unit
 ) : RecyclerView.Adapter<StickerCollectionViewHolder>() {
-    val RECENT_STICKERS_POSITION = 0
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, index: Int): StickerCollectionViewHolder {
         return StickerCollectionViewHolder(
@@ -56,6 +55,10 @@ class StickerCollectionAdapter(
         }
         viewHolder.bind(pack, index == RECENT_STICKERS_POSITION, programId)
     }
+
+    companion object {
+        const val RECENT_STICKERS_POSITION = 0
+    }
 }
 
 class StickerCollectionViewHolder(
@@ -74,6 +77,7 @@ class StickerCollectionViewHolder(
         itemView.rvStickers.adapter = adapter
         if (isRecent) {
             val stickers = getRecentStickers(programId)
+            logDebug { "Recent Sticker Count: ${stickers.size}" }
             itemView.empty_recent_text?.visibility = if (stickers.isEmpty()) {
                 View.VISIBLE
             } else {
@@ -229,8 +233,7 @@ open class RVPagerSnapHelperListenable(private val maxPages: Int = 3) {
 class PagerSnapHelperVerbose(
     private val recyclerView: RecyclerView,
     private val externalListener: RVPagerStateListener
-) : PagerSnapHelper()
-    , ViewTreeObserver.OnGlobalLayoutListener {
+) : PagerSnapHelper(), ViewTreeObserver.OnGlobalLayoutListener {
 
     private var lastPage = RecyclerView.NO_POSITION
 

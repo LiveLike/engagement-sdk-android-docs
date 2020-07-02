@@ -22,7 +22,7 @@ public class MixpanelExtension {
 
             Map<Context, MixpanelAPI> instances = sInstanceMap.get(clientID);
             if (null == instances) {
-                instances = new HashMap<Context, MixpanelAPI>();
+                instances = new HashMap<>();
                 sInstanceMap.put(clientID, instances);
             }
 
@@ -44,7 +44,7 @@ public class MixpanelExtension {
     }
 
 
-    private static final Map<String, Map<Context, MixpanelAPI>> sInstanceMap = new HashMap<String, Map<Context, MixpanelAPI>>();
+    private static final Map<String, Map<Context, MixpanelAPI>> sInstanceMap = new HashMap<>();
     private static final SharedPreferencesLoader sPrefsLoader = new SharedPreferencesLoader();
     private static Future<SharedPreferences> sReferrerPrefs;
 }

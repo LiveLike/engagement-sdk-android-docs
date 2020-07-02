@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.support.v13.view.inputmethod.EditorInfoCompat
@@ -14,7 +15,6 @@ import android.view.inputmethod.InputConnection
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
-
 
 class RichContentEditText : AppCompatEditText {
     constructor(context: Context) : super(context)
@@ -36,7 +36,7 @@ class RichContentEditText : AppCompatEditText {
                     val hasExternalImage = s.toString().findImages().countMatches() > 0
                     info.contentDescription = ""
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        info.hintText=""
+                        info.hintText = ""
                     }
                     info.text = if (hasExternalImage)
                         context.getString(R.string.image)
@@ -80,12 +80,20 @@ class RichContentEditText : AppCompatEditText {
         return ic
     }
 
-    var allowMediaFromKeyboard: Boolean=true
+    var allowMediaFromKeyboard: Boolean = true
     var isTouching = false
 
+    /**
+     * this touch is override to check if the user scrolling the chat list so uneven opening of the keyboard
+     */
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         isTouching =
             event?.action == MotionEvent.ACTION_DOWN || event?.action == MotionEvent.ACTION_MOVE
         return super.onTouchEvent(event)
+    }
+
+    override fun performClick(): Boolean {
+        return super.performClick()
     }
 }

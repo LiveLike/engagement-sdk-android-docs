@@ -18,7 +18,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.chat.ChatRoom
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
@@ -312,6 +312,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             checkForNetworkToRecreateActivity()
                         }
                     }
+
                 )
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
@@ -431,7 +432,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
 
         if (ThemeRandomizer.themesList.size > 0) {
-//            Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
             widget_view.applyTheme(ThemeRandomizer.themesList.last())
         }
 
@@ -451,8 +451,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             txt_chat_room_id.visibility = View.VISIBLE
             txt_chat_room_title.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.getChatRoom(privateGroupRoomId!!,
-                object : LiveLikeCallback<ChatRoom>() {
-                    override fun onResponse(result: ChatRoom?, error: String?) {
+                object : LiveLikeCallback<ChatRoomInfo>() {
+                    override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         result?.let {
                             txt_chat_room_title.text = it.title ?: "No Title"
                             txt_chat_room_id.text = it.id
