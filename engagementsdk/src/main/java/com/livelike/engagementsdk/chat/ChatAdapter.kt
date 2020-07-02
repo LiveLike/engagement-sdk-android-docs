@@ -106,6 +106,10 @@ internal class ChatRecyclerAdapter(
         )
     }
 
+    fun isReactionPopUpShowing(): Boolean {
+        return chatPopUpView?.isShowing ?: false
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindTo(getItem(position))
         holder.itemView.requestLayout()
