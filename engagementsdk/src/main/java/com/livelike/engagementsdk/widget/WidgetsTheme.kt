@@ -56,12 +56,11 @@ data class WidgetsTheme(
     val imageSlider: ImageSliderTheme? = null,
     val poll: OptionsWidgetThemeComponent? = null,
     val prediction: OptionsWidgetThemeComponent? = null,
-    val predictionFollowUp: OptionsWidgetThemeComponent? = null,
     val quiz: OptionsWidgetThemeComponent? = null
 ) : BaseTheme() {
     override fun validate(): String? {
         return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate() ?: poll?.validate()
-        ?: prediction?.validate() ?: predictionFollowUp?.validate()
+        ?: prediction?.validate()
         ?: quiz?.validate()
     }
 
@@ -71,7 +70,7 @@ data class WidgetsTheme(
             WidgetType.TEXT_POLL, WidgetType.IMAGE_POLL -> poll
             WidgetType.TEXT_QUIZ, WidgetType.IMAGE_QUIZ -> quiz
             WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> prediction
-            WidgetType.TEXT_PREDICTION_FOLLOW_UP, WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> predictionFollowUp
+            WidgetType.TEXT_PREDICTION_FOLLOW_UP, WidgetType.IMAGE_PREDICTION_FOLLOW_UP -> prediction
             WidgetType.IMAGE_SLIDER -> imageSlider
             WidgetType.CHEER_METER -> cheerMeter
             else -> null
