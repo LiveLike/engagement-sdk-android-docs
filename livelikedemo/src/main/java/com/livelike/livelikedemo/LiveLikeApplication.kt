@@ -69,7 +69,6 @@ class LiveLikeApplication : Application() {
                         PREF_USER_ACCESS_TOKEN, accessToken
                     ).apply()
                 }
-
             })
     }
 
@@ -105,7 +104,8 @@ class LiveLikeApplication : Application() {
     }
 
     fun createPrivateSession(
-        errorDelegate: ErrorDelegate? = null, timecodeGetter: EngagementSDK.TimecodeGetter? = null
+        errorDelegate: ErrorDelegate? = null,
+        timecodeGetter: EngagementSDK.TimecodeGetter? = null
     ): LiveLikeChatSession {
         if (privateGroupChatsession == null) {
             privateGroupChatsession?.close()

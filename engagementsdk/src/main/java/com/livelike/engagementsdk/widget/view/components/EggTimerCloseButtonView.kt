@@ -68,7 +68,7 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
         closeButton.visibility = View.GONE
     }
 
-    companion object{
+    companion object {
         private const val ANIMATION_BASE_TIME =
             5000f // This value need to be updated if the animation is changed to a different one
     }

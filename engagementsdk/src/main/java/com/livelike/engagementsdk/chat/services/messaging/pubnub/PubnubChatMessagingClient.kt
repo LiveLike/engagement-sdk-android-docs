@@ -726,7 +726,7 @@ internal class PubnubChatMessagingClient(
         flushPublishedMessage(*connectedChannels.toTypedArray())
     }
 
-    companion object{
+    companion object {
         private const val PREF_CHAT_ROOM_MSG_RECEIVED = "pubnub message received"
     }
 }

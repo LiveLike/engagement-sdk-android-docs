@@ -1,6 +1,5 @@
 package com.livelike.livelikedemo
 
-import android.R.attr.label
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -36,7 +35,6 @@ import kotlinx.android.synthetic.main.activity_chat_only.prg_refresh
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_id
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_members_count
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_title
-
 
 class ChatOnlyActivity : AppCompatActivity() {
     private lateinit var privateGroupChatsession: LiveLikeChatSession

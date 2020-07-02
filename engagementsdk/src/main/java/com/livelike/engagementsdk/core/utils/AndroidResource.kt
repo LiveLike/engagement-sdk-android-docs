@@ -10,19 +10,27 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import com.google.gson.Gson
-import com.livelike.engagementsdk.widget.Component
+import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.widget.FontWeight
-import org.threeten.bp.Duration
-import org.threeten.bp.format.DateTimeParseException
+import com.livelike.engagementsdk.widget.Format
+import com.livelike.engagementsdk.widget.ViewStyleProps
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.util.Random
+import org.threeten.bp.Duration
+import org.threeten.bp.format.DateTimeParseException
 
 fun Any.unit() = Unit
 internal class AndroidResource {
 
     companion object {
+
+        fun webPxToDevicePx(px: Int): Int {
+            val scale = Resources.getSystem().displayMetrics.density
+            return ((px * 0.6F) * scale + 0.5f).toInt()
+        }
+
         fun dpToPx(dp: Int): Int {
             val scale = Resources.getSystem().displayMetrics.density
             return (dp * scale + 0.5f).toInt()
@@ -70,7 +78,11 @@ internal class AndroidResource {
             return null
         }
 
-        fun updateThemeForView(textView: TextView, component: Component?) {
+        fun updateThemeForView(
+            textView: TextView,
+            component: ViewStyleProps?,
+            fontFamilyProvider: FontFamilyProvider? = null
+        ) {
             component?.let {
                 textView.apply {
                     it.fontSize?.let {
@@ -79,9 +91,19 @@ internal class AndroidResource {
                     it.fontColor?.let {
                         setTextColor(getColorFromString(it) ?: Color.WHITE)
                     }
+
+                    if (fontFamilyProvider != null) {
+                        it.fontFamily?.forEach {
+                            val typeFace = fontFamilyProvider.getTypeFace(it)
+                            if (typeFace != null) {
+                                typeface = typeFace
+                                return@forEach
+                            }
+                        }
+                    }
                     it.fontWeight?.let {
                         setTypeface(
-                            null, when (it) {
+                            typeface, when (it) {
                                 FontWeight.Bold -> Typeface.BOLD
                                 FontWeight.Light -> Typeface.NORMAL
                                 FontWeight.Normal -> Typeface.NORMAL
@@ -94,26 +116,34 @@ internal class AndroidResource {
 
         fun setPaddingForView(view: View, padding: List<Double>?) {
             view.setPadding(
-                dpToPx(padding?.get(0)?.toInt() ?: 0),
-                dpToPx(padding?.get(1)?.toInt() ?: 0),
-                dpToPx(padding?.get(2)?.toInt() ?: 0),
-                dpToPx(padding?.get(3)?.toInt() ?: 0)
+                webPxToDevicePx(padding?.get(0)?.toInt() ?: 0),
+                webPxToDevicePx(padding?.get(1)?.toInt() ?: 0),
+                webPxToDevicePx(padding?.get(2)?.toInt() ?: 0),
+                webPxToDevicePx(padding?.get(3)?.toInt() ?: 0)
             )
         }
 
-        fun createUpdateDrawable(
-            component: Component?,
-            shape: GradientDrawable = GradientDrawable()
+        fun createDrawable(
+            component: ViewStyleProps?
         ): GradientDrawable? {
+            var shape: GradientDrawable = GradientDrawable()
             component?.background?.let {
-//                shape.shape = GradientDrawable.RECTANGLE
-                if (it.colors.isNullOrEmpty().not())
-                    shape.colors = it.colors?.map { c -> getColorFromString(c) ?: 0 }?.toIntArray()
-                else
-                    shape.colors = null
-                if (it.color != null)
-                    shape.setColor(getColorFromString(it.color) ?: Color.TRANSPARENT)
+                if (it.format == Format.Fill.key) {
+                    if (it.color!!.isNotEmpty())
+                        shape.setColor(getColorFromString(it.color) ?: Color.TRANSPARENT)
+                } else {
+                    if (it.colors.isNullOrEmpty().not())
+                        shape.colors =
+                            it.colors?.map { c -> getColorFromString(c) ?: 0 }?.toIntArray()
+                    else
+                        shape.colors = null
+                }
             }
+
+            shape.orientation =
+                component?.background?.direction?.toInt()
+                    ?.let { selectGradientDirection(it) }
+
             if (component?.borderRadius.isNullOrEmpty()
                     .not() && component?.borderRadius?.size == 4
             ) {
@@ -135,9 +165,25 @@ internal class AndroidResource {
                     dpToPx(component.borderWidth.toInt()),
                     getColorFromString(component.borderColor) ?: Color.TRANSPARENT
                 )
-
             }
             return shape
+        }
+
+        internal fun selectGradientDirection(direction: Int): GradientDrawable.Orientation {
+            return GradientDrawable.Orientation.LEFT_RIGHT
+            // commenting as direction to be implemented later
+//            return when (direction) {
+//                0 -> GradientDrawable.Orientation.BOTTOM_TOP
+//                45 -> GradientDrawable.Orientation.TOP_BOTTOM
+//                90 -> GradientDrawable.Orientation.BL_TR
+//                135 -> GradientDrawable.Orientation.BR_TL
+//                180 -> GradientDrawable.Orientation.LEFT_RIGHT
+//                225 -> GradientDrawable.Orientation.RIGHT_LEFT
+//                270 -> GradientDrawable.Orientation.TL_BR
+//                else -> {
+//                    GradientDrawable.Orientation.TR_BL
+//                }
+//            }
         }
 
         fun selectRandomLottieAnimation(path: String, context: Context): String? {

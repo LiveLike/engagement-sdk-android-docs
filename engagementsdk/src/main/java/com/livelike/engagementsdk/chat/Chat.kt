@@ -51,7 +51,7 @@ internal data class ChatMessage(
     var image_height: Int? = 100,
     var isDeleted: Boolean = false
 ) {
-    //Update the user_id to profile_id as required from backend
+    // Update the user_id to profile_id as required from backend
     fun toReportMessageJson(): String {
         return """{
                     "channel": "$channel",

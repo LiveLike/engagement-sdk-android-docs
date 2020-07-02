@@ -5,9 +5,6 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.LayerDrawable
-import android.graphics.drawable.ScaleDrawable
 import android.support.constraint.ConstraintLayout
 import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
@@ -15,13 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import com.bumptech.glide.Glide
+import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.widget.Component
-import com.livelike.engagementsdk.widget.LayoutPickerComponent
+import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
+import com.livelike.engagementsdk.widget.ViewStyleProps
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
+import kotlin.math.roundToInt
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButtonBackground
@@ -32,8 +31,6 @@ import kotlinx.android.synthetic.main.atom_widget_text_item.view.bkgrd
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.determinateBar
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.percentageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
-import kotlin.math.roundToInt
-
 
 internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     ConstraintLayout(context, attr) {
@@ -47,7 +44,8 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         correctOptionId: String?,
         selectedPredictionId: String = "",
         itemIsLast: Boolean,
-        component: LayoutPickerComponent?
+        component: OptionsWidgetThemeComponent?,
+        fontFamilyProvider: FontFamilyProvider?
     ) {
         if (!inflated) {
             if (!option.image_url.isNullOrEmpty()) {
@@ -68,7 +66,8 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             selectedPredictionId,
             option,
             itemIsLast,
-            component
+            component,
+            fontFamilyProvider
         )
         animateProgress(option)
     }
@@ -97,17 +96,18 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         userSelectedOptionId: String,
         option: Option,
         itemIsLast: Boolean,
-        layoutPickerComponent: LayoutPickerComponent?
+        layoutPickerComponent: OptionsWidgetThemeComponent?,
+        fontFamilyProvider: FontFamilyProvider?
     ) {
         logDebug { "WidgetItemView setbackground widgetType:$widgetType , isSelected:$itemIsSelected , isItemLast:$itemIsLast" }
-        var optionDescTheme: Component?
+        var optionDescTheme: ViewStyleProps?
         if (itemIsSelected) {
             optionDescTheme = layoutPickerComponent?.selectedOptionDescription
             when (widgetType) { // TODO: make a set with the entire widget customization drawable and pass it from the adapter
                 WidgetType.TEXT_PREDICTION, WidgetType.IMAGE_PREDICTION -> {
                     if (layoutPickerComponent?.selectedOption != null) {
                         updateViewButtonBackground(
-                            drawable2 = AndroidResource.createUpdateDrawable(
+                            drawable2 = AndroidResource.createDrawable(
                                 layoutPickerComponent.selectedOption
                             )
                         )
@@ -128,7 +128,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     )
                     if (layoutPickerComponent?.selectedOption != null) {
                         updateViewButtonBackground(
-                            drawable2 = AndroidResource.createUpdateDrawable(
+                            drawable2 = AndroidResource.createDrawable(
                                 layoutPickerComponent.selectedOption
                             )
                         )
@@ -145,7 +145,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     )
                     if (layoutPickerComponent?.selectedOption != null) {
                         updateViewButtonBackground(
-                            drawable2 = AndroidResource.createUpdateDrawable(
+                            drawable2 = AndroidResource.createDrawable(
                                 layoutPickerComponent.selectedOption
                             )
                         )
@@ -162,7 +162,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     )
                     if (layoutPickerComponent?.unselectedOption != null) {
                         updateViewButtonBackground(
-                            drawable2 = AndroidResource.createUpdateDrawable(
+                            drawable2 = AndroidResource.createDrawable(
                                 layoutPickerComponent.unselectedOption
                             )
                         )
@@ -178,7 +178,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             )
             if (layoutPickerComponent?.unselectedOption != null) {
                 updateViewButtonBackground(
-                    drawable2 = AndroidResource.createUpdateDrawable(
+                    drawable2 = AndroidResource.createDrawable(
                         layoutPickerComponent.unselectedOption
                     )
                 )
@@ -200,7 +200,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                 )
                 if (layoutPickerComponent?.incorrectOption != null)
                     updateViewButtonBackground(
-                        drawable2 = AndroidResource.createUpdateDrawable(
+                        drawable2 = AndroidResource.createDrawable(
                             layoutPickerComponent.incorrectOption
                         )
                     )
@@ -215,7 +215,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                 )
                 if (layoutPickerComponent?.correctOption != null) {
                     updateViewButtonBackground(
-                        drawable2 = AndroidResource.createUpdateDrawable(
+                        drawable2 = AndroidResource.createDrawable(
                             layoutPickerComponent.correctOption
                         )
                     )
@@ -223,17 +223,18 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
                     updateViewButtonBackground(R.drawable.answer_outline_correct)
             }
         }
-        if (itemIsLast) {
-            updateViewBackground(R.drawable.answer_background_last_item)
-        } else {
-            updateViewBackground(R.drawable.answer_background_default)
-        }
+// TODO kanav and shivansh check  what are design requirements and why this is required
+//        if (itemIsLast) {
+//            updateViewBackground(R.drawable.answer_background_last_item)
+//        } else {
+//            updateViewBackground(R.drawable.answer_background_default)
+//        }
         if (!option.image_url.isNullOrEmpty()) {
-            AndroidResource.updateThemeForView(imageText, optionDescTheme)
-            AndroidResource.updateThemeForView(imagePercentage, optionDescTheme)
+            AndroidResource.updateThemeForView(imageText, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(imagePercentage, optionDescTheme, fontFamilyProvider)
         } else {
-            AndroidResource.updateThemeForView(text_button, optionDescTheme)
-            AndroidResource.updateThemeForView(percentageText, optionDescTheme)
+            AndroidResource.updateThemeForView(text_button, optionDescTheme, fontFamilyProvider)
+            AndroidResource.updateThemeForView(percentageText, optionDescTheme, fontFamilyProvider)
         }
         setProgressVisibility(!correctOptionId.isNullOrEmpty())
     }
@@ -282,7 +283,7 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         )
     }
 
-    private fun updateDescViewTheme(isImage: Boolean, component: Component?) {
+    private fun updateDescViewTheme(isImage: Boolean, component: ViewStyleProps?) {
         component?.let {
             if (isImage) {
                 AndroidResource.updateThemeForView(imageText, it)
@@ -292,21 +293,21 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
         }
     }
 
-    private fun updateViewProgressBar(drawableId: Int, component: Component? = null) {
+    private fun updateViewProgressBar(drawableId: Int, component: ViewStyleProps? = null) {
         val drawable = AppCompatResources.getDrawable(context, drawableId)
         component?.let {
-            val scaleDrawable: ScaleDrawable = (drawable as LayerDrawable)
-                .findDrawableByLayerId(android.R.id.progress) as ScaleDrawable
-            val gradientDrawable: GradientDrawable = scaleDrawable.drawable as GradientDrawable
-            AndroidResource.createUpdateDrawable(component, shape = gradientDrawable)
+            determinateBar?.progressDrawable = AndroidResource.createDrawable(component)
+            imageBar?.progressDrawable = AndroidResource.createDrawable(component)
         }
-        if (determinateBar != null && determinateBar?.tag != drawableId) {
-            determinateBar?.progressDrawable = drawable
-            determinateBar?.tag = drawableId
-        }
-        if (imageBar != null && imageBar?.tag != drawableId) {
-            imageBar?.progressDrawable = drawable
-            determinateBar?.tag = drawableId
+        if (component == null) {
+            if (determinateBar != null && determinateBar?.tag != drawableId) {
+                determinateBar?.progressDrawable = drawable
+                determinateBar?.tag = drawableId
+            }
+            if (imageBar != null && imageBar?.tag != drawableId) {
+                imageBar?.progressDrawable = drawable
+                determinateBar?.tag = drawableId
+            }
         }
     }
 
@@ -316,9 +317,9 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             else -> drawable2
         }
         drawable?.let {
-            if (text_button != null && text_button?.tag != drawableId ?: drawable2) {
-                text_button?.background = drawable
-                text_button?.tag = drawableId ?: drawable2
+            if (bkgrd != null && bkgrd?.tag != drawableId ?: drawable2) {
+                bkgrd?.background = drawable
+                bkgrd?.tag = drawableId ?: drawable2
             }
             if (imageButtonBackground != null && imageButtonBackground?.tag != drawableId ?: drawable2) {
                 imageButtonBackground?.background = drawable

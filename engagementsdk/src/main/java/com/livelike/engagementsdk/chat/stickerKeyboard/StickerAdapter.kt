@@ -23,14 +23,12 @@ import kotlinx.android.synthetic.main.livelike_sticker_keyboard_item.view.itemIm
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.empty_recent_text
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_rv.view.rvStickers
 
-
 class StickerCollectionAdapter(
     private val stickerPacks: List<StickerPack>,
     val programId: String,
     private val emptyRecentTextColor: Int = R.color.livelike_sticker_recent_empty_text_color,
     private val onClickCallback: (Sticker) -> Unit
 ) : RecyclerView.Adapter<StickerCollectionViewHolder>() {
-
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, index: Int): StickerCollectionViewHolder {
         return StickerCollectionViewHolder(
@@ -58,7 +56,7 @@ class StickerCollectionAdapter(
         viewHolder.bind(pack, index == RECENT_STICKERS_POSITION, programId)
     }
 
-    companion object{
+    companion object {
         const val RECENT_STICKERS_POSITION = 0
     }
 }
@@ -235,8 +233,7 @@ open class RVPagerSnapHelperListenable(private val maxPages: Int = 3) {
 class PagerSnapHelperVerbose(
     private val recyclerView: RecyclerView,
     private val externalListener: RVPagerStateListener
-) : PagerSnapHelper()
-    , ViewTreeObserver.OnGlobalLayoutListener {
+) : PagerSnapHelper(), ViewTreeObserver.OnGlobalLayoutListener {
 
     private var lastPage = RecyclerView.NO_POSITION
 

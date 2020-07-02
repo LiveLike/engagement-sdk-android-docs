@@ -103,7 +103,7 @@ internal class ChatActionsPopupView(
         chatReactionRepository?.reactionList?.forEach { reaction ->
             val cardView = CardView(context)
             cardView.cardElevation = 0f
-            cardView.setContentPadding(5,5,8,5)
+            cardView.setContentPadding(5, 5, 8, 5)
             val relativeLayout = RelativeLayout(context)
             val countView = TextView(context)
             val imageView = ImageView(context)
@@ -116,10 +116,10 @@ internal class ChatActionsPopupView(
             userReaction?.let {
                 if (it.emojiId == reaction.id) {
                     cardView.radius = chatViewThemeAttributes.chatSelectedReactionRadius
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(context,R.color.livelike_chat_reaction_selected_background_color))
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.livelike_chat_reaction_selected_background_color))
                 }
             }
-            //On Touch we are scaling and descaling the reaction imageview to show bounce feature
+            // On Touch we are scaling and descaling the reaction imageview to show bounce feature
             imageView.setOnTouchListener { v, event ->
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {

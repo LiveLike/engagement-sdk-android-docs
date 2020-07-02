@@ -25,7 +25,7 @@ internal fun setSharedAccessToken(token: String) {
 }
 
 internal fun getSharedAccessToken(): String? {
-    return getSharedPreferences().getString(PREFERENCE_KEY_ACCESS_TOKEN, null);
+    return getSharedPreferences().getString(PREFERENCE_KEY_ACCESS_TOKEN, null)
 }
 
 internal fun getSessionId(): String {
@@ -59,6 +59,3 @@ internal fun getBlockedUsers(): List<String> {
         .getString(BLOCKED_USERS, "") ?: ""
     return currentList.split(",")
 }
-
-
-

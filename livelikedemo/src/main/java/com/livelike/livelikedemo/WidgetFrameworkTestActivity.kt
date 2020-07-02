@@ -7,6 +7,7 @@ import com.google.gson.JsonParser
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import com.livelike.livelikedemo.utils.ThemeRandomizer
 import kotlinx.android.synthetic.main.activity_widget_framework.current_state_text_view
 import kotlinx.android.synthetic.main.activity_widget_framework.input_widget_json
 import kotlinx.android.synthetic.main.activity_widget_framework.move_to_next_state
@@ -54,6 +55,9 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
             ) {
                 current_state_text_view.text = "Current State : ${state.name}"
             }
+        }
+        if (ThemeRandomizer.themesList.size> 0) {
+            widget_view.applyTheme(ThemeRandomizer.themesList.last())
         }
     }
 }

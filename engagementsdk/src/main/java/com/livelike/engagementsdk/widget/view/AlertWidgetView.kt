@@ -15,6 +15,8 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
@@ -91,6 +93,21 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         }
     }
 
+    override fun applyTheme(theme: WidgetsTheme) {
+        super.applyTheme(theme)
+        viewModel?.data?.latest()?.let { widget ->
+            theme.getThemeLayoutComponent(WidgetType.ALERT)?.let { themeComponent ->
+                AndroidResource.updateThemeForView(labelText, themeComponent.title, fontFamilyProvider)
+                if (themeComponent.header?.background != null) {
+                    labelText.background = AndroidResource.createDrawable(themeComponent.header)
+                    AndroidResource.setPaddingForView(labelText, themeComponent.header.padding)
+                }
+                bodyBackground.background =
+                        AndroidResource.createDrawable(themeComponent.body)
+            }
+        }
+    }
+
     override fun moveToNextState() {
         if (widgetViewModel?.widgetState?.latest() == WidgetStates.INTERACTING) {
             widgetViewModel?.widgetState?.onNext(WidgetStates.FINISHED)
@@ -151,6 +168,9 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 params.height = AndroidResource.dpToPx(200)
                 widgetContainer.requestLayout()
             }
+        }
+        widgetsTheme?.let {
+            applyTheme(it)
         }
     }
 
