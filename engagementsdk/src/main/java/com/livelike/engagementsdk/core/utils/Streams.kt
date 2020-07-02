@@ -15,7 +15,6 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
     private val observerMap = ConcurrentHashMap<Any, (T?) -> Unit>()
     var currentData: T? = null
         private set
-    private var latestNotNullData: T? = null
 
     override fun onNext(data1: T?) {
         // TODO add debug log with class name appended
@@ -26,9 +25,6 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
             }
         })
         currentData = data1
-        if (data1 != null) {
-            latestNotNullData = data1
-        }
     }
 
     override fun subscribe(key: Any, observer: (T?) -> Unit) {
@@ -46,19 +42,11 @@ internal class SubscriptionManager<T>(private val emitOnSubscribe: Boolean = tru
         onNext(null)
         observerMap.clear()
     }
-
-    override fun latestNotNull(): T? {
-        return latestNotNullData
-    }
-
-    override fun clearLatestNotNull() {
-        latestNotNullData = null
-    }
 }
 
 /**
- * Applies the given function on the same thread to each value emitted by source stream and returns stream, which emits resulting values.
- */
+* Applies the given function on the same thread to each value emitted by source stream and returns stream, which emits resulting values.
+*/
 internal fun <X, Y> Stream<X>.map(applyTransformation: (x: X) -> Y): Stream<Y> {
 
     val out = SubscriptionManager<Y>()
@@ -74,10 +62,7 @@ internal fun <X, Y> Stream<X>.map(applyTransformation: (x: X) -> Y): Stream<Y> {
 /**
  * combine the latest from 2 streams only once, so the stream out will be single RX
  */
-internal fun <X, Y> Stream<X>.combineLatestOnce(
-    other: Stream<Y>,
-    hashCode: Int? = null
-): Stream<Pair<X, Y>> {
+internal fun <X, Y> Stream<X>.combineLatestOnce(other: Stream<Y>,hashCode:Int?=null): Stream<Pair<X, Y>> {
     val pairedStream: Stream<Pair<X, Y>> =
         SubscriptionManager()
     val combinedHashCode = "${other.hashCode()}$hashCode"
@@ -95,27 +80,26 @@ internal fun <X, Y> Stream<X>.combineLatestOnce(
     return pairedStream
 }
 
-internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> =
-    SubscriptionManager<T>()
-        .let { mgr ->
-            val source = this
-            val handler = Handler(Looper.getMainLooper())
-            var running = false
+internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> = SubscriptionManager<T>()
+    .let { mgr ->
+    val source = this
+    val handler = Handler(Looper.getMainLooper())
+    var running = false
 
-            fun runnable(): Runnable {
-                return Runnable {
-                    running = false
-                    mgr.onNext(source.currentData)
-                }
-            }
-
-            source.subscribe(source::class.java.simpleName) {
-                if (!running) {
-                    running = true
-                    handler.removeCallbacks(runnable())
-                    handler.postDelayed(runnable(), duration)
-                }
-            }
-
-            return mgr
+    fun runnable(): Runnable {
+        return Runnable {
+            running = false
+            mgr.onNext(source.currentData)
         }
+    }
+
+    source.subscribe(source::class.java.simpleName) {
+        if (!running) {
+            running = true
+            handler.removeCallbacks(runnable())
+            handler.postDelayed(runnable(), duration)
+        }
+    }
+
+    return mgr
+}

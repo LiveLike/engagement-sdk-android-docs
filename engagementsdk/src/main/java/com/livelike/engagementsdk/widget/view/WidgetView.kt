@@ -27,7 +27,8 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
     private var engagementSDKTheme: EngagementSDKTheme? = null
-    private var widgetContainerViewModel: WidgetContainerViewModel? = null
+    private var widgetContainerViewModel: WidgetContainerViewModel? =
+        WidgetContainerViewModel(SubscriptionManager())
     private val widgetViewThemeAttributes = WidgetViewThemeAttributes()
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
         set(value) {
@@ -54,38 +55,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             }
         }
         widgetContainerViewModel?.setWidgetContainer(this, widgetViewThemeAttributes)
-    }
-
-    override fun onRestoreInstanceState(state: Parcelable?) {
-        if (state is Bundle) {
-            val widgetType = state.getString("key")
-            val widgetInfos = state.getParcelable<WidgetInfos>("value")
-            if (widgetType != null && widgetInfos != null)
-                widgetContainerViewModel?.currentWidgetViewStream?.onNext(
-                    Pair(
-                        widgetType,
-                        (session as? ContentSession)?.createSpecifiedView(
-                            context,
-                            widgetInfos,
-                            widgetViewThemeAttributes,
-                            engagementSDKTheme
-                        )
-                    )
-                )
-            super.onRestoreInstanceState(state.getParcelable("super"))
-        } else
-            super.onRestoreInstanceState(state)
-    }
-
-    override fun onSaveInstanceState(): Parcelable? {
-        val bundle = Bundle()
-        val pair = widgetContainerViewModel?.currentWidgetViewStream?.latestNotNull()
-        pair?.let {
-            bundle.putString("key", pair.first)
-            bundle.putParcelable("value", pair.second?.widgetInfos)
-        }
-        bundle.putParcelable("super", super.onSaveInstanceState())
-        return bundle
     }
 
     private var session: LiveLikeContentSession? = null
