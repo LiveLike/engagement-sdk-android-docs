@@ -56,7 +56,7 @@ class LiveLikeApplication : Application() {
 
     private fun initSDK() {
         sdk = EngagementSDK(
-            "WV6W1rkAJAAXAS9l0LpqHzjDyEcPbuGJjX7Kc2hk",
+            BuildConfig.APP_CLIENT_ID,
             applicationContext,
             object : ErrorDelegate() {
                 override fun onError(error: String) {
@@ -79,22 +79,6 @@ class LiveLikeApplication : Application() {
                 }
 
             })
-        sdk.createContentSession("4048f6a0-4d0c-467c-8fe0-dd35fb904337",
-            errorDelegate = object : ErrorDelegate() {
-                override fun onError(error: String) {
-                    println("Error: $error")
-                }
-            },
-            timecodeGetter = object : EngagementSDK.TimecodeGetter {
-                override fun getTimecode(): EpochTime {
-                    return EpochTime(0)
-                }
-            })
-        sdk.createChatRoom("min",object : LiveLikeCallback<ChatRoomInfo>() {
-            override fun onResponse(result: ChatRoomInfo?, error: String?) {
-                println("LiveLikeApplication.onResponse-->${result?.id}")
-            }
-        })
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
