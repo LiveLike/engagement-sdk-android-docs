@@ -1,20 +1,28 @@
 package com.livelike.livelikedemo
 
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.os.Looper
+import android.util.Log
+import android.view.View
 import com.bugsnag.android.Bugsnag
 import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
+import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_title
+import kotlinx.android.synthetic.main.activity_chat_only.prg_create
 
 class LiveLikeApplication : Application() {
 
@@ -48,7 +56,7 @@ class LiveLikeApplication : Application() {
 
     private fun initSDK() {
         sdk = EngagementSDK(
-            BuildConfig.APP_CLIENT_ID,
+            "WV6W1rkAJAAXAS9l0LpqHzjDyEcPbuGJjX7Kc2hk",
             applicationContext,
             object : ErrorDelegate() {
                 override fun onError(error: String) {
@@ -71,6 +79,22 @@ class LiveLikeApplication : Application() {
                 }
 
             })
+        sdk.createContentSession("4048f6a0-4d0c-467c-8fe0-dd35fb904337",
+            errorDelegate = object : ErrorDelegate() {
+                override fun onError(error: String) {
+                    println("Error: $error")
+                }
+            },
+            timecodeGetter = object : EngagementSDK.TimecodeGetter {
+                override fun getTimecode(): EpochTime {
+                    return EpochTime(0)
+                }
+            })
+        sdk.createChatRoom("min",object : LiveLikeCallback<ChatRoomInfo>() {
+            override fun onResponse(result: ChatRoomInfo?, error: String?) {
+                println("LiveLikeApplication.onResponse-->${result?.id}")
+            }
+        })
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
