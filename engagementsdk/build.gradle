@@ -29,7 +29,6 @@ android {
     }
 
     buildTypes {
-        qa{}
         debug{}
         release {
             minifyEnabled true
@@ -52,6 +51,10 @@ android {
         }
     }
 
+    sonarqube {
+        androidVariant 'stagingDebug'
+    }
+
     dokka {
         outputFormat = 'html'
         outputDirectory = "$buildDir/dokka"
@@ -64,7 +67,6 @@ android {
     }
 
     configurations {
-        qa
         debug
         release
     }

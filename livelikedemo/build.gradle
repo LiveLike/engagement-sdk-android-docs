@@ -14,17 +14,18 @@ android {
         versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    buildTypes {
 
-        qa{
-            signingConfig signingConfigs.debug
-        }
+    buildTypes {
         debug{}
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    sonarqube {
+        androidVariant 'stagingDebug'
     }
 
 
@@ -83,7 +84,6 @@ dependencies {
     //sdk
     debugApi project(path: ':engagementsdk')
     releaseApi project(path: ':engagementsdk') //TODO  define configuration: 'release' for release variant currently it is not building in it.
-    qaApi project(path: ':engagementsdk')
 
     implementation project(path: ':pluginexoplayer')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
