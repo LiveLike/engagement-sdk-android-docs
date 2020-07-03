@@ -106,7 +106,6 @@ internal class CheerMeterViewModel(
             it.voteCount++
         }
         wouldSendVote()
-        println("vote state ${voteStateList.getOrNull(teamIndex).toString()}")
     }
 
     private fun wouldSendVote() {
@@ -133,7 +132,6 @@ internal class CheerMeterViewModel(
                 voteState.voteUrl = it
                 voteState.requestType = RequestType.PATCH }
             voteState.voteCount = 0
-            println("vote state request ${voteState.toString()}")
         }
     }
 
