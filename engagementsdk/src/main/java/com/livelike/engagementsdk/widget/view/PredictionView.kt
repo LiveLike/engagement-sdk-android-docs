@@ -11,7 +11,9 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
@@ -194,19 +196,25 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
         }
     }
 
+    override fun applyTheme(theme: WidgetsTheme) {
+        super.applyTheme(theme)
+        viewModel?.data?.latest()?.let { widget ->
+            theme.getThemeLayoutComponent(widget.type)?.let { themeComponent ->
+                if (themeComponent is OptionsWidgetThemeComponent) {
+                    applyThemeOnTitleView(themeComponent)
+                    viewModel?.adapter?.component = themeComponent
+                    viewModel?.adapter?.notifyDataSetChanged()
+                }
+            }
+        }
+    }
+
     private fun widgetObserver(widget: PredictionWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
                 inflate(context, R.layout.widget_text_option_selection, this@PredictionView)
-            }
-            when (optionList.map { it.image_url.isNullOrEmpty().not() }
-                .reduce { a, b -> a && b }) {
-                true -> widgetsTheme?.imagePrediction
-                else -> widgetsTheme?.textPrediction
-            }?.let {
-                updateTitleView(it)
             }
 
             titleView.title = resource.question
@@ -221,11 +229,13 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 widget.type,
                 resource.correct_option_id,
                 (if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
-                    ?: "",component = when(optionList.map { it.image_url.isNullOrEmpty().not() }.reduce { a, b -> a&&b }){
-                    true -> widgetsTheme?.imagePrediction
-                    else -> widgetsTheme?.textPrediction
-                }
+                    ?: ""
             )
+
+            widgetsTheme?.let {
+                applyTheme(it)
+            }
+
             viewModel?.apply {
                 val rootPath = widgetViewThemeAttributes.stayTunedAnimation
                 animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context.applicationContext) ?: ""

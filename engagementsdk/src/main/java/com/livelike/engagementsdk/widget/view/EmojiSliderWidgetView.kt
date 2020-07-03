@@ -7,7 +7,6 @@ import android.util.TypedValue
 import android.view.Gravity
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.ImageSliderTheme
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
@@ -16,16 +15,15 @@ import com.livelike.engagementsdk.widget.view.components.imageslider.ScaleDrawab
 import com.livelike.engagementsdk.widget.view.components.imageslider.ThumbDrawable
 import com.livelike.engagementsdk.widget.viewModel.EmojiSliderWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetState
+import java.math.RoundingMode
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_emoji_slider.view.image_slider
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
-import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.math.RoundingMode
 
 internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = null) :
     GenericSpecifiedWidgetView<ImageSliderEntity, EmojiSliderWidgetViewModel>(context, attr) {
@@ -65,11 +63,9 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     }
 
     private fun updateTitle(it: ImageSliderTheme?) {
-        titleView.componentTheme = it?.title
-        if (it?.header?.background != null) {
-            txtTitleBackground.background = AndroidResource.createUpdateDrawable(it.header)
+        it?.let {
+            applyThemeOnTitleView(it)
         }
-        AndroidResource.setPaddingForView(txtTitleBackground, it?.header?.padding)
     }
 
     override fun dataModelObserver(entity: ImageSliderEntity?) {

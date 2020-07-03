@@ -53,7 +53,6 @@ internal class ImageSlider @JvmOverloads constructor(
             bgColor?.let {
                 colorTrack = bgColor
             }
-
         }
 
     /**

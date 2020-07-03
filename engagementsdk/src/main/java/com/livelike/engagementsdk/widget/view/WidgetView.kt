@@ -3,16 +3,16 @@ package com.livelike.engagementsdk.widget.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.EngagementSDKTheme
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -24,7 +24,7 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 
 class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
-    private var engagementSDKTheme: EngagementSDKTheme? = null
+    private var engagementSDKTheme: LiveLikeEngagementTheme? = null
     private var widgetContainerViewModel: WidgetContainerViewModel? =
         WidgetContainerViewModel(SubscriptionManager())
     private val widgetViewThemeAttributes = WidgetViewThemeAttributes()
@@ -64,18 +64,33 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
-        session.widgetThemeStream.onNext(engagementSDKTheme?.widgets)
+        session.livelikeThemeStream.onNext(engagementSDKTheme)
     }
 
-    @Throws(Exception::class)
-    internal fun setTheme(json: String) {
-        val gson = Gson()
-        engagementSDKTheme = gson.fromJson(json, EngagementSDKTheme::class.java)
-        val validateString = engagementSDKTheme!!.validate()
-        if (validateString != null) {
-            throw Exception("$validateString")
+    /**
+     * will update the value of theme to be applied for all widgets
+     * This will update the theme on the current displayed widget as well
+     **/
+    fun applyTheme(theme: LiveLikeEngagementTheme) {
+        engagementSDKTheme = theme
+        (session as? ContentSession)?.livelikeThemeStream?.onNext(engagementSDKTheme)
+        if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
+            (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme)
         }
-        (session as? ContentSession)?.widgetThemeStream?.onNext(engagementSDKTheme?.widgets)
+    }
+
+    /**
+     * this method parse livelike theme from json object and apply if its a valid json
+     * refer @applyTheme(theme)
+     **/
+    fun applyTheme(themeJson: JsonObject): Result<Boolean> {
+        val themeResult = LiveLikeEngagementTheme.instanceFrom(themeJson)
+        return if (themeResult is Result.Success) {
+            applyTheme(themeResult.data)
+            Result.Success(true)
+        } else {
+            themeResult as Result.Error
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -118,7 +133,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             null,
                             SubscriptionManager(),
                             widgetViewThemeAttributes,
-                            engagementSDKTheme?.widgets
+                            engagementSDKTheme
                         )
                 )
             )

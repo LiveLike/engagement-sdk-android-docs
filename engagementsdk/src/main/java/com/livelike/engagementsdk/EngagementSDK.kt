@@ -308,7 +308,6 @@ class EngagementSDK(
             }
     }
 
-
     override fun deleteCurrentUserFromChatRoom(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<Boolean>
