@@ -49,6 +49,11 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -60,11 +65,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {

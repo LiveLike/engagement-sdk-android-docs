@@ -20,6 +20,9 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.core.utils.logWarn
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -32,9 +35,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @Suppress("USELESS_ELVIS")
 internal open class EngagementDataClientImpl : DataClient,
@@ -276,7 +276,7 @@ internal open class EngagementDataClientImpl : DataClient,
             })
         }
 
-    companion object{
+    companion object {
         private const val MAX_PROGRAM_DATA_REQUESTS = 13
     }
 }

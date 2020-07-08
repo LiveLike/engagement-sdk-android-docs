@@ -8,6 +8,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkInfo
@@ -19,11 +20,24 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import com.github.angads25.filepicker.controller.DialogSelectionListener
+import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.FontFamilyProvider
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.chat.ChatRoomInfo
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
+import com.livelike.livelikedemo.utils.ThemeRandomizer
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
+import kotlinx.android.synthetic.main.activity_main.btn_create
+import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.build_no
@@ -43,16 +57,11 @@ import kotlinx.android.synthetic.main.activity_main.sdk_version
 import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_button
+import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -166,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                     private_group_label.text = chatRoomIds.elementAt(which)
                     ExoPlayerActivity.privateGroupRoomId = chatRoomIds.elementAt(which)
 
-                    //Copy to clipboard
+                    // Copy to clipboard
                     val clipboard: ClipboardManager =
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
@@ -223,11 +232,38 @@ class MainActivity : AppCompatActivity() {
         themes_json_button.setOnClickListener {
             DialogUtils.showFilePicker(this,
                 DialogSelectionListener { files ->
+                    if (files.isNotEmpty()) {
+                        ThemeRandomizer.themesList.clear()
+                        themes_json_label.text = "${files.size} selected"
+                    } else {
+                        themes_json_label.text = "None"
+                    }
                     files?.forEach { file ->
                         val fin = FileInputStream(file)
                         val theme: String? = convertStreamToString(fin)
                         // Make sure you close all streams.
                         fin.close()
+                        val element =
+                            LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(theme).asJsonObject)
+                        if (element is Result.Success) {
+                            element.data.fontFamilyProvider = object : FontFamilyProvider {
+                                override fun getTypeFace(fontFamilyName: String): Typeface? {
+                                    if (fontFamilyName.contains("Pangolin"))
+                                        return Typeface.createFromAsset(
+                                            resources.assets,
+                                            "fonts/Pangolin-Regular.ttf"
+                                        )
+                                    else if (fontFamilyName.contains("Raleway")) {
+                                        return Typeface.createFromAsset(
+                                            resources.assets,
+                                            "fonts/Raleway-Regular.ttf"
+                                        )
+                                    }
+                                    return null
+                                }
+                            }
+                            ThemeRandomizer.themesList.add(element.data)
+                        }
                         if (theme != null) {
                             player.jsonTheme = theme
                             onlyWidget.jsonTheme = theme

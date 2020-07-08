@@ -7,7 +7,6 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPrefer
 private const val RECENT_STICKERS = "recent-stickers"
 private const val RECENT_STICKERS_DELIMITER = "~~~~"
 
-
 internal fun addRecentSticker(sticker: Sticker) {
     val editor = getSharedPreferences()
         .edit()
@@ -45,7 +44,6 @@ internal fun getRecentStickers(programId: String): List<Sticker> {
         )
     }
 }
-
 
 internal fun addPublishedMessage(channel: String, messageId: String) {
     val msgList = getPublishedMessages(channel)

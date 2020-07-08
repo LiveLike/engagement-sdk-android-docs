@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
@@ -43,7 +44,7 @@ internal class WidgetManager(
     private val programRepository: ProgramRepository,
     private val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     private val widgetThemeAttributes: WidgetViewThemeAttributes?,
-    private val widgetTheme: Stream<WidgetsTheme>
+    private val livelikeThemeStream: Stream<LiveLikeEngagementTheme>
 ) :
     MessagingClientProxy(upstream) {
 
@@ -170,7 +171,7 @@ internal class WidgetManager(
                         programRepository,
                         animationEventsStream,
                         widgetThemeAttributes ?: WidgetViewThemeAttributes(),
-                            widgetTheme.latest()
+                            livelikeThemeStream.latest()
                     )
                 )
             )
@@ -235,7 +236,7 @@ internal fun MessagingClient.asWidgetManager(
     programRepository: ProgramRepository,
     animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     widgetThemeAttributes: WidgetViewThemeAttributes?,
-    widgets: Stream<WidgetsTheme>
+    livelikeThemeStream: Stream<LiveLikeEngagementTheme>
 ): WidgetManager {
     return WidgetManager(
         this,
@@ -249,6 +250,6 @@ internal fun MessagingClient.asWidgetManager(
         programRepository,
         animationEventsStream,
         widgetThemeAttributes,
-        widgets
+        livelikeThemeStream
     )
 }

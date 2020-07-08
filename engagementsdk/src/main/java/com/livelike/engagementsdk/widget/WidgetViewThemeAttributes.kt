@@ -8,7 +8,7 @@ class WidgetViewThemeAttributes {
     var widgetWinAnimation: String = "winAnimation"
     var widgetLoseAnimation: String = "loseAnimation"
     var widgetDrawAnimation: String = "drawAnimation"
-    var stayTunedAnimation:String = "staytuned"
+    var stayTunedAnimation: String = "staytuned"
 
     fun init(typedArray: TypedArray?) {
         typedArray?.apply {

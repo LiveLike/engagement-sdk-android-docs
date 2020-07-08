@@ -10,7 +10,9 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
+import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
@@ -117,20 +119,25 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         viewModel?.onOptionClicked()
     }
 
+    override fun applyTheme(theme: WidgetsTheme) {
+        super.applyTheme(theme)
+        viewModel?.data?.latest()?.let { widget ->
+            theme.getThemeLayoutComponent(widget.type)?.let { themeComponent ->
+                if (themeComponent is OptionsWidgetThemeComponent) {
+                    applyThemeOnTitleView(themeComponent)
+                    viewModel?.adapter?.component = themeComponent
+                    viewModel?.adapter?.notifyDataSetChanged()
+                }
+            }
+        }
+    }
+
     private fun resourceObserver(widget: QuizWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return
             if (!inflated) {
                 inflated = true
                 inflate(context, R.layout.widget_text_option_selection, this@QuizView)
-            }
-
-            when (optionList.map { it.image_url.isNullOrEmpty().not() }
-                .reduce { a, b -> a && b }) {
-                true -> widgetsTheme?.imageQuiz
-                else -> widgetsTheme?.textQuiz
-            }?.let {
-                updateTitleView(it)
             }
 
             titleView.title = resource.question
@@ -142,10 +149,11 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
                 }
-            }, type, component = when (optionList.map { it.image_url.isNullOrEmpty().not() }.reduce { a, b -> a && b }) {
-                true -> widgetsTheme?.imageQuiz
-                else -> widgetsTheme?.textQuiz
-            })
+            }, type)
+
+            widgetsTheme?.let {
+                applyTheme(it)
+            }
 
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter

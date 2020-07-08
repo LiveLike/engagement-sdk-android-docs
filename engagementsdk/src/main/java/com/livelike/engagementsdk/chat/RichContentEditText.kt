@@ -16,7 +16,6 @@ import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 
-
 class RichContentEditText : AppCompatEditText {
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
@@ -37,7 +36,7 @@ class RichContentEditText : AppCompatEditText {
                     val hasExternalImage = s.toString().findImages().countMatches() > 0
                     info.contentDescription = ""
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        info.hintText=""
+                        info.hintText = ""
                     }
                     info.text = if (hasExternalImage)
                         context.getString(R.string.image)
@@ -81,7 +80,7 @@ class RichContentEditText : AppCompatEditText {
         return ic
     }
 
-    var allowMediaFromKeyboard: Boolean=true
+    var allowMediaFromKeyboard: Boolean = true
     var isTouching = false
 
     /**

@@ -137,7 +137,7 @@ internal class ResultDrawable(
         return mRunning
     }
 
-    companion object{
+    companion object {
         private const val FRAME_DELAY = (1000 / 60).toLong() // 60 fps
     }
 }
