@@ -116,7 +116,7 @@ internal class ChatRecyclerAdapter(
     }
 
     override fun onViewDetachedFromWindow(holder: ViewHolder) {
-            holder.hideFloatingUI()
+        holder.hideFloatingUI()
         super.onViewDetachedFromWindow(holder)
     }
 
@@ -635,7 +635,7 @@ internal class ChatRecyclerAdapter(
                         val isReactionsAvaiable =
                             (chatReactionRepository?.reactionList?.size ?: 0) > 0
 
-                        if (chatViewThemeAttribute.chatReactionHintEnable) {
+                        if (chatViewThemeAttribute.chatReactionHintEnable && sumCount == 0) {
                             val imageView = ImageView(context)
                             imageView.contentDescription =
                                 context.getString(R.string.you_can_add_reaction_hint)
