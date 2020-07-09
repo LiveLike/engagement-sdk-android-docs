@@ -38,6 +38,7 @@ interface AnalyticsService {
     )
     fun trackSessionStarted()
     fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean = false)
+    fun trackMessageDisplayed(msgId: String, msg: String, hasExternalImage: Boolean = false)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
@@ -145,6 +146,10 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
     }
 
     override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
+        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
+    }
+
+    override fun trackMessageDisplayed(msgId: String, msg: String, hasExternalImage: Boolean) {
         Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
@@ -268,6 +273,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
 
     companion object {
         const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
+        const val KEY_CHAT_MESSAGE_DISPLAYED = "Chat Message Displayed"
         const val KEY_WIDGET_RECEIVED = "Widget_Received"
         const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
         const val KEY_WIDGET_INTERACTION = "Widget Interacted"
@@ -542,6 +548,15 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         val timeNow = parser.format(Date(System.currentTimeMillis()))
         superProp.put("Time of Last Chat Message", timeNow)
         mixpanel.registerSuperProperties(superProp)
+    }
+
+    override fun trackMessageDisplayed(msgId: String, msg: String, hasExternalImage: Boolean) {
+        val properties = JSONObject()
+        properties.put(CHAT_MESSAGE_ID, msgId)
+        properties.put("Message ID", msgId)
+        properties.put("Sticker Ids", msg.findStickers().allMatches())
+        mixpanel.track(KEY_CHAT_MESSAGE_DISPLAYED, properties)
+        eventObservers[clientId]?.invoke(KEY_CHAT_MESSAGE_DISPLAYED, properties)
     }
 
     private fun Matcher.allMatches(): List<String> {
