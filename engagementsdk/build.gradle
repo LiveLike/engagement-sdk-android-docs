@@ -12,7 +12,7 @@ android {
     androidExtensions {
         experimental = true
     }
-
+    defaultPublishConfig "productionRelease"
     defaultConfig {
         // required for customizing vector icon colors
         vectorDrawables.useSupportLibrary = true
