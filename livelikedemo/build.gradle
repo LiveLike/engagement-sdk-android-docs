@@ -14,32 +14,44 @@ android {
         versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-    buildTypes {
 
-        qa{
-            buildConfigField "String", "APP_CLIENT_ID", '"pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/programs/?client_id=pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
-            applicationIdSuffix ".qa"
-            signingConfig signingConfigs.debug
-        }
-        debug{
-            buildConfigField "String", "APP_CLIENT_ID", '"vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
-            applicationIdSuffix ".debug"
-        }
+    buildTypes {
+        debug{}
         release {
-            buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
-            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
+    sonarqube {
+        androidVariant 'stagingDebug'
+    }
+
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    flavorDimensions 'default'
+    productFlavors {
+        staging {
+            dimension 'default'
+            buildConfigField "String", "APP_CLIENT_ID", '"vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
+            applicationIdSuffix ".debug"
+        }
+        production {
+            dimension 'default'
+            buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+        }
+        qatesting {
+            dimension 'default'
+            applicationIdSuffix ".qa"
+            buildConfigField "String", "APP_CLIENT_ID", '"pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/programs/?client_id=pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
+        }
     }
 }
 
@@ -72,7 +84,6 @@ dependencies {
     //sdk
     debugApi project(path: ':engagementsdk')
     releaseApi project(path: ':engagementsdk') //TODO  define configuration: 'release' for release variant currently it is not building in it.
-    qaApi project(path: ':engagementsdk')
 
     implementation project(path: ':pluginexoplayer')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

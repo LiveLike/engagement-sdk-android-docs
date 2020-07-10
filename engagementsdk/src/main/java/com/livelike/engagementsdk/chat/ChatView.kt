@@ -278,8 +278,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                         // Auto scroll if user is looking at the latest messages
                         autoScroll = true
                         checkEmptyChat()
-                        if (isLastItemVisible && !swipeToRefresh.isRefreshing) {
+                        if (isLastItemVisible && !swipeToRefresh.isRefreshing && chatAdapter.isReactionPopUpShowing()
+                                .not()
+                        ) {
                             snapToLive()
+                        } else if (chatAdapter.isReactionPopUpShowing()) {
+                            showSnapToLive()
                         }
                     }
                     ChatViewModel.EVENT_LOADING_COMPLETE -> {
@@ -372,10 +376,16 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             true
                         )
                         // cleanup before the image
-                        if (matcher.start()> 0) edittext_chat_message.text?.delete(0, matcher.start())
+                        if (matcher.start() > 0) edittext_chat_message.text?.delete(
+                            0,
+                            matcher.start()
+                        )
 
                         // cleanup after the image
-                        if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
+                        if (matcher.end() < s.length) edittext_chat_message.text?.delete(
+                            matcher.end(),
+                            s.length
+                        )
                         // Move to end of line
                         edittext_chat_message.setSelection(edittext_chat_message.text?.length ?: 0)
                         if (edittext_chat_message.text?.isNotEmpty() == true)
@@ -541,6 +551,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private var isLastItemVisible = false
     private var autoScroll = false
+
     /**
      *  Sets the data source for this view.
      *  @param chatAdapter ChatAdapter used for creating this view.

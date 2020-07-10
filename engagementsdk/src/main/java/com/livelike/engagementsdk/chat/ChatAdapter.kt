@@ -49,11 +49,6 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -65,6 +60,11 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -91,7 +91,7 @@ internal class ChatRecyclerAdapter(
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
-
+    private var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     private var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
@@ -106,20 +106,28 @@ internal class ChatRecyclerAdapter(
         )
     }
 
+    fun isReactionPopUpShowing(): Boolean {
+        return chatPopUpView?.isShowing ?: false
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindTo(getItem(position))
         holder.itemView.requestLayout()
     }
 
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        if (isAccessibilityEnabled(holder.v.context))
-            holder.hideFloatingUI()
-        super.onViewDetachedFromWindow(holder)
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        mRecyclerView = recyclerView
     }
 
-    private fun isAccessibilityEnabled(context: Context): Boolean {
-        val am = context.getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
-        return am.isEnabled && am.isTouchExplorationEnabled
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        mRecyclerView = null
+    }
+
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        holder.hideFloatingUI()
+        super.onViewDetachedFromWindow(holder)
     }
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener,
@@ -398,11 +406,13 @@ internal class ChatRecyclerAdapter(
             if (chatPopUpView?.isShowing == true)
                 chatPopUpView?.dismiss()
             chatPopUpView = null
-            if (currentChatReactionPopUpViewPos > -1) {
-                notifyItemChanged(currentChatReactionPopUpViewPos)
+            if (mRecyclerView?.isComputingLayout == false) {
+                if (currentChatReactionPopUpViewPos > -1) {
+                    notifyItemChanged(currentChatReactionPopUpViewPos)
+                }
+                currentChatReactionPopUpViewPos = -1
+                updateBackground()
             }
-            currentChatReactionPopUpViewPos = -1
-            updateBackground()
         }
 
         // HH:MM:SS eg 02:45:12
@@ -637,7 +647,7 @@ internal class ChatRecyclerAdapter(
                         val isReactionsAvaiable =
                             (chatReactionRepository?.reactionList?.size ?: 0) > 0
 
-                        if (chatViewThemeAttribute.chatReactionHintEnable) {
+                        if (chatViewThemeAttribute.chatReactionHintEnable && sumCount == 0) {
                             val imageView = ImageView(context)
                             imageView.contentDescription =
                                 context.getString(R.string.you_can_add_reaction_hint)

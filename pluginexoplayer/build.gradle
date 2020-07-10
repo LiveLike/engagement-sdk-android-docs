@@ -7,6 +7,7 @@ group='com.livelike'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
+    defaultPublishConfig "productionRelease"
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
@@ -22,7 +23,18 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        qa {}
+    }
+    flavorDimensions 'default'
+    productFlavors {
+        staging {
+            dimension 'default'
+        }
+        production {
+            dimension 'default'
+        }
+        qatesting {
+            dimension 'default'
+        }
     }
 }
 

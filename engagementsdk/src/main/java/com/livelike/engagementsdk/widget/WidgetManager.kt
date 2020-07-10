@@ -88,6 +88,7 @@ internal class WidgetManager(
     }
 
     override fun stop() {
+        widgetOnScreen = false
         upstream.stop()
         currentWidgetViewStream.onNext(null)
     }
@@ -136,7 +137,12 @@ internal class WidgetManager(
                 withContext(Dispatchers.Main) {
                     // Need to assure we are on the main thread to communicated with the external activity
                     try {
-                        widgetInterceptor?.widgetWantsToShow(gson.fromJson(message.clientMessage.message["payload"], LiveLikeWidgetEntity::class.java))
+                        widgetInterceptor?.widgetWantsToShow(
+                            gson.fromJson(
+                                message.clientMessage.message["payload"],
+                                LiveLikeWidgetEntity::class.java
+                            )
+                        )
                     } catch (e: Exception) {
                         logError { "Widget interceptor encountered a problem: $e \n Dismissing the widget" }
                         dismissPendingMessage()
@@ -155,24 +161,25 @@ internal class WidgetManager(
 
         handler.post {
             currentWidgetViewStream.onNext(
-                Pair(widgetType,
+                Pair(
+                    widgetType,
                     WidgetProvider()
                         .get(
-                        this,
-                        WidgetInfos(widgetType, payload, widgetId),
-                        context,
-                        analyticsService,
-                        sdkConfiguration,
-                        {
-                            checkForPointTutorial()
-                            publishNextInQueue()
-                        },
-                        userRepository,
-                        programRepository,
-                        animationEventsStream,
-                        widgetThemeAttributes ?: WidgetViewThemeAttributes(),
+                            this,
+                            WidgetInfos(widgetType, payload, widgetId),
+                            context,
+                            analyticsService,
+                            sdkConfiguration,
+                            {
+                                checkForPointTutorial()
+                                publishNextInQueue()
+                            },
+                            userRepository,
+                            programRepository,
+                            animationEventsStream,
+                            widgetThemeAttributes ?: WidgetViewThemeAttributes(),
                             livelikeThemeStream.latest()
-                    )
+                        )
                 )
             )
         }
