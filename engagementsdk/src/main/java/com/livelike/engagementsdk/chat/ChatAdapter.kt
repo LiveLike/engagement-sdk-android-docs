@@ -562,8 +562,8 @@ internal class ChatRecyclerAdapter(
                                     callback,
                                     false,
                                     message.id,
-                                    message.image_width ?: largerStickerSize,
-                                    message.image_height ?: largerStickerSize
+                                    message.image_width ?: LARGER_STICKER_SIZE,
+                                    message.image_height ?: LARGER_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
@@ -577,7 +577,7 @@ internal class ChatRecyclerAdapter(
                                     stickerPackRepository,
                                     null,
                                     callback,
-                                    largerStickerSize
+                                    LARGER_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
@@ -591,7 +591,7 @@ internal class ChatRecyclerAdapter(
                                     stickerPackRepository,
                                     null,
                                     callback,
-                                    mediumStickerSize
+                                    MEDIUM_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
@@ -662,5 +662,7 @@ internal class ChatRecyclerAdapter(
     }
 }
 
-private const val largerStickerSize = 100
-private const val mediumStickerSize = 50
+// const val should be in uppercase always
+private const val LARGER_STICKER_SIZE = 100
+private const val MEDIUM_STICKER_SIZE = 50
+
