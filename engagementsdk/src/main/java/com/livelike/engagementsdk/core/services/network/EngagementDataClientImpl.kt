@@ -108,8 +108,10 @@ internal open class EngagementDataClientImpl : DataClient,
     ) {
         GlobalScope.launch {
             val result =
-                remoteCall<EngagementSDK.SdkConfiguration>(url,
-                    RequestType.GET, null, null)
+                remoteCall<EngagementSDK.SdkConfiguration>(
+                    url,
+                    RequestType.GET, null, null
+                )
             responseCallback.invoke(result)
             if (result is Result.Error) {
                 logError { "The client id is incorrect. Check your configuration." }

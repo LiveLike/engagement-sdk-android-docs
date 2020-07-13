@@ -18,7 +18,6 @@ import com.livelike.livelikedemo.video.VideoPlayer
 class LiveLikeApplication : Application() {
 
 
-
     lateinit var channelManager: ChannelManager
     lateinit var player: VideoPlayer
     val timecodeGetter = object : EngagementSDK.TimecodeGetter {
@@ -114,6 +113,7 @@ class LiveLikeApplication : Application() {
         }
         return privateGroupChatsession as LiveLikeChatSession
     }
+
     companion object {
         const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
 //            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"

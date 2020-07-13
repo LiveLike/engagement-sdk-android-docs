@@ -366,10 +366,16 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             true
                         )
                         // cleanup before the image
-                        if (matcher.start()> 0) edittext_chat_message.text?.delete(0, matcher.start())
+                        if (matcher.start() > 0) edittext_chat_message.text?.delete(
+                            0,
+                            matcher.start()
+                        )
 
                         // cleanup after the image
-                        if (matcher.end() <s.length) edittext_chat_message.text?.delete(matcher.end(), s.length)
+                        if (matcher.end() < s.length) edittext_chat_message.text?.delete(
+                            matcher.end(),
+                            s.length
+                        )
                         // Move to end of line
                         edittext_chat_message.setSelection(edittext_chat_message.text?.length ?: 0)
                         if (edittext_chat_message.text?.isNotEmpty() == true)
@@ -785,9 +791,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
                     rv.smoothScrollToPosition(it)
                 } else {
-                    chatdisplay.postDelayed( {
+                    chatdisplay.postDelayed({
                         rv.scrollToPosition(it - 1)
-                    },200)
+                    }, 200)
                 }
             }
         }
@@ -802,6 +808,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         super.onDetachedFromWindow()
         chatdisplay.adapter = null
     }
+
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
         const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F

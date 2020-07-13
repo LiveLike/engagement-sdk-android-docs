@@ -9,13 +9,13 @@
         android:id="@+id/chat_reaction_background_card"
         android:layout_width="wrap_content"
         android:layout_height="42dp"
-        app:contentPadding="0dp"
-        android:focusable="true"
-        android:descendantFocusability="beforeDescendants"
         android:defaultFocusHighlightEnabled="true"
+        android:descendantFocusability="beforeDescendants"
+        android:focusable="true"
         android:focusedByDefault="true"
         android:importantForAccessibility="yes"
         android:screenReaderFocusable="true"
+        app:contentPadding="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 

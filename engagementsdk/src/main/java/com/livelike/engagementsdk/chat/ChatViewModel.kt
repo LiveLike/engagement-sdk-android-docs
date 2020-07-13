@@ -28,11 +28,11 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -93,7 +93,6 @@ internal class ChatViewModel(
             }
         }
     private val dataClient: ChatDataClient = ChatDataClientImpl()
-
 
 
     override fun displayChatMessage(message: ChatMessage) {
@@ -324,6 +323,7 @@ internal class ChatViewModel(
                 }
             })
     }
+
     companion object {
         const val EVENT_NEW_MESSAGE = "new-message"
         const val EVENT_MESSAGE_DELETED = "deletion"

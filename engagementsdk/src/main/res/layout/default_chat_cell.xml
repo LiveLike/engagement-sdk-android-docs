@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:defaultFocusHighlightEnabled="true"
+    android:focusable="true"
     android:focusedByDefault="true"
     android:importantForAccessibility="yes"
+    android:orientation="vertical"
     android:screenReaderFocusable="true"
-    android:focusable="true"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:background="@color/livelike_black">
 
     <View
@@ -83,15 +83,15 @@
                     android:id="@+id/message_date_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/livelike_chatMessage_timestamp_text_font"
                     android:gravity="start"
                     android:textAlignment="viewStart"
                     android:textColor="@color/livelike_chatMessage_timestamp_text_color"
-                    android:fontFamily="@font/livelike_chatMessage_timestamp_text_font"
                     android:textSize="12sp"
                     android:visibility="gone"
-                    tools:visibility="visible"
-                    android:layout_marginTop="4dp"
-                    tools:text="Jan 13, 3:45 PM" />
+                    tools:text="Jan 13, 3:45 PM"
+                    tools:visibility="visible" />
 
             </LinearLayout>
 
@@ -121,14 +121,15 @@
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@android:color/white"
-            android:textStyle="bold"
             android:textSize="11dp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="@+id/chatBackground"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
+
     <View
         android:id="@+id/border_bottom"
         android:layout_width="match_parent"

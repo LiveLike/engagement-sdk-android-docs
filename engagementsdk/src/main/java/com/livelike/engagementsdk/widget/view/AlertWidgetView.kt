@@ -97,13 +97,17 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         super.applyTheme(theme)
         viewModel?.data?.latest()?.let { widget ->
             theme.getThemeLayoutComponent(WidgetType.ALERT)?.let { themeComponent ->
-                AndroidResource.updateThemeForView(labelText, themeComponent.title, fontFamilyProvider)
+                AndroidResource.updateThemeForView(
+                    labelText,
+                    themeComponent.title,
+                    fontFamilyProvider
+                )
                 if (themeComponent.header?.background != null) {
                     labelText.background = AndroidResource.createDrawable(themeComponent.header)
                     AndroidResource.setPaddingForView(labelText, themeComponent.header.padding)
                 }
                 bodyBackground.background =
-                        AndroidResource.createDrawable(themeComponent.body)
+                    AndroidResource.createDrawable(themeComponent.body)
             }
         }
     }

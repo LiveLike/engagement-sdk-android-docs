@@ -7,7 +7,6 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.widget.BaseTheme
 import com.livelike.engagementsdk.widget.WidgetsTheme
-import java.lang.RuntimeException
 
 class LiveLikeEngagementTheme internal constructor(
     val chat: Map<String, Any?>? = null,
@@ -23,7 +22,10 @@ class LiveLikeEngagementTheme internal constructor(
 
     companion object {
         @JvmStatic
-        fun instanceFrom(themeJson: JsonObject, fontFamilyProvider: FontFamilyProvider? = null): Result<LiveLikeEngagementTheme> {
+        fun instanceFrom(
+            themeJson: JsonObject,
+            fontFamilyProvider: FontFamilyProvider? = null
+        ): Result<LiveLikeEngagementTheme> {
             return try {
                 val data = gson.fromJson(
                     themeJson,

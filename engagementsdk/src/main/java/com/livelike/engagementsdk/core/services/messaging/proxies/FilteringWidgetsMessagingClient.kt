@@ -11,8 +11,8 @@ import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 
 /**
-*Filtering out the widgets which have been interacted or not supported on android.
-**/
+ *Filtering out the widgets which have been interacted or not supported on android.
+ **/
 internal class FilteringWidgetsMessagingClient(
     upstream: MessagingClient
 ) :

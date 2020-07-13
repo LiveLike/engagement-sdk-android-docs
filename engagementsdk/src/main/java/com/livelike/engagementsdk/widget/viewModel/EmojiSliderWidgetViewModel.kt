@@ -31,7 +31,15 @@ internal class EmojiSliderWidgetViewModel(
     userRepository: UserRepository,
     programRepository: ProgramRepository? = null,
     widgetMessagingClient: WidgetManager? = null
-) : WidgetViewModel<ImageSliderEntity>(widgetInfos, sdkConfiguration, userRepository, programRepository, widgetMessagingClient, onDismiss, analyticsService) {
+) : WidgetViewModel<ImageSliderEntity>(
+    widgetInfos,
+    sdkConfiguration,
+    userRepository,
+    programRepository,
+    widgetMessagingClient,
+    onDismiss,
+    analyticsService
+) {
 
     private val dataClient: WidgetDataClient = WidgetDataClientImpl()
 
@@ -39,18 +47,24 @@ internal class EmojiSliderWidgetViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
+            pubnub =
+                PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val payload = event.message["payload"].asJsonObject
                     uiScope.launch {
-                        val data = gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
+                        val data =
+                            gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
                         results.onNext(data)
                     }
                 }
 
                 override fun onClientMessageError(client: MessagingClient, error: Error) {}
-                override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {}
+                override fun onClientMessageStatus(
+                    client: MessagingClient,
+                    status: ConnectionStatus
+                ) {
+                }
             })
         }
 
@@ -67,22 +81,25 @@ internal class EmojiSliderWidgetViewModel(
     override fun vote(value: String) {
         uiScope.launch {
             data.latest()?.voteUrl?.let {
-                dataClient.voteAsync(it, "", userRepository?.userAccessToken, FormBody.Builder()
-                    .add("magnitude", value).build())
+                dataClient.voteAsync(
+                    it, "", userRepository?.userAccessToken, FormBody.Builder()
+                        .add("magnitude", value).build()
+                )
             }
         }
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos) {
-            val resource = gson.fromJson(widgetInfos.payload.toString(), ImageSliderEntity::class.java) ?: null
-            resource?.apply {
-                pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.onNext(resource)
-                widgetState.onNext(WidgetStates.READY)
-            }
-            currentWidgetId = widgetInfos.widgetId
-            currentWidgetType = WidgetType.fromString(widgetInfos.type)
-            interactionData.widgetDisplayed()
+        val resource =
+            gson.fromJson(widgetInfos.payload.toString(), ImageSliderEntity::class.java) ?: null
+        resource?.apply {
+            pubnub?.subscribe(listOf(resource.subscribe_channel))
+            data.onNext(resource)
+            widgetState.onNext(WidgetStates.READY)
+        }
+        currentWidgetId = widgetInfos.widgetId
+        currentWidgetType = WidgetType.fromString(widgetInfos.type)
+        interactionData.widgetDisplayed()
     }
 
     override fun dismissWidget(action: DismissAction) {

@@ -265,6 +265,7 @@ class EngagementSDK(
         @SerializedName("pubnub_origin")
         val pubnubOrigin: String? = null
     )
+
     companion object {
         @JvmStatic
         var enableDebug: Boolean = false

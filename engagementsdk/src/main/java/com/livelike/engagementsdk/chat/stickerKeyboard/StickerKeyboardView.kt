@@ -163,7 +163,7 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                     if (i == stickerCollectionPagerAdapter.RECENT_STICKERS_POSITION) {
                         tab.customView = createTabItemView()
                     } else {
-                        tab.customView = createTabItemView(stickerPacks[i-1])
+                        tab.customView = createTabItemView(stickerPacks[i - 1])
                     }
                     pager_tab.addTab(tab)
                 }

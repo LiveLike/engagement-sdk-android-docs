@@ -25,12 +25,12 @@ import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getTotalPoints
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.shouldShowPointTutorial
-import java.util.PriorityQueue
-import java.util.Queue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.PriorityQueue
+import java.util.Queue
 
 internal class WidgetManager(
     upstream: MessagingClient,

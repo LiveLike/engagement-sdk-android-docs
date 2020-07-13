@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -18,18 +17,18 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-<!--            <ImageView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:srcCompat="@drawable/ic_cheer_meter_minigame" />-->
+            <!--            <ImageView-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                app:srcCompat="@drawable/ic_cheer_meter_minigame" />-->
 
             <TextView
                 android:id="@+id/txt_cheer_meter_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:padding="5dp"
                 android:gravity="center"
+                android:padding="5dp"
                 android:text="@string/minigame_pick_a_side"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
                 android:textColor="@color/livelike_cheer_meter_title_color"
@@ -58,28 +57,28 @@
                 android:id="@+id/view_ripple"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
+                android:layout_gravity="left"
                 android:background="@drawable/ripple_effect_team_1"
-                android:clickable="true"
-                android:layout_gravity="left" />
+                android:clickable="true" />
 
             <View
                 android:id="@+id/view_ripple2"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
+                android:layout_gravity="right"
                 android:background="@drawable/ripple_effect_team_2"
-                android:clickable="true"
-                android:layout_gravity="right" />
+                android:clickable="true" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:animateLayoutChanges="true"
+                android:clickable="false"
+                android:descendantFocusability="blocksDescendants"
                 android:paddingLeft="@dimen/livelike_cheer_meter_padding"
                 android:paddingTop="35dp"
                 android:paddingRight="@dimen/livelike_cheer_meter_padding"
-                android:paddingBottom="35dp"
-                android:clickable="false"
-                android:descendantFocusability="blocksDescendants">
+                android:paddingBottom="35dp">
 
                 <ImageView
                     android:id="@+id/img_logo_team_1"
@@ -145,21 +144,21 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="MY SCORE"-->
-<!--                    android:textColor="@android:color/white"-->
-<!--                    android:textSize="15sp"-->
-<!--                    android:textStyle="bold" />-->
+                <!--                <TextView-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:text="MY SCORE"-->
+                <!--                    android:textColor="@android:color/white"-->
+                <!--                    android:textSize="15sp"-->
+                <!--                    android:textStyle="bold" />-->
 
                 <TextView
                     android:id="@+id/txt_my_score"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
-                    android:visibility="gone"
-                    android:textSize="25sp" />
+                    android:textSize="25sp"
+                    android:visibility="gone" />
             </LinearLayout>
 
         </FrameLayout>
@@ -169,20 +168,20 @@
     <FrameLayout
         android:id="@+id/fl_result_team"
         android:layout_width="match_parent"
-        android:layout_gravity="center"
-        android:layout_height="350dp" >
+        android:layout_height="350dp"
+        android:layout_gravity="center">
 
         <ImageView
             android:id="@+id/img_winner_team"
             android:layout_width="125dp"
-            android:layout_gravity="center"
-            android:layout_height="125dp" />
+            android:layout_height="125dp"
+            android:layout_gravity="center" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/img_winner_anim"
             android:layout_width="300dp"
-            android:layout_gravity="center"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            android:layout_gravity="center" />
     </FrameLayout>
 
 </FrameLayout>

@@ -29,10 +29,10 @@ android {
     }
 
     buildTypes {
-        qa{
+        qa {
             buildConfigField "String", "CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/"'
         }
-        debug{
+        debug {
             buildConfigField "String", "CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/"'
         }
         release {
@@ -58,7 +58,7 @@ android {
         debug
         release
     }
-    
+
 }
 
 dependencies {

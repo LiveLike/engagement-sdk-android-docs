@@ -212,7 +212,6 @@ internal class ChatRecyclerAdapter(
         }
 
 
-
         val callback = MultiCallback(true)
 
         fun bindTo(item: ChatMessage?) {

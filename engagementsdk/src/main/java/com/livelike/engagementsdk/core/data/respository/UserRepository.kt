@@ -4,11 +4,11 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.respository.WidgetRepository
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -92,11 +92,15 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
 
     var rewardType = "none"
 
-    suspend fun getGamificationReward(rewardUrl: String, analyticsService: AnalyticsService): ProgramGamificationProfile? {
+    suspend fun getGamificationReward(
+        rewardUrl: String,
+        analyticsService: AnalyticsService
+    ): ProgramGamificationProfile? {
         if (rewardType == "none") {
             return null
         }
-        val reward = widgetDataClient.rewardAsync(rewardUrl, analyticsService, accessToken = userAccessToken)
+        val reward =
+            widgetDataClient.rewardAsync(rewardUrl, analyticsService, accessToken = userAccessToken)
         lifetimePoints.onNext(reward?.points)
         rank.onNext(reward?.rank)
         return reward

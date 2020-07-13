@@ -17,5 +17,7 @@ internal const val TEMPLATE_CHAT_ROOM_ID = "{chat_room_id}"
 
 // Date time formatters
 
-internal val DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER = SimpleDateFormat("MMM d, h:mm a",
-    Locale.getDefault())
+internal val DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER = SimpleDateFormat(
+    "MMM d, h:mm a",
+    Locale.getDefault()
+)

@@ -445,6 +445,7 @@ internal class ImageSlider @JvmOverloads constructor(
             }
         }
     }
+
     companion object {
         const val INITIAL_POSITION = 0.25f
     }

@@ -98,7 +98,10 @@ internal class ImagePreloaderMessagingClient(
                     }
                 })
                 .apply(
-                    RequestOptions().override(AndroidResource.dpToPx(74), AndroidResource.dpToPx(74)).transform(
+                    RequestOptions().override(
+                        AndroidResource.dpToPx(74),
+                        AndroidResource.dpToPx(74)
+                    ).transform(
                         MultiTransformation(FitCenter(), RoundedCorners(12))
                     )
                 ).preload()
@@ -116,7 +119,10 @@ internal class ImagePreloaderMessagingClient(
         }
     }
 
-    private fun getImagesFromJson(jsonObject: JsonObject, imagesList: MutableList<String>): MutableList<String> {
+    private fun getImagesFromJson(
+        jsonObject: JsonObject,
+        imagesList: MutableList<String>
+    ): MutableList<String> {
         val elements = jsonObject.entrySet()
         elements.forEach { element ->
             when {
@@ -126,7 +132,10 @@ internal class ImagePreloaderMessagingClient(
                         downloadedImages.add(element.value.asString)
                     }
                 }
-                element.value.isJsonObject -> getImagesFromJson(element.value.asJsonObject, imagesList)
+                element.value.isJsonObject -> getImagesFromJson(
+                    element.value.asJsonObject,
+                    imagesList
+                )
                 element.value.isJsonArray -> element.value.asJsonArray.forEach {
                     if (it.isJsonObject) {
                         getImagesFromJson(it.asJsonObject, imagesList)

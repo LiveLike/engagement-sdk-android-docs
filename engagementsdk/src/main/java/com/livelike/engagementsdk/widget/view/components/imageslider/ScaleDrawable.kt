@@ -15,14 +15,14 @@ import android.graphics.drawable.Drawable
 internal class ScaleDrawable(private val bitmap: Bitmap, scale: Float = 1f) : Drawable() {
 
     var scale = scale
-    set(value) {
-        field = value
-        val scaleSize = (bitmap.width * scale).toInt()
-        scaledBitmap?.recycle()
-        scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaleSize, scaleSize, false)
-    }
+        set(value) {
+            field = value
+            val scaleSize = (bitmap.width * scale).toInt()
+            scaledBitmap?.recycle()
+            scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaleSize, scaleSize, false)
+        }
     private val paint =
-            Paint(Paint.ANTI_ALIAS_FLAG)
+        Paint(Paint.ANTI_ALIAS_FLAG)
     private val rect = RectF()
     private var scaledBitmap: Bitmap? = null
 
