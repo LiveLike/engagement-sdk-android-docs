@@ -156,6 +156,31 @@ internal class ChatRecyclerAdapter(
                 }.show()
             })
 
+        init {
+            chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
+                if (res < 0) {
+                    v.chatBubbleBackground.setBackgroundColor(res)
+                } else {
+                    val value = TypedValue()
+                    v.context.resources.getValue(res, value, true)
+                    when {
+                        value.type == TypedValue.TYPE_REFERENCE -> v.chatBubbleBackground.setBackgroundResource(
+                            res
+                        )
+                        value.type == TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
+                            R.drawable.ic_chat_message_bubble_rounded_rectangle
+                        )
+                        value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT -> ColorDrawable(
+                            value.data
+                        )
+                        else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
+                    }
+                }
+            }
+            v.setOnLongClickListener(this)
+            v.setOnClickListener(this)
+        }
+
         override fun onLongClick(view: View?): Boolean {
             return true
         }
@@ -186,30 +211,7 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-        init {
-            chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
-                if (res < 0) {
-                    v.chatBubbleBackground.setBackgroundColor(res)
-                } else {
-                    val value = TypedValue()
-                    v.context.resources.getValue(res, value, true)
-                    when {
-                        value.type == TypedValue.TYPE_REFERENCE -> v.chatBubbleBackground.setBackgroundResource(
-                            res
-                        )
-                        value.type == TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
-                            R.drawable.ic_chat_message_bubble_rounded_rectangle
-                        )
-                        value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT -> ColorDrawable(
-                            value.data
-                        )
-                        else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
-                    }
-                }
-            }
-            v.setOnLongClickListener(this)
-            v.setOnClickListener(this)
-        }
+
 
         val callback = MultiCallback(true)
 

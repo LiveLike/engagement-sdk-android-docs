@@ -26,16 +26,6 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
 
     private val subscribedChannels = mutableListOf<String>()
 
-    override fun stop() {
-        pubnub.unsubscribeAll()
-        pubnub.disconnect()
-    }
-
-    override fun start() {
-        pubnub.reconnect()
-        pubnub.subscribe().channels(subscribedChannels).execute()
-    }
-
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
     var pubnub: PubNub
     private var listener: MessagingEventListener? = null
@@ -70,13 +60,19 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
                             PNStatusCategory.PNDisconnectedCategory -> {
                                 // this is the expected category for an unsubscribe. This means there
                                 // was no error in unsubscribing from everything
-                                listener?.onClientMessageStatus(client, ConnectionStatus.DISCONNECTED)
+                                listener?.onClientMessageStatus(
+                                    client,
+                                    ConnectionStatus.DISCONNECTED
+                                )
                             }
 
                             PNStatusCategory.PNAccessDeniedCategory -> {
                                 // this means that PAM does allow this client to subscribe to this
                                 // channel and channel group configuration. This is another explicit error
-                                listener?.onClientMessageError(client, Error("Access Denied", "Access Denied"))
+                                listener?.onClientMessageError(
+                                    client,
+                                    Error("Access Denied", "Access Denied")
+                                )
                             }
 
                             PNStatusCategory.PNTimeoutCategory, PNStatusCategory.PNNetworkIssuesCategory, PNStatusCategory.PNUnexpectedDisconnectCategory -> {
@@ -129,6 +125,17 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
             }
         })
     }
+
+    override fun stop() {
+        pubnub.unsubscribeAll()
+        pubnub.disconnect()
+    }
+
+    override fun start() {
+        pubnub.reconnect()
+        pubnub.subscribe().channels(subscribedChannels).execute()
+    }
+
     override fun subscribe(channels: List<String>) {
         pubnub.subscribe().channels(channels).execute()
         subscribedChannels.addAll(channels)

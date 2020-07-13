@@ -91,13 +91,7 @@ import kotlin.math.min
  */
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
-    companion object {
-        const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
-        const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
-        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
-        private const val CHAT_MINIMUM_SIZE_DP = 292
-        private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
-    }
+
 
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
@@ -807,5 +801,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         chatdisplay.adapter = null
+    }
+    companion object {
+        const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
+        const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
+        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
+        private const val CHAT_MINIMUM_SIZE_DP = 292
+        private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 }

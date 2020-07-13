@@ -39,10 +39,6 @@ class EngagementSDK(
     private val originURL: String? = null
 ) : IEngagement {
 
-    companion object {
-        @JvmStatic
-        var enableDebug: Boolean = false
-    }
 
     internal var configurationStream: Stream<SdkConfiguration> =
         SubscriptionManager()
@@ -269,4 +265,9 @@ class EngagementSDK(
         @SerializedName("pubnub_origin")
         val pubnubOrigin: String? = null
     )
+    companion object {
+        @JvmStatic
+        var enableDebug: Boolean = false
+    }
+
 }

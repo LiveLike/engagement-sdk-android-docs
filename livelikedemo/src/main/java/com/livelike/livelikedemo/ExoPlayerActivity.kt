@@ -53,13 +53,7 @@ import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 
 class ExoPlayerActivity : AppCompatActivity() {
-    companion object {
-        const val AD_STATE = "adstate"
-        const val SHOWING_DIALOG = "showingDialog"
-        const val POSITION = "position"
-        const val CHANNEL_NAME = "channelName"
-        var privateGroupRoomId: String? = null
-    }
+
 
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
@@ -542,5 +536,12 @@ class ExoPlayerActivity : AppCompatActivity() {
         outState?.putBoolean(AD_STATE, adsPlaying)
         outState?.putBoolean(SHOWING_DIALOG, showingDialog)
         outState?.putLong(POSITION, player?.position() ?: 0)
+    }
+    companion object {
+        const val AD_STATE = "adstate"
+        const val SHOWING_DIALOG = "showingDialog"
+        const val POSITION = "position"
+        const val CHANNEL_NAME = "channelName"
+        var privateGroupRoomId: String? = null
     }
 }

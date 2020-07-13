@@ -4,7 +4,10 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import kotlin.math.pow
 
-internal class ThumbDrawable(private val drawableList: List<ScaleDrawable>, val initialMagnitude: Float = .5f) : GenericDrawableCallback() {
+internal class ThumbDrawable(
+    private val drawableList: List<ScaleDrawable>,
+    val initialMagnitude: Float = .5f
+) : GenericDrawableCallback() {
 
     private lateinit var drawable: ScaleDrawable
 
@@ -16,6 +19,10 @@ internal class ThumbDrawable(private val drawableList: List<ScaleDrawable>, val 
                 drawable.scale = getScale(progress)
             }
         }
+
+    init {
+        progress = initialMagnitude
+    }
 
     private fun getScale(progress: Float): Float {
         return if (drawableList.size > 2) {
@@ -41,9 +48,6 @@ internal class ThumbDrawable(private val drawableList: List<ScaleDrawable>, val 
         }
     }
 
-    init {
-        progress = initialMagnitude
-    }
 
     override fun draw(canvas: Canvas) {
         drawable.draw(canvas)

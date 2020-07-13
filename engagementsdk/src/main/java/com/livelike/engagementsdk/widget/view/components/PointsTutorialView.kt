@@ -45,14 +45,16 @@ class PointsTutorialView(context: Context, attr: AttributeSet? = null) : Specifi
             }
         }
 
+    init {
+        pointTutorialSeen()
+        inflate(context, R.layout.atom_widget_points_tutorial, this)
+    }
+
     override var dismissFunc: ((action: DismissAction) -> Unit)? =
         {
             viewModel?.dismissWidget(it)
             removeAllViews()
         }
 
-    init {
-        pointTutorialSeen()
-        inflate(context, R.layout.atom_widget_points_tutorial, this)
-    }
+
 }

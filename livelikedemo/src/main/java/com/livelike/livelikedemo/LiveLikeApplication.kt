@@ -17,10 +17,7 @@ import com.livelike.livelikedemo.video.VideoPlayer
 
 class LiveLikeApplication : Application() {
 
-    companion object {
-        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
-//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
-    }
+
 
     lateinit var channelManager: ChannelManager
     lateinit var player: VideoPlayer
@@ -116,6 +113,10 @@ class LiveLikeApplication : Application() {
             privateGroupChatsession = sdk.createChatSession(timecodeGetter, errorDelegate)
         }
         return privateGroupChatsession as LiveLikeChatSession
+    }
+    companion object {
+        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
+//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
     }
 }
 

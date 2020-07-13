@@ -98,95 +98,6 @@ internal class PubnubChatMessagingClient(
             flushPublishedMessage(*connectedChannels.toTypedArray())
         }
 
-    @Synchronized
-    fun addChannelSubscription(channel: String, startTimestamp: Long) {
-        if (!connectedChannels.contains(channel)) {
-            connectedChannels.add(channel)
-            flushPublishedMessage(*connectedChannels.toTypedArray())
-            val endTimeStamp = Calendar.getInstance().timeInMillis
-            pubnub.subscribe().channels(listOf(channel)).execute()
-//            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
-        }
-    }
-
-    private fun convertToTimeToken(timestamp: Long): Long {
-        return timestamp * 10000
-    }
-
-    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
-        val clientMessage = gson.fromJson(message, ChatMessage::class.java)
-        val pubnubChatEvent = PubnubChatEvent(
-            clientMessage.messageEvent.key, clientMessage.toPubnubChatMessage(
-                ZonedDateTime.ofInstant(
-                    Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
-                    org.threeten.bp.ZoneId.of("UTC")
-                ).format(isoUTCDateTimeFormatter)
-            )
-        )
-        publishQueue.enqueue(Pair(channel, pubnubChatEvent))
-        if (isDiscardOwnPublishInSubcription) {
-            addPublishedMessage(channel, pubnubChatEvent.payload.messageId)
-        }
-        if (!isPublishRunning) {
-            startPublishingFromQueue()
-        }
-    }
-
-    private fun startPublishingFromQueue() {
-        isPublishRunning = true
-        coroutineScope.async {
-            while (!publishQueue.isEmpty()) {
-                publishQueue.peek()?.let { messageChannelPair ->
-                    if (publishMessageToPubnub(
-                            messageChannelPair.second,
-                            messageChannelPair.first
-                        )
-                    ) {
-                        publishQueue.dequeue()
-                        delay(100) // ensure messages not more than 5 per second as 100ms is pubnub latency
-                    } else {
-                        delay(2000) // Linear back-off strategy.
-                    }
-                }
-            }
-            isPublishRunning = false
-        }
-    }
-
-    private suspend fun publishMessageToPubnub(
-        pubnubChatEvent: PubnubChatEvent<PubnubChatMessage>,
-        channel: String
-    ) = suspendCoroutine<Boolean> {
-        pubnub.publish()
-            .message(
-                pubnubChatEvent
-            )
-            .meta(JsonObject().apply {
-                addProperty("sender_id", pubnubChatEvent.payload.senderId)
-                addProperty("language", "en-us")
-            })
-            .channel(channel)
-            .async(object : PNCallback<PNPublishResult>() {
-                override fun onResponse(result: PNPublishResult?, status: PNStatus) {
-                    logDebug { "pub status code: " + status?.statusCode }
-                    if (!status.isError) {
-                        logDebug { "pub timetoken: " + result?.timetoken!! }
-                        it.resume(true)
-                    } else {
-                        it.resume(false)
-                    }
-                }
-            })
-    }
-
-    override fun stop() {
-        pubnub.disconnect()
-    }
-
-    override fun start() {
-        pubnub.reconnect()
-    }
-
     private val pubnubConfiguration: PNConfiguration = PNConfiguration()
     var pubnub: PubNub
     private var listener: MessagingEventListener? = null
@@ -196,7 +107,8 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
-        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || !(content_filter contains 'filtered')"
+        pubnubConfiguration.filterExpression =
+            "sender_id == '$uuid' || !(content_filter contains 'filtered')"
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
@@ -322,6 +234,96 @@ internal class PubnubChatMessagingClient(
             }
         })
     }
+
+    @Synchronized
+    fun addChannelSubscription(channel: String, startTimestamp: Long) {
+        if (!connectedChannels.contains(channel)) {
+            connectedChannels.add(channel)
+            flushPublishedMessage(*connectedChannels.toTypedArray())
+            val endTimeStamp = Calendar.getInstance().timeInMillis
+            pubnub.subscribe().channels(listOf(channel)).execute()
+//            getAllMessages(channel, convertToTimeToken(startTimestamp), convertToTimeToken(endTimeStamp))
+        }
+    }
+
+    private fun convertToTimeToken(timestamp: Long): Long {
+        return timestamp * 10000
+    }
+
+    override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
+        val clientMessage = gson.fromJson(message, ChatMessage::class.java)
+        val pubnubChatEvent = PubnubChatEvent(
+            clientMessage.messageEvent.key, clientMessage.toPubnubChatMessage(
+                ZonedDateTime.ofInstant(
+                    Instant.ofEpochMilli(timeSinceEpoch.timeSinceEpochInMs),
+                    org.threeten.bp.ZoneId.of("UTC")
+                ).format(isoUTCDateTimeFormatter)
+            )
+        )
+        publishQueue.enqueue(Pair(channel, pubnubChatEvent))
+        if (isDiscardOwnPublishInSubcription) {
+            addPublishedMessage(channel, pubnubChatEvent.payload.messageId)
+        }
+        if (!isPublishRunning) {
+            startPublishingFromQueue()
+        }
+    }
+
+    private fun startPublishingFromQueue() {
+        isPublishRunning = true
+        coroutineScope.async {
+            while (!publishQueue.isEmpty()) {
+                publishQueue.peek()?.let { messageChannelPair ->
+                    if (publishMessageToPubnub(
+                            messageChannelPair.second,
+                            messageChannelPair.first
+                        )
+                    ) {
+                        publishQueue.dequeue()
+                        delay(100) // ensure messages not more than 5 per second as 100ms is pubnub latency
+                    } else {
+                        delay(2000) // Linear back-off strategy.
+                    }
+                }
+            }
+            isPublishRunning = false
+        }
+    }
+
+    private suspend fun publishMessageToPubnub(
+        pubnubChatEvent: PubnubChatEvent<PubnubChatMessage>,
+        channel: String
+    ) = suspendCoroutine<Boolean> {
+        pubnub.publish()
+            .message(
+                pubnubChatEvent
+            )
+            .meta(JsonObject().apply {
+                addProperty("sender_id", pubnubChatEvent.payload.senderId)
+                addProperty("language", "en-us")
+            })
+            .channel(channel)
+            .async(object : PNCallback<PNPublishResult>() {
+                override fun onResponse(result: PNPublishResult?, status: PNStatus) {
+                    logDebug { "pub status code: " + status?.statusCode }
+                    if (!status.isError) {
+                        logDebug { "pub timetoken: " + result?.timetoken!! }
+                        it.resume(true)
+                    } else {
+                        it.resume(false)
+                    }
+                }
+            })
+    }
+
+    override fun stop() {
+        pubnub.disconnect()
+    }
+
+    override fun start() {
+        pubnub.reconnect()
+    }
+
 
     private fun processPubnubMessageAction(
         pnMessageActionResult: PNMessageActionResult,

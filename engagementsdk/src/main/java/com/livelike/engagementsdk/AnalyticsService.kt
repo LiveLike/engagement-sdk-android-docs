@@ -36,6 +36,7 @@ interface AnalyticsService {
         id: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
+
     fun trackSessionStarted()
     fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean = false)
     fun trackLastChatStatus(status: Boolean)
@@ -49,13 +50,25 @@ interface AnalyticsService {
         interactable: Boolean?,
         action: DismissAction
     )
-    fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int = 1)
+
+    fun trackInteraction(
+        kind: String,
+        id: String,
+        interactionType: String,
+        interactionCount: Int = 1
+    )
+
     fun trackOrientationChange(isPortrait: Boolean)
     fun trackSession(sessionId: String)
     fun trackButtonTap(buttonName: String, extra: JsonObject)
     fun trackUsername(username: String)
     fun trackKeyboardOpen(keyboardType: KeyboardType)
-    fun trackKeyboardClose(keyboardType: KeyboardType, hideMethod: KeyboardHideReason, chatMessageId: String? = null)
+    fun trackKeyboardClose(
+        keyboardType: KeyboardType,
+        hideMethod: KeyboardHideReason,
+        chatMessageId: String? = null
+    )
+
     fun trackFlagButtonPressed()
     fun trackReportingMessage()
     fun trackBlockingUser()
@@ -86,7 +99,10 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         reactionId: String,
         reactionAction: String
     ) {
-        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $reactionAction")
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $reactionAction"
+        )
     }
 
     override fun registerSuperProperty(
@@ -97,63 +113,70 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
     }
 
     override fun trackPointThisProgram(points: Int) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]$points")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$points")
     }
 
     override fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackFlagButtonPressed() {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackReportingMessage() {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackCancelFlagUi() {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackBlockingUser() {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun registerSuperAndPeopleProperty(event: Pair<String, String>) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $event")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $event")
     }
 
     override fun trackLastChatStatus(status: Boolean) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $status")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $status")
     }
 
     override fun trackLastWidgetStatus(status: Boolean) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $status")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $status")
     }
 
     override fun trackConfiguration(internalAppName: String) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $internalAppName")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $internalAppName")
     }
 
-    override fun trackWidgetInteraction(kind: String, id: String, interactionInfo: AnalyticsWidgetInteractionInfo) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $interactionInfo")
+    override fun trackWidgetInteraction(
+        kind: String,
+        id: String,
+        interactionInfo: AnalyticsWidgetInteractionInfo
+    ) {
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionInfo"
+        )
     }
 
     override fun trackSessionStarted() {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}]")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
     override fun trackWidgetReceived(kind: String, id: String) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
     override fun trackWidgetDisplayed(kind: String, id: String) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
     override fun trackWidgetDismiss(
@@ -163,31 +186,42 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         interactable: Boolean?,
         action: DismissAction
     ) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $action $interactionInfo")
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $action $interactionInfo"
+        )
     }
 
-    override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $kind $interactionType")
+    override fun trackInteraction(
+        kind: String,
+        id: String,
+        interactionType: String,
+        interactionCount: Int
+    ) {
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionType"
+        )
     }
 
     override fun trackOrientationChange(isPortrait: Boolean) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $isPortrait")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $isPortrait")
     }
 
     override fun trackSession(sessionId: String) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $sessionId")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $sessionId")
     }
 
     override fun trackButtonTap(buttonName: String, extra: JsonObject) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $buttonName")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $buttonName")
     }
 
     override fun trackUsername(username: String) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $username")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $username")
     }
 
     override fun trackKeyboardOpen(keyboardType: KeyboardType) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $keyboardType")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $keyboardType")
     }
 
     override fun trackKeyboardClose(
@@ -195,7 +229,10 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         hideMethod: KeyboardHideReason,
         chatMessageId: String?
     ) {
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $keyboardType $hideMethod")
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $keyboardType $hideMethod"
+        )
     }
 }
 
@@ -266,24 +303,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         clientId
     )
 
-    companion object {
-        const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
-        const val KEY_WIDGET_RECEIVED = "Widget_Received"
-        const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
-        const val KEY_WIDGET_INTERACTION = "Widget Interacted"
-        const val KEY_WIDGET_USER_DISMISS = "Widget Dismissed"
-        const val KEY_ORIENTATION_CHANGED = "Orientation_Changed"
-        const val KEY_ACTION_TAP = "Action_Tap"
-        const val KEY_KEYBOARD_SELECTED = "Keyboard Selected"
-        const val KEY_KEYBOARD_HIDDEN = "Keyboard Hidden"
-        const val KEY_FLAG_BUTTON_PRESSED = "Chat Flag Button Pressed"
-        const val KEY_FLAG_ACTION_SELECTED = "Chat Flag Action Selected"
-        const val KEY_POINT_TUTORIAL_COMPLETED = "Points Tutorial Completed"
-        const val KEY_REASON = "Reason"
-        const val KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED = "Badge Collected Button Pressed"
-        const val KEY_EVENT_CHAT_REACTION_PANEL_OPEN = "Chat Reaction Panel Opened"
-        const val KEY_EVENT_CHAT_REACTION_SELECTED = "Chat Reaction Selected"
-    }
 
     private var parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
@@ -562,7 +581,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
 
     override fun trackWidgetReceived(kind: String, id: String) {
         val properties = JSONObject()
-        properties.put("Time Of Last Widget Receipt", parser.format(Date(System.currentTimeMillis())))
+        properties.put(
+            "Time Of Last Widget Receipt",
+            parser.format(Date(System.currentTimeMillis()))
+        )
         properties.put("Widget Type", kind)
         properties.put("Widget Id", id)
         mixpanel.track(KEY_WIDGET_RECEIVED, properties)
@@ -613,7 +635,12 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
 
     private var lastOrientation: Boolean? = null
 
-    override fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int) {
+    override fun trackInteraction(
+        kind: String,
+        id: String,
+        interactionType: String,
+        interactionCount: Int
+    ) {
         val properties = JSONObject()
         properties.put("kind", kind)
         properties.put("id", id)
@@ -627,11 +654,11 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         if (lastOrientation == isPortrait) return // return if the orientation stays the same
         lastOrientation = isPortrait
         JSONObject().apply {
-            put("Device Orientation", if (isPortrait)"Portrait" else "Landscape")
+            put("Device Orientation", if (isPortrait) "Portrait" else "Landscape")
             mixpanel.registerSuperProperties(this)
         }
         JSONObject().apply {
-            put("Last Device Orientation", if (isPortrait)"Portrait" else "Landscape")
+            put("Last Device Orientation", if (isPortrait) "Portrait" else "Landscape")
             mixpanel.people.set(this)
         }
     }
@@ -655,6 +682,25 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("Nickname", username)
         mixpanel.registerSuperProperties(properties)
         eventObservers[clientId]?.invoke("Nickname", properties)
+    }
+
+    companion object {
+        const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
+        const val KEY_WIDGET_RECEIVED = "Widget_Received"
+        const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
+        const val KEY_WIDGET_INTERACTION = "Widget Interacted"
+        const val KEY_WIDGET_USER_DISMISS = "Widget Dismissed"
+        const val KEY_ORIENTATION_CHANGED = "Orientation_Changed"
+        const val KEY_ACTION_TAP = "Action_Tap"
+        const val KEY_KEYBOARD_SELECTED = "Keyboard Selected"
+        const val KEY_KEYBOARD_HIDDEN = "Keyboard Hidden"
+        const val KEY_FLAG_BUTTON_PRESSED = "Chat Flag Button Pressed"
+        const val KEY_FLAG_ACTION_SELECTED = "Chat Flag Action Selected"
+        const val KEY_POINT_TUTORIAL_COMPLETED = "Points Tutorial Completed"
+        const val KEY_REASON = "Reason"
+        const val KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED = "Badge Collected Button Pressed"
+        const val KEY_EVENT_CHAT_REACTION_PANEL_OPEN = "Chat Reaction Panel Opened"
+        const val KEY_EVENT_CHAT_REACTION_SELECTED = "Chat Reaction Selected"
     }
 }
 
