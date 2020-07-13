@@ -23,9 +23,11 @@ internal fun filterRecentStickers(programId: String, stickerPacks: List<StickerP
         getSharedPreferences()
             .getStringSet(RECENT_STICKERS + programId, setOf()) ?: setOf()
 
-    val totalStickerSet: Set<String> =
-        stickerPacks.map { stickerPack -> stickerPack.stickers.map { sticker -> sticker.file + RECENT_STICKERS_DELIMITER + sticker.shortcode } }
+    val totalStickerSet: Set<String> = when (stickerPacks.isEmpty()) {
+        true -> setOf()
+        else -> stickerPacks.map { stickerPack -> stickerPack.stickers.map { sticker -> sticker.file + RECENT_STICKERS_DELIMITER + sticker.shortcode } }
             .reduceRight { list, list2 -> list.plus(list2) }.toSet()
+    }
     val updatedStickerSet = stickerSet.filter { totalStickerSet.contains(it) }.toMutableSet()
     val editor = getSharedPreferences()
         .edit()
