@@ -21,7 +21,6 @@ internal class ResultDrawable(
 ) : GenericDrawableCallback(), Animatable, Runnable {
 
     private var isDrawResultGradient: Boolean = false
-    private val FRAME_DELAY = (1000 / 60).toLong() // 60 fps
     private var mRunning = false
     private var mStartTime: Long = 0
     private val mDurationMs = 500 // in ms
@@ -136,5 +135,9 @@ internal class ResultDrawable(
 
     override fun isRunning(): Boolean {
         return mRunning
+    }
+
+    companion object {
+        private const val FRAME_DELAY = (1000 / 60).toLong() // 60 fps
     }
 }

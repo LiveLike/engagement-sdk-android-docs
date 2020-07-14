@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
@@ -43,7 +45,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     init {
         context.obtainStyledAttributes(
             attr,
-            R.styleable.LiveLike_WidgetView,
+            R.styleable.WidgetView,
             0, 0
         ).apply {
             try {

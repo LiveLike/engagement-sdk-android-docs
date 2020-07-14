@@ -362,13 +362,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         response?.let {
                             when (it) {
                                 is AlertResponse -> {
-                                    it.schedule_url?.let { it1 -> putAPI(it1) }
+                                    putAPI(it.schedule_url)
                                 }
                                 is PollRequestResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
                                 }
                                 is QuizResponse -> {
-                                    it.schedule_url?.let { it1 -> putAPI(it1) }
+                                    putAPI(it.schedule_url)
                                 }
                                 is PredictionResponse -> {
                                     it.schedule_url?.let { it1 -> putAPI(it1) }
@@ -403,13 +403,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                         it.follow_ups?.let { followups ->
                                             val res =
                                                 patchAPI(
-                                                    "${followups[0].url}",
+                                                    followups[0].url,
                                                     followRequest
                                                 )
                                             val resp =
                                                 gson.fromJson(res, FollowUpResponse::class.java)
                                             resp?.let { r ->
-                                                r.schedule_url?.let { it1 -> putAPI(it1) }
+                                                r.schedule_url.let { it1 -> putAPI(it1) }
                                             }
                                         }
                                     }

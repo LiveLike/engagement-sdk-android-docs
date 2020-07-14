@@ -25,14 +25,12 @@
             android:name=".WidgetFrameworkTestActivity"
             android:exported="true" />
         <activity android:name=".LiveBlogActivity" />
-        <activity android:name=".ChatOnlyActivity" />
         <activity
-            android:name=".WidgetOnlyActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
+            android:name=".ChatOnlyActivity"
+            android:theme="@style/Default" />
+        <activity android:name=".WidgetOnlyActivity" />
         <activity android:name=".WidgetStandaloneActivity" />
-        <activity
-            android:name=".ExoPlayerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize" />
+        <activity android:name=".ExoPlayerActivity" />
         <activity android:name=".TwoSessionActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

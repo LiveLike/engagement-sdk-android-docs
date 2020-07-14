@@ -59,7 +59,8 @@
                 android:layout_height="200dp"
                 android:layout_gravity="left"
                 android:background="@drawable/ripple_effect_team_1"
-                android:clickable="true" />
+                android:clickable="true"
+                android:focusable="true" />
 
             <View
                 android:id="@+id/view_ripple2"
@@ -67,7 +68,8 @@
                 android:layout_height="200dp"
                 android:layout_gravity="right"
                 android:background="@drawable/ripple_effect_team_2"
-                android:clickable="true" />
+                android:clickable="true"
+                android:focusable="true" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,6 +87,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:contentDescription="@string/team_one"
                     android:padding="5dp" />
 
                 <com.airbnb.lottie.LottieAnimationView
@@ -99,6 +102,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:contentDescription="@string/team_two"
                     android:padding="5dp" />
 
 
@@ -175,7 +179,8 @@
             android:id="@+id/img_winner_team"
             android:layout_width="125dp"
             android:layout_height="125dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:contentDescription="@string/winner" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/img_winner_anim"

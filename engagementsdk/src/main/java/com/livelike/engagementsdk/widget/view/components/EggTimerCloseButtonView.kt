@@ -12,8 +12,6 @@ import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.vie
 
 class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
     ConstraintLayout(context, attr) {
-    private val ANIMATION_BASE_TIME =
-        5000f // This value need to be updated if the animation is changed to a different one
 
     private var dismiss: ((action: DismissAction) -> Unit)? = null
 
@@ -65,8 +63,13 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
         eggTimer.visibility = View.GONE
     }
 
-    fun showEggTimer() {
+    private fun showEggTimer() {
         eggTimer.visibility = View.VISIBLE
         closeButton.visibility = View.GONE
+    }
+
+    companion object {
+        private const val ANIMATION_BASE_TIME =
+            5000f // This value need to be updated if the animation is changed to a different one
     }
 }

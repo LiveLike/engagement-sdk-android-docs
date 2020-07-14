@@ -1,19 +1,28 @@
 package com.livelike.livelikedemo
 
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.os.Looper
+import android.util.Log
+import android.view.View
 import com.bugsnag.android.Bugsnag
 import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
+import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
+import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_title
+import kotlinx.android.synthetic.main.activity_chat_only.prg_create
 
 class LiveLikeApplication : Application() {
 
@@ -42,35 +51,29 @@ class LiveLikeApplication : Application() {
     }
 
     private fun initSDK() {
-        val accessToken = getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
-            PREF_USER_ACCESS_TOKEN,
-            null
-        )
         sdk = EngagementSDK(
             BuildConfig.APP_CLIENT_ID,
             applicationContext,
-            accessToken,
             object : ErrorDelegate() {
                 override fun onError(error: String) {
                     android.os.Handler(Looper.getMainLooper()).postDelayed({
                         initSDK()
                     }, 1000)
                 }
-            })
-        if (accessToken == null) {
-            fetchAndPersisToken(sdk)
-        }
-    }
+            }, accessTokenDelegate = object : AccessTokenDelegate {
+                override fun getAccessToken(): String? {
+                    return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
+                        PREF_USER_ACCESS_TOKEN,
+                        null
+                    )
+                }
 
-    private fun fetchAndPersisToken(sdk: EngagementSDK) {
-        sdk.userStream.subscribe(javaClass.simpleName) {
-            it?.let {
-                sdk.userStream.unsubscribe(javaClass.simpleName)
-                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
-                    PREF_USER_ACCESS_TOKEN, it.accessToken
-                ).apply()
-            }
-        }
+                override fun storeAccessToken(accessToken: String?) {
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
+                        PREF_USER_ACCESS_TOKEN, accessToken
+                    ).apply()
+                }
+            })
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
@@ -105,11 +108,13 @@ class LiveLikeApplication : Application() {
     }
 
     fun createPrivateSession(
-        errorDelegate: ErrorDelegate? = null
+        errorDelegate: ErrorDelegate? = null,
+        timecodeGetter: EngagementSDK.TimecodeGetter? = null
     ): LiveLikeChatSession {
         if (privateGroupChatsession == null) {
             privateGroupChatsession?.close()
-            privateGroupChatsession = sdk.createChatSession(timecodeGetter, errorDelegate)
+            privateGroupChatsession =
+                sdk.createChatSession(timecodeGetter ?: this.timecodeGetter, errorDelegate)
         }
         return privateGroupChatsession as LiveLikeChatSession
     }
@@ -121,3 +126,4 @@ class LiveLikeApplication : Application() {
 }
 
 const val PREFERENCES_APP_ID = BuildConfig.APP_CLIENT_ID + "Test_Demo"
+const val CHAT_ROOM_LIST = BuildConfig.APP_CLIENT_ID + "chat_rooms"

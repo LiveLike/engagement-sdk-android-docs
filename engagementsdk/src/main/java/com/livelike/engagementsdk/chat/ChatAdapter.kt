@@ -91,7 +91,7 @@ internal class ChatRecyclerAdapter(
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
-
+    private var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     private var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
@@ -106,20 +106,28 @@ internal class ChatRecyclerAdapter(
         )
     }
 
+    fun isReactionPopUpShowing(): Boolean {
+        return chatPopUpView?.isShowing ?: false
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindTo(getItem(position))
         holder.itemView.requestLayout()
     }
 
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        if (isAccessibilityEnabled(holder.v.context))
-            holder.hideFloatingUI()
-        super.onViewDetachedFromWindow(holder)
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        mRecyclerView = recyclerView
     }
 
-    private fun isAccessibilityEnabled(context: Context): Boolean {
-        val am = context.getSystemService(ACCESSIBILITY_SERVICE) as AccessibilityManager
-        return am.isEnabled && am.isTouchExplorationEnabled
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        mRecyclerView = null
+    }
+
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        holder.hideFloatingUI()
+        super.onViewDetachedFromWindow(holder)
     }
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener,
@@ -399,11 +407,13 @@ internal class ChatRecyclerAdapter(
             if (chatPopUpView?.isShowing == true)
                 chatPopUpView?.dismiss()
             chatPopUpView = null
-            if (currentChatReactionPopUpViewPos > -1) {
-                notifyItemChanged(currentChatReactionPopUpViewPos)
+            if (mRecyclerView?.isComputingLayout == false) {
+                if (currentChatReactionPopUpViewPos > -1) {
+                    notifyItemChanged(currentChatReactionPopUpViewPos)
+                }
+                currentChatReactionPopUpViewPos = -1
+                updateBackground()
             }
-            currentChatReactionPopUpViewPos = -1
-            updateBackground()
         }
 
         // HH:MM:SS eg 02:45:12
@@ -553,7 +563,7 @@ internal class ChatRecyclerAdapter(
                             message.message
                         }
                         when {
-                            isExternalImage -> {
+                            !isDeleted && isExternalImage -> {
                                 val s = SpannableString(message.message)
                                 replaceWithImages(
                                     s,
@@ -568,7 +578,7 @@ internal class ChatRecyclerAdapter(
                                     chatMessage.text = s
                                 }
                             }
-                            (isOnlyStickers && numberOfStickers < 2) -> {
+                            !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -582,7 +592,7 @@ internal class ChatRecyclerAdapter(
                                     chatMessage.text = s
                                 }
                             }
-                            atLeastOneSticker -> {
+                            !isDeleted && atLeastOneSticker -> {
                                 val s = SpannableString(message.message)
                                 replaceWithStickers(
                                     s,
@@ -638,21 +648,22 @@ internal class ChatRecyclerAdapter(
                         val isReactionsAvaiable =
                             (chatReactionRepository?.reactionList?.size ?: 0) > 0
 
+                        if (chatViewThemeAttribute.chatReactionHintEnable && sumCount == 0) {
+                            val imageView = ImageView(context)
+                            imageView.contentDescription =
+                                context.getString(R.string.you_can_add_reaction_hint)
+                            imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
+                            val params: FrameLayout.LayoutParams =
+                                FrameLayout.LayoutParams(size, size)
+                            rel_reactions_lay.addView(imageView, params)
+                        }
+
                         if (emojiCountMap.isNotEmpty() && sumCount > 0 && isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.VISIBLE
                             txt_chat_reactions_count.text = "$sumCount"
                         } else if (isReactionsAvaiable) {
                             txt_chat_reactions_count.visibility = View.INVISIBLE
                             txt_chat_reactions_count.text = "  "
-                            if (chatViewThemeAttribute.chatReactionHintEnable) {
-                                val imageView = ImageView(context)
-                                imageView.contentDescription =
-                                    context.getString(R.string.you_can_add_reaction_hint)
-                                imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
-                                val params: FrameLayout.LayoutParams =
-                                    FrameLayout.LayoutParams(size, size)
-                                rel_reactions_lay.addView(imageView, params)
-                            }
                         }
                     }
                 }

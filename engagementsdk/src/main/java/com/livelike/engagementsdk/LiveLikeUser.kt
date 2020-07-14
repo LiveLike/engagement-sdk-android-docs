@@ -16,5 +16,6 @@ data class LiveLikeUser(
     var isWidgetEnabled: Boolean,
     var isChatEnabled: Boolean,
     var userPic: String? = null,
-    var url: String
+    var url: String,
+    var chat_room_memberships_url: String
 )

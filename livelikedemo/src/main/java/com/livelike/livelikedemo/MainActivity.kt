@@ -24,7 +24,7 @@ import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
-import com.livelike.engagementsdk.chat.ChatRoom
+import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
@@ -36,6 +36,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
+import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
@@ -179,7 +180,11 @@ class MainActivity : AppCompatActivity() {
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                     val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
                     clipboard.primaryClip = clip
-                    Toast.makeText(applicationContext, "Room Id Copy To Clipboard", Toast.LENGTH_LONG)
+                    Toast.makeText(
+                        applicationContext,
+                        "Room Id Copy To Clipboard",
+                        Toast.LENGTH_LONG
+                    )
                         .show()
                 }
                 create()
@@ -278,7 +283,7 @@ class MainActivity : AppCompatActivity() {
             getString("UserNickname", "")
                 .let {
                     nicknameText.setText(it)
-//                edit().putString("userPic","http://lorempixel.com/200/200/?$it").apply()
+//                edit().putString("userPic","http://lorempixel.com/200/200/?$it").commit()
                 }
             getString("userPic", "").let {
                 if (it.isNullOrEmpty()) {
@@ -290,7 +295,8 @@ class MainActivity : AppCompatActivity() {
                     edit().putString("userPic", it).apply()
                 }
             }
-            chatRoomIds = getStringSet("chatRoomList", mutableSetOf())
+
+            chatRoomIds = getStringSet(CHAT_ROOM_LIST, mutableSetOf()) ?: mutableSetOf()
         }
 
         btn_create.setOnClickListener {
@@ -298,16 +304,18 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
-                object : LiveLikeCallback<ChatRoom>() {
-                    override fun onResponse(result: ChatRoom?, error: String?) {
+                object : LiveLikeCallback<ChatRoomInfo>() {
+                    override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         textView2.text = when {
                             result != null -> "${result.title ?: "No Title"}(${result.id})"
                             else -> error
                         }
                         result?.let {
                             chatRoomIds.add(it.id)
-                            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                                .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                                    .edit().apply {
+                                        putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
+                                    }
                         }
                         progressBar.visibility = View.GONE
                     }
@@ -319,7 +327,7 @@ class MainActivity : AppCompatActivity() {
             if (chatRoomId.isEmpty().not()) {
                 chatRoomIds.add(chatRoomId)
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                    .edit().putStringSet("chatRoomList", chatRoomIds).apply()
+                    .edit().putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
                 chatroomText1.setText("")
             }
         }

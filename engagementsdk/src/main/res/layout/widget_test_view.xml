@@ -15,7 +15,7 @@
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></FrameLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/testSecond"
@@ -28,7 +28,7 @@
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/testFirst"></FrameLayout>
+        app:layout_constraintTop_toBottomOf="@+id/testFirst" />
 
     <FrameLayout
         android:id="@+id/testThird"
@@ -41,7 +41,7 @@
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/testSecond"></FrameLayout>
+        app:layout_constraintTop_toBottomOf="@+id/testSecond" />
 
     <FrameLayout
         android:id="@+id/testFourth"
@@ -54,7 +54,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/testThird"></FrameLayout>
+        app:layout_constraintTop_toBottomOf="@+id/testThird" />
 
     <Button
         android:id="@+id/buttonRefresh"

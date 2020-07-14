@@ -78,6 +78,7 @@
         android:scaleType="fitXY"
         android:translationY="50dp"
         android:visibility="gone"
+        android:contentDescription="@string/snap_to_live"
         app:layout_constraintBottom_toTopOf="@id/chatInput"
         app:layout_constraintEnd_toEndOf="@id/chatdisplayBack"
         app:srcCompat="@drawable/ic_chat_ic_live"

@@ -1,538 +1,538 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
 
-        android:id="@+id/main_layout"
-        android:orientation="vertical"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
 
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:focusableInTouchMode="true"
-                      android:orientation="vertical">
-            <android.support.v7.widget.CardView
-                    android:id="@+id/layout_section"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+        <android.support.v7.widget.CardView
+            android:id="@+id/layout_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-                <android.support.constraint.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                    <TextView
-                            style="@style/TestAppLabel"
-                            android:id="@+id/layout_label"
-                            android:text="@string/layout_label"
-
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            tools:text="LAYOUT"
-                    />
-
-                    <ImageView
-                            android:id="@+id/layout_side_panel"
-                            android:layout_width="160dp"
-                            android:layout_height="160dp"
-                            android:src="@drawable/side_panel"
-                            android:layout_marginTop="16dp"
-                            android:contentDescription="@string/layout_side_content_description"
-                            app:layout_constraintTop_toBottomOf="@id/layout_label"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toStartOf="@id/layout_overlay"
-                    />
-                    <ImageView
-                            android:id="@+id/layout_overlay"
-                            android:layout_width="160dp"
-                            android:layout_height="160dp"
-                            android:src="@drawable/sync"
-                            android:layout_marginTop="16dp"
-                            android:contentDescription="@string/layout_overlay_content_description"
-                            app:layout_constraintTop_toBottomOf="@id/layout_label"
-                            app:layout_constraintStart_toEndOf="@id/layout_side_panel"
-                            app:layout_constraintEnd_toEndOf="parent"
-                    />
-
-                    <Button
-                            style="@style/TestAppButton"
-                            android:id="@+id/events_button"
-                            android:layout_width="match_parent"
-                            android:layout_height="75dp"
-                            android:layout_marginTop="16dp"
-                            app:layout_constraintTop_toBottomOf="@id/layout_side_panel"
-
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:paddingBottom="24dp"
-                            android:text="@string/events_btn_label"
-
-                            android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
-                            tools:text="Events"
-                            />
-                    <TextView
-                            android:id="@+id/events_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/default_channel_label"
-                            style="@style/TestAppButtonSubLabel"
-
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:paddingTop="36dp"
-                            app:layout_constraintTop_toTopOf="@id/events_button"
-                            app:layout_constraintBottom_toBottomOf="@id/events_button"
-                            app:layout_constraintStart_toStartOf="@id/events_button"
-                            tools:text="Droid Demo Channel 1"
-                    />
-
-                    <Button
-                        style="@style/TestAppButton"
-                        android:id="@+id/private_group_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="75dp"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/events_button"
-
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="24dp"
-                        android:text="Private group"
-
-                        android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
-                        tools:text="Private group"
-                        />
-                    <TextView
-                        android:id="@+id/private_group_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Select groups"
-                        style="@style/TestAppButtonSubLabel"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="36dp"
-                        app:layout_constraintTop_toTopOf="@id/private_group_button"
-                        app:layout_constraintBottom_toBottomOf="@id/private_group_button"
-                        app:layout_constraintStart_toStartOf="@id/private_group_button"
-                        tools:text="Select group"
-                        />
-
-
-                    <Button
-                        style="@style/TestAppButton"
-                        android:id="@+id/themes_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="75dp"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/private_group_button"
-
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="24dp"
-                        android:text="@string/theme_btn_label"
-
-                        android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
-                        tools:text="Themes"
-                        />
-                    <TextView
-                        android:id="@+id/themes_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/default_theme_label"
-                        style="@style/TestAppButtonSubLabel"
-
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="36dp"
-                        app:layout_constraintTop_toTopOf="@id/themes_button"
-                        app:layout_constraintBottom_toBottomOf="@id/themes_button"
-                        app:layout_constraintStart_toStartOf="@id/themes_button"
-                        tools:text="Select Theme"
-                        />
-
-                    <Button
-                        style="@style/TestAppButton"
-                        android:id="@+id/themes_json_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/themes_button"
-
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="24dp"
-                        android:textSize="12sp"
-                        android:lineSpacingMultiplier="0.5"
-                        android:text="JSON Themes (Select multiple for randomizer)"
-                        android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
-                        tools:text="JSON Themes"
-                        />
-                    <TextView
-                        android:id="@+id/themes_json_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="None"
-                        style="@style/TestAppButtonSubLabel"
-
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:paddingTop="36dp"
-                        app:layout_constraintTop_toTopOf="@id/themes_json_button"
-                        app:layout_constraintBottom_toBottomOf="@id/themes_json_button"
-                        app:layout_constraintStart_toStartOf="@id/themes_json_button"
-                        tools:text="Select Theme"
-                        />
-
-                    <CheckBox
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/chk_show_dismiss"
-                        android:layout_margin="6dp"
-                        android:text="Show Notification For Allow Widget"
-                        app:layout_constraintTop_toBottomOf="@+id/themes_json_label"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        />
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
-            <android.support.v7.widget.CardView
-                android:id="@+id/chat_room_section"
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <android.support.constraint.ConstraintLayout
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/layout_label"
+                    style="@style/TestAppLabel"
+                    android:text="@string/layout_label"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="LAYOUT" />
+
+                <ImageView
+                    android:id="@+id/layout_side_panel"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_marginTop="16dp"
+                    android:contentDescription="@string/layout_side_content_description"
+                    android:src="@drawable/side_panel"
+                    app:layout_constraintEnd_toStartOf="@id/layout_overlay"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/layout_label" />
+
+                <ImageView
+                    android:id="@+id/layout_overlay"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_marginTop="16dp"
+                    android:contentDescription="@string/layout_overlay_content_description"
+                    android:src="@drawable/sync"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/layout_side_panel"
+                    app:layout_constraintTop_toBottomOf="@id/layout_label" />
+
+                <Button
+                    android:id="@+id/events_button"
+                    style="@style/TestAppButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/chat_room1_label"
-                        style="@style/TestAppLabel"
+                    android:layout_height="75dp"
+                    android:layout_marginTop="16dp"
+                    android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
 
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:text="CREATE CHAT ROOM"
-                        tools:text="CREATE CHAT ROOM"
-                        />
-                    <TextView
-                        android:id="@+id/chat_room2_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Title"
-                        android:textSize="16sp"
-                        android:fontFamily="sans-serif"
-                        android:textStyle="normal"
-                        android:textColor="#de000000"
-                        android:lineSpacingExtra="8sp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/chat_room1_label"
-                        app:layout_constraintStart_toStartOf="parent"
-                        tools:text="Title"
-                        />
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="24dp"
+                    android:text="@string/events_btn_label"
 
-                    <EditText
-                        android:maxLines="1"
-                        android:inputType="text"
-                        android:maxLength="20"
-                        android:focusedByDefault="false"
-                        android:id="@+id/chatroomText"
-                        android:layout_width="250dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="16dp"
-                        app:layout_constraintBottom_toBottomOf="@id/chat_room2_label"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/chat_room2_label"
-                        app:layout_constraintVertical_bias="0.7" />
+                    app:layout_constraintTop_toBottomOf="@id/layout_side_panel"
+                    tools:text="Events" />
 
-                    <Button
-                        android:id="@+id/btn_create"
-                        android:layout_width="wrap_content"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        android:layout_marginLeft="10dp"
-                        android:text="Create"
-                        app:layout_constraintTop_toBottomOf="@+id/chatroomText"
-                        android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/events_label"
+                    style="@style/TestAppButtonSubLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
 
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/progressBar"
-                        app:layout_constraintTop_toBottomOf="@+id/chatroomText" />
+                    android:paddingTop="36dp"
+                    android:paddingEnd="16dp"
+                    android:text="@string/default_channel_label"
+                    app:layout_constraintBottom_toBottomOf="@id/events_button"
+                    app:layout_constraintStart_toStartOf="@id/events_button"
+                    app:layout_constraintTop_toTopOf="@id/events_button"
+                    tools:text="Droid Demo Channel 1" />
 
-                    <ProgressBar
-                        android:id="@+id/progressBar"
-                        style="?android:attr/progressBarStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:visibility="invisible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/btn_create"
-                        app:layout_constraintTop_toBottomOf="@+id/chatroomText" />
-
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
-            <android.support.v7.widget.CardView
-                android:id="@+id/chat_room_section1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <android.support.constraint.ConstraintLayout
+                <Button
+                    android:id="@+id/private_group_button"
+                    style="@style/TestAppButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/chat_room1_label1"
-                        style="@style/TestAppLabel"
+                    android:layout_height="75dp"
+                    android:layout_marginTop="16dp"
+                    android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
 
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        android:text="JOIN CHAT ROOM"
-                        tools:text="JOIN CHAT ROOM"
-                        />
-                    <TextView
-                        android:id="@+id/chat_room2_label1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Enter Room Id"
-                        android:textSize="16sp"
-                        android:fontFamily="sans-serif"
-                        android:textStyle="normal"
-                        android:textColor="#de000000"
-                        android:lineSpacingExtra="8sp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/chat_room1_label1"
-                        app:layout_constraintStart_toStartOf="parent"
-                        tools:text="Enter Room Id"
-                        />
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="24dp"
+                    android:text="Private group"
 
-                    <EditText
-                        android:maxLines="1"
-                        android:inputType="text"
-                        android:focusedByDefault="false"
-                        android:id="@+id/chatroomText1"
-                        android:layout_width="250dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="16dp"
-                        app:layout_constraintBottom_toBottomOf="@id/chat_room2_label1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/chat_room2_label1"
-                        app:layout_constraintVertical_bias="0.7" />
+                    app:layout_constraintTop_toBottomOf="@id/events_button"
+                    tools:text="Private group" />
 
-                    <Button
-                        android:id="@+id/btn_join"
-                        android:layout_width="wrap_content"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        android:layout_marginLeft="10dp"
-                        android:text="Join"
-                        app:layout_constraintTop_toBottomOf="@+id/chatroomText1"
-                        android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/private_group_label"
+                    style="@style/TestAppButtonSubLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+                    android:paddingTop="36dp"
+                    android:paddingEnd="16dp"
+                    android:text="Select groups"
+                    app:layout_constraintBottom_toBottomOf="@id/private_group_button"
+                    app:layout_constraintStart_toStartOf="@id/private_group_button"
+                    app:layout_constraintTop_toTopOf="@id/private_group_button"
+                    tools:text="Select group" />
 
-                    <TextView
-                        android:id="@+id/textView21"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/progressBar1"
-                        app:layout_constraintTop_toBottomOf="@+id/chatroomText1" />
 
-                    <ProgressBar
-                        android:id="@+id/progressBar1"
-                        style="?android:attr/progressBarStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:visibility="invisible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/btn_join"
-                        app:layout_constraintTop_toBottomOf="@+id/chatroomText1" />
+                <Button
+                    android:id="@+id/themes_button"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_marginTop="16dp"
+                    android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
 
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
-            <android.support.v7.widget.CardView
-                    android:id="@+id/standalone_section"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="24dp"
+                    android:text="@string/theme_btn_label"
+
+                    app:layout_constraintTop_toBottomOf="@id/private_group_button"
+                    tools:text="Themes" />
+
+                <TextView
+                    android:id="@+id/themes_label"
+                    style="@style/TestAppButtonSubLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+
+                    android:paddingTop="36dp"
+                    android:paddingEnd="16dp"
+                    android:text="@string/default_theme_label"
+                    app:layout_constraintBottom_toBottomOf="@id/themes_button"
+                    app:layout_constraintStart_toStartOf="@id/themes_button"
+                    app:layout_constraintTop_toTopOf="@id/themes_button"
+                    tools:text="Select Theme" />
+
+                <Button
+                    android:id="@+id/themes_json_button"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_marginTop="16dp"
+                    android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
+
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="24dp"
+                    android:text="JSON Themes"
+
+                    app:layout_constraintTop_toBottomOf="@id/themes_button"
+                    tools:text="JSON Themes" />
+
+                <TextView
+                    android:id="@+id/themes_json_label"
+                    style="@style/TestAppButtonSubLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="16dp"
+
+                    android:paddingTop="36dp"
+                    android:paddingEnd="16dp"
+                    android:text="None"
+                    app:layout_constraintBottom_toBottomOf="@id/themes_json_button"
+                    app:layout_constraintStart_toStartOf="@id/themes_json_button"
+                    app:layout_constraintTop_toTopOf="@id/themes_json_button"
+                    tools:text="Select Theme" />
+
+                <CheckBox
+                    android:id="@+id/chk_show_dismiss"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp">
+                    android:layout_margin="6dp"
+                    android:text="Show Notification For Allow Widget"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/themes_json_label" />
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/chat_room_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/chat_room1_label"
+                    style="@style/TestAppLabel"
+
+                    android:text="CREATE CHAT ROOM"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="CREATE CHAT ROOM" />
+
+                <TextView
+                    android:id="@+id/chat_room2_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="8sp"
+                    android:text="Title"
+                    android:textColor="#de000000"
+                    android:textSize="16sp"
+                    android:textStyle="normal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/chat_room1_label"
+                    tools:text="Title" />
+
+                <EditText
+                    android:id="@+id/chatroomText"
+                    android:layout_width="250dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="16dp"
+                    android:focusedByDefault="false"
+                    android:inputType="text"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    app:layout_constraintBottom_toBottomOf="@id/chat_room2_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/chat_room2_label"
+                    app:layout_constraintVertical_bias="0.7" />
+
+                <Button
+                    android:id="@+id/btn_create"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="Create"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/chatroomText" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/progressBar"
+                    app:layout_constraintTop_toBottomOf="@+id/chatroomText" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/btn_create"
+                    app:layout_constraintTop_toBottomOf="@+id/chatroomText" />
+
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/chat_room_section1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/chat_room1_label1"
+                    style="@style/TestAppLabel"
+
+                    android:text="JOIN CHAT ROOM"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="JOIN CHAT ROOM" />
+
+                <TextView
+                    android:id="@+id/chat_room2_label1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="8sp"
+                    android:text="Enter Room Id"
+                    android:textColor="#de000000"
+                    android:textSize="16sp"
+                    android:textStyle="normal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/chat_room1_label1"
+                    tools:text="Enter Room Id" />
+
+                <EditText
+                    android:id="@+id/chatroomText1"
+                    android:layout_width="250dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="16dp"
+                    android:focusedByDefault="false"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    app:layout_constraintBottom_toBottomOf="@id/chat_room2_label1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/chat_room2_label1"
+                    app:layout_constraintVertical_bias="0.7" />
+
+                <Button
+                    android:id="@+id/btn_join"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="Join"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/chatroomText1" />
+
+                <TextView
+                    android:id="@+id/textView21"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/progressBar1"
+                    app:layout_constraintTop_toBottomOf="@+id/chatroomText1" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar1"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/btn_join"
+                    app:layout_constraintTop_toBottomOf="@+id/chatroomText1" />
+
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/standalone_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/standalone_label"
+                    style="@style/TestAppLabel"
+                    android:text="@string/standalone_label"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="STANDALONE" />
+
+                <Button
+                    android:id="@+id/widgets_framework_button"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="@string/widget_framework"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_label"
+                    tools:text="Widgets Framework" />
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/colorDivider"
+                    app:layout_constraintStart_toStartOf="@id/widgets_only_button"
+                    app:layout_constraintTop_toBottomOf="@id/widgets_only_button" />
+
+                <Button
+                    android:id="@+id/widgets_only_button"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="@string/widgets_only_btn_label"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_label"
+                    tools:text="Widgets Only" />
+
+                <View
+                    android:id="@+id/standalone_divider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/colorDivider"
+                    app:layout_constraintStart_toStartOf="@id/widgets_only_button"
+                    app:layout_constraintTop_toBottomOf="@id/widgets_only_button" />
+
+                <Button
+                    android:id="@+id/chat_only_button"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="@string/chat_only_btn_label"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider"
+                    tools:text="Chat Only" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/settings_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/settings_label"
+                    style="@style/TestAppLabel"
+
+                    android:text="@string/settings_label"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="SETTINGS" />
+
+                <TextView
+                    android:id="@+id/resize_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="8sp"
+                    android:text="@string/resize_btn_label"
+                    android:textColor="#de000000"
+                    android:textSize="16sp"
+                    android:textStyle="normal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/settings_label"
+                    tools:text="Nickname" />
+
+                <EditText
+                    android:id="@+id/nicknameText"
+                    android:layout_width="250dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="16dp"
+                    android:focusedByDefault="false"
+                    android:inputType="text"
+                    android:maxLength="20"
+                    android:maxLines="1"
+                    app:layout_constraintBottom_toBottomOf="@id/resize_label"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/resize_label"
+                    app:layout_constraintVertical_bias="0.7" />
+
                 <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <TextView
-                            style="@style/TestAppLabel"
-                            android:id="@+id/standalone_label"
-                            android:text="@string/standalone_label"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            tools:text="STANDALONE"
-                    />
-                    <Button
-                            style="@style/TestAppButton"
-                            android:id="@+id/widgets_framework_button"
-                            android:layout_width="match_parent"
-                            android:layout_height="75dp"
-                            android:text="@string/widget_framework"
-                            app:layout_constraintTop_toBottomOf="@id/standalone_label"
-                            tools:text="Widgets Framework"
-                    />
-
-                    <View
-                          android:layout_width="wrap_content"
-                          android:layout_height="1dp"
-                          android:background="@color/colorDivider"
-                          android:layout_marginStart="16dp"
-                          app:layout_constraintTop_toBottomOf="@id/widgets_only_button"
-                          app:layout_constraintStart_toStartOf="@id/widgets_only_button"
-                    />
-
-                    <Button
-                        style="@style/TestAppButton"
-                        android:id="@+id/widgets_only_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="75dp"
-                        android:text="@string/widgets_only_btn_label"
-                        app:layout_constraintTop_toBottomOf="@id/standalone_label"
-                        tools:text="Widgets Only"
-                        />
-
-                    <View android:id="@+id/standalone_divider"
-                        android:layout_width="wrap_content"
-                        android:layout_height="1dp"
-                        android:background="@color/colorDivider"
-                        android:layout_marginStart="16dp"
-                        app:layout_constraintTop_toBottomOf="@id/widgets_only_button"
-                        app:layout_constraintStart_toStartOf="@id/widgets_only_button"
-                        />
-                    <Button
-                            style="@style/TestAppButton"
-                            android:id="@+id/chat_only_button"
-                            android:layout_width="match_parent"
-                            android:layout_height="75dp"
-                            android:text="@string/chat_only_btn_label"
-                            app:layout_constraintTop_toBottomOf="@id/standalone_divider"
-                            tools:text="Chat Only"
-                    />
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-            <android.support.v7.widget.CardView
-                    android:id="@+id/settings_section"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp">
-                <android.support.constraint.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/nicknameText">
+
                     <TextView
-                            android:id="@+id/settings_label"
-                            style="@style/TestAppLabel"
-
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:text="@string/settings_label"
-                            tools:text="SETTINGS"
-                    />
-                    <TextView
-                            android:id="@+id/resize_label"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/resize_btn_label"
-                            android:textSize="16sp"
-                            android:fontFamily="sans-serif"
-                            android:textStyle="normal"
-                            android:textColor="#de000000"
-                            android:lineSpacingExtra="8sp"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="16dp"
-                            app:layout_constraintTop_toBottomOf="@id/settings_label"
-                            app:layout_constraintStart_toStartOf="parent"
-                            tools:text="Nickname"
-                    />
-
-                    <EditText
-                        android:maxLines="1"
-                        android:inputType="text"
-                        android:maxLength="20"
-                        android:focusedByDefault="false"
-                        android:id="@+id/nicknameText"
-                        android:layout_width="250dp"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="16dp"
-                        app:layout_constraintBottom_toBottomOf="@id/resize_label"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/resize_label"
-                        app:layout_constraintVertical_bias="0.7" />
-
-                    <LinearLayout
-                        android:layout_marginTop="8dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/nicknameText"
-                        android:layout_width="match_parent"
-                        android:visibility="gone"
+                        style="@style/TestAppLabel"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <TextView
-                            style="@style/TestAppLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:text="Keyboard Auto Close on/off(Will work with turner theme only)"
-                            tools:text="KEYBOARD ON/OFF"
-                            />
+                        android:text="Keyboard Auto Close on/off(Will work with turner theme only)"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="KEYBOARD ON/OFF" />
+
                     <ToggleButton
                         android:id="@+id/toggle_auto_keyboard_hide"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
                         android:layout_gravity="center"
-                        />
-                    </LinearLayout>
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
+                        android:checked="true" />
+                </LinearLayout>
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
 
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/version_details_section"
+        <android.support.v7.widget.CardView
+            android:id="@+id/version_details_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:paddingBottom="12dp">
 
-                <android.support.constraint.ConstraintLayout
-                    android:paddingBottom="12dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/build_label"
+                    style="@style/TestAppLabel"
+                    android:text="@string/build_details"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Build details" />
 
-                    <TextView
-                        android:id="@+id/build_label"
-                        style="@style/TestAppLabel"
-                        android:text="@string/build_details"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="Build details" />
+                <TextView
+                    android:id="@+id/sdk_version"
+                    style="@style/TestAppButtonSubLabel"
+                    android:text="@string/build_details"
+                    app:layout_constraintLeft_toLeftOf="@id/build_label"
+                    app:layout_constraintTop_toBottomOf="@id/build_label"
+                    tools:text="Build details" />
 
-                    <TextView
-                        android:id="@+id/sdk_version"
-                        style="@style/TestAppButtonSubLabel"
-                        android:text="@string/build_details"
-                        app:layout_constraintTop_toBottomOf="@id/build_label"
-                        app:layout_constraintLeft_toLeftOf="@id/build_label"
-                        tools:text="Build details" />
+                <TextView
+                    android:id="@+id/build_no"
+                    style="@style/TestAppButtonSubLabel"
+                    android:text="Bitrise build : NA"
+                    app:layout_constraintLeft_toLeftOf="@id/sdk_version"
+                    app:layout_constraintTop_toBottomOf="@id/sdk_version"
+                    tools:text="Bitrise build : NA" />
 
-                    <TextView
-                        android:id="@+id/build_no"
-                        style="@style/TestAppButtonSubLabel"
-                        android:text="Bitrise build : NA"
-                        app:layout_constraintTop_toBottomOf="@id/sdk_version"
-                        app:layout_constraintLeft_toLeftOf="@id/sdk_version"
-                        tools:text="Bitrise build : NA" />
-
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
-        </LinearLayout>
-    </ScrollView>
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+</ScrollView>

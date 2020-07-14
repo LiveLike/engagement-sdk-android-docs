@@ -19,4 +19,11 @@
     <string name="reactions_panel_opened">Reactions panel opened</string>
     <string name="you_can_add_reaction_hint">you can add reaction here</string>
     <string name="image">Image</string>
+    <string name="coins">coins</string>
+    <string name="snap_to_live">snap to live</string>
+    <string name="user_image">user image</string>
+    <string name="report_message">Report Message</string>
+    <string name="team_one">team one</string>
+    <string name="team_two">team two</string>
+    <string name="winner">winner</string>
 </resources>
