@@ -9,11 +9,10 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 
-
 @RunWith(Parameterized::class)
-class SDKInitializationTest (
-    private val clientId : String,
-    private val programId : String
+class SDKInitializationTest(
+    private val clientId: String,
+    private val programId: String
 ) {
 
     private lateinit var instrumentationContext: Context
@@ -36,12 +35,18 @@ class SDKInitializationTest (
         @JvmStatic
         @Parameterized.Parameters
         fun clientId() = listOf(
-            arrayOf("",""),
-            arrayOf("wrong client id",""),
-            arrayOf("WV6W1rkAJAAXAS9l0LpqHzjDyEcPbuGJjX7Kc2hk","wrong program id"), // Prod
-            arrayOf("WV6W1rkAJAAXAS9l0LpqHzjDyEcPbuGJjX7Kc2hk","43a0b614-e248-421d-8d6f-3ecb3977a5d8"), // Prod
-            arrayOf("l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu","wrong program id"), // Staging
-            arrayOf("l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu","13f0387b-5ea8-439f-84ea-f97e6c03177b") // Staging
+            arrayOf("", ""),
+            arrayOf("wrong client id", ""),
+            arrayOf("WV6W1rkAJAAXAS9l0LpqHzjDyEcPbuGJjX7Kc2hk", "wrong program id"), // Prod
+            arrayOf(
+                "WV6W1rkAJAAXAS9l0LpqHzjDyEcPbuGJjX7Kc2hk",
+                "43a0b614-e248-421d-8d6f-3ecb3977a5d8"
+            ), // Prod
+            arrayOf("l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu", "wrong program id"), // Staging
+            arrayOf(
+                "l3euw77STbgCVQn59AQZudZ163qO2EhzWVOKBfpu",
+                "13f0387b-5ea8-439f-84ea-f97e6c03177b"
+            ) // Staging
         )
     }
 }

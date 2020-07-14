@@ -56,7 +56,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 current_state_text_view.text = "Current State : ${state.name}"
             }
         }
-        if (ThemeRandomizer.themesList.size> 0) {
+        if (ThemeRandomizer.themesList.size > 0) {
             widget_view.applyTheme(ThemeRandomizer.themesList.last())
         }
     }
