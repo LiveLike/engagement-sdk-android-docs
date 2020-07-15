@@ -47,6 +47,7 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -93,7 +94,7 @@ internal class ChatRecyclerAdapter(
     internal var isPublicChat: Boolean = true
     private var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
-    private var currentChatReactionPopUpViewPos: Int = -1
+    var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
