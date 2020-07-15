@@ -127,4 +127,12 @@
         android:textSize="13sp"
         android:layout_marginLeft="8dp"/>
 
+    <Button
+        android:id="@+id/btn_my_widgets"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/live_blog"
+        android:layout_width="wrap_content"
+        android:text="My Widgets"
+        android:layout_height="35dp" />
+
 </android.support.constraint.ConstraintLayout>

@@ -14,10 +14,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.WidgetListener
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
@@ -34,6 +37,7 @@ import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import java.util.Calendar
 import java.util.Date
 import java.util.Timer
@@ -71,6 +75,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var privateGroupChatsession: LiveLikeChatSession? = null
     private var startingState: PlayerState? = null
     private var channelManager: ChannelManager? = null
+    private var myWidgetsList: ArrayList<LiveLikeWidget> = arrayListOf()
 
     private var adsPlaying = false
         set(adsPlaying) {
@@ -167,6 +172,24 @@ class ExoPlayerActivity : AppCompatActivity() {
                         create()
                     }.show()
                 }
+            }
+            myWidgetsList = GsonBuilder().create()
+                .fromJson(
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
+                        PREF_MY_WIDGETS,
+                        null
+                    )
+                    , object : TypeToken<List<LiveLikeWidget>>() {}.type
+                ) ?: arrayListOf()
+
+            btn_my_widgets.setOnClickListener {
+                AlertDialog.Builder(this).apply {
+                    setTitle("Choose a widget to show!")
+                    setItems(myWidgetsList.map { it.toString() }.toTypedArray()) { _, which ->
+
+                    }
+                    create()
+                }.show()
             }
 
             chat_room_button.setOnClickListener {
@@ -275,6 +298,13 @@ class ExoPlayerActivity : AppCompatActivity() {
                     else -> null
                 }
             )
+            session.setWidgetListener(object : WidgetListener {
+                override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
+                    myWidgetsList.add(0,liveLikeWidget)
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                        .edit().putString(PREF_MY_WIDGETS, Gson().toJson(myWidgetsList)).apply()
+                }
+            })
             widget_view.setSession(session)
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(

@@ -40,6 +40,8 @@ interface LiveLikeContentSession {
     var widgetInterceptor: WidgetInterceptor?
     /** set value of style for widget **/
     fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes)
+    /** listener for getting latest widget data **/
+    fun setWidgetListener(widgetListener: WidgetListener)
 }
 
 /**
@@ -48,6 +50,13 @@ interface LiveLikeContentSession {
  */
 interface MessageListener {
     fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage)
+}
+
+/**
+ * Return the new widget id and kind appear on screen
+ */
+interface WidgetListener{
+    fun onNewWidget(liveLikeWidget: LiveLikeWidget)
 }
 
 /** A simple representation of an observable stream.
