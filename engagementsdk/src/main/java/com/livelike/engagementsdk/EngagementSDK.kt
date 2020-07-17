@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.chat.ChatRoomInfo
@@ -19,6 +21,7 @@ import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
+import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
@@ -27,6 +30,7 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -58,6 +62,7 @@ class EngagementSDK(
         SubscriptionManager()
     private val dataClient =
         EngagementDataClientImpl()
+    private val widgetDataClient = WidgetDataClientImpl()
 
     internal val userRepository =
         UserRepository(clientId)
@@ -334,6 +339,25 @@ class EngagementSDK(
                     }
                 }
             }
+    }
+
+    fun fetchWidgetDetails(
+        widgetId: String,
+        widgetKind: String,
+        liveLikeCallback: LiveLikeCallback<LiveLikeWidget>
+    ) {
+        uiScope.launch {
+            try {
+                val jsonObject = widgetDataClient.getWidgetDataFromIdAndKind(widgetId, widgetKind)
+                liveLikeCallback.onResponse(
+                    gson.fromJson(jsonObject, LiveLikeWidget::class.java),
+                    null
+                )
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            }
+        }
     }
 
     /**

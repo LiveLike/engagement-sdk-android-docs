@@ -162,7 +162,7 @@ internal class WidgetManager(
         val widgetId = payload["id"].asString
 
         handler.post {
-            widgetStream.onNext(LiveLikeWidget(widgetId, widgetKind))
+            widgetStream.onNext(LiveLikeWidget(id = widgetId, kind = widgetKind))
             currentWidgetViewStream.onNext(
                 Pair(
                     widgetType,

@@ -16,6 +16,7 @@ import android.view.View
 import android.view.WindowManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
@@ -185,8 +186,17 @@ class ExoPlayerActivity : AppCompatActivity() {
             btn_my_widgets.setOnClickListener {
                 AlertDialog.Builder(this).apply {
                     setTitle("Choose a widget to show!")
-                    setItems(myWidgetsList.map { it.toString() }.toTypedArray()) { _, which ->
-
+                    setItems(myWidgetsList.map { "${it.id}(${it.kind})" }.toTypedArray()) { _, which ->
+                        val widget = myWidgetsList[which]
+                        (application as LiveLikeApplication).sdk.fetchWidgetDetails(widget.id!!,
+                            widget.kind!!,
+                            object : LiveLikeCallback<LiveLikeWidget>() {
+                                override fun onResponse(result: LiveLikeWidget?, error: String?) {
+                                    result?.let {
+                                        widget_view.displayWidget((application as LiveLikeApplication).sdk,result)
+                                    }
+                                }
+                            })
                     }
                     create()
                 }.show()
@@ -298,14 +308,15 @@ class ExoPlayerActivity : AppCompatActivity() {
                     else -> null
                 }
             )
-            session.setWidgetListener(object : WidgetListener {
+            widget_view.setWidgetListener(object : WidgetListener {
                 override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
-                    myWidgetsList.add(0,liveLikeWidget)
+                    myWidgetsList.add(0, liveLikeWidget)
                     getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
                         .edit().putString(PREF_MY_WIDGETS, Gson().toJson(myWidgetsList)).apply()
                 }
             })
             widget_view.setSession(session)
+
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(
                     state: WidgetStates,

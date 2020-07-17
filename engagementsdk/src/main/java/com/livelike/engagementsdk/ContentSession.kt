@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -78,10 +79,6 @@ internal class ContentSession(
         widgetThemeAttributes = widgetViewThemeAttributes
     }
 
-    override fun setWidgetListener(widgetListener: WidgetListener) {
-        this.widgetListener = widgetListener
-    }
-
     override var analyticService: AnalyticsService =
         MockAnalyticsService(programId)
     private val llDataClient =
@@ -92,7 +89,7 @@ internal class ContentSession(
     private val currentWidgetViewStream =
         SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-    private val widgetStream = SubscriptionManager<LiveLikeWidget>()
+    val widgetStream = SubscriptionManager<LiveLikeWidget>()
     private val programRepository =
         ProgramRepository(
             programId,
@@ -106,8 +103,6 @@ internal class ContentSession(
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
-
-    private var widgetListener: WidgetListener? = null
 
     // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
     private val configurationUserPairFlow = flow {
@@ -124,7 +119,6 @@ internal class ContentSession(
                 analyticService.trackUsername(it.nickname)
             }
         }
-
         userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -178,16 +172,11 @@ internal class ContentSession(
                     }
                 }
             }
-        widgetStream.subscribe(this) {
-            logDebug { "widget Stream: $it" }
-            it?.let {
-                widgetListener?.onNewWidget(it)
-            }
-        }
         if (!applicationContext.isNetworkConnected()) {
             errorDelegate?.onError("Network error please create the session again")
         }
     }
+
 
     private fun startObservingForGamificationAnalytics(
         analyticService: AnalyticsService,

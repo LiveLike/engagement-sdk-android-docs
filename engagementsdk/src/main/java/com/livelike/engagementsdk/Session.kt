@@ -40,8 +40,6 @@ interface LiveLikeContentSession {
     var widgetInterceptor: WidgetInterceptor?
     /** set value of style for widget **/
     fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes)
-    /** listener for getting latest widget data **/
-    fun setWidgetListener(widgetListener: WidgetListener)
 }
 
 /**
