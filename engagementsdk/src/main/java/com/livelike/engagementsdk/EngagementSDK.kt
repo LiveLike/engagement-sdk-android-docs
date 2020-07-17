@@ -22,6 +22,7 @@ import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -74,7 +75,8 @@ class EngagementSDK(
      */
     init {
         EnagagementSdkUncaughtExceptionHandler
-        BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
+        if(BuildConfig.DEBUG.not())
+            BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(
             applicationContext
