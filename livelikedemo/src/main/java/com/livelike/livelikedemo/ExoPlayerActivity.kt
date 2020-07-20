@@ -308,9 +308,11 @@ class ExoPlayerActivity : AppCompatActivity() {
             )
             widget_view.setWidgetListener(object : WidgetListener {
                 override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
-                    myWidgetsList.add(0, liveLikeWidget)
-                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                        .edit().putString(PREF_MY_WIDGETS, Gson().toJson(myWidgetsList)).apply()
+                    if (myWidgetsList.find { it.id == liveLikeWidget.id } == null) {
+                        myWidgetsList.add(0, liveLikeWidget)
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                            .edit().putString(PREF_MY_WIDGETS, Gson().toJson(myWidgetsList)).apply()
+                    }
                 }
             })
             widget_view.setSession(session)
