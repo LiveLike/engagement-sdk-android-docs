@@ -35,6 +35,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
@@ -184,22 +185,19 @@ class ExoPlayerActivity : AppCompatActivity() {
                 ) ?: arrayListOf()
 
             btn_my_widgets.setOnClickListener {
-                AlertDialog.Builder(this).apply {
-                    setTitle("Choose a widget to show!")
-                    setItems(myWidgetsList.map { "${it.id}(${it.kind})" }.toTypedArray()) { _, which ->
-                        val widget = myWidgetsList[which]
-                        (application as LiveLikeApplication).sdk.fetchWidgetDetails(widget.id!!,
-                            widget.kind!!,
-                            object : LiveLikeCallback<LiveLikeWidget>() {
-                                override fun onResponse(result: LiveLikeWidget?, error: String?) {
-                                    result?.let {
-                                        widget_view.displayWidget((application as LiveLikeApplication).sdk,result)
-                                    }
-                                }
-                            })
-                    }
-                    create()
-                }.show()
+                DialogUtils.showMyWidgetsDialog(this,
+                    (application as LiveLikeApplication).sdk,
+                    myWidgetsList,
+                    object : LiveLikeCallback<LiveLikeWidget>() {
+                        override fun onResponse(result: LiveLikeWidget?, error: String?) {
+                            result?.let {
+                                widget_view.displayWidget(
+                                    (application as LiveLikeApplication).sdk,
+                                    result
+                                )
+                            }
+                        }
+                    })
             }
 
             chat_room_button.setOnClickListener {

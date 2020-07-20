@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidget
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import kotlinx.android.synthetic.main.activity_widget_framework.current_state_text_view
 import kotlinx.android.synthetic.main.activity_widget_framework.input_widget_json
@@ -32,7 +33,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
 
         input_widget_json.setText(json)
 
-        val myWidgetsList: ArrayList<LiveLikeWidget>  = GsonBuilder().create()
+        val myWidgetsList: ArrayList<LiveLikeWidget> = GsonBuilder().create()
             .fromJson(
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                     PREF_MY_WIDGETS,
@@ -41,22 +42,19 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 , object : TypeToken<List<LiveLikeWidget>>() {}.type
             ) ?: arrayListOf()
         show_my_widget.setOnClickListener {
-            AlertDialog.Builder(this).apply {
-                setTitle("Choose a widget to show!")
-                setItems(myWidgetsList.map { "${it.id}(${it.kind})" }.toTypedArray()) { _, which ->
-                    val widget = myWidgetsList[which]
-                    (application as LiveLikeApplication).sdk.fetchWidgetDetails(widget.id!!,
-                        widget.kind!!,
-                        object : LiveLikeCallback<LiveLikeWidget>() {
-                            override fun onResponse(result: LiveLikeWidget?, error: String?) {
-                                result?.let {
-                                    widget_view.displayWidget((application as LiveLikeApplication).sdk,result)
-                                }
-                            }
-                        })
-                }
-                create()
-            }.show()
+            DialogUtils.showMyWidgetsDialog(this,
+                (application as LiveLikeApplication).sdk,
+                myWidgetsList,
+                object : LiveLikeCallback<LiveLikeWidget>() {
+                    override fun onResponse(result: LiveLikeWidget?, error: String?) {
+                        result?.let {
+                            widget_view.displayWidget(
+                                (application as LiveLikeApplication).sdk,
+                                result
+                            )
+                        }
+                    }
+                })
         }
         show_widget.setOnClickListener {
             try {
@@ -90,7 +88,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 current_state_text_view.text = "Current State : ${state.name}"
             }
         }
-        if (ThemeRandomizer.themesList.size> 0) {
+        if (ThemeRandomizer.themesList.size > 0) {
             widget_view.applyTheme(ThemeRandomizer.themesList.last())
         }
     }
