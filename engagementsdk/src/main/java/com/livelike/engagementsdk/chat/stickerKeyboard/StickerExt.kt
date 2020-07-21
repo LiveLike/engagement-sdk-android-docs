@@ -27,6 +27,12 @@ fun String.findStickers(): Matcher {
     return pattern.matcher(this)
 }
 
+internal fun String.findStickerCodes(): Matcher {
+    val regex = "(?<=:)[^ :\\s]+(?=:)"
+    val pattern = Pattern.compile(regex)
+    return pattern.matcher(this)
+}
+
 fun String.findImages(): Matcher {
     val regex = ":content://[^ :\\s]*:|:https://[^ :\\s]*:"
     val pattern = Pattern.compile(regex)

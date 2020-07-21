@@ -58,7 +58,7 @@ internal class ChatSession(
     override var analyticService: AnalyticsService = MockAnalyticsService()
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
-            MockAnalyticsService(),
+            analyticService,
             userRepository.currentUserStream,
             isPublicRoom,
             null
