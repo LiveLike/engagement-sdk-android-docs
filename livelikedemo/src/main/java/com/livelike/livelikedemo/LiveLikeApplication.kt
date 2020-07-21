@@ -69,7 +69,7 @@ class LiveLikeApplication : Application() {
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
-        player = ExoPlayerImpl(baseContext, playerView)
+        player = ExoPlayerImpl(applicationContext, playerView)
         return player
     }
 

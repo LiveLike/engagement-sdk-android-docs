@@ -14,6 +14,7 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
@@ -88,7 +89,20 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         ExoPlayerActivity.privateGroupRoomId = null
+        LocalBroadcastManager.getInstance(this)
+            .unregisterReceiver(mConnReceiver)
     }
+
+    override fun onBackPressed() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.finishAfterTransition()
+        }
+        else
+        {
+            super.onBackPressed()
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
