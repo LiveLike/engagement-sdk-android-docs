@@ -95,8 +95,13 @@ data class LiveLikeWidget(
     @field:SerializedName("link_url")
     val linkUrl: String? = null,
     @field:SerializedName("link_label")
-    val linkLabel: String? = null
-
+    val linkLabel: String? = null,
+    @field:SerializedName("text_prediction_id")
+    val textPredictionId: String? = null,
+    @field:SerializedName("text_prediction_url")
+    val textPredictionUrl: String? = null,
+    @field:SerializedName("correct_option_id")
+    val correctOptionId: String? = null
 )
 
 data class CreatedBy(
@@ -129,7 +134,16 @@ data class OptionsItem(
     val translatableFields: List<String?>? = null,
 
     @field:SerializedName("vote_count")
-    val voteCount: Int? = null
+    val voteCount: Int? = null,
+
+    @field:SerializedName("is_correct")
+    val isCorrect: Boolean? = null,
+
+    @field:SerializedName("answer_url")
+    val answerUrl: String? = null,
+
+    @field:SerializedName("answer_count")
+    val answerCount: Int? = null
 )
 
 data class ReactionsItem(
