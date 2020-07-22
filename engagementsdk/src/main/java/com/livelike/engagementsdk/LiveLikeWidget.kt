@@ -101,7 +101,9 @@ data class LiveLikeWidget(
     @field:SerializedName("text_prediction_url")
     val textPredictionUrl: String? = null,
     @field:SerializedName("correct_option_id")
-    val correctOptionId: String? = null
+    val correctOptionId: String? = null,
+    @field:SerializedName("title")
+    val title: String? = null
 )
 
 data class CreatedBy(

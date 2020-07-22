@@ -315,7 +315,7 @@ internal class ChatViewModel(
                         uiScope.launch(Dispatchers.IO) {
                             val imageUrl = dataClient.uploadImage(
                                 currentChatRoom!!.uploadUrl,
-                                userStream.latest()!!.accessToken,
+                                null,
                                 fileBytes
                             )
                             chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
