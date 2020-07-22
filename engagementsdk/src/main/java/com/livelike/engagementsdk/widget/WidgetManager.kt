@@ -83,6 +83,12 @@ internal class WidgetManager(
 
     init {
         widgetInterceptorSubscribe()
+        currentWidgetViewStream.subscribe(this) {
+            widgetOnScreen = (it != null)
+            if (messageQueue.isNotEmpty()) {
+                publishNextInQueue()
+            }
+        }
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
