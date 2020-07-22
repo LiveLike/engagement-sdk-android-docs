@@ -3,6 +3,7 @@ package com.livelike.livelikedemo
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -188,7 +189,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.show()
             }
         } else {
-            checkForNetworkToRecreateActivity()
+            //checkForNetworkToRecreateActivity()
         }
         if (themeCurrent == R.style.TurnerChatTheme) {
             val emptyView =
@@ -196,6 +197,18 @@ class ExoPlayerActivity : AppCompatActivity() {
             chat_view.emptyChatBackgroundView = emptyView
             chat_view.allowMediaFromKeyboard = false
         }
+    }
+
+    override fun onBackPressed() {
+        if (this.isTaskRoot) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                this.finishAfterTransition()
+            }
+        } else {
+            super.onBackPressed()
+        }
+
+
     }
 
     private fun testKeyboardDismissUseCase(themeCurrent: Int) {
@@ -301,11 +314,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (privateGroupChatsession == null) {
             privateGroupChatsession =
                 (application as LiveLikeApplication).createPrivateSession(
-                    errorDelegate = object : ErrorDelegate() {
-                        override fun onError(error: String) {
-                            checkForNetworkToRecreateActivity()
-                        }
-                    }
+//                    errorDelegate = object : ErrorDelegate() {
+//                        override fun onError(error: String) {
+//                            checkForNetworkToRecreateActivity()
+//                        }
+//                    }
 
                 )
             privateGroupChatsession?.setMessageListener(object : MessageListener {
@@ -481,18 +494,19 @@ class ExoPlayerActivity : AppCompatActivity() {
         fullLogs.text = "$logs \n\n ${fullLogs.text}"
     }
 
-    private fun checkForNetworkToRecreateActivity() {
-        playerView.postDelayed({
-            if (isNetworkConnected()) {
-                playerView.post {
-                    startActivity(intent)
-                    finish()
-                }
-            } else {
-                checkForNetworkToRecreateActivity()
-            }
-        }, 1000)
-    }
+//    private fun checkForNetworkToRecreateActivity() {
+//        //removing this method implementation as it is causing multiple instances on same activity in a task
+////        playerView.postDelayed({
+////            if (isNetworkConnected()) {
+////                playerView.post {
+////                    startActivity(intent)
+////                    finish()
+////                }
+////            } else {
+////                checkForNetworkToRecreateActivity()
+////            }
+////        }, 1000)
+//    }
 
     override fun onStart() {
         super.onStart()

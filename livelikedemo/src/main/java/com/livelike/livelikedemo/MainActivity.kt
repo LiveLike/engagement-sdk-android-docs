@@ -94,20 +94,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.finishAfterTransition()
-        }
-        else
-        {
-            super.onBackPressed()
-        }
-    }
+        if(this.isTaskRoot){
+                this.finishAfterTransition()
+            }
+            else
+            {
+                super.onBackPressed()
+            } }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    fun registerNetWorkCallback(){
         channelManager = (application as LiveLikeApplication).channelManager
-
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
@@ -128,9 +125,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
+    }
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        registerNetWorkCallback()
         sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
         if (BuildConfig.VERSION_CODE > 1) {
             build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
