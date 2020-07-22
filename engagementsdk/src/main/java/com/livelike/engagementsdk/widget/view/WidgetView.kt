@@ -146,27 +146,38 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 widgetType = "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
-            widgetContainerViewModel?.currentWidgetViewStream?.onNext(
-                Pair(
-                    widgetType,
-                    WidgetProvider()
-                        .get(
-                            null,
-                            WidgetInfos(widgetType, widgetResourceJson, widgetId),
-                            context,
-                            MockAnalyticsService(),
-                            sdk.configurationStream.latest()!!,
-                            {
-                                widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
-                            },
-                            sdk.userRepository,
-                            null,
-                            SubscriptionManager(),
-                            widgetViewThemeAttributes,
-                            engagementSDKTheme
-                        )
+            if (widgetContainerViewModel?.currentWidgetViewStream?.latest() == null) {
+                widgetContainerViewModel?.currentWidgetViewStream?.onNext(
+                    Pair(
+                        widgetType,
+                        WidgetProvider()
+                            .get(
+                                null,
+                                WidgetInfos(widgetType, widgetResourceJson, widgetId),
+                                context,
+                                MockAnalyticsService(),
+                                sdk.configurationStream.latest()!!,
+                                {
+                                    widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
+                                },
+                                sdk.userRepository,
+                                null,
+                                SubscriptionManager(),
+                                widgetViewThemeAttributes,
+                                engagementSDKTheme
+                            )
+                    )
                 )
-            )
+            } else {
+                widgetContainerViewModel?.currentWidgetViewStream?.subscribe(this) {
+                    if (it == null) {
+                        widgetContainerViewModel?.currentWidgetViewStream?.unsubscribe(this)
+                        post {
+                            displayWidget(sdk, widgetResourceJson)
+                        }
+                    }
+                }
+            }
         } catch (ex: Exception) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()

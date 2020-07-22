@@ -23,13 +23,20 @@ object DialogUtils {
         dialog.show()
     }
 
-    fun showMyWidgetsDialog(context: Context,sdk: EngagementSDK,myWidgetsList: ArrayList<LiveLikeWidget>,liveLikeCallback: LiveLikeCallback<LiveLikeWidget>){
+    fun showMyWidgetsDialog(
+        context: Context,
+        sdk: EngagementSDK,
+        myWidgetsList: ArrayList<LiveLikeWidget>,
+        liveLikeCallback: LiveLikeCallback<LiveLikeWidget>
+    ) {
         AlertDialog.Builder(context).apply {
             setTitle("Choose a widget to show!")
             setItems(myWidgetsList.map { "${it.id}(${it.kind})" }.toTypedArray()) { _, which ->
                 val widget = myWidgetsList[which]
-                sdk.fetchWidgetDetails(widget.id!!,
-                    widget.kind!!,liveLikeCallback)
+                sdk.fetchWidgetDetails(
+                    widget.id!!,
+                    widget.kind!!, liveLikeCallback
+                )
             }
             create()
         }.show()
