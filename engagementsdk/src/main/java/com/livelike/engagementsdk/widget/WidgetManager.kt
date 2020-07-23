@@ -164,11 +164,15 @@ internal class WidgetManager(
     private fun showWidgetOnScreen(msgHolder: MessageHolder) {
         val widgetType = msgHolder.clientMessage.message.get("event").asString ?: ""
         val payload = msgHolder.clientMessage.message["payload"].asJsonObject
-        val widgetKind = payload["kind"].asString
         val widgetId = payload["id"].asString
 
         handler.post {
-            widgetStream.onNext(LiveLikeWidget(id = widgetId, kind = widgetKind))
+            widgetStream.onNext(
+                gson.fromJson(
+                    payload.toString(),
+                    LiveLikeWidget::class.java
+                )
+            )
             currentWidgetViewStream.onNext(
                 Pair(
                     widgetType,

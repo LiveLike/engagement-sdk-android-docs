@@ -122,7 +122,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
             }
         }
-
+        widget_view.setWidgetListener(object : WidgetListener {
+            override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
+                println("Widget:${liveLikeWidget.id},${liveLikeWidget.programId},${liveLikeWidget.options?.size}")
+            }
+        })
         widget_view.setSession(session)
     }
 
