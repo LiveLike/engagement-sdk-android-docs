@@ -36,6 +36,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -80,7 +81,7 @@ class EngagementSDK(
      */
     init {
         EnagagementSdkUncaughtExceptionHandler
-        if(BuildConfig.DEBUG.not())
+        if (BuildConfig.DEBUG.not())
             BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(
@@ -356,6 +357,9 @@ class EngagementSDK(
                     null
                 )
             } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            } catch (e: IOException) {
                 e.printStackTrace()
                 liveLikeCallback.onResponse(null, e.message)
             }
