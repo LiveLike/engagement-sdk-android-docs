@@ -41,6 +41,7 @@ import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.build_no
+import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
@@ -336,6 +337,10 @@ class MainActivity : AppCompatActivity() {
             player.keyboardClose = isChecked
         }
         toggle_auto_keyboard_hide.isChecked = player.keyboardClose
+
+        chat_input_visibility_switch.setOnCheckedChangeListener { _, isChecked ->
+            ExoPlayerActivity.isHideChatInput = isChecked
+        }
 
         nicknameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
