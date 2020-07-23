@@ -706,6 +706,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
     }
 
+    /**
+     * use this function to hide message input to build use case like influencer chat
+     **/
+    fun hideChatInputView() {
+        chatInput.visibility = View.GONE
+    }
+
     private fun sendMessageNow() {
         if (edittext_chat_message.text.isNullOrBlank()) {
             // Do nothing if the message is blank or empty
