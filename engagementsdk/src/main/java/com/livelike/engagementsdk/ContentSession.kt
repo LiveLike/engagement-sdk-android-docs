@@ -2,6 +2,7 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -88,7 +89,7 @@ internal class ContentSession(
     private val currentWidgetViewStream =
         SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-
+    val widgetStream = SubscriptionManager<LiveLikeWidget>()
     private val programRepository =
         ProgramRepository(
             programId,
@@ -118,7 +119,6 @@ internal class ContentSession(
                 analyticService.trackUsername(it.nickname)
             }
         }
-
         userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -135,33 +135,48 @@ internal class ContentSession(
                     analyticService.trackUsername(pair.first.nickname)
                     analyticService.trackConfiguration(configuration.name ?: "")
 
-                if (programId.isNotEmpty()) {
-                    llDataClient.getProgramData(configuration.programDetailUrlTemplate.replace(TEMPLATE_PROGRAM_ID, programId)) { program ->
-                        if (program !== null) {
-                            programRepository.program = program
-                            userRepository.rewardType = program.rewardsType
-                            isGamificationEnabled = !program.rewardsType.equals(RewardsType.NONE.key)
-                            initializeWidgetMessaging(program.subscribeChannel, configuration, pair.first.id)
-                            chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
-                            program.analyticsProps.forEach { map ->
-                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                    if (programId.isNotEmpty()) {
+                        llDataClient.getProgramData(
+                            configuration.programDetailUrlTemplate.replace(
+                                TEMPLATE_PROGRAM_ID,
+                                programId
+                            )
+                        ) { program ->
+                            if (program !== null) {
+                                programRepository.program = program
+                                userRepository.rewardType = program.rewardsType
+                                isGamificationEnabled =
+                                    !program.rewardsType.equals(RewardsType.NONE.key)
+                                initializeWidgetMessaging(
+                                    program.subscribeChannel,
+                                    configuration,
+                                    pair.first.id
+                                )
+                                chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
+                                program.analyticsProps.forEach { map ->
+                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                }
+                                configuration.analyticsProps.forEach { map ->
+                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                }
+                                contentSessionScope.launch {
+                                    if (isGamificationEnabled) programRepository.fetchProgramRank()
+                                }
+                                startObservingForGamificationAnalytics(
+                                    analyticService,
+                                    programRepository.programGamificationProfileStream,
+                                    programRepository.rewardType
+                                )
                             }
-                            configuration.analyticsProps.forEach { map ->
-                                analyticService.registerSuperAndPeopleProperty(map.key to map.value)
-                            }
-                            contentSessionScope.launch {
-                                if (isGamificationEnabled) programRepository.fetchProgramRank()
-                            }
-                            startObservingForGamificationAnalytics(analyticService, programRepository.programGamificationProfileStream, programRepository.rewardType)
                         }
                     }
                 }
             }
-        }
         if (!applicationContext.isNetworkConnected()) {
             errorDelegate?.onError("Network error please create the session again")
         }
     }
+
 
     private fun startObservingForGamificationAnalytics(
         analyticService: AnalyticsService,
@@ -242,7 +257,8 @@ internal class ContentSession(
                     programRepository,
                     animationEventsStream,
                     widgetThemeAttributes,
-                    livelikeThemeStream
+                    livelikeThemeStream,
+                    widgetStream
                 )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
