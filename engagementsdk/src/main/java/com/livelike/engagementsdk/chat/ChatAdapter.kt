@@ -238,6 +238,9 @@ internal class ChatRecyclerAdapter(
                     )
                 }
             }
+            item?.let {
+                analyticsService.trackMessageDisplayed(item.id, item.message)
+            }
         }
 
         private fun showFloatingUI(

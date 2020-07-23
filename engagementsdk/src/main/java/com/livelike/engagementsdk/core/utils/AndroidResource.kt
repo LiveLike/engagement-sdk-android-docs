@@ -70,6 +70,11 @@ internal class AndroidResource {
                     if (checkedColor?.contains("#") == false) {
                         checkedColor = "#$checkedColor"
                     }
+
+                    // check for alpha part in color as android color parsinf
+                    if (checkedColor != null && checkedColor.length > 7) {
+                        checkedColor = "#" + checkedColor.substring(7, 9) + checkedColor.substring(1, 7)
+                    }
                     return Color.parseColor(checkedColor)
                 }
             } catch (e: Exception) {
