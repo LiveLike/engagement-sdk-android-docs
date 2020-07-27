@@ -26,7 +26,6 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetIntercep
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
@@ -35,6 +34,10 @@ import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -48,13 +51,8 @@ import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
-
 
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
@@ -189,7 +187,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.show()
             }
         } else {
-            //checkForNetworkToRecreateActivity()
+            // checkForNetworkToRecreateActivity()
         }
         if (themeCurrent == R.style.TurnerChatTheme) {
             val emptyView =
@@ -207,8 +205,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
-
-
     }
 
     private fun testKeyboardDismissUseCase(themeCurrent: Int) {
@@ -496,16 +492,16 @@ class ExoPlayerActivity : AppCompatActivity() {
 
 //    private fun checkForNetworkToRecreateActivity() {
 //        //removing this method implementation as it is causing multiple instances on same activity in a task
-////        playerView.postDelayed({
-////            if (isNetworkConnected()) {
-////                playerView.post {
-////                    startActivity(intent)
-////                    finish()
-////                }
-////            } else {
-////                checkForNetworkToRecreateActivity()
-////            }
-////        }, 1000)
+// //        playerView.postDelayed({
+// //            if (isNetworkConnected()) {
+// //                playerView.post {
+// //                    startActivity(intent)
+// //                    finish()
+// //                }
+// //            } else {
+// //                checkForNetworkToRecreateActivity()
+// //            }
+// //        }, 1000)
 //    }
 
     override fun onStart() {
@@ -520,6 +516,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        (application as LiveLikeApplication).player = null
         timer.cancel()
         timer.purge()
         player?.release()
