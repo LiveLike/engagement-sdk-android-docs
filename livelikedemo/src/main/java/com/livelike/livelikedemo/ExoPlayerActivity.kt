@@ -65,6 +65,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val POSITION = "position"
         const val CHANNEL_NAME = "channelName"
         var privateGroupRoomId: String? = null
+        var isHideChatInput: Boolean = false
     }
 
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
@@ -232,6 +233,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                 LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
             chat_view.emptyChatBackgroundView = emptyView
             chat_view.allowMediaFromKeyboard = false
+        }
+        if (isHideChatInput) {
+            chat_view.hideChatInputView()
         }
     }
 
