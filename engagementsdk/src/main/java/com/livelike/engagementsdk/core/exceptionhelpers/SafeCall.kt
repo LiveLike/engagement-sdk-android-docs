@@ -25,6 +25,7 @@ internal suspend fun <T : Any> safeRemoteApiCall(
     return try {
         call()
     } catch (e: Exception) {
+        e.printStackTrace()
         // An exception was thrown when calling the API so we're converting this to an IOException
         Result.Error(IOException(errorMessage ?: e.message, e))
     }

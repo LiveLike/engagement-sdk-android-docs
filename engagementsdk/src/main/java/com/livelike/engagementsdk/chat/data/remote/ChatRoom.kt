@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat.data.remote
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.chat.Visibility
 
 /**
  * Chat Rooms are abstraction over the chat providers in our infra
@@ -31,7 +32,9 @@ internal data class ChatRoom(
     @SerializedName("sticker_packs_url")
     val stickerPacksUrl: String,
     @SerializedName("reaction_packs_url")
-    val reactionPacksUrl: String
+    val reactionPacksUrl: String,
+    @SerializedName("visibility")
+    val visibility: Visibility?=null
 
 )
 

@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
+import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
@@ -35,6 +36,7 @@ import kotlinx.android.synthetic.main.activity_chat_only.prg_refresh
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_id
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_members_count
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_title
+import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_visibility
 
 class ChatOnlyActivity : AppCompatActivity() {
     private lateinit var privateGroupChatsession: LiveLikeChatSession
@@ -49,6 +51,7 @@ class ChatOnlyActivity : AppCompatActivity() {
             prg_create.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
+                null,
                 object : LiveLikeCallback<ChatRoomInfo>() {
                     override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         val response = when {
@@ -63,7 +66,7 @@ class ChatOnlyActivity : AppCompatActivity() {
 
                         ed_chat_room_title.setText("")
                         prg_create.visibility = View.INVISIBLE
-                        
+
                     }
                 })
         }
@@ -117,6 +120,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                     }
                 })
         }
+
         btn_chat_room_members.setOnClickListener {
             val id = txt_chat_room_id.text.toString()
             if (id.isNotEmpty()) {
@@ -172,7 +176,37 @@ class ChatOnlyActivity : AppCompatActivity() {
                 showToast("Select Room")
             }
         }
+        txt_chat_room_visibility.setOnClickListener {
+            if (txt_chat_room_id.text.isNotEmpty())
+                AlertDialog.Builder(this).apply {
+                    setTitle("Select Visibility")
+                    setItems(Visibility.values().map { it.toString() }.toTypedArray()) { _, which ->
+                        val visibility = Visibility.values()[which]
+                        (application as LiveLikeApplication).sdk.updateChatRoom(txt_chat_room_id.text.toString(),
+                            txt_chat_room_title.text.toString(),
+                            visibility,
+                            object : LiveLikeCallback<ChatRoomInfo>() {
+                                override fun onResponse(result: ChatRoomInfo?, error: String?) {
+                                    updateData(result)
+                                    error?.let {
+                                        showToast(it)
+                                    }
+                                }
+                            })
+                    }
+                    create()
+                }.show()
+        }
         btn_refresh.callOnClick()
+    }
+
+    private fun updateData(result: ChatRoomInfo?) {
+        result?.let {
+            txt_chat_room_title.text = it.title ?: "No Title"
+            txt_chat_room_id.text = it.id
+            txt_chat_room_members_count.text = ""
+            txt_chat_room_visibility.text = it.visibility?.name
+        }
     }
 
     private fun changeChatRoom(chatRoomId: String) {
@@ -195,11 +229,7 @@ class ChatOnlyActivity : AppCompatActivity() {
             chatRoomId,
             object : LiveLikeCallback<ChatRoomInfo>() {
                 override fun onResponse(result: ChatRoomInfo?, error: String?) {
-                    result?.let {
-                        txt_chat_room_title.text = it.title ?: "No Title"
-                        txt_chat_room_id.text = it.id
-                        txt_chat_room_members_count.text = ""
-                    }
+                    updateData(result)
                 }
             })
         chat_view.visibility = View.VISIBLE

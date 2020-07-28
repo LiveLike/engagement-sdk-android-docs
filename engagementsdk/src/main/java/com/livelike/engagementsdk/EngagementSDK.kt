@@ -1,13 +1,13 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
-import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
+import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
@@ -25,7 +25,6 @@ import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
@@ -136,7 +135,11 @@ class EngagementSDK(
         }
     }
 
-    override fun createChatRoom(title: String?, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>) {
+    override fun createChatRoom(
+        title: String?,
+        visibility: Visibility?,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -152,13 +155,54 @@ class EngagementSDK(
 
                     uiScope.launch {
                         val chatRoomResult = chatRepository.createChatRoom(
-                            title, pair.second.createChatRoomUrl
+                            title, visibility, pair.second.createChatRoomUrl
                         )
                         if (chatRoomResult is Result.Success) {
                             liveLikeCallback.onResponse(
                                 ChatRoomInfo(
                                     chatRoomResult.data.id,
-                                    chatRoomResult.data.title
+                                    chatRoomResult.data.title,
+                                    chatRoomResult.data.visibility
+                                ), null
+                            )
+                        } else if (chatRoomResult is Result.Error) {
+                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
+                        }
+                    }
+                }
+            }
+    }
+
+    override fun updateChatRoom(
+        chatRoomId: String,
+        title: String?,
+        visibility: Visibility?,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    ) {
+        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
+            .subscribe(this) {
+                it?.let { pair ->
+                    val chatRepository =
+                        ChatRepository(
+                            pair.second.pubNubKey,
+                            pair.first.accessToken,
+                            pair.first.id,
+                            MockAnalyticsService(),
+                            pair.second.pubnubPublishKey,
+                            origin = pair.second.pubnubOrigin
+                        )
+
+                    uiScope.launch {
+                        val chatRoomResult = chatRepository.updateChatRoom(
+                            chatRoomId,
+                            title, visibility, pair.second.createChatRoomUrl
+                        )
+                        if (chatRoomResult is Result.Success) {
+                            liveLikeCallback.onResponse(
+                                ChatRoomInfo(
+                                    chatRoomResult.data.id,
+                                    chatRoomResult.data.title,
+                                    chatRoomResult.data.visibility
                                 ), null
                             )
                         } else if (chatRoomResult is Result.Error) {
@@ -191,7 +235,8 @@ class EngagementSDK(
                             liveLikeCallback.onResponse(
                                 ChatRoomInfo(
                                     chatRoomResult.data.id,
-                                    chatRoomResult.data.title
+                                    chatRoomResult.data.title,
+                                    chatRoomResult.data.visibility
                                 ), null
                             )
                         } else if (chatRoomResult is Result.Error) {
