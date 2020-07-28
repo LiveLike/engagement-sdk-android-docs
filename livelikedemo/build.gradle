@@ -63,6 +63,7 @@ dependencies {
     implementation "com.android.support:multidex:$multidexVersion"
 
     implementation "com.bugsnag:bugsnag-android:$bugsnagVersion"
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
 
     // Tests frameworks
     testImplementation "junit:junit:$junitVersion"
