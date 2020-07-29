@@ -53,6 +53,13 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btn_visibility"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:text="Visibility"
+                android:textSize="9sp" />
         </LinearLayout>
 
         <LinearLayout

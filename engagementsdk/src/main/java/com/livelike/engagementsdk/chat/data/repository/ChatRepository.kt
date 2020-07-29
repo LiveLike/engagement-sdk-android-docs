@@ -80,7 +80,7 @@ internal class ChatRepository(
         visibility: Visibility?,
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
-        val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "")+"/$chatRoomId/"
+        val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "") + "/$chatRoomId"
         val titleRequest = when {
             title.isNullOrEmpty().not() && visibility != null -> RequestBody.create(
                 MediaType.parse("application/json; charset=utf-8"),

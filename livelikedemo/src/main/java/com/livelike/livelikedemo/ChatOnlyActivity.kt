@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_chat_only.btn_create
 import kotlinx.android.synthetic.main.activity_chat_only.btn_delete
 import kotlinx.android.synthetic.main.activity_chat_only.btn_join
 import kotlinx.android.synthetic.main.activity_chat_only.btn_refresh
+import kotlinx.android.synthetic.main.activity_chat_only.btn_visibility
 import kotlinx.android.synthetic.main.activity_chat_only.chat_view
 import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_id
 import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_title
@@ -47,11 +48,14 @@ class ChatOnlyActivity : AppCompatActivity() {
 
         btn_create.setOnClickListener {
             val title = ed_chat_room_title.text.toString()
-
+            val visibility = if (btn_visibility.text.toString().toLowerCase().contains("visibility").not())
+                Visibility.valueOf(btn_visibility.text.toString())
+            else
+                Visibility.everyone
             prg_create.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
-                null,
+                visibility,
                 object : LiveLikeCallback<ChatRoomInfo>() {
                     override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         val response = when {
@@ -103,6 +107,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                 create()
             }.show()
         }
+
         btn_refresh.setOnClickListener {
             prg_refresh.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.getCurrentUserChatRoomList(
@@ -176,12 +181,17 @@ class ChatOnlyActivity : AppCompatActivity() {
                 showToast("Select Room")
             }
         }
+        btn_visibility.setOnClickListener {
+            selectVisibility(object : VisibilityInterface {
+                override fun onSelectItem(visibility: Visibility) {
+                    btn_visibility.text = visibility.name
+                }
+            })
+        }
         txt_chat_room_visibility.setOnClickListener {
             if (txt_chat_room_id.text.isNotEmpty())
-                AlertDialog.Builder(this).apply {
-                    setTitle("Select Visibility")
-                    setItems(Visibility.values().map { it.toString() }.toTypedArray()) { _, which ->
-                        val visibility = Visibility.values()[which]
+                selectVisibility(object : VisibilityInterface {
+                    override fun onSelectItem(visibility: Visibility) {
                         (application as LiveLikeApplication).sdk.updateChatRoom(txt_chat_room_id.text.toString(),
                             txt_chat_room_title.text.toString(),
                             visibility,
@@ -194,10 +204,24 @@ class ChatOnlyActivity : AppCompatActivity() {
                                 }
                             })
                     }
-                    create()
-                }.show()
+                })
         }
         btn_refresh.callOnClick()
+    }
+
+    private fun selectVisibility(visibilityInterface: VisibilityInterface) {
+        AlertDialog.Builder(this).apply {
+            setTitle("Select Visibility")
+            setItems(Visibility.values().map { it.toString() }.toTypedArray()) { _, which ->
+                val visibility = Visibility.values()[which]
+                visibilityInterface.onSelectItem(visibility)
+            }
+            create()
+        }.show()
+    }
+
+    interface VisibilityInterface {
+        fun onSelectItem(visibility: Visibility)
     }
 
     private fun updateData(result: ChatRoomInfo?) {
