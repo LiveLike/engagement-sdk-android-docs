@@ -32,7 +32,15 @@ data class LeaderBoard(
     @SerializedName("reward_item_id") val reward_item_id: String,
     @SerializedName("is_locked") val is_locked: Boolean,
     @SerializedName("entries_url") val entries_url: String,
-    @SerializedName("entry_detail_url_template") val entry_detail_url_template: String
+    @SerializedName("entry_detail_url_template") val entry_detail_url_template: String,
+    @SerializedName("reward_item") val rewardItem: RewardItem
+)
+
+data class RewardItem(
+    @SerializedName("id") val id: String,
+    @SerializedName("url") val url: String,
+    @SerializedName("client_id") val client_id: String,
+    @SerializedName("name") val name: String
 )
 
 internal data class ProgramModel(
