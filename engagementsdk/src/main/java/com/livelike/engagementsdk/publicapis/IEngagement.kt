@@ -5,6 +5,7 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
+import com.livelike.engagementsdk.core.data.models.LeaderBoard
 
 interface IEngagement {
 
@@ -41,6 +42,7 @@ interface IEngagement {
         chatRoomMembershipPagination: ChatRoomMembershipPagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     )
+
     fun getMembersOfChatRoom(
         chatRoomId: String,
         chatRoomMembershipPagination: ChatRoomMembershipPagination,
@@ -50,5 +52,10 @@ interface IEngagement {
     fun deleteCurrentUserFromChatRoom(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<Boolean>
+    )
+
+    fun getLeaderBoardsForProgram(
+        programId: String,
+        liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
     )
 }
