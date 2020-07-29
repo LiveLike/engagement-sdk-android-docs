@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
@@ -44,7 +45,8 @@ internal class WidgetManager(
     private val programRepository: ProgramRepository,
     private val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     private val widgetThemeAttributes: WidgetViewThemeAttributes?,
-    private val livelikeThemeStream: Stream<LiveLikeEngagementTheme>
+    private val livelikeThemeStream: Stream<LiveLikeEngagementTheme>,
+    private val widgetStream: Stream<LiveLikeWidget>
 ) :
     MessagingClientProxy(upstream) {
 
@@ -81,6 +83,12 @@ internal class WidgetManager(
 
     init {
         widgetInterceptorSubscribe()
+        currentWidgetViewStream.subscribe(this) {
+            widgetOnScreen = (it != null)
+            if (messageQueue.isNotEmpty()) {
+                publishNextInQueue()
+            }
+        }
     }
 
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
@@ -155,11 +163,16 @@ internal class WidgetManager(
 
     private fun showWidgetOnScreen(msgHolder: MessageHolder) {
         val widgetType = msgHolder.clientMessage.message.get("event").asString ?: ""
-
         val payload = msgHolder.clientMessage.message["payload"].asJsonObject
         val widgetId = payload["id"].asString
 
         handler.post {
+            widgetStream.onNext(
+                gson.fromJson(
+                    payload.toString(),
+                    LiveLikeWidget::class.java
+                )
+            )
             currentWidgetViewStream.onNext(
                 Pair(
                     widgetType,
@@ -243,7 +256,8 @@ internal fun MessagingClient.asWidgetManager(
     programRepository: ProgramRepository,
     animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     widgetThemeAttributes: WidgetViewThemeAttributes?,
-    livelikeThemeStream: Stream<LiveLikeEngagementTheme>
+    livelikeThemeStream: Stream<LiveLikeEngagementTheme>,
+    widgetStream: Stream<LiveLikeWidget>
 ): WidgetManager {
     return WidgetManager(
         this,
@@ -257,6 +271,7 @@ internal fun MessagingClient.asWidgetManager(
         programRepository,
         animationEventsStream,
         widgetThemeAttributes,
-        livelikeThemeStream
+        livelikeThemeStream,
+        widgetStream
     )
 }

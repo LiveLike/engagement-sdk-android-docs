@@ -5,20 +5,26 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
+import com.google.gson.JsonParser
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.WidgetInfos
+import com.livelike.engagementsdk.WidgetListener
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
@@ -67,6 +73,11 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
         session.livelikeThemeStream.onNext(engagementSDKTheme)
+        session.widgetStream.subscribe(this) {
+            it?.let {
+                widgetListener?.onNewWidget(it)
+            }
+        }
     }
 
     /**
@@ -105,6 +116,22 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
+    private var widgetListener: WidgetListener? = null
+
+    fun setWidgetListener(widgetListener: WidgetListener) {
+        this.widgetListener = widgetListener
+    }
+
+    fun displayWidget(sdk: EngagementSDK, liveLikeWidget: LiveLikeWidget) {
+        try {
+            val jsonObject = GsonBuilder().create().toJson(liveLikeWidget)
+            displayWidget(sdk, JsonParser.parseString(jsonObject).asJsonObject)
+        } catch (ex: JsonParseException) {
+            logDebug { "Invalid json passed for displayWidget" }
+            ex.printStackTrace()
+        }
+    }
+
     /** displays the widget in the container
     throws error if json invalid
     clears the previous displayed widget (if any)
@@ -119,26 +146,38 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 widgetType = "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
-            widgetContainerViewModel?.currentWidgetViewStream?.onNext(
-                Pair(
-                    widgetType,
-                    WidgetProvider()
-                        .get(
-                            null,
-                            WidgetInfos(widgetType, widgetResourceJson, widgetId),
-                            context,
-                            MockAnalyticsService(),
-                            sdk.configurationStream.latest()!!,
-                            {
-                            },
-                            sdk.userRepository,
-                            null,
-                            SubscriptionManager(),
-                            widgetViewThemeAttributes,
-                            engagementSDKTheme
-                        )
+            if (widgetContainerViewModel?.currentWidgetViewStream?.latest() == null) {
+                widgetContainerViewModel?.currentWidgetViewStream?.onNext(
+                    Pair(
+                        widgetType,
+                        WidgetProvider()
+                            .get(
+                                null,
+                                WidgetInfos(widgetType, widgetResourceJson, widgetId),
+                                context,
+                                MockAnalyticsService(),
+                                sdk.configurationStream.latest()!!,
+                                {
+                                    widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
+                                },
+                                sdk.userRepository,
+                                null,
+                                SubscriptionManager(),
+                                widgetViewThemeAttributes,
+                                engagementSDKTheme
+                            )
+                    )
                 )
-            )
+            } else {
+                widgetContainerViewModel?.currentWidgetViewStream?.subscribe(this) {
+                    if (it == null) {
+                        widgetContainerViewModel?.currentWidgetViewStream?.unsubscribe(this)
+                        post {
+                            displayWidget(sdk, widgetResourceJson)
+                        }
+                    }
+                }
+            }
         } catch (ex: Exception) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()

@@ -69,7 +69,9 @@ class LiveLikeApplication : Application() {
                     return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                         PREF_USER_ACCESS_TOKEN,
                         null
-                    )
+                    ).apply {
+                        println("Token:${this}")
+                    }
                 }
 
                 override fun storeAccessToken(accessToken: String?) {

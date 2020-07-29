@@ -12,8 +12,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -24,18 +24,26 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:textColor="@color/livelike_white"
                 android:hint="Input widget json received here"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:textColor="@color/livelike_white" />
         </android.support.design.widget.TextInputLayout>
 
         <Button
             android:id="@+id/show_widget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="show widget" />
+
+
     </LinearLayout>
 
+    <Button
+        android:id="@+id/show_my_widget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My widget" />
 
     <com.livelike.engagementsdk.widget.view.WidgetView
         android:id="@+id/widget_view"
@@ -44,14 +52,13 @@
         android:layout_margin="16dp" />
 
 
-
     <TextView
         android:id="@+id/current_state_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/livelike_white"
         android:layout_marginTop="64dp"
-        android:text="Current state : NA" />
+        android:text="Current state : NA"
+        android:textColor="@color/livelike_white" />
 
 
     <Button
