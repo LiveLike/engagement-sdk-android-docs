@@ -140,6 +140,15 @@ class EngagementSDK(
         visibility: Visibility?,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
+        createUpdateChatRoom(null, visibility, title, liveLikeCallback)
+    }
+
+    internal fun createUpdateChatRoom(
+        chatRoomId: String?,
+        visibility: Visibility?,
+        title: String?,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -154,9 +163,15 @@ class EngagementSDK(
                         )
 
                     uiScope.launch {
-                        val chatRoomResult = chatRepository.createChatRoom(
-                            title, visibility, pair.second.createChatRoomUrl
-                        )
+                        val chatRoomResult = when (chatRoomId == null) {
+                            true -> chatRepository.createChatRoom(
+                                title, visibility, pair.second.createChatRoomUrl
+                            )
+                            else -> chatRepository.updateChatRoom(
+                                chatRoomId,
+                                title, visibility, pair.second.createChatRoomUrl
+                            )
+                        }
                         if (chatRoomResult is Result.Success) {
                             liveLikeCallback.onResponse(
                                 ChatRoomInfo(
@@ -179,38 +194,7 @@ class EngagementSDK(
         visibility: Visibility?,
         liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
     ) {
-        userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
-            .subscribe(this) {
-                it?.let { pair ->
-                    val chatRepository =
-                        ChatRepository(
-                            pair.second.pubNubKey,
-                            pair.first.accessToken,
-                            pair.first.id,
-                            MockAnalyticsService(),
-                            pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin
-                        )
-
-                    uiScope.launch {
-                        val chatRoomResult = chatRepository.updateChatRoom(
-                            chatRoomId,
-                            title, visibility, pair.second.createChatRoomUrl
-                        )
-                        if (chatRoomResult is Result.Success) {
-                            liveLikeCallback.onResponse(
-                                ChatRoomInfo(
-                                    chatRoomResult.data.id,
-                                    chatRoomResult.data.title,
-                                    chatRoomResult.data.visibility
-                                ), null
-                            )
-                        } else if (chatRoomResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
-                        }
-                    }
-                }
-            }
+        createUpdateChatRoom(chatRoomId, visibility, title, liveLikeCallback)
     }
 
     override fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>) {
