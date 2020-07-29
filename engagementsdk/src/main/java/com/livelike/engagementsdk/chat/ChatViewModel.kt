@@ -28,11 +28,11 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 internal class ChatViewModel(
     val analyticsService: AnalyticsService,
@@ -93,7 +93,6 @@ internal class ChatViewModel(
             }
         }
     private val dataClient: ChatDataClient = ChatDataClientImpl()
-
 
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
@@ -211,6 +210,7 @@ internal class ChatViewModel(
             }
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList.toSet()))
+                chatAdapter.currentChatReactionPopUpViewPos = -1
                 val index = messageList.indexOfFirst { it.id == messageId }
                 if (index != -1 && index < chatAdapter.itemCount) {
                     chatAdapter.notifyItemChanged(index)
@@ -305,7 +305,7 @@ internal class ChatViewModel(
                         uiScope.launch(Dispatchers.IO) {
                             val imageUrl = dataClient.uploadImage(
                                 currentChatRoom!!.uploadUrl,
-                                userStream.latest()!!.accessToken,
+                                null,
                                 fileBytes
                             )
                             chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED

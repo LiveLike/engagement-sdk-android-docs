@@ -206,7 +206,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
-                            viewModel?.dismissWidget(DismissAction.TAP_X)
+                            viewModel?.dismissWidget(DismissAction.TIMEOUT)
                         }
 
                         override fun onAnimationCancel(animation: Animator?) {

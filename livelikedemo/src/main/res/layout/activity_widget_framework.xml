@@ -33,9 +33,17 @@
             android:id="@+id/show_widget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="show widget" />
+
+
     </LinearLayout>
 
+    <Button
+        android:id="@+id/show_my_widget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="My widget" />
 
     <com.livelike.engagementsdk.widget.view.WidgetView
         android:id="@+id/widget_view"

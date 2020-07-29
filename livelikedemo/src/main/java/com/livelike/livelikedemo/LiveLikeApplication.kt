@@ -18,7 +18,6 @@ import com.livelike.livelikedemo.video.VideoPlayer
 
 class LiveLikeApplication : Application() {
 
-
     lateinit var channelManager: ChannelManager
     lateinit var player: VideoPlayer
     val timecodeGetter = object : EngagementSDK.TimecodeGetter {
@@ -57,7 +56,9 @@ class LiveLikeApplication : Application() {
                     return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                         PREF_USER_ACCESS_TOKEN,
                         null
-                    )
+                    ).apply {
+                        println("Token:$this")
+                    }
                 }
 
                 override fun storeAccessToken(accessToken: String?) {

@@ -58,6 +58,13 @@ interface MessageListener {
     fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage)
 }
 
+/**
+ * Return the new widget id and kind appear on screen
+ */
+interface WidgetListener {
+    fun onNewWidget(liveLikeWidget: LiveLikeWidget)
+}
+
 /** A simple representation of an observable stream.
  * Subscription will requires a key to avoid multiple subscription of the same observable.
  */

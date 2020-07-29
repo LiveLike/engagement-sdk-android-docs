@@ -88,7 +88,7 @@ internal class ContentSession(
     private val currentWidgetViewStream =
         SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-
+    val widgetStream = SubscriptionManager<LiveLikeWidget>()
     private val programRepository =
         ProgramRepository(
             programId,
@@ -118,7 +118,6 @@ internal class ContentSession(
                 analyticService.trackUsername(it.nickname)
             }
         }
-
         userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -256,7 +255,8 @@ internal class ContentSession(
                     programRepository,
                     animationEventsStream,
                     widgetThemeAttributes,
-                    livelikeThemeStream
+                    livelikeThemeStream,
+                    widgetStream
                 )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())
