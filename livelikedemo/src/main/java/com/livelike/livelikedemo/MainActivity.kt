@@ -30,16 +30,9 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
-import kotlinx.android.synthetic.main.activity_main.btn_create
-import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
+import kotlinx.android.synthetic.main.activity_main.btn_nick_name
 import kotlinx.android.synthetic.main.activity_main.build_no
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
@@ -60,8 +53,15 @@ import kotlinx.android.synthetic.main.activity_main.themes_json_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
+import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -312,10 +312,10 @@ class MainActivity : AppCompatActivity() {
                         }
                         result?.let {
                             chatRoomIds.add(it.id)
-                                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                                    .edit().apply {
-                                        putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
-                                    }
+                            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                                .edit().apply {
+                                    putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
+                                }
                         }
                         progressBar.visibility = View.GONE
                     }
@@ -350,6 +350,15 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
+        (application as LiveLikeApplication).sdk.userStream.subscribe(this) {
+            runOnUiThread {
+                txt_nickname_server.text = it?.nickname
+            }
+        }
+        btn_nick_name.setOnClickListener {
+            if (nicknameText.text.toString().isEmpty().not())
+                (application as LiveLikeApplication).sdk.updateChatNickname(nicknameText.text.toString())
+        }
 
         widgets_framework_button.setOnClickListener {
             startActivity(
