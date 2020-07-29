@@ -43,6 +43,21 @@ data class RewardItem(
     @SerializedName("name") val name: String
 )
 
+internal data class LeaderBoardEntryResult(
+    val previous: String? = null,
+    val next: String? = null,
+    val count: Int? = null,
+    val results: List<LeaderBoardEntry>? = null
+)
+
+data class LeaderBoardEntry(
+    @SerializedName("percentile_rank") val percentile_rank: Double,
+    @SerializedName("profile_id") val profile_id: String,
+    @SerializedName("rank") val rank: Int,
+    @SerializedName("score") val score: Int,
+    @SerializedName("profile_nickname") val profile_nickname: String
+)
+
 internal data class ProgramModel(
     @SerializedName("url")
     val programUrl: String?,

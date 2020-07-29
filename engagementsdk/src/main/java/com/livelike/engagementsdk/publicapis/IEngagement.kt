@@ -58,4 +58,9 @@ interface IEngagement {
         programId: String,
         liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
     )
+
+    fun getEntriesForLeaderBoard(
+        leaderBoardId:String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    )
 }

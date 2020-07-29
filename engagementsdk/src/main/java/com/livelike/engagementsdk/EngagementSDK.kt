@@ -366,6 +366,15 @@ class EngagementSDK(
         }
     }
 
+    override fun getEntriesForLeaderBoard(
+        leaderBoardId: String,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    ) {
+        uiScope.launch {
+            dataClient.remoteCall<>()
+        }
+    }
+
     fun fetchWidgetDetails(
         widgetId: String,
         widgetKind: String,
