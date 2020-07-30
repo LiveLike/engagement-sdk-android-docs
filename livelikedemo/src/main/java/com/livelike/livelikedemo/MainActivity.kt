@@ -98,7 +98,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (this.isTaskRoot) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 this.finishAfterTransition()
+            }
             } else {
                 super.onBackPressed()
             } }
