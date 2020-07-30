@@ -369,14 +369,13 @@ class EngagementSDK(
         }
     }
 
-    private var leaderBoardEntryResult: LeaderBoardEntryResult? = null
+    private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
 
     override fun getEntriesForLeaderBoard(
         leaderBoardId: String,
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
     ) {
-
         configurationStream.subscribe(this) {
             it?.let {
                 configurationStream.unsubscribe(this)
@@ -387,9 +386,8 @@ class EngagementSDK(
                     )}entries"
                     val url = when (liveLikePagination) {
                         LiveLikePagination.FIRST -> defaultUrl
-                        LiveLikePagination.NEXT -> leaderBoardEntryResult?.next
-                        LiveLikePagination.PREVIOUS -> leaderBoardEntryResult?.previous
-
+                        LiveLikePagination.NEXT -> leaderBoardEntryResult[leaderBoardId]?.next
+                        LiveLikePagination.PREVIOUS -> leaderBoardEntryResult[leaderBoardId]?.previous
                     }
                     if (url != null) {
                         val result = dataClient.remoteCall<LeaderBoardEntryResult>(
@@ -398,8 +396,11 @@ class EngagementSDK(
                             accessToken = null
                         )
                         if (result is Result.Success) {
-                            leaderBoardEntryResult = result.data
-                            liveLikeCallback.onResponse(leaderBoardEntryResult?.results, null)
+                            leaderBoardEntryResult[leaderBoardId] = result.data
+                            liveLikeCallback.onResponse(
+                                leaderBoardEntryResult[leaderBoardId]?.results,
+                                null
+                            )
                         } else if (result is Result.Error) {
                             liveLikeCallback.onResponse(null, result.exception.message)
                         }
