@@ -35,8 +35,8 @@ internal fun addWidgetPredictionVoted(id: String, optionId: String) {
 internal fun getWidgetPredictionVoted(): Array<SavedWidgetVote> {
     val predictionVotedJson = getSharedPreferences()
         .getString(
-        PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, ""
-    ) ?: ""
+            PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, ""
+        ) ?: ""
     return gson.fromJson(predictionVotedJson, Array<SavedWidgetVote>::class.java) ?: emptyArray()
 }
 

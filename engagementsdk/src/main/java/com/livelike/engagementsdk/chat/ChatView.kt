@@ -48,9 +48,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -77,6 +74,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -91,13 +91,7 @@ import pl.droidsonroids.gif.MultiCallback
  */
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
-    companion object {
-        const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
-        const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
-        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
-        private const val CHAT_MINIMUM_SIZE_DP = 292
-        private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
-    }
+
 
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
@@ -645,7 +639,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
-//            if (visibility == View.VISIBLE) {
+            //            if (visibility == View.VISIBLE) {
 //                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
 //            }
             visibility = View.GONE
@@ -818,5 +812,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         chatdisplay.adapter = null
+    }
+
+    companion object {
+        const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
+        const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
+        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
+        private const val CHAT_MINIMUM_SIZE_DP = 292
+        private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 }

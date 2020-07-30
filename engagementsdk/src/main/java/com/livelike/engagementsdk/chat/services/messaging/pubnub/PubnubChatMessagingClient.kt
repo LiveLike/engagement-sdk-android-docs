@@ -54,15 +54,15 @@ import com.pubnub.api.models.consumer.message_actions.PNMessageAction
 import com.pubnub.api.models.consumer.message_actions.PNRemoveMessageActionResult
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.message_actions.PNMessageActionResult
-import java.util.Calendar
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import org.threeten.bp.Instant
 import org.threeten.bp.ZonedDateTime
+import java.util.Calendar
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
 
@@ -194,7 +194,8 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
-        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || !(content_filter contains 'filtered')"
+        pubnubConfiguration.filterExpression =
+            "sender_id == '$uuid' || !(content_filter contains 'filtered')"
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }

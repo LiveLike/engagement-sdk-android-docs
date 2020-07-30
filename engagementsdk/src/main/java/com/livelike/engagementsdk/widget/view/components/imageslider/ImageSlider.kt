@@ -33,9 +33,6 @@ internal class ImageSlider @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    companion object {
-        const val INITIAL_POSITION = 0.25f
-    }
 
     private val desiredWidth: Int
     private val desiredHeight: Int
@@ -451,4 +448,9 @@ internal class ImageSlider @JvmOverloads constructor(
             }
         }
     }
+
+    companion object {
+        const val INITIAL_POSITION = 0.25f
+    }
+
 }

@@ -2,7 +2,6 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
-import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.ServerDataValidationException
@@ -176,7 +175,6 @@ internal class ContentSession(
             errorDelegate?.onError("Network error please create the session again")
         }
     }
-
 
     private fun startObservingForGamificationAnalytics(
         analyticService: AnalyticsService,

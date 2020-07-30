@@ -37,6 +37,10 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
             }
         }
 
+    init {
+        inflate(context, R.layout.widget_gamification_collect_badge, this)
+    }
+
     private fun animateView(badge: Badge) {
         clipParents(false)
         badge_iv.loadImage(badge.imageFile, AndroidResource.dpToPx(80))
@@ -95,7 +99,5 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
             removeAllViews()
         }
 
-    init {
-        inflate(context, R.layout.widget_gamification_collect_badge, this)
-    }
+
 }

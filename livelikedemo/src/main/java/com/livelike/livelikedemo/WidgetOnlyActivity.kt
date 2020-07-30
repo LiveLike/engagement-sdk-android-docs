@@ -115,7 +115,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
         rcyl_view.adapter = adapter
         val jsonTheme = intent.getStringExtra("jsonTheme")
         if (jsonTheme != null) {
-            Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                applicationContext,
+                "JSON Theme Customization is hold for now",
+                Toast.LENGTH_LONG
+            ).show()
             try {
                 widget_view.applyTheme(ThemeRandomizer.themesList.last())
             } catch (e: Exception) {

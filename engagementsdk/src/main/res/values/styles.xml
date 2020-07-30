@@ -43,14 +43,17 @@
         <item name="android:theme">@style/SelectableItemTheme</item>
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
-    
+
     <style name="ChatReactionAnimation">
         <item name="android:windowEnterAnimation">@anim/chat_reaction_popup_show_animation</item>
         <item name="android:windowExitAnimation">@anim/chat_reaction_popup_hide_animation</item>
     </style>
+
     <style name="ChatReactionAnimationReverse">
-        <item name="android:windowExitAnimation">@anim/chat_reaction_popup_hide_animation_reverse</item>
-        <item name="android:windowEnterAnimation">@anim/chat_reaction_popup_show_animation_reverse</item>
+        <item name="android:windowExitAnimation">@anim/chat_reaction_popup_hide_animation_reverse
+        </item>
+        <item name="android:windowEnterAnimation">@anim/chat_reaction_popup_show_animation_reverse
+        </item>
     </style>
 
 

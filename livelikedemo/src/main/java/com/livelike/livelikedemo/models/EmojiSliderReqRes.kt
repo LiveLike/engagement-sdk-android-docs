@@ -1,6 +1,5 @@
 package com.livelike.livelikedemo.models
 
-import com.livelike.livelikedemo.CreatedBy
 import com.livelike.livelikedemo.Option
 
 data class EmojiSliderRequest(

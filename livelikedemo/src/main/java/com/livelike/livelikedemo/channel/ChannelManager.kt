@@ -6,21 +6,17 @@ import android.os.Looper
 import android.support.annotation.NonNull
 import android.util.Log
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
-import java.io.IOException
-import java.net.URL
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
+import java.net.URL
 
 class ChannelManager(private val channelConfigUrl: String, val appContext: Context) {
 
-    companion object {
-        private val PREFERENCE_CHANNEL_ID = "ChannelId"
-        val NONE_CHANNEL = Channel("None - Clear Session")
-    }
 
     private val client: OkHttpClient = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -28,12 +24,12 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     val channelList: MutableList<Channel> = mutableListOf()
     @NonNull
     var selectedChannel: Channel = NONE_CHANNEL
-    set(channel) {
-        field = channel
-        persistChannel(channel.name)
-        for (listener in channelSelectListeners)
-            listener.invoke(channel)
-    }
+        set(channel) {
+            field = channel
+            persistChannel(channel.name)
+            for (listener in channelSelectListeners)
+                listener.invoke(channel)
+        }
 
     init {
         loadClientConfig()
@@ -49,21 +45,22 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             override fun onResponse(call: okhttp3.Call, response: Response) {
                 val responseData = response.body()?.string()
                 mainHandler.post {
-                    val savedChannel = appContext.getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                        .getString(PREFERENCE_CHANNEL_ID, "")
+                    val savedChannel =
+                        appContext.getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                            .getString(PREFERENCE_CHANNEL_ID, "")
                     try {
                         val json = JSONObject(responseData)
                         val results = json.getJSONArray("results")
-                        if(results.length()>0){
+                        if (results.length() > 0) {
                             channelList.clear()
                         }
                         for (i in 0 until results.length()) {
                             val channel = getChannelFor(results.getJSONObject(i))
                             channel?.let {
                                 channelList.add(channel)
-                            if (savedChannel == channel.name) {
-                                selectedChannel = channel
-                            }
+                                if (savedChannel == channel.name) {
+                                    selectedChannel = channel
+                                }
                             }
                         }
                     } catch (e: JSONException) {
@@ -85,11 +82,11 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
             else -> URL(streamUrl)
         }
         return Channel(
-                channelData.getString("title"),
-                url,
-                null,
-                channelData.getString("id")
-            )
+            channelData.getString("title"),
+            url,
+            null,
+            channelData.getString("id")
+        )
     }
 
     private fun persistChannel(channelName: String) {
@@ -102,6 +99,16 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     fun getChannels(): ArrayList<Channel> {
         return ArrayList(channelList)
     }
+
+    companion object {
+        private val PREFERENCE_CHANNEL_ID = "ChannelId"
+        val NONE_CHANNEL = Channel("None - Clear Session")
+    }
 }
 
-data class Channel(val name: String, val video: URL? = null, val thumbnail: URL? = null, val llProgram: String? = null)
+data class Channel(
+    val name: String,
+    val video: URL? = null,
+    val thumbnail: URL? = null,
+    val llProgram: String? = null
+)

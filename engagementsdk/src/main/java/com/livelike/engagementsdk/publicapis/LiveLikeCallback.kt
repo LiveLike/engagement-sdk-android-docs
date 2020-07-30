@@ -18,10 +18,10 @@ abstract class LiveLikeCallback<T : Any> {
 abstract class ErrorDelegate {
 
     /**
-        Called when the given object has failed to setup properly
-        Upon receiving this call, the `sdk` should be considered invalid and unuseable.
-        If caused by some transient failure like a poor network, a new `EngagementSDK` should
-        be created.
+    Called when the given object has failed to setup properly
+    Upon receiving this call, the `sdk` should be considered invalid and unuseable.
+    If caused by some transient failure like a poor network, a new `EngagementSDK` should
+    be created.
      */
     abstract fun onError(error: String)
 }

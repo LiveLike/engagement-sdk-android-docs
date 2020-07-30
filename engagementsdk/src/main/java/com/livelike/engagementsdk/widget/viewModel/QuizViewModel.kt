@@ -51,8 +51,8 @@ internal class QuizViewModel(
     val context: Context,
     var onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-    private val programRepository: ProgramRepository ? = null,
-    val widgetMessagingClient: WidgetManager ? = null
+    private val programRepository: ProgramRepository? = null,
+    val widgetMessagingClient: WidgetManager? = null
 ) : BaseViewModel() {
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
@@ -84,20 +84,27 @@ internal class QuizViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
+            pubnub =
+                PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""
                     logVerbose { "type is : $widgetType" }
                     val payload = event.message["payload"].asJsonObject
                     Handler(Looper.getMainLooper()).post {
-                        results.onNext(gson.fromJson(payload.toString(), Resource::class.java) ?: null)
+                        results.onNext(
+                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
+                        )
                     }
                 }
 
                 override fun onClientMessageError(client: MessagingClient, error: Error) {
                 }
-                override fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus) {
+
+                override fun onClientMessageStatus(
+                    client: MessagingClient,
+                    status: ConnectionStatus
+                ) {
                 }
             })
         }
@@ -117,7 +124,13 @@ internal class QuizViewModel(
         uiScope.launch {
             adapter?.apply {
                 val url = myDataset[selectedPosition].getMergedVoteUrl()
-                url?.let { dataClient.voteAsync(url, myDataset[selectedPosition].id, userRepository.userAccessToken) }
+                url?.let {
+                    dataClient.voteAsync(
+                        url,
+                        myDataset[selectedPosition].id,
+                        userRepository.userAccessToken
+                    )
+                }
             }
             adapter?.notifyDataSetChanged()
         }
@@ -128,10 +141,16 @@ internal class QuizViewModel(
             (WidgetType.fromString(widgetInfos.type) == WidgetType.IMAGE_QUIZ ||
                     WidgetType.fromString(widgetInfos.type) == WidgetType.TEXT_QUIZ)
         ) {
-            val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
+            val resource =
+                gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.onNext(WidgetType.fromString(widgetInfos.type)?.let { QuizWidget(it, resource) })
+                data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
+                    QuizWidget(
+                        it,
+                        resource
+                    )
+                })
             }
             currentWidgetId = widgetInfos.widgetId
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
@@ -184,7 +203,8 @@ internal class QuizViewModel(
             return
         }
 
-        val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
+        val isUserCorrect =
+            adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
         adapter?.selectionLocked = true
         logDebug { "Quiz View ,showing result isUserCorrect:$isUserCorrect" }
         uiScope.launch {
@@ -199,7 +219,13 @@ internal class QuizViewModel(
                 }
             }
 //            state.onNext("results")
-            currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
+            currentWidgetType?.let {
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    interactionData
+                )
+            }
         }
     }
 

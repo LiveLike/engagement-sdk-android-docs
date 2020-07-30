@@ -28,7 +28,10 @@ fun getExoplayerPdtTime(playerProvider: PlayerProvider): Long {
     return playerProvider.get()?.let {
         it.currentTimeline?.run {
             if (!isEmpty) {
-                getWindow(it.currentWindowIndex, Timeline.Window()).windowStartTimeMs + it.currentPosition
+                getWindow(
+                    it.currentWindowIndex,
+                    Timeline.Window()
+                ).windowStartTimeMs + it.currentPosition
             } else {
                 it.currentPosition
             }

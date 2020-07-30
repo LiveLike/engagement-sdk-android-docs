@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.widget.services.messaging.pubnub
 
 import com.livelike.engagementsdk.EpochTime
-import com.livelike.engagementsdk.parseISODateTime
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
@@ -9,6 +8,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClien
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.parseISODateTime
 import com.pubnub.api.PubNub
 import com.pubnub.api.callbacks.PNCallback
 import com.pubnub.api.models.consumer.PNStatus
@@ -60,27 +60,30 @@ internal class PubnubMessagingClientReplay(
             .includeTimetoken(true)
             .async(object : PNCallback<PNHistoryResult>() {
                 override fun onResponse(result: PNHistoryResult?, status: PNStatus) {
-                        result?.let {
-                            result.messages.reversed().forEach {
-                                val payload = it.entry.asJsonObject.getAsJsonObject("payload")
-                                val timeoutReceived = payload.extractStringOrEmpty("timeout")
-                                val pdtString = payload.extractStringOrEmpty("program_date_time")
-                                var epochTimeMs = 0L
-                                pdtString.parseISODateTime()?.let {
-                                    epochTimeMs = it.toInstant().toEpochMilli()
-                                }
-                                val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
-
-                                val clientMessage = ClientMessage(
-                                    it.entry.asJsonObject,
-                                    channel,
-                                    EpochTime(epochTimeMs),
-                                    timeoutMs
-                                )
-                                logDebug { "$pdtString - Received history message from pubnub: $clientMessage" }
-                                listener?.onClientMessageEvent(this@PubnubMessagingClientReplay, clientMessage)
+                    result?.let {
+                        result.messages.reversed().forEach {
+                            val payload = it.entry.asJsonObject.getAsJsonObject("payload")
+                            val timeoutReceived = payload.extractStringOrEmpty("timeout")
+                            val pdtString = payload.extractStringOrEmpty("program_date_time")
+                            var epochTimeMs = 0L
+                            pdtString.parseISODateTime()?.let {
+                                epochTimeMs = it.toInstant().toEpochMilli()
                             }
+                            val timeoutMs = AndroidResource.parseDuration(timeoutReceived)
+
+                            val clientMessage = ClientMessage(
+                                it.entry.asJsonObject,
+                                channel,
+                                EpochTime(epochTimeMs),
+                                timeoutMs
+                            )
+                            logDebug { "$pdtString - Received history message from pubnub: $clientMessage" }
+                            listener?.onClientMessageEvent(
+                                this@PubnubMessagingClientReplay,
+                                clientMessage
+                            )
                         }
+                    }
                 }
             })
     }
