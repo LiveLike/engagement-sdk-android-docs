@@ -14,6 +14,7 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
@@ -91,12 +92,21 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         ExoPlayerActivity.privateGroupRoomId = null
+        LocalBroadcastManager.getInstance(this)
+            .unregisterReceiver(mConnReceiver)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        channelManager = (application as LiveLikeApplication).channelManager
+    override fun onBackPressed() {
+        if (this.isTaskRoot) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                this.finishAfterTransition()
+            }
+            } else {
+                super.onBackPressed()
+            } }
 
+    fun registerNetWorkCallback() {
+        channelManager = (application as LiveLikeApplication).channelManager
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
@@ -117,9 +127,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        registerNetWorkCallback()
         sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
         if (BuildConfig.VERSION_CODE > 1) {
             build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"

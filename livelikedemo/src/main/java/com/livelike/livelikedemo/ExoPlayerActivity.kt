@@ -3,6 +3,7 @@ package com.livelike.livelikedemo
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -28,7 +29,6 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetIntercep
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
@@ -216,7 +216,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.show()
             }
         } else {
-            checkForNetworkToRecreateActivity()
+            // checkForNetworkToRecreateActivity()
         }
         if (themeCurrent == R.style.TurnerChatTheme) {
             val emptyView =
@@ -226,6 +226,16 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
         if (isHideChatInput) {
             chat_view.hideChatInputView()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (this.isTaskRoot) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                this.finishAfterTransition()
+            }
+        } else {
+            super.onBackPressed()
         }
     }
 
@@ -342,11 +352,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (privateGroupChatsession == null) {
             privateGroupChatsession =
                 (application as LiveLikeApplication).createPrivateSession(
-                    errorDelegate = object : ErrorDelegate() {
-                        override fun onError(error: String) {
-                            checkForNetworkToRecreateActivity()
-                        }
-                    }
+//                    errorDelegate = object : ErrorDelegate() {
+//                        override fun onError(error: String) {
+//                            checkForNetworkToRecreateActivity()
+//                        }
+//                    }
 
                 )
             privateGroupChatsession?.setMessageListener(object : MessageListener {
@@ -522,18 +532,19 @@ class ExoPlayerActivity : AppCompatActivity() {
         fullLogs.text = "$logs \n\n ${fullLogs.text}"
     }
 
-    private fun checkForNetworkToRecreateActivity() {
-        playerView.postDelayed({
-            if (isNetworkConnected()) {
-                playerView.post {
-                    startActivity(intent)
-                    finish()
-                }
-            } else {
-                checkForNetworkToRecreateActivity()
-            }
-        }, 1000)
-    }
+//    private fun checkForNetworkToRecreateActivity() {
+//        //removing this method implementation as it is causing multiple instances on same activity in a task
+// //        playerView.postDelayed({
+// //            if (isNetworkConnected()) {
+// //                playerView.post {
+// //                    startActivity(intent)
+// //                    finish()
+// //                }
+// //            } else {
+// //                checkForNetworkToRecreateActivity()
+// //            }
+// //        }, 1000)
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -547,6 +558,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        (application as LiveLikeApplication).player = null
         timer.cancel()
         timer.purge()
         player?.release()
