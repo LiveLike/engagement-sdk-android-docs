@@ -7,12 +7,15 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.activity_leader_board.btn_fetch
 import kotlinx.android.synthetic.main.activity_leader_board.ed_txt_program_id
 import kotlinx.android.synthetic.main.activity_leader_board.prg_fetch_leader_boards
 import kotlinx.android.synthetic.main.activity_leader_board.rcyl_leader_board
+import kotlinx.android.synthetic.main.activity_leader_board.rcyl_leader_board_entries
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.txt_leaderboard_name
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.txt_reward_item_name
 
@@ -21,6 +24,8 @@ class LeaderBoardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leader_board)
         rcyl_leader_board.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        rcyl_leader_board_entries.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         ed_txt_program_id.setText("47c14e1d-5786-401e-a850-22c5a91a5399")
         btn_fetch.setOnClickListener {
@@ -39,13 +44,19 @@ class LeaderBoardActivity : AppCompatActivity() {
                 )
             }
         }
+        (application as LiveLikeApplication).sdk.getEntriesForLeaderBoard("c30c70cc-5f35-4bcb-9614-54ce37737057",
+            LiveLikePagination.FIRST,
+            object : LiveLikeCallback<List<LeaderBoardEntry>>() {
+                override fun onResponse(result: List<LeaderBoardEntry>?, error: String?) {
+                    println("SD->${result?.size}")
+                }
+            })
     }
 }
 
 class LeaderBoardAdapter(private val list: List<LeaderBoard>) :
-    RecyclerView.Adapter<LeaderBoardAdapter.LeaderBoardViewHolder>() {
+    RecyclerView.Adapter<LeaderBoardViewHolder>() {
 
-    class LeaderBoardViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): LeaderBoardViewHolder {
         return LeaderBoardViewHolder(
@@ -60,5 +71,29 @@ class LeaderBoardAdapter(private val list: List<LeaderBoard>) :
         val leaderBoard = list[p1]
         p0.itemView.txt_leaderboard_name.text = leaderBoard.name
         p0.itemView.txt_reward_item_name.text = leaderBoard.rewardItem.name
+    }
+}
+class LeaderBoardViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+
+class LeaderBoardEntriesAdapter(private val list: List<LeaderBoardEntry>) :
+    RecyclerView.Adapter<LeaderBoardViewHolder>() {
+
+    class LeaderBoardViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): com.livelike.livelikedemo.LeaderBoardViewHolder {
+        return com.livelike.livelikedemo.LeaderBoardViewHolder(
+            LayoutInflater.from(p0.context)
+                .inflate(R.layout.lay_leader_board_list_item, p0, false)
+        )
+    }
+
+    override fun getItemCount(): Int = list.size
+
+
+    override fun onBindViewHolder(p0: com.livelike.livelikedemo.LeaderBoardViewHolder, p1: Int) {
+        val leaderBoard = list[p1]
+//        p0.itemView.txt_leaderboard_name.text = leaderBoard.name
+//        p0.itemView.txt_reward_item_name.text = leaderBoard.rewardItem.name
     }
 }
