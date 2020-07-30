@@ -387,20 +387,24 @@ class EngagementSDK(
                     )}entries"
                     val url = when (liveLikePagination) {
                         LiveLikePagination.FIRST -> defaultUrl
-                        LiveLikePagination.NEXT -> leaderBoardEntryResult?.next ?: defaultUrl
+                        LiveLikePagination.NEXT -> leaderBoardEntryResult?.next
                         LiveLikePagination.PREVIOUS -> leaderBoardEntryResult?.previous
-                            ?: defaultUrl
+
                     }
-                    val result = dataClient.remoteCall<LeaderBoardEntryResult>(
-                        url,
-                        requestType = RequestType.GET,
-                        accessToken = null
-                    )
-                    if (result is Result.Success) {
-                        leaderBoardEntryResult = result.data
-                        liveLikeCallback.onResponse(leaderBoardEntryResult?.results, null)
-                    } else if (result is Result.Error) {
-                        liveLikeCallback.onResponse(null, result.exception.message)
+                    if (url != null) {
+                        val result = dataClient.remoteCall<LeaderBoardEntryResult>(
+                            url,
+                            requestType = RequestType.GET,
+                            accessToken = null
+                        )
+                        if (result is Result.Success) {
+                            leaderBoardEntryResult = result.data
+                            liveLikeCallback.onResponse(leaderBoardEntryResult?.results, null)
+                        } else if (result is Result.Error) {
+                            liveLikeCallback.onResponse(null, result.exception.message)
+                        }
+                    } else {
+                        liveLikeCallback.onResponse(null, "No More data to load")
                     }
                 }
             }
