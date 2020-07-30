@@ -140,7 +140,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lay_top" />
+        app:layout_constraintTop_toBottomOf="@+id/lay_top">
+
+
+    </com.livelike.engagementsdk.chat.ChatView>
 
     <LinearLayout
         android:id="@+id/lay_join_chat_room"
@@ -196,6 +199,16 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_chat_room_title" />
+
+    <ProgressBar
+        android:id="@+id/prg_visibility"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:visibility="invisible"
+        android:layout_marginRight="10dp"
+        app:layout_constraintRight_toLeftOf="@+id/txt_chat_room_visibility"
+        app:layout_constraintTop_toTopOf="@+id/txt_chat_room_visibility" />
 
     <TextView
         android:id="@+id/txt_chat_room_members_count"

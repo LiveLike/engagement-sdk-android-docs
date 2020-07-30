@@ -52,26 +52,31 @@ internal class ChatRepository(
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "")
-        val titleRequest = when {
-            title.isNullOrEmpty().not() && visibility != null -> RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"),
-                """{"visibility":"${visibility.name}","title":"$title"}"""
-            )
-            title.isNullOrEmpty().not() && visibility == null -> RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"), """{"title":"$title"}"""
-            )
-            title.isNullOrEmpty() && visibility != null -> RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"),
-                """{"visibility":"${visibility.name}"}"""
-            )
-            else -> RequestBody.create(null, byteArrayOf())
-        }
+        val titleRequest = createTitleRequest(title, visibility)
         return dataClient.remoteCall<ChatRoom>(
             remoteURL,
             RequestType.POST,
             accessToken = authKey,
             requestBody = titleRequest
         )
+    }
+
+    private fun createTitleRequest(
+        title: String?,
+        visibility: Visibility?
+    ) = when {
+        title.isNullOrEmpty().not() && visibility != null -> RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"),
+            """{"visibility":"${visibility.name}","title":"$title"}"""
+        )
+        title.isNullOrEmpty().not() && visibility == null -> RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"), """{"title":"$title"}"""
+        )
+        title.isNullOrEmpty() && visibility != null -> RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"),
+            """{"visibility":"${visibility.name}"}"""
+        )
+        else -> RequestBody.create(null, byteArrayOf())
     }
 
     suspend fun updateChatRoom(
@@ -81,20 +86,7 @@ internal class ChatRepository(
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "") + "/$chatRoomId"
-        val titleRequest = when {
-            title.isNullOrEmpty().not() && visibility != null -> RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"),
-                """{"visibility":"${visibility.name}","title":"$title"}"""
-            )
-            title.isNullOrEmpty().not() && visibility == null -> RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"), """{"title":"$title"}"""
-            )
-            title.isNullOrEmpty() && visibility != null -> RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"),
-                """{"visibility":"${visibility.name}"}"""
-            )
-            else -> RequestBody.create(null, byteArrayOf())
-        }
+        val titleRequest = createTitleRequest(title, visibility)
         return dataClient.remoteCall<ChatRoom>(
             remoteURL,
             RequestType.PUT,

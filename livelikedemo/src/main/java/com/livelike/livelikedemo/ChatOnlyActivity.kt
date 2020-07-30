@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_chat_only.prg_delete
 import kotlinx.android.synthetic.main.activity_chat_only.prg_join
 import kotlinx.android.synthetic.main.activity_chat_only.prg_members
 import kotlinx.android.synthetic.main.activity_chat_only.prg_refresh
+import kotlinx.android.synthetic.main.activity_chat_only.prg_visibility
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_id
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_members_count
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_title
@@ -48,10 +49,11 @@ class ChatOnlyActivity : AppCompatActivity() {
 
         btn_create.setOnClickListener {
             val title = ed_chat_room_title.text.toString()
-            val visibility = if (btn_visibility.text.toString().toLowerCase().contains("visibility").not())
-                Visibility.valueOf(btn_visibility.text.toString())
-            else
-                Visibility.everyone
+            val visibility =
+                if (btn_visibility.text.toString().toLowerCase().contains("visibility").not())
+                    Visibility.valueOf(btn_visibility.text.toString())
+                else
+                    Visibility.everyone
             prg_create.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
@@ -189,14 +191,16 @@ class ChatOnlyActivity : AppCompatActivity() {
             })
         }
         txt_chat_room_visibility.setOnClickListener {
-            if (txt_chat_room_id.text.isNotEmpty())
+            if (txt_chat_room_id.text.isNotEmpty()) {
                 selectVisibility(object : VisibilityInterface {
                     override fun onSelectItem(visibility: Visibility) {
+                        prg_visibility.visibility = View.VISIBLE
                         (application as LiveLikeApplication).sdk.updateChatRoom(txt_chat_room_id.text.toString(),
                             txt_chat_room_title.text.toString(),
                             visibility,
                             object : LiveLikeCallback<ChatRoomInfo>() {
                                 override fun onResponse(result: ChatRoomInfo?, error: String?) {
+                                    prg_visibility.visibility = View.INVISIBLE
                                     updateData(result)
                                     error?.let {
                                         showToast(it)
@@ -205,6 +209,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                             })
                     }
                 })
+            }
         }
         btn_refresh.callOnClick()
     }
