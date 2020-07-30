@@ -196,7 +196,7 @@ internal open class EngagementDataClientImpl : DataClient,
     }
 
     override suspend fun patchUser(profileUrl: String, userJson: JsonObject, accessToken: String?) {
-        remoteCall<LiveLikeUser>(
+        val result: Result<LiveLikeUser> = remoteCall<LiveLikeUser>(
             profileUrl,
             RequestType.PATCH,
             RequestBody.create(
@@ -204,6 +204,11 @@ internal open class EngagementDataClientImpl : DataClient,
             ),
             accessToken
         )
+        if (result is Result.Error) {
+            logDebug { "Update User:${result.exception.message}" }
+            result.exception.printStackTrace()
+        } else
+            logDebug { "Update User:${(result as Result.Success).data.nickname}" }
     }
 
     internal suspend inline fun <reified T : Any> remoteCall(
@@ -214,7 +219,7 @@ internal open class EngagementDataClientImpl : DataClient,
     ): Result<T> {
         return safeRemoteApiCall({
             withContext(Dispatchers.IO) {
-                logDebug { "url : $url" }
+                logDebug { "url : $url ,has AccessToken:${accessToken != null}" }
                 val request = Request.Builder()
                     .url(url)
                     .method(requestType.name, requestBody)

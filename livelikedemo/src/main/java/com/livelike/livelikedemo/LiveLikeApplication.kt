@@ -67,6 +67,8 @@ class LiveLikeApplication : Application() {
                     ).apply()
                 }
             })
+
+//        sdk.updateChatNickname("Hello Man:${java.util.Random().nextInt(20)}")
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {

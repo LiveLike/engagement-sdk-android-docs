@@ -78,8 +78,8 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
         )
         currentUserStream.latest()?.apply {
             this.nickname = nickname
-            currentUserStream.onNext(this)
             patchNickNameOnRemote(this)
+            currentUserStream.onNext(this)
         }
     }
 
@@ -87,7 +87,7 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
         val jsonObject = JsonObject()
         jsonObject.addProperty("id", liveLikeUser.id)
         jsonObject.addProperty("nickname", liveLikeUser.nickname)
-        dataClient.patchUser(profileUrl, jsonObject, userAccessToken)
+        dataClient.patchUser(profileUrl, jsonObject, userAccessToken ?: liveLikeUser.accessToken)
     }
 
     var rewardType = "none"
