@@ -49,8 +49,6 @@ internal open class Resource(
             totalAnswers
         }
     }
-
-
 }
 
 internal data class Alert(

@@ -48,7 +48,6 @@ internal class ThumbDrawable(
         }
     }
 
-
     override fun draw(canvas: Canvas) {
         drawable.draw(canvas)
     }

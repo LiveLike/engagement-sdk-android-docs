@@ -46,6 +46,11 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -57,11 +62,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -90,7 +90,7 @@ internal class ChatRecyclerAdapter(
     internal var isPublicChat: Boolean = true
     private var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
-    private var currentChatReactionPopUpViewPos: Int = -1
+    var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
@@ -216,7 +216,6 @@ internal class ChatRecyclerAdapter(
             }
         }
 
-
         val callback = MultiCallback(true)
 
         fun bindTo(item: ChatMessage?) {
@@ -235,6 +234,9 @@ internal class ChatRecyclerAdapter(
                         message?.myChatMessageReaction
                     )
                 }
+            }
+            item?.let {
+                analyticsService.trackMessageDisplayed(item.id, item.message)
             }
         }
 
@@ -672,4 +674,3 @@ internal class ChatRecyclerAdapter(
 // const val should be in uppercase always
 private const val LARGER_STICKER_SIZE = 100
 private const val MEDIUM_STICKER_SIZE = 50
-

@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterViewModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidget
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import kotlin.math.max
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.fl_result_team
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_1
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.img_logo_team_2
@@ -44,7 +45,6 @@ import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_cheer_meter_ti
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.txt_my_score
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple
 import kotlinx.android.synthetic.main.widget_cheer_meter.view.view_ripple2
-import kotlin.math.max
 
 class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {

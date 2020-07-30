@@ -3,11 +3,9 @@ package com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPreferences
 
-
 private const val PREFERENCE_KEY_POINTS_TUTORIAL = "PointsTutorial"
 private const val PREFERENCE_KEY_POINTS_TOTAL = "PointsTotal"
 private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
-
 
 internal fun shouldShowPointTutorial(): Boolean {
     return getSharedPreferences()

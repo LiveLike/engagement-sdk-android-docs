@@ -48,6 +48,9 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -74,9 +77,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -92,7 +92,7 @@ import kotlin.math.min
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
 
-
+    private var mHideChatInput: Boolean = false
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
@@ -664,7 +664,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun hideLoadingSpinner() {
         loadingSpinner.visibility = View.GONE
-        chatInput.visibility = View.VISIBLE
+        if (!mHideChatInput) {
+            chatInput.visibility = View.VISIBLE
+        }
         chatdisplay.visibility = View.VISIBLE
         wouldUpdateChatInputAccessibiltyFocus()
     }
@@ -698,6 +700,14 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     fun dismissKeyboard() {
         hideKeyboard(KeyboardHideReason.EXPLICIT_CALL)
         hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
+    }
+
+    /**
+     * use this function to hide message input to build use case like influencer chat
+     **/
+    fun hideChatInputView() {
+        mHideChatInput = true
+        chatInput.visibility = View.GONE
     }
 
     private fun sendMessageNow() {

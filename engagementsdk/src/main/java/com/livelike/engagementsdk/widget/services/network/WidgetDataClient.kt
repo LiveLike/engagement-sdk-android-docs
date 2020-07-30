@@ -1,6 +1,9 @@
 package com.livelike.engagementsdk.widget.services.network
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
@@ -11,6 +14,10 @@ import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addPoints
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -18,7 +25,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import java.io.IOException
 
 internal interface WidgetDataClient {
     suspend fun voteAsync(
@@ -36,6 +42,8 @@ internal interface WidgetDataClient {
         analyticsService: AnalyticsService,
         accessToken: String?
     ): ProgramGamificationProfile?
+
+    suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
 }
 
 internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClient {
@@ -86,6 +94,31 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
             )
         }
     }
+
+    override suspend fun getWidgetDataFromIdAndKind(id: String, kind: String) =
+        suspendCoroutine<JsonObject> {
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url("${BuildConfig.CONFIG_URL}widgets/$kind/$id")
+                .get()
+                .addUserAgent()
+                .build()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    it.resumeWithException(e)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    try {
+                        val s = response.body()?.string()
+                        it.resume(JsonParser().parse(s).asJsonObject)
+                    } catch (e: Exception) {
+                        logError { e }
+                        it.resumeWithException(e)
+                    }
+                }
+            })
+        }
 
     override fun registerImpression(impressionUrl: String, accessToken: String?) {
         if (impressionUrl.isNullOrEmpty()) {

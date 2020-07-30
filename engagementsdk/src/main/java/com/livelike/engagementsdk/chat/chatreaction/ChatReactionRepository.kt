@@ -11,8 +11,7 @@ import kotlinx.coroutines.withContext
 internal class ChatReactionRepository(
     private val remoteUrl: String,
     private val accessToken: String?
-) :
-    BaseRepository() {
+) : BaseRepository() {
 
     var reactionList: List<Reaction>? = null
     var reactionMap: Map<String, Reaction>? = null
@@ -25,7 +24,7 @@ internal class ChatReactionRepository(
                     val result = dataClient.remoteCall<ReactionPackResults>(
                         remoteUrl,
                         RequestType.GET,
-                        accessToken = accessToken
+                        accessToken = null
                     )
                     if (result is Result.Success) {
                         val reactionPack = result.data

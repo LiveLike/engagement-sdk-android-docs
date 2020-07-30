@@ -15,10 +15,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.WidgetListener
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
@@ -31,6 +34,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
@@ -38,6 +42,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
+import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -64,6 +69,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     private var privateGroupChatsession: LiveLikeChatSession? = null
     private var startingState: PlayerState? = null
     private var channelManager: ChannelManager? = null
+    private var myWidgetsList: ArrayList<LiveLikeWidget> = arrayListOf()
 
     private var adsPlaying = false
         set(adsPlaying) {
@@ -161,6 +167,29 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }.show()
                 }
             }
+            myWidgetsList = GsonBuilder().create()
+                .fromJson(
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
+                        PREF_MY_WIDGETS,
+                        null
+                    ), object : TypeToken<List<LiveLikeWidget>>() {}.type
+                ) ?: arrayListOf()
+
+            btn_my_widgets.setOnClickListener {
+                DialogUtils.showMyWidgetsDialog(this,
+                    (application as LiveLikeApplication).sdk,
+                    myWidgetsList,
+                    object : LiveLikeCallback<LiveLikeWidget>() {
+                        override fun onResponse(result: LiveLikeWidget?, error: String?) {
+                            result?.let {
+                                widget_view.displayWidget(
+                                    (application as LiveLikeApplication).sdk,
+                                    result
+                                )
+                            }
+                        }
+                    })
+            }
 
             chat_room_button.setOnClickListener {
 
@@ -194,6 +223,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                 LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
             chat_view.emptyChatBackgroundView = emptyView
             chat_view.allowMediaFromKeyboard = false
+        }
+        if (isHideChatInput) {
+            chat_view.hideChatInputView()
         }
     }
 
@@ -278,7 +310,17 @@ class ExoPlayerActivity : AppCompatActivity() {
                     else -> null
                 }
             )
+            widget_view.setWidgetListener(object : WidgetListener {
+                override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
+                    if (myWidgetsList.find { it.id == liveLikeWidget.id } == null) {
+                        myWidgetsList.add(0, liveLikeWidget)
+                        getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                            .edit().putString(PREF_MY_WIDGETS, Gson().toJson(myWidgetsList)).apply()
+                    }
+                }
+            })
             widget_view.setSession(session)
+
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(
                     state: WidgetStates,
@@ -555,5 +597,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         const val POSITION = "position"
         const val CHANNEL_NAME = "channelName"
         var privateGroupRoomId: String? = null
+        var isHideChatInput: Boolean = false
     }
 }

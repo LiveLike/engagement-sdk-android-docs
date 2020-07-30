@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat.startActivity
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -89,6 +90,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 }
             }
             WidgetStates.FINISHED -> {
+                removeAllViews()
+                parent?.let { (it as ViewGroup).removeAllViews() }
             }
         }
     }

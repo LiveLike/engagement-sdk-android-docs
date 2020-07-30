@@ -13,6 +13,8 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeWidget
+import com.livelike.engagementsdk.WidgetListener
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -124,6 +126,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
             }
         }
+        widget_view.setWidgetListener(object : WidgetListener {
+            override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
+                println("Widget:${liveLikeWidget.id},${liveLikeWidget.programId},${liveLikeWidget.options?.size}")
+            }
+        })
         widget_view.setSession(session)
     }
 
