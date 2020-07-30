@@ -44,7 +44,7 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
                 cause = currentCause.cause
             }
             count++
-        } while (cause != null && count <10)
+        } while (cause != null && count < 10)
 
         if (count == 10) {
             return true // to make it more fail-safe if there is weird deep connections or repetition in causes then will capture for now to see

@@ -1,35 +1,22 @@
 package com.livelike.livelikedemo
 
 import android.app.Application
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.os.Looper
-import android.util.Log
-import android.view.View
 import com.bugsnag.android.Bugsnag
 import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeContentSession
-import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
-import kotlinx.android.synthetic.main.activity_chat_only.ed_chat_room_title
-import kotlinx.android.synthetic.main.activity_chat_only.prg_create
 
 class LiveLikeApplication : Application() {
-
-    companion object {
-        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
-//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
-    }
 
     lateinit var channelManager: ChannelManager
     lateinit var player: VideoPlayer
@@ -70,7 +57,7 @@ class LiveLikeApplication : Application() {
                         PREF_USER_ACCESS_TOKEN,
                         null
                     ).apply {
-                        println("Token:${this}")
+                        println("Token:$this")
                     }
                 }
 
@@ -80,6 +67,8 @@ class LiveLikeApplication : Application() {
                     ).apply()
                 }
             })
+
+//        sdk.updateChatNickname("Hello Man:${java.util.Random().nextInt(20)}")
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
@@ -123,6 +112,11 @@ class LiveLikeApplication : Application() {
                 sdk.createChatSession(timecodeGetter ?: this.timecodeGetter, errorDelegate)
         }
         return privateGroupChatsession as LiveLikeChatSession
+    }
+
+    companion object {
+        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
+//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
     }
 }
 

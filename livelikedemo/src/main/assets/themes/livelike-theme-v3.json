@@ -3033,7 +3033,6 @@
           0
         ]
       },
-
       "correctOptionBar": {
         "borderColor": "000000",
         "fontWeight": "normal",
@@ -3194,7 +3193,6 @@
           0
         ]
       },
-
       "incorrectOptionDescription": {
         "borderColor": "000000",
         "fontWeight": "normal",
@@ -3355,7 +3353,6 @@
           0
         ]
       },
-
       "unselectedOptionDescription": {
         "borderColor": "000000",
         "fontWeight": "normal",
@@ -3516,7 +3513,6 @@
           0
         ]
       },
-
       "header": {
         "borderColor": "000000",
         "fontWeight": "normal",

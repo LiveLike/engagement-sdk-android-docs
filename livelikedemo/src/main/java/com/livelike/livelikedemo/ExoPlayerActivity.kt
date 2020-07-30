@@ -16,7 +16,6 @@ import android.view.View
 import android.view.WindowManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
@@ -39,11 +38,11 @@ import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import java.util.Calendar
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
+import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -59,14 +58,6 @@ import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 
 class ExoPlayerActivity : AppCompatActivity() {
-    companion object {
-        const val AD_STATE = "adstate"
-        const val SHOWING_DIALOG = "showingDialog"
-        const val POSITION = "position"
-        const val CHANNEL_NAME = "channelName"
-        var privateGroupRoomId: String? = null
-        var isHideChatInput: Boolean = false
-    }
 
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
@@ -181,8 +172,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                         PREF_MY_WIDGETS,
                         null
-                    )
-                    , object : TypeToken<List<LiveLikeWidget>>() {}.type
+                    ), object : TypeToken<List<LiveLikeWidget>>() {}.type
                 ) ?: arrayListOf()
 
             btn_my_widgets.setOnClickListener {
@@ -587,5 +577,14 @@ class ExoPlayerActivity : AppCompatActivity() {
         outState?.putBoolean(AD_STATE, adsPlaying)
         outState?.putBoolean(SHOWING_DIALOG, showingDialog)
         outState?.putLong(POSITION, player?.position() ?: 0)
+    }
+
+    companion object {
+        const val AD_STATE = "adstate"
+        const val SHOWING_DIALOG = "showingDialog"
+        const val POSITION = "position"
+        const val CHANNEL_NAME = "channelName"
+        var privateGroupRoomId: String? = null
+        var isHideChatInput: Boolean = false
     }
 }

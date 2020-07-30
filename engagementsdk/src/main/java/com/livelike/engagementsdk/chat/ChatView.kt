@@ -91,13 +91,6 @@ import pl.droidsonroids.gif.MultiCallback
  */
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
-    companion object {
-        const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
-        const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
-        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
-        private const val CHAT_MINIMUM_SIZE_DP = 292
-        private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
-    }
 
     private var mHideChatInput: Boolean = false
     private val chatAttribute = ChatViewThemeAttributes()
@@ -646,7 +639,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
         findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
-//            if (visibility == View.VISIBLE) {
+            //            if (visibility == View.VISIBLE) {
 //                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
 //            }
             visibility = View.GONE
@@ -829,5 +822,13 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         chatdisplay.adapter = null
+    }
+
+    companion object {
+        const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
+        const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
+        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
+        private const val CHAT_MINIMUM_SIZE_DP = 292
+        private const val SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT = 100
     }
 }

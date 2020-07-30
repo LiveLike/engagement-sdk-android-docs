@@ -3,11 +3,9 @@ package com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPreferences
 
-
 private const val PREFERENCE_KEY_POINTS_TUTORIAL = "PointsTutorial"
 private const val PREFERENCE_KEY_POINTS_TOTAL = "PointsTotal"
 private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
-
 
 internal fun shouldShowPointTutorial(): Boolean {
     return getSharedPreferences()
@@ -35,8 +33,8 @@ internal fun addWidgetPredictionVoted(id: String, optionId: String) {
 internal fun getWidgetPredictionVoted(): Array<SavedWidgetVote> {
     val predictionVotedJson = getSharedPreferences()
         .getString(
-        PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, ""
-    ) ?: ""
+            PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, ""
+        ) ?: ""
     return gson.fromJson(predictionVotedJson, Array<SavedWidgetVote>::class.java) ?: emptyArray()
 }
 

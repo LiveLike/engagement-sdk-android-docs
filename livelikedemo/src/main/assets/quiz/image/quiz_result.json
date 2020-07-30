@@ -1,14 +1,14 @@
 {
-  "choices":[
+  "choices": [
     {
-      "id":"1fa67d2d-a0ba-449a-a37b-5992c5eb608c",
-      "is_correct":true,
-      "answer_count":1
+      "id": "1fa67d2d-a0ba-449a-a37b-5992c5eb608c",
+      "is_correct": true,
+      "answer_count": 1
     },
     {
-      "id":"056691c2-9906-4d5e-ae7e-e110abfbe6f5",
-      "is_correct":false,
-      "answer_count":0
+      "id": "056691c2-9906-4d5e-ae7e-e110abfbe6f5",
+      "is_correct": false,
+      "answer_count": 0
     }
   ]
 }

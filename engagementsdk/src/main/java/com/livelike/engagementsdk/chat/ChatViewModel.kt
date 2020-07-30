@@ -94,16 +94,6 @@ internal class ChatViewModel(
         }
     private val dataClient: ChatDataClient = ChatDataClientImpl()
 
-    companion object {
-        const val EVENT_NEW_MESSAGE = "new-message"
-        const val EVENT_MESSAGE_DELETED = "deletion"
-        const val EVENT_MESSAGE_TIMETOKEN_UPDATED = "id-updated"
-        const val EVENT_LOADING_COMPLETE = "loading-complete"
-        const val EVENT_LOADING_STARTED = "loading-started"
-        const val EVENT_REACTION_ADDED = "reaction-added"
-        const val EVENT_REACTION_REMOVED = "reaction-removed"
-    }
-
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
             "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(
@@ -334,5 +324,15 @@ internal class ChatViewModel(
                     }
                 }
             })
+    }
+
+    companion object {
+        const val EVENT_NEW_MESSAGE = "new-message"
+        const val EVENT_MESSAGE_DELETED = "deletion"
+        const val EVENT_MESSAGE_TIMETOKEN_UPDATED = "id-updated"
+        const val EVENT_LOADING_COMPLETE = "loading-complete"
+        const val EVENT_LOADING_STARTED = "loading-started"
+        const val EVENT_REACTION_ADDED = "reaction-added"
+        const val EVENT_REACTION_REMOVED = "reaction-removed"
     }
 }

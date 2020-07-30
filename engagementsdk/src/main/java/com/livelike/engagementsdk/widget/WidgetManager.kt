@@ -70,6 +70,16 @@ internal class WidgetManager(
             widgetInterceptorSubscribe()
         }
 
+    init {
+        widgetInterceptorSubscribe()
+        currentWidgetViewStream.subscribe(this) {
+            widgetOnScreen = (it != null)
+            if (messageQueue.isNotEmpty()) {
+                publishNextInQueue()
+            }
+        }
+    }
+
     private fun widgetInterceptorSubscribe() {
         widgetInterceptor?.let { wi ->
             wi.events.subscribe(javaClass.simpleName) {
@@ -77,16 +87,6 @@ internal class WidgetManager(
                     WidgetInterceptor.Decision.Show -> showPendingMessage()
                     WidgetInterceptor.Decision.Dismiss -> dismissPendingMessage()
                 }
-            }
-        }
-    }
-
-    init {
-        widgetInterceptorSubscribe()
-        currentWidgetViewStream.subscribe(this) {
-            widgetOnScreen = (it != null)
-            if (messageQueue.isNotEmpty()) {
-                publishNextInQueue()
             }
         }
     }
