@@ -411,6 +411,35 @@ class EngagementSDK(
         }
     }
 
+    override fun getProfileForLeaderBoardEntry(
+        leaderBoardId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+    ) {
+        configurationStream.subscribe(this) {
+            it?.let {
+                configurationStream.unsubscribe(this)
+                uiScope.launch {
+                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )}entries/$profileId"
+
+                    val result = dataClient.remoteCall<LeaderBoardEntry>(
+                        url,
+                        requestType = RequestType.GET,
+                        accessToken = null
+                    )
+                    if (result is Result.Success) {
+                        liveLikeCallback.onResponse(result.data, null)
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(null, result.exception.message)
+                    }
+                }
+            }
+        }
+    }
+
     fun fetchWidgetDetails(
         widgetId: String,
         widgetKind: String,

@@ -66,4 +66,10 @@ interface IEngagement {
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
     )
+
+    fun getProfileForLeaderBoardEntry(
+        leaderBoardId: String,
+        profileId:String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+    )
 }

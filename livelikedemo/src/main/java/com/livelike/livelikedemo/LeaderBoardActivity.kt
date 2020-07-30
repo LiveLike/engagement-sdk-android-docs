@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -24,7 +25,40 @@ import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.txt_leader
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.txt_reward_item_name
 
 class LeaderBoardActivity : AppCompatActivity() {
-    val adapter = LeaderBoardEntriesAdapter()
+    val adapter =
+        LeaderBoardEntriesAdapter(object : RecyclerViewItemClickListener<LeaderBoardEntry> {
+            override fun itemClick(item: LeaderBoardEntry) {
+                leaderBoardId?.let {
+                    (application as LiveLikeApplication).sdk.getProfileForLeaderBoardEntry(
+                        leaderBoardId!!,
+                        item.profile_id,
+                        object : LiveLikeCallback<LeaderBoardEntry>() {
+                            override fun onResponse(result: LeaderBoardEntry?, error: String?) {
+                                result?.let {
+                                    AlertDialog.Builder(this@LeaderBoardActivity).apply {
+                                        setTitle("Profile")
+                                        setItems(
+                                            arrayOf(
+                                                "NickName: ${result.profile_nickname}",
+                                                "Id: ${result.profile_id}",
+                                                "Percentile Rank: ${result.percentile_rank}",
+                                                "Rank: ${result.rank}",
+                                                "Score: ${result.score}"
+                                            )
+                                        ) { _, which ->
+
+                                        }
+                                        create()
+                                    }.show()
+                                }
+                                error?.let {
+                                    showToast(error)
+                                }
+                            }
+                        })
+                }
+            }
+        })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,7 +168,7 @@ interface RecyclerViewItemClickListener<T> {
 class LeaderBoardViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
 
-class LeaderBoardEntriesAdapter() :
+class LeaderBoardEntriesAdapter(private val recyclerViewItemClickListener: RecyclerViewItemClickListener<LeaderBoardEntry>) :
     RecyclerView.Adapter<LeaderBoardViewHolder>() {
     val list: ArrayList<LeaderBoardEntry> = arrayListOf()
 
@@ -152,5 +186,8 @@ class LeaderBoardEntriesAdapter() :
         val leaderBoard = list[p1]
         p0.itemView.txt_leaderboard_name.text = leaderBoard.profile_nickname
         p0.itemView.txt_reward_item_name.text = leaderBoard.rank.toString()
+        p0.itemView.lay_leader_board_item.setOnClickListener {
+            recyclerViewItemClickListener.itemClick(leaderBoard)
+        }
     }
 }
