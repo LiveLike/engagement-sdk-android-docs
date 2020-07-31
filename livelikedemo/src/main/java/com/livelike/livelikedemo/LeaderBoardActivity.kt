@@ -29,6 +29,12 @@ class LeaderBoardActivity : AppCompatActivity() {
         LeaderBoardEntriesAdapter(object : RecyclerViewItemClickListener<LeaderBoardEntry> {
             override fun itemClick(item: LeaderBoardEntry) {
                 leaderBoardId?.let {
+                    (application as LiveLikeApplication).sdk.getLeaderBoardDetails(leaderBoardId!!,
+                        object : LiveLikeCallback<LeaderBoard>() {
+                            override fun onResponse(result: LeaderBoard?, error: String?) {
+                                println("LeaderBoard: ${result?.id}")
+                            }
+                        })
                     (application as LiveLikeApplication).sdk.getProfileForLeaderBoardEntry(
                         leaderBoardId!!,
                         item.profile_id,
