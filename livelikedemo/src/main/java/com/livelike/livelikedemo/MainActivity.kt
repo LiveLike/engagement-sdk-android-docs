@@ -42,7 +42,6 @@ import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
-import kotlinx.android.synthetic.main.activity_main.leaderboard_button
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
@@ -167,9 +166,6 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
 
-        leaderboard_button.setOnClickListener {
-            startActivity(Intent(this, LeaderBoardActivity::class.java))
-        }
         private_group_button.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle("Select a private group")
