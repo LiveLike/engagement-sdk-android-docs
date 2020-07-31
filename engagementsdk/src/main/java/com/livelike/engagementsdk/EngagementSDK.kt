@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
+import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -59,7 +60,7 @@ class EngagementSDK(
     private var chatRoomMemberListMap: MutableMap<String, ChatRoomMemberListResponse> =
         mutableMapOf()
     internal var configurationStream: Stream<SdkConfiguration> =
-        SubscriptionManager()
+        SubscriptionManager(true)
     private val dataClient =
         EngagementDataClientImpl()
     private val widgetDataClient = WidgetDataClientImpl()
@@ -340,6 +341,29 @@ class EngagementSDK(
                     }
                 }
             }
+    }
+
+    override fun getLeaderBoardsForProgram(
+        programId: String,
+        liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
+    ) {
+        configurationStream.subscribe(this) { configuration ->
+            configuration?.let {
+                configurationStream.unsubscribe(this)
+                dataClient.getProgramData(
+                    configuration.programDetailUrlTemplate.replace(
+                        TEMPLATE_PROGRAM_ID,
+                        programId
+                    )
+                ) { program ->
+                    if (program?.leaderboards != null) {
+                        liveLikeCallback.onResponse(program.leaderboards, null)
+                    } else {
+                        liveLikeCallback.onResponse(null, "Unable to fetch LeaderBoards")
+                    }
+                }
+            }
+        }
     }
 
     fun fetchWidgetDetails(
