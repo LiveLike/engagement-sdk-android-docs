@@ -92,7 +92,19 @@ import pl.droidsonroids.gif.MultiCallback
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
 
-    private var mHideChatInput: Boolean = false
+    /**
+     * use this variable to hide message input to build use case like influencer chat
+     **/
+    var isChatInputVisible: Boolean = false
+        set(value) {
+            field = value
+            if (value) {
+                chatInput.visibility = View.VISIBLE
+            } else {
+                chatInput.visibility = View.GONE
+            }
+        }
+
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
 
@@ -664,7 +676,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun hideLoadingSpinner() {
         loadingSpinner.visibility = View.GONE
-        if (!mHideChatInput) {
+        if (isChatInputVisible) {
             chatInput.visibility = View.VISIBLE
         }
         chatdisplay.visibility = View.VISIBLE
@@ -700,14 +712,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     fun dismissKeyboard() {
         hideKeyboard(KeyboardHideReason.EXPLICIT_CALL)
         hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
-    }
-
-    /**
-     * use this function to hide message input to build use case like influencer chat
-     **/
-    fun hideChatInputView() {
-        mHideChatInput = true
-        chatInput.visibility = View.GONE
     }
 
     private fun sendMessageNow() {
