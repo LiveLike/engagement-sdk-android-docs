@@ -225,7 +225,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             chat_view.allowMediaFromKeyboard = false
         }
         if (isHideChatInput) {
-            chat_view.hideChatInputView()
+            chat_view.isChatInputVisible = false
         }
     }
 
