@@ -1,45 +1,45 @@
 {
-  "id":"2ff21c75-cdc0-4c24-8a56-8f25c3eb0669",
-  "url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-predictions\/2ff21c75-cdc0-4c24-8a56-8f25c3eb0669\/",
-  "kind":"image-prediction",
-  "program_id":"00f4cdfd-6a19-4853-9c21-51aa46d070a0",
-  "created_at":"2019-03-20T13:38:38.809933-04:00",
-  "published_at":"2019-03-20T13:38:38.809952-04:00",
+  "id": "2ff21c75-cdc0-4c24-8a56-8f25c3eb0669",
+  "url": "https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-predictions\/2ff21c75-cdc0-4c24-8a56-8f25c3eb0669\/",
+  "kind": "image-prediction",
+  "program_id": "00f4cdfd-6a19-4853-9c21-51aa46d070a0",
+  "created_at": "2019-03-20T13:38:38.809933-04:00",
+  "published_at": "2019-03-20T13:38:38.809952-04:00",
   "correct_option_id": "283428f6-c694-43d6-bd89-079c7240b789",
-  "follow_up_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/",
-  "question":"Which is the best mascot?",
-  "confirmation_message":"Stay tuned for results!",
-  "timeout":"P0DT00H00M07S",
-  "options":[
+  "follow_up_url": "https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-follow-ups\/",
+  "question": "Which is the best mascot?",
+  "confirmation_message": "Stay tuned for results!",
+  "timeout": "P0DT00H00M07S",
+  "options": [
     {
-      "id":"283428f6-c694-43d6-bd89-079c7240b789",
-      "description":"RIT Mascot",
-      "vote_count":50,
-      "vote_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-options\/283428f6-c694-43d6-bd89-079c7240b789\/votes\/",
-      "image_url":"https:\/\/cf-blast-storage.livelikecdn.com\/assets\/31f4600b-fdca-4b5c-9075-e475d2a4fb55.gif"
+      "id": "283428f6-c694-43d6-bd89-079c7240b789",
+      "description": "RIT Mascot",
+      "vote_count": 50,
+      "vote_url": "https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-options\/283428f6-c694-43d6-bd89-079c7240b789\/votes\/",
+      "image_url": "https:\/\/cf-blast-storage.livelikecdn.com\/assets\/31f4600b-fdca-4b5c-9075-e475d2a4fb55.gif"
     },
     {
-      "id":"32330bcd-522a-43b7-a654-718f1358f9bb",
-      "description":"RMU Mascot",
-      "vote_count":30,
-      "vote_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-options\/32330bcd-522a-43b7-a654-718f1358f9bb\/votes\/",
-      "image_url":"https:\/\/cf-blast-storage.livelikecdn.com\/assets\/09ab651d-1dbf-4d16-860c-b4e24e7f5f98.gif"
+      "id": "32330bcd-522a-43b7-a654-718f1358f9bb",
+      "description": "RMU Mascot",
+      "vote_count": 30,
+      "vote_url": "https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-options\/32330bcd-522a-43b7-a654-718f1358f9bb\/votes\/",
+      "image_url": "https:\/\/cf-blast-storage.livelikecdn.com\/assets\/09ab651d-1dbf-4d16-860c-b4e24e7f5f98.gif"
     },
     {
-      "id":"9e436c69-9738-4ebf-bc31-c85261b7928d",
-      "description":"RMU Mascot",
-      "vote_count":10,
-      "vote_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-options\/9e436c69-9738-4ebf-bc31-c85261b7928d\/votes\/",
-      "image_url":"https:\/\/cf-blast-storage.livelikecdn.com\/assets\/e3799397-3bb8-4920-b07c-fec1de0b5694.gif"
+      "id": "9e436c69-9738-4ebf-bc31-c85261b7928d",
+      "description": "RMU Mascot",
+      "vote_count": 10,
+      "vote_url": "https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-options\/9e436c69-9738-4ebf-bc31-c85261b7928d\/votes\/",
+      "image_url": "https:\/\/cf-blast-storage.livelikecdn.com\/assets\/e3799397-3bb8-4920-b07c-fec1de0b5694.gif"
     },
     {
-      "id":"53847c36-ff59-4288-8951-fbce282aadf9",
-      "description":"Paw",
-      "vote_count":15,
-      "vote_url":"https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-options\/53847c36-ff59-4288-8951-fbce282aadf9\/votes\/",
-      "image_url":"https:\/\/cf-blast-storage.livelikecdn.com\/assets\/ff61c23f-bc72-4d01-8815-e07357ee1828.gif"
+      "id": "53847c36-ff59-4288-8951-fbce282aadf9",
+      "description": "Paw",
+      "vote_count": 15,
+      "vote_url": "https:\/\/cf-blast.livelikecdn.com\/api\/v1\/image-prediction-options\/53847c36-ff59-4288-8951-fbce282aadf9\/votes\/",
+      "image_url": "https:\/\/cf-blast-storage.livelikecdn.com\/assets\/ff61c23f-bc72-4d01-8815-e07357ee1828.gif"
     }
   ],
-  "subscribe_channel":"image_prediction_2ff21c75_cdc0_4c24_8a56_8f25c3eb0669",
-  "program_date_time":null
+  "subscribe_channel": "image_prediction_2ff21c75_cdc0_4c24_8a56_8f25c3eb0669",
+  "program_date_time": null
 }

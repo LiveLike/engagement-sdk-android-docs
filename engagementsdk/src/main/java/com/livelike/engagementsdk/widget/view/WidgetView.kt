@@ -1,8 +1,6 @@
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
-import android.os.Bundle
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.google.gson.GsonBuilder
@@ -24,7 +22,6 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes

@@ -27,6 +27,12 @@ internal open class Resource(
     val engagement_precent: String = ""
 ) {
 
+    init {
+        getMergedOptions()?.forEach {
+            it.percentage = it.getPercent(getMergedTotal().toFloat())
+        }
+    }
+
     fun getMergedOptions(): List<Option>? {
         return if (choices != null && choices.isNotEmpty()) {
             choices
@@ -41,12 +47,6 @@ internal open class Resource(
             choices?.map { it.answer_count ?: 0 }?.sum() ?: 0
         } else {
             totalAnswers
-        }
-    }
-
-    init {
-        getMergedOptions()?.forEach {
-            it.percentage = it.getPercent(getMergedTotal().toFloat())
         }
     }
 }

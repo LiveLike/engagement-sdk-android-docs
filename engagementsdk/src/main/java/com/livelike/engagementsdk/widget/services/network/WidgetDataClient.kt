@@ -15,6 +15,9 @@ import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addPoints
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -22,10 +25,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import org.json.JSONObject
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 internal interface WidgetDataClient {
     suspend fun voteAsync(
@@ -44,7 +43,7 @@ internal interface WidgetDataClient {
         accessToken: String?
     ): ProgramGamificationProfile?
 
-    suspend fun getWidgetDataFromIdAndKind(id: String, kind: String):JsonObject?
+    suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
 }
 
 internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClient {
@@ -120,7 +119,6 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 }
             })
         }
-
 
     override fun registerImpression(impressionUrl: String, accessToken: String?) {
         if (impressionUrl.isNullOrEmpty()) {

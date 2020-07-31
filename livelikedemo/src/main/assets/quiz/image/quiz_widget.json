@@ -1,36 +1,36 @@
 {
-  "id":"4d673d5f-7873-4021-9b45-d727b8059915",
-  "url":"https:\/\/blast.livelikecdn.com\/api\/v1\/image-quizzes\/4d673d5f-7873-4021-9b45-d727b8059915\/",
-  "program_id":"260f0345-06d2-42cf-8970-2e5ed6c24603",
-  "created_at":"2019-03-30T14:53:48.753655-04:00",
-  "kind":"image-quiz",
-  "published_at":null,
-  "question":"dsada",
-  "timeout":"P0DT00H00M07S",
-  "choices":[
+  "id": "4d673d5f-7873-4021-9b45-d727b8059915",
+  "url": "https:\/\/blast.livelikecdn.com\/api\/v1\/image-quizzes\/4d673d5f-7873-4021-9b45-d727b8059915\/",
+  "program_id": "260f0345-06d2-42cf-8970-2e5ed6c24603",
+  "created_at": "2019-03-30T14:53:48.753655-04:00",
+  "kind": "image-quiz",
+  "published_at": null,
+  "question": "dsada",
+  "timeout": "P0DT00H00M07S",
+  "choices": [
     {
-      "id":"1fa67d2d-a0ba-449a-a37b-5992c5eb608c",
-      "description":"Zion Williamson",
-      "is_correct":true,
-      "image_url":"https:\/\/cf-blast-storage.livelikecdn.com\/assets\/a7d18200-7120-4ae3-a854-edf71efd55ce.png",
-      "answer_url":"https:\/\/blast.livelikecdn.com\/api\/v1\/image-quiz-choices\/1fa67d2d-a0ba-449a-a37b-5992c5eb608c\/answers\/",
-      "answer_count":0
+      "id": "1fa67d2d-a0ba-449a-a37b-5992c5eb608c",
+      "description": "Zion Williamson",
+      "is_correct": true,
+      "image_url": "https:\/\/cf-blast-storage.livelikecdn.com\/assets\/a7d18200-7120-4ae3-a854-edf71efd55ce.png",
+      "answer_url": "https:\/\/blast.livelikecdn.com\/api\/v1\/image-quiz-choices\/1fa67d2d-a0ba-449a-a37b-5992c5eb608c\/answers\/",
+      "answer_count": 0
     },
     {
-      "id":"056691c2-9906-4d5e-ae7e-e110abfbe6f5",
-      "description":"RJ Barrett",
-      "is_correct":false,
-      "image_url":"https:\/\/cf-blast-storage.livelikecdn.com\/assets\/303863e0-0412-43a6-86d4-dc9d2d5469eb.png",
-      "answer_url":"https:\/\/blast.livelikecdn.com\/api\/v1\/image-quiz-choices\/056691c2-9906-4d5e-ae7e-e110abfbe6f5\/answers\/",
-      "answer_count":0
+      "id": "056691c2-9906-4d5e-ae7e-e110abfbe6f5",
+      "description": "RJ Barrett",
+      "is_correct": false,
+      "image_url": "https:\/\/cf-blast-storage.livelikecdn.com\/assets\/303863e0-0412-43a6-86d4-dc9d2d5469eb.png",
+      "answer_url": "https:\/\/blast.livelikecdn.com\/api\/v1\/image-quiz-choices\/056691c2-9906-4d5e-ae7e-e110abfbe6f5\/answers\/",
+      "answer_count": 0
     }
   ],
-  "subscribe_channel":"image_quiz_4d673d5f_7873_4021_9b45_d727b8059915",
-  "program_date_time":"2019-03-30T14:53:36.305000-04:00",
-  "publish_delay":"P0DT00H00M00S",
-  "impression_url":"https:\/\/blast.livelikecdn.com\/api\/v1\/image-quizzes\/4d673d5f-7873-4021-9b45-d727b8059915\/impressions\/",
-  "impression_count":0,
-  "engagement_count":0,
-  "engagement_percent":"0.000",
-  "status":"scheduled"
+  "subscribe_channel": "image_quiz_4d673d5f_7873_4021_9b45_d727b8059915",
+  "program_date_time": "2019-03-30T14:53:36.305000-04:00",
+  "publish_delay": "P0DT00H00M00S",
+  "impression_url": "https:\/\/blast.livelikecdn.com\/api\/v1\/image-quizzes\/4d673d5f-7873-4021-9b45-d727b8059915\/impressions\/",
+  "impression_count": 0,
+  "engagement_count": 0,
+  "engagement_percent": "0.000",
+  "status": "scheduled"
 }

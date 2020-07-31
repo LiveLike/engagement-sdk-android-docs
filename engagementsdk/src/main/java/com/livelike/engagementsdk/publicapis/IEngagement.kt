@@ -41,6 +41,7 @@ interface IEngagement {
         chatRoomMembershipPagination: ChatRoomMembershipPagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     )
+
     fun getMembersOfChatRoom(
         chatRoomId: String,
         chatRoomMembershipPagination: ChatRoomMembershipPagination,

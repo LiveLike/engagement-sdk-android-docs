@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
-import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -25,18 +24,17 @@ import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -51,11 +49,6 @@ class EngagementSDK(
     private val originURL: String? = null,
     private var accessTokenDelegate: AccessTokenDelegate? = null
 ) : IEngagement {
-
-    companion object {
-        @JvmStatic
-        var enableDebug: Boolean = false
-    }
 
     private var userChatRoomListResponse: UserChatRoomListResponse? = null
     private var chatRoomMemberListMap: MutableMap<String, ChatRoomMemberListResponse> =
@@ -466,4 +459,9 @@ class EngagementSDK(
         @SerializedName("pubnub_origin")
         val pubnubOrigin: String? = null
     )
+
+    companion object {
+        @JvmStatic
+        var enableDebug: Boolean = false
+    }
 }

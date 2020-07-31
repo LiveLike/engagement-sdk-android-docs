@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-<gradient
-        android:startColor="@color/livelike_quiz_title_gradient_left"
+    <gradient
+        android:angle="@integer/header_gradient_angle"
         android:endColor="@color/livelike_quiz_title_gradient_right"
-        android:angle="@integer/header_gradient_angle"/>
-    <corners android:topLeftRadius="@dimen/livelike_button_corner_radius"
-             android:topRightRadius="@dimen/livelike_button_corner_radius"/>
+        android:startColor="@color/livelike_quiz_title_gradient_left" />
+    <corners
+        android:topLeftRadius="@dimen/livelike_button_corner_radius"
+        android:topRightRadius="@dimen/livelike_button_corner_radius" />
 </shape>
