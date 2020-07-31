@@ -1,5 +1,5 @@
 package com.livelike.engagementsdk.chat.data.remote
 
-enum class LiveLikePagination {
+enum class ChatRoomMembershipPagination {
     FIRST, NEXT, PREVIOUS
 }
