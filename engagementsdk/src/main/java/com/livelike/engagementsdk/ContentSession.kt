@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 
 internal class ContentSession(
+    clientId: String,
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
@@ -79,7 +80,7 @@ internal class ContentSession(
     }
 
     override var analyticService: AnalyticsService =
-        MockAnalyticsService(programId)
+        MockAnalyticsService(clientId)
     private val llDataClient =
         EngagementDataClientImpl()
     private val widgetDataClient = WidgetDataClientImpl()
