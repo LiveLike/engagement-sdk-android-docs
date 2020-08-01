@@ -57,6 +57,7 @@ internal class ContentSession(
     }
 
     override var chatSession: ChatSession = ChatSession(
+        clientId,
         sdkConfiguration,
         userRepository,
         applicationContext,
