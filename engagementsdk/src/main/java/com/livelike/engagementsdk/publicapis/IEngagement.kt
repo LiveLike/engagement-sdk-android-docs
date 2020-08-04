@@ -5,8 +5,9 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
-import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.core.data.models.LeaderBoard
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 
 interface IEngagement {
 
@@ -51,13 +52,13 @@ interface IEngagement {
     )
 
     fun getCurrentUserChatRoomList(
-        chatRoomMembershipPagination: LiveLikePagination,
+        liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     )
 
     fun getMembersOfChatRoom(
         chatRoomId: String,
-        chatRoomMembershipPagination: LiveLikePagination,
+        liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeUser>>
     )
 
@@ -69,5 +70,22 @@ interface IEngagement {
     fun getLeaderBoardsForProgram(
         programId: String,
         liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
+    )
+
+    fun getLeaderBoardDetails(
+        leaderBoardId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoard>
+    )
+
+    fun getEntriesForLeaderBoard(
+        leaderBoardId: String,
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
+    )
+
+    fun getProfileForLeaderBoardEntry(
+        leaderBoardId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
 }

@@ -16,9 +16,12 @@ import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryResult
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
@@ -265,7 +268,7 @@ class EngagementSDK(
     }
 
     override fun getCurrentUserChatRoomList(
-        likePagination: LiveLikePagination,
+        liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
@@ -281,7 +284,7 @@ class EngagementSDK(
                             origin = pair.second.pubnubOrigin
                         )
                     uiScope.launch {
-                        val url = when (likePagination) {
+                        val url = when (liveLikePagination) {
                             LiveLikePagination.FIRST -> pair.first.chat_room_memberships_url
                             LiveLikePagination.NEXT -> userChatRoomListResponse?.next
                             LiveLikePagination.PREVIOUS -> userChatRoomListResponse?.previous
@@ -308,7 +311,7 @@ class EngagementSDK(
 
     override fun getMembersOfChatRoom(
         chatRoomId: String,
-        chatRoomMembershipPagination: LiveLikePagination,
+        liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeUser>>
     ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
@@ -324,7 +327,7 @@ class EngagementSDK(
                             origin = pair.second.pubnubOrigin
                         )
                     uiScope.launch {
-                        val url = when (chatRoomMembershipPagination) {
+                        val url = when (liveLikePagination) {
                             LiveLikePagination.FIRST -> null
                             LiveLikePagination.NEXT -> chatRoomMemberListMap[chatRoomId]?.next
                             LiveLikePagination.PREVIOUS -> chatRoomMemberListMap[chatRoomId]?.previous
@@ -391,6 +394,108 @@ class EngagementSDK(
                         liveLikeCallback.onResponse(program.leaderboards, null)
                     } else {
                         liveLikeCallback.onResponse(null, "Unable to fetch LeaderBoards")
+                    }
+                }
+            }
+        }
+    }
+
+    override fun getLeaderBoardDetails(
+        leaderBoardId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoard>
+    ) {
+        configurationStream.subscribe(this) {
+            it?.let {
+                configurationStream.unsubscribe(this)
+                uiScope.launch {
+                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )}"
+                    val result = dataClient.remoteCall<LeaderBoard>(
+                        url,
+                        requestType = RequestType.GET,
+                        accessToken = null
+                    )
+                    if (result is Result.Success) {
+                        liveLikeCallback.onResponse(
+                            result.data,
+                            null
+                        )
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(null, result.exception.message)
+                    }
+                }
+            }
+        }
+    }
+
+    private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
+
+    override fun getEntriesForLeaderBoard(
+        leaderBoardId: String,
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
+    ) {
+        configurationStream.subscribe(this) {
+            it?.let {
+                configurationStream.unsubscribe(this)
+                uiScope.launch {
+                    val defaultUrl = "${it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )}entries"
+                    val url = when (liveLikePagination) {
+                        LiveLikePagination.FIRST -> defaultUrl
+                        LiveLikePagination.NEXT -> leaderBoardEntryResult[leaderBoardId]?.next
+                        LiveLikePagination.PREVIOUS -> leaderBoardEntryResult[leaderBoardId]?.previous
+                    }
+                    if (url != null) {
+                        val result = dataClient.remoteCall<LeaderBoardEntryResult>(
+                            url,
+                            requestType = RequestType.GET,
+                            accessToken = null
+                        )
+                        if (result is Result.Success) {
+                            leaderBoardEntryResult[leaderBoardId] = result.data
+                            liveLikeCallback.onResponse(
+                                leaderBoardEntryResult[leaderBoardId]?.results,
+                                null
+                            )
+                        } else if (result is Result.Error) {
+                            liveLikeCallback.onResponse(null, result.exception.message)
+                        }
+                    } else {
+                        liveLikeCallback.onResponse(null, "No More data to load")
+                    }
+                }
+            }
+        }
+    }
+
+    override fun getProfileForLeaderBoardEntry(
+        leaderBoardId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+    ) {
+        configurationStream.subscribe(this) {
+            it?.let {
+                configurationStream.unsubscribe(this)
+                uiScope.launch {
+                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )}entries/$profileId"
+
+                    val result = dataClient.remoteCall<LeaderBoardEntry>(
+                        url,
+                        requestType = RequestType.GET,
+                        accessToken = null
+                    )
+                    if (result is Result.Success) {
+                        liveLikeCallback.onResponse(result.data, null)
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(null, result.exception.message)
                     }
                 }
             }
@@ -517,6 +622,8 @@ class EngagementSDK(
         @SerializedName("program_detail_url_template")
         val programDetailUrlTemplate: String,
         @SerializedName("pubnub_origin")
-        val pubnubOrigin: String? = null
+        val pubnubOrigin: String? = null,
+        @SerializedName("leaderboard_detail_url_template")
+        val leaderboardDetailUrlTemplate: String? = null
     )
 }
