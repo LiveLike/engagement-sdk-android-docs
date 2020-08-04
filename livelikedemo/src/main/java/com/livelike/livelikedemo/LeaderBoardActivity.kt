@@ -16,6 +16,8 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.activity_leader_board.btn_current_entry
 import kotlinx.android.synthetic.main.activity_leader_board.btn_fetch
 import kotlinx.android.synthetic.main.activity_leader_board.btn_next
+import kotlinx.android.synthetic.main.activity_leader_board.btn_sort_down
+import kotlinx.android.synthetic.main.activity_leader_board.btn_sort_up
 import kotlinx.android.synthetic.main.activity_leader_board.ed_txt_program_id
 import kotlinx.android.synthetic.main.activity_leader_board.prg_fetch_leader_boards
 import kotlinx.android.synthetic.main.activity_leader_board.prg_leaderboard_entries
@@ -122,6 +124,12 @@ class LeaderBoardActivity : AppCompatActivity() {
                     })
             }
         }
+        btn_sort_down.setOnClickListener {
+            adapter.sortList(false)
+        }
+        btn_sort_up.setOnClickListener {
+            adapter.sortList(true)
+        }
         prg_leaderboard_entries.visibility = View.INVISIBLE
     }
 
@@ -196,6 +204,14 @@ class LeaderBoardViewHolder(view: View) : RecyclerView.ViewHolder(view)
 class LeaderBoardEntriesAdapter(private val recyclerViewItemClickListener: RecyclerViewItemClickListener<LeaderBoardEntry>) :
     RecyclerView.Adapter<LeaderBoardViewHolder>() {
     val list: ArrayList<LeaderBoardEntry> = arrayListOf()
+    var isAscending = true
+    fun sortList(isAsc: Boolean) {
+        if (isAsc != isAscending) {
+            isAscending = !isAscending
+            list.reverse()
+            notifyDataSetChanged()
+        }
+    }
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): LeaderBoardViewHolder {
         return LeaderBoardViewHolder(
