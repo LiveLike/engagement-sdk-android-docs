@@ -15,8 +15,11 @@ internal const val REACTION_CREATED = "rc"
 internal const val TEMPLATE_PROGRAM_ID = "{program_id}"
 internal const val TEMPLATE_CHAT_ROOM_ID = "{chat_room_id}"
 internal const val TEMPLATE_LEADER_BOARD_ID = "{leaderboard_id}"
+internal const val TEMPLATE_PROFILE_ID = "{profile_id}"
 
 // Date time formatters
 
-internal val DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER = SimpleDateFormat("MMM d, h:mm a",
-    Locale.getDefault())
+internal val DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER = SimpleDateFormat(
+    "MMM d, h:mm a",
+    Locale.getDefault()
+)
