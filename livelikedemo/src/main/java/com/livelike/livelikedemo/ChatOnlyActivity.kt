@@ -103,7 +103,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                 setTitle("Select a private group")
                 setItems(chatRoomList.map { it.id }.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
-                    (application as LiveLikeApplication).removePrivateSession()
+//                    (application as LiveLikeApplication).removePrivateSession()
                     changeChatRoom(chatRoomList.elementAt(which).id)
                 }
                 create()
@@ -127,7 +127,6 @@ class ChatOnlyActivity : AppCompatActivity() {
                     }
                 })
         }
-
         btn_chat_room_members.setOnClickListener {
             val id = txt_chat_room_id.text.toString()
             if (id.isNotEmpty()) {
