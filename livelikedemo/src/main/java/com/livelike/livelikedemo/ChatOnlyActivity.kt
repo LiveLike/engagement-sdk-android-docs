@@ -103,7 +103,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                 setTitle("Select a private group")
                 setItems(chatRoomList.map { it.id }.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
-                    (application as LiveLikeApplication).removePrivateSession()
+//                    (application as LiveLikeApplication).removePrivateSession()
                     changeChatRoom(chatRoomList.elementAt(which).id)
                 }
                 create()
@@ -127,7 +127,6 @@ class ChatOnlyActivity : AppCompatActivity() {
                     }
                 })
         }
-
         btn_chat_room_members.setOnClickListener {
             val id = txt_chat_room_id.text.toString()
             if (id.isNotEmpty()) {
@@ -170,10 +169,12 @@ class ChatOnlyActivity : AppCompatActivity() {
                                 showToast("Deleted ChatRoom")
                                 privateGroupChatsession.exitChatRoom(id)
                                 privateGroupChatsession.close()
+                                (application as LiveLikeApplication).removePrivateSession()
                                 chat_view.visibility = View.INVISIBLE
                                 txt_chat_room_id.text = ""
                                 txt_chat_room_title.text = ""
                                 txt_chat_room_members_count.text = ""
+                                txt_chat_room_visibility.text = ""
                             }
                             prg_delete.visibility = View.INVISIBLE
                             btn_refresh.callOnClick()
