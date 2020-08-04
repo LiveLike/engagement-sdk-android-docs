@@ -117,4 +117,15 @@
         app:layout_constraintStart_toEndOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/rcyl_leader_board"
         tools:visibility="invisible" />
+
+    <Button
+        android:id="@+id/btn_current_entry"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:text="Current User Entry"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_next"
+        app:layout_constraintEnd_toStartOf="@+id/btn_next"
+        app:layout_constraintStart_toEndOf="@+id/prg_leaderboard_entries"
+        app:layout_constraintTop_toTopOf="@+id/btn_next" />
 </android.support.constraint.ConstraintLayout>

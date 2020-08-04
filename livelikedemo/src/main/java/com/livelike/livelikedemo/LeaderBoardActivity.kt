@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import kotlinx.android.synthetic.main.activity_leader_board.btn_current_entry
 import kotlinx.android.synthetic.main.activity_leader_board.btn_fetch
 import kotlinx.android.synthetic.main.activity_leader_board.btn_next
 import kotlinx.android.synthetic.main.activity_leader_board.ed_txt_program_id
@@ -35,27 +36,13 @@ class LeaderBoardActivity : AppCompatActivity() {
                                 println("LeaderBoard: ${result?.id}")
                             }
                         })
-                    (application as LiveLikeApplication).sdk.getProfileForLeaderBoardEntry(
+                    (application as LiveLikeApplication).sdk.getLeaderBoardEntryForProfile(
                         leaderBoardId!!,
                         item.profile_id,
                         object : LiveLikeCallback<LeaderBoardEntry>() {
                             override fun onResponse(result: LeaderBoardEntry?, error: String?) {
                                 result?.let {
-                                    AlertDialog.Builder(this@LeaderBoardActivity).apply {
-                                        setTitle("Profile")
-                                        setItems(
-                                            arrayOf(
-                                                "NickName: ${result.profile_nickname}",
-                                                "Id: ${result.profile_id}",
-                                                "Percentile Rank: ${result.percentile_rank}",
-                                                "Rank: ${result.rank}",
-                                                "Score: ${result.score}"
-                                            )
-                                        ) { _, which ->
-
-                                        }
-                                        create()
-                                    }.show()
+                                    showData(it)
                                 }
                                 error?.let {
                                     showToast(error)
@@ -65,6 +52,24 @@ class LeaderBoardActivity : AppCompatActivity() {
                 }
             }
         })
+
+    private fun showData(result: LeaderBoardEntry) {
+        AlertDialog.Builder(this@LeaderBoardActivity).apply {
+            setTitle("Profile")
+            setItems(
+                arrayOf(
+                    "NickName: ${result.profile_nickname}",
+                    "Id: ${result.profile_id}",
+                    "Percentile Rank: ${result.percentile_rank}",
+                    "Rank: ${result.rank}",
+                    "Score: ${result.score}"
+                )
+            ) { _, which ->
+
+            }
+            create()
+        }.show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +107,21 @@ class LeaderBoardActivity : AppCompatActivity() {
         btn_next.setOnClickListener {
             loadEntries(LiveLikePagination.NEXT)
         }
-
+        btn_current_entry.setOnClickListener {
+            leaderBoardId?.let { id ->
+                (application as LiveLikeApplication).sdk.getLeaderBoardEntryForCurrentUserProfile(id,
+                    object : LiveLikeCallback<LeaderBoardEntry>() {
+                        override fun onResponse(result: LeaderBoardEntry?, error: String?) {
+                            result?.let {
+                                showData(it)
+                            }
+                            error?.let {
+                                showToast(it)
+                            }
+                        }
+                    })
+            }
+        }
         prg_leaderboard_entries.visibility = View.INVISIBLE
     }
 

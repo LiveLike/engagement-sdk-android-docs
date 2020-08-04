@@ -473,7 +473,7 @@ class EngagementSDK(
         }
     }
 
-    override fun getProfileForLeaderBoardEntry(
+    override fun getLeaderBoardEntryForProfile(
         leaderBoardId: String,
         profileId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
@@ -498,6 +498,18 @@ class EngagementSDK(
                         liveLikeCallback.onResponse(null, result.exception.message)
                     }
                 }
+            }
+        }
+    }
+
+    override fun getLeaderBoardEntryForCurrentUserProfile(
+        leaderBoardId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+    ) {
+        userRepository.currentUserStream.subscribe(this) {
+            it?.let { user ->
+                userRepository.currentUserStream.unsubscribe(this)
+                getLeaderBoardEntryForProfile(leaderBoardId, user.id, liveLikeCallback)
             }
         }
     }
