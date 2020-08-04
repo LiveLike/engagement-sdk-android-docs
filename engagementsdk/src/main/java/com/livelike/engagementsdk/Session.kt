@@ -3,7 +3,9 @@ package com.livelike.engagementsdk
 import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 
@@ -40,6 +42,8 @@ interface LiveLikeContentSession {
     var widgetInterceptor: WidgetInterceptor?
     /** set value of style for widget **/
     fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes)
+
+    fun getPublishedWidgets(liveLikePagination: LiveLikePagination,liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget?>>)
 }
 
 /**

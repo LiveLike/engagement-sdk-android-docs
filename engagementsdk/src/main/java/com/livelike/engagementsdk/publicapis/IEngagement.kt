@@ -5,8 +5,8 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 
 interface IEngagement {
 
@@ -51,13 +51,13 @@ interface IEngagement {
     )
 
     fun getCurrentUserChatRoomList(
-        chatRoomMembershipPagination: ChatRoomMembershipPagination,
+        chatRoomMembershipPagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     )
 
     fun getMembersOfChatRoom(
         chatRoomId: String,
-        chatRoomMembershipPagination: ChatRoomMembershipPagination,
+        chatRoomMembershipPagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeUser>>
     )
 

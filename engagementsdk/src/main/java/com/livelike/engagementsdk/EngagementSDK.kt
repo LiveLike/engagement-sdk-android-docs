@@ -10,7 +10,7 @@ import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.core.AccessTokenDelegate
@@ -265,7 +265,7 @@ class EngagementSDK(
     }
 
     override fun getCurrentUserChatRoomList(
-        chatRoomMembershipPagination: ChatRoomMembershipPagination,
+        likePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
@@ -281,10 +281,10 @@ class EngagementSDK(
                             origin = pair.second.pubnubOrigin
                         )
                     uiScope.launch {
-                        val url = when (chatRoomMembershipPagination) {
-                            ChatRoomMembershipPagination.FIRST -> pair.first.chat_room_memberships_url
-                            ChatRoomMembershipPagination.NEXT -> userChatRoomListResponse?.next
-                            ChatRoomMembershipPagination.PREVIOUS -> userChatRoomListResponse?.previous
+                        val url = when (likePagination) {
+                            LiveLikePagination.FIRST -> pair.first.chat_room_memberships_url
+                            LiveLikePagination.NEXT -> userChatRoomListResponse?.next
+                            LiveLikePagination.PREVIOUS -> userChatRoomListResponse?.previous
                         }
                         val chatRoomResult = chatRepository.getCurrentUserChatRoomList(
                             url ?: pair.first.chat_room_memberships_url
@@ -308,7 +308,7 @@ class EngagementSDK(
 
     override fun getMembersOfChatRoom(
         chatRoomId: String,
-        chatRoomMembershipPagination: ChatRoomMembershipPagination,
+        chatRoomMembershipPagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeUser>>
     ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
@@ -325,9 +325,9 @@ class EngagementSDK(
                         )
                     uiScope.launch {
                         val url = when (chatRoomMembershipPagination) {
-                            ChatRoomMembershipPagination.FIRST -> null
-                            ChatRoomMembershipPagination.NEXT -> chatRoomMemberListMap[chatRoomId]?.next
-                            ChatRoomMembershipPagination.PREVIOUS -> chatRoomMemberListMap[chatRoomId]?.previous
+                            LiveLikePagination.FIRST -> null
+                            LiveLikePagination.NEXT -> chatRoomMemberListMap[chatRoomId]?.next
+                            LiveLikePagination.PREVIOUS -> chatRoomMemberListMap[chatRoomId]?.previous
                         }
                         val chatRoomResult = chatRepository.getMembersOfChatRoom(
                             chatRoomId, pair.second.chatRoomUrlTemplate, paginationUrl = url

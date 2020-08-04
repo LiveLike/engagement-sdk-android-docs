@@ -15,7 +15,7 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -113,7 +113,7 @@ class ChatOnlyActivity : AppCompatActivity() {
         btn_refresh.setOnClickListener {
             prg_refresh.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.getCurrentUserChatRoomList(
-                ChatRoomMembershipPagination.FIRST,
+                LiveLikePagination.FIRST,
                 object : LiveLikeCallback<List<ChatRoomInfo>>() {
                     override fun onResponse(result: List<ChatRoomInfo>?, error: String?) {
                         prg_refresh.visibility = View.INVISIBLE
@@ -133,7 +133,7 @@ class ChatOnlyActivity : AppCompatActivity() {
             if (id.isNotEmpty()) {
                 prg_members.visibility = View.VISIBLE
                 (application as LiveLikeApplication).sdk.getMembersOfChatRoom(id,
-                    ChatRoomMembershipPagination.FIRST,
+                    LiveLikePagination.FIRST,
                     object : LiveLikeCallback<List<LiveLikeUser>>() {
                         override fun onResponse(result: List<LiveLikeUser>?, error: String?) {
                             if (result?.isNotEmpty() == true)
