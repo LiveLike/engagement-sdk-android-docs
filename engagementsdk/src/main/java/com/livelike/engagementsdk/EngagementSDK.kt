@@ -18,6 +18,9 @@ import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryResult
+import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
+import com.livelike.engagementsdk.core.data.models.toLeadBoard
+import com.livelike.engagementsdk.core.data.models.toReward
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -391,7 +394,13 @@ class EngagementSDK(
                     )
                 ) { program ->
                     if (program?.leaderboards != null) {
-                        liveLikeCallback.onResponse(program.leaderboards, null)
+                        liveLikeCallback.onResponse(program.leaderboards.map {
+                            LeaderBoard(
+                                it.id,
+                                it.name,
+                                it.rewardItem.toReward()
+                            )
+                        }, null)
                     } else {
                         liveLikeCallback.onResponse(null, "Unable to fetch LeaderBoards")
                     }
@@ -412,14 +421,14 @@ class EngagementSDK(
                         TEMPLATE_LEADER_BOARD_ID,
                         leaderBoardId
                     )}"
-                    val result = dataClient.remoteCall<LeaderBoard>(
+                    val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
                         requestType = RequestType.GET,
                         accessToken = null
                     )
                     if (result is Result.Success) {
                         liveLikeCallback.onResponse(
-                            result.data,
+                            result.data.toLeadBoard(),
                             null
                         )
                     } else if (result is Result.Error) {
@@ -437,19 +446,29 @@ class EngagementSDK(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
     ) {
-        getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
-            override fun onResponse(result: LeaderBoard?, error: String?) {
-                result?.let { leaderBoard ->
-                    val defaultUrl = leaderBoard.entries_url
-                    val url = when (liveLikePagination) {
-                        LiveLikePagination.FIRST -> defaultUrl
-                        LiveLikePagination.NEXT -> leaderBoardEntryResult[leaderBoardId]?.next
-                        LiveLikePagination.PREVIOUS -> leaderBoardEntryResult[leaderBoardId]?.previous
-                    }
-                    if (url != null) {
-                        uiScope.launch {
+        configurationStream.subscribe(this) {
+            it?.let {
+                configurationStream.unsubscribe(this)
+                uiScope.launch {
+                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )}"
+                    val result = dataClient.remoteCall<LeaderBoardResource>(
+                        url,
+                        requestType = RequestType.GET,
+                        accessToken = null
+                    )
+                    if (result is Result.Success) {
+                        val defaultUrl = result.data.entries_url
+                        val entriesUrl = when (liveLikePagination) {
+                            LiveLikePagination.FIRST -> defaultUrl
+                            LiveLikePagination.NEXT -> leaderBoardEntryResult[leaderBoardId]?.next
+                            LiveLikePagination.PREVIOUS -> leaderBoardEntryResult[leaderBoardId]?.previous
+                        }
+                        if (entriesUrl != null) {
                             val listResult = dataClient.remoteCall<LeaderBoardEntryResult>(
-                                url,
+                                entriesUrl,
                                 requestType = RequestType.GET,
                                 accessToken = null
                             )
@@ -465,16 +484,17 @@ class EngagementSDK(
                                     listResult.exception.message
                                 )
                             }
+                        } else {
+                            liveLikeCallback.onResponse(null, "No More data to load")
                         }
-                    } else {
-                        liveLikeCallback.onResponse(null, "No More data to load")
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(null, result.exception.message)
                     }
-                }
-                error?.let {
-                    liveLikeCallback.onResponse(null, error)
+
                 }
             }
-        })
+        }
+
     }
 
     override fun getLeaderBoardEntryForProfile(
@@ -482,12 +502,22 @@ class EngagementSDK(
         profileId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     ) {
-        getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
-            override fun onResponse(result: LeaderBoard?, error: String?) {
-                result?.let {
-                    uiScope.launch {
+        configurationStream.subscribe(this) {
+            it?.let {
+                configurationStream.unsubscribe(this)
+                uiScope.launch {
+                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )}"
+                    val result = dataClient.remoteCall<LeaderBoardResource>(
+                        url,
+                        requestType = RequestType.GET,
+                        accessToken = null
+                    )
+                    if (result is Result.Success) {
                         val profileResult = dataClient.remoteCall<LeaderBoardEntry>(
-                            it.entry_detail_url_template.replace(TEMPLATE_PROFILE_ID, profileId),
+                            result.data.entry_detail_url_template.replace(TEMPLATE_PROFILE_ID, profileId),
                             requestType = RequestType.GET,
                             accessToken = null
                         )
@@ -496,6 +526,20 @@ class EngagementSDK(
                         } else if (profileResult is Result.Error) {
                             liveLikeCallback.onResponse(null, profileResult.exception.message)
                         }
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(null, result.exception.message)
+                    }
+
+                }
+            }
+        }
+
+
+        getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
+            override fun onResponse(result: LeaderBoard?, error: String?) {
+                result?.let {
+                    uiScope.launch {
+
                     }
                 }
                 error?.let {
