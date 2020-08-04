@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.publicapis
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
+import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
@@ -30,7 +31,18 @@ interface IEngagement {
     /** Override the default auto-generated chat userpic **/
     fun updateChatUserPic(url: String?)
 
-    fun createChatRoom(title: String? = null, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>)
+    fun createChatRoom(
+        title: String? = null,
+        visibility: Visibility? = null,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    )
+
+    fun updateChatRoom(
+        chatRoomId: String,
+        title: String? = null,
+        visibility: Visibility? = null,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    )
 
     fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>)
 

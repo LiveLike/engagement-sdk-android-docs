@@ -44,15 +44,22 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:textColor="@android:color/white"
                 android:layout_weight="1"
-                android:hint="Enter Room title" />
+                android:hint="Enter Room title"
+                android:textColor="@android:color/white" />
 
             <ProgressBar
                 android:id="@+id/prg_create"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/btn_visibility"
+                android:layout_width="70dp"
+                android:layout_height="50dp"
+                android:text="Visibility"
+                android:textSize="9sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -71,9 +78,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:textColor="@android:color/white"
                 android:layout_weight="1"
-                android:hint="Enter Room Id to Join" />
+                android:hint="Enter Room Id to Join"
+                android:textColor="@android:color/white" />
 
             <ProgressBar
                 android:id="@+id/prg_join"
@@ -133,7 +140,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lay_top" />
+        app:layout_constraintTop_toBottomOf="@+id/lay_top">
+
+
+    </com.livelike.engagementsdk.chat.ChatView>
 
     <LinearLayout
         android:id="@+id/lay_join_chat_room"
@@ -180,7 +190,7 @@
         app:layout_constraintTop_toBottomOf="@+id/txt_chat_room_id" />
 
     <TextView
-        android:id="@+id/txt_chat_room_members_count"
+        android:id="@+id/txt_chat_room_visibility"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -189,5 +199,26 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_chat_room_title" />
+
+    <ProgressBar
+        android:id="@+id/prg_visibility"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:visibility="invisible"
+        android:layout_marginRight="10dp"
+        app:layout_constraintRight_toLeftOf="@+id/txt_chat_room_visibility"
+        app:layout_constraintTop_toTopOf="@+id/txt_chat_room_visibility" />
+
+    <TextView
+        android:id="@+id/txt_chat_room_members_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/rounded_black_background"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_chat_room_visibility" />
 
 </android.support.constraint.ConstraintLayout>

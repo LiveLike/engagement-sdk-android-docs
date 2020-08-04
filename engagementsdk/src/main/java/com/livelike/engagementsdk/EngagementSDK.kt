@@ -7,6 +7,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
+import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
@@ -138,7 +139,20 @@ class EngagementSDK(
         }
     }
 
-    override fun createChatRoom(title: String?, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>) {
+    override fun createChatRoom(
+        title: String?,
+        visibility: Visibility?,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    ) {
+        createUpdateChatRoom(null, visibility, title, liveLikeCallback)
+    }
+
+    internal fun createUpdateChatRoom(
+        chatRoomId: String?,
+        visibility: Visibility?,
+        title: String?,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    ) {
         userRepository.currentUserStream.combineLatestOnce(configurationStream, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -153,14 +167,21 @@ class EngagementSDK(
                         )
 
                     uiScope.launch {
-                        val chatRoomResult = chatRepository.createChatRoom(
-                            title, pair.second.createChatRoomUrl
-                        )
+                        val chatRoomResult = when (chatRoomId == null) {
+                            true -> chatRepository.createChatRoom(
+                                title, visibility, pair.second.createChatRoomUrl
+                            )
+                            else -> chatRepository.updateChatRoom(
+                                chatRoomId,
+                                title, visibility, pair.second.createChatRoomUrl
+                            )
+                        }
                         if (chatRoomResult is Result.Success) {
                             liveLikeCallback.onResponse(
                                 ChatRoomInfo(
                                     chatRoomResult.data.id,
-                                    chatRoomResult.data.title
+                                    chatRoomResult.data.title,
+                                    chatRoomResult.data.visibility
                                 ), null
                             )
                         } else if (chatRoomResult is Result.Error) {
@@ -169,6 +190,15 @@ class EngagementSDK(
                     }
                 }
             }
+    }
+
+    override fun updateChatRoom(
+        chatRoomId: String,
+        title: String?,
+        visibility: Visibility?,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    ) {
+        createUpdateChatRoom(chatRoomId, visibility, title, liveLikeCallback)
     }
 
     override fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>) {
@@ -193,7 +223,8 @@ class EngagementSDK(
                             liveLikeCallback.onResponse(
                                 ChatRoomInfo(
                                     chatRoomResult.data.id,
-                                    chatRoomResult.data.title
+                                    chatRoomResult.data.title,
+                                    chatRoomResult.data.visibility
                                 ), null
                             )
                         } else if (chatRoomResult is Result.Error) {
