@@ -59,7 +59,6 @@ internal class ChatSession(
     override var analyticService: AnalyticsService = MockAnalyticsService(clientId)
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
-            analyticService,
             userRepository.currentUserStream,
             isPublicRoom,
             null
@@ -90,6 +89,7 @@ internal class ChatSession(
                     pair.first.mixpanelToken,
                     pair.first.clientId
                 )
+                chatViewModel.analyticsService = analyticService
                 val liveLikeUser = pair.second
                 chatRepository =
                     ChatRepository(
