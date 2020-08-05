@@ -80,54 +80,29 @@ internal class ChatRepository(
     }
 
     suspend fun updateChatRoom(
-        chatRoomId: String,
         title: String?,
         visibility: Visibility?,
-        chatRoomTemplateUrl: String
-    ): Result<ChatRoom> {
-        val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "") + "/$chatRoomId"
-        val titleRequest = createTitleRequest(title, visibility)
-        return dataClient.remoteCall<ChatRoom>(
-            remoteURL,
-            RequestType.PUT,
-            accessToken = authKey,
-            requestBody = titleRequest
-        )
-    }
-
-    suspend fun addCurrentUserToChatRoom(
         chatRoomId: String,
         chatRoomTemplateUrl: String
-    ): Result<ChatRoomMembership> {
-        val remoteURL =
-            chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "") + "/$chatRoomId/memberships"
-        return dataClient.remoteCall<ChatRoomMembership>(
-            remoteURL,
-            accessToken = authKey,
-            requestType = RequestType.POST,
-            requestBody = RequestBody.create(null, byteArrayOf())
-        )
+    ): Result<ChatRoom> {
+        val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
+        val titleRequest = createTitleRequest(title, visibility)
+        return if (chatRoomResult is Result.Success) {
+            return dataClient.remoteCall<ChatRoom>(
+                chatRoomResult.data.url,
+                RequestType.PUT,
+                accessToken = authKey,
+                requestBody = titleRequest
+            )
+        } else {
+            chatRoomResult as Result.Error
+        }
+
     }
 
     suspend fun getCurrentUserChatRoomList(membershipUrl: String): Result<UserChatRoomListResponse> {
         return dataClient.remoteCall<UserChatRoomListResponse>(
             membershipUrl,
-            accessToken = authKey,
-            requestType = RequestType.GET
-        )
-    }
-
-    suspend fun getMembersOfChatRoom(
-        chatRoomId: String,
-        chatRoomTemplateUrl: String,
-        paginationUrl: String? = null
-    ): Result<ChatRoomMemberListResponse> {
-        val remoteURL = paginationUrl ?: chatRoomTemplateUrl.replace(
-            TEMPLATE_CHAT_ROOM_ID,
-            ""
-        ) + "$chatRoomId/memberships"
-        return dataClient.remoteCall<ChatRoomMemberListResponse>(
-            remoteURL,
             accessToken = authKey,
             requestType = RequestType.GET
         )
