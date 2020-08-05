@@ -8,7 +8,8 @@ import android.view.ViewGroup
 import kotlin.math.roundToInt
 
 // This layout takes up all the space available and disable scrolling
-class SpanningLinearLayoutManager(context: Context, val itemMinSize: Int) : LinearLayoutManager(context) {
+class SpanningLinearLayoutManager(context: Context, val itemMinSize: Int) :
+    LinearLayoutManager(context) {
 
     private val horizontalSpace: Int
         get() = width - paddingRight - paddingLeft

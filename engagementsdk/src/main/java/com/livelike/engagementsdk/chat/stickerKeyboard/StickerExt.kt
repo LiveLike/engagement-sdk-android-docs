@@ -52,9 +52,17 @@ fun Matcher.countMatches(): Int {
     return counter
 }
 
-const val stickerSize = 100
+const val STICKER_SIZE = 100
 
-fun replaceWithStickers(s: Spannable?, context: Context, stickerPackRepository: StickerPackRepository, edittext_chat_message: EditText?, callback: MultiCallback?, size: Int = 50, onMatch: (() -> Unit)? = null) {
+fun replaceWithStickers(
+    s: Spannable?,
+    context: Context,
+    stickerPackRepository: StickerPackRepository,
+    edittext_chat_message: EditText?,
+    callback: MultiCallback?,
+    size: Int = 50,
+    onMatch: (() -> Unit)? = null
+) {
     val existingSpans = s?.getSpans(0, s.length, ImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
     existingSpans?.forEach { imageSpan ->
@@ -187,7 +195,8 @@ fun replaceWithImages(
                     ) {
                         try {
                             val drawable = GifDrawable(resource)
-                            setupBounds(drawable, inEditText,
+                            setupBounds(
+                                drawable, inEditText,
                                 drawable.intrinsicWidth,
                                 drawable.intrinsicHeight
                             )
@@ -215,9 +224,11 @@ fun replaceWithImages(
                         transition: Transition<in Drawable>?
                     ) {
                         try {
-                            setupBounds(drawable, inEditText,
+                            setupBounds(
+                                drawable, inEditText,
                                 drawable.intrinsicWidth,
-                                drawable.intrinsicHeight)
+                                drawable.intrinsicHeight
+                            )
                             val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
@@ -240,7 +251,7 @@ internal fun setupBounds(
     val h = drawable.intrinsicHeight
 
     val overrideSize = if (edittext_chat_message != null) {
-        AndroidResource.dpToPx(smallStickerSize)
+        AndroidResource.dpToPx(SMALL_STICKER_SIZE)
     } else {
         AndroidResource.dpToPx(size)
     }
@@ -279,9 +290,9 @@ internal fun setupBounds(
     val padding = AndroidResource.dpToPx(8)
 
     val overrideSize = if (inEditText) {
-        AndroidResource.dpToPx(smallStickerSize)
+        AndroidResource.dpToPx(SMALL_STICKER_SIZE)
     } else {
-        AndroidResource.dpToPx(stickerSize)
+        AndroidResource.dpToPx(STICKER_SIZE)
     }
     val height = overrideSize
     val width = (overrideSize.toFloat() * w / h).roundToInt()
@@ -294,4 +305,4 @@ internal fun setupBounds(
     )
 }
 
-private const val smallStickerSize = 30
+private const val SMALL_STICKER_SIZE = 30

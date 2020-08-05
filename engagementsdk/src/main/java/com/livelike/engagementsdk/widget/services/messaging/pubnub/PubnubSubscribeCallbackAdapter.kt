@@ -12,10 +12,10 @@ import com.pubnub.api.models.consumer.pubsub.objects.PNSpaceResult
 import com.pubnub.api.models.consumer.pubsub.objects.PNUserResult
 
 /**
-* This adapter class provides empty implementations of the methods from pubnub subscribe callbacks.
-* Any custom listener that cares only about a subset of the methods of this listener can simply
-* subclass this adapter class instead of implementing the class directly.
-**/
+ * This adapter class provides empty implementations of the methods from pubnub subscribe callbacks.
+ * Any custom listener that cares only about a subset of the methods of this listener can simply
+ * subclass this adapter class instead of implementing the class directly.
+ **/
 internal abstract class PubnubSubscribeCallbackAdapter : SubscribeCallback() {
 
     override fun signal(pubnub: PubNub, pnSignalResult: PNSignalResult) {

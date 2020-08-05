@@ -33,7 +33,11 @@ class WidgetOnlyActivityTest {
         onView(withIndex(withId(R.id.text_button), 5)).perform(click())
         takeScreenshot("widgetOnly2")
         Thread.sleep(1000)
-        ActivityCompat.requestPermissions(activityRule.activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+        ActivityCompat.requestPermissions(
+            activityRule.activity,
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            1
+        )
         Thread.sleep(5000)
         takeScreenshot("widgetOnly2")
     }

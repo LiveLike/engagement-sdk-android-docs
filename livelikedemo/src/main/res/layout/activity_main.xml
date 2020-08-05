@@ -455,6 +455,33 @@
                     tools:text="SETTINGS" />
 
                 <TextView
+                    android:id="@+id/chat_input_visibility_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif"
+                    android:lineSpacingExtra="8sp"
+                    android:text="Hide chat message input"
+                    android:textColor="#de000000"
+                    android:textSize="16sp"
+                    android:textStyle="normal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/settings_label"
+                    tools:text="Hide chat message input" />
+
+
+                <Switch
+                    android:id="@+id/chat_input_visibility_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="18dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/settings_label"
+                    />
+
+
+                <TextView
                     android:id="@+id/resize_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -467,7 +494,7 @@
                     android:textSize="16sp"
                     android:textStyle="normal"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/settings_label"
+                    app:layout_constraintTop_toBottomOf="@id/chat_input_visibility_label"
                     tools:text="Nickname" />
 
                 <TextView

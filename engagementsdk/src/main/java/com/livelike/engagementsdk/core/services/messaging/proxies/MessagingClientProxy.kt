@@ -7,7 +7,8 @@ import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.core.utils.logDebug
 
-internal abstract class MessagingClientProxy(val upstream: MessagingClient) : MessagingClient, MessagingEventListener {
+internal abstract class MessagingClientProxy(val upstream: MessagingClient) : MessagingClient,
+    MessagingEventListener {
 
     var listener: MessagingEventListener? = null
 

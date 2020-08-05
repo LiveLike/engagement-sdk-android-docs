@@ -2,7 +2,6 @@ package com.livelike.livelikedemo
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.google.gson.GsonBuilder
@@ -38,8 +37,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                     PREF_MY_WIDGETS,
                     null
-                )
-                , object : TypeToken<List<LiveLikeWidget>>() {}.type
+                ), object : TypeToken<List<LiveLikeWidget>>() {}.type
             ) ?: arrayListOf()
         show_my_widget.setOnClickListener {
             DialogUtils.showMyWidgetsDialog(this,

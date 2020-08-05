@@ -7,11 +7,19 @@ import com.livelike.engagementsdk.core.data.models.Program
 
 internal interface DataClient {
     fun getProgramData(url: String, responseCallback: (program: Program?) -> Unit)
-    fun getUserData(profileUrl: String, accessToken: String, responseCallback: (livelikeUser: LiveLikeUser?) -> Unit)
+    fun getUserData(
+        profileUrl: String,
+        accessToken: String,
+        responseCallback: (livelikeUser: LiveLikeUser?) -> Unit
+    )
+
     fun createUserData(profileUrl: String, responseCallback: (livelikeUser: LiveLikeUser) -> Unit)
     suspend fun patchUser(profileUrl: String, userJson: JsonObject, accessToken: String?)
 }
 
 internal interface EngagementSdkDataClient {
-    fun getEngagementSdkConfig(url: String, responseCallback: (config: Result<EngagementSDK.SdkConfiguration>) -> Unit)
+    fun getEngagementSdkConfig(
+        url: String,
+        responseCallback: (config: Result<EngagementSDK.SdkConfiguration>) -> Unit
+    )
 }

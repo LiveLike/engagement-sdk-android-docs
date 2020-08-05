@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-       android:shape="rectangle">
+    android:shape="rectangle">
 
-    <solid
-            android:color="#ffffff">
-    </solid>
+    <solid android:color="#ffffff"></solid>
 
-    <corners
-            android:radius="@dimen/livelike_chat_rounded_rect_radius">
-    </corners>
+    <corners android:radius="@dimen/livelike_chat_rounded_rect_radius"></corners>
 </shape>

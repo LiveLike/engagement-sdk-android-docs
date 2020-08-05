@@ -38,11 +38,11 @@ import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.io.IOException
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -57,11 +57,6 @@ class EngagementSDK(
     private val originURL: String? = null,
     private var accessTokenDelegate: AccessTokenDelegate? = null
 ) : IEngagement {
-
-    companion object {
-        @JvmStatic
-        var enableDebug: Boolean = false
-    }
 
     private var userChatRoomListResponse: UserChatRoomListResponse? = null
     private var chatRoomMemberListMap: MutableMap<String, ChatRoomMemberListResponse> =
@@ -592,6 +587,7 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         return ContentSession(
+            clientId,
             configurationStream,
             userRepository,
             applicationContext,
@@ -619,6 +615,7 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         return ContentSession(
+            clientId,
             configurationStream,
             userRepository,
             applicationContext,
@@ -637,6 +634,7 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeChatSession {
         return ChatSession(
+            clientId,
             configurationStream,
             userRepository,
             applicationContext,
@@ -685,4 +683,9 @@ class EngagementSDK(
         @SerializedName("leaderboard_detail_url_template")
         val leaderboardDetailUrlTemplate: String? = null
     )
+
+    companion object {
+        @JvmStatic
+        var enableDebug: Boolean = false
+    }
 }

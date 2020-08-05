@@ -3,15 +3,16 @@
     <item android:id="@android:id/progress">
         <scale android:scaleWidth="100%">
             <shape>
-                <corners android:radius="@dimen/livelike_percent_bar_corner_radius"/>
+                <corners android:radius="@dimen/livelike_percent_bar_corner_radius" />
                 <gradient
-                        android:angle="@integer/percent_bar_gradient_angle"
-                        android:startColor="@color/livelike_prediction_bar_gradient_left"
-                        android:endColor="@color/livelike_prediction_bar_gradient_right"/>
-                <padding android:bottom="15dp"
-                         android:top="14dp"
-                         android:right="48dp"
-                         android:left="16dp"/>
+                    android:angle="@integer/percent_bar_gradient_angle"
+                    android:endColor="@color/livelike_prediction_bar_gradient_right"
+                    android:startColor="@color/livelike_prediction_bar_gradient_left" />
+                <padding
+                    android:bottom="15dp"
+                    android:left="16dp"
+                    android:right="48dp"
+                    android:top="14dp" />
             </shape>
         </scale>
     </item>

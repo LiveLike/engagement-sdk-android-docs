@@ -49,6 +49,7 @@ import org.threeten.bp.ZonedDateTime
 import java.io.IOException
 
 internal class ContentSession(
+    clientId: String,
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
@@ -62,6 +63,7 @@ internal class ContentSession(
     }
 
     override var chatSession: ChatSession = ChatSession(
+        clientId,
         sdkConfiguration,
         userRepository,
         applicationContext,
@@ -118,7 +120,7 @@ internal class ContentSession(
     }
 
     override var analyticService: AnalyticsService =
-        MockAnalyticsService(programId)
+        MockAnalyticsService(clientId)
     private val llDataClient =
         EngagementDataClientImpl()
     private val widgetDataClient = WidgetDataClientImpl()
@@ -214,7 +216,6 @@ internal class ContentSession(
             errorDelegate?.onError("Network error please create the session again")
         }
     }
-
 
     private fun startObservingForGamificationAnalytics(
         analyticService: AnalyticsService,

@@ -19,17 +19,20 @@ data class PlayerState(
     var whenReady: Boolean = true
 )
 
-class ExoPlayerImpl(private val context: Context, private val playerView: PlayerView) : VideoPlayer {
+class ExoPlayerImpl(private val context: Context, private val playerView: PlayerView) :
+    VideoPlayer {
 
     private var player: SimpleExoPlayer? =
-        ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
+        ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector())
+            .also { playerView.player = it }
     private var mediaSource: MediaSource = buildMediaSource(Uri.EMPTY)
     private var playerState = PlayerState()
 
     private fun initializePlayer(uri: Uri, state: PlayerState, useHls: Boolean = true) {
         playerView.requestFocus()
 
-        player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector()).also { playerView.player = it }
+        player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector())
+            .also { playerView.player = it }
 
         mediaSource = if (useHls) buildHLSMediaSource(uri) else buildMediaSource(uri)
         playerState = state
@@ -51,11 +54,13 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
 
     private fun buildMediaSource(uri: Uri): HlsMediaSource {
         return HlsMediaSource.Factory(
-            DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
+            DefaultDataSourceFactory(context, "LLDemoApp")
+        ).createMediaSource(uri)
     }
 
     private fun buildHLSMediaSource(uri: Uri): HlsMediaSource {
-        return HlsMediaSource.Factory(DefaultDataSourceFactory(context, "LLDemoApp")).createMediaSource(uri)
+        return HlsMediaSource.Factory(DefaultDataSourceFactory(context, "LLDemoApp"))
+            .createMediaSource(uri)
     }
 
     override fun playMedia(uri: Uri, startState: PlayerState) {

@@ -51,14 +51,13 @@ public class SwipeDismissTouchListener implements View.OnTouchListener {
     // Fixed properties
     private final View mView;
     private final DismissCallbacks mCallbacks;
+    private final Object mToken;
     private int mViewWidth = 1; // 1 and not 0 to prevent dividing by zero
-
     // Transient properties
     private float mDownX;
     private float mDownY;
     private boolean mSwiping;
     private int mSwipingSlop;
-    private final Object mToken;
     private VelocityTracker mVelocityTracker;
     private float mTranslationX;
 

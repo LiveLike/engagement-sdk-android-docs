@@ -20,9 +20,10 @@ internal class SynchronizedMessagingClient(
 ) :
     MessagingClientProxy(upstream) {
 
-    private val queueMap:MutableMap<String, Queue<ClientMessage>> = mutableMapOf()
+    private val queueMap: MutableMap<String, Queue<ClientMessage>> = mutableMapOf()
     private var coroutineTimer: Job
-    private var isQueueProcess:Boolean=false
+    private var isQueueProcess: Boolean = false
+
     init {
         coroutineTimer = MainScope().launch {
             publishTimeSynchronizedMessageFromQueue()

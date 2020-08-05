@@ -18,16 +18,11 @@ import com.livelike.livelikedemo.video.VideoPlayer
 
 class LiveLikeApplication : Application() {
 
-    companion object {
-        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
-//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
-    }
-
     lateinit var channelManager: ChannelManager
-    lateinit var player: VideoPlayer
+    var player: VideoPlayer? = null
     val timecodeGetter = object : EngagementSDK.TimecodeGetter {
         override fun getTimecode(): EpochTime {
-            return EpochTime(player.getPDT())
+            return EpochTime(player?.getPDT() ?: 0)
         }
     }
     var publicSession: LiveLikeContentSession? = null
@@ -62,7 +57,7 @@ class LiveLikeApplication : Application() {
                         PREF_USER_ACCESS_TOKEN,
                         null
                     ).apply {
-                        println("Token:${this}")
+                        println("Token:$this")
                     }
                 }
 
@@ -77,8 +72,9 @@ class LiveLikeApplication : Application() {
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
-        player = ExoPlayerImpl(baseContext, playerView)
-        return player
+        val playerTemp = ExoPlayerImpl(applicationContext, playerView)
+        player = playerTemp
+        return playerTemp
     }
 
     fun removePublicSession() {
@@ -117,6 +113,11 @@ class LiveLikeApplication : Application() {
                 sdk.createChatSession(timecodeGetter ?: this.timecodeGetter, errorDelegate)
         }
         return privateGroupChatsession as LiveLikeChatSession
+    }
+
+    companion object {
+        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
+//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
     }
 }
 
