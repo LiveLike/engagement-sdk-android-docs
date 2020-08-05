@@ -20,16 +20,16 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
-        versionName "2.4"
+        versionName "2.5.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
 
-        buildConfigField "String", "SDK_VERSION", '"2.4"'
+        buildConfigField "String", "SDK_VERSION", '"2.5.1"'
     }
 
     buildTypes {
-        debug{}
+        debug {}
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -70,7 +70,7 @@ android {
         debug
         release
     }
-    
+
 }
 
 dependencies {

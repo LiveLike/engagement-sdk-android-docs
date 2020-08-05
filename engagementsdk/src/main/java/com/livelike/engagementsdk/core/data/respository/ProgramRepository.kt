@@ -2,13 +2,13 @@ package com.livelike.engagementsdk.core.data.respository
 
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.data.models.Program
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,7 +23,11 @@ internal class ProgramRepository(
 
     internal var program: Program? = null
 
-    internal val rewardType: RewardsType by lazy { RewardsType.valueOf(program?.rewardsType?.toUpperCase() ?: "none") }
+    internal val rewardType: RewardsType by lazy {
+        RewardsType.valueOf(
+            program?.rewardsType?.toUpperCase() ?: "none"
+        )
+    }
     /**
      *  user points and other gamification stuff under this program.
      */

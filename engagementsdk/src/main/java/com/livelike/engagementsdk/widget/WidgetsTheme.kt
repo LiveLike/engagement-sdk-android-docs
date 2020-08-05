@@ -59,7 +59,8 @@ data class WidgetsTheme(
     val quiz: OptionsWidgetThemeComponent? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-        return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate() ?: poll?.validate()
+        return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate()
+        ?: poll?.validate()
         ?: prediction?.validate()
         ?: quiz?.validate()
     }

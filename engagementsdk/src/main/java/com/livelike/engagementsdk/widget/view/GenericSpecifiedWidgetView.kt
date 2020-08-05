@@ -126,32 +126,32 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         }
     }
 
-internal abstract fun lockInteraction()
+    internal abstract fun lockInteraction()
 
-internal abstract fun unLockInteraction()
+    internal abstract fun unLockInteraction()
 
-private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
-    when (widgetStates) {
-        WidgetStates.READY -> {
-            moveToNextState()
-        }
-        WidgetStates.INTERACTING -> {
-            viewModel.data.latest()?.let { entity ->
-                val timeout = AndroidResource.parseDuration(entity.timeout)
-                viewModel.startInteractionTimeout(timeout)
+    private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
+        when (widgetStates) {
+            WidgetStates.READY -> {
+                moveToNextState()
             }
+            WidgetStates.INTERACTING -> {
+                viewModel.data.latest()?.let { entity ->
+                    val timeout = AndroidResource.parseDuration(entity.timeout)
+                    viewModel.startInteractionTimeout(timeout)
+                }
 //            viewModel?.data?.latest()?.let {
 //                viewModel?.startDismissTimout(it.resource.timeout)
 //            }
-        }
-        WidgetStates.RESULTS -> {
+            }
+            WidgetStates.RESULTS -> {
 //            viewModel?.confirmationState()
-        }
-        WidgetStates.FINISHED -> {
-            dataModelObserver(null)
+            }
+            WidgetStates.FINISHED -> {
+                dataModelObserver(null)
+            }
         }
     }
-}
 
     protected open fun unsubscribeCalls() {
         viewModel.state.unsubscribe(javaClass.name)

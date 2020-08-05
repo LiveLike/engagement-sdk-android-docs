@@ -16,7 +16,7 @@ android {
     }
 
     buildTypes {
-        debug{}
+        debug {}
         release {
             minifyEnabled true
             shrinkResources true
@@ -83,7 +83,8 @@ dependencies {
 
     //sdk
     debugApi project(path: ':engagementsdk')
-    releaseApi project(path: ':engagementsdk') //TODO  define configuration: 'release' for release variant currently it is not building in it.
+    releaseApi project(path: ':engagementsdk')
+    //TODO  define configuration: 'release' for release variant currently it is not building in it.
 
     implementation project(path: ':pluginexoplayer')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"

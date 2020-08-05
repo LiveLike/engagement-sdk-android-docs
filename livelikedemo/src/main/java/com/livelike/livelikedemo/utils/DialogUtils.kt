@@ -9,8 +9,6 @@ import com.github.angads25.filepicker.view.FilePickerDialog
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.livelikedemo.LiveLikeApplication
-import kotlinx.android.synthetic.main.activity_widget_framework.widget_view
 
 object DialogUtils {
 

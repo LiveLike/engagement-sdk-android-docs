@@ -1,7 +1,10 @@
 package com.livelike.engagementsdk.chat.data.remote
 
 import com.google.gson.annotations.SerializedName
-import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.*
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_CREATED
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.MESSAGE_DELETED
 
 internal data class PubnubChatEvent<T>(
     @SerializedName("event")
@@ -20,8 +23,8 @@ internal enum class PubnubChatEventType(val key: String) {
     IMAGE_DELETED("image-deleted")
 }
 
-internal fun String.toPubnubChatEventType() : PubnubChatEventType? =
-    when(this){
+internal fun String.toPubnubChatEventType(): PubnubChatEventType? =
+    when (this) {
         IMAGE_CREATED.key -> IMAGE_CREATED
         IMAGE_DELETED.key -> IMAGE_DELETED
         MESSAGE_DELETED.key -> MESSAGE_DELETED

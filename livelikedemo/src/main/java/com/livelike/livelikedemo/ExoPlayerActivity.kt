@@ -3,6 +3,7 @@ package com.livelike.livelikedemo
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,7 +17,6 @@ import android.view.View
 import android.view.WindowManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
@@ -29,7 +29,6 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetIntercep
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
@@ -39,11 +38,11 @@ import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import java.util.Calendar
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
+import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
@@ -59,13 +58,6 @@ import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
 
 class ExoPlayerActivity : AppCompatActivity() {
-    companion object {
-        const val AD_STATE = "adstate"
-        const val SHOWING_DIALOG = "showingDialog"
-        const val POSITION = "position"
-        const val CHANNEL_NAME = "channelName"
-        var privateGroupRoomId: String? = null
-    }
 
     private val themeRadomizerHandler = Handler(Looper.getMainLooper())
     private var jsonTheme: String? = null
@@ -180,8 +172,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                     getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                         PREF_MY_WIDGETS,
                         null
-                    )
-                    , object : TypeToken<List<LiveLikeWidget>>() {}.type
+                    ), object : TypeToken<List<LiveLikeWidget>>() {}.type
                 ) ?: arrayListOf()
 
             btn_my_widgets.setOnClickListener {
@@ -225,13 +216,26 @@ class ExoPlayerActivity : AppCompatActivity() {
                 }.show()
             }
         } else {
-            checkForNetworkToRecreateActivity()
+            // checkForNetworkToRecreateActivity()
         }
         if (themeCurrent == R.style.TurnerChatTheme) {
             val emptyView =
                 LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
             chat_view.emptyChatBackgroundView = emptyView
             chat_view.allowMediaFromKeyboard = false
+        }
+        if (isHideChatInput) {
+            chat_view.isChatInputVisible = false
+        }
+    }
+
+    override fun onBackPressed() {
+        if (this.isTaskRoot) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                this.finishAfterTransition()
+            }
+        } else {
+            super.onBackPressed()
         }
     }
 
@@ -348,11 +352,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (privateGroupChatsession == null) {
             privateGroupChatsession =
                 (application as LiveLikeApplication).createPrivateSession(
-                    errorDelegate = object : ErrorDelegate() {
-                        override fun onError(error: String) {
-                            checkForNetworkToRecreateActivity()
-                        }
-                    }
+//                    errorDelegate = object : ErrorDelegate() {
+//                        override fun onError(error: String) {
+//                            checkForNetworkToRecreateActivity()
+//                        }
+//                    }
 
                 )
             privateGroupChatsession?.setMessageListener(object : MessageListener {
@@ -528,18 +532,19 @@ class ExoPlayerActivity : AppCompatActivity() {
         fullLogs.text = "$logs \n\n ${fullLogs.text}"
     }
 
-    private fun checkForNetworkToRecreateActivity() {
-        playerView.postDelayed({
-            if (isNetworkConnected()) {
-                playerView.post {
-                    startActivity(intent)
-                    finish()
-                }
-            } else {
-                checkForNetworkToRecreateActivity()
-            }
-        }, 1000)
-    }
+//    private fun checkForNetworkToRecreateActivity() {
+//        //removing this method implementation as it is causing multiple instances on same activity in a task
+// //        playerView.postDelayed({
+// //            if (isNetworkConnected()) {
+// //                playerView.post {
+// //                    startActivity(intent)
+// //                    finish()
+// //                }
+// //            } else {
+// //                checkForNetworkToRecreateActivity()
+// //            }
+// //        }, 1000)
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -553,6 +558,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        (application as LiveLikeApplication).player = null
         timer.cancel()
         timer.purge()
         player?.release()
@@ -583,5 +589,14 @@ class ExoPlayerActivity : AppCompatActivity() {
         outState?.putBoolean(AD_STATE, adsPlaying)
         outState?.putBoolean(SHOWING_DIALOG, showingDialog)
         outState?.putLong(POSITION, player?.position() ?: 0)
+    }
+
+    companion object {
+        const val AD_STATE = "adstate"
+        const val SHOWING_DIALOG = "showingDialog"
+        const val POSITION = "position"
+        const val CHANNEL_NAME = "channelName"
+        var privateGroupRoomId: String? = null
+        var isHideChatInput: Boolean = false
     }
 }

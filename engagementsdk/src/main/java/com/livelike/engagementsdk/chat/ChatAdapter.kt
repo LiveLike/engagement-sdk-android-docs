@@ -1,8 +1,6 @@
 package com.livelike.engagementsdk.chat
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Context.ACCESSIBILITY_SERVICE
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
@@ -19,7 +17,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
@@ -47,9 +44,13 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -61,11 +62,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -165,6 +161,31 @@ internal class ChatRecyclerAdapter(
                 }.show()
             })
 
+        init {
+            chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
+                if (res < 0) {
+                    v.chatBubbleBackground.setBackgroundColor(res)
+                } else {
+                    val value = TypedValue()
+                    v.context.resources.getValue(res, value, true)
+                    when {
+                        value.type == TypedValue.TYPE_REFERENCE -> v.chatBubbleBackground.setBackgroundResource(
+                            res
+                        )
+                        value.type == TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
+                            R.drawable.ic_chat_message_bubble_rounded_rectangle
+                        )
+                        value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT -> ColorDrawable(
+                            value.data
+                        )
+                        else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
+                    }
+                }
+            }
+            v.setOnLongClickListener(this)
+            v.setOnClickListener(this)
+        }
+
         override fun onLongClick(view: View?): Boolean {
             return true
         }
@@ -193,31 +214,6 @@ internal class ChatRecyclerAdapter(
             } else {
                 wouldShowFloatingUi(view)
             }
-        }
-
-        init {
-            chatViewThemeAttribute.chatBubbleBackgroundRes?.let { res ->
-                if (res < 0) {
-                    v.chatBubbleBackground.setBackgroundColor(res)
-                } else {
-                    val value = TypedValue()
-                    v.context.resources.getValue(res, value, true)
-                    when {
-                        value.type == TypedValue.TYPE_REFERENCE -> v.chatBubbleBackground.setBackgroundResource(
-                            res
-                        )
-                        value.type == TypedValue.TYPE_NULL -> v.chatBubbleBackground.setBackgroundResource(
-                            R.drawable.ic_chat_message_bubble_rounded_rectangle
-                        )
-                        value.type >= TypedValue.TYPE_FIRST_COLOR_INT && value.type <= TypedValue.TYPE_LAST_COLOR_INT -> ColorDrawable(
-                            value.data
-                        )
-                        else -> v.chatBubbleBackground.setBackgroundResource(R.drawable.ic_chat_message_bubble_rounded_rectangle)
-                    }
-                }
-            }
-            v.setOnLongClickListener(this)
-            v.setOnClickListener(this)
         }
 
         val callback = MultiCallback(true)
@@ -574,8 +570,8 @@ internal class ChatRecyclerAdapter(
                                     callback,
                                     false,
                                     message.id,
-                                    message.image_width ?: largerStickerSize,
-                                    message.image_height ?: largerStickerSize
+                                    message.image_width ?: LARGER_STICKER_SIZE,
+                                    message.image_height ?: LARGER_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
@@ -589,7 +585,7 @@ internal class ChatRecyclerAdapter(
                                     stickerPackRepository,
                                     null,
                                     callback,
-                                    largerStickerSize
+                                    LARGER_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
@@ -603,7 +599,7 @@ internal class ChatRecyclerAdapter(
                                     stickerPackRepository,
                                     null,
                                     callback,
-                                    mediumStickerSize
+                                    MEDIUM_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
                                     chatMessage.text = s
@@ -675,5 +671,6 @@ internal class ChatRecyclerAdapter(
     }
 }
 
-private const val largerStickerSize = 100
-private const val mediumStickerSize = 50
+// const val should be in uppercase always
+private const val LARGER_STICKER_SIZE = 100
+private const val MEDIUM_STICKER_SIZE = 50

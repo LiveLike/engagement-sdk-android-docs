@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
  * Created by Shivansh Mittal on 2020-04-08.
  */
 internal class ChatSession(
+    clientId: String,
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
@@ -55,7 +56,7 @@ internal class ChatSession(
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
 
     // TODO get analytics service by moving it to SDK level instewad of program
-    override var analyticService: AnalyticsService = MockAnalyticsService()
+    override var analyticService: AnalyticsService = MockAnalyticsService(clientId)
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
             analyticService,

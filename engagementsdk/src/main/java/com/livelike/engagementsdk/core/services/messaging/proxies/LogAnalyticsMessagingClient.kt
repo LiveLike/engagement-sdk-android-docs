@@ -8,7 +8,7 @@ import com.livelike.engagementsdk.core.utils.logDebug
 
 /**
  * Meessaging Proxy/Pipe for adding analytics for our widgets received.
-*/
+ */
 internal class LogAnalyticsMessagingClient(
     upstream: MessagingClient,
     val analyticsService: AnalyticsService

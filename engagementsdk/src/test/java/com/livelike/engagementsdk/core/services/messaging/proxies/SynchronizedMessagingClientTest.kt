@@ -55,7 +55,8 @@ class SynchronizedMessagingClientTest {
 
     @Test
     fun `should not publish event if timestamp gt time`() {
-        val clientMessage = ClientMessage(JsonObject(), "",
+        val clientMessage = ClientMessage(
+            JsonObject(), "",
             EpochTime(timeSource.invoke().timeSinceEpochInMs + 50)
         )
         subject.listener = listener
@@ -66,7 +67,8 @@ class SynchronizedMessagingClientTest {
 
     @Test
     fun `should publish event if timestamp lt time`() {
-        val clientMessage = ClientMessage(JsonObject(), "",
+        val clientMessage = ClientMessage(
+            JsonObject(), "",
             EpochTime(timeSource.invoke().timeSinceEpochInMs - 50)
         )
         subject.listener = listener
