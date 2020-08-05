@@ -50,6 +50,7 @@ import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.nicknameText
+import kotlinx.android.synthetic.main.activity_main.orientation_widget_button
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.progressBar
@@ -368,6 +369,15 @@ class MainActivity : AppCompatActivity() {
                 Intent(
                     this,
                     ChatOnlyActivity::class.java
+                )
+            )
+        }
+
+        orientation_widget_button.setOnClickListener {
+            startActivity(
+                Intent(
+                    this,
+                    WidgetActivity::class.java
                 )
             )
         }

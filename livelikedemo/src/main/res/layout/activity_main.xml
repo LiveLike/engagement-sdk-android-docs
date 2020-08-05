@@ -415,6 +415,15 @@
                     android:text="@string/chat_only_btn_label"
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider"
                     tools:text="Chat Only" />
+
+                <Button
+                    android:id="@+id/orientation_widget_button"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="@string/orientation_widget_only_btn_label"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider"
+                    tools:text="Chat Only" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
