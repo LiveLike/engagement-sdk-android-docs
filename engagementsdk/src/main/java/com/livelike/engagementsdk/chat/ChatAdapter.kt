@@ -75,7 +75,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     }
 
 internal class ChatRecyclerAdapter(
-    private val analyticsService: AnalyticsService,
+    internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 

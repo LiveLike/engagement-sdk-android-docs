@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeUser
+import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -35,7 +36,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 internal class ChatViewModel(
-    val analyticsService: AnalyticsService,
     val userStream: Stream<LiveLikeUser>,
     val isPublicRoom: Boolean,
     val animationEventsStream: SubscriptionManager<ViewAnimationEvents>? = null,
@@ -43,12 +43,18 @@ internal class ChatViewModel(
 ) : ChatRenderer, ViewModel() {
 
     var chatListener: ChatEventListener? = null
+    var analyticsService: AnalyticsService = MockAnalyticsService()
+        set(value) {
+            field = value
+            chatAdapter.analyticsService = value
+        }
     var chatAdapter: ChatRecyclerAdapter =
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     var messageList = mutableListOf<ChatMessage>()
     var allMessageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
+
     internal val eventStream: Stream<String> =
         SubscriptionManager(false)
     var currentChatRoom: ChatRoom? = null
