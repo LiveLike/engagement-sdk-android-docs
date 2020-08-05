@@ -115,7 +115,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
         rcyl_view.adapter = adapter
         val jsonTheme = intent.getStringExtra("jsonTheme")
         if (jsonTheme != null) {
-            Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                applicationContext,
+                "JSON Theme Customization is hold for now",
+                Toast.LENGTH_LONG
+            ).show()
             try {
                 widget_view.applyTheme(ThemeRandomizer.themesList.last())
             } catch (e: Exception) {
@@ -220,8 +224,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     val choices: ArrayList<Choice> = ArrayList()
                     val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
                     accessToken =
-                        when (com.livelike.livelikedemo.BuildConfig.BUILD_TYPE == "release") {
-                            true -> "Bearer DblPy3BVfqj_aatq6N5kFpNcH08LKObqEbnlLWc-3NlFInKTfsVxEg"
+                        when (com.livelike.livelikedemo.BuildConfig.FLAVOR) {
+                            "production" -> "Bearer zslM9_lbiy3SWkMbKsoGfAkK2Kg46dfVkN1Zsdt8K_P3BJU-AJOeSQ"
+                            "staging" -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                            "qa"-> "Bearer 95BmUG5FWgtikjrj-hqlYblfdF4X5nldidDepAmhFefBUy2lRPXEEw"
                             else -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
                         }
                     scope.launch(Dispatchers.IO) {
