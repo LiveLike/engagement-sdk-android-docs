@@ -203,7 +203,7 @@ internal class ChatSession(
                             val chatRoomResult =
                                 chatRepository.fetchChatRoom(
                                     chatRoomId,
-                                    pair.first.chatRoomUrlTemplate
+                                    pair.first.chatRoomDetailUrlTemplate
                                 )
                             if (chatRoomResult is Result.Success) {
                                 chatRoomMap[chatRoomId] = chatRoomResult.data

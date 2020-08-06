@@ -3,8 +3,11 @@ package com.livelike.engagementsdk.publicapis
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
+import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
-import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembershipPagination
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.core.data.models.LeaderBoard
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 
 interface IEngagement {
 
@@ -28,7 +31,18 @@ interface IEngagement {
     /** Override the default auto-generated chat userpic **/
     fun updateChatUserPic(url: String?)
 
-    fun createChatRoom(title: String? = null, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>)
+    fun createChatRoom(
+        title: String? = null,
+        visibility: Visibility? = null,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    )
+
+    fun updateChatRoom(
+        chatRoomId: String,
+        title: String? = null,
+        visibility: Visibility? = null,
+        liveLikeCallback: LiveLikeCallback<ChatRoomInfo>
+    )
 
     fun getChatRoom(id: String, liveLikeCallback: LiveLikeCallback<ChatRoomInfo>)
 
@@ -38,18 +52,45 @@ interface IEngagement {
     )
 
     fun getCurrentUserChatRoomList(
-        chatRoomMembershipPagination: ChatRoomMembershipPagination,
+        liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     )
 
     fun getMembersOfChatRoom(
         chatRoomId: String,
-        chatRoomMembershipPagination: ChatRoomMembershipPagination,
+        liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeUser>>
     )
 
     fun deleteCurrentUserFromChatRoom(
         chatRoomId: String,
         liveLikeCallback: LiveLikeCallback<Boolean>
+    )
+
+    fun getLeaderBoardsForProgram(
+        programId: String,
+        liveLikeCallback: LiveLikeCallback<List<LeaderBoard>>
+    )
+
+    fun getLeaderBoardDetails(
+        leaderBoardId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoard>
+    )
+
+    fun getEntriesForLeaderBoard(
+        leaderBoardId: String,
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
+    )
+
+    fun getLeaderBoardEntryForProfile(
+        leaderBoardId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+    )
+
+    fun getLeaderBoardEntryForCurrentUserProfile(
+        leaderBoardId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
 }

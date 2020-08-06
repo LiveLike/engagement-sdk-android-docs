@@ -240,7 +240,9 @@ internal open class EngagementDataClientImpl : DataClient,
                     )
                 } else {
                     Result.Error(
-                        IOException("response code : ${execute.code()} - ${execute.message()}")
+                        IOException(
+                            "response code : ${execute.code()} - ${execute.message()}"
+                        )
                     )
                 }
             }
