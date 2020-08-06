@@ -33,7 +33,7 @@ internal interface ChatRenderer {
 internal data class ChatMessage(
     var messageEvent: PubnubChatEventType,
     var channel: String,
-    var message: String,
+    var message: String?,
     val senderId: String,
     val senderDisplayName: String,
     val senderDisplayPic: String?,

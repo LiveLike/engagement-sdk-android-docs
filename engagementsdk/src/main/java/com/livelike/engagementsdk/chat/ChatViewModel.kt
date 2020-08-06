@@ -29,11 +29,11 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 internal class ChatViewModel(
     val userStream: Stream<LiveLikeUser>,
@@ -292,9 +292,7 @@ internal class ChatViewModel(
     }
 
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
-
-        val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length - 1))
-
+        val url = Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
         Glide.with(context)
             .`as`(ByteArray::class.java)
             .load(url)
