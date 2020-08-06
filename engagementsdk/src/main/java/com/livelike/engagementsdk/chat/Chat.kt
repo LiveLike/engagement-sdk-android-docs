@@ -58,7 +58,7 @@ internal data class ChatMessage(
                     "profile_id": "$senderId",
                     "nickname": "$senderDisplayName",
                     "message_id": "$id",
-                    "message": "$message"
+                    "message": "${message?.trim()}"
                 }""".trimIndent()
     }
 
