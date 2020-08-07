@@ -234,10 +234,8 @@ internal class CheerMeterViewModel(
     }
 }
 
-
 data class CheerMeterVoteState(
     var voteCount: Int,
     var voteUrl: String,
     var requestType: RequestType
-) {
-}
+)

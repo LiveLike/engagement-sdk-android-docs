@@ -14,6 +14,7 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,10 +31,17 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.btn_nick_name
 import kotlinx.android.synthetic.main.activity_main.build_no
+import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
@@ -42,6 +50,7 @@ import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
+import kotlinx.android.synthetic.main.activity_main.leaderboard_button
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
@@ -56,12 +65,6 @@ import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -90,12 +93,21 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         ExoPlayerActivity.privateGroupRoomId = null
+        LocalBroadcastManager.getInstance(this)
+            .unregisterReceiver(mConnReceiver)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        channelManager = (application as LiveLikeApplication).channelManager
+    override fun onBackPressed() {
+        if (this.isTaskRoot) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                this.finishAfterTransition()
+            }
+            } else {
+                super.onBackPressed()
+            } }
 
+    fun registerNetWorkCallback() {
+        channelManager = (application as LiveLikeApplication).channelManager
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
@@ -116,9 +128,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        registerNetWorkCallback()
         sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
         if (BuildConfig.VERSION_CODE > 1) {
             build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
@@ -166,6 +181,9 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
 
+        leaderboard_button.setOnClickListener {
+            startActivity(Intent(this, LeaderBoardActivity::class.java))
+        }
         private_group_button.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle("Select a private group")
@@ -304,6 +322,7 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
+                null,
                 object : LiveLikeCallback<ChatRoomInfo>() {
                     override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         textView2.text = when {
@@ -336,6 +355,10 @@ class MainActivity : AppCompatActivity() {
             player.keyboardClose = isChecked
         }
         toggle_auto_keyboard_hide.isChecked = player.keyboardClose
+
+        chat_input_visibility_switch.setOnCheckedChangeListener { _, isChecked ->
+            ExoPlayerActivity.isHideChatInput = isChecked
+        }
 
         nicknameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {

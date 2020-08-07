@@ -5,6 +5,8 @@ import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -49,15 +51,19 @@ internal class ChatDataClientImpl : EngagementDataClientImpl(), ChatDataClient {
         message: ChatMessage,
         accessToken: String?
     ) {
-        remoteCall<LiveLikeUser>(
+        val json = message.toReportMessageJson()
+        val result = remoteCall<LiveLikeUser>(
             remoteUrl,
             RequestType.POST,
             RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"), message.toReportMessageJson()
+                MediaType.parse("application/json; charset=utf-8"), json
             ),
             accessToken
         )
+        if (result is Result.Success) {
+            logDebug { "Report Success:${result.data.id}" }
+        } else if (result is Result.Error) {
+            logError { result.exception.message }
+        }
     }
-
-
 }

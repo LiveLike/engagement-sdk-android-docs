@@ -20,6 +20,7 @@ import com.livelike.engagementsdk.widget.OptionsWidgetThemeComponent
 import com.livelike.engagementsdk.widget.ViewStyleProps
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Option
+import kotlin.math.roundToInt
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageBar
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButton
 import kotlinx.android.synthetic.main.atom_widget_image_item.view.imageButtonBackground
@@ -30,7 +31,6 @@ import kotlinx.android.synthetic.main.atom_widget_text_item.view.bkgrd
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.determinateBar
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.percentageText
 import kotlinx.android.synthetic.main.atom_widget_text_item.view.text_button
-import kotlin.math.roundToInt
 
 internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
     ConstraintLayout(context, attr) {

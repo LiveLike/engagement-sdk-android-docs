@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.chat.data.repository
 
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
+import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
@@ -47,15 +48,11 @@ internal class ChatRepository(
 
     suspend fun createChatRoom(
         title: String?,
+        visibility: Visibility?,
         chatRoomTemplateUrl: String
     ): Result<ChatRoom> {
         val remoteURL = chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "")
-        val titleRequest = when (title.isNullOrEmpty()) {
-            true -> RequestBody.create(null, byteArrayOf())
-            else -> RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"), """{"title":"$title"}"""
-            )
-        }
+        val titleRequest = createTitleRequest(title, visibility)
         return dataClient.remoteCall<ChatRoom>(
             remoteURL,
             RequestType.POST,
@@ -64,39 +61,48 @@ internal class ChatRepository(
         )
     }
 
-    suspend fun addCurrentUserToChatRoom(
+    private fun createTitleRequest(
+        title: String?,
+        visibility: Visibility?
+    ) = when {
+        title.isNullOrEmpty().not() && visibility != null -> RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"),
+            """{"visibility":"${visibility.name}","title":"$title"}"""
+        )
+        title.isNullOrEmpty().not() && visibility == null -> RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"), """{"title":"$title"}"""
+        )
+        title.isNullOrEmpty() && visibility != null -> RequestBody.create(
+            MediaType.parse("application/json; charset=utf-8"),
+            """{"visibility":"${visibility.name}"}"""
+        )
+        else -> RequestBody.create(null, byteArrayOf())
+    }
+
+    suspend fun updateChatRoom(
+        title: String?,
+        visibility: Visibility?,
         chatRoomId: String,
         chatRoomTemplateUrl: String
-    ): Result<ChatRoomMembership> {
-        val remoteURL =
-            chatRoomTemplateUrl.replace(TEMPLATE_CHAT_ROOM_ID, "") + "/$chatRoomId/memberships"
-        return dataClient.remoteCall<ChatRoomMembership>(
-            remoteURL,
-            accessToken = authKey,
-            requestType = RequestType.POST,
-            requestBody = RequestBody.create(null, byteArrayOf())
-        )
+    ): Result<ChatRoom> {
+        val chatRoomResult = fetchChatRoom(chatRoomId, chatRoomTemplateUrl)
+        val titleRequest = createTitleRequest(title, visibility)
+        return if (chatRoomResult is Result.Success) {
+            return dataClient.remoteCall<ChatRoom>(
+                chatRoomResult.data.url,
+                RequestType.PUT,
+                accessToken = authKey,
+                requestBody = titleRequest
+            )
+        } else {
+            chatRoomResult as Result.Error
+        }
+
     }
 
     suspend fun getCurrentUserChatRoomList(membershipUrl: String): Result<UserChatRoomListResponse> {
         return dataClient.remoteCall<UserChatRoomListResponse>(
             membershipUrl,
-            accessToken = authKey,
-            requestType = RequestType.GET
-        )
-    }
-
-    suspend fun getMembersOfChatRoom(
-        chatRoomId: String,
-        chatRoomTemplateUrl: String,
-        paginationUrl: String? = null
-    ): Result<ChatRoomMemberListResponse> {
-        val remoteURL = paginationUrl ?: chatRoomTemplateUrl.replace(
-            TEMPLATE_CHAT_ROOM_ID,
-            ""
-        ) + "$chatRoomId/memberships"
-        return dataClient.remoteCall<ChatRoomMemberListResponse>(
-            remoteURL,
             accessToken = authKey,
             requestType = RequestType.GET
         )

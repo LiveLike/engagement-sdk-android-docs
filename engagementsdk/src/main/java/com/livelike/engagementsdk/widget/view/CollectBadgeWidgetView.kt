@@ -98,6 +98,4 @@ class CollectBadgeWidgetView(context: Context, attr: AttributeSet? = null) :
             viewModel?.dismissWidget(it)
             removeAllViews()
         }
-
-
 }

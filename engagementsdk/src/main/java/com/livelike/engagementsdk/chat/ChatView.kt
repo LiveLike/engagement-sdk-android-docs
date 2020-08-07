@@ -92,6 +92,18 @@ import kotlin.math.min
 open class ChatView(context: Context, private val attrs: AttributeSet?) :
     ConstraintLayout(context, attrs) {
 
+    /**
+     * use this variable to hide message input to build use case like influencer chat
+     **/
+    var isChatInputVisible: Boolean = true
+        set(value) {
+            field = value
+            if (value) {
+                chatInput.visibility = View.VISIBLE
+            } else {
+                chatInput.visibility = View.GONE
+            }
+        }
 
     private val chatAttribute = ChatViewThemeAttributes()
     private val uiScope = CoroutineScope(Dispatchers.Main)
@@ -664,7 +676,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     private fun hideLoadingSpinner() {
         loadingSpinner.visibility = View.GONE
-        chatInput.visibility = View.VISIBLE
+        if (isChatInputVisible) {
+            chatInput.visibility = View.VISIBLE
+        }
         chatdisplay.visibility = View.VISIBLE
         wouldUpdateChatInputAccessibiltyFocus()
     }
@@ -722,7 +736,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                val hasExternalImage = it.message.findImages().countMatches() > 0
+                val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)
                 } else {

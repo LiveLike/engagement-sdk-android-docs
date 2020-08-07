@@ -15,7 +15,7 @@ data class LiveLikeUserApi(
 data class LiveLikeChatMessage(
     val nickname: String = "",
     val userPic: String?,
-    val message: String = "",
+    val message: String? = "",
     val timestamp: String = "",
     val id: Long = 0
 )

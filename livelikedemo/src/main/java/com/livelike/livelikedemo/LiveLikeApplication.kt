@@ -19,10 +19,10 @@ import com.livelike.livelikedemo.video.VideoPlayer
 class LiveLikeApplication : Application() {
 
     lateinit var channelManager: ChannelManager
-    lateinit var player: VideoPlayer
+    var player: VideoPlayer? = null
     val timecodeGetter = object : EngagementSDK.TimecodeGetter {
         override fun getTimecode(): EpochTime {
-            return EpochTime(player.getPDT())
+            return EpochTime(player?.getPDT() ?: 0)
         }
     }
     var publicSession: LiveLikeContentSession? = null
@@ -72,8 +72,9 @@ class LiveLikeApplication : Application() {
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
-        player = ExoPlayerImpl(baseContext, playerView)
-        return player
+        val playerTemp = ExoPlayerImpl(applicationContext, playerView)
+        player = playerTemp
+        return playerTemp
     }
 
     fun removePublicSession() {

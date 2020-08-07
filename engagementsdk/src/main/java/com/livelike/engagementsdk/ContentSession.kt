@@ -2,7 +2,9 @@ package com.livelike.engagementsdk
 
 import android.content.Context
 import android.widget.FrameLayout
+import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.chat.ChatSession
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.ServerDataValidationException
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
@@ -19,17 +21,20 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
+import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
@@ -41,8 +46,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
+import java.io.IOException
 
 internal class ContentSession(
+    clientId: String,
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
@@ -56,6 +63,7 @@ internal class ContentSession(
     }
 
     override var chatSession: ChatSession = ChatSession(
+        clientId,
         sdkConfiguration,
         userRepository,
         applicationContext,
@@ -73,13 +81,46 @@ internal class ContentSession(
         }
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
+    private var publishedWidgetListResponse: PublishedWidgetListResponse? = null
 
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
     }
 
+    override fun getPublishedWidgets(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget?>>
+    ) {
+        contentSessionScope.launch {
+            val defaultUrl =
+                "${BuildConfig.CONFIG_URL}programs/$programId/widgets/?status=published&ordering=recent"
+            val url = when (liveLikePagination) {
+                LiveLikePagination.FIRST -> defaultUrl
+                LiveLikePagination.NEXT -> publishedWidgetListResponse?.next ?: defaultUrl
+                LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous ?: defaultUrl
+            }
+            try {
+                val jsonObject = widgetDataClient.getAllPublishedWidgets(url)
+                publishedWidgetListResponse =
+                    gson.fromJson(
+                        jsonObject.toString(),
+                        PublishedWidgetListResponse::class.java
+                    )
+                publishedWidgetListResponse?.results?.let {
+                    liveLikeCallback.onResponse(it, null)
+                }
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            }
+        }
+    }
+
     override var analyticService: AnalyticsService =
-        MockAnalyticsService(programId)
+        MockAnalyticsService(clientId)
     private val llDataClient =
         EngagementDataClientImpl()
     private val widgetDataClient = WidgetDataClientImpl()
