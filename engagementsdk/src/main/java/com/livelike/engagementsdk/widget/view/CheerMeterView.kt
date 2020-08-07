@@ -426,7 +426,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             repeatCount = 0
             addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
-                    viewModel?.dismissWidget(DismissAction.TAP_X)
+                    viewModel?.dismissWidget(DismissAction.TIMEOUT)
                 }
             })
             playAnimation()
@@ -445,7 +445,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     if (viewModel?.enableDefaultWidgetTransition == true)
-                        viewModel?.dismissWidget(DismissAction.TAP_X)
+                        viewModel?.dismissWidget(DismissAction.TIMEOUT)
                 }
             })
             playAnimation()
@@ -464,7 +464,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     if (viewModel?.enableDefaultWidgetTransition == true)
-                        viewModel?.dismissWidget(DismissAction.TAP_X)
+                        viewModel?.dismissWidget(DismissAction.TIMEOUT)
                 }
             })
             playAnimation()

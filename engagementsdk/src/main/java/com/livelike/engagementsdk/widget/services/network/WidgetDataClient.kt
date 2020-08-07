@@ -15,8 +15,12 @@ import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addPoints
 import java.io.IOException
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import kotlin.coroutines.suspendCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -44,6 +48,7 @@ internal interface WidgetDataClient {
     ): ProgramGamificationProfile?
 
     suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
+    suspend fun getAllPublishedWidgets(url: String): JsonObject?
 }
 
 internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClient {
@@ -103,21 +108,36 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 .get()
                 .addUserAgent()
                 .build()
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
+            apiCallback(client, request, it)
+        }
+
+    private fun apiCallback(client: OkHttpClient, request: Request, it: Continuation<JsonObject>) {
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                it.resumeWithException(e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                try {
+                    val s = response.body()?.string()
+                    it.resume(JsonParser().parse(s).asJsonObject)
+                } catch (e: Exception) {
+                    logError { e }
                     it.resumeWithException(e)
                 }
+            }
+        })
+    }
 
-                override fun onResponse(call: Call, response: Response) {
-                    try {
-                        val s = response.body()?.string()
-                        it.resume(JsonParser().parse(s).asJsonObject)
-                    } catch (e: Exception) {
-                        logError { e }
-                        it.resumeWithException(e)
-                    }
-                }
-            })
+    override suspend fun getAllPublishedWidgets(url: String): JsonObject? =
+        suspendCoroutine<JsonObject> {
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url(url)
+                .get()
+                .addUserAgent()
+                .build()
+            apiCallback(client, request, it)
         }
 
     override fun registerImpression(impressionUrl: String, accessToken: String?) {

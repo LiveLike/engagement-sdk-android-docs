@@ -224,8 +224,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     val choices: ArrayList<Choice> = ArrayList()
                     val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
                     accessToken =
-                        when (com.livelike.livelikedemo.BuildConfig.BUILD_TYPE == "release") {
-                            true -> "Bearer DblPy3BVfqj_aatq6N5kFpNcH08LKObqEbnlLWc-3NlFInKTfsVxEg"
+                        when (com.livelike.livelikedemo.BuildConfig.FLAVOR) {
+                            "production" -> "Bearer zslM9_lbiy3SWkMbKsoGfAkK2Kg46dfVkN1Zsdt8K_P3BJU-AJOeSQ"
+                            "staging" -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                            "qatesting" -> "Bearer 95BmUG5FWgtikjrj-hqlYblfdF4X5nldidDepAmhFefBUy2lRPXEEw"
                             else -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
                         }
                     scope.launch(Dispatchers.IO) {

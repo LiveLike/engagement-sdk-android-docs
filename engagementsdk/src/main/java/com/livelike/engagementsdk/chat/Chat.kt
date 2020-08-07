@@ -33,7 +33,7 @@ internal interface ChatRenderer {
 internal data class ChatMessage(
     var messageEvent: PubnubChatEventType,
     var channel: String,
-    var message: String,
+    var message: String?,
     val senderId: String,
     val senderDisplayName: String,
     val senderDisplayPic: String?,
@@ -58,7 +58,7 @@ internal data class ChatMessage(
                     "profile_id": "$senderId",
                     "nickname": "$senderDisplayName",
                     "message_id": "$id",
-                    "message": "$message"
+                    "message": "${message?.trim()}"
                 }""".trimIndent()
     }
 
@@ -87,6 +87,12 @@ internal data class ChatMessageReaction(
     var pubnubActionToken: Long? = null
 )
 
-data class ChatRoomInfo(val id: String, val title: String? = null)
+data class ChatRoomInfo(
+    val id: String,
+    val title: String? = null,
+    val visibility: Visibility? = null
+)
+
+enum class Visibility { everyone, members }
 
 internal const val CHAT_MESSAGE_IMAGE_TEMPLATE = ":message:"

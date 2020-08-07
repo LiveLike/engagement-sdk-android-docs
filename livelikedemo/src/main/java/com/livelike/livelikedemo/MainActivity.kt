@@ -50,6 +50,7 @@ import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
+import kotlinx.android.synthetic.main.activity_main.leaderboard_button
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
@@ -180,6 +181,9 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
 
+        leaderboard_button.setOnClickListener {
+            startActivity(Intent(this, LeaderBoardActivity::class.java))
+        }
         private_group_button.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle("Select a private group")
@@ -318,6 +322,7 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
+                null,
                 object : LiveLikeCallback<ChatRoomInfo>() {
                     override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         textView2.text = when {

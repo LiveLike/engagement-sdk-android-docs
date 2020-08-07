@@ -75,7 +75,7 @@ private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     }
 
 internal class ChatRecyclerAdapter(
-    private val analyticsService: AnalyticsService,
+    internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
 
@@ -547,12 +547,12 @@ internal class ChatRecyclerAdapter(
                             .replaceAll(Matcher.quoteReplacement(""))
                         val isOnlyStickers =
                             inputNoString.findIsOnlyStickers()
-                                .matches() || message.message.findImages().matches()
+                                .matches() || message.message?.findImages()?.matches() == true
                         val atLeastOneSticker =
-                            inputNoString.findStickers().find() || message.message.findImages()
-                                .matches()
-                        val numberOfStickers = message.message.findStickers().countMatches()
-                        val isExternalImage = message.message.findImages().matches()
+                            inputNoString.findStickers().find() || message.message?.findImages()
+                                ?.matches() == true
+                        val numberOfStickers = message.message?.findStickers()?.countMatches() ?: 0
+                        val isExternalImage = message.message?.findImages()?.matches() ?: false
 
                         chatMessage.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
                         callback.addView(chatMessage)

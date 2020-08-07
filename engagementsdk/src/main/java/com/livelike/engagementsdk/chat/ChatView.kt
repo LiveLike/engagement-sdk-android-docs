@@ -95,7 +95,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     /**
      * use this variable to hide message input to build use case like influencer chat
      **/
-    var isChatInputVisible: Boolean = false
+    var isChatInputVisible: Boolean = true
         set(value) {
             field = value
             if (value) {
@@ -736,7 +736,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             sentMessageListener?.invoke(it.toLiveLikeChatMessage())
             viewModel?.apply {
                 displayChatMessage(it)
-                val hasExternalImage = it.message.findImages().countMatches() > 0
+                val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
                 if (hasExternalImage) {
                     uploadAndPostImage(context, it, timeData)
                 } else {

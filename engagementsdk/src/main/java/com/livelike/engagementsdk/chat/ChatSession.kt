@@ -39,6 +39,7 @@ import kotlinx.coroutines.launch
  * Created by Shivansh Mittal on 2020-04-08.
  */
 internal class ChatSession(
+    clientId: String,
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
@@ -55,10 +56,9 @@ internal class ChatSession(
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
 
     // TODO get analytics service by moving it to SDK level instewad of program
-    override var analyticService: AnalyticsService = MockAnalyticsService()
+    override var analyticService: AnalyticsService = MockAnalyticsService(clientId)
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
-            analyticService,
             userRepository.currentUserStream,
             isPublicRoom,
             null
@@ -89,6 +89,7 @@ internal class ChatSession(
                     pair.first.mixpanelToken,
                     pair.first.clientId
                 )
+                chatViewModel.analyticsService = analyticService
                 val liveLikeUser = pair.second
                 chatRepository =
                     ChatRepository(
@@ -202,7 +203,7 @@ internal class ChatSession(
                             val chatRoomResult =
                                 chatRepository.fetchChatRoom(
                                     chatRoomId,
-                                    pair.first.chatRoomUrlTemplate
+                                    pair.first.chatRoomDetailUrlTemplate
                                 )
                             if (chatRoomResult is Result.Success) {
                                 chatRoomMap[chatRoomId] = chatRoomResult.data
