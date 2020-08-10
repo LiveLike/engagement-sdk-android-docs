@@ -51,13 +51,8 @@ internal class QuizViewModel(
     val context: Context,
     var onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-<<<<<<< Updated upstream
-    private val programRepository: ProgramRepository ? = null,
-    val widgetMessagingClient: WidgetManager ? = null
-=======
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
->>>>>>> Stashed changes
 ) : BaseViewModel() {
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
@@ -208,12 +203,8 @@ internal class QuizViewModel(
             return
         }
 
-<<<<<<< Updated upstream
-        val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
-=======
         val isUserCorrect =
             adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
->>>>>>> Stashed changes
         adapter?.selectionLocked = true
         logDebug { "Quiz View ,showing result isUserCorrect:$isUserCorrect" }
         uiScope.launch {
@@ -228,9 +219,6 @@ internal class QuizViewModel(
                 }
             }
 //            state.onNext("results")
-<<<<<<< Updated upstream
-            currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
-=======
             currentWidgetType?.let {
                 analyticsService.trackWidgetInteraction(
                     it.toAnalyticsString(),
@@ -238,7 +226,6 @@ internal class QuizViewModel(
                     interactionData
                 )
             }
->>>>>>> Stashed changes
         }
     }
 

@@ -1,20 +1,14 @@
 package com.livelike.livelikedemo.utils
 
 import android.content.Context
-<<<<<<< Updated upstream
-=======
 import android.support.v7.app.AlertDialog
->>>>>>> Stashed changes
 import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.github.angads25.filepicker.model.DialogConfigs
 import com.github.angads25.filepicker.model.DialogProperties
 import com.github.angads25.filepicker.view.FilePickerDialog
-<<<<<<< Updated upstream
-=======
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
->>>>>>> Stashed changes
 
 object DialogUtils {
 
@@ -26,8 +20,6 @@ object DialogUtils {
         dialog.setDialogSelectionListener(callback)
         dialog.show()
     }
-<<<<<<< Updated upstream
-=======
 
     fun showMyWidgetsDialog(
         context: Context,
@@ -47,5 +39,4 @@ object DialogUtils {
             create()
         }.show()
     }
->>>>>>> Stashed changes
 }

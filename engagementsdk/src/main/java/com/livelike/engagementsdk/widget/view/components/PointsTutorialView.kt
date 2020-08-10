@@ -17,12 +17,8 @@ import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.pointsTut
 import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.points_progression_meter_switcher
 import kotlinx.android.synthetic.main.atom_widget_points_tutorial.view.progressionMeterView
 
-<<<<<<< Updated upstream
-class PointsTutorialView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetView(context, attr) {
-=======
 class PointsTutorialView(context: Context, attr: AttributeSet? = null) :
     SpecifiedWidgetView(context, attr) {
->>>>>>> Stashed changes
 
     private var viewModel: PointTutorialWidgetViewModel? = null
     override var widgetViewModel: BaseViewModel? = null

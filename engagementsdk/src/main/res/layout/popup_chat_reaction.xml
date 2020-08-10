@@ -40,11 +40,9 @@
         android:visibility="gone"
         app:layout_constraintLeft_toRightOf="@id/chat_reaction_background_card"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible"
-        android:focusable="true">
+        tools:visibility="visible">
 
         <ImageView
-            android:contentDescription="@string/report_message"
             android:id="@+id/moderation_flag"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

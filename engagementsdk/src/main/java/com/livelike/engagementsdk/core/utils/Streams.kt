@@ -62,14 +62,10 @@ internal fun <X, Y> Stream<X>.map(applyTransformation: (x: X) -> Y): Stream<Y> {
 /**
  * combine the latest from 2 streams only once, so the stream out will be single RX
  */
-<<<<<<< Updated upstream:engagementsdk/src/main/java/com/livelike/engagementsdk/core/utils/Streams.kt
-internal fun <X, Y> Stream<X>.combineLatestOnce(other: Stream<Y>,hashCode:Int?=null): Stream<Pair<X, Y>> {
-=======
 internal fun <X, Y> Stream<X>.combineLatestOnce(
     other: Stream<Y>,
     hashCode: Int? = null
 ): Stream<Pair<X, Y>> {
->>>>>>> Stashed changes:engagementsdk/src/main/java/com/livelike/engagementsdk/utils/Streams.kt
     val pairedStream: Stream<Pair<X, Y>> =
         SubscriptionManager()
     val combinedHashCode = "${other.hashCode()}$hashCode"
@@ -87,20 +83,12 @@ internal fun <X, Y> Stream<X>.combineLatestOnce(
     return pairedStream
 }
 
-<<<<<<< Updated upstream:engagementsdk/src/main/java/com/livelike/engagementsdk/core/utils/Streams.kt
-internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> = SubscriptionManager<T>()
-    .let { mgr ->
-    val source = this
-    val handler = Handler(Looper.getMainLooper())
-    var running = false
-=======
 internal fun <T> SubscriptionManager<T>.debounce(duration: Long = 1000L): SubscriptionManager<T> =
     SubscriptionManager<T>()
         .let { mgr ->
             val source = this
             val handler = Handler(Looper.getMainLooper())
             var running = false
->>>>>>> Stashed changes:engagementsdk/src/main/java/com/livelike/engagementsdk/utils/Streams.kt
 
             fun runnable(): Runnable {
                 return Runnable {

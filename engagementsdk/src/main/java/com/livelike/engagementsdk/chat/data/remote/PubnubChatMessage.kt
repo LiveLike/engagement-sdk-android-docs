@@ -7,7 +7,7 @@ internal data class PubnubChatMessage(
     @SerializedName("id")
     val messageId: String,
     @SerializedName("message")
-    val message: String,
+    val message: String?,
     @SerializedName("sender_id")
     val senderId: String,
     @SerializedName("sender_image_url")

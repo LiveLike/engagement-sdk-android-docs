@@ -20,7 +20,62 @@ internal data class Program(
     val reactionPacksUrl: String,
     val chatRooms: List<ChatRoom>?,
     val defaultChatRoom: ChatRoom?,
-    val reportUrl: String?
+    val reportUrl: String?,
+    val leaderboards: List<LeaderBoardResource>
+)
+
+internal data class LeaderBoardResource(
+    @SerializedName("id") val id: String,
+    @SerializedName("url") val url: String,
+    @SerializedName("client_id") val client_id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("reward_item_id") val reward_item_id: String,
+    @SerializedName("is_locked") val is_locked: Boolean,
+    @SerializedName("entries_url") val entries_url: String,
+    @SerializedName("entry_detail_url_template") val entry_detail_url_template: String,
+    @SerializedName("reward_item") val rewardItem: RewardItem
+)
+
+internal fun LeaderBoardResource.toLeadBoard(): LeaderBoard {
+    return LeaderBoard(id, name, rewardItem.toReward())
+}
+
+
+data class LeaderBoard(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("reward_item") val rewardItem: LeaderBoardReward
+)
+
+internal data class RewardItem(
+    @SerializedName("id") val id: String,
+    @SerializedName("url") val url: String,
+    @SerializedName("client_id") val client_id: String,
+    @SerializedName("name") val name: String
+)
+
+internal fun RewardItem.toReward(): LeaderBoardReward {
+    return LeaderBoardReward(id, name)
+}
+
+data class LeaderBoardReward(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String
+)
+
+internal data class LeaderBoardEntryResult(
+    val previous: String? = null,
+    val next: String? = null,
+    val count: Int? = null,
+    val results: List<LeaderBoardEntry>? = null
+)
+
+data class LeaderBoardEntry(
+    @SerializedName("percentile_rank") val percentile_rank: Double,
+    @SerializedName("profile_id") val profile_id: String,
+    @SerializedName("rank") val rank: Int,
+    @SerializedName("score") val score: Int,
+    @SerializedName("profile_nickname") val profile_nickname: String
 )
 
 internal data class ProgramModel(
@@ -54,7 +109,8 @@ internal data class ProgramModel(
     @SerializedName("chat_rooms")
     val chatRooms: List<ChatRoom>?,
     @SerializedName("default_chat_room")
-    val defaultChatRoom: ChatRoom?
+    val defaultChatRoom: ChatRoom?,
+    val leaderboards: List<LeaderBoardResource>
 )
 
 internal fun ProgramModel.toProgram(): Program {
@@ -75,7 +131,8 @@ internal fun ProgramModel.toProgram(): Program {
         reaction_packs_url ?: "",
         chatRooms,
         defaultChatRoom,
-        reportUrl
+        reportUrl,
+        leaderboards
     )
 }
 

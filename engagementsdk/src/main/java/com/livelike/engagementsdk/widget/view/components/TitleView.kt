@@ -15,19 +15,6 @@ class TitleView(context: Context, attr: AttributeSet) : ConstraintLayout(context
             titleTextView.text = value
         }
     var componentTheme: ViewStyleProps? = null
-<<<<<<< Updated upstream
-    set(value) {
-        field = value
-        value?.padding?.let { padding ->
-            setPadding(
-                AndroidResource.webPxToDevicePx(padding[0].toInt()),
-                AndroidResource.webPxToDevicePx(padding[1].toInt()),
-                AndroidResource.webPxToDevicePx(padding[2].toInt()),
-                AndroidResource.webPxToDevicePx(padding[3].toInt())
-            )
-        }
-    }
-=======
         set(value) {
             field = value
             value?.padding?.let { padding ->
@@ -39,7 +26,6 @@ class TitleView(context: Context, attr: AttributeSet) : ConstraintLayout(context
                 )
             }
         }
->>>>>>> Stashed changes
 
     init {
         inflate(context, R.layout.atom_widget_title, this)

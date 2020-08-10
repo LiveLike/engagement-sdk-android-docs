@@ -1,10 +1,6 @@
 package com.livelike.engagementsdk.widget.domain
 
 import com.google.gson.JsonObject
-<<<<<<< Updated upstream:engagementsdk/src/main/java/com/livelike/engagementsdk/widget/domain/GamificationManager.kt
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
-=======
->>>>>>> Stashed changes:engagementsdk/src/main/java/com/livelike/engagementsdk/domain/GamificationManager.kt
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.widget.WidgetManager

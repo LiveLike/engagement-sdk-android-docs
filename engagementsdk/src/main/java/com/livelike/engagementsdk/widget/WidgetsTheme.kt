@@ -59,12 +59,8 @@ data class WidgetsTheme(
     val quiz: OptionsWidgetThemeComponent? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-<<<<<<< Updated upstream
-        return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate() ?: poll?.validate()
-=======
         return alert?.validate() ?: cheerMeter?.validate() ?: imageSlider?.validate()
         ?: poll?.validate()
->>>>>>> Stashed changes
         ?: prediction?.validate()
         ?: quiz?.validate()
     }

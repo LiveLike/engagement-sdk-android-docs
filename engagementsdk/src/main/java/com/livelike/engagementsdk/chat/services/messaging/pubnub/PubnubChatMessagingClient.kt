@@ -194,12 +194,8 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
-<<<<<<< Updated upstream:engagementsdk/src/main/java/com/livelike/engagementsdk/chat/services/messaging/pubnub/PubnubChatMessagingClient.kt
-        pubnubConfiguration.filterExpression = "sender_id == '$uuid' || !(content_filter contains 'filtered')"
-=======
         pubnubConfiguration.filterExpression =
             "sender_id == '$uuid' || !(content_filter contains 'filtered')"
->>>>>>> Stashed changes:engagementsdk/src/main/java/com/livelike/engagementsdk/services/messaging/pubnub/PubnubChatMessagingClient.kt
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }

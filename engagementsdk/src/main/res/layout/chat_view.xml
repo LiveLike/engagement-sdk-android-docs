@@ -79,7 +79,6 @@
         android:scaleType="fitXY"
         android:translationY="50dp"
         android:visibility="gone"
-        android:contentDescription="@string/snap_to_live"
         app:layout_constraintBottom_toTopOf="@id/chatInput"
         app:layout_constraintEnd_toEndOf="@id/chatdisplayBack"
         app:srcCompat="@drawable/ic_chat_ic_live"
@@ -87,10 +86,6 @@
         tools:translationY="0dp" />
 
     <com.livelike.engagementsdk.chat.stickerKeyboard.StickerKeyboardView
-<<<<<<< Updated upstream
-        android:layout_width="0dp"
-=======
->>>>>>> Stashed changes
         android:id="@+id/sticker_keyboard"
         android:layout_width="0dp"
         android:layout_height="200dp"

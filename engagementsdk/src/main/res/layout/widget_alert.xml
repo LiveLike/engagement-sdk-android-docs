@@ -51,21 +51,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-<<<<<<< Updated upstream
-                android:id="@+id/bodyImage"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:animateLayoutChanges="true"
-                android:visibility="visible"
-                android:layout_margin="5dp"
-                android:contentDescription="@string/image"
-                app:layout_constraintBottom_toTopOf="@+id/linkBackground"
-                app:layout_constraintEnd_toEndOf="@+id/bodyBackground"
-                app:layout_constraintStart_toEndOf="@+id/bodyText"
-                app:layout_constraintTop_toTopOf="@+id/bodyBackground"
-                tools:src="@tools:sample/backgrounds/scenic"
-        />
-=======
             android:id="@+id/bodyImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -78,7 +63,6 @@
             app:layout_constraintStart_toEndOf="@+id/bodyText"
             app:layout_constraintTop_toTopOf="@+id/bodyBackground"
             tools:src="@tools:sample/backgrounds/scenic" />
->>>>>>> Stashed changes
 
         <!--suppress AndroidDomInspection -->
         <TextView

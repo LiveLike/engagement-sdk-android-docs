@@ -31,9 +31,6 @@ internal class EmojiSliderWidgetViewModel(
     userRepository: UserRepository,
     programRepository: ProgramRepository? = null,
     widgetMessagingClient: WidgetManager? = null
-<<<<<<< Updated upstream
-) : WidgetViewModel<ImageSliderEntity>(widgetInfos, sdkConfiguration, userRepository, programRepository, widgetMessagingClient, onDismiss, analyticsService) {
-=======
 ) : WidgetViewModel<ImageSliderEntity>(
     widgetInfos,
     sdkConfiguration,
@@ -43,7 +40,6 @@ internal class EmojiSliderWidgetViewModel(
     onDismiss,
     analyticsService
 ) {
->>>>>>> Stashed changes
 
     private val dataClient: WidgetDataClient = WidgetDataClientImpl()
 
@@ -57,12 +53,8 @@ internal class EmojiSliderWidgetViewModel(
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val payload = event.message["payload"].asJsonObject
                     uiScope.launch {
-<<<<<<< Updated upstream
-                        val data = gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
-=======
                         val data =
                             gson.fromJson(payload.toString(), ImageSliderEntity::class.java) ?: null
->>>>>>> Stashed changes
                         results.onNext(data)
                     }
                 }
@@ -98,17 +90,6 @@ internal class EmojiSliderWidgetViewModel(
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos) {
-<<<<<<< Updated upstream
-            val resource = gson.fromJson(widgetInfos.payload.toString(), ImageSliderEntity::class.java) ?: null
-            resource?.apply {
-                pubnub?.subscribe(listOf(resource.subscribe_channel))
-                data.onNext(resource)
-                widgetState.onNext(WidgetStates.READY)
-            }
-            currentWidgetId = widgetInfos.widgetId
-            currentWidgetType = WidgetType.fromString(widgetInfos.type)
-            interactionData.widgetDisplayed()
-=======
         val resource =
             gson.fromJson(widgetInfos.payload.toString(), ImageSliderEntity::class.java) ?: null
         resource?.apply {
@@ -119,7 +100,6 @@ internal class EmojiSliderWidgetViewModel(
         currentWidgetId = widgetInfos.widgetId
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
         interactionData.widgetDisplayed()
->>>>>>> Stashed changes
     }
 
     override fun dismissWidget(action: DismissAction) {

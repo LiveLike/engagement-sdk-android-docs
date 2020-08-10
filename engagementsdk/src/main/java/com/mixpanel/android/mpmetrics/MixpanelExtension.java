@@ -9,13 +9,10 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 public class MixpanelExtension {
-<<<<<<< Updated upstream
-=======
     private static final Map<String, Map<Context, MixpanelAPI>> sInstanceMap = new HashMap<>();
     private static final SharedPreferencesLoader sPrefsLoader = new SharedPreferencesLoader();
     private static Future<SharedPreferences> sReferrerPrefs;
 
->>>>>>> Stashed changes
     public static MixpanelAPI getUniqueInstance(Context context, String token, String clientID) {
         if (null == token || null == context) {
             return null;
@@ -49,12 +46,4 @@ public class MixpanelExtension {
             return instance;
         }
     }
-<<<<<<< Updated upstream
-
-
-    private static final Map<String, Map<Context, MixpanelAPI>> sInstanceMap = new HashMap<>();
-    private static final SharedPreferencesLoader sPrefsLoader = new SharedPreferencesLoader();
-    private static Future<SharedPreferences> sReferrerPrefs;
-=======
->>>>>>> Stashed changes
 }

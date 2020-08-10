@@ -8,10 +8,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
-<<<<<<< Updated upstream
-=======
 import com.livelike.engagementsdk.LiveLikeWidget
->>>>>>> Stashed changes
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.WidgetInfos
@@ -48,12 +45,8 @@ internal class WidgetManager(
     private val programRepository: ProgramRepository,
     private val animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     private val widgetThemeAttributes: WidgetViewThemeAttributes?,
-<<<<<<< Updated upstream
-    private val livelikeThemeStream: Stream<LiveLikeEngagementTheme>
-=======
     private val livelikeThemeStream: Stream<LiveLikeEngagementTheme>,
     private val widgetStream: Stream<LiveLikeWidget>
->>>>>>> Stashed changes
 ) :
     MessagingClientProxy(upstream) {
 
@@ -263,12 +256,8 @@ internal fun MessagingClient.asWidgetManager(
     programRepository: ProgramRepository,
     animationEventsStream: SubscriptionManager<ViewAnimationEvents>,
     widgetThemeAttributes: WidgetViewThemeAttributes?,
-<<<<<<< Updated upstream
-    livelikeThemeStream: Stream<LiveLikeEngagementTheme>
-=======
     livelikeThemeStream: Stream<LiveLikeEngagementTheme>,
     widgetStream: Stream<LiveLikeWidget>
->>>>>>> Stashed changes
 ): WidgetManager {
     return WidgetManager(
         this,
@@ -282,11 +271,7 @@ internal fun MessagingClient.asWidgetManager(
         programRepository,
         animationEventsStream,
         widgetThemeAttributes,
-<<<<<<< Updated upstream
-        livelikeThemeStream
-=======
         livelikeThemeStream,
         widgetStream
->>>>>>> Stashed changes
     )
 }

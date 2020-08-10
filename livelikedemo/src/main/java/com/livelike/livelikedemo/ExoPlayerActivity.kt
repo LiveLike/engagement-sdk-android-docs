@@ -21,10 +21,7 @@ import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.MessageListener
-<<<<<<< Updated upstream
-=======
 import com.livelike.engagementsdk.WidgetListener
->>>>>>> Stashed changes
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
@@ -32,19 +29,12 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetIntercep
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
-<<<<<<< Updated upstream
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
-=======
->>>>>>> Stashed changes
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
-<<<<<<< Updated upstream
-=======
 import com.livelike.livelikedemo.utils.DialogUtils
->>>>>>> Stashed changes
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
@@ -320,9 +310,6 @@ class ExoPlayerActivity : AppCompatActivity() {
                     else -> null
                 }
             )
-<<<<<<< Updated upstream
-            widget_view.setSession(session)
-=======
             widget_view.setWidgetListener(object : WidgetListener {
                 override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
                     if (myWidgetsList.find { it.id == liveLikeWidget.id } == null) {
@@ -334,7 +321,6 @@ class ExoPlayerActivity : AppCompatActivity() {
             })
             widget_view.setSession(session)
 
->>>>>>> Stashed changes
             widget_view.widgetLifeCycleEventsListener = object : WidgetLifeCycleEventsListener() {
                 override fun onWidgetStateChange(
                     state: WidgetStates,
@@ -366,19 +352,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (privateGroupChatsession == null) {
             privateGroupChatsession =
                 (application as LiveLikeApplication).createPrivateSession(
-<<<<<<< Updated upstream
-                    errorDelegate = object : ErrorDelegate() {
-                        override fun onError(error: String) {
-                            checkForNetworkToRecreateActivity()
-                        }
-                    }
-=======
 //                    errorDelegate = object : ErrorDelegate() {
 //                        override fun onError(error: String) {
 //                            checkForNetworkToRecreateActivity()
 //                        }
 //                    }
->>>>>>> Stashed changes
 
                 )
             privateGroupChatsession?.setMessageListener(object : MessageListener {
@@ -554,20 +532,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         fullLogs.text = "$logs \n\n ${fullLogs.text}"
     }
 
-<<<<<<< Updated upstream
-    private fun checkForNetworkToRecreateActivity() {
-        playerView.postDelayed({
-            if (isNetworkConnected()) {
-                playerView.post {
-                    startActivity(intent)
-                    finish()
-                }
-            } else {
-                checkForNetworkToRecreateActivity()
-            }
-        }, 1000)
-    }
-=======
 //    private fun checkForNetworkToRecreateActivity() {
 //        //removing this method implementation as it is causing multiple instances on same activity in a task
 // //        playerView.postDelayed({
@@ -581,7 +545,6 @@ class ExoPlayerActivity : AppCompatActivity() {
 // //            }
 // //        }, 1000)
 //    }
->>>>>>> Stashed changes
 
     override fun onStart() {
         super.onStart()

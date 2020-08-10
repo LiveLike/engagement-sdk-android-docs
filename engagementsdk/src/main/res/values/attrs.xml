@@ -14,20 +14,11 @@
     <item name="livelike_chatMessage_timestamp_text_font" type="font">@font/roboto_regular</item>
 
 
-<<<<<<< Updated upstream
-
-    <declare-styleable name="WidgetView">
-        <attr name="winAnimation" format="string"/>
-        <attr name="loseAnimation" format="string"/>
-        <attr name="drawAnimation" format="string"/>
-        <attr name="stayTunedAnimation" format="string"/>
-=======
     <declare-styleable name="WidgetView">
         <attr name="winAnimation" format="string" />
         <attr name="loseAnimation" format="string" />
         <attr name="drawAnimation" format="string" />
         <attr name="stayTunedAnimation" format="string" />
->>>>>>> Stashed changes
     </declare-styleable>
 
     <declare-styleable name="ChatView">

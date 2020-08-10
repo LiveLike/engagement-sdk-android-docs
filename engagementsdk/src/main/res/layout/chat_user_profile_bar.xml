@@ -30,19 +30,6 @@
             tools:text="Me (SilverDog318)"
             tools:visibility="visible" />
 
-<<<<<<< Updated upstream
-    <ImageView
-        android:id="@+id/gamification_badge_iv"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:layout_marginLeft="4dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/user_profile_tv"
-        android:visibility="gone"
-        android:contentDescription="@string/coins"
-        tools:src="@drawable/coin"/>
-=======
         <ImageView
             android:id="@+id/gamification_badge_iv"
             android:layout_width="14dp"
@@ -54,7 +41,6 @@
             app:layout_constraintLeft_toRightOf="@id/user_profile_tv"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/coin" />
->>>>>>> Stashed changes
 
     </android.support.constraint.ConstraintLayout>
 

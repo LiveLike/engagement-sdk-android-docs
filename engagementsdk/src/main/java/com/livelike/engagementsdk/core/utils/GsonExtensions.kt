@@ -33,19 +33,12 @@ internal fun JsonObject.extractLong(propertyName: String, default: Long = 0): Lo
 }
 
 internal val gson = GsonBuilder()
-<<<<<<< Updated upstream:engagementsdk/src/main/java/com/livelike/engagementsdk/core/utils/GsonExtensions.kt
-    .registerTypeAdapter(ZonedDateTime::class.java,
-        DateDeserializer()
-    )
-    .registerTypeAdapter(ZonedDateTime::class.java,
-=======
     .registerTypeAdapter(
         ZonedDateTime::class.java,
         DateDeserializer()
     )
     .registerTypeAdapter(
         ZonedDateTime::class.java,
->>>>>>> Stashed changes:engagementsdk/src/main/java/com/livelike/engagementsdk/utils/GsonExtensions.kt
         DateSerializer()
     )
     .create()!!

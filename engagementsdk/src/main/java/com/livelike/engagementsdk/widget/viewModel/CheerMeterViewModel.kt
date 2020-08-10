@@ -54,11 +54,7 @@ internal class CheerMeterViewModel(
      *this is equal to size of list of options containing vote count to synced with server for each option
      *first request is post to create the vote then after to update the count on that option, patch request will be used
      **/
-<<<<<<< Updated upstream
-     var voteStateList: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
-=======
     var voteStateList: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
->>>>>>> Stashed changes
 
     private var pushVoteJob: Job? = null
     private val VOTE_THRASHHOLD = 10
@@ -104,11 +100,7 @@ internal class CheerMeterViewModel(
         widgetObserver(widgetInfos)
     }
 
-<<<<<<< Updated upstream
-    fun incrementVoteCount(teamIndex : Int) {
-=======
     fun incrementVoteCount(teamIndex: Int) {
->>>>>>> Stashed changes
         interactionData.incrementInteraction()
         totalVoteCount++
         voteStateList.getOrNull(teamIndex)?.let {
@@ -123,11 +115,7 @@ internal class CheerMeterViewModel(
                 uiScope.launch { pushVoteStateData(it) }
             }
         }
-<<<<<<< Updated upstream
-        if(pushVoteJob == null || pushVoteJob?.isCompleted == false){
-=======
         if (pushVoteJob == null || pushVoteJob?.isCompleted == false) {
->>>>>>> Stashed changes
             pushVoteJob?.cancel()
             pushVoteJob = uiScope.launch {
                 delay(1000L)
@@ -138,14 +126,6 @@ internal class CheerMeterViewModel(
         }
     }
 
-<<<<<<< Updated upstream
-    private suspend fun pushVoteStateData(voteState : CheerMeterVoteState){
-        if (voteState.voteCount > 0) {
-            val voteUrl = dataClient.voteAsync(voteState.voteUrl, body = RequestBody.create(MediaType.parse("application/json"), "{\"vote_count\":${voteState.voteCount}}"), accessToken =  userRepository.userAccessToken, type = voteState.requestType, useVoteUrl = false)
-            voteUrl?.let {
-                voteState.voteUrl = it
-                voteState.requestType = RequestType.PATCH }
-=======
     private suspend fun pushVoteStateData(voteState: CheerMeterVoteState) {
         if (voteState.voteCount > 0) {
             val voteUrl = dataClient.voteAsync(
@@ -162,7 +142,6 @@ internal class CheerMeterViewModel(
                 voteState.voteUrl = it
                 voteState.requestType = RequestType.PATCH
             }
->>>>>>> Stashed changes
             voteState.voteCount = 0
         }
     }
@@ -184,9 +163,6 @@ internal class CheerMeterViewModel(
             resource?.apply {
 
                 resource.getMergedOptions()?.forEach { option ->
-<<<<<<< Updated upstream
-                    voteStateList.add(CheerMeterVoteState(0, option.vote_url ?: "", RequestType.POST))
-=======
                     voteStateList.add(
                         CheerMeterVoteState(
                             0,
@@ -194,7 +170,6 @@ internal class CheerMeterViewModel(
                             RequestType.POST
                         )
                     )
->>>>>>> Stashed changes
                 }
 
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
@@ -223,17 +198,10 @@ internal class CheerMeterViewModel(
         if (timeout.isNotEmpty()) {
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
-<<<<<<< Updated upstream
-                    if (totalVoteCount == 0) {
-                        dismissWidget(DismissAction.TIMEOUT)
-                    }else{
-                        widgetState.onNext(WidgetStates.RESULTS)
-=======
                 if (totalVoteCount == 0) {
                     dismissWidget(DismissAction.TIMEOUT)
                 } else {
                     widgetState.onNext(WidgetStates.RESULTS)
->>>>>>> Stashed changes
                 }
             }
         }
@@ -266,14 +234,8 @@ internal class CheerMeterViewModel(
     }
 }
 
-<<<<<<< Updated upstream
-
-data class CheerMeterVoteState(var voteCount: Int, var voteUrl: String, var requestType: RequestType) {
-}
-=======
 data class CheerMeterVoteState(
     var voteCount: Int,
     var voteUrl: String,
     var requestType: RequestType
 )
->>>>>>> Stashed changes

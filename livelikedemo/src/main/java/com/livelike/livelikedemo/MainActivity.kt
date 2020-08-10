@@ -38,17 +38,10 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.btn_create
-<<<<<<< Updated upstream
-import kotlinx.android.synthetic.main.activity_main.btn_create
-import kotlinx.android.synthetic.main.activity_main.btn_create
-import kotlinx.android.synthetic.main.activity_main.btn_join
-import kotlinx.android.synthetic.main.activity_main.build_no
-=======
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.btn_nick_name
 import kotlinx.android.synthetic.main.activity_main.build_no
 import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
->>>>>>> Stashed changes
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
@@ -57,8 +50,8 @@ import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
+import kotlinx.android.synthetic.main.activity_main.leaderboard_button
 import kotlinx.android.synthetic.main.activity_main.nicknameText
-import kotlinx.android.synthetic.main.activity_main.orientation_widget_button
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.progressBar
@@ -69,10 +62,7 @@ import kotlinx.android.synthetic.main.activity_main.themes_json_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
-<<<<<<< Updated upstream
-=======
 import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
->>>>>>> Stashed changes
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
@@ -155,20 +145,6 @@ class MainActivity : AppCompatActivity() {
             R.style.Default,
             true
 
-<<<<<<< Updated upstream
-        sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
-        if (BuildConfig.VERSION_CODE > 1) {
-            build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
-        }
-
-        val player = PlayerInfo(
-            "Exo Player",
-            ExoPlayerActivity::class,
-            R.style.Default,
-            true
-
-=======
->>>>>>> Stashed changes
         )
 
         val onlyWidget = PlayerInfo(
@@ -205,6 +181,9 @@ class MainActivity : AppCompatActivity() {
             }.show()
         }
 
+        leaderboard_button.setOnClickListener {
+            startActivity(Intent(this, LeaderBoardActivity::class.java))
+        }
         private_group_button.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle("Select a private group")
@@ -240,18 +219,6 @@ class MainActivity : AppCompatActivity() {
                     themes_label.text = channels[which]
                     EngagementSDK.enableDebug = false
                     player.theme = when (which) {
-                        0 -> R.style.Default
-                        1 -> {
-                            EngagementSDK.enableDebug = true
-                            R.style.TurnerChatTheme
-                        }
-                        2 -> {
-                            EngagementSDK.enableDebug = false
-                            R.style.CustomChatReactionTheme
-                        }
-                        else -> R.style.Default
-                    }
-                    onlyWidget.theme = when (which) {
                         0 -> R.style.Default
                         1 -> {
                             EngagementSDK.enableDebug = true
@@ -355,6 +322,7 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.createChatRoom(
                 title,
+                null,
                 object : LiveLikeCallback<ChatRoomInfo>() {
                     override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         textView2.text = when {
@@ -363,17 +331,10 @@ class MainActivity : AppCompatActivity() {
                         }
                         result?.let {
                             chatRoomIds.add(it.id)
-<<<<<<< Updated upstream
-                                getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
-                                    .edit().apply {
-                                        putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
-                                    }
-=======
                             getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
                                 .edit().apply {
                                     putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
                                 }
->>>>>>> Stashed changes
                         }
                         progressBar.visibility = View.GONE
                     }
@@ -442,28 +403,7 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
-
-        orientation_widget_button.setOnClickListener {
-            startActivity(
-                Intent(
-                    this,
-                    WidgetActivity::class.java
-                )
-            )
-        }
     }
-}
-
-@Throws(java.lang.Exception::class)
-fun convertStreamToString(`is`: InputStream?): String? {
-    val reader = BufferedReader(InputStreamReader(`is`))
-    val sb = java.lang.StringBuilder()
-    var line: String? = null
-    while (reader.readLine().also { line = it } != null) {
-        sb.append(line).append("\n")
-    }
-    reader.close()
-    return sb.toString()
 }
 
 @Throws(java.lang.Exception::class)

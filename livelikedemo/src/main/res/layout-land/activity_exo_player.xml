@@ -114,30 +114,6 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Button
-<<<<<<< Updated upstream
-            android:id="@+id/openLogs"
-            android:text="Logs"
-            android:layout_height="wrap_content"
-            android:layout_width="46dp"
-            android:visibility="visible"
-            app:layout_constraintTop_toTopOf="@+id/logsPreview"
-            app:layout_constraintBottom_toBottomOf="@+id/logsPreview"
-            android:textSize="8sp"
-            app:layout_constraintVertical_bias="1.0"
-            app:layout_constraintEnd_toStartOf="@+id/chatWidget"
-    />
-    <Button
-        android:id="@+id/live_blog"
-        android:text="Live B"
-        android:layout_height="35dp"
-        android:layout_width="wrap_content"
-        android:visibility="visible"
-        android:layout_marginStart="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/chatWidget"
-        app:layout_constraintBottom_toTopOf="@+id/openLogs"
-        android:textSize="13sp"
-        android:layout_marginLeft="8dp"/>
-=======
         android:id="@+id/live_blog"
         android:layout_width="wrap_content"
         android:layout_height="35dp"
@@ -156,6 +132,5 @@
         android:text="My Widgets"
         app:layout_constraintBottom_toTopOf="@+id/live_blog"
         app:layout_constraintEnd_toStartOf="@+id/chatWidget" />
->>>>>>> Stashed changes
 
 </android.support.constraint.ConstraintLayout>

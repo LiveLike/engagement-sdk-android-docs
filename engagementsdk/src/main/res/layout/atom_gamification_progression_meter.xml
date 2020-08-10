@@ -43,22 +43,12 @@
             tools:text="150/300" />
 
 
-<<<<<<< Updated upstream
-    <ImageView
-        android:id="@+id/gamification_badge_iv"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="end"
-        android:contentDescription="@string/coins"
-        tools:src="@drawable/coin" />
-=======
         <ImageView
             android:id="@+id/gamification_badge_iv"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="end"
             tools:src="@drawable/coin" />
->>>>>>> Stashed changes
 
     </FrameLayout>
 

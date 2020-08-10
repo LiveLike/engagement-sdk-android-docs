@@ -99,12 +99,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     } else {
                         viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
                         confirmationMessage?.apply {
-<<<<<<< Updated upstream
-                            text = viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
-=======
                             text =
                                 viewModel?.data?.currentData?.resource?.confirmation_message ?: ""
->>>>>>> Stashed changes
                             viewModel?.animationPath?.let {
                                 viewModel?.animationProgress?.let { it1 ->
                                     startAnimation(
@@ -243,14 +239,10 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
 
             viewModel?.apply {
                 val rootPath = widgetViewThemeAttributes.stayTunedAnimation
-<<<<<<< Updated upstream
-                animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context.applicationContext) ?: ""
-=======
                 animationPath = AndroidResource.selectRandomLottieAnimation(
                     rootPath,
                     context.applicationContext
                 ) ?: ""
->>>>>>> Stashed changes
             }
 
             textRecyclerView.apply {

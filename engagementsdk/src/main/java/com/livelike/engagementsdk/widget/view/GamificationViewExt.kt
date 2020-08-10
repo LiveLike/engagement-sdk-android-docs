@@ -3,11 +3,6 @@
 package com.livelike.engagementsdk.widget.view
 
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
-<<<<<<< Updated upstream
-import com.livelike.engagementsdk.widget.data.models.Badge
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
-=======
->>>>>>> Stashed changes
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView

@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat.startActivity
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -89,11 +90,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 }
             }
             WidgetStates.FINISHED -> {
-<<<<<<< Updated upstream
-=======
                 removeAllViews()
                 parent?.let { (it as ViewGroup).removeAllViews() }
->>>>>>> Stashed changes
             }
         }
     }
@@ -102,25 +100,17 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         super.applyTheme(theme)
         viewModel?.data?.latest()?.let { widget ->
             theme.getThemeLayoutComponent(WidgetType.ALERT)?.let { themeComponent ->
-<<<<<<< Updated upstream
-                AndroidResource.updateThemeForView(labelText, themeComponent.title, fontFamilyProvider)
-=======
                 AndroidResource.updateThemeForView(
                     labelText,
                     themeComponent.title,
                     fontFamilyProvider
                 )
->>>>>>> Stashed changes
                 if (themeComponent.header?.background != null) {
                     labelText.background = AndroidResource.createDrawable(themeComponent.header)
                     AndroidResource.setPaddingForView(labelText, themeComponent.header.padding)
                 }
                 bodyBackground.background =
-<<<<<<< Updated upstream
-                        AndroidResource.createDrawable(themeComponent.body)
-=======
                     AndroidResource.createDrawable(themeComponent.body)
->>>>>>> Stashed changes
             }
         }
     }

@@ -12,15 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-<<<<<<< Updated upstream
-        android:src="@drawable/ic_empty"
-        android:scaleType="center"
-        android:contentDescription="@string/chat_list_is_empty" />
-=======
         android:contentDescription="@string/chat_list_is_empty"
         android:scaleType="center"
         android:src="@drawable/ic_empty" />
->>>>>>> Stashed changes
 
     <TextView
         android:id="@+id/chatdisplay_empty_txt"

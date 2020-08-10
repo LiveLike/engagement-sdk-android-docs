@@ -20,11 +20,7 @@ import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 
 // TODO remove view references from this view model, also clean content session for same.
 
-<<<<<<< Updated upstream
-class WidgetContainerViewModel(internal val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
-=======
 class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
->>>>>>> Stashed changes
 
     var enableDefaultWidgetTransition: Boolean = true
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null

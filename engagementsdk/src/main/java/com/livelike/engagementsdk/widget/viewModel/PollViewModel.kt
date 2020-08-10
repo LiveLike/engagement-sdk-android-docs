@@ -51,13 +51,8 @@ internal class PollViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
-<<<<<<< Updated upstream
-    private val programRepository: ProgramRepository?=null,
-    val widgetMessagingClient: WidgetManager?=null
-=======
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
->>>>>>> Stashed changes
 ) : BaseViewModel() {
     lateinit var onWidgetInteractionCompleted: () -> Unit
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream

@@ -119,16 +119,12 @@ internal class ChatActionsPopupView(
             userReaction?.let {
                 if (it.emojiId == reaction.id) {
                     cardView.radius = chatViewThemeAttributes.chatSelectedReactionRadius
-<<<<<<< Updated upstream
-                    cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.livelike_chat_reaction_selected_background_color))
-=======
                     cardView.setCardBackgroundColor(
                         ContextCompat.getColor(
                             context,
                             R.color.livelike_chat_reaction_selected_background_color
                         )
                     )
->>>>>>> Stashed changes
                 }
             }
             // On Touch we are scaling and descaling the reaction imageview to show bounce feature

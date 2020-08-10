@@ -1,33 +1,21 @@
 package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
-import android.os.Bundle
-import android.os.Parcelable
 import android.util.AttributeSet
 import android.widget.FrameLayout
-<<<<<<< Updated upstream
-import com.google.gson.JsonObject
-=======
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
->>>>>>> Stashed changes
 import com.livelike.engagementsdk.ContentSession
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
-<<<<<<< Updated upstream
-import com.livelike.engagementsdk.MockAnalyticsService
-import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.WidgetInfos
-=======
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.WidgetListener
->>>>>>> Stashed changes
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -82,14 +70,11 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
         session.livelikeThemeStream.onNext(engagementSDKTheme)
-<<<<<<< Updated upstream
-=======
         session.widgetStream.subscribe(this) {
             it?.let {
                 widgetListener?.onNewWidget(it)
             }
         }
->>>>>>> Stashed changes
     }
 
     /**
@@ -102,7 +87,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
             (getChildAt(0) as SpecifiedWidgetView).applyTheme(theme)
         }
-<<<<<<< Updated upstream
     }
 
     /**
@@ -119,24 +103,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         }
     }
 
-=======
-    }
-
-    /**
-     * this method parse livelike theme from json object and apply if its a valid json
-     * refer @applyTheme(theme)
-     **/
-    fun applyTheme(themeJson: JsonObject): Result<Boolean> {
-        val themeResult = LiveLikeEngagementTheme.instanceFrom(themeJson)
-        return if (themeResult is Result.Success) {
-            applyTheme(themeResult.data)
-            Result.Success(true)
-        } else {
-            themeResult as Result.Error
-        }
-    }
-
->>>>>>> Stashed changes
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthDp = AndroidResource.pxToDp(width)
         if (widthDp < 292 && widthDp != 0) {
@@ -147,8 +113,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
-<<<<<<< Updated upstream
-=======
     private var widgetListener: WidgetListener? = null
 
     fun setWidgetListener(widgetListener: WidgetListener) {
@@ -165,7 +129,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         }
     }
 
->>>>>>> Stashed changes
     /** displays the widget in the container
     throws error if json invalid
     clears the previous displayed widget (if any)
@@ -180,28 +143,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 widgetType = "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
-<<<<<<< Updated upstream
-            widgetContainerViewModel?.currentWidgetViewStream?.onNext(
-                Pair(
-                    widgetType,
-                    WidgetProvider()
-                        .get(
-                            null,
-                            WidgetInfos(widgetType, widgetResourceJson, widgetId),
-                            context,
-                            MockAnalyticsService(),
-                            sdk.configurationStream.latest()!!,
-                            {
-                            },
-                            sdk.userRepository,
-                            null,
-                            SubscriptionManager(),
-                            widgetViewThemeAttributes,
-                            engagementSDKTheme
-                        )
-                )
-            )
-=======
             if (widgetContainerViewModel?.currentWidgetViewStream?.latest() == null) {
                 widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                     Pair(
@@ -234,7 +175,6 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                     }
                 }
             }
->>>>>>> Stashed changes
         } catch (ex: Exception) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()

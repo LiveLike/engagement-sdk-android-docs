@@ -64,11 +64,7 @@ internal class PredictionViewModel(
     val data: SubscriptionManager<PredictionWidget?> =
         SubscriptionManager()
     private val dataClient: WidgetDataClient = WidgetDataClientImpl()
-<<<<<<< Updated upstream
-//    var state: Stream<String?> =
-=======
     //    var state: Stream<String?> =
->>>>>>> Stashed changes
 //        SubscriptionManager() // confirmation, followup
     var results: Stream<Resource> =
         SubscriptionManager()
@@ -259,9 +255,6 @@ internal class PredictionViewModel(
             pubnub?.stop()
             pubnub?.unsubscribeAll()
 //            state.onNext("confirmation")
-<<<<<<< Updated upstream
-            currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
-=======
             currentWidgetType?.let {
                 analyticsService.trackWidgetInteraction(
                     it.toAnalyticsString(),
@@ -269,7 +262,6 @@ internal class PredictionViewModel(
                     interactionData
                 )
             }
->>>>>>> Stashed changes
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
         }

@@ -39,8 +39,8 @@ interface AnalyticsService {
     )
 
     fun trackSessionStarted()
-    fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean = false)
-    fun trackMessageDisplayed(msgId: String, msg: String, hasExternalImage: Boolean = false)
+    fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean = false)
+    fun trackMessageDisplayed(msgId: String, msg: String?, hasExternalImage: Boolean = false)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
@@ -169,16 +169,12 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
-    override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
+    override fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean) {
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
-    override fun trackMessageDisplayed(msgId: String, msg: String, hasExternalImage: Boolean) {
-<<<<<<< Updated upstream
+    override fun trackMessageDisplayed(msgId: String, msg: String?, hasExternalImage: Boolean) {
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $msgId")
-=======
-        Log.d("[Analytics]", "[${object{}.javaClass.enclosingMethod?.name}] $msgId")
->>>>>>> Stashed changes
     }
 
     override fun trackWidgetReceived(kind: String, id: String) {
@@ -313,29 +309,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         clientId
     )
 
-<<<<<<< Updated upstream
-    companion object {
-        const val KEY_CHAT_MESSAGE_SENT = "Chat Message Sent"
-        const val KEY_CHAT_MESSAGE_DISPLAYED = "Chat Message Displayed"
-        const val KEY_WIDGET_RECEIVED = "Widget_Received"
-        const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
-        const val KEY_WIDGET_INTERACTION = "Widget Interacted"
-        const val KEY_WIDGET_USER_DISMISS = "Widget Dismissed"
-        const val KEY_ORIENTATION_CHANGED = "Orientation_Changed"
-        const val KEY_ACTION_TAP = "Action_Tap"
-        const val KEY_KEYBOARD_SELECTED = "Keyboard Selected"
-        const val KEY_KEYBOARD_HIDDEN = "Keyboard Hidden"
-        const val KEY_FLAG_BUTTON_PRESSED = "Chat Flag Button Pressed"
-        const val KEY_FLAG_ACTION_SELECTED = "Chat Flag Action Selected"
-        const val KEY_POINT_TUTORIAL_COMPLETED = "Points Tutorial Completed"
-        const val KEY_REASON = "Reason"
-        const val KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED = "Badge Collected Button Pressed"
-        const val KEY_EVENT_CHAT_REACTION_PANEL_OPEN = "Chat Reaction Panel Opened"
-        const val KEY_EVENT_CHAT_REACTION_SELECTED = "Chat Reaction Selected"
-    }
-
-=======
->>>>>>> Stashed changes
     private var parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
 
     init {
@@ -579,12 +552,12 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         }
     }
 
-    override fun trackMessageSent(msgId: String, msg: String, hasExternalImage: Boolean) {
+    override fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean) {
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, msgId)
-        properties.put("Character Length", (if (hasExternalImage) 0 else msg.length))
-        properties.put("Sticker Count", msg.findStickers().countMatches())
-        properties.put("Sticker Shortcodes", msg.findStickerCodes().allMatches())
+        properties.put("Character Length", (if (hasExternalImage) 0 else msg?.length ?: 0))
+        properties.put("Sticker Count", msg?.findStickers()?.countMatches())
+        properties.put("Sticker Shortcodes", msg?.findStickerCodes()?.allMatches())
         properties.put("Has External Image", hasExternalImage)
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
         eventObservers[clientId]?.invoke(KEY_CHAT_MESSAGE_SENT, properties)
@@ -595,11 +568,14 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         mixpanel.registerSuperProperties(superProp)
     }
 
-    override fun trackMessageDisplayed(msgId: String, msg: String, hasExternalImage: Boolean) {
+    override fun trackMessageDisplayed(msgId: String, msg: String?, hasExternalImage: Boolean) {
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, msgId)
         properties.put("Message ID", msgId)
-        properties.put("Sticker Shortcodes", msg.findStickerCodes().allMatches())
+        properties.put(
+            "Sticker Shortcodes",
+            msg?.findStickerCodes()?.allMatches() ?: listOf<String>()
+        )
         mixpanel.track(KEY_CHAT_MESSAGE_DISPLAYED, properties)
         eventObservers[clientId]?.invoke(KEY_CHAT_MESSAGE_DISPLAYED, properties)
     }
@@ -723,8 +699,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("Nickname", username)
         mixpanel.registerSuperProperties(properties)
         eventObservers[clientId]?.invoke("Nickname", properties)
-<<<<<<< Updated upstream
-=======
     }
 
     companion object {
@@ -745,7 +719,6 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         const val KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED = "Badge Collected Button Pressed"
         const val KEY_EVENT_CHAT_REACTION_PANEL_OPEN = "Chat Reaction Panel Opened"
         const val KEY_EVENT_CHAT_REACTION_SELECTED = "Chat Reaction Selected"
->>>>>>> Stashed changes
     }
 }
 

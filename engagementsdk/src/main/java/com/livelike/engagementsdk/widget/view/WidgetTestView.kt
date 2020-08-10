@@ -102,10 +102,7 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
             "",
             userRepository
         )
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
     init {
         ConstraintLayout.inflate(context, R.layout.widget_test_view, this)
 

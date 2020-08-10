@@ -29,11 +29,11 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 internal class ChatViewModel(
     val userStream: Stream<LiveLikeUser>,
@@ -43,24 +43,18 @@ internal class ChatViewModel(
 ) : ChatRenderer, ViewModel() {
 
     var chatListener: ChatEventListener? = null
-<<<<<<< Updated upstream
-=======
     var analyticsService: AnalyticsService = MockAnalyticsService()
         set(value) {
             field = value
             chatAdapter.analyticsService = value
         }
->>>>>>> Stashed changes
     var chatAdapter: ChatRecyclerAdapter =
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     var messageList = mutableListOf<ChatMessage>()
     var allMessageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
     internal val eventStream: Stream<String> =
         SubscriptionManager(false)
     var currentChatRoom: ChatRoom? = null
@@ -105,19 +99,6 @@ internal class ChatViewModel(
             }
         }
     private val dataClient: ChatDataClient = ChatDataClientImpl()
-<<<<<<< Updated upstream
-
-    companion object {
-        const val EVENT_NEW_MESSAGE = "new-message"
-        const val EVENT_MESSAGE_DELETED = "deletion"
-        const val EVENT_MESSAGE_TIMETOKEN_UPDATED = "id-updated"
-        const val EVENT_LOADING_COMPLETE = "loading-complete"
-        const val EVENT_LOADING_STARTED = "loading-started"
-        const val EVENT_REACTION_ADDED = "reaction-added"
-        const val EVENT_REACTION_REMOVED = "reaction-removed"
-    }
-=======
->>>>>>> Stashed changes
 
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
@@ -235,10 +216,7 @@ internal class ChatViewModel(
             }
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList.toSet()))
-<<<<<<< Updated upstream
-=======
                 chatAdapter.currentChatReactionPopUpViewPos = -1
->>>>>>> Stashed changes
                 val index = messageList.indexOfFirst { it.id == messageId }
                 if (index != -1 && index < chatAdapter.itemCount) {
                     chatAdapter.notifyItemChanged(index)
@@ -314,9 +292,7 @@ internal class ChatViewModel(
     }
 
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
-
-        val url = Uri.parse(chatMessage.message.substring(1, chatMessage.message.length - 1))
-
+        val url = Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
         Glide.with(context)
             .`as`(ByteArray::class.java)
             .load(url)
@@ -352,8 +328,6 @@ internal class ChatViewModel(
                     }
                 }
             })
-<<<<<<< Updated upstream
-=======
     }
 
     companion object {
@@ -364,6 +338,5 @@ internal class ChatViewModel(
         const val EVENT_LOADING_STARTED = "loading-started"
         const val EVENT_REACTION_ADDED = "reaction-added"
         const val EVENT_REACTION_REMOVED = "reaction-removed"
->>>>>>> Stashed changes
     }
 }

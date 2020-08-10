@@ -2,13 +2,8 @@ package com.livelike.engagementsdk.widget.viewModel
 
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
-<<<<<<< Updated upstream
-import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
-import com.livelike.engagementsdk.core.data.models.RewardsType
-=======
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
->>>>>>> Stashed changes
 import com.livelike.engagementsdk.widget.model.Resource
 
 internal class PointTutorialWidgetViewModel(

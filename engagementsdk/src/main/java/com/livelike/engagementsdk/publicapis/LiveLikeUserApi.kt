@@ -15,16 +15,13 @@ data class LiveLikeUserApi(
 data class LiveLikeChatMessage(
     val nickname: String = "",
     val userPic: String?,
-    val message: String = "",
+    val message: String? = "",
     val timestamp: String = "",
     val id: Long = 0
 )
 
 internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
     // TODO will require to bump to major version as id needs to be string
-<<<<<<< Updated upstream
-    return LiveLikeChatMessage(senderNickname, senderImageUrl, message, "", messageId.hashCode().toLong())
-=======
     return LiveLikeChatMessage(
         senderNickname,
         senderImageUrl,
@@ -32,7 +29,6 @@ internal fun PubnubChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {
         "",
         messageId.hashCode().toLong()
     )
->>>>>>> Stashed changes
 }
 
 internal fun ChatMessage.toLiveLikeChatMessage(): LiveLikeChatMessage {

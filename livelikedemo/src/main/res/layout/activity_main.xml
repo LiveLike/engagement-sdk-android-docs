@@ -90,8 +90,6 @@
                 <Button
                     android:id="@+id/private_group_button"
                     style="@style/TestAppButton"
-<<<<<<< Updated upstream
-=======
                     android:layout_width="match_parent"
                     android:layout_height="75dp"
                     android:layout_marginTop="16dp"
@@ -123,7 +121,6 @@
                 <Button
                     android:id="@+id/themes_button"
                     style="@style/TestAppButton"
->>>>>>> Stashed changes
                     android:layout_width="match_parent"
                     android:layout_height="75dp"
                     android:layout_marginTop="16dp"
@@ -132,15 +129,6 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:paddingBottom="24dp"
-<<<<<<< Updated upstream
-                    android:text="Private group"
-
-                    app:layout_constraintTop_toBottomOf="@id/events_button"
-                    tools:text="Private group" />
-
-                <TextView
-                    android:id="@+id/private_group_label"
-=======
                     android:text="@string/theme_btn_label"
 
                     app:layout_constraintTop_toBottomOf="@id/private_group_button"
@@ -148,62 +136,6 @@
 
                 <TextView
                     android:id="@+id/themes_label"
->>>>>>> Stashed changes
-                    style="@style/TestAppButtonSubLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="16dp"
-<<<<<<< Updated upstream
-                    android:paddingTop="36dp"
-                    android:paddingEnd="16dp"
-                    android:text="Select groups"
-                    app:layout_constraintBottom_toBottomOf="@id/private_group_button"
-                    app:layout_constraintStart_toStartOf="@id/private_group_button"
-                    app:layout_constraintTop_toTopOf="@id/private_group_button"
-                    tools:text="Select group" />
-
-
-                <Button
-                    android:id="@+id/themes_button"
-=======
-
-                    android:paddingTop="36dp"
-                    android:paddingEnd="16dp"
-                    android:text="@string/default_theme_label"
-                    app:layout_constraintBottom_toBottomOf="@id/themes_button"
-                    app:layout_constraintStart_toStartOf="@id/themes_button"
-                    app:layout_constraintTop_toTopOf="@id/themes_button"
-                    tools:text="Select Theme" />
-
-                <Button
-                    android:id="@+id/themes_json_button"
->>>>>>> Stashed changes
-                    style="@style/TestAppButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="75dp"
-                    android:layout_marginTop="16dp"
-                    android:drawableEnd="@drawable/ic_keyboard_arrow_right_black_24dp"
-
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="24dp"
-<<<<<<< Updated upstream
-                    android:text="@string/theme_btn_label"
-
-                    app:layout_constraintTop_toBottomOf="@id/private_group_button"
-                    tools:text="Themes" />
-
-                <TextView
-                    android:id="@+id/themes_label"
-=======
-                    android:text="JSON Themes"
-
-                    app:layout_constraintTop_toBottomOf="@id/themes_button"
-                    tools:text="JSON Themes" />
-
-                <TextView
-                    android:id="@+id/themes_json_label"
->>>>>>> Stashed changes
                     style="@style/TestAppButtonSubLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -211,7 +143,6 @@
 
                     android:paddingTop="36dp"
                     android:paddingEnd="16dp"
-<<<<<<< Updated upstream
                     android:text="@string/default_theme_label"
                     app:layout_constraintBottom_toBottomOf="@id/themes_button"
                     app:layout_constraintStart_toStartOf="@id/themes_button"
@@ -243,8 +174,6 @@
 
                     android:paddingTop="36dp"
                     android:paddingEnd="16dp"
-=======
->>>>>>> Stashed changes
                     android:text="None"
                     app:layout_constraintBottom_toBottomOf="@id/themes_json_button"
                     app:layout_constraintStart_toStartOf="@id/themes_json_button"
@@ -486,18 +415,23 @@
                     android:text="@string/chat_only_btn_label"
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider"
                     tools:text="Chat Only" />
-<<<<<<< Updated upstream
+
+                <View
+                    android:id="@+id/standalone_divider_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@color/colorDivider"
+                    app:layout_constraintStart_toStartOf="@id/chat_only_button"
+                    app:layout_constraintTop_toBottomOf="@id/chat_only_button" />
 
                 <Button
-                    android:id="@+id/orientation_widget_button"
+                    android:id="@+id/leaderboard_button"
                     style="@style/TestAppButton"
                     android:layout_width="match_parent"
                     android:layout_height="75dp"
-                    android:text="@string/orientation_widget_only_btn_label"
-                    app:layout_constraintTop_toBottomOf="@id/standalone_divider"
-                    tools:text="Chat Only" />
-=======
->>>>>>> Stashed changes
+                    android:text="Leaderboard"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
@@ -521,8 +455,6 @@
                     tools:text="SETTINGS" />
 
                 <TextView
-<<<<<<< Updated upstream
-=======
                     android:id="@+id/chat_input_visibility_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -550,7 +482,6 @@
 
 
                 <TextView
->>>>>>> Stashed changes
                     android:id="@+id/resize_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -563,13 +494,6 @@
                     android:textSize="16sp"
                     android:textStyle="normal"
                     app:layout_constraintStart_toStartOf="parent"
-<<<<<<< Updated upstream
-                    app:layout_constraintTop_toBottomOf="@id/settings_label"
-                    tools:text="Nickname" />
-
-                <EditText
-                    android:id="@+id/nicknameText"
-=======
                     app:layout_constraintTop_toBottomOf="@id/chat_input_visibility_label"
                     tools:text="Nickname" />
 
@@ -586,7 +510,6 @@
 
                 <LinearLayout
                     android:id="@+id/lay_nickname"
->>>>>>> Stashed changes
                     android:layout_width="250dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="16dp"
@@ -597,9 +520,6 @@
                     app:layout_constraintBottom_toBottomOf="@id/resize_label"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/resize_label"
-<<<<<<< Updated upstream
-                    app:layout_constraintVertical_bias="0.7" />
-=======
                     app:layout_constraintVertical_bias="0.7" >
 
                     <EditText
@@ -614,7 +534,6 @@
                         android:text="Update"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
->>>>>>> Stashed changes
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -624,11 +543,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-<<<<<<< Updated upstream
-                    app:layout_constraintTop_toBottomOf="@+id/nicknameText">
-=======
                     app:layout_constraintTop_toBottomOf="@+id/lay_nickname">
->>>>>>> Stashed changes
 
                     <TextView
                         style="@style/TestAppLabel"

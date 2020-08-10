@@ -51,11 +51,7 @@
         android:layout_height="80dp"
         android:layout_gravity="center_horizontal"
         android:contentDescription="@string/coins"
-<<<<<<< Updated upstream
-        tools:src="@drawable/coin"/>
-=======
         tools:src="@drawable/coin" />
->>>>>>> Stashed changes
 
     <TextView
         android:id="@+id/collect_badge_button"

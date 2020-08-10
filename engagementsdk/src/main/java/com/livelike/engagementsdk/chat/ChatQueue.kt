@@ -8,13 +8,6 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClien
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
-<<<<<<< Updated upstream
-import com.livelike.engagementsdk.core.services.messaging.ClientMessage
-import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClientProxy
-import com.livelike.engagementsdk.core.utils.gson
-=======
->>>>>>> Stashed changes
 
 internal class ChatQueue(upstream: MessagingClient) :
     MessagingClientProxy(upstream),

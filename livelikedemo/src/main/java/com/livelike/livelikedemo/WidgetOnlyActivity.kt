@@ -13,11 +13,8 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.LiveLikeContentSession
-<<<<<<< Updated upstream
-=======
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
->>>>>>> Stashed changes
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -118,29 +115,22 @@ class WidgetOnlyActivity : AppCompatActivity() {
         rcyl_view.adapter = adapter
         val jsonTheme = intent.getStringExtra("jsonTheme")
         if (jsonTheme != null) {
-<<<<<<< Updated upstream
-            Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
-=======
             Toast.makeText(
                 applicationContext,
                 "JSON Theme Customization is hold for now",
                 Toast.LENGTH_LONG
             ).show()
->>>>>>> Stashed changes
             try {
                 widget_view.applyTheme(ThemeRandomizer.themesList.last())
             } catch (e: Exception) {
                 Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
             }
         }
-<<<<<<< Updated upstream
-=======
         widget_view.setWidgetListener(object : WidgetListener {
             override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
                 println("Widget:${liveLikeWidget.id},${liveLikeWidget.programId},${liveLikeWidget.options?.size}")
             }
         })
->>>>>>> Stashed changes
         widget_view.setSession(session)
     }
 
@@ -234,8 +224,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     val choices: ArrayList<Choice> = ArrayList()
                     val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
                     accessToken =
-                        when (com.livelike.livelikedemo.BuildConfig.BUILD_TYPE == "release") {
-                            true -> "Bearer DblPy3BVfqj_aatq6N5kFpNcH08LKObqEbnlLWc-3NlFInKTfsVxEg"
+                        when (com.livelike.livelikedemo.BuildConfig.FLAVOR) {
+                            "production" -> "Bearer zslM9_lbiy3SWkMbKsoGfAkK2Kg46dfVkN1Zsdt8K_P3BJU-AJOeSQ"
+                            "staging" -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
+                            "qatesting" -> "Bearer 95BmUG5FWgtikjrj-hqlYblfdF4X5nldidDepAmhFefBUy2lRPXEEw"
                             else -> "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
                         }
                     scope.launch(Dispatchers.IO) {
