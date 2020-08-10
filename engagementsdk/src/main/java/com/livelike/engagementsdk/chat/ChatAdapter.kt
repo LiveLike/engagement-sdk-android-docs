@@ -78,7 +78,7 @@ internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
-
+    internal var chatRoomId: String? = null
     private var lastFloatingUiAnchorView: View? = null
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
@@ -284,7 +284,7 @@ internal class ChatRecyclerAdapter(
                         if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos < itemCount) {
                             getItem(currentChatReactionPopUpViewPos)?.apply {
                                 val reactionId: String?
-                                val reactionAction: String
+                                val isRemoved: Boolean
                                 if (reaction == null) {
                                     reactionId = myChatMessageReaction?.emojiId
                                     myChatMessageReaction?.let { myChatMessageReaction ->
@@ -301,7 +301,7 @@ internal class ChatRecyclerAdapter(
                                         }
                                     }
                                     myChatMessageReaction = null
-                                    reactionAction = "Removed"
+                                    isRemoved = true
                                 } else {
                                     myChatMessageReaction?.let {
                                         emojiCountMap[it.emojiId] =
@@ -327,14 +327,17 @@ internal class ChatRecyclerAdapter(
                                             reaction.id
                                         )
                                     }
-                                    reactionAction = "Added"
+                                    isRemoved = false
                                 }
-                                reactionId?.let {
-                                    analyticsService.trackChatReactionSelected(
-                                        id,
-                                        it,
-                                        reactionAction
-                                    )
+                                reactionId?.let { reactionId ->
+                                    chatRoomId?.let {
+                                        analyticsService.trackChatReactionSelected(
+                                            it,
+                                            id,
+                                            reactionId,
+                                            isRemoved
+                                        )
+                                    }
                                 }
                                 notifyItemChanged(currentChatReactionPopUpViewPos)
                             }
