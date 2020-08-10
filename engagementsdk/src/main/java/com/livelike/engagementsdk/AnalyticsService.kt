@@ -540,13 +540,15 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, messageId)
         properties.put(CHAT_REACTION_ID, reactionId)
+        properties.put(CHAT_ROOM_ID, chatRoomId)
+        val event = when (isRemoved) {
+            true -> KEY_EVENT_CHAT_REACTION_REMOVED
+            else -> KEY_EVENT_CHAT_REACTION_ADDED
+        }
         mixpanel.track(
-            when (isRemoved) {
-                true -> KEY_EVENT_CHAT_REACTION_REMOVED
-                else -> KEY_EVENT_CHAT_REACTION_ADDED
-            }, properties
+            event, properties
         )
-        eventObservers[clientId]?.invoke(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
+        eventObservers[clientId]?.invoke(event, properties)
     }
 
     override fun registerSuperProperty(
@@ -756,3 +758,4 @@ enum class DismissAction {
 
 const val CHAT_MESSAGE_ID = "Chat Message ID"
 const val CHAT_REACTION_ID = "Chat Reaction ID"
+const val CHAT_ROOM_ID = "Chat Room ID"
