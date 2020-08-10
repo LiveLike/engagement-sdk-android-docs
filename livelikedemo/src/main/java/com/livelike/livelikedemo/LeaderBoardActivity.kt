@@ -88,7 +88,7 @@ class LeaderBoardActivity : AppCompatActivity() {
         rcyl_leader_board_entries.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 //        ed_txt_program_id.setText("47c14e1d-5786-401e-a850-22c5a91a5399") //QA
-//        ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb")//Prod
+        ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb")//Prod
         rcyl_leader_board_entries.adapter = adapter
         btn_fetch.setOnClickListener {
             val programId = ed_txt_program_id.text.toString()
@@ -162,8 +162,10 @@ class LeaderBoardActivity : AppCompatActivity() {
                         error: String?
                     ) {
                         prg_leaderboard_entries.visibility = View.INVISIBLE
-                        if (pagination == LiveLikePagination.FIRST)
+                        if (pagination == LiveLikePagination.FIRST) {
                             adapter.list.clear()
+                            adapter.notifyDataSetChanged()
+                        }
                         result?.let {
                             adapter.list.addAll(result)
                             adapter.notifyDataSetChanged()
