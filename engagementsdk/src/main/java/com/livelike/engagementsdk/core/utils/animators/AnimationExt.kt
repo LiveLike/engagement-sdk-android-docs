@@ -15,7 +15,12 @@ import android.view.animation.RotateAnimation
  */
 
 @Suppress("UNUSED_PARAMETER")
-internal fun View.buildScaleAnimator(fromScale: Float, toScale: Float, duration: Long, interpolator: TimeInterpolator = BounceEaseOutInterpolator()): ObjectAnimator {
+internal fun View.buildScaleAnimator(
+    fromScale: Float,
+    toScale: Float,
+    duration: Long,
+    interpolator: TimeInterpolator = BounceEaseOutInterpolator()
+): ObjectAnimator {
 
     val kf0 = Keyframe.ofFloat(0f, fromScale)
     val kf1 = Keyframe.ofFloat(1f, toScale)

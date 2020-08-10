@@ -64,7 +64,11 @@ internal class PredictionViewModel(
     val data: SubscriptionManager<PredictionWidget?> =
         SubscriptionManager()
     private val dataClient: WidgetDataClient = WidgetDataClientImpl()
+<<<<<<< Updated upstream
 //    var state: Stream<String?> =
+=======
+    //    var state: Stream<String?> =
+>>>>>>> Stashed changes
 //        SubscriptionManager() // confirmation, followup
     var results: Stream<Resource> =
         SubscriptionManager()
@@ -81,7 +85,8 @@ internal class PredictionViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
+            pubnub =
+                PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""
@@ -114,7 +119,8 @@ internal class PredictionViewModel(
                 type == WidgetType.TEXT_PREDICTION ||
                 type == WidgetType.TEXT_PREDICTION_FOLLOW_UP
             ) {
-                val resource = gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
+                val resource =
+                    gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
                 resource?.apply {
                     pubnub?.subscribe(listOf(resource.subscribe_channel))
                     data.onNext(PredictionWidget(type, resource))
@@ -145,9 +151,14 @@ internal class PredictionViewModel(
                     dismissWidget(DismissAction.TIMEOUT)
                 }
                 data.currentData?.apply {
-                    val selectedPredictionId = getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
+                    val selectedPredictionId =
+                        getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)
                     uiScope.launch {
-                        delay(if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(timeout) else 0)
+                        delay(
+                            if (selectedPredictionId.isNotEmpty()) AndroidResource.parseDuration(
+                                timeout
+                            ) else 0
+                        )
                         dismissWidget(DismissAction.TIMEOUT)
                     }
                 }
@@ -202,8 +213,10 @@ internal class PredictionViewModel(
             }
         })
 
-        val isUserCorrect = adapter?.myDataset?.find { it.id == selectedPredictionId }?.is_correct ?: false
-        val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
+        val isUserCorrect =
+            adapter?.myDataset?.find { it.id == selectedPredictionId }?.is_correct ?: false
+        val rootPath =
+            if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
         animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, appContext) ?: ""
         uiScope.launch {
             data.currentData?.resource?.rewards_url?.let {
@@ -246,7 +259,17 @@ internal class PredictionViewModel(
             pubnub?.stop()
             pubnub?.unsubscribeAll()
 //            state.onNext("confirmation")
+<<<<<<< Updated upstream
             currentWidgetType?.let { analyticsService.trackWidgetInteraction(it.toAnalyticsString(), currentWidgetId, interactionData) }
+=======
+            currentWidgetType?.let {
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    interactionData
+                )
+            }
+>>>>>>> Stashed changes
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
         }

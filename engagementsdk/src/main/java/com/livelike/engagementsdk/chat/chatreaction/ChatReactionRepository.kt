@@ -8,8 +8,15 @@ import com.livelike.engagementsdk.core.services.network.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+<<<<<<< Updated upstream
 internal class ChatReactionRepository(private val remoteUrl: String, private val accessToken: String?) :
     BaseRepository() {
+=======
+internal class ChatReactionRepository(
+    private val remoteUrl: String,
+    private val accessToken: String?
+) : BaseRepository() {
+>>>>>>> Stashed changes
 
     var reactionList: List<Reaction>? = null
     var reactionMap: Map<String, Reaction>? = null

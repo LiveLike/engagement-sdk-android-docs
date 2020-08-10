@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/image_slider_widget_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/rounded_corner_with_background"
         app:layout_constraintStart_toStartOf="parent"
-        android:background="@drawable/rounded_corner_with_background">
+        app:layout_constraintTop_toTopOf="parent">
 
         <View
             android:id="@+id/txtTitleBackground"
@@ -29,9 +29,9 @@
             android:layout_height="wrap_content"
             android:paddingStart="16dp"
             android:paddingLeft="16dp"
+            android:paddingTop="10dp"
             android:paddingEnd="16dp"
             android:paddingRight="16dp"
-            android:paddingTop="10dp"
             android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/textEggTimer"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,33 +41,33 @@
             android:id="@+id/textEggTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="visible"
             android:layout_marginTop="10dp"
-            app:layout_constraintVertical_bias="0.0"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/titleView"
-            app:layout_constraintTop_toTopOf="@+id/titleView"
+            android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"/>
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/titleView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/titleView"
+            app:layout_constraintVertical_bias="0.0" />
 
 
         <com.livelike.engagementsdk.widget.view.components.imageslider.ImageSlider
             android:id="@+id/image_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
-            android:layout_marginBottom="3dp"
             android:layout_marginLeft="6dp"
+            android:layout_marginTop="3dp"
             android:layout_marginRight="6dp"
+            android:layout_marginBottom="3dp"
+            android:visibility="gone"
             app:allow_reselection="true"
-            app:progress_value="0.3"
-            app:register_touches_outside_thumb="true"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/titleView"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+            app:progress_value="0.3"
+            app:register_touches_outside_thumb="true"
+            tools:visibility="visible" />
 
     </android.support.constraint.ConstraintLayout>
 
@@ -81,10 +81,10 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:visibility="gone"
-        tools:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_slider_widget_box" />
+        app:layout_constraintTop_toBottomOf="@+id/image_slider_widget_box"
+        tools:visibility="visible" />
 
 
     <com.livelike.engagementsdk.widget.view.components.ProgressionMeterView

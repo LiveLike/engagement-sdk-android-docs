@@ -52,7 +52,12 @@ class ChatOnlyActivity : AppCompatActivity() {
                 object : LiveLikeCallback<ChatRoomInfo>() {
                     override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         val response = when {
+<<<<<<< Updated upstream
                             result != null -> "${result.title ?: "No Title"}(${result.id}),  Room Id copy to clipboard"
+=======
+                            result != null -> "${result.title
+                                ?: "No Title"}(${result.id}),  Room Id copy to clipboard"
+>>>>>>> Stashed changes
                             else -> error
                         }
                         val clipboard =
@@ -63,7 +68,10 @@ class ChatOnlyActivity : AppCompatActivity() {
 
                         ed_chat_room_title.setText("")
                         prg_create.visibility = View.INVISIBLE
+<<<<<<< Updated upstream
                         
+=======
+>>>>>>> Stashed changes
                     }
                 })
         }

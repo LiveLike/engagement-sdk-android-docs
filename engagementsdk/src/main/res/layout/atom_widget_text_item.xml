@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:animateLayoutChanges="true"
-                                             android:layout_height="wrap_content">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
 
 
     <View
-            android:id="@+id/bkgrd"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@drawable/answer_background_default"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/text_button"
-    />
+        android:id="@+id/bkgrd"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/answer_background_default"
+        app:layout_constraintBottom_toBottomOf="@+id/text_button"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <ProgressBar
+<<<<<<< Updated upstream
             android:id="@+id/determinateBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="0dp"
@@ -32,17 +32,31 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
+=======
+        android:id="@+id/determinateBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:indeterminate="false"
+        android:textSize="@dimen/livelike_option_text_size"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+>>>>>>> Stashed changes
 
-            tools:progress="60"
-            tools:visibility="visible"
-            tools:progressDrawable="@drawable/progress_bar_correct"
-    />
+        tools:progress="60"
+        tools:progressDrawable="@drawable/progress_bar_correct"
+        tools:visibility="visible" />
 
     <!--suppress AndroidDomInspection -->
     <TextView
         android:id="@+id/text_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+<<<<<<< Updated upstream
         android:minHeight="45dp"
         android:fontFamily="@font/livelike_option_font"
         android:textSize="@dimen/livelike_option_text_size"
@@ -69,20 +83,47 @@
             android:textColor="@color/livelike_percent_label_text_color"
             android:textSize="@dimen/livelike_percent_label_text_size"
             android:gravity="end"
+=======
+        android:fontFamily="@font/livelike_option_font"
+        android:gravity="start|center"
+        android:minHeight="45dp"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="46dp"
+        android:paddingRight="46dp"
+        android:textAlignment="textStart"
+        android:textAllCaps="false"
+        android:textColor="@color/livelike_option_text_color"
+        android:textSize="@dimen/livelike_option_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="TextViewEdits"
+        tools:text="Some Hockey Player" />
+>>>>>>> Stashed changes
 
-            app:fontFamily="@font/livelike_option_font"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/determinateBar"
-            app:layout_constraintStart_toStartOf="@+id/determinateBar"
-            app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
-            app:layout_constraintHorizontal_bias="1.0"
+    <!--suppress AndroidDomInspection -->
+    <TextView
+        android:id="@+id/percentageText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="end"
 
-            android:layout_marginEnd="10dp"
-            tools:text="80%"
-            tools:visibility="visible"
-            android:layout_marginRight="10dp"
-            android:textStyle="bold"/>
+        android:textColor="@color/livelike_percent_label_text_color"
+        android:textSize="@dimen/livelike_percent_label_text_size"
+        android:textStyle="bold"
+        app:fontFamily="@font/livelike_option_font"
+        app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
+        app:layout_constraintEnd_toEndOf="parent"
 
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/determinateBar"
+        app:layout_constraintTop_toTopOf="@+id/determinateBar"
+        tools:text="80%"
+        tools:visibility="visible" />
 
 
 </android.support.constraint.ConstraintLayout>

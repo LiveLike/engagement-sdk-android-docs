@@ -1,6 +1,13 @@
 package com.livelike.engagementsdk.widget.services.network
 
+<<<<<<< Updated upstream
 import com.livelike.engagementsdk.AnalyticsService
+=======
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.BuildConfig
+>>>>>>> Stashed changes
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
@@ -12,6 +19,12 @@ import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addPoints
 import java.io.IOException
+<<<<<<< Updated upstream
+=======
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
+>>>>>>> Stashed changes
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -36,6 +49,11 @@ internal interface WidgetDataClient {
         analyticsService: AnalyticsService,
         accessToken: String?
     ): ProgramGamificationProfile?
+<<<<<<< Updated upstream
+=======
+
+    suspend fun getWidgetDataFromIdAndKind(id: String, kind: String): JsonObject?
+>>>>>>> Stashed changes
 }
 
 internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClient {
@@ -87,6 +105,34 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         }
     }
 
+<<<<<<< Updated upstream
+=======
+    override suspend fun getWidgetDataFromIdAndKind(id: String, kind: String) =
+        suspendCoroutine<JsonObject> {
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url("${BuildConfig.CONFIG_URL}widgets/$kind/$id")
+                .get()
+                .addUserAgent()
+                .build()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    it.resumeWithException(e)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    try {
+                        val s = response.body()?.string()
+                        it.resume(JsonParser().parse(s).asJsonObject)
+                    } catch (e: Exception) {
+                        logError { e }
+                        it.resumeWithException(e)
+                    }
+                }
+            })
+        }
+
+>>>>>>> Stashed changes
     override fun registerImpression(impressionUrl: String, accessToken: String?) {
         if (impressionUrl.isNullOrEmpty()) {
             return

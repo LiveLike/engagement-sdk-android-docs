@@ -41,6 +41,10 @@ interface IEngagement {
         chatRoomMembershipPagination: ChatRoomMembershipPagination,
         liveLikeCallback: LiveLikeCallback<List<ChatRoomInfo>>
     )
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     fun getMembersOfChatRoom(
         chatRoomId: String,
         chatRoomMembershipPagination: ChatRoomMembershipPagination,

@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 
 internal class ContentSession(
+    clientId: String,
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
@@ -56,6 +57,10 @@ internal class ContentSession(
     }
 
     override var chatSession: ChatSession = ChatSession(
+<<<<<<< Updated upstream
+=======
+        clientId,
+>>>>>>> Stashed changes
         sdkConfiguration,
         userRepository,
         applicationContext,
@@ -79,7 +84,11 @@ internal class ContentSession(
     }
 
     override var analyticService: AnalyticsService =
+<<<<<<< Updated upstream
         MockAnalyticsService(programId)
+=======
+        MockAnalyticsService(clientId)
+>>>>>>> Stashed changes
     private val llDataClient =
         EngagementDataClientImpl()
     private val widgetDataClient = WidgetDataClientImpl()
@@ -88,7 +97,11 @@ internal class ContentSession(
     private val currentWidgetViewStream =
         SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
+<<<<<<< Updated upstream
 
+=======
+    val widgetStream = SubscriptionManager<LiveLikeWidget>()
+>>>>>>> Stashed changes
     private val programRepository =
         ProgramRepository(
             programId,
@@ -118,7 +131,10 @@ internal class ContentSession(
                 analyticService.trackUsername(it.nickname)
             }
         }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
@@ -135,6 +151,7 @@ internal class ContentSession(
                     analyticService.trackUsername(pair.first.nickname)
                     analyticService.trackConfiguration(configuration.name ?: "")
 
+<<<<<<< Updated upstream
                 if (programId.isNotEmpty()) {
                     llDataClient.getProgramData(configuration.programDetailUrlTemplate.replace(TEMPLATE_PROGRAM_ID, programId)) { program ->
                         if (program !== null) {
@@ -151,13 +168,45 @@ internal class ContentSession(
                             }
                             contentSessionScope.launch {
                                 if (isGamificationEnabled) programRepository.fetchProgramRank()
+=======
+                    if (programId.isNotEmpty()) {
+                        llDataClient.getProgramData(
+                            configuration.programDetailUrlTemplate.replace(
+                                TEMPLATE_PROGRAM_ID,
+                                programId
+                            )
+                        ) { program ->
+                            if (program !== null) {
+                                programRepository.program = program
+                                userRepository.rewardType = program.rewardsType
+                                isGamificationEnabled =
+                                    !program.rewardsType.equals(RewardsType.NONE.key)
+                                initializeWidgetMessaging(
+                                    program.subscribeChannel,
+                                    configuration,
+                                    pair.first.id
+                                )
+                                chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
+                                program.analyticsProps.forEach { map ->
+                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                }
+                                configuration.analyticsProps.forEach { map ->
+                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                }
+                                contentSessionScope.launch {
+                                    if (isGamificationEnabled) programRepository.fetchProgramRank()
+                                }
+                                startObservingForGamificationAnalytics(
+                                    analyticService,
+                                    programRepository.programGamificationProfileStream,
+                                    programRepository.rewardType
+                                )
+>>>>>>> Stashed changes
                             }
-                            startObservingForGamificationAnalytics(analyticService, programRepository.programGamificationProfileStream, programRepository.rewardType)
                         }
                     }
                 }
             }
-        }
         if (!applicationContext.isNetworkConnected()) {
             errorDelegate?.onError("Network error please create the session again")
         }
@@ -242,7 +291,12 @@ internal class ContentSession(
                     programRepository,
                     animationEventsStream,
                     widgetThemeAttributes,
+<<<<<<< Updated upstream
                     livelikeThemeStream
+=======
+                    livelikeThemeStream,
+                    widgetStream
+>>>>>>> Stashed changes
                 )
                 .apply {
                     subscribe(hashSetOf(subscribeChannel).toList())

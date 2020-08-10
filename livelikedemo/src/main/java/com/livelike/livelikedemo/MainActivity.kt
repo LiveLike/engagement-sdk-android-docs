@@ -14,6 +14,7 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
@@ -37,10 +38,17 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.btn_create
+<<<<<<< Updated upstream
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.build_no
+=======
+import kotlinx.android.synthetic.main.activity_main.btn_join
+import kotlinx.android.synthetic.main.activity_main.btn_nick_name
+import kotlinx.android.synthetic.main.activity_main.build_no
+import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
+>>>>>>> Stashed changes
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
@@ -61,6 +69,10 @@ import kotlinx.android.synthetic.main.activity_main.themes_json_button
 import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
+<<<<<<< Updated upstream
+=======
+import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
+>>>>>>> Stashed changes
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
 
@@ -91,12 +103,21 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         ExoPlayerActivity.privateGroupRoomId = null
+        LocalBroadcastManager.getInstance(this)
+            .unregisterReceiver(mConnReceiver)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        channelManager = (application as LiveLikeApplication).channelManager
+    override fun onBackPressed() {
+        if (this.isTaskRoot) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                this.finishAfterTransition()
+            }
+            } else {
+                super.onBackPressed()
+            } }
 
+    fun registerNetWorkCallback() {
+        channelManager = (application as LiveLikeApplication).channelManager
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
@@ -117,9 +138,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        registerNetWorkCallback()
         sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
         if (BuildConfig.VERSION_CODE > 1) {
             build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
@@ -131,6 +155,20 @@ class MainActivity : AppCompatActivity() {
             R.style.Default,
             true
 
+<<<<<<< Updated upstream
+        sdk_version.text = "SDK Version : ${com.livelike.engagementsdk.BuildConfig.VERSION_NAME}"
+        if (BuildConfig.VERSION_CODE > 1) {
+            build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
+        }
+
+        val player = PlayerInfo(
+            "Exo Player",
+            ExoPlayerActivity::class,
+            R.style.Default,
+            true
+
+=======
+>>>>>>> Stashed changes
         )
 
         val onlyWidget = PlayerInfo(
@@ -202,6 +240,18 @@ class MainActivity : AppCompatActivity() {
                     themes_label.text = channels[which]
                     EngagementSDK.enableDebug = false
                     player.theme = when (which) {
+                        0 -> R.style.Default
+                        1 -> {
+                            EngagementSDK.enableDebug = true
+                            R.style.TurnerChatTheme
+                        }
+                        2 -> {
+                            EngagementSDK.enableDebug = false
+                            R.style.CustomChatReactionTheme
+                        }
+                        else -> R.style.Default
+                    }
+                    onlyWidget.theme = when (which) {
                         0 -> R.style.Default
                         1 -> {
                             EngagementSDK.enableDebug = true
@@ -313,10 +363,17 @@ class MainActivity : AppCompatActivity() {
                         }
                         result?.let {
                             chatRoomIds.add(it.id)
+<<<<<<< Updated upstream
                                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
                                     .edit().apply {
                                         putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
                                     }
+=======
+                            getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
+                                .edit().apply {
+                                    putStringSet(CHAT_ROOM_LIST, chatRoomIds).apply()
+                                }
+>>>>>>> Stashed changes
                         }
                         progressBar.visibility = View.GONE
                     }
@@ -338,6 +395,10 @@ class MainActivity : AppCompatActivity() {
         }
         toggle_auto_keyboard_hide.isChecked = player.keyboardClose
 
+        chat_input_visibility_switch.setOnCheckedChangeListener { _, isChecked ->
+            ExoPlayerActivity.isHideChatInput = isChecked
+        }
+
         nicknameText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().apply {
@@ -351,6 +412,15 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
+        (application as LiveLikeApplication).sdk.userStream.subscribe(this) {
+            runOnUiThread {
+                txt_nickname_server.text = it?.nickname
+            }
+        }
+        btn_nick_name.setOnClickListener {
+            if (nicknameText.text.toString().isEmpty().not())
+                (application as LiveLikeApplication).sdk.updateChatNickname(nicknameText.text.toString())
+        }
 
         widgets_framework_button.setOnClickListener {
             startActivity(
@@ -382,6 +452,18 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
+}
+
+@Throws(java.lang.Exception::class)
+fun convertStreamToString(`is`: InputStream?): String? {
+    val reader = BufferedReader(InputStreamReader(`is`))
+    val sb = java.lang.StringBuilder()
+    var line: String? = null
+    while (reader.readLine().also { line = it } != null) {
+        sb.append(line).append("\n")
+    }
+    reader.close()
+    return sb.toString()
 }
 
 @Throws(java.lang.Exception::class)

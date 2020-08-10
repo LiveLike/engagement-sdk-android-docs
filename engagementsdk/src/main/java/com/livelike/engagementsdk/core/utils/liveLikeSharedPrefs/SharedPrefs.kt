@@ -41,7 +41,11 @@ internal fun setNickname(nickname: String) {
 
 internal fun getNickename(): String {
     return getSharedPreferences()
+<<<<<<< Updated upstream
         .getString(PREFERENCE_KEY_USER_PIC, "") ?: ""
+=======
+        .getString(PREFERENCE_KEY_NICKNAME, "") ?: ""
+>>>>>>> Stashed changes
 }
 
 internal fun blockUser(userId: String) {

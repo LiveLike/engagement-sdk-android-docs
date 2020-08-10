@@ -511,7 +511,14 @@ class ChatViewThemeAttributes {
                     AndroidResource.dpToPx(0)
                 )
             chatReactionHintEnable = getBoolean(R.styleable.ChatView_reaction_hint_enable, true)
+<<<<<<< Updated upstream
             chatReactionHintIcon = getResourceId(R.styleable.ChatView_reaction_icon, R.drawable.ic_chat_reaction_default)
+=======
+            chatReactionHintIcon = getResourceId(
+                R.styleable.ChatView_reaction_icon,
+                R.drawable.ic_chat_reaction_default
+            )
+>>>>>>> Stashed changes
         }
     }
 

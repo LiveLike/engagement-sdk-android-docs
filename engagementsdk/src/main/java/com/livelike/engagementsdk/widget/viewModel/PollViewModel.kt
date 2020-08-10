@@ -51,8 +51,13 @@ internal class PollViewModel(
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
+<<<<<<< Updated upstream
     private val programRepository: ProgramRepository?=null,
     val widgetMessagingClient: WidgetManager?=null
+=======
+    private val programRepository: ProgramRepository? = null,
+    val widgetMessagingClient: WidgetManager? = null
+>>>>>>> Stashed changes
 ) : BaseViewModel() {
     lateinit var onWidgetInteractionCompleted: () -> Unit
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream
@@ -86,7 +91,9 @@ internal class PollViewModel(
 
     init {
         sdkConfiguration.pubNubKey.let {
-            pubnub = PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)?.asBehaviourSubject()
+            pubnub =
+                PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
+                    ?.asBehaviourSubject()
             pubnub?.addMessagingEventListener(object : MessagingEventListener {
                 override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
                     val widgetType = event.message.get("event").asString ?: ""

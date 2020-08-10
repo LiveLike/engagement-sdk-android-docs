@@ -40,10 +40,18 @@
     <color name="livelike_default_title_gradient_right">#0096c8</color>
     <color name="livelike_default_option_selected_border">#00b4c8</color>
 
-    <color name="livelike_prediction_title_gradient_left">@color/livelike_default_title_gradient_left</color>
-    <color name="livelike_prediction_title_gradient_right">@color/livelike_default_title_gradient_right</color>
-    <color name="livelike_prediction_option_selected_border">@color/livelike_default_option_selected_border</color>
-    <color name="livelike_prediction_image_option_selected_border">@color/livelike_prediction_option_selected_border</color>
+    <color name="livelike_prediction_title_gradient_left">
+        @color/livelike_default_title_gradient_left
+    </color>
+    <color name="livelike_prediction_title_gradient_right">
+        @color/livelike_default_title_gradient_right
+    </color>
+    <color name="livelike_prediction_option_selected_border">
+        @color/livelike_default_option_selected_border
+    </color>
+    <color name="livelike_prediction_image_option_selected_border">
+        @color/livelike_prediction_option_selected_border
+    </color>
 
     <color name="livelike_quiz_title_gradient_left">#f76b1c</color>
     <color name="livelike_quiz_title_gradient_right">#ffb400</color>
@@ -60,7 +68,8 @@
     <color name="livelike_default_bar_gradient_left">#33ffffff</color>
     <color name="livelike_default_bar_gradient_right">#33ffffff</color>
     <color name="livelike_quiz_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
-    <color name="livelike_quiz_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
+    <color name="livelike_quiz_bar_gradient_right">@color/livelike_default_bar_gradient_right
+    </color>
     <color name="livelike_poll_bar_gradient_left">#e69650be</color>
     <color name="livelike_poll_bar_gradient_right">#e6c864c8</color>
     <color name="livelike_prediction_bar_gradient_left">#e69650be</color>
@@ -69,10 +78,12 @@
     <color name="livelike_correct_bar_gradient_right">#e6429321</color>
     <color name="livelike_incorrect_bar_gradient_left">#e6dc0028</color>
     <color name="livelike_incorrect_bar_gradient_right">#e6d0021b</color>
-    <color name="livelike_neutral_bar_gradient_left">@color/livelike_default_bar_gradient_left</color>
-    <color name="livelike_neutral_bar_gradient_right">@color/livelike_default_bar_gradient_right</color>
+    <color name="livelike_neutral_bar_gradient_left">@color/livelike_default_bar_gradient_left
+    </color>
+    <color name="livelike_neutral_bar_gradient_right">@color/livelike_default_bar_gradient_right
+    </color>
 
-<!--  Gamification -->
+    <!--  Gamification -->
     <color name="livelike_rank_label_text_color">#fff000</color>
     <color name="livelike_rank_label_gradient_right">#4b28b4</color>
     <color name="livelike_rank_label_gradient_left">#6928b4</color>
@@ -82,7 +93,7 @@
     <color name="cheer_meter_team2_color2">#fa5064</color>
     <color name="cheer_meter_team1_color">#2828b4</color>
     <color name="cheer_meter_team1_color2">#50a0fa</color>
-<!--Image Slider-->
+    <!--Image Slider-->
     <color name="livelike_image_slider_gradient_start">#fff000</color>
     <color name="livelike_image_slider_gradient_end">#a0ff28</color>
     <color name="livelike_image_slider_bg">#ffffff</color>

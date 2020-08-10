@@ -111,12 +111,24 @@ internal class ChatActionsPopupView(
             imageView.isFocusable = true
             imageView.contentDescription = reaction.name
             imageView.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
-            imageView.loadImage(reaction.file, context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size))
+            imageView.loadImage(
+                reaction.file,
+                context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_size)
+            )
 
             userReaction?.let {
                 if (it.emojiId == reaction.id) {
                     cardView.radius = chatViewThemeAttributes.chatSelectedReactionRadius
+<<<<<<< Updated upstream
                     cardView.setCardBackgroundColor(ContextCompat.getColor(context, R.color.livelike_chat_reaction_selected_background_color))
+=======
+                    cardView.setCardBackgroundColor(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.livelike_chat_reaction_selected_background_color
+                        )
+                    )
+>>>>>>> Stashed changes
                 }
             }
             // On Touch we are scaling and descaling the reaction imageview to show bounce feature
@@ -152,17 +164,33 @@ internal class ChatActionsPopupView(
                 text = formattedReactionCount(count)
                 setTextColor(chatViewThemeAttributes.chatReactionPanelCountColor)
                 setTypeface(null, Typeface.BOLD)
-                setTextSize(TypedValue.COMPLEX_UNIT_PX, context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size))
+                setTextSize(
+                    TypedValue.COMPLEX_UNIT_PX,
+                    context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size)
+                )
             }
-            relativeLayout.addView(imageView, RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT).apply {
-                addRule(RelativeLayout.CENTER_IN_PARENT)
-            })
-            relativeLayout.addView(countView, RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT).apply {
-                addRule(RelativeLayout.ALIGN_TOP, imageView.id)
-                addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-            })
+            relativeLayout.addView(
+                imageView,
+                RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT
+                ).apply {
+                    addRule(RelativeLayout.CENTER_IN_PARENT)
+                })
+            relativeLayout.addView(
+                countView,
+                RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    addRule(RelativeLayout.ALIGN_TOP, imageView.id)
+                    addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                })
             cardView.addView(relativeLayout)
-            reactionsBox.addView(cardView, LinearLayout.LayoutParams(AndroidResource.dpToPx(35), AndroidResource.dpToPx(35)))
+            reactionsBox.addView(
+                cardView,
+                LinearLayout.LayoutParams(AndroidResource.dpToPx(35), AndroidResource.dpToPx(35))
+            )
         }
         contentView.chat_reaction_background_card.visibility =
             if ((chatReactionRepository?.reactionList?.size ?: 0) > 0) {
@@ -175,6 +203,7 @@ internal class ChatActionsPopupView(
         }, 500)
     }
 }
+
 internal interface SelectReactionListener {
     fun onSelectReaction(reaction: Reaction?)
 }

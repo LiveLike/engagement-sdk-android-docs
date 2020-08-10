@@ -6,8 +6,21 @@
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [159, 4, 27],
             [245, 81, 95]
+=======
+            [
+              159,
+              4,
+              27
+            ],
+            [
+              245,
+              81,
+              95
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
@@ -18,20 +31,54 @@
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [48, 35, 174],
             [200, 109, 215]
+=======
+            [
+              48,
+              35,
+              174
+            ],
+            [
+              200,
+              109,
+              215
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
       "selected-option": {
+<<<<<<< Updated upstream
         "border-color": [200, 109, 215]
+=======
+        "border-color": [
+          200,
+          109,
+          215
+        ]
+>>>>>>> Stashed changes
       },
       "selected-option-bar": {
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [48, 35, 174],
             [200, 109, 215]
+=======
+            [
+              48,
+              35,
+              174
+            ],
+            [
+              200,
+              109,
+              215
+            ]
+>>>>>>> Stashed changes
           ]
         }
       }
@@ -41,44 +88,120 @@
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [247, 107, 28],
             [255, 180, 0]
+=======
+            [
+              247,
+              107,
+              28
+            ],
+            [
+              255,
+              180,
+              0
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
       "selected-option": {
+<<<<<<< Updated upstream
         "border-color": [255, 180, 0]
+=======
+        "border-color": [
+          255,
+          180,
+          0
+        ]
+>>>>>>> Stashed changes
       },
       "selected-option-bar": {
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [247, 107, 28],
             [255, 180, 0]
+=======
+            [
+              247,
+              107,
+              28
+            ],
+            [
+              255,
+              180,
+              0
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
       "correct-option": {
+<<<<<<< Updated upstream
         "border-color": [129, 202, 0]
+=======
+        "border-color": [
+          129,
+          202,
+          0
+        ]
+>>>>>>> Stashed changes
       },
       "correct-option-bar": {
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [66, 147, 33],
             [129, 202, 0]
+=======
+            [
+              66,
+              147,
+              33
+            ],
+            [
+              129,
+              202,
+              0
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
       "incorrect-option": {
+<<<<<<< Updated upstream
         "border-color": [220, 0, 40]
+=======
+        "border-color": [
+          220,
+          0,
+          40
+        ]
+>>>>>>> Stashed changes
       },
       "incorrect-option-bar": {
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [208, 2, 27],
             [220, 0, 40]
+=======
+            [
+              208,
+              2,
+              27
+            ],
+            [
+              220,
+              0,
+              40
+            ]
+>>>>>>> Stashed changes
           ]
         }
       }
@@ -88,20 +211,54 @@
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [0, 50, 100],
             [0, 150, 200]
+=======
+            [
+              0,
+              50,
+              100
+            ],
+            [
+              0,
+              150,
+              200
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
       "selected-option": {
+<<<<<<< Updated upstream
         "border-color": [0, 150, 200]
+=======
+        "border-color": [
+          0,
+          150,
+          200
+        ]
+>>>>>>> Stashed changes
       },
       "selected-option-bar": {
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [0, 50, 100],
             [0, 150, 200]
+=======
+            [
+              0,
+              50,
+              100
+            ],
+            [
+              0,
+              150,
+              200
+            ]
+>>>>>>> Stashed changes
           ]
         }
       }
@@ -111,59 +268,162 @@
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [0, 50, 100],
             [0, 150, 200]
+=======
+            [
+              0,
+              50,
+              100
+            ],
+            [
+              0,
+              150,
+              200
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
       "selected-option": {
+<<<<<<< Updated upstream
         "border-color": [0, 150, 200]
+=======
+        "border-color": [
+          0,
+          150,
+          200
+        ]
+>>>>>>> Stashed changes
       },
       "selected-option-bar": {
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [0, 50, 100],
             [0, 150, 200]
+=======
+            [
+              0,
+              50,
+              100
+            ],
+            [
+              0,
+              150,
+              200
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
       "correct-option": {
+<<<<<<< Updated upstream
         "border-color": [129, 202, 0]
+=======
+        "border-color": [
+          129,
+          202,
+          0
+        ]
+>>>>>>> Stashed changes
       },
       "correct-option-bar": {
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [66, 147, 33],
             [129, 202, 0]
+=======
+            [
+              66,
+              147,
+              33
+            ],
+            [
+              129,
+              202,
+              0
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
       "incorrect-option": {
+<<<<<<< Updated upstream
         "border-color": [220, 0, 40]
+=======
+        "border-color": [
+          220,
+          0,
+          40
+        ]
+>>>>>>> Stashed changes
       },
       "incorrect-option-bar": {
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [208, 2, 27],
             [220, 0, 40]
+=======
+            [
+              208,
+              2,
+              27
+            ],
+            [
+              220,
+              0,
+              40
+            ]
+>>>>>>> Stashed changes
           ]
         }
       }
     },
     "image-slider": {
       "track": {
+<<<<<<< Updated upstream
         "hot-color": [255, 45, 45],
         "cold-color": [60, 30, 255]
+=======
+        "hot-color": [
+          255,
+          45,
+          45
+        ],
+        "cold-color": [
+          60,
+          30,
+          255
+        ]
+>>>>>>> Stashed changes
       },
       "marker": {
         "background": {
           "format": "fill",
+<<<<<<< Updated upstream
           "color": [255, 45, 45]
         },
         "border-color": [255, 255, 255],
+=======
+          "color": [
+            255,
+            45,
+            45
+          ]
+        },
+        "border-color": [
+          255,
+          255,
+          255
+        ],
+>>>>>>> Stashed changes
         "border-width": 3
       }
     },
@@ -172,8 +432,21 @@
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [48, 35, 174],
             [83, 160, 253]
+=======
+            [
+              48,
+              35,
+              174
+            ],
+            [
+              83,
+              160,
+              253
+            ]
+>>>>>>> Stashed changes
           ]
         }
       },
@@ -181,8 +454,21 @@
         "background": {
           "format": "uniform-gradient",
           "colors": [
+<<<<<<< Updated upstream
             [159, 4, 27],
             [245, 81, 95]
+=======
+            [
+              159,
+              4,
+              27
+            ],
+            [
+              245,
+              81,
+              95
+            ]
+>>>>>>> Stashed changes
           ]
         }
       }

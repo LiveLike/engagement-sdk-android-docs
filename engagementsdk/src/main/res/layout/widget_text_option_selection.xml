@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                             xmlns:app="http://schemas.android.com/apk/res-auto"
-                                             xmlns:tools="http://schemas.android.com/tools"
-                                             android:layout_width="match_parent"
-                                             android:animateLayoutChanges="true"
-                                             android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
     <View
         android:id="@+id/txtTitleBackground"
@@ -22,9 +22,9 @@
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingLeft="16dp"
+        android:paddingTop="10dp"
         android:paddingEnd="16dp"
         android:paddingRight="16dp"
-        android:paddingTop="10dp"
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toStartOf="@+id/textEggTimer"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,23 +34,23 @@
         android:id="@+id/textEggTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
         android:layout_marginTop="10dp"
-        app:layout_constraintVertical_bias="0.0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/titleView"
-        app:layout_constraintTop_toTopOf="@+id/titleView"
+        android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"/>
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/titleView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titleView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@+id/textRecyclerView"
-        android:layout_height="wrap_content">
+        app:layout_constraintTop_toBottomOf="@+id/textRecyclerView">
 
         <com.livelike.engagementsdk.widget.view.components.PointView
             android:id="@+id/pointView"
@@ -70,6 +70,7 @@
     </LinearLayout>
 
 
+<<<<<<< Updated upstream
 
     <android.support.v7.widget.RecyclerView android:id="@+id/textRecyclerView"
                                             android:hapticFeedbackEnabled="true"
@@ -83,22 +84,36 @@
                                             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                                             android:orientation="vertical"
                                             app:layout_constraintEnd_toEndOf="parent"/>
+=======
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/textRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/answer_background_last_item"
+        android:hapticFeedbackEnabled="true"
+        android:orientation="vertical"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleView"
+        tools:itemCount="4"
+        tools:listitem="@layout/atom_widget_image_item" />
+>>>>>>> Stashed changes
 
     <com.livelike.engagementsdk.widget.view.components.ConfirmMessageView
-            android:id="@+id/confirmationMessage"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"
-            app:layout_constraintEnd_toEndOf="@+id/textRecyclerView"
-            app:layout_constraintStart_toStartOf="@+id/textRecyclerView"
-            android:layout_marginLeft="32dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginRight="32dp"
-            android:layout_marginEnd="32dp"
-            tools:visibility="gone"
-    />
+        android:id="@+id/confirmationMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"
+        app:layout_constraintEnd_toEndOf="@+id/textRecyclerView"
+        app:layout_constraintStart_toStartOf="@+id/textRecyclerView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/followupAnimation"
@@ -106,8 +121,8 @@
         android:layout_height="0dp"
         android:adjustViewBounds="false"
         android:cropToPadding="false"
-        android:scaleType="fitCenter"
         android:padding="0dp"
+        android:scaleType="fitCenter"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/textRecyclerView"
         app:layout_constraintEnd_toEndOf="@+id/textRecyclerView"

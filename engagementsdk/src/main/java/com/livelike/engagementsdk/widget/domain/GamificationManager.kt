@@ -1,11 +1,15 @@
 package com.livelike.engagementsdk.widget.domain
 
 import com.google.gson.JsonObject
+<<<<<<< Updated upstream:engagementsdk/src/main/java/com/livelike/engagementsdk/widget/domain/GamificationManager.kt
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+=======
+>>>>>>> Stashed changes:engagementsdk/src/main/java/com/livelike/engagementsdk/domain/GamificationManager.kt
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 
 /**
  * All domain logic and use-cases related to Gamification.
@@ -17,7 +21,10 @@ internal object GamificationManager {
      * @param program reward object that is typically fetched after widget interaction .
      * @param widgetManager last layer in widget pipeline where new badge collection widget may be published.
      */
-    fun checkForNewBadgeEarned(programGamificationProfile: ProgramGamificationProfile, widgetManager: WidgetManager) {
+    fun checkForNewBadgeEarned(
+        programGamificationProfile: ProgramGamificationProfile,
+        widgetManager: WidgetManager
+    ) {
 
         if (programGamificationProfile.newBadges != null && programGamificationProfile.newBadges.isNotEmpty()) {
             val latestBadge = programGamificationProfile.newBadges.max()

@@ -2,13 +2,20 @@ package com.livelike.engagementsdk.core.data.respository
 
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.data.models.Program
+<<<<<<< Updated upstream:engagementsdk/src/main/java/com/livelike/engagementsdk/core/data/respository/ProgramRepository.kt
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+=======
+>>>>>>> Stashed changes:engagementsdk/src/main/java/com/livelike/engagementsdk/data/repository/ProgramRepository.kt
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+<<<<<<< Updated upstream:engagementsdk/src/main/java/com/livelike/engagementsdk/core/data/respository/ProgramRepository.kt
+=======
+import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+>>>>>>> Stashed changes:engagementsdk/src/main/java/com/livelike/engagementsdk/data/repository/ProgramRepository.kt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,7 +30,11 @@ internal class ProgramRepository(
 
     internal var program: Program? = null
 
-    internal val rewardType: RewardsType by lazy { RewardsType.valueOf(program?.rewardsType?.toUpperCase() ?: "none") }
+    internal val rewardType: RewardsType by lazy {
+        RewardsType.valueOf(
+            program?.rewardsType?.toUpperCase() ?: "none"
+        )
+    }
     /**
      *  user points and other gamification stuff under this program.
      */

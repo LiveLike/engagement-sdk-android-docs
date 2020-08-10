@@ -13,11 +13,19 @@
     <dimen name="livelike_default_chat_input_text_size">14sp</dimen>
     <dimen name="livelike_default_chat_cell_margin_vertical">8dp</dimen>
     <dimen name="livelike_default_chat_cell_padding_horizontal">16dp</dimen>
-    <dimen name="livelike_default_chat_cell_padding_left">@dimen/livelike_default_chat_cell_padding_horizontal</dimen>
-    <dimen name="livelike_default_chat_cell_padding_right">@dimen/livelike_default_chat_cell_padding_horizontal</dimen>
+    <dimen name="livelike_default_chat_cell_padding_left">
+        @dimen/livelike_default_chat_cell_padding_horizontal
+    </dimen>
+    <dimen name="livelike_default_chat_cell_padding_right">
+        @dimen/livelike_default_chat_cell_padding_horizontal
+    </dimen>
     <dimen name="livelike_default_chat_cell_padding_vertical">8dp</dimen>
-    <dimen name="livelike_default_chat_cell_padding_top">@dimen/livelike_default_chat_cell_padding_vertical</dimen>
-    <dimen name="livelike_default_chat_cell_padding_bottom">@dimen/livelike_default_chat_cell_padding_vertical</dimen>
+    <dimen name="livelike_default_chat_cell_padding_top">
+        @dimen/livelike_default_chat_cell_padding_vertical
+    </dimen>
+    <dimen name="livelike_default_chat_cell_padding_bottom">
+        @dimen/livelike_default_chat_cell_padding_vertical
+    </dimen>
     <dimen name="livelike_default_chat_input_border_radius">12dp</dimen>
     <dimen name="livelike_default_chat_input_border_stroke">1dp</dimen>
     <dimen name="livelike_default_chat_input_margin_bottom">8dp</dimen>
@@ -32,7 +40,7 @@
     <dimen name="livelike_header_outline_stroke_width">1dp</dimen>
 
 
-<!--    Gamification-->
+    <!--    Gamification-->
     <dimen name="livelike_rank_label_text_size">10sp</dimen>
     <dimen name="livelike_cheer_meter_corner_radius">8dp</dimen>
     <dimen name="livelike_cheer_meter_padding">10dp</dimen>

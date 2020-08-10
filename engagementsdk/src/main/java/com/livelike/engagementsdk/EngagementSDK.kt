@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk
 
 import android.content.Context
+import com.google.gson.JsonParseException
 import com.google.gson.annotations.SerializedName
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.livelike.engagementsdk.chat.ChatRoomInfo
@@ -19,6 +20,10 @@ import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
+<<<<<<< Updated upstream
+=======
+import com.livelike.engagementsdk.core.utils.gson
+>>>>>>> Stashed changes
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccessToken
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
@@ -27,6 +32,11 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+<<<<<<< Updated upstream
+=======
+import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import java.io.IOException
+>>>>>>> Stashed changes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -46,11 +56,16 @@ class EngagementSDK(
     private var accessTokenDelegate: AccessTokenDelegate? = null
 ) : IEngagement {
 
-    companion object {
-        @JvmStatic
-        var enableDebug: Boolean = false
-    }
+    private var userChatRoomListResponse: UserChatRoomListResponse? = null
+    private var chatRoomMemberListMap: MutableMap<String, ChatRoomMemberListResponse> =
+        mutableMapOf()
+    internal var configurationStream: Stream<SdkConfiguration> =
+        SubscriptionManager()
+    private val dataClient =
+        EngagementDataClientImpl()
+    private val widgetDataClient = WidgetDataClientImpl()
 
+<<<<<<< Updated upstream
     private var userChatRoomListResponse: UserChatRoomListResponse? = null
     private var chatRoomMemberListMap: MutableMap<String, ChatRoomMemberListResponse> =
         mutableMapOf()
@@ -59,6 +74,8 @@ class EngagementSDK(
     private val dataClient =
         EngagementDataClientImpl()
 
+=======
+>>>>>>> Stashed changes
     internal val userRepository =
         UserRepository(clientId)
 
@@ -74,7 +91,8 @@ class EngagementSDK(
      */
     init {
         EnagagementSdkUncaughtExceptionHandler
-        BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
+        if (BuildConfig.DEBUG.not())
+            BugsnagClient.wouldInitializeBugsnagClient(applicationContext)
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(
             applicationContext
@@ -87,6 +105,7 @@ class EngagementSDK(
                     accessToken?.let { setSharedAccessToken(accessToken) }
                 }
             }
+<<<<<<< Updated upstream
         }
         userRepository.currentUserStream.subscribe(this.javaClass.simpleName) {
             it?.accessToken?.let { token ->
@@ -94,6 +113,15 @@ class EngagementSDK(
                 accessTokenDelegate!!.storeAccessToken(token)
             }
         }
+=======
+        }
+        userRepository.currentUserStream.subscribe(this.javaClass.simpleName) {
+            it?.accessToken?.let { token ->
+                userRepository.currentUserStream.unsubscribe(this.javaClass.simpleName)
+                accessTokenDelegate!!.storeAccessToken(token)
+            }
+        }
+>>>>>>> Stashed changes
         val url = originURL?.plus("/api/v1/applications/$clientId")
             ?: BuildConfig.CONFIG_URL.plus("applications/$clientId")
         dataClient.getEngagementSdkConfig(url) {
@@ -336,6 +364,31 @@ class EngagementSDK(
             }
     }
 
+<<<<<<< Updated upstream
+=======
+    fun fetchWidgetDetails(
+        widgetId: String,
+        widgetKind: String,
+        liveLikeCallback: LiveLikeCallback<LiveLikeWidget>
+    ) {
+        uiScope.launch {
+            try {
+                val jsonObject = widgetDataClient.getWidgetDataFromIdAndKind(widgetId, widgetKind)
+                liveLikeCallback.onResponse(
+                    gson.fromJson(jsonObject, LiveLikeWidget::class.java),
+                    null
+                )
+            } catch (e: JsonParseException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                liveLikeCallback.onResponse(null, e.message)
+            }
+        }
+    }
+
+>>>>>>> Stashed changes
     /**
      *  Creates a content session without sync.
      *  @param programId Backend generated unique identifier for current program
@@ -345,6 +398,7 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         return ContentSession(
+            clientId,
             configurationStream,
             userRepository,
             applicationContext,
@@ -372,6 +426,7 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeContentSession {
         return ContentSession(
+            clientId,
             configurationStream,
             userRepository,
             applicationContext,
@@ -390,6 +445,10 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeChatSession {
         return ChatSession(
+<<<<<<< Updated upstream
+=======
+            clientId,
+>>>>>>> Stashed changes
             configurationStream,
             userRepository,
             applicationContext,
@@ -436,4 +495,9 @@ class EngagementSDK(
         @SerializedName("pubnub_origin")
         val pubnubOrigin: String? = null
     )
+
+    companion object {
+        @JvmStatic
+        var enableDebug: Boolean = false
+    }
 }

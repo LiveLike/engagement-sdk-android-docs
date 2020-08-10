@@ -12,12 +12,18 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeContentSession
+<<<<<<< Updated upstream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
+=======
+>>>>>>> Stashed changes
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
+<<<<<<< Updated upstream
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+=======
+>>>>>>> Stashed changes
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.video.ExoPlayerImpl
 import com.livelike.livelikedemo.video.VideoPlayer
@@ -26,16 +32,11 @@ import kotlinx.android.synthetic.main.activity_chat_only.prg_create
 
 class LiveLikeApplication : Application() {
 
-    companion object {
-        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
-//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
-    }
-
     lateinit var channelManager: ChannelManager
-    lateinit var player: VideoPlayer
+    var player: VideoPlayer? = null
     val timecodeGetter = object : EngagementSDK.TimecodeGetter {
         override fun getTimecode(): EpochTime {
-            return EpochTime(player.getPDT())
+            return EpochTime(player?.getPDT() ?: 0)
         }
     }
     var publicSession: LiveLikeContentSession? = null
@@ -69,6 +70,7 @@ class LiveLikeApplication : Application() {
                     return getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).getString(
                         PREF_USER_ACCESS_TOKEN,
                         null
+<<<<<<< Updated upstream
                     )
                 }
 
@@ -78,11 +80,27 @@ class LiveLikeApplication : Application() {
                     ).apply()
                 }
             })
+=======
+                    ).apply {
+                        println("Token:$this")
+                    }
+                }
+
+                override fun storeAccessToken(accessToken: String?) {
+                    getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE).edit().putString(
+                        PREF_USER_ACCESS_TOKEN, accessToken
+                    ).apply()
+                }
+            })
+
+//        sdk.updateChatNickname("Hello Man:${java.util.Random().nextInt(20)}")
+>>>>>>> Stashed changes
     }
 
     fun createPlayer(playerView: PlayerView): VideoPlayer {
-        player = ExoPlayerImpl(baseContext, playerView)
-        return player
+        val playerTemp = ExoPlayerImpl(applicationContext, playerView)
+        player = playerTemp
+        return playerTemp
     }
 
     fun removePublicSession() {
@@ -121,6 +139,14 @@ class LiveLikeApplication : Application() {
                 sdk.createChatSession(timecodeGetter ?: this.timecodeGetter, errorDelegate)
         }
         return privateGroupChatsession as LiveLikeChatSession
+<<<<<<< Updated upstream
+=======
+    }
+
+    companion object {
+        const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
+//            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
+>>>>>>> Stashed changes
     }
 }
 

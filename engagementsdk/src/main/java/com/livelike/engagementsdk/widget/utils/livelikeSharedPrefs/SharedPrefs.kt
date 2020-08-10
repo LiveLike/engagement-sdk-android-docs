@@ -3,12 +3,18 @@ package com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPreferences
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 private const val PREFERENCE_KEY_POINTS_TUTORIAL = "PointsTutorial"
 private const val PREFERENCE_KEY_POINTS_TOTAL = "PointsTotal"
 private const val PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED = "predictions-voted"
 
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 internal fun shouldShowPointTutorial(): Boolean {
     return getSharedPreferences()
         .getBoolean(PREFERENCE_KEY_POINTS_TUTORIAL, true)
@@ -35,8 +41,13 @@ internal fun addWidgetPredictionVoted(id: String, optionId: String) {
 internal fun getWidgetPredictionVoted(): Array<SavedWidgetVote> {
     val predictionVotedJson = getSharedPreferences()
         .getString(
+<<<<<<< Updated upstream
         PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, ""
     ) ?: ""
+=======
+            PREFERENCE_KEY_WIDGETS_PREDICTIONS_VOTED, ""
+        ) ?: ""
+>>>>>>> Stashed changes
     return gson.fromJson(predictionVotedJson, Array<SavedWidgetVote>::class.java) ?: emptyArray()
 }
 
@@ -58,4 +69,8 @@ internal fun addPoints(points: Int) {
     val editor = getSharedPreferences()
         .edit()
     editor.putInt(PREFERENCE_KEY_POINTS_TOTAL, points + getTotalPoints()).apply()
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

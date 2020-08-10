@@ -21,7 +21,10 @@
         android:versionName="1"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
+<<<<<<< Updated upstream
         <activity android:name=".WidgetActivity"></activity>
+=======
+>>>>>>> Stashed changes
         <activity
             android:name=".WidgetFrameworkTestActivity"
             android:exported="true" />
@@ -36,7 +39,10 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

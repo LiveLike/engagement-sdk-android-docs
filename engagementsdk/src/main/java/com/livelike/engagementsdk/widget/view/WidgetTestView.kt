@@ -26,7 +26,8 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
         "SPONSOR",
         "UPCOMING",
         "",
-        "NBA")
+        "NBA"
+    )
 
     private val textTitle = listOf(
         "IS THIS ELI MANNING'S LAST GAME WITH THE GIANTS?",
@@ -34,7 +35,8 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
         "WHICH WAS YOUR TEAM LAST YEAR?",
         "WHAT KIND OF FAN ARE YOU?",
         "WHO WILL BE THE MAN OF THE MATCH?",
-        "WHO HOLDS THE RECORD FOR MOST TOUCHDOWNS IN NFL HISTORY?")
+        "WHO HOLDS THE RECORD FOR MOST TOUCHDOWNS IN NFL HISTORY?"
+    )
 
     private val textOptions = listOf(
         "Who? Is he still playing?",
@@ -42,22 +44,26 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
         "Tom Brady",
         "For sure! He's done.",
         "He still has a lot left in the tank!",
-        "I'm not interested...")
+        "I'm not interested..."
+    )
 
     private val bodyOptions = listOf(
         "Super Bowl halftime show left shark by Katy Perry",
         "",
         "Dirk Koetter stays with Ryan Fitzpatrick to save season, but is it realistic?",
-        "Manning reaches 500 TD passes in Broncos' 38-24 win")
+        "Manning reaches 500 TD passes in Broncos' 38-24 win"
+    )
 
     private val linkOptions = listOf(
         "",
-        "https://google.fr")
+        "https://google.fr"
+    )
 
     private val linkLabelOptions = listOf(
         "Click Here",
         "Enjoy more Here",
-        "Do you want more?")
+        "Do you want more?"
+    )
 
     private val imageUrlOption = listOf(
         "",
@@ -67,7 +73,8 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
     var imageUrl: () -> String = { "" }
 
     private val dataAlert =
-        { """
+        {
+            """
             {"timeout": "P0DT00H00M10S",
               "kind": "alert",
               "program_date_time": null,
@@ -76,7 +83,8 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
               "image_url": "https://picsum.photos/150/100?${java.util.UUID.randomUUID()}",
               "link_url": "${linkOptions.first()}",
               "link_label": "${linkLabelOptions.first()}"}
-        """ }
+        """
+        }
 
     private val pollTextData =
         { """{"id":"9d1b221c-50e9-4b4d-8d0e-2ddb250364f3","question":"${textTitle.first()}","timeout":"P0DT01H00M10S","options":[{"id":"9e9b519c-bec3-40a5-95b2-2ca8c89a41ba","description":"${textOptions.first()}","image_url":"${imageUrl()}","vote_count":0,"vote_url":"https://cf-blast.livelikecdn.com/api/v1/text-poll-options/9e9b519c-bec3-40a5-95b2-2ca8c89a41ba/votes/"},{"id":"65441e5e-fac8-4260-8cee-792120dd976b","description":"${textOptions.first()}","image_url":"${imageUrl()}","vote_count":0,"vote_url":"https://cf-blast.livelikecdn.com/api/v1/text-poll-options/65441e5e-fac8-4260-8cee-792120dd976b/votes/"}],"subscribe_channel":"text_poll_9d1b221c_50e9_4b4d_8d0e_2ddb250364f3","program_date_time":null}""" }
@@ -94,6 +102,10 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
             "",
             userRepository
         )
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     init {
         ConstraintLayout.inflate(context, R.layout.widget_test_view, this)
 
@@ -112,10 +124,16 @@ class WidgetTestView(context: Context, attr: AttributeSet) : FrameLayout(context
 
     private fun addWidgetViews() {
         val randomImage = imageUrlOption.first()
-        imageUrl = { if (randomImage.isEmpty()) randomImage else randomImage + java.util.UUID.randomUUID() }
+        imageUrl =
+            { if (randomImage.isEmpty()) randomImage else randomImage + java.util.UUID.randomUUID() }
         val viewTutorial = PointsTutorialView(context).apply {
         }
-        viewTutorial.widgetViewModel = PointTutorialWidgetViewModel({}, MockAnalyticsService(), RewardsType.BADGES, programRepository.programGamificationProfileStream.latest())
+        viewTutorial.widgetViewModel = PointTutorialWidgetViewModel(
+            {},
+            MockAnalyticsService(),
+            RewardsType.BADGES,
+            programRepository.programGamificationProfileStream.latest()
+        )
         testSecond.addView(viewTutorial)
 //        val viewAlert = AlertWidgetView(context).apply {
 //            val info = WidgetInfos(

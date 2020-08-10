@@ -17,9 +17,15 @@ class ThemeRandomizer {
         fun nextTheme(): LiveLikeEngagementTheme? {
             if (themesList.size > 1) {
                 var nextRandomIndex = mLastindex
+<<<<<<< Updated upstream
                     while (mLastindex == nextRandomIndex) {
                         nextRandomIndex = Random().nextInt(themesList.size)
                     }
+=======
+                while (mLastindex == nextRandomIndex) {
+                    nextRandomIndex = Random().nextInt(themesList.size)
+                }
+>>>>>>> Stashed changes
                 mLastindex = nextRandomIndex
                 return themesList[nextRandomIndex]
             }

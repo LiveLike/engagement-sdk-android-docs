@@ -190,8 +190,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 txt_cheer_meter_team_2.background =
                     AndroidResource.createDrawable(cheerMeterTheme.sideBBar)
                 widgetsTheme?.cheerMeter?.sideAButton?.let {
+<<<<<<< Updated upstream
                                             updateRippleView(view_ripple, it)
                                         }
+=======
+                    updateRippleView(view_ripple, it)
+                }
+>>>>>>> Stashed changes
                 widgetsTheme?.cheerMeter?.sideBButton?.let {
                     updateRippleView(view_ripple2, it)
                 }
@@ -426,7 +431,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             repeatCount = 0
             addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
+<<<<<<< Updated upstream
                     viewModel?.dismissWidget(DismissAction.TAP_X)
+=======
+                    viewModel?.dismissWidget(DismissAction.TIMEOUT)
+>>>>>>> Stashed changes
                 }
             })
             playAnimation()
@@ -445,7 +454,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     if (viewModel?.enableDefaultWidgetTransition == true)
+<<<<<<< Updated upstream
                         viewModel?.dismissWidget(DismissAction.TAP_X)
+=======
+                        viewModel?.dismissWidget(DismissAction.TIMEOUT)
+>>>>>>> Stashed changes
                 }
             })
             playAnimation()
@@ -464,7 +477,11 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             addAnimatorListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator?) {
                     if (viewModel?.enableDefaultWidgetTransition == true)
+<<<<<<< Updated upstream
                         viewModel?.dismissWidget(DismissAction.TAP_X)
+=======
+                        viewModel?.dismissWidget(DismissAction.TIMEOUT)
+>>>>>>> Stashed changes
                 }
             })
             playAnimation()

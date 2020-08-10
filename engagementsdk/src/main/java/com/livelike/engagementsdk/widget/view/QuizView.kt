@@ -62,9 +62,19 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 lockInteraction()
                 onWidgetInteractionCompleted()
                 viewModel?.apply {
+<<<<<<< Updated upstream
                     val isUserCorrect = adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct } ?: false
                     val rootPath = if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
                     animationPath = AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+=======
+                    val isUserCorrect =
+                        adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct }
+                            ?: false
+                    val rootPath =
+                        if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
+                    animationPath =
+                        AndroidResource.selectRandomLottieAnimation(rootPath, context) ?: ""
+>>>>>>> Stashed changes
                 }
                 resultsObserver(viewModel?.results?.latest())
                 listOf(textEggTimer).forEach { v ->

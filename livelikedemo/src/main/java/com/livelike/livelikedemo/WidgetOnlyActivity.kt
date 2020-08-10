@@ -13,6 +13,11 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.LiveLikeContentSession
+<<<<<<< Updated upstream
+=======
+import com.livelike.engagementsdk.LiveLikeWidget
+import com.livelike.engagementsdk.WidgetListener
+>>>>>>> Stashed changes
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -113,13 +118,29 @@ class WidgetOnlyActivity : AppCompatActivity() {
         rcyl_view.adapter = adapter
         val jsonTheme = intent.getStringExtra("jsonTheme")
         if (jsonTheme != null) {
+<<<<<<< Updated upstream
             Toast.makeText(applicationContext, "JSON Theme Customization is hold for now", Toast.LENGTH_LONG).show()
+=======
+            Toast.makeText(
+                applicationContext,
+                "JSON Theme Customization is hold for now",
+                Toast.LENGTH_LONG
+            ).show()
+>>>>>>> Stashed changes
             try {
                 widget_view.applyTheme(ThemeRandomizer.themesList.last())
             } catch (e: Exception) {
                 Toast.makeText(applicationContext, "${e.message}", Toast.LENGTH_LONG).show()
             }
         }
+<<<<<<< Updated upstream
+=======
+        widget_view.setWidgetListener(object : WidgetListener {
+            override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
+                println("Widget:${liveLikeWidget.id},${liveLikeWidget.programId},${liveLikeWidget.options?.size}")
+            }
+        })
+>>>>>>> Stashed changes
         widget_view.setSession(session)
     }
 

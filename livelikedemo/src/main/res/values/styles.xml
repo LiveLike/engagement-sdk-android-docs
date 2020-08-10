@@ -31,7 +31,13 @@
         <item name="chatReactionRadius">12dp</item>
         <item name="chatSelectedReactionRadius">12dp</item>
         <item name="chatBubbleBackground">@drawable/ic_chat_message_bubble_rounded_rectangle</item>
+<<<<<<< Updated upstream
         <item name="chatReactionMessageBubbleHighlightedBackground">@drawable/ic_chat_message_highlighted_bubble_rounded_rectangle</item>
+=======
+        <item name="chatReactionMessageBubbleHighlightedBackground">
+            @drawable/ic_chat_message_highlighted_bubble_rounded_rectangle
+        </item>
+>>>>>>> Stashed changes
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme">
@@ -106,7 +112,9 @@
         <item name="showMessageTime">false</item>
         <item name="chatReactionPanelColor">#5028a0</item>
         <item name="chatReactionDisplayCountColor">#ffffff</item>
-        <item name="chatReactionMessageBubbleHighlightedBackground">@drawable/ic_chat_message_highlighted_bubble_rounded_rectangle</item>
+        <item name="chatReactionMessageBubbleHighlightedBackground">
+            @drawable/ic_chat_message_highlighted_bubble_rounded_rectangle
+        </item>
         <item name="chatReactionFlagTintColor">@android:color/white</item>
         <item name="chatReactionPanelCountColor">@android:color/white</item>
         <item name="reaction_hint_enable">false</item>

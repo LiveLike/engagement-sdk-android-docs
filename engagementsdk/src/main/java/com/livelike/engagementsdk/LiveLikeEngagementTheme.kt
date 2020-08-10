@@ -7,7 +7,10 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.widget.BaseTheme
 import com.livelike.engagementsdk.widget.WidgetsTheme
+<<<<<<< Updated upstream
 import java.lang.RuntimeException
+=======
+>>>>>>> Stashed changes
 
 class LiveLikeEngagementTheme internal constructor(
     val chat: Map<String, Any?>? = null,
@@ -23,7 +26,14 @@ class LiveLikeEngagementTheme internal constructor(
 
     companion object {
         @JvmStatic
+<<<<<<< Updated upstream
         fun instanceFrom(themeJson: JsonObject, fontFamilyProvider: FontFamilyProvider? = null): Result<LiveLikeEngagementTheme> {
+=======
+        fun instanceFrom(
+            themeJson: JsonObject,
+            fontFamilyProvider: FontFamilyProvider? = null
+        ): Result<LiveLikeEngagementTheme> {
+>>>>>>> Stashed changes
             return try {
                 val data = gson.fromJson(
                     themeJson,
