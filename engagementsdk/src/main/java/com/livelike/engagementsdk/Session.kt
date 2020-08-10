@@ -51,7 +51,10 @@ interface LiveLikeContentSession {
     /** set value of style for widget **/
     fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes)
 
-    fun getPublishedWidgets(liveLikePagination: LiveLikePagination,liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget?>>)
+    fun getPublishedWidgets(
+        liveLikePagination: LiveLikePagination,
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget?>>
+    )
 }
 
 /**

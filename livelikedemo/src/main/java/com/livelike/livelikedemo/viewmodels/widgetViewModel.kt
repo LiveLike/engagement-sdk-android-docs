@@ -1,21 +1,35 @@
-
-
 import android.arch.lifecycle.AndroidViewModel
-
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
-
+import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.livelikedemo.LiveLikeApplication
+import com.livelike.livelikedemo.channel.ChannelManager
 
 public class widgetViewModel constructor(
     application: LiveLikeApplication
 ) : AndroidViewModel(application) {
 
-    val engagementSDK = application.sdk
+    var publicSession: LiveLikeContentSession? = null
 
-    val contentSession = application.publicSession
+
+    private val channelManager = application.channelManager
+
+    private val engagementSDK = application.sdk
+
+
+    val contentSession =
+        createPublicSession(getChannelManager().selectedChannel.llProgram.toString())
 
     fun getSession(): LiveLikeContentSession? {
         return contentSession
+    }
+
+    fun getChannelManager(): ChannelManager {
+        return channelManager
+    }
+
+    fun getEngagementSDK(): EngagementSDK {
+        return engagementSDK
     }
 
     fun pauseSession() {
@@ -28,5 +42,19 @@ public class widgetViewModel constructor(
 
     fun closeSession() {
         contentSession?.close()
+    }
+
+    fun createPublicSession(
+        sessionId: String,
+        widgetInterceptor: WidgetInterceptor? = null,
+        allowTimeCodeGetter: Boolean = true
+    ): LiveLikeContentSession {
+        if (publicSession == null || publicSession?.contentSessionId() != sessionId) {
+            publicSession?.close()
+            publicSession =
+                getEngagementSDK().createContentSession(sessionId)
+        }
+        publicSession!!.widgetInterceptor = widgetInterceptor
+        return publicSession as LiveLikeContentSession
     }
 }
