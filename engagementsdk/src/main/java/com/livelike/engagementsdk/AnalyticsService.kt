@@ -80,6 +80,7 @@ interface AnalyticsService {
     fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)
     fun trackChatReactionPanelOpen(messageId: String)
     fun trackChatReactionSelected(messageId: String, reactionId: String, reactionAction: String)
+    fun trackAlertLinkOpened(alertId: String, programId: String, linkUrl: String)
 }
 
 class MockAnalyticsService(private val clientId: String = "") : AnalyticsService {
@@ -104,6 +105,13 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $reactionAction"
+        )
+    }
+
+    override fun trackAlertLinkOpened(alertId: String, programId: String, linkUrl: String) {
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]$alertId $programId $linkUrl"
         )
     }
 
@@ -538,6 +546,15 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         eventObservers[clientId]?.invoke(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
     }
 
+    override fun trackAlertLinkOpened(alertId: String, programId: String, linkUrl: String) {
+        val properties = JSONObject()
+        properties.put(ALERT_ID, alertId)
+        properties.put(PROGRAM_ID, programId)
+        properties.put(LINK_URL, linkUrl)
+        mixpanel.track(KEY_EVENT_ALERT_LINK_OPENED, properties)
+        eventObservers[clientId]?.invoke(KEY_EVENT_ALERT_LINK_OPENED, properties)
+    }
+
     override fun registerSuperProperty(
         analyticsSuperProperties: AnalyticsSuperProperties,
         value: Any?
@@ -719,6 +736,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         const val KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED = "Badge Collected Button Pressed"
         const val KEY_EVENT_CHAT_REACTION_PANEL_OPEN = "Chat Reaction Panel Opened"
         const val KEY_EVENT_CHAT_REACTION_SELECTED = "Chat Reaction Selected"
+        const val KEY_EVENT_ALERT_LINK_OPENED = "Alert Link Opened"
     }
 }
 
@@ -742,3 +760,6 @@ enum class DismissAction {
 }
 
 const val CHAT_MESSAGE_ID = "Chat Message ID"
+const val ALERT_ID = "Alert ID"
+const val PROGRAM_ID = "Program ID"
+const val LINK_URL = "Link Url"
