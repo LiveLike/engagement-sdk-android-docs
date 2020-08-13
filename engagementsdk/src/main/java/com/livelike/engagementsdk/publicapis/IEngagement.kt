@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 
 interface IEngagement {
 
@@ -80,7 +81,7 @@ interface IEngagement {
     fun getEntriesForLeaderBoard(
         leaderBoardId: String,
         liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntryPaginationResult>
     )
 
     fun getLeaderBoardEntryForProfile(

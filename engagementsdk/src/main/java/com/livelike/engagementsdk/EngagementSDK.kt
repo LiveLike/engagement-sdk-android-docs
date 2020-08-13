@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryResult
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.toLeadBoard
@@ -474,13 +475,13 @@ class EngagementSDK(
 
     private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
     private val leaderBoardEntryPaginationQueue =
-        Queue<Pair<LiveLikePagination, Pair<String, LiveLikeCallback<List<LeaderBoardEntry>>>>>()
+        Queue<Pair<LiveLikePagination, Pair<String, LiveLikeCallback<LeaderBoardEntryPaginationResult>>>>()
     private var isQueueProcess = false
 
     override fun getEntriesForLeaderBoard(
         leaderBoardId: String,
         liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntryPaginationResult>
     ) {
         leaderBoardEntryPaginationQueue.enqueue(
             Pair(
@@ -495,10 +496,10 @@ class EngagementSDK(
         }
     }
 
-    private fun getEntries(pair: Pair<LiveLikePagination, Pair<String, LiveLikeCallback<List<LeaderBoardEntry>>>>) {
+    private fun getEntries(pair: Pair<LiveLikePagination, Pair<String, LiveLikeCallback<LeaderBoardEntryPaginationResult>>>) {
         isQueueProcess = true
-        configurationStream.subscribe(this) {
-            it?.let {
+        configurationStream.subscribe(this) { sdkConfiguration ->
+            sdkConfiguration?.let {
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
                     val leaderBoardId = pair.second.first
@@ -527,7 +528,6 @@ class EngagementSDK(
                         LiveLikePagination.PREVIOUS -> leaderBoardEntryResult[leaderBoardId]?.previous
                     }
                     if (entriesUrl != null && entriesUrl.isNotEmpty()) {
-                        println("LL->$entriesUrl")
                         val listResult = dataClient.remoteCall<LeaderBoardEntryResult>(
                             entriesUrl,
                             requestType = RequestType.GET,
@@ -536,7 +536,15 @@ class EngagementSDK(
                         if (listResult is Result.Success) {
                             leaderBoardEntryResult[leaderBoardId] = listResult.data
                             liveLikeCallback.onResponse(
-                                leaderBoardEntryResult[leaderBoardId]?.results,
+                                leaderBoardEntryResult[leaderBoardId]?.let {
+                                    LeaderBoardEntryPaginationResult(
+                                        it.count ?: 0,
+                                        it.previous != null,
+                                        it.next != null,
+                                        it.results
+                                    )
+                                }
+                                ,
                                 null
                             )
                             isQueueProcess = false

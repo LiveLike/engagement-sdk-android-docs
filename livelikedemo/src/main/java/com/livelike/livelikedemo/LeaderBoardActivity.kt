@@ -13,6 +13,7 @@ import android.widget.Toast
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.activity_leader_board.btn_current_entry
 import kotlinx.android.synthetic.main.activity_leader_board.btn_fetch
@@ -156,9 +157,9 @@ class LeaderBoardActivity : AppCompatActivity() {
                 leaderBoardId!!,
                 pagination,
                 object :
-                    LiveLikeCallback<List<LeaderBoardEntry>>() {
+                    LiveLikeCallback<LeaderBoardEntryPaginationResult>() {
                     override fun onResponse(
-                        result: List<LeaderBoardEntry>?,
+                        result: LeaderBoardEntryPaginationResult?,
                         error: String?
                     ) {
                         prg_leaderboard_entries.visibility = View.INVISIBLE
@@ -167,7 +168,9 @@ class LeaderBoardActivity : AppCompatActivity() {
                             adapter.notifyDataSetChanged()
                         }
                         result?.let {
-                            adapter.list.addAll(result)
+                            result.list?.let {
+                                adapter.list.addAll(it)
+                            }
                             adapter.notifyDataSetChanged()
                         }
                         error?.let {
