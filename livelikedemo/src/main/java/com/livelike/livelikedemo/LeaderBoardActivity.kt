@@ -15,9 +15,11 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import kotlinx.android.synthetic.main.activity_leader_board.btn_current_entry
+import kotlinx.android.synthetic.main.activity_leader_board.btn_current_user
 import kotlinx.android.synthetic.main.activity_leader_board.btn_fetch
+import kotlinx.android.synthetic.main.activity_leader_board.btn_first
 import kotlinx.android.synthetic.main.activity_leader_board.btn_next
+import kotlinx.android.synthetic.main.activity_leader_board.btn_previous
 import kotlinx.android.synthetic.main.activity_leader_board.btn_sort_down
 import kotlinx.android.synthetic.main.activity_leader_board.btn_sort_up
 import kotlinx.android.synthetic.main.activity_leader_board.ed_txt_program_id
@@ -118,10 +120,16 @@ class LeaderBoardActivity : AppCompatActivity() {
                 )
             }
         }
+        btn_previous.setOnClickListener {
+            loadEntries(LiveLikePagination.PREVIOUS)
+        }
         btn_next.setOnClickListener {
             loadEntries(LiveLikePagination.NEXT)
         }
-        btn_current_entry.setOnClickListener {
+        btn_first.setOnClickListener {
+            loadEntries(LiveLikePagination.FIRST)
+        }
+        btn_current_user.setOnClickListener {
             leaderBoardId?.let { id ->
                 dialog?.show()
                 (application as LiveLikeApplication).sdk.getLeaderBoardEntryForCurrentUserProfile(id,
@@ -163,16 +171,16 @@ class LeaderBoardActivity : AppCompatActivity() {
                         error: String?
                     ) {
                         prg_leaderboard_entries.visibility = View.INVISIBLE
-                        if (pagination == LiveLikePagination.FIRST) {
-                            adapter.list.clear()
-                            adapter.notifyDataSetChanged()
-                        }
+//                        if (pagination == LiveLikePagination.FIRST) {
+                        adapter.list.clear()
+//                            adapter.notifyDataSetChanged()
+//                        }
                         result?.let {
                             result.list?.let {
                                 adapter.list.addAll(it)
                             }
-                            adapter.notifyDataSetChanged()
                         }
+                        adapter.notifyDataSetChanged()
                         error?.let {
                             showToast(error)
                         }
