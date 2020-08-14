@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_leader_board.prg_fetch_leader_boa
 import kotlinx.android.synthetic.main.activity_leader_board.prg_leaderboard_entries
 import kotlinx.android.synthetic.main.activity_leader_board.rcyl_leader_board
 import kotlinx.android.synthetic.main.activity_leader_board.rcyl_leader_board_entries
+import kotlinx.android.synthetic.main.activity_leader_board.txt_count
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.lay_leader_board_item
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.textView5
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.txt_leaderboard_name
@@ -179,6 +180,7 @@ class LeaderBoardActivity : AppCompatActivity() {
                             result.list?.let {
                                 adapter.list.addAll(it)
                             }
+                            txt_count.text = "Count: ${result.count}"
                         }
                         adapter.notifyDataSetChanged()
                         error?.let {
