@@ -79,7 +79,12 @@ interface AnalyticsService {
     fun trackPointThisProgram(points: Int)
     fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)
     fun trackChatReactionPanelOpen(messageId: String)
-    fun trackChatReactionSelected(messageId: String, reactionId: String, reactionAction: String)
+    fun trackChatReactionSelected(
+        chatRoomId: String,
+        messageId: String,
+        reactionId: String,
+        isRemoved: Boolean
+    )
 }
 
 class MockAnalyticsService(private val clientId: String = "") : AnalyticsService {
@@ -97,13 +102,14 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
     }
 
     override fun trackChatReactionSelected(
+        chatRoomId: String,
         messageId: String,
         reactionId: String,
-        reactionAction: String
+        isRemoved: Boolean
     ) {
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $reactionAction"
+            "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $isRemoved"
         )
     }
 
@@ -526,16 +532,23 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     }
 
     override fun trackChatReactionSelected(
+        chatRoomId: String,
         messageId: String,
         reactionId: String,
-        reactionAction: String
+        isRemoved: Boolean
     ) {
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, messageId)
-        properties.put("Chat Reaction ID", reactionId)
-        properties.put("Reaction Action", reactionAction)
-        mixpanel.track(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
-        eventObservers[clientId]?.invoke(KEY_EVENT_CHAT_REACTION_SELECTED, properties)
+        properties.put(CHAT_REACTION_ID, reactionId)
+        properties.put(CHAT_ROOM_ID, chatRoomId)
+        val event = when (isRemoved) {
+            true -> KEY_EVENT_CHAT_REACTION_REMOVED
+            else -> KEY_EVENT_CHAT_REACTION_ADDED
+        }
+        mixpanel.track(
+            event, properties
+        )
+        eventObservers[clientId]?.invoke(event, properties)
     }
 
     override fun registerSuperProperty(
@@ -719,6 +732,8 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         const val KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED = "Badge Collected Button Pressed"
         const val KEY_EVENT_CHAT_REACTION_PANEL_OPEN = "Chat Reaction Panel Opened"
         const val KEY_EVENT_CHAT_REACTION_SELECTED = "Chat Reaction Selected"
+        const val KEY_EVENT_CHAT_REACTION_ADDED = "Chat Reaction Added"
+        const val KEY_EVENT_CHAT_REACTION_REMOVED = "Chat Reaction Removed"
     }
 }
 
@@ -742,3 +757,5 @@ enum class DismissAction {
 }
 
 const val CHAT_MESSAGE_ID = "Chat Message ID"
+const val CHAT_REACTION_ID = "Chat Reaction ID"
+const val CHAT_ROOM_ID = "Chat Room ID"
