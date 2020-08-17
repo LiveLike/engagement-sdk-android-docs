@@ -547,20 +547,22 @@ class EngagementSDK(
                                 ,
                                 null
                             )
-                            isQueueProcess = false
-                            val dequeuePair = leaderBoardEntryPaginationQueue.dequeue()
-                            if (dequeuePair != null)
-                                getEntries(dequeuePair)
                         } else if (listResult is Result.Error) {
                             liveLikeCallback.onResponse(
                                 null,
                                 listResult.exception.message
                             )
-                            isQueueProcess = false
                         }
+                        isQueueProcess = false
+                        val dequeuePair = leaderBoardEntryPaginationQueue.dequeue()
+                        if (dequeuePair != null)
+                            getEntries(dequeuePair)
                     } else if (entriesUrl == null) {
                         liveLikeCallback.onResponse(null, "No More data to load")
                         isQueueProcess = false
+                        val dequeuePair = leaderBoardEntryPaginationQueue.dequeue()
+                        if (dequeuePair != null)
+                            getEntries(dequeuePair)
                     }
                 }
             }

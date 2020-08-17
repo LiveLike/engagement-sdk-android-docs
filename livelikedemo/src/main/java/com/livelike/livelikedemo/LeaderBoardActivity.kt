@@ -173,11 +173,13 @@ class LeaderBoardActivity : AppCompatActivity() {
                     ) {
                         prg_leaderboard_entries.visibility = View.INVISIBLE
 //                        if (pagination == LiveLikePagination.FIRST) {
-                        adapter.list.clear()
+
 //                            adapter.notifyDataSetChanged()
 //                        }
                         result?.let {
                             result.list?.let {
+                                if (it.isNotEmpty())
+                                    adapter.list.clear()
                                 adapter.list.addAll(it)
                             }
                             txt_count.text = "Count: ${result.count}"
