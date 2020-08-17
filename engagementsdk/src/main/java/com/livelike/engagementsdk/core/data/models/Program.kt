@@ -40,7 +40,6 @@ internal fun LeaderBoardResource.toLeadBoard(): LeaderBoard {
     return LeaderBoard(id, name, rewardItem.toReward())
 }
 
-
 data class LeaderBoard(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,

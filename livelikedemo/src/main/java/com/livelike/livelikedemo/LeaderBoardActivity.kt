@@ -29,7 +29,6 @@ import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.textView5
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.txt_leaderboard_name
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.txt_reward_item_name
 
-
 class LeaderBoardActivity : AppCompatActivity() {
     val adapter =
         LeaderBoardEntriesAdapter(object : RecyclerViewItemClickListener<LeaderBoardEntry> {
@@ -70,7 +69,6 @@ class LeaderBoardActivity : AppCompatActivity() {
                     "Score: ${result.score}"
                 )
             ) { _, which ->
-
             }
             create()
         }.show()
@@ -179,7 +177,6 @@ class LeaderBoardActivity : AppCompatActivity() {
     fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
-
 }
 
 class LeaderBoardAdapter(
@@ -187,7 +184,6 @@ class LeaderBoardAdapter(
     private val clickListener: RecyclerViewItemClickListener<LeaderBoard>
 ) :
     RecyclerView.Adapter<LeaderBoardViewHolder>() {
-
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): LeaderBoardViewHolder {
         return LeaderBoardViewHolder(
@@ -215,7 +211,6 @@ interface RecyclerViewItemClickListener<T> {
 
 class LeaderBoardViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-
 class LeaderBoardEntriesAdapter(private val recyclerViewItemClickListener: RecyclerViewItemClickListener<LeaderBoardEntry>) :
     RecyclerView.Adapter<LeaderBoardViewHolder>() {
     val list: ArrayList<LeaderBoardEntry> = arrayListOf()
@@ -236,7 +231,6 @@ class LeaderBoardEntriesAdapter(private val recyclerViewItemClickListener: Recyc
     }
 
     override fun getItemCount(): Int = list.size
-
 
     override fun onBindViewHolder(p0: LeaderBoardViewHolder, p1: Int) {
         val leaderBoard = list[p1]

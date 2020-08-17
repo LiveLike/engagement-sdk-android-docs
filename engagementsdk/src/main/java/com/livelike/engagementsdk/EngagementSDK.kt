@@ -38,12 +38,12 @@ import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
-import java.io.IOException
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -274,7 +274,6 @@ class EngagementSDK(
                         } else if (chatRoomResult is Result.Error) {
                             liveLikeCallback.onResponse(null, chatRoomResult.exception.message)
                         }
-
                     }
                 }
             }
@@ -522,11 +521,9 @@ class EngagementSDK(
                     } else if (result is Result.Error) {
                         liveLikeCallback.onResponse(null, result.exception.message)
                     }
-
                 }
             }
         }
-
     }
 
     override fun getLeaderBoardEntryForProfile(
@@ -564,17 +561,14 @@ class EngagementSDK(
                     } else if (result is Result.Error) {
                         liveLikeCallback.onResponse(null, result.exception.message)
                     }
-
                 }
             }
         }
-
 
         getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
             override fun onResponse(result: LeaderBoard?, error: String?) {
                 result?.let {
                     uiScope.launch {
-
                     }
                 }
                 error?.let {
