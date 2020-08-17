@@ -20,9 +20,6 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.core.utils.logWarn
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -35,6 +32,9 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import okio.ByteString
+import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Suppress("USELESS_ELVIS")
 internal open class EngagementDataClientImpl : DataClient,
@@ -239,9 +239,16 @@ internal open class EngagementDataClientImpl : DataClient,
                         data
                     )
                 } else {
+                    val error = execute.body()?.string()
+                    val errorJson = JsonParser().parse(error).asJsonObject
+                    val msg = execute.message()
+                    val errorMsg = when (msg.isNotEmpty()) {
+                        true -> msg
+                        else -> errorJson.get("detail").asString
+                    }
                     Result.Error(
                         IOException(
-                            "response code : ${execute.code()} - ${execute.message()}"
+                            "response code : ${execute.code()} - $errorMsg"
                         )
                     )
                 }

@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryResult
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.toLeadBoard
@@ -26,6 +27,7 @@ import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
+import com.livelike.engagementsdk.core.utils.Queue
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.gson
@@ -472,61 +474,99 @@ class EngagementSDK(
     }
 
     private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
+    private val leaderBoardEntryPaginationQueue =
+        Queue<Pair<LiveLikePagination, Pair<String, LiveLikeCallback<LeaderBoardEntryPaginationResult>>>>()
+    private var isQueueProcess = false
 
     override fun getEntriesForLeaderBoard(
         leaderBoardId: String,
         liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<List<LeaderBoardEntry>>
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntryPaginationResult>
     ) {
-        configurationStream.subscribe(this) {
-            it?.let {
+        leaderBoardEntryPaginationQueue.enqueue(
+            Pair(
+                liveLikePagination,
+                Pair(leaderBoardId, liveLikeCallback)
+            )
+        )
+        if (!isQueueProcess) {
+            val pair = leaderBoardEntryPaginationQueue.dequeue()
+            if (pair != null)
+                getEntries(pair)
+        }
+    }
+
+    private fun getEntries(pair: Pair<LiveLikePagination, Pair<String, LiveLikeCallback<LeaderBoardEntryPaginationResult>>>) {
+        isQueueProcess = true
+        configurationStream.subscribe(this) { sdkConfiguration ->
+            sdkConfiguration?.let {
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
-                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
-                        TEMPLATE_LEADER_BOARD_ID,
-                        leaderBoardId
-                    )}"
-                    val result = dataClient.remoteCall<LeaderBoardResource>(
-                        url,
-                        requestType = RequestType.GET,
-                        accessToken = null
-                    )
-                    if (result is Result.Success) {
-                        val defaultUrl = result.data.entries_url
-                        val entriesUrl = when (liveLikePagination) {
-                            LiveLikePagination.FIRST -> defaultUrl
-                            LiveLikePagination.NEXT -> leaderBoardEntryResult[leaderBoardId]?.next
-                            LiveLikePagination.PREVIOUS -> leaderBoardEntryResult[leaderBoardId]?.previous
-                        }
-                        if (entriesUrl != null) {
-                            val listResult = dataClient.remoteCall<LeaderBoardEntryResult>(
-                                entriesUrl,
+                    val leaderBoardId = pair.second.first
+                    val liveLikeCallback = pair.second.second
+                    val entriesUrl = when (pair.first) {
+                        LiveLikePagination.FIRST -> {
+                            val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                                TEMPLATE_LEADER_BOARD_ID,
+                                leaderBoardId
+                            )}"
+                            val result = dataClient.remoteCall<LeaderBoardResource>(
+                                url,
                                 requestType = RequestType.GET,
                                 accessToken = null
                             )
-                            if (listResult is Result.Success) {
-                                leaderBoardEntryResult[leaderBoardId] = listResult.data
-                                liveLikeCallback.onResponse(
-                                    leaderBoardEntryResult[leaderBoardId]?.results,
-                                    null
-                                )
-                            } else if (listResult is Result.Error) {
-                                liveLikeCallback.onResponse(
-                                    null,
-                                    listResult.exception.message
-                                )
+                            var defaultUrl = ""
+                            if (result is Result.Success) {
+                                defaultUrl = result.data.entries_url
+                            } else if (result is Result.Error) {
+                                defaultUrl = ""
+                                liveLikeCallback.onResponse(null, result.exception.message)
                             }
-                        } else {
-                            liveLikeCallback.onResponse(null, "No More data to load")
+                            defaultUrl
                         }
-                    } else if (result is Result.Error) {
-                        liveLikeCallback.onResponse(null, result.exception.message)
+                        LiveLikePagination.NEXT -> leaderBoardEntryResult[leaderBoardId]?.next
+                        LiveLikePagination.PREVIOUS -> leaderBoardEntryResult[leaderBoardId]?.previous
                     }
-
+                    if (entriesUrl != null && entriesUrl.isNotEmpty()) {
+                        val listResult = dataClient.remoteCall<LeaderBoardEntryResult>(
+                            entriesUrl,
+                            requestType = RequestType.GET,
+                            accessToken = null
+                        )
+                        if (listResult is Result.Success) {
+                            leaderBoardEntryResult[leaderBoardId] = listResult.data
+                            liveLikeCallback.onResponse(
+                                leaderBoardEntryResult[leaderBoardId]?.let {
+                                    LeaderBoardEntryPaginationResult(
+                                        it.count ?: 0,
+                                        it.previous != null,
+                                        it.next != null,
+                                        it.results
+                                    )
+                                }
+                                ,
+                                null
+                            )
+                        } else if (listResult is Result.Error) {
+                            liveLikeCallback.onResponse(
+                                null,
+                                listResult.exception.message
+                            )
+                        }
+                        isQueueProcess = false
+                        val dequeuePair = leaderBoardEntryPaginationQueue.dequeue()
+                        if (dequeuePair != null)
+                            getEntries(dequeuePair)
+                    } else if (entriesUrl == null) {
+                        liveLikeCallback.onResponse(null, "No More data to load")
+                        isQueueProcess = false
+                        val dequeuePair = leaderBoardEntryPaginationQueue.dequeue()
+                        if (dequeuePair != null)
+                            getEntries(dequeuePair)
+                    }
                 }
             }
         }
-
     }
 
     override fun getLeaderBoardEntryForProfile(
