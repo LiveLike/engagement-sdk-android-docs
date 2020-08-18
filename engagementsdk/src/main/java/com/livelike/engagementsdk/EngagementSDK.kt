@@ -556,7 +556,7 @@ class EngagementSDK(
                         val dequeuePair = leaderBoardEntryPaginationQueue.dequeue()
                         if (dequeuePair != null)
                             getEntries(dequeuePair)
-                    } else if (entriesUrl == null) {
+                    } else if (entriesUrl == null || entriesUrl.isEmpty()) {
                         liveLikeCallback.onResponse(null, "No More data to load")
                         isQueueProcess = false
                         val dequeuePair = leaderBoardEntryPaginationQueue.dequeue()
