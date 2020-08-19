@@ -17,14 +17,15 @@ public class widgetViewModel constructor(
     private val engagementSDK = application.sdk
 
 
-    val contentSession =
+    private val contentSession =
         createPublicSession(getChannelManager().selectedChannel.llProgram.toString())
 
     fun getSession(): LiveLikeContentSession? {
+        println("widgetViewModel.getSession->$contentSession")
         return contentSession
     }
 
-    fun getChannelManager(): ChannelManager {
+    private fun getChannelManager(): ChannelManager {
         return channelManager
     }
 

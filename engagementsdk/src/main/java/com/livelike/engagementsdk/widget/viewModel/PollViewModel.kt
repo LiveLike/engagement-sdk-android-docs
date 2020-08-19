@@ -143,6 +143,7 @@ internal class PollViewModel(
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
                 pubnub?.subscribe(listOf(resource.subscribe_channel))
+                println("PollViewModel.widgetObserver--->")
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
                     PollWidget(
                         it,
@@ -161,6 +162,7 @@ internal class PollViewModel(
             timeoutStarted = true
             uiScope.launch {
                 delay(AndroidResource.parseDuration(timeout))
+                println("PollViewModel.startDismissTimout------->>>")
                 widgetState.onNext(WidgetStates.RESULTS)
             }
         }

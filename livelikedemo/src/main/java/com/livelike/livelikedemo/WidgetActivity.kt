@@ -1,10 +1,11 @@
 package com.livelike.livelikedemo
 
 import EngagementViewModelFactory
-import android.app.Application
 import android.arch.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.livelike.engagementsdk.LiveLikeWidget
+import com.livelike.engagementsdk.WidgetListener
 import kotlinx.android.synthetic.main.activity_widget.widget_view
 import widgetViewModel
 
@@ -22,12 +23,16 @@ class WidgetActivity : AppCompatActivity() {
         // This will create an instance of Engagement viewmodel which can be used to creating session and initialization
         mainViewModel = ViewModelProvider(
             this,
-            EngagementViewModelFactory(this.applicationContext as Application)
+            EngagementViewModelFactory(this.application)
         ).get(widgetViewModel::class.java)
         // Check whether chat or widget is selected
-
+        println("WidgetActivity.onCreate->$mainViewModel")
         mainViewModel!!.getSession()?.let { widget_view.setSession(it) }
-
+        widget_view.setWidgetListener(object : WidgetListener {
+            override fun onNewWidget(liveLikeWidget: LiveLikeWidget) {
+                println("WidgetActivity.onNewWidget->${liveLikeWidget.kind}")
+            }
+        })
         // Example of Widget Interceptor showing a dialog
 //        val interceptor = object : WidgetInterceptor() {
 //            override fun widgetWantsToShow(widgetData: LiveLikeWidgetEntity) {
@@ -52,17 +57,17 @@ class WidgetActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        mainViewModel?.pauseSession()
+//        mainViewModel?.pauseSession()
     }
 
     override fun onResume() {
         super.onResume()
-        mainViewModel?.resumeSession()
+//        mainViewModel?.resumeSession()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mainViewModel?.closeSession()
+//        mainViewModel?.closeSession()
     }
 
 
