@@ -77,6 +77,13 @@ data class LeaderBoardEntry(
     @SerializedName("profile_nickname") val profile_nickname: String
 )
 
+data class LeaderBoardEntryPaginationResult(
+    val count: Int = 0,
+    val hasPrevious: Boolean = false,
+    val hasNext: Boolean = false,
+    val list: List<LeaderBoardEntry>? = null
+)
+
 internal data class ProgramModel(
     @SerializedName("url")
     val programUrl: String?,
