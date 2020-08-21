@@ -35,11 +35,16 @@ internal class AlertWidgetViewModel(
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
 
-    fun onClickLink() {
+    fun onClickLink(linkUrl: String) {
         interactionData.incrementInteraction()
-        currentWidgetType?.let {
+        currentWidgetType?.let { widgetType ->
+            data.latest()?.program_id?.let {
+                analyticsService.trackAlertLinkOpened(
+                    currentWidgetId, it, linkUrl
+                )
+            }
             analyticsService.trackWidgetInteraction(
-                it.toAnalyticsString(),
+                widgetType.toAnalyticsString(),
                 currentWidgetId,
                 interactionData
             )

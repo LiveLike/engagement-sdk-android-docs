@@ -239,9 +239,16 @@ internal open class EngagementDataClientImpl : DataClient,
                         data
                     )
                 } else {
+                    val error = execute.body()?.string()
+                    val errorJson = JsonParser().parse(error).asJsonObject
+                    val msg = execute.message()
+                    val errorMsg = when (msg.isNotEmpty()) {
+                        true -> msg
+                        else -> errorJson.get("detail").asString
+                    }
                     Result.Error(
                         IOException(
-                            "response code : ${execute.code()} - ${execute.message()}"
+                            "response code : ${execute.code()} - $errorMsg"
                         )
                     )
                 }

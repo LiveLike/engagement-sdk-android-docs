@@ -60,6 +60,7 @@ internal class ChatViewModel(
     var currentChatRoom: ChatRoom? = null
         set(value) {
             field = value
+            chatAdapter.chatRoomId = value?.id
             chatAdapter.isPublicChat = isPublicRoom
         }
 
