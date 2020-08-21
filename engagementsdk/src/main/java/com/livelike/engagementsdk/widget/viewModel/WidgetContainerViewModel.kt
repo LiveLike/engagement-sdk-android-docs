@@ -53,9 +53,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     }
                 })
         )
-        println("WidgetContainerViewModel.setWidgetContainer->$currentWidgetViewStream ->${currentWidgetViewStream.latest()}")
         currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
-            println("WidgetContainerViewModel.setWidgetContainer-->$this ->$pair")
             if (pair != null)
                 widgetObserver(pair?.second, pair?.first)
         }
@@ -65,7 +63,6 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
         removeViews()
-        println("WidgetContainerViewModel.widgetObserver ->$this ->$widgetView  ->$widgetType ->${widgetView?.widgetViewModel?.widgetState?.latest()}")
         if (widgetView != null) {
             widgetView.widgetViewModel?.enableDefaultWidgetTransition =
                 enableDefaultWidgetTransition

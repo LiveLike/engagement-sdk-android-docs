@@ -57,17 +57,17 @@ class WidgetActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-//        mainViewModel?.pauseSession()
+        mainViewModel?.pauseSession()
     }
 
     override fun onResume() {
         super.onResume()
-//        mainViewModel?.resumeSession()
+        mainViewModel?.resumeSession()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-//        mainViewModel?.closeSession()
+        mainViewModel?.closeSession()
     }
 
 

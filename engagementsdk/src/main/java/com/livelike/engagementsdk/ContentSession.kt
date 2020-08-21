@@ -264,7 +264,6 @@ internal class ContentSession(
         widgetView: FrameLayout,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
-        println("ContentSession.setWidgetContainer->")
         widgetContainer.setWidgetContainer(widgetView, widgetViewThemeAttributes)
     }
 

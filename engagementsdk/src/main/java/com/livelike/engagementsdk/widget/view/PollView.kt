@@ -38,7 +38,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             field = value
             viewModel = value as PollViewModel
 //            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-            println("PollView.->${viewModel?.widgetState?.latest()}")
             viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
 //            viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
@@ -61,9 +60,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-        println("PollView.onAttachedToWindow->${viewModel?.widgetState?.latest()} ->${viewModel?.data?.latest()} ->${viewModel?.data}")
         viewModel?.widgetState?.subscribe(javaClass.simpleName) {
-            println("PollView.onAttachedToWindow---->$it")
             stateObserver(it)
         }
 //        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
@@ -72,7 +69,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun stateObserver(widgetStates: WidgetStates?) {
-        println("PollView.stateObserver->$widgetStates---->${viewModel?.widgetState?.latest()} ---->> ${viewModel?.widgetState}")
         when (widgetStates) {
             WidgetStates.READY -> {
                 lockInteraction()
@@ -106,7 +102,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
-        println("PollView.defaultStateTransitionManager->$widgetStates")
         when (widgetStates) {
             WidgetStates.READY -> {
                 moveToNextState()
@@ -183,7 +178,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             showTimer()
             logDebug { "showing PollWidget" }
-            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
+            if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
+                widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
         }
         if (widget == null) {
             inflated = false
