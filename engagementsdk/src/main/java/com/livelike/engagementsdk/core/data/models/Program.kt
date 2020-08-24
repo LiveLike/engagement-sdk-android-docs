@@ -40,7 +40,6 @@ internal fun LeaderBoardResource.toLeadBoard(): LeaderBoard {
     return LeaderBoard(id, name, rewardItem.toReward())
 }
 
-
 data class LeaderBoard(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
@@ -76,6 +75,13 @@ data class LeaderBoardEntry(
     @SerializedName("rank") val rank: Int,
     @SerializedName("score") val score: Int,
     @SerializedName("profile_nickname") val profile_nickname: String
+)
+
+data class LeaderBoardEntryPaginationResult(
+    val count: Int = 0,
+    val hasPrevious: Boolean = false,
+    val hasNext: Boolean = false,
+    val list: List<LeaderBoardEntry>? = null
 )
 
 internal data class ProgramModel(

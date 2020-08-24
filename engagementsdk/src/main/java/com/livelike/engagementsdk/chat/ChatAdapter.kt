@@ -46,6 +46,11 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
@@ -57,11 +62,6 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
 import kotlinx.android.synthetic.main.default_chat_cell.view.rel_reactions_lay
 import kotlinx.android.synthetic.main.default_chat_cell.view.txt_chat_reactions_count
 import pl.droidsonroids.gif.MultiCallback
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 private val diffChatMessage: DiffUtil.ItemCallback<ChatMessage> =
     object : DiffUtil.ItemCallback<ChatMessage>() {
@@ -78,7 +78,7 @@ internal class ChatRecyclerAdapter(
     internal var analyticsService: AnalyticsService,
     private val reporter: (ChatMessage) -> Unit
 ) : ListAdapter<ChatMessage, ChatRecyclerAdapter.ViewHolder>(diffChatMessage) {
-
+    internal var chatRoomId: String? = null
     private var lastFloatingUiAnchorView: View? = null
     var chatRepository: ChatRepository? = null
     lateinit var stickerPackRepository: StickerPackRepository
@@ -284,7 +284,7 @@ internal class ChatRecyclerAdapter(
                         if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos < itemCount) {
                             getItem(currentChatReactionPopUpViewPos)?.apply {
                                 val reactionId: String?
-                                val reactionAction: String
+                                val isRemoved: Boolean
                                 if (reaction == null) {
                                     reactionId = myChatMessageReaction?.emojiId
                                     myChatMessageReaction?.let { myChatMessageReaction ->
@@ -301,7 +301,7 @@ internal class ChatRecyclerAdapter(
                                         }
                                     }
                                     myChatMessageReaction = null
-                                    reactionAction = "Removed"
+                                    isRemoved = true
                                 } else {
                                     myChatMessageReaction?.let {
                                         emojiCountMap[it.emojiId] =
@@ -327,14 +327,17 @@ internal class ChatRecyclerAdapter(
                                             reaction.id
                                         )
                                     }
-                                    reactionAction = "Added"
+                                    isRemoved = false
                                 }
-                                reactionId?.let {
-                                    analyticsService.trackChatReactionSelected(
-                                        id,
-                                        it,
-                                        reactionAction
-                                    )
+                                reactionId?.let { reactionId ->
+                                    chatRoomId?.let {
+                                        analyticsService.trackChatReactionSelected(
+                                            it,
+                                            id,
+                                            reactionId,
+                                            isRemoved
+                                        )
+                                    }
                                 }
                                 notifyItemChanged(currentChatReactionPopUpViewPos)
                             }

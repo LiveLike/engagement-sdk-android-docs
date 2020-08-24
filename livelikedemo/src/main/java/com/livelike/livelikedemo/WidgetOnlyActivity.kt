@@ -28,6 +28,7 @@ import com.livelike.livelikedemo.models.PredictionResponse
 import com.livelike.livelikedemo.models.QuizRequest
 import com.livelike.livelikedemo.models.QuizResponse
 import com.livelike.livelikedemo.utils.ThemeRandomizer
+import kotlin.random.Random
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.progress_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rcyl_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.widget_view
@@ -106,7 +107,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 PostType("Text Only", false, alerts, 1),
                 PostType("Image Only", false, alerts, 2),
                 PostType("Text and Image", false, alerts, 3),
-                PostType("Text,Image and URL", false, alerts, 4),
+                PostType("Text,Image and Universal URL(random)", false, alerts, 4),
 
                 PostType("Cheer Meter", true),
                 PostType(twoOptions, false, cheerMeter, 2)
@@ -217,6 +218,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 "https://cf-blast-storage-staging.livelikecdn.com/assets/0cd1f9ad-c92c-4f6d-ada5-bab926df175f.jpg"
             )
 
+            private val alertWidgetUrls = arrayListOf(
+                "tel:8372873843432",
+                "https://www.google.co.in",
+                "https://www.youtube.com/watch?v=m5C6gKviWIQ",
+                "nothing://nothing"
+            )
+
             init {
                 button.setOnClickListener {
                     val type = getItem(adapterPosition)
@@ -293,7 +301,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                     title = "Alert",
                                     text = type.title,
                                     image_url = images[0],
-                                    link_url = "https://www.google.com",
+                                    link_url = alertWidgetUrls[Random.nextInt(0, 4)],
                                     link_label = "Google", program_id = programId, timeout = "PT10S"
                                 )
                                 else -> null

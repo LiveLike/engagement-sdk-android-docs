@@ -182,9 +182,11 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     }
 
     private fun openBrowser(context: Context, linkUrl: String) {
-        viewModel?.onClickLink()
-        val browserIntent =
+        viewModel?.onClickLink(linkUrl)
+        val universalLinkIntent =
             Intent(Intent.ACTION_VIEW, Uri.parse(linkUrl)).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(context, browserIntent, Bundle.EMPTY)
+        if (universalLinkIntent.resolveActivity(context.packageManager) != null) {
+            startActivity(context, universalLinkIntent, Bundle.EMPTY)
+        }
     }
 }
