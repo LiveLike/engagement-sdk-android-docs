@@ -64,11 +64,11 @@ class WidgetActivity : AppCompatActivity() {
         super.onResume()
         mainViewModel?.resumeSession()
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mainViewModel?.closeSession()
-    }
+//
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        mainViewModel?.closeSession()
+//    }
 
 
 }
