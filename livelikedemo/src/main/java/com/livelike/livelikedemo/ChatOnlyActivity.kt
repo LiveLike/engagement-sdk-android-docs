@@ -73,7 +73,6 @@ class ChatOnlyActivity : AppCompatActivity() {
 
                         ed_chat_room_title.setText("")
                         prg_create.visibility = View.INVISIBLE
-
                     }
                 })
         }

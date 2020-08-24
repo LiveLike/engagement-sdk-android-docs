@@ -10,11 +10,11 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
-import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Matcher
+import org.json.JSONObject
 
 /**
  * The base interface for the analytics. This will log events to any remote analytics provider.
