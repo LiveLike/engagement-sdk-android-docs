@@ -98,7 +98,6 @@ internal class WidgetManager(
     override fun stop() {
         widgetOnScreen = false
         upstream.stop()
-        currentWidgetViewStream.onNext(null)
     }
 
     override fun start() {
