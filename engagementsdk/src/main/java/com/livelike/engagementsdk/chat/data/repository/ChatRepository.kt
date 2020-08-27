@@ -95,7 +95,6 @@ internal class ChatRepository(
         } else {
             chatRoomResult as Result.Error
         }
-
     }
 
     suspend fun getCurrentUserChatRoomList(membershipUrl: String): Result<UserChatRoomListResponse> {
