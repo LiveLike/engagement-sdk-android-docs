@@ -293,6 +293,7 @@ internal class ChatSession(
                     chatRoom.reactionPacksUrl,
                     chatRoom.reportMessageUrl
                 )
+                delay(1000)
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }
