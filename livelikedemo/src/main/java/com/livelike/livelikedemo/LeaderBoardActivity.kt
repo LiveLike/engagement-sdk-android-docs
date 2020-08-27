@@ -13,10 +13,13 @@ import android.widget.Toast
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
+import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import kotlinx.android.synthetic.main.activity_leader_board.btn_current_entry
+import kotlinx.android.synthetic.main.activity_leader_board.btn_current_user
 import kotlinx.android.synthetic.main.activity_leader_board.btn_fetch
+import kotlinx.android.synthetic.main.activity_leader_board.btn_first
 import kotlinx.android.synthetic.main.activity_leader_board.btn_next
+import kotlinx.android.synthetic.main.activity_leader_board.btn_previous
 import kotlinx.android.synthetic.main.activity_leader_board.btn_sort_down
 import kotlinx.android.synthetic.main.activity_leader_board.btn_sort_up
 import kotlinx.android.synthetic.main.activity_leader_board.ed_txt_program_id
@@ -24,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_leader_board.prg_fetch_leader_boa
 import kotlinx.android.synthetic.main.activity_leader_board.prg_leaderboard_entries
 import kotlinx.android.synthetic.main.activity_leader_board.rcyl_leader_board
 import kotlinx.android.synthetic.main.activity_leader_board.rcyl_leader_board_entries
+import kotlinx.android.synthetic.main.activity_leader_board.txt_count
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.lay_leader_board_item
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.textView5
 import kotlinx.android.synthetic.main.lay_leader_board_list_item.view.txt_leaderboard_name
@@ -86,7 +90,7 @@ class LeaderBoardActivity : AppCompatActivity() {
         rcyl_leader_board_entries.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 //        ed_txt_program_id.setText("47c14e1d-5786-401e-a850-22c5a91a5399") //QA
-//        ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb")//Prod
+        ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb")//Prod
         rcyl_leader_board_entries.adapter = adapter
         btn_fetch.setOnClickListener {
             val programId = ed_txt_program_id.text.toString()
@@ -115,10 +119,16 @@ class LeaderBoardActivity : AppCompatActivity() {
                 )
             }
         }
+        btn_previous.setOnClickListener {
+            loadEntries(LiveLikePagination.PREVIOUS)
+        }
         btn_next.setOnClickListener {
             loadEntries(LiveLikePagination.NEXT)
         }
-        btn_current_entry.setOnClickListener {
+        btn_first.setOnClickListener {
+            loadEntries(LiveLikePagination.FIRST)
+        }
+        btn_current_user.setOnClickListener {
             leaderBoardId?.let { id ->
                 dialog?.show()
                 (application as LiveLikeApplication).sdk.getLeaderBoardEntryForCurrentUserProfile(id,
@@ -154,18 +164,25 @@ class LeaderBoardActivity : AppCompatActivity() {
                 leaderBoardId!!,
                 pagination,
                 object :
-                    LiveLikeCallback<List<LeaderBoardEntry>>() {
+                    LiveLikeCallback<LeaderBoardEntryPaginationResult>() {
                     override fun onResponse(
-                        result: List<LeaderBoardEntry>?,
+                        result: LeaderBoardEntryPaginationResult?,
                         error: String?
                     ) {
                         prg_leaderboard_entries.visibility = View.INVISIBLE
-                        if (pagination == LiveLikePagination.FIRST)
-                            adapter.list.clear()
+//                        if (pagination == LiveLikePagination.FIRST) {
+
+//                            adapter.notifyDataSetChanged()
+//                        }
                         result?.let {
-                            adapter.list.addAll(result)
-                            adapter.notifyDataSetChanged()
+                            result.list?.let {
+                                if (it.isNotEmpty())
+                                    adapter.list.clear()
+                                adapter.list.addAll(it)
+                            }
+                            txt_count.text = "Count: ${result.count}"
                         }
+                        adapter.notifyDataSetChanged()
                         error?.let {
                             showToast(error)
                         }

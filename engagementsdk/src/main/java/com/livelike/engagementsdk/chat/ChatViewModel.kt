@@ -60,6 +60,7 @@ internal class ChatViewModel(
     var currentChatRoom: ChatRoom? = null
         set(value) {
             field = value
+            chatAdapter.chatRoomId = value?.id
             chatAdapter.isPublicChat = isPublicRoom
         }
 
@@ -292,7 +293,8 @@ internal class ChatViewModel(
     }
 
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
-        val url = Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
+        val url =
+            Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
         Glide.with(context)
             .`as`(ByteArray::class.java)
             .load(url)
