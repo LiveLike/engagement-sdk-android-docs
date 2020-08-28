@@ -1,7 +1,6 @@
 package com.livelike.engagementsdk.core
 
 import com.livelike.engagementsdk.BuildConfig
-import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient.client
 
 internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
 
@@ -23,7 +22,6 @@ internal object EnagagementSdkUncaughtExceptionHandler : Thread.UncaughtExceptio
 
         if (record) {
             throwable?.run {
-                client?.notify(throwable)
                 throwable.printStackTrace()
             }
         }

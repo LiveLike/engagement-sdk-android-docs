@@ -6,12 +6,10 @@ import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
-import com.livelike.engagementsdk.core.ServerDataValidationException
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.core.services.messaging.proxies.filter
@@ -24,9 +22,7 @@ import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
-import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
@@ -272,12 +268,6 @@ internal class ContentSession(
         config: EngagementSDK.SdkConfiguration,
         uuid: String
     ) {
-        if (!validateUuid(uuid)) {
-            logError { "Widget Initialization Failed due no uuid compliant user id received for user" }
-            // Check with ben should we assume user id will always be uuid
-            BugsnagClient.client?.notify(ServerDataValidationException("User id not compliant to uuid"))
-            return
-        }
         analyticService.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(

@@ -3,7 +3,6 @@ package com.livelike.livelikedemo
 import android.app.Application
 import android.content.Context
 import android.os.Looper
-import com.bugsnag.android.Bugsnag
 import com.google.android.exoplayer2.ui.PlayerView
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
@@ -33,7 +32,6 @@ class LiveLikeApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Bugsnag.init(this)
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
 
         initSDK()
