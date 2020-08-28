@@ -2,12 +2,12 @@ package com.livelike.engagementsdk
 
 import android.text.TextUtils
 import com.livelike.engagementsdk.core.utils.logError
-import java.math.BigDecimal
-import java.util.regex.Pattern
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneOffset
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
+import java.math.BigDecimal
+import java.util.regex.Pattern
 
 /**
  * A fixed moment in time with a specified baseline and precision.

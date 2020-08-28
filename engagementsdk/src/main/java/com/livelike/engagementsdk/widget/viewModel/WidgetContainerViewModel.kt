@@ -53,11 +53,10 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     }
                 })
         )
-
         currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
-            widgetObserver(pair?.second, pair?.first)
+            if (pair != null)
+                widgetObserver(pair?.second, pair?.first)
         }
-
         // Show / Hide animation
         widgetContainer.layoutTransition = LayoutTransition()
     }
