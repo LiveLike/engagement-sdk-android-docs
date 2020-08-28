@@ -36,8 +36,9 @@
             <Button
                 android:id="@+id/btn_create"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Create" />
+                android:layout_height="34dp"
+                android:text="Create"
+                android:textSize="12sp" />
 
             <EditText
                 android:id="@+id/ed_chat_room_title"
@@ -57,7 +58,7 @@
             <Button
                 android:id="@+id/btn_visibility"
                 android:layout_width="70dp"
-                android:layout_height="50dp"
+                android:layout_height="34dp"
                 android:text="Visibility"
                 android:textSize="9sp" />
         </LinearLayout>
@@ -70,7 +71,8 @@
             <Button
                 android:id="@+id/btn_join"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="34dp"
+                android:textSize="12sp"
                 android:text="Join" />
 
             <EditText
@@ -97,13 +99,15 @@
             <Button
                 android:id="@+id/btn_change"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="34dp"
+                android:textSize="12sp"
                 android:text="Change ChatRoom" />
 
             <Button
                 android:id="@+id/btn_refresh"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="34dp"
+                android:textSize="12sp"
                 android:text="Refresh ChatRoom List" />
 
             <ProgressBar
@@ -122,7 +126,8 @@
             <Button
                 android:id="@+id/btn_delete"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="34dp"
+                android:textSize="12sp"
                 android:text="Remove User From ChatRoom" />
 
             <ProgressBar
@@ -140,10 +145,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lay_top">
-
-
-    </com.livelike.engagementsdk.chat.ChatView>
+        app:layout_constraintTop_toBottomOf="@+id/lay_top" />
 
     <LinearLayout
         android:id="@+id/lay_join_chat_room"
@@ -157,7 +159,8 @@
         <Button
             android:id="@+id/btn_chat_room_members"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="34dp"
+            android:textSize="12sp"
             android:text="Show Room Members" />
 
         <ProgressBar

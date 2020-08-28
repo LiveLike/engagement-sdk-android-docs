@@ -29,11 +29,11 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getBlockedUsers
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 internal class ChatViewModel(
     val userStream: Stream<LiveLikeUser>,
@@ -67,14 +67,12 @@ internal class ChatViewModel(
     var stickerPackRepository: StickerPackRepository? = null
         set(value) {
             field = value
+            value?.let {
+                stickerPackRepositoryStream.onNext(value)
+            }
             value?.let { chatAdapter.stickerPackRepository = value }
         }
-    val stickerPackRepositoryFlow = flow {
-        while (stickerPackRepository == null) {
-            delay(1000)
-        }
-        emit(stickerPackRepository!!)
-    }
+    val stickerPackRepositoryStream: Stream<StickerPackRepository> = SubscriptionManager()
     var chatReactionRepository: ChatReactionRepository? = null
         set(value) {
             field = value
