@@ -109,14 +109,19 @@ internal class ImagePreloaderMessagingClient(
     }
 
     fun updateProcessingList(imageMessage: ImageMessage) {
-        val msg = processingList.first { msg -> msg == imageMessage }
-        processingList.remove(msg)
-        msg.imagePreloaded++
-        if (msg.imageCount == msg.imagePreloaded) {
-            listener?.onClientMessageEvent(imageMessage.messagingClient, imageMessage.clientMessage)
-        } else {
-            processingList.add(msg)
-        }
+            val msg = processingList.find { msg -> msg == imageMessage }
+            processingList.remove(msg)
+            msg?.let {
+                msg.imagePreloaded++
+                if (msg.imageCount == msg.imagePreloaded) {
+                    listener?.onClientMessageEvent(
+                        imageMessage.messagingClient,
+                        imageMessage.clientMessage
+                    )
+                } else {
+                    processingList.add(msg)
+                }
+            }
     }
 
     private fun getImagesFromJson(
