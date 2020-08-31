@@ -613,7 +613,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     private fun Matcher.allMatches(): List<String> {
         val allMatches = mutableListOf<String>()
         while (find()) {
-            allMatches.add(group())
+            allMatches.add(":${group()}:")
         }
         return allMatches
     }
