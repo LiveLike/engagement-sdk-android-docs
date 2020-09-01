@@ -22,7 +22,9 @@ import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
+import com.livelike.engagementsdk.core.utils.validateUuid
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
@@ -269,6 +271,10 @@ internal class ContentSession(
         config: EngagementSDK.SdkConfiguration,
         uuid: String
     ) {
+        if (!validateUuid(uuid)) {
+            logError { "Widget Initialization Failed due no uuid compliant user id received for user" }
+            return
+        }
         analyticService.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(
