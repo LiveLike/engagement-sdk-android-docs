@@ -216,6 +216,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                     create()
                 }.show()
             }
+            channelManager?.let {
+                selectChannel(it.selectedChannel)
+            }
         } else {
             // checkForNetworkToRecreateActivity()
         }
@@ -569,16 +572,12 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        session?.widgetInterceptor = null
         session?.pause()
         privateGroupChatsession?.pause()
         super.onPause()
     }
 
     override fun onResume() {
-        channelManager?.let {
-            selectChannel(it.selectedChannel)
-        }
         session?.resume()
         privateGroupChatsession?.resume()
         super.onResume()
