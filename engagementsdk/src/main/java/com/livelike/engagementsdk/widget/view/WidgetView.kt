@@ -64,6 +64,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
+        (session as ContentSession?)?.isSetSessionCalled = true
         session.setWidgetViewThemeAttribute(widgetViewThemeAttributes)
         session.setWidgetContainer(this, widgetViewThemeAttributes)
         session.analyticService.trackOrientationChange(resources.configuration.orientation == 1)

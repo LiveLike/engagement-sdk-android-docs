@@ -96,7 +96,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         }
     }
 
-    private fun removeViews() {
+    internal fun removeViews() {
         logDebug { "NOW - Dismiss WidgetInfos" }
         widgetContainer?.removeAllViews()
         widgetContainer?.apply {
