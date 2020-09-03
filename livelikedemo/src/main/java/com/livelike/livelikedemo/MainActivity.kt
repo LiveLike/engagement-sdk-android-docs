@@ -31,12 +31,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.btn_nick_name
@@ -65,6 +59,12 @@ import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -130,6 +130,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    val player = PlayerInfo(
+        "Exo Player",
+        ExoPlayerActivity::class,
+        R.style.Default,
+        true
+
+    )
+
+    val onlyWidget = PlayerInfo(
+        "Widget Only",
+        WidgetOnlyActivity::class,
+        R.style.Default,
+        true
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -139,20 +154,6 @@ class MainActivity : AppCompatActivity() {
             build_no.text = "Bitrise build : ${BuildConfig.VERSION_CODE}"
         }
 
-        val player = PlayerInfo(
-            "Exo Player",
-            ExoPlayerActivity::class,
-            R.style.Default,
-            true
-
-        )
-
-        val onlyWidget = PlayerInfo(
-            "Widget Only",
-            WidgetOnlyActivity::class,
-            R.style.Default,
-            true
-        )
         val drawerDemoActivity =
             PlayerInfo("Exo Player", TwoSessionActivity::class, R.style.Default, false)
 
@@ -250,48 +251,7 @@ class MainActivity : AppCompatActivity() {
         themes_json_button.setOnClickListener {
             DialogUtils.showFilePicker(this,
                 DialogSelectionListener { files ->
-                    if (files.isNotEmpty()) {
-                        ThemeRandomizer.themesList.clear()
-                        themes_json_label.text = "${files.size} selected"
-                    } else {
-                        themes_json_label.text = "None"
-                    }
-                    files?.forEach { file ->
-                        val fin = FileInputStream(file)
-                        val theme: String? = convertStreamToString(fin)
-                        // Make sure you close all streams.
-                        fin.close()
-                        val element =
-                            LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(theme).asJsonObject)
-                        if (element is Result.Success) {
-                            element.data.fontFamilyProvider = object : FontFamilyProvider {
-                                override fun getTypeFace(fontFamilyName: String): Typeface? {
-                                    if (fontFamilyName.contains("Pangolin"))
-                                        return Typeface.createFromAsset(
-                                            resources.assets,
-                                            "fonts/Pangolin-Regular.ttf"
-                                        )
-                                    else if (fontFamilyName.contains("Raleway")) {
-                                        return Typeface.createFromAsset(
-                                            resources.assets,
-                                            "fonts/Raleway-Regular.ttf"
-                                        )
-                                    }
-                                    return null
-                                }
-                            }
-                            ThemeRandomizer.themesList.add(element.data)
-                        }
-                        if (theme != null) {
-                            player.jsonTheme = theme
-                            onlyWidget.jsonTheme = theme
-                        } else
-                            Toast.makeText(
-                                applicationContext,
-                                "Unable to get the theme json",
-                                Toast.LENGTH_LONG
-                            ).show()
-                    }
+                    setupJsonThemesFilePath(files)
                 })
         }
 
@@ -402,6 +362,51 @@ class MainActivity : AppCompatActivity() {
                     ChatOnlyActivity::class.java
                 )
             )
+        }
+    }
+
+    fun setupJsonThemesFilePath(files: Array<out String>?) {
+        if (files?.isNotEmpty() == true) {
+            ThemeRandomizer.themesList.clear()
+            themes_json_label.text = "${files.size} selected"
+        } else {
+            themes_json_label.text = "None"
+        }
+        files?.forEach { file ->
+            val fin = FileInputStream(file)
+            val theme: String? = convertStreamToString(fin)
+            // Make sure you close all streams.
+            fin.close()
+            val element =
+                LiveLikeEngagementTheme.instanceFrom(JsonParser.parseString(theme).asJsonObject)
+            if (element is Result.Success) {
+                element.data.fontFamilyProvider = object : FontFamilyProvider {
+                    override fun getTypeFace(fontFamilyName: String): Typeface? {
+                        if (fontFamilyName.contains("Pangolin"))
+                            return Typeface.createFromAsset(
+                                resources.assets,
+                                "fonts/Pangolin-Regular.ttf"
+                            )
+                        else if (fontFamilyName.contains("Raleway")) {
+                            return Typeface.createFromAsset(
+                                resources.assets,
+                                "fonts/Raleway-Regular.ttf"
+                            )
+                        }
+                        return null
+                    }
+                }
+                ThemeRandomizer.themesList.add(element.data)
+            }
+            if (theme != null) {
+                player.jsonTheme = theme
+                onlyWidget.jsonTheme = theme
+            } else
+                Toast.makeText(
+                    applicationContext,
+                    "Unable to get the theme json",
+                    Toast.LENGTH_LONG
+                ).show()
         }
     }
 }
