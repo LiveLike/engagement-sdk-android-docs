@@ -6,12 +6,10 @@ import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
-import com.livelike.engagementsdk.core.ServerDataValidationException
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.core.exceptionhelpers.BugsnagClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.core.services.messaging.proxies.filter
@@ -38,7 +36,6 @@ import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
-import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -47,6 +44,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
+import java.io.IOException
 
 internal class ContentSession(
     clientId: String,
@@ -82,6 +80,7 @@ internal class ContentSession(
 
     private var widgetThemeAttributes: WidgetViewThemeAttributes? = null
     private var publishedWidgetListResponse: PublishedWidgetListResponse? = null
+    internal var isSetSessionCalled = false
 
     override fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes) {
         widgetThemeAttributes = widgetViewThemeAttributes
@@ -274,8 +273,6 @@ internal class ContentSession(
     ) {
         if (!validateUuid(uuid)) {
             logError { "Widget Initialization Failed due no uuid compliant user id received for user" }
-            // Check with ben should we assume user id will always be uuid
-            BugsnagClient.client?.notify(ServerDataValidationException("User id not compliant to uuid"))
             return
         }
         analyticService.trackLastWidgetStatus(true)
@@ -317,6 +314,11 @@ internal class ContentSession(
 
     override fun resume() {
         logVerbose { "Resuming the Session" }
+        if (!isSetSessionCalled) {
+            widgetContainer.removeViews()
+        } else {
+            isSetSessionCalled = false
+        }
         widgetClient?.start()
         pubnubClientForMessageCount?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }

@@ -53,11 +53,10 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     }
                 })
         )
-
         currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
-            widgetObserver(pair?.second, pair?.first)
+            if (pair != null)
+                widgetObserver(pair?.second, pair?.first)
         }
-
         // Show / Hide animation
         widgetContainer.layoutTransition = LayoutTransition()
     }
@@ -97,7 +96,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         }
     }
 
-    private fun removeViews() {
+    internal fun removeViews() {
         logDebug { "NOW - Dismiss WidgetInfos" }
         widgetContainer?.removeAllViews()
         widgetContainer?.apply {

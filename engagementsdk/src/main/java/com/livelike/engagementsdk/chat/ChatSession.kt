@@ -25,7 +25,6 @@ import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -34,6 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
  * Created by Shivansh Mittal on 2020-04-08.
@@ -293,6 +293,7 @@ internal class ChatSession(
                     chatRoom.reactionPacksUrl,
                     chatRoom.reportMessageUrl
                 )
+                delay(1000)
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }

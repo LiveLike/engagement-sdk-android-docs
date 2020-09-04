@@ -20,12 +20,12 @@ android {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
-        versionName "2.6.3"
+        versionName "2.6.4"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
 
-        buildConfigField "String", "SDK_VERSION", '"2.6.3"'
+        buildConfigField "String", "SDK_VERSION", '"2.6.4"'
     }
 
     buildTypes {
@@ -106,7 +106,6 @@ dependencies {
     // Analytics
     implementation "com.mixpanel.android:mixpanel-android:$mixpanelVersion"
 
-    implementation "com.bugsnag:bugsnag-android:$bugsnagVersion"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
 }
 

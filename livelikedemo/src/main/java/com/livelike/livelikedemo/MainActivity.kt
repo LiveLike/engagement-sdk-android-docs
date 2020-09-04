@@ -31,12 +31,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
-import java.io.BufferedReader
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
-import kotlin.reflect.KClass
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.btn_nick_name
@@ -63,8 +57,15 @@ import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
+import kotlinx.android.synthetic.main.activity_main.widget_viewModel
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
 
@@ -102,9 +103,10 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 this.finishAfterTransition()
             }
-            } else {
-                super.onBackPressed()
-            } }
+        } else {
+            super.onBackPressed()
+        }
+    }
 
     fun registerNetWorkCallback() {
         channelManager = (application as LiveLikeApplication).channelManager
@@ -391,6 +393,17 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
+
+        widget_viewModel.setOnClickListener {
+            startActivity(
+                Intent(
+                    this,
+                    WidgetActivity::class.java
+                )
+            )
+        }
+
+
 
         widgets_only_button.setOnClickListener {
             startActivity(playerDetailIntent(onlyWidget))

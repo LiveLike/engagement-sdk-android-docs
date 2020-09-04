@@ -38,10 +38,6 @@ import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
-import java.util.Calendar
-import java.util.Date
-import java.util.Timer
-import java.util.TimerTask
 import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
@@ -56,6 +52,10 @@ import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
+import java.util.Calendar
+import java.util.Date
+import java.util.Timer
+import java.util.TimerTask
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -88,16 +88,17 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
         }
     private val timer = Timer()
-    private var chatRoomIds: List<String> = when {
-        BuildConfig.DEBUG -> {
+    private var chatRoomIds: List<String> = when (BuildConfig.FLAVOR) {
+        "staging" -> {
             listOf("4d5ecf8d-3012-4ca2-8a56-4b8470c1ec8b", "e50ee571-7679-4efd-ad0b-e5fa00e38384")
         }
-        BuildConfig.BUILD_TYPE == "qa" -> {
-            listOf("dd4582e4-d558-4f56-96d7-0b2d8bb0a115", "143ef6fc-8f88-474a-bee9-e0e660bcc265")
+        "qatesting" -> {
+            listOf("db177f26-2715-4b9f-9559-83fa05e58bfc", "73a19566-a855-432f-9a70-65266e79a81f")
         }
-        else -> {
+        "production" -> {
             listOf("dba595c6-afab-4f73-b22f-c7c0cb317ca9", "f05ee348-b8e5-4107-8019-c66fad7054a8")
         }
+        else -> listOf()
     }
     private lateinit var chatRoomLastTimeStampMap: MutableMap<String, Long>
 
@@ -214,6 +215,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
                     create()
                 }.show()
+            }
+            channelManager?.let {
+                selectChannel(it.selectedChannel)
             }
         } else {
             // checkForNetworkToRecreateActivity()
@@ -568,16 +572,12 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        session?.widgetInterceptor = null
         session?.pause()
         privateGroupChatsession?.pause()
         super.onPause()
     }
 
     override fun onResume() {
-        channelManager?.let {
-            selectChannel(it.selectedChannel)
-        }
         session?.resume()
         privateGroupChatsession?.resume()
         super.onResume()

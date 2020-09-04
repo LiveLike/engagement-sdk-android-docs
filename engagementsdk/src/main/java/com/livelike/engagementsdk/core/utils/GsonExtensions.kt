@@ -8,10 +8,10 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.livelike.engagementsdk.parseISODateTime
-import java.lang.reflect.Type
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
+import java.lang.reflect.Type
 
 internal fun JsonObject.extractStringOrEmpty(propertyName: String): String {
     return if (this.has(propertyName) && !this[propertyName].isJsonNull) this[propertyName].asString else ""
