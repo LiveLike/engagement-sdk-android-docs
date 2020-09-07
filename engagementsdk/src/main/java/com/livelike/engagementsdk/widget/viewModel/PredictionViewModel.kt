@@ -292,7 +292,12 @@ internal class PredictionViewModel(
 
                     // Prediction widget votes on dismiss
                     selectedOption?.getMergedVoteUrl()?.let { url ->
-                        dataClient.voteAsync(url, selectedOption.id, userRepository.userAccessToken)
+                        dataClient.voteAsync(
+                            url,
+                            selectedOption.id,
+                            userRepository.userAccessToken,
+                            userRepository = userRepository
+                        )
                     }
 
                     // Save widget id and voted option for followup widget

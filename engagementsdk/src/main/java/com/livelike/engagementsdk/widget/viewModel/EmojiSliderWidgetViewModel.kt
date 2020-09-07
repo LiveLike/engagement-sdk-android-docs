@@ -83,7 +83,8 @@ internal class EmojiSliderWidgetViewModel(
             data.latest()?.voteUrl?.let {
                 dataClient.voteAsync(
                     it, "", userRepository?.userAccessToken, FormBody.Builder()
-                        .add("magnitude", value).build()
+                        .add("magnitude", value).build(),
+                    userRepository = userRepository
                 )
             }
         }
