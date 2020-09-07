@@ -120,7 +120,7 @@ internal class ContentSession(
     }
 
     override fun getRewardItems(): List<RewardItem> {
-        TODO("Not yet implemented")
+       return programRepository.program?.rewardItems?: listOf()
     }
 
     override var analyticService: AnalyticsService =
