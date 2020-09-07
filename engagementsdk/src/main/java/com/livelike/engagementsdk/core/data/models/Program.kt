@@ -46,7 +46,7 @@ data class LeaderBoard(
     @SerializedName("reward_item") val rewardItem: LeaderBoardReward
 )
 
-internal data class RewardItem(
+data class RewardItem(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,

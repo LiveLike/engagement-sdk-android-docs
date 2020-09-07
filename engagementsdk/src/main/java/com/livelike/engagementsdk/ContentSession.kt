@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -116,6 +117,10 @@ internal class ContentSession(
                 liveLikeCallback.onResponse(null, e.message)
             }
         }
+    }
+
+    override fun getRewardItems(): List<RewardItem> {
+        TODO("Not yet implemented")
     }
 
     override var analyticService: AnalyticsService =
