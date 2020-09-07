@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.respository.WidgetRepository
+import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -35,6 +36,8 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
     val rank: Stream<Int> =
         SubscriptionManager()
     private var profileUrl: String = ""
+
+    var userProfileDelegate: UserProfileDelegate? = null
 
     /**
      * Create or init user according to passed access token.

@@ -28,7 +28,7 @@ interface IEngagement {
     val userStream: Stream<LiveLikeUserApi>
 
      /* Set user profile delegate to intercept any user related updates like rewards */
-    val userProfileDelegate: UserProfileDelegate?
+    var userProfileDelegate: UserProfileDelegate?
 
 
     /** Override the default auto-generated chat nickname **/
