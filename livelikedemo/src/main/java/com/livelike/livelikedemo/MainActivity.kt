@@ -368,9 +368,13 @@ class MainActivity : AppCompatActivity() {
     fun setupJsonThemesFilePath(files: Array<out String>?) {
         if (files?.isNotEmpty() == true) {
             ThemeRandomizer.themesList.clear()
-            themes_json_label.text = "${files.size} selected"
+            themes_json_label.post {
+                themes_json_label.text = "${files.size} selected"
+            }
         } else {
-            themes_json_label.text = "None"
+            themes_json_label.post {
+                themes_json_label.text = "None"
+            }
         }
         files?.forEach { file ->
             val fin = FileInputStream(file)
@@ -402,11 +406,13 @@ class MainActivity : AppCompatActivity() {
                 player.jsonTheme = theme
                 onlyWidget.jsonTheme = theme
             } else
-                Toast.makeText(
-                    applicationContext,
-                    "Unable to get the theme json",
-                    Toast.LENGTH_LONG
-                ).show()
+                themes_json_label.post {
+                    Toast.makeText(
+                        applicationContext,
+                        "Unable to get the theme json",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
         }
     }
 }
