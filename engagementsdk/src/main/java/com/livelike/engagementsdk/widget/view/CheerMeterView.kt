@@ -262,7 +262,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             var handler = Handler(Looper.getMainLooper())
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 // when tapped for first time
-                if (viewModel?.totalVoteCount == 0) {
+                if (viewModel?.totalVoteCount == 0 && v.isClickable) {
                     this@CheerMeterView.clearStartingAnimations()
                 }
                 when (event.action) {
