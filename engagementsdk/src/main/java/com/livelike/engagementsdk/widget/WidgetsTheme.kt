@@ -92,10 +92,10 @@ data class ViewStyleProps(
     val padding: List<Double>? = null
 ) : BaseTheme() {
     override fun validate(): String? {
-        if (AndroidResource.getColorFromString(borderColor) == null)
-            return "Unable to parse Border Color"
-        if (AndroidResource.getColorFromString(fontColor) == null)
-            return "Unable to parse Font Color"
+//        if (AndroidResource.getColorFromString(borderColor) == null)
+//            return "Unable to parse Border Color"
+//        if (AndroidResource.getColorFromString(fontColor) == null)
+//            return "Unable to parse Font Color"
         return background?.validate()
     }
 }

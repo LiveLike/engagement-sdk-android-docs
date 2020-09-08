@@ -60,7 +60,9 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-        viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
+        viewModel?.widgetState?.subscribe(javaClass.simpleName) {
+            stateObserver(it)
+        }
 //        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
         viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
@@ -176,7 +178,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             showTimer()
             logDebug { "showing PollWidget" }
-            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
+            if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
+                widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
         }
         if (widget == null) {
             inflated = false

@@ -28,7 +28,6 @@ import com.livelike.livelikedemo.models.PredictionResponse
 import com.livelike.livelikedemo.models.QuizRequest
 import com.livelike.livelikedemo.models.QuizResponse
 import com.livelike.livelikedemo.utils.ThemeRandomizer
-import kotlin.random.Random
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.progress_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rcyl_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.widget_view
@@ -44,6 +43,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import kotlin.random.Random
 
 class WidgetOnlyActivity : AppCompatActivity() {
     private lateinit var session: LiveLikeContentSession

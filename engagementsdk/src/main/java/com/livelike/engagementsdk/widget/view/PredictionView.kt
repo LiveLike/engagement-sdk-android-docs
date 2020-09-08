@@ -278,7 +278,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 textEggTimer?.visibility = View.GONE
             }
             logDebug { "showing PredictionView Widget" }
-            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
+            if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
+                widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
         }
 
         if (widget == null) {
