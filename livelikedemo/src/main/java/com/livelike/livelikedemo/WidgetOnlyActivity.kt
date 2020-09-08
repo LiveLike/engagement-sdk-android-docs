@@ -13,6 +13,7 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
 import com.livelike.engagementsdk.widget.domain.Reward
@@ -47,8 +48,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+import java.time.LocalTime
 import kotlin.random.Random
 
 class WidgetOnlyActivity : AppCompatActivity() {
@@ -142,9 +142,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
             UserProfileDelegate {
-            override fun userProfile(reward: Reward, rewardSource: RewardSource) {
+            override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
                 val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
-                rewards_tv.text =  "At time ${DateTimeFormatter.ISO_LOCAL_TIME.format(ZonedDateTime.now())} : $text"
+                rewards_tv.text =  "At time ${LocalTime.now()} : $text"
                 println(text)
             }
         }

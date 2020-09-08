@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setNickname
@@ -38,6 +39,9 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
     private var profileUrl: String = ""
 
     var userProfileDelegate: UserProfileDelegate? = null
+
+    val rewardItemMapCache : MutableMap<String,RewardItem>  = mutableMapOf()
+
 
     /**
      * Create or init user according to passed access token.
@@ -113,6 +117,12 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
         currentUserStream.latest()?.apply {
             this.userPic = url
             currentUserStream.onNext(this)
+        }
+    }
+
+    fun updateRewardItemCache(rewardItems: List<RewardItem>) {
+        rewardItems.forEach {
+            rewardItemMapCache[it.id] = it
         }
     }
 }

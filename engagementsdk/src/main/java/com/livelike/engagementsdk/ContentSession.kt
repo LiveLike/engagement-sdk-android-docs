@@ -189,6 +189,7 @@ internal class ContentSession(
                             if (program !== null) {
                                 programRepository.program = program
                                 userRepository.rewardType = program.rewardsType
+                                userRepository.updateRewardItemCache(program.rewardItems)
                                 isGamificationEnabled =
                                     !program.rewardsType.equals(RewardsType.NONE.key)
                                 initializeWidgetMessaging(

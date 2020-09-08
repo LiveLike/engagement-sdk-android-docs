@@ -87,7 +87,13 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
             voteUrl = jsonObject.extractStringOrEmpty("url")
             gson.fromJson<VoteApiResponse>(jsonObject,VoteApiResponse::class.java).rewards?.let {
                 for ( reward in it){
-                    userRepository?.userProfileDelegate?.userProfile(Reward(reward.rewardId, reward.rewardItemAmount),RewardSource.WIDGETS)
+                    userRepository?.run {
+                        rewardItemMapCache[reward.rewardId]?.let {
+                            currentUserStream.latest()?.let { user->
+                                userProfileDelegate?.userProfile(user, Reward(it, reward.rewardItemAmount), RewardSource.WIDGETS)
+                            }
+                        }
+                    }
                 }
             }
             return@afterPrevious voteUrl

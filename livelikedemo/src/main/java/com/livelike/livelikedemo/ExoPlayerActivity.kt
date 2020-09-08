@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.WidgetListener
@@ -236,7 +237,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object : UserProfileDelegate{
-            override fun userProfile(reward: Reward, rewardSource: RewardSource) {
+            override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
                 val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
                 logsPreview.text = "$text \n\n ${logsPreview.text}"
                 fullLogs.text = "$text \n\n ${fullLogs.text}"
