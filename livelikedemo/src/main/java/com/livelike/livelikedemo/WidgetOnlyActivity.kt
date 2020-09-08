@@ -15,6 +15,9 @@ import com.livelike.engagementsdk.BuildConfig
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
+import com.livelike.engagementsdk.widget.domain.Reward
+import com.livelike.engagementsdk.widget.domain.RewardSource
+import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -30,6 +33,7 @@ import com.livelike.livelikedemo.models.QuizResponse
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.progress_view
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rcyl_view
+import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.rewards_tv
 import kotlinx.android.synthetic.main.activity_each_widget_type_with_variance.widget_view
 import kotlinx.android.synthetic.main.rcyl_item_header.view.textView
 import kotlinx.android.synthetic.main.rcyl_list_item.view.button
@@ -43,6 +47,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 class WidgetOnlyActivity : AppCompatActivity() {
@@ -133,6 +139,15 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         })
         widget_view.setSession(session)
+
+        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
+            UserProfileDelegate {
+            override fun userProfile(reward: Reward, rewardSource: RewardSource) {
+                val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
+                rewards_tv.text =  "At time ${DateTimeFormatter.ISO_LOCAL_TIME.format(ZonedDateTime.now())} : $text"
+                println(text)
+            }
+        }
     }
 
     override fun onResume() {

@@ -235,11 +235,12 @@ class ExoPlayerActivity : AppCompatActivity() {
             chat_view.isChatInputVisible = false
         }
 
-        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object : UserProfileDelegate(){
+        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object : UserProfileDelegate{
             override fun userProfile(reward: Reward, rewardSource: RewardSource) {
                 val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
                 logsPreview.text = "$text \n\n ${logsPreview.text}"
                 fullLogs.text = "$text \n\n ${fullLogs.text}"
+                println(text)
             }
         }
     }

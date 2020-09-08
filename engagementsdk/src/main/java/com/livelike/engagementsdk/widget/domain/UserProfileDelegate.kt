@@ -1,8 +1,7 @@
 package com.livelike.engagementsdk.widget.domain
 
-abstract class UserProfileDelegate {
-
-    abstract fun userProfile(reward : com.livelike.engagementsdk.widget.domain.Reward, rewardSource: RewardSource)
+interface UserProfileDelegate {
+    fun userProfile(reward : com.livelike.engagementsdk.widget.domain.Reward, rewardSource: RewardSource)
 }
 
 
