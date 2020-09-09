@@ -59,6 +59,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                 }
             }
             WidgetState.DISMISS -> {
+                dataModelObserver(null)
             }
         }
     }
