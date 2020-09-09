@@ -48,7 +48,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import java.text.SimpleDateFormat
 import java.time.LocalTime
+import java.util.Calendar
 import kotlin.random.Random
 
 class WidgetOnlyActivity : AppCompatActivity() {
@@ -144,7 +146,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             UserProfileDelegate {
             override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
                 val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
-                rewards_tv.text =  "At time ${LocalTime.now()} : $text"
+                rewards_tv.text =  "At time ${SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().time)} : $text"
                 println(text)
             }
         }
