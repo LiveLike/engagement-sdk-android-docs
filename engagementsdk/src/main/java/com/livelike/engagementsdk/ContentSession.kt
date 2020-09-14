@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -118,6 +119,10 @@ internal class ContentSession(
         }
     }
 
+    override fun getRewardItems(): List<RewardItem> {
+       return programRepository.program?.rewardItems?: listOf()
+    }
+
     override var analyticService: AnalyticsService =
         MockAnalyticsService(clientId)
     private val llDataClient =
@@ -184,6 +189,7 @@ internal class ContentSession(
                             if (program !== null) {
                                 programRepository.program = program
                                 userRepository.rewardType = program.rewardsType
+                                userRepository.updateRewardItemCache(program.rewardItems)
                                 isGamificationEnabled =
                                     !program.rewardsType.equals(RewardsType.NONE.key)
                                 initializeWidgetMessaging(

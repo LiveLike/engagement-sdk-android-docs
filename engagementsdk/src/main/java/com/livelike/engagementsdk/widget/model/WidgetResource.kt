@@ -111,16 +111,3 @@ internal data class Option(
     }
 }
 
-internal data class Vote(
-    val id: String,
-    val url: String = "",
-    val choice_id: String = "",
-    val option_id: String = ""
-)
-
-internal data class Reward(
-    val id: String?,
-    val rank: Int?,
-    val new_points: Int?,
-    val points: Int?
-)

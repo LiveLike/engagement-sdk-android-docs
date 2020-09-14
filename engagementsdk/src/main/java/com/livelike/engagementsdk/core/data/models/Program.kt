@@ -21,7 +21,8 @@ internal data class Program(
     val chatRooms: List<ChatRoom>?,
     val defaultChatRoom: ChatRoom?,
     val reportUrl: String?,
-    val leaderboards: List<LeaderBoardResource>
+    val leaderboards: List<LeaderBoardResource>,
+    val rewardItems : List<RewardItem>
 )
 
 internal data class LeaderBoardResource(
@@ -46,7 +47,7 @@ data class LeaderBoard(
     @SerializedName("reward_item") val rewardItem: LeaderBoardReward
 )
 
-internal data class RewardItem(
+data class RewardItem(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,
@@ -116,7 +117,9 @@ internal data class ProgramModel(
     val chatRooms: List<ChatRoom>?,
     @SerializedName("default_chat_room")
     val defaultChatRoom: ChatRoom?,
-    val leaderboards: List<LeaderBoardResource>
+    val leaderboards: List<LeaderBoardResource>,
+    @SerializedName("reward_items")
+    val rewardItems: List<RewardItem>
 )
 
 internal fun ProgramModel.toProgram(): Program {
@@ -138,7 +141,8 @@ internal fun ProgramModel.toProgram(): Program {
         chatRooms,
         defaultChatRoom,
         reportUrl,
-        leaderboards
+        leaderboards,
+        rewardItems
     )
 }
 

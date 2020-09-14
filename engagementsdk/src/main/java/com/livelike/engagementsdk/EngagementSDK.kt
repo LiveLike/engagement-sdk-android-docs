@@ -38,13 +38,14 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
-import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
+import java.io.IOException
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -71,6 +72,12 @@ class EngagementSDK(
 
     internal val userRepository =
         UserRepository(clientId)
+
+    override var userProfileDelegate: UserProfileDelegate? = null
+        set(value) {
+            field = value
+            userRepository.userProfileDelegate = value
+        }
 
     private val job = SupervisorJob()
 
