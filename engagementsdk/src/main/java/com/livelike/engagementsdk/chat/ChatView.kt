@@ -48,9 +48,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.view.loadImage
-import java.util.Date
-import kotlin.math.max
-import kotlin.math.min
 import kotlinx.android.synthetic.main.chat_input.view.button_chat_send
 import kotlinx.android.synthetic.main.chat_input.view.button_emoji
 import kotlinx.android.synthetic.main.chat_input.view.chat_input_background
@@ -77,6 +74,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
+import java.util.Date
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *  This view will load and display a chat component. To use chat view
@@ -449,32 +449,34 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         chatViewModel: ChatViewModel
     ) {
         stickerKeyboardView.initTheme(chatAttribute)
-        uiScope.launch {
-            chatViewModel.stickerPackRepositoryFlow.collect { stickerPackRepository ->
-                stickerKeyboardView.setProgram(stickerPackRepository) {
-                    if (it.isNullOrEmpty()) {
-                        button_emoji?.visibility = View.GONE
-                        sticker_keyboard?.visibility = View.GONE
-                    } else {
-                        button_emoji?.visibility = View.VISIBLE
-                    }
-                    viewModel?.chatAdapter?.notifyDataSetChanged()
-                }
-                // used to pass the shortcode to the keyboard
-                stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
-                    override fun onClick(sticker: Sticker) {
-                        val textToInsert = ":${sticker.shortcode}:"
-                        val start = max(edittext_chat_message.selectionStart, 0)
-                        val end = max(edittext_chat_message.selectionEnd, 0)
-                        if (edittext_chat_message.text!!.length + textToInsert.length < 250) {
-                            // replace selected text or start where the cursor is
-                            edittext_chat_message.text?.replace(
-                                min(start, end), max(start, end),
-                                textToInsert, 0, textToInsert.length
-                            )
+        chatViewModel.stickerPackRepositoryStream.subscribe(this@ChatView) {stickerPackRepository->
+            uiScope.launch {
+                stickerPackRepository?.let {
+                    stickerKeyboardView.setProgram(stickerPackRepository) {
+                        if (it.isNullOrEmpty()) {
+                            button_emoji?.visibility = View.GONE
+                            sticker_keyboard?.visibility = View.GONE
+                        } else {
+                            button_emoji?.visibility = View.VISIBLE
                         }
+                        viewModel?.chatAdapter?.notifyDataSetChanged()
                     }
-                })
+                    // used to pass the shortcode to the keyboard
+                    stickerKeyboardView.setOnClickListener(object : FragmentClickListener {
+                        override fun onClick(sticker: Sticker) {
+                            val textToInsert = ":${sticker.shortcode}:"
+                            val start = max(edittext_chat_message.selectionStart, 0)
+                            val end = max(edittext_chat_message.selectionEnd, 0)
+                            if (edittext_chat_message.text!!.length + textToInsert.length < 250) {
+                                // replace selected text or start where the cursor is
+                                edittext_chat_message.text?.replace(
+                                    min(start, end), max(start, end),
+                                    textToInsert, 0, textToInsert.length
+                                )
+                            }
+                        }
+                    })
+                }
             }
         }
     }

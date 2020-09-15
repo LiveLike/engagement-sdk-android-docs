@@ -613,7 +613,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     private fun Matcher.allMatches(): List<String> {
         val allMatches = mutableListOf<String>()
         while (find()) {
-            allMatches.add(group())
+            allMatches.add(":${group()}:")
         }
         return allMatches
     }
@@ -774,7 +774,7 @@ enum class DismissAction {
 }
 
 const val CHAT_MESSAGE_ID = "Chat Message ID"
-const val ALERT_ID = "Alert ID"
+const val ALERT_ID = "Alert Id"
 const val PROGRAM_ID = "Program ID"
 const val LINK_URL = "Link Url"
 const val CHAT_REACTION_ID = "Chat Reaction ID"

@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
+import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 
 interface IEngagement {
 
@@ -25,6 +26,10 @@ interface IEngagement {
      * Returns public user stream.
      */
     val userStream: Stream<LiveLikeUserApi>
+
+     /* Set user profile delegate to intercept any user related updates like rewards */
+    var userProfileDelegate: UserProfileDelegate?
+
 
     /** Override the default auto-generated chat nickname **/
     fun updateChatNickname(nickname: String)
@@ -94,4 +99,5 @@ interface IEngagement {
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
+
 }

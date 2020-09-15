@@ -123,8 +123,10 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
             if (viewModel?.enableDefaultWidgetTransition) {
                 defaultStateTransitionManager(it)
             }
+
         }
     }
+
 
     internal abstract fun lockInteraction()
 
