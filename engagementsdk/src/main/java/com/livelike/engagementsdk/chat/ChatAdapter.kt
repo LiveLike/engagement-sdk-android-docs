@@ -339,7 +339,8 @@ internal class ChatRecyclerAdapter(
                                         )
                                     }
                                 }
-                                notifyItemChanged(currentChatReactionPopUpViewPos)
+                                //removing this call as it is not necessary and may cause crash
+                               // notifyItemChanged(currentChatReactionPopUpViewPos)
                             }
                         }
                     }
