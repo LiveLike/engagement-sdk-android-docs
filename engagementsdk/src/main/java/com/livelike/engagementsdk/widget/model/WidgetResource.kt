@@ -24,7 +24,8 @@ internal open class Resource(
     val impression_count: String = "",
     val unique_impression_count: String = "",
     val engagement_count: String = "",
-    val engagement_precent: String = ""
+    val engagement_precent: String = "",
+    val claim_url: String? = null
 ) {
 
     init {
