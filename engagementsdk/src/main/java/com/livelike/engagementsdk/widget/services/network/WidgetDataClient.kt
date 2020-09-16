@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.core.data.models.VoteApiResponse
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
@@ -14,6 +15,7 @@ import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVote
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.util.SingleRunner
@@ -39,7 +41,8 @@ internal interface WidgetDataClient {
         body: RequestBody? = null,
         type: RequestType? = null,
         useVoteUrl: Boolean = true,
-        userRepository: UserRepository?
+        userRepository: UserRepository?,
+        widgetId: String? = null
     ): String?
 
     fun registerImpression(impressionUrl: String, accessToken: String?)
@@ -64,7 +67,8 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         body: RequestBody?,
         type: RequestType?,
         useVoteUrl: Boolean,
-        userRepository: UserRepository?
+        userRepository: UserRepository?,
+        widgetId: String?
     ): String? {
         return singleRunner.afterPrevious {
             val jsonObject : JsonObject
@@ -85,7 +89,13 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 )
             }
             voteUrl = jsonObject.extractStringOrEmpty("url")
-            gson.fromJson<VoteApiResponse>(jsonObject,VoteApiResponse::class.java).rewards?.let {
+            val voteApiResponse = gson.fromJson<VoteApiResponse>(jsonObject, VoteApiResponse::class.java)
+            voteApiResponse?.claimToken?.let {
+                widgetId?.let { widgetId->
+                    EngagementSDK.predictionWidgetVoteRepository.add(PredictionWidgetVote(widgetId,it)){}
+                }
+            }
+            voteApiResponse.rewards?.let {
                 for ( reward in it){
                     userRepository?.run {
                         rewardItemMapCache[reward.rewardId]?.let {
