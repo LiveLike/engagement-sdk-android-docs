@@ -9,7 +9,7 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedPrefer
 class LocalPredictionWidgetVoteRepository : PredictionWidgetVoteRepository {
 
 
-    override fun add(vote: PredictionWidgetVote, completion: () -> Void) {
+    override fun add(vote: PredictionWidgetVote, completion: () -> Unit) {
       val json =  getSharedPreferences().getString(PREFERENCE_KEY_WIDGET_CLAIM_TOKEN, null)
       var map =  gson.fromJson<MutableMap<String,String>>(json, object : TypeToken<MutableMap<String, String>>() {}.type)
         if(map ==null){
@@ -19,20 +19,21 @@ class LocalPredictionWidgetVoteRepository : PredictionWidgetVoteRepository {
         getSharedPreferences().edit().putString(PREFERENCE_KEY_WIDGET_CLAIM_TOKEN, gson.toJson(map)).apply()
     }
 
-    override fun get(predictionWidgetID: String, completion: (String?) -> Void) {
+    override fun get(predictionWidgetID: String) : String? {
         val json = getSharedPreferences().getString(PREFERENCE_KEY_WIDGET_CLAIM_TOKEN, null)
         json?.let {
            val map =  gson.fromJson<MutableMap<String,String>>(json, object : TypeToken<MutableMap<String, String>>() {}.type)
-            completion(map[predictionWidgetID])
+            return map[predictionWidgetID]
         }
+        return null
     }
 
 }
 
 
 interface PredictionWidgetVoteRepository{
-    fun add(vote: PredictionWidgetVote, completion: () -> Void)
-    fun get(predictionWidgetID: String, completion: (String?) -> Void)
+    fun add(vote: PredictionWidgetVote, completion: () -> Unit)
+    fun get(predictionWidgetID: String) : String?
 }
 
 
