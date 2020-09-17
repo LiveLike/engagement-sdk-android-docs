@@ -26,6 +26,7 @@ import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
 class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
@@ -188,9 +189,16 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         removeAllViews()
     }
 
-    fun moveToNextState() {
+    fun getCurrentState(): WidgetStates? {
         if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
-            (getChildAt(0) as SpecifiedWidgetView).moveToNextState()
+            return (getChildAt(0) as SpecifiedWidgetView).getCurrentState()
+        }
+        return null
+    }
+
+    fun moveToNextState(widgetStates: WidgetStates? = null) {
+        if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
+            (getChildAt(0) as SpecifiedWidgetView).moveToNextState(widgetStates)
         }
     }
 }

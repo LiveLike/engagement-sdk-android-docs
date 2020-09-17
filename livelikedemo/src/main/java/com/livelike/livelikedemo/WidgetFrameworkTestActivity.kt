@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeWidget
+import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -17,6 +18,10 @@ import com.livelike.livelikedemo.utils.ThemeRandomizer
 import kotlinx.android.synthetic.main.activity_widget_framework.current_state_text_view
 import kotlinx.android.synthetic.main.activity_widget_framework.input_widget_json
 import kotlinx.android.synthetic.main.activity_widget_framework.move_to_next_state
+import kotlinx.android.synthetic.main.activity_widget_framework.radio_finished
+import kotlinx.android.synthetic.main.activity_widget_framework.radio_interaction
+import kotlinx.android.synthetic.main.activity_widget_framework.radio_ready
+import kotlinx.android.synthetic.main.activity_widget_framework.radio_result
 import kotlinx.android.synthetic.main.activity_widget_framework.show_my_widget
 import kotlinx.android.synthetic.main.activity_widget_framework.show_widget
 import kotlinx.android.synthetic.main.activity_widget_framework.widget_view
@@ -40,16 +45,54 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 ), object : TypeToken<List<LiveLikeWidget>>() {}.type
             ) ?: arrayListOf()
         show_my_widget.setOnClickListener {
-            DialogUtils.showMyWidgetsDialog(this,
-                (application as LiveLikeApplication).sdk,
-                myWidgetsList,
-                object : LiveLikeCallback<LiveLikeWidget>() {
-                    override fun onResponse(result: LiveLikeWidget?, error: String?) {
-                        result?.let {
-                            widget_view.displayWidget(
+//            DialogUtils.showMyWidgetsDialog(this,
+//                (application as LiveLikeApplication).sdk,
+//                myWidgetsList,
+//                object : LiveLikeCallback<LiveLikeWidget>() {
+//                    override fun onResponse(result: LiveLikeWidget?, error: String?) {
+//                        result?.let {
+//                            widget_view.displayWidget(
+//                                (application as LiveLikeApplication).sdk,
+//                                result
+//                            )
+//                        }
+//                    }
+//                })
+            val channelManager = (application as LiveLikeApplication).channelManager
+            val channel = channelManager.selectedChannel
+            val session = (application as LiveLikeApplication).createPublicSession(
+                channel.llProgram.toString(),
+                null
+            )
+            session.getPublishedWidgets(
+                LiveLikePagination.FIRST,
+                object : LiveLikeCallback<List<LiveLikeWidget?>>() {
+                    override fun onResponse(
+                        result: List<LiveLikeWidget?>?,
+                        error: String?
+                    ) {
+                        error?.let {
+                            Toast.makeText(applicationContext, "$it", Toast.LENGTH_SHORT).show()
+                        }
+                        println("WidgetFrameworkTestActivity.onResponse->${result?.size}")
+
+                        result?.map { it!! }.let { list ->
+                            DialogUtils.showMyWidgetsDialog(this@WidgetFrameworkTestActivity,
                                 (application as LiveLikeApplication).sdk,
-                                result
-                            )
+                                ArrayList(list),
+                                object : LiveLikeCallback<LiveLikeWidget>() {
+                                    override fun onResponse(
+                                        result: LiveLikeWidget?,
+                                        error: String?
+                                    ) {
+                                        result?.let {
+                                            widget_view.displayWidget(
+                                                (application as LiveLikeApplication).sdk,
+                                                result
+                                            )
+                                        }
+                                    }
+                                })
                         }
                     }
                 })
@@ -84,6 +127,40 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 widgetData: LiveLikeWidgetEntity
             ) {
                 current_state_text_view.text = "Current State : ${state.name}"
+                when (state) {
+                    WidgetStates.FINISHED -> {
+                        radio_finished.isChecked = true
+                    }
+                    WidgetStates.RESULTS -> {
+                        radio_result.isChecked = true
+                    }
+                    WidgetStates.INTERACTING -> {
+                        radio_interaction.isChecked = true
+                    }
+                    WidgetStates.READY -> {
+                        radio_ready.isChecked = true
+                    }
+                }
+            }
+        }
+        radio_ready.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                widget_view.moveToNextState(WidgetStates.READY)
+            }
+        }
+        radio_interaction.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                widget_view.moveToNextState(WidgetStates.INTERACTING)
+            }
+        }
+        radio_result.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                widget_view.moveToNextState(WidgetStates.RESULTS)
+            }
+        }
+        radio_finished.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                widget_view.moveToNextState(WidgetStates.FINISHED)
             }
         }
         if (ThemeRandomizer.themesList.size > 0) {

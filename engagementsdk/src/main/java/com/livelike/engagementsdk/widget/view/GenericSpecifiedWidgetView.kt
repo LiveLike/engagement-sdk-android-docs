@@ -111,13 +111,11 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                 WidgetStates.INTERACTING -> {
                     unLockInteraction()
                 }
-                WidgetStates.RESULTS -> {
+                WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                     lockInteraction()
                     onWidgetInteractionCompleted()
                     showResults()
                     viewModel.confirmInteraction()
-                }
-                WidgetStates.FINISHED -> {
                 }
             }
 

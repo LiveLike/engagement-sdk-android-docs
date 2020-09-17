@@ -44,8 +44,8 @@ object DialogUtils {
 
         }.create()
             .apply {
-                listView.divider = ColorDrawable(Color.BLACK) // set color
-                listView.dividerHeight = 2
+//                listView.divider = ColorDrawable(Color.BLACK) // set color
+//                listView.dividerHeight = 2
                 show()
             }
     }

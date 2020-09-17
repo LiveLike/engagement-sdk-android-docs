@@ -63,7 +63,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
             }
-            WidgetStates.RESULTS -> {
+            WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
                 viewModel?.apply {
@@ -132,8 +132,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     }
                 }
             }
-            WidgetStates.FINISHED -> {
-            }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
             defaultStateTransitionManager(widgetStates)
@@ -178,8 +176,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun resultsObserver(resource: Resource?) {
-        resource?.apply {
-            val optionResults = resource.getMergedOptions() ?: return
+        (resource ?: viewModel?.data?.currentData?.resource)?.apply {
+            val optionResults = this.getMergedOptions() ?: return
             val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
             val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
             options.forEach { opt ->
