@@ -191,7 +191,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             logDebug { "PredictionWidget Showing result total:$totalVotes" }
             viewModel?.adapter?.myDataset = options
             viewModel?.adapter?.showPercentage = true
-            textRecyclerView.swapAdapter(viewModel?.adapter, false)
+            textRecyclerView?.swapAdapter(viewModel?.adapter, false)
         }
     }
 
