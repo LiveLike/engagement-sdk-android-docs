@@ -293,7 +293,8 @@ internal class PredictionViewModel(
                         url,
                         useVoteUrl = false,
                         body = FormBody.Builder()
-                            .add("claim_token", EngagementSDK.predictionWidgetVoteRepository.get(it.resource.text_prediction_id)?:"").build(),
+                            .add("claim_token", EngagementSDK.predictionWidgetVoteRepository.get(
+                                (getPredictionId(it)?:""))).build(),
                         type = RequestType.POST,
                         accessToken = userRepository.userAccessToken,
                         userRepository = userRepository,
@@ -302,6 +303,13 @@ internal class PredictionViewModel(
                 }
             }
         }
+    }
+
+    private fun getPredictionId(it: PredictionWidget) : String? {
+        if(it.resource.text_prediction_id.isNullOrEmpty()){
+            return it.resource.image_prediction_id
+        }
+        return it.resource.text_prediction_id
     }
 
 
