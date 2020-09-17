@@ -80,15 +80,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
             }
-            WidgetStates.RESULTS -> {
+            WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
-                if ((viewModel?.totalVoteCount ?: 0) > 0) {
+                if ((viewModel?.totalVoteCount ?: 0) > 0 || viewModel?.enableDefaultWidgetTransition == false) {
                     viewModel?.voteEnd?.onNext(true)
                     viewModel?.voteEnd()
                 }
-            }
-            WidgetStates.FINISHED -> {
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
@@ -125,9 +123,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun resultObserver(resource: Resource?) {
-        resource?.let {
+        (resource ?: viewModel?.data?.latest()?.resource)?.let {
             lastResult = it
-            val options = resource.options ?: return
+            val options = it.options ?: return
             if (options.size == 2) {
                 val team1 = options[0]
                 val team2 = options[1]
@@ -351,6 +349,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
     private fun endObserver(it: Boolean?) {
         if (it == true) {
+            this@CheerMeterView.clearStartingAnimations()
             txt_cheer_meter_team_1.alpha = 1F
             txt_cheer_meter_team_2.alpha = 1F
             if (lastResult == null) {
