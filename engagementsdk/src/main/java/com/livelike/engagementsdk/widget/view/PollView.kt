@@ -206,7 +206,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             if (this.getMergedTotal() > 0) {
                 viewModel?.adapter?.showPercentage = true
             }
-            textRecyclerView.swapAdapter(viewModel?.adapter, false)
+            textRecyclerView?.swapAdapter(viewModel?.adapter, false)
             logDebug { "PollWidget Showing result total:$totalVotes" }
         }
     }
