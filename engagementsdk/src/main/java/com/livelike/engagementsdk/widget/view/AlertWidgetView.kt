@@ -79,7 +79,6 @@ internal class AlertWidgetView : SpecifiedWidgetView {
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
-                moveToNextState()
                 viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
             }
             WidgetStates.INTERACTING -> {
