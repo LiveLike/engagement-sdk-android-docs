@@ -112,7 +112,7 @@ class LiveBlogActivity : AppCompatActivity() {
                 liveLikeWidget
             )
             viewHolder.itemView.txt_index.text = "$p1"
-            viewHolder.itemView.widget_view.moveToNextState(widgetStates)
+            viewHolder.itemView.widget_view.setState(widgetStates)
             viewHolder.itemView.widget_view.widgetLifeCycleEventsListener =
                 object : WidgetLifeCycleEventsListener() {
                     override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {

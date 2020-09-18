@@ -265,12 +265,18 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         return widgetViewModel?.widgetState?.latest()
     }
 
-    open fun moveToNextState(widgetStates: WidgetStates? = null) {
+    open fun setState(widgetStates: WidgetStates) {
+        val nextStateOrdinal = widgetStates.ordinal
+        widgetViewModel?.widgetState?.onNext(
+            WidgetStates.values()[min(
+                nextStateOrdinal,
+                WidgetStates.FINISHED.ordinal
+            )]
+        )
+    }
 
-        val nextStateOrdinal = when {
-            widgetStates != null -> widgetStates.ordinal
-            else -> (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
-        }
+    open fun moveToNextState() {
+        val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
         widgetViewModel?.widgetState?.onNext(
             WidgetStates.values()[min(
                 nextStateOrdinal,

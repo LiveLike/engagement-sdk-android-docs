@@ -196,9 +196,15 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         return null
     }
 
-    fun moveToNextState(widgetStates: WidgetStates? = null) {
+    fun setState(widgetStates: WidgetStates) {
         if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
-            (getChildAt(0) as SpecifiedWidgetView).moveToNextState(widgetStates)
+            (getChildAt(0) as SpecifiedWidgetView).setState(widgetStates)
+        }
+    }
+
+    fun moveToNextState() {
+        if (childCount == 1 && getChildAt(0) is SpecifiedWidgetView) {
+            (getChildAt(0) as SpecifiedWidgetView).moveToNextState()
         }
     }
 }

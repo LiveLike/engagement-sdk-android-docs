@@ -114,12 +114,12 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         }
     }
 
-    override fun moveToNextState(widgetStates: WidgetStates?) {
-        super.moveToNextState(widgetStates)
+    override fun moveToNextState() {
+        super.moveToNextState()
         if (widgetViewModel?.widgetState?.latest() == WidgetStates.INTERACTING) {
             widgetViewModel?.widgetState?.onNext(WidgetStates.FINISHED)
         } else {
-            super.moveToNextState(widgetStates)
+            super.moveToNextState()
         }
     }
 

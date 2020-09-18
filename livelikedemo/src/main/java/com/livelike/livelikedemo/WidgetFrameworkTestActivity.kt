@@ -145,22 +145,22 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
         }
         radio_ready.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                widget_view.moveToNextState(WidgetStates.READY)
+                widget_view.setState(WidgetStates.READY)
             }
         }
         radio_interaction.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                widget_view.moveToNextState(WidgetStates.INTERACTING)
+                widget_view.setState(WidgetStates.INTERACTING)
             }
         }
         radio_result.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                widget_view.moveToNextState(WidgetStates.RESULTS)
+                widget_view.setState(WidgetStates.RESULTS)
             }
         }
         radio_finished.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                widget_view.moveToNextState(WidgetStates.FINISHED)
+                widget_view.setState(WidgetStates.FINISHED)
             }
         }
         if (ThemeRandomizer.themesList.size > 0) {
