@@ -52,10 +52,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         }
     }
 
-    override fun moveToNextState() {
-        super.moveToNextState()
-    }
-
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
@@ -79,13 +75,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 //                    viewModel?.startDismissTimout(it.resource.timeout)
 //                }
             }
-            WidgetStates.RESULTS -> {
+            WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
                 viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
-            }
-            WidgetStates.FINISHED -> {
-//                resourceObserver(null)
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
@@ -197,8 +190,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun resultsObserver(resource: Resource?) {
-        resource?.apply {
-            val optionResults = resource.getMergedOptions() ?: return
+        (resource ?: viewModel?.data?.currentData?.resource)?.apply {
+            val optionResults = this.getMergedOptions() ?: return
             val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
             val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
             options.forEach { opt ->
@@ -210,7 +203,10 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 }
             }
             viewModel?.adapter?.myDataset = options
-            textRecyclerView.swapAdapter(viewModel?.adapter, false)
+            if (this.getMergedTotal() > 0) {
+                viewModel?.adapter?.showPercentage = true
+            }
+            textRecyclerView?.swapAdapter(viewModel?.adapter, false)
             logDebug { "PollWidget Showing result total:$totalVotes" }
         }
     }

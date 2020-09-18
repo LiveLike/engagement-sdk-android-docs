@@ -45,6 +45,7 @@ import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.leaderboard_button
+import kotlinx.android.synthetic.main.activity_main.live_blog
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
@@ -182,6 +183,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 create()
             }.show()
+        }
+
+        live_blog.setOnClickListener {
+            startActivity(Intent(this, LiveBlogActivity::class.java))
         }
 
         leaderboard_button.setOnClickListener {

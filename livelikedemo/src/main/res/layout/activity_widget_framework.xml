@@ -67,5 +67,45 @@
         android:layout_height="wrap_content"
         android:text="move to next state" />
 
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <RadioButton
+            android:id="@+id/radio_ready"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+            android:text="Ready"
+            android:textColor="@android:color/white" />
+
+        <RadioButton
+            android:id="@+id/radio_interaction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+            android:text="Interaction"
+            android:textColor="@android:color/white" />
+
+        <RadioButton
+            android:id="@+id/radio_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+
+            android:text="Result"
+            android:textColor="@android:color/white" />
+
+        <RadioButton
+            android:id="@+id/radio_finished"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="@android:color/white"
+            android:text="Finished"
+            android:textColor="@android:color/white" />
+    </RadioGroup>
 
 </LinearLayout>

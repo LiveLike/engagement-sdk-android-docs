@@ -80,15 +80,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
             }
-            WidgetStates.RESULTS -> {
+            WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
-                if ((viewModel?.totalVoteCount ?: 0) > 0) {
+                if ((viewModel?.totalVoteCount ?: 0) > 0 || viewModel?.enableDefaultWidgetTransition == false) {
                     viewModel?.voteEnd?.onNext(true)
                     viewModel?.voteEnd()
                 }
-            }
-            WidgetStates.FINISHED -> {
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
@@ -97,13 +95,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun lockInteraction() {
-        view_ripple.isClickable = false
-        view_ripple2.isClickable = false
+        view_ripple?.isClickable = false
+        view_ripple2?.isClickable = false
     }
 
     private fun unLockInteraction() {
-        view_ripple.isClickable = true
-        view_ripple2.isClickable = true
+        view_ripple?.isClickable = true
+        view_ripple2?.isClickable = true
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
@@ -125,9 +123,9 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun resultObserver(resource: Resource?) {
-        resource?.let {
+        (resource ?: viewModel?.data?.latest()?.resource)?.let {
             lastResult = it
-            val options = resource.options ?: return
+            val options = it.options ?: return
             if (options.size == 2) {
                 val team1 = options[0]
                 val team2 = options[1]
@@ -262,7 +260,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             var handler = Handler(Looper.getMainLooper())
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 // when tapped for first time
-                if (viewModel?.totalVoteCount == 0) {
+                if (viewModel?.totalVoteCount == 0 && v.isClickable) {
                     this@CheerMeterView.clearStartingAnimations()
                 }
                 when (event.action) {
@@ -351,6 +349,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
 
     private fun endObserver(it: Boolean?) {
         if (it == true) {
+            this@CheerMeterView.clearStartingAnimations()
             txt_cheer_meter_team_1.alpha = 1F
             txt_cheer_meter_team_2.alpha = 1F
             if (lastResult == null) {
