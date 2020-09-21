@@ -1,15 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.livelike.livelikedemo.LiveBlogActivity">
 
 
-    <WebView
-        android:id="@+id/web_view"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <RadioButton
+                android:id="@+id/radio_ready"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ready" />
+
+            <RadioButton
+                android:id="@+id/radio_interaction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Interaction" />
+
+            <RadioButton
+                android:id="@+id/radio_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Result" />
+
+            <RadioButton
+                android:id="@+id/radio_finished"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Finished" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+
+            <Button
+                android:id="@+id/btn_load_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Load More Widgets" />
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcyl_timeline"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"

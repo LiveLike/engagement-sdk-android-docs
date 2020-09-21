@@ -58,12 +58,17 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
             }
-            WidgetStates.RESULTS -> {
+            WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
                 viewModel?.apply {
                     val isUserCorrect =
-                        adapter?.selectedPosition?.let { adapter?.myDataset?.get(it)?.is_correct }
+                        adapter?.selectedPosition?.let {
+                            if (it > -1) {
+                                adapter?.myDataset?.get(it)?.is_correct
+                            }
+                            false
+                        }
                             ?: false
                     val rootPath =
                         if (isUserCorrect) widgetViewThemeAttributes.widgetWinAnimation else widgetViewThemeAttributes.widgetLoseAnimation
@@ -108,8 +113,6 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                         )
                     }
                 }
-            }
-            WidgetStates.FINISHED -> {
             }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
@@ -224,8 +227,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun resultsObserver(resource: Resource?) {
-        resource?.apply {
-            val optionResults = resource.getMergedOptions() ?: return
+        (resource ?: viewModel?.data?.currentData?.resource)?.apply {
+            val optionResults = this.getMergedOptions() ?: return
             val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
             val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
             options.forEach { opt ->

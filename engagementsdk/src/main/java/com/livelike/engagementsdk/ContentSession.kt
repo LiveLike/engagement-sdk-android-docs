@@ -90,7 +90,7 @@ internal class ContentSession(
         liveLikePagination: LiveLikePagination,
         liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget?>>
     ) {
-        contentSessionScope.launch {
+        uiScope.launch {
             val defaultUrl =
                 "${BuildConfig.CONFIG_URL}programs/$programId/widgets/?status=published&ordering=recent"
             val url = when (liveLikePagination) {
@@ -142,6 +142,7 @@ internal class ContentSession(
 
     private val job = SupervisorJob()
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + job)
+    private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
     // TODO: I'm going to replace the original Stream by a Flow in a following PR to not have to much changes to review right now.
     private val configurationUserPairFlow = flow {
@@ -329,7 +330,7 @@ internal class ContentSession(
     override fun close() {
         logVerbose { "Closing the Session" }
         contentSessionScope.cancel()
-
+        uiScope.cancel()
         widgetClient?.run {
             destroy()
         }
