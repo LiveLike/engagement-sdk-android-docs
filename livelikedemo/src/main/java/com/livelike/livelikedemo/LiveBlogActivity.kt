@@ -21,7 +21,11 @@ import kotlinx.android.synthetic.main.activity_live_blog.radio_ready
 import kotlinx.android.synthetic.main.activity_live_blog.radio_result
 import kotlinx.android.synthetic.main.activity_live_blog.rcyl_timeline
 import kotlinx.android.synthetic.main.time_line_item.view.txt_index
+import kotlinx.android.synthetic.main.time_line_item.view.txt_time
 import kotlinx.android.synthetic.main.time_line_item.view.widget_view
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class LiveBlogActivity : AppCompatActivity() {
 
@@ -113,6 +117,15 @@ class LiveBlogActivity : AppCompatActivity() {
             )
             viewHolder.itemView.txt_index.text = "$p1"
             viewHolder.itemView.widget_view.setState(widgetStates)
+            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'")
+            try {
+                val date: Date = format.parse(liveLikeWidget.createdAt)
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+                val dateTime = dateFormat.format(date)
+                viewHolder.itemView.txt_time.text = dateTime
+            } catch (e: ParseException) {
+                e.printStackTrace()
+            }
             viewHolder.itemView.widget_view.widgetLifeCycleEventsListener =
                 object : WidgetLifeCycleEventsListener() {
                     override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
