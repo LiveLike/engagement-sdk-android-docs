@@ -7,7 +7,11 @@ class VoteApiResponse {
     @SerializedName("rewards")
     val rewards: List<EarnedReward>? = null
 
+    @SerializedName("claim_token")
+    val claimToken: String? = null
+
 }
+
 
 
 data class EarnedReward(

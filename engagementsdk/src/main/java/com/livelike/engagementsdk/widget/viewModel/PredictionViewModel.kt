@@ -18,6 +18,7 @@ import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
 import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
+import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
@@ -39,6 +40,7 @@ import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.FormBody
 
 internal class PredictionWidget(
     val type: WidgetType,
@@ -202,7 +204,7 @@ internal class PredictionViewModel(
         adapter?.correctOptionId = correctOptionId
         adapter?.userSelectedOptionId = selectedPredictionId
         adapter?.selectionLocked = true
-
+        claimPredictionRewards()
         data.onNext(data.currentData?.apply {
             resource.getMergedOptions()?.forEach { opt ->
                 opt.percentage = opt.getPercent(resource.getMergedTotal().toFloat())
@@ -283,6 +285,34 @@ internal class PredictionViewModel(
         interactionData.reset()
     }
 
+    private fun claimPredictionRewards(){
+        data.currentData?.let {
+            it.resource.claim_url?.let { url ->
+                uiScope.launch {
+                    dataClient.voteAsync(
+                        url,
+                        useVoteUrl = false,
+                        body = FormBody.Builder()
+                            .add("claim_token", EngagementSDK.predictionWidgetVoteRepository.get(
+                                (getPredictionId(it)?:""))).build(),
+                        type = RequestType.POST,
+                        accessToken = userRepository.userAccessToken,
+                        userRepository = userRepository,
+                        widgetId = currentWidgetId
+                    )
+                }
+            }
+        }
+    }
+
+    private fun getPredictionId(it: PredictionWidget) : String? {
+        if(it.resource.text_prediction_id.isNullOrEmpty()){
+            return it.resource.image_prediction_id
+        }
+        return it.resource.text_prediction_id
+    }
+
+
     @Suppress("USELESS_ELVIS")
     private suspend fun vote() {
         data.currentData?.let {
@@ -296,7 +326,8 @@ internal class PredictionViewModel(
                             url,
                             selectedOption.id,
                             userRepository.userAccessToken,
-                            userRepository = userRepository
+                            userRepository = userRepository,
+                            widgetId = currentWidgetId
                         )
                     }
 

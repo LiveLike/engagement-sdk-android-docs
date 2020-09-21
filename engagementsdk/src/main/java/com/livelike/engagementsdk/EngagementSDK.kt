@@ -38,6 +38,8 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
+import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
+import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import kotlinx.coroutines.CoroutineScope
@@ -767,5 +769,7 @@ class EngagementSDK(
     companion object {
         @JvmStatic
         var enableDebug: Boolean = false
+        @JvmStatic
+        var  predictionWidgetVoteRepository : PredictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
     }
 }
