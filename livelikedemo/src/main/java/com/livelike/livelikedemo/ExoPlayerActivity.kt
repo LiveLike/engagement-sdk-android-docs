@@ -492,8 +492,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
             for (pair in chatRoomLastTimeStampMap) {
                 val chatRoomId = pair.key
-                val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
+                var timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
                     ?: Calendar.getInstance().timeInMillis))
+                if (timestamp == 0L) timestamp = Calendar.getInstance().timeInMillis
                 logsPreview.text =
                     "Get Count: $timestamp roomId: $chatRoomId \n\n ${logsPreview.text}"
                 fullLogs.text =
