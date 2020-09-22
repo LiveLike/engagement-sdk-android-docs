@@ -63,15 +63,16 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
             }
-            WidgetStates.RESULTS -> {
+            WidgetStates.RESULTS, WidgetStates.FINISHED -> {
                 lockInteraction()
                 onWidgetInteractionCompleted()
                 viewModel?.apply {
                     if (followUp) {
                         followupAnimation?.apply {
-                            setAnimation(
-                                viewModel?.animationPath
-                            )
+                            if (viewModel?.animationPath?.isNotEmpty() == true)
+                                setAnimation(
+                                    viewModel?.animationPath
+                                )
                             progress = viewModel?.animationProgress!!
                             addAnimatorUpdateListener { valueAnimator ->
                                 viewModel?.animationProgress = valueAnimator.animatedFraction
@@ -132,8 +133,6 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                     }
                 }
             }
-            WidgetStates.FINISHED -> {
-            }
         }
         if (viewModel?.enableDefaultWidgetTransition == true) {
             defaultStateTransitionManager(widgetStates)
@@ -178,8 +177,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     }
 
     private fun resultsObserver(resource: Resource?) {
-        resource?.apply {
-            val optionResults = resource.getMergedOptions() ?: return
+        (resource ?: viewModel?.data?.currentData?.resource)?.apply {
+            val optionResults = this.getMergedOptions() ?: return
             val totalVotes = optionResults.sumBy { it.getMergedVoteCount().toInt() }
             val options = viewModel?.data?.currentData?.resource?.getMergedOptions() ?: return
             options.forEach { opt ->
@@ -193,7 +192,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             logDebug { "PredictionWidget Showing result total:$totalVotes" }
             viewModel?.adapter?.myDataset = options
             viewModel?.adapter?.showPercentage = true
-            textRecyclerView.swapAdapter(viewModel?.adapter, false)
+            textRecyclerView?.swapAdapter(viewModel?.adapter, false)
         }
     }
 
@@ -237,21 +236,22 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 applyTheme(it)
             }
 
-            viewModel?.apply {
-                val rootPath = widgetViewThemeAttributes.stayTunedAnimation
-                animationPath = AndroidResource.selectRandomLottieAnimation(
-                    rootPath,
-                    context.applicationContext
-                ) ?: ""
-            }
+            val isFollowUp = resource.kind.contains("follow-up")
+
+            if (!isFollowUp)
+                viewModel?.apply {
+                    val rootPath = widgetViewThemeAttributes.stayTunedAnimation
+                    animationPath = AndroidResource.selectRandomLottieAnimation(
+                        rootPath,
+                        context.applicationContext
+                    ) ?: ""
+                }
 
             textRecyclerView.apply {
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
 
-            val isFollowUp = resource.kind.contains("follow-up")
-//            viewModel?.widgetState?.onNext(WidgetStates.INTERACTING)
             if (isFollowUp) {
                 val selectedPredictionId =
                     getWidgetPredictionVotedAnswerIdOrEmpty(if (resource.text_prediction_id.isNullOrEmpty()) resource.image_prediction_id else resource.text_prediction_id)

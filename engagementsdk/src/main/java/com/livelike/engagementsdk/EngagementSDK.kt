@@ -612,18 +612,6 @@ class EngagementSDK(
                 }
             }
         }
-
-        getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
-            override fun onResponse(result: LeaderBoard?, error: String?) {
-                result?.let {
-                    uiScope.launch {
-                    }
-                }
-                error?.let {
-                    liveLikeCallback.onResponse(null, error)
-                }
-            }
-        })
     }
 
     override fun getLeaderBoardEntryForCurrentUserProfile(
