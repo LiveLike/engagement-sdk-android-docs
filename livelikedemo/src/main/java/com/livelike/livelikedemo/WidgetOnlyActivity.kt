@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -49,7 +50,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.text.SimpleDateFormat
-import java.time.LocalTime
 import java.util.Calendar
 import kotlin.random.Random
 
@@ -150,6 +150,18 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 println(text)
             }
         }
+
+        widget_view.postDelayed({
+            val availableRewards = session.getRewardItems().joinToString {rewardItem ->
+                rewardItem.name
+            }
+            AlertDialog.Builder(this).apply {
+                setTitle("Welcome! You have chance to win rewards!")
+                    .setMessage(availableRewards)
+                    .create()
+            }.show()
+        },2000)
+
     }
 
     override fun onResume() {
