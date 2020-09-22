@@ -103,7 +103,13 @@ data class LiveLikeWidget(
     @field:SerializedName("correct_option_id")
     val correctOptionId: String? = null,
     @field:SerializedName("title")
-    val title: String? = null
+    val title: String? = null,
+    @field:SerializedName("initial_magnitude")
+    val initialMagnitude: Float?,
+    @field:SerializedName("average_magnitude")
+    val averageMagnitude: Float?,
+    @field:SerializedName("vote_url")
+    val voteUrl: String
 )
 
 data class CreatedBy(

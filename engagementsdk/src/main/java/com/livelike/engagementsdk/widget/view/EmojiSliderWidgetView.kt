@@ -47,17 +47,13 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
         super.stateObserver(widgetState)
     }
 
-    override fun moveToNextState() {
-        super.moveToNextState()
-    }
-
     override fun confirmInteraction() {
         image_slider.isUserSeekable = false
         onWidgetInteractionCompleted()
     }
 
     override fun showResults() {
-        val result = viewModel.results.latest()
+        val result = viewModel.results.latest() ?: viewModel.data.latest()
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }
@@ -107,10 +103,12 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
                 image_slider.positionListener = { magnitude ->
                     viewModel.currentVote.onNext(
-                        "${magnitude.toBigDecimal().setScale(
-                            2,
-                            RoundingMode.UP
-                        ).toFloat()}"
+                        "${
+                            magnitude.toBigDecimal().setScale(
+                                2,
+                                RoundingMode.UP
+                            ).toFloat()
+                        }"
                     )
                 }
             }
