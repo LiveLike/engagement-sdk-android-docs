@@ -71,7 +71,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import pl.droidsonroids.gif.MultiCallback
 import java.util.Date
@@ -449,7 +448,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         chatViewModel: ChatViewModel
     ) {
         stickerKeyboardView.initTheme(chatAttribute)
-        chatViewModel.stickerPackRepositoryStream.subscribe(this@ChatView) {stickerPackRepository->
+        chatViewModel.stickerPackRepositoryStream.subscribe(this@ChatView) { stickerPackRepository ->
             uiScope.launch {
                 stickerPackRepository?.let {
                     stickerKeyboardView.setProgram(stickerPackRepository) {
@@ -749,7 +748,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 analyticsService.trackMessageSent(
                     it.id,
                     it.message,
-                    hasExternalImage
+                    hasExternalImage,
+                    viewModel?.currentChatRoom?.id!!
                 )
             }
         }
