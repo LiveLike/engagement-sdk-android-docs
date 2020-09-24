@@ -52,7 +52,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import java.io.IOException
-import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -498,66 +497,73 @@ class EngagementSDK(
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<List<LeaderBoardUserDetails>>
     ): List<LeaderBoardUserDetails> {
-        var leaderBoardDataList = ConcurrentLinkedQueue<LeaderBoardUserDetails>()
+
+        // @kanav FYI concurrent modification will not happen now
+        val leaderBoardDataList = mutableListOf<LeaderBoardUserDetails>()
 
         configurationStream.subscribe(this) {
             it?.let {
-                configurationStream.unsubscribe(this)
-                CoroutineScope(Dispatchers.IO).launch {
+                userRepository.currentUserStream.subscribe(this) { user ->
+                    userRepository.currentUserStream.unsubscribe(this)
+                    configurationStream.unsubscribe(this)
+                    CoroutineScope(Dispatchers.IO).launch {
 
-                    val job = ArrayList<Job>()
-                    for (i in 1 until leaderBoardId.size - 1) {
-                        job.add(launch {
-                            val url = "${it.leaderboardDetailUrlTemplate?.replace(
-                                TEMPLATE_LEADER_BOARD_ID,
-                                leaderBoardId.get(i)
-                            )}"
-                            val result = dataClient.remoteCall<LeaderBoardResource>(
-                                url,
-                                requestType = RequestType.GET,
-                                accessToken = null
-                            )
-                            if (result is Result.Success) {
-                                userRepository.currentUserStream.subscribe(this) {
-                                    it?.let { user ->
-                                        userRepository.currentUserStream.unsubscribe(this)
-                                        CoroutineScope(Dispatchers.IO).launch {
-                                            getLeaderBoardEntryForCurrentUser(
-                                                result.data.id,
-                                                user.id,
-                                                object : LiveLikeCallback<LeaderBoardEntry>() {
-                                                    override fun onResponse(
-                                                        result2: LeaderBoardEntry?,
-                                                        error: String?
-                                                    ) {
-                                                        result2?.let {
-                                                            leaderBoardDataList.add(
-                                                                LeaderBoardUserDetails(
-                                                                    result.data.toLeadBoard(),
-                                                                    result2
-                                                                )
-                                                            )
-                                                        }
-                                                        error?.let {
-                                                        }
-                                                    }
-                                                })
+                        val job = ArrayList<Job>()
+                        for (i in 1 until leaderBoardId.size - 1) {
+                            job.add(launch {
+                                val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                                    TEMPLATE_LEADER_BOARD_ID,
+                                    leaderBoardId.get(i)
+                                )}"
+                                val result = dataClient.remoteCall<LeaderBoardResource>(
+                                    url,
+                                    requestType = RequestType.GET,
+                                    accessToken = null
+                                )
+                                if (result is Result.Success) {
+                                    user?.let { user ->
+                                        val result2 = getLeaderBoardEntry(it, result.data.id, user.id)
+                                        if(result2 is Result.Success){
+                                            leaderBoardDataList.add( LeaderBoardUserDetails(
+                                                result.data.toLeadBoard(),
+                                                result2.data
+                                            ))
                                         }
-
+//                                        CoroutineScope(Dispatchers.IO).launch {
+//                                            getLeaderBoardEntryForCurrentUser(
+//                                                result.data.id,
+//                                                user.id,
+//                                                object : LiveLikeCallback<LeaderBoardEntry>() {
+//                                                    override fun onResponse(
+//                                                        result2: LeaderBoardEntry?,
+//                                                        error: String?
+//                                                    ) {
+//                                                        result2?.let {
+//                                                            leaderBoardDataList.add(
+//                                                                LeaderBoardUserDetails(
+//                                                                    result.data.toLeadBoard(),
+//                                                                    result2
+//                                                                )
+//                                                            )
+//                                                        }
+//                                                        error?.let {
+//                                                        }
+//                                                    }
+//                                                })
+//                                        }
                                     }
+
+                                } else if (result is Result.Error) {
+                                    // liveLikeCallback.onResponse(null, result.exception.message)
                                 }
+                            })
 
 
-                            } else if (result is Result.Error) {
-                                // liveLikeCallback.onResponse(null, result.exception.message)
-                            }
-                        })
+                        }
+                        job.joinAll()
 
 
                     }
-                    job.joinAll()
-
-
                 }
             }
         }
@@ -723,33 +729,14 @@ class EngagementSDK(
             it?.let {
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
-                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
-                        TEMPLATE_LEADER_BOARD_ID,
-                        leaderBoardId
-                    )}"
-                    val result = dataClient.remoteCall<LeaderBoardResource>(
-                        url,
-                        requestType = RequestType.GET,
-                        accessToken = null
-                    )
+                    val result = getLeaderBoardEntry(it, leaderBoardId, profileId)
                     if (result is Result.Success) {
-                        val profileResult = dataClient.remoteCall<LeaderBoardEntry>(
-                            result.data.entry_detail_url_template.replace(
-                                TEMPLATE_PROFILE_ID,
-                                profileId
-                            ),
-                            requestType = RequestType.GET,
-                            accessToken = null
-                        )
-                        if (profileResult is Result.Success) {
-                            liveLikeCallback.onResponse(profileResult.data, null)
-                            // leaderBoardDelegate?.leaderBoard(profileResul)
-                        } else if (profileResult is Result.Error) {
-                            liveLikeCallback.onResponse(null, profileResult.exception.message)
-                        }
+                        liveLikeCallback.onResponse(result.data, null)
+                        // leaderBoardDelegate?.leaderBoard(profileResul)
                     } else if (result is Result.Error) {
                         liveLikeCallback.onResponse(null, result.exception.message)
                     }
+
                 }
             }
         }
@@ -765,6 +752,37 @@ class EngagementSDK(
                 }
             }
         })
+    }
+
+    private suspend fun getLeaderBoardEntry(
+        sdkConfig: SdkConfiguration,
+        leaderBoardId: String,
+        profileId: String
+    ): Result<LeaderBoardEntry> {
+        val url = "${sdkConfig.leaderboardDetailUrlTemplate?.replace(
+            TEMPLATE_LEADER_BOARD_ID,
+            leaderBoardId
+        )}"
+        val result = dataClient.remoteCall<LeaderBoardResource>(
+            url,
+            requestType = RequestType.GET,
+            accessToken = null
+        )
+        return when (result) {
+            is Result.Success -> {
+                dataClient.remoteCall(
+                    result.data.entry_detail_url_template.replace(
+                        TEMPLATE_PROFILE_ID,
+                        profileId
+                    ),
+                    requestType = RequestType.GET,
+                    accessToken = null
+                )
+            }
+            is Result.Error -> {
+                Result.Error(result.exception)
+            }
+        }
     }
 
 
