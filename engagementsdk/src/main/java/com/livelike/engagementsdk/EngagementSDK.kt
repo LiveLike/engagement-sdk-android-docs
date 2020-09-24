@@ -40,14 +40,19 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
+import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import java.io.IOException
+import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * Use this class to initialize the EngagementSDK. This is the entry point for SDK usage. This creates an instance of EngagementSDK.
@@ -79,6 +84,12 @@ class EngagementSDK(
         set(value) {
             field = value
             userRepository.userProfileDelegate = value
+        }
+
+    override var leaderBoardDelegate: LeaderBoardDelegate? = null
+        set(value) {
+            field = value
+            userRepository.leaderBoardDelegate = value
         }
 
     private val job = SupervisorJob()
@@ -440,6 +451,8 @@ class EngagementSDK(
                                 it.rewardItem.toReward()
                             )
                         }, null)
+
+
                     } else {
                         liveLikeCallback.onResponse(null, "Unable to fetch LeaderBoards")
                     }
@@ -470,6 +483,8 @@ class EngagementSDK(
                             result.data.toLeadBoard(),
                             null
                         )
+                        //leaderBoardDelegate?.leaderBoard(result.data.toLeadBoard(),result.data)
+
                     } else if (result is Result.Error) {
                         liveLikeCallback.onResponse(null, result.exception.message)
                     }
@@ -477,6 +492,78 @@ class EngagementSDK(
             }
         }
     }
+
+
+    override fun getLeaderboardClients(
+        leaderBoardId: List<String>,
+        liveLikeCallback: LiveLikeCallback<List<LeaderBoardUserDetails>>
+    ): List<LeaderBoardUserDetails> {
+        var leaderBoardDataList = ConcurrentLinkedQueue<LeaderBoardUserDetails>()
+
+        configurationStream.subscribe(this) {
+            it?.let {
+                configurationStream.unsubscribe(this)
+                CoroutineScope(Dispatchers.IO).launch {
+
+                    val job = ArrayList<Job>()
+                    for (i in 1 until leaderBoardId.size - 1) {
+                        job.add(launch {
+                            val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                                TEMPLATE_LEADER_BOARD_ID,
+                                leaderBoardId.get(i)
+                            )}"
+                            val result = dataClient.remoteCall<LeaderBoardResource>(
+                                url,
+                                requestType = RequestType.GET,
+                                accessToken = null
+                            )
+                            if (result is Result.Success) {
+                                userRepository.currentUserStream.subscribe(this) {
+                                    it?.let { user ->
+                                        userRepository.currentUserStream.unsubscribe(this)
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            getLeaderBoardEntryForCurrentUser(
+                                                result.data.id,
+                                                user.id,
+                                                object : LiveLikeCallback<LeaderBoardEntry>() {
+                                                    override fun onResponse(
+                                                        result2: LeaderBoardEntry?,
+                                                        error: String?
+                                                    ) {
+                                                        result2?.let {
+                                                            leaderBoardDataList.add(
+                                                                LeaderBoardUserDetails(
+                                                                    result.data.toLeadBoard(),
+                                                                    result2
+                                                                )
+                                                            )
+                                                        }
+                                                        error?.let {
+                                                        }
+                                                    }
+                                                })
+                                        }
+
+                                    }
+                                }
+
+
+                            } else if (result is Result.Error) {
+                                // liveLikeCallback.onResponse(null, result.exception.message)
+                            }
+                        })
+
+
+                    }
+                    job.joinAll()
+
+
+                }
+            }
+        }
+        return leaderBoardDataList.toList()
+    }
+
 
     private var leaderBoardEntryResult: HashMap<String, LeaderBoardEntryResult> = hashMapOf()
     private val leaderBoardEntryPaginationQueue =
@@ -603,6 +690,7 @@ class EngagementSDK(
                         )
                         if (profileResult is Result.Success) {
                             liveLikeCallback.onResponse(profileResult.data, null)
+                            // leaderBoardDelegate?.leaderBoard(profileResul)
                         } else if (profileResult is Result.Error) {
                             liveLikeCallback.onResponse(null, profileResult.exception.message)
                         }
@@ -626,6 +714,60 @@ class EngagementSDK(
         })
     }
 
+    override suspend fun getLeaderBoardEntryForCurrentUser(
+        leaderBoardId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+    ) {
+        configurationStream.subscribe(this) {
+            it?.let {
+                configurationStream.unsubscribe(this)
+                uiScope.launch {
+                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
+                        TEMPLATE_LEADER_BOARD_ID,
+                        leaderBoardId
+                    )}"
+                    val result = dataClient.remoteCall<LeaderBoardResource>(
+                        url,
+                        requestType = RequestType.GET,
+                        accessToken = null
+                    )
+                    if (result is Result.Success) {
+                        val profileResult = dataClient.remoteCall<LeaderBoardEntry>(
+                            result.data.entry_detail_url_template.replace(
+                                TEMPLATE_PROFILE_ID,
+                                profileId
+                            ),
+                            requestType = RequestType.GET,
+                            accessToken = null
+                        )
+                        if (profileResult is Result.Success) {
+                            liveLikeCallback.onResponse(profileResult.data, null)
+                            // leaderBoardDelegate?.leaderBoard(profileResul)
+                        } else if (profileResult is Result.Error) {
+                            liveLikeCallback.onResponse(null, profileResult.exception.message)
+                        }
+                    } else if (result is Result.Error) {
+                        liveLikeCallback.onResponse(null, result.exception.message)
+                    }
+                }
+            }
+        }
+
+        getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
+            override fun onResponse(result: LeaderBoard?, error: String?) {
+                result?.let {
+                    uiScope.launch {
+                    }
+                }
+                error?.let {
+                    liveLikeCallback.onResponse(null, error)
+                }
+            }
+        })
+    }
+
+
     override fun getLeaderBoardEntryForCurrentUserProfile(
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
@@ -637,6 +779,7 @@ class EngagementSDK(
             }
         }
     }
+
 
     fun fetchWidgetDetails(
         widgetId: String,
@@ -770,6 +913,7 @@ class EngagementSDK(
         @JvmStatic
         var enableDebug: Boolean = false
         @JvmStatic
-        var  predictionWidgetVoteRepository : PredictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
+        var predictionWidgetVoteRepository: PredictionWidgetVoteRepository =
+            LocalPredictionWidgetVoteRepository()
     }
 }

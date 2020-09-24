@@ -4,11 +4,13 @@ import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
+import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
+import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -56,6 +58,9 @@ interface LiveLikeContentSession {
 
     /** Returns list of reward item associated to entered program */
     fun getRewardItems() : List<RewardItem>
+
+//    /** Returns list of leaderboards associated to entered program */
+//    fun getLeaderboardClients() : List<LeaderBoardUserDetails>
 
 }
 

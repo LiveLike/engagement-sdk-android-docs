@@ -25,7 +25,7 @@ internal data class Program(
     val rewardItems : List<RewardItem>
 )
 
-internal data class LeaderBoardResource(
+data class LeaderBoardResource(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,
@@ -39,6 +39,10 @@ internal data class LeaderBoardResource(
 
 internal fun LeaderBoardResource.toLeadBoard(): LeaderBoard {
     return LeaderBoard(id, name, rewardItem.toReward())
+}
+
+internal fun LeaderboardClient.toLeaderBoard(): LeaderBoard {
+    return LeaderBoard(id,name,rewardItem.toReward())
 }
 
 data class LeaderBoard(
@@ -77,6 +81,23 @@ data class LeaderBoardEntry(
     @SerializedName("score") val score: Int,
     @SerializedName("profile_nickname") val profile_nickname: String
 )
+
+data class LeaderboardClient(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("rewardItem") val rewardItem: RewardItem,
+    @SerializedName("currentUserPlacement") val currentUserPlacement: LeaderboardPlacement
+)
+
+data class LeaderboardPlacement(
+    @SerializedName("rank") val rank:Int,
+    @SerializedName("rankPercentile") val rankPercentile: String,
+    @SerializedName("score") val score: Int)
+
+
+
+
+
 
 data class LeaderBoardEntryPaginationResult(
     val count: Int = 0,

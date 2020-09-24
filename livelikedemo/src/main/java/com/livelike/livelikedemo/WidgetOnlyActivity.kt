@@ -16,6 +16,9 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
+import com.livelike.engagementsdk.core.data.models.LeaderBoard
+import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
@@ -49,7 +52,6 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import java.text.SimpleDateFormat
-import java.time.LocalTime
 import java.util.Calendar
 import kotlin.random.Random
 
@@ -76,6 +78,38 @@ class WidgetOnlyActivity : AppCompatActivity() {
         session = (application as LiveLikeApplication).createPublicSession(
             channelManager.selectedChannel.llProgram.toString(), allowTimeCodeGetter = false
         )
+
+        (application as LiveLikeApplication).sdk.getLeaderBoardsForProgram(
+            channelManager.selectedChannel.llProgram.toString(),
+            object : LiveLikeCallback<List<LeaderBoard>>() {
+                override fun onResponse(result: List<LeaderBoard>?, error: String?) {
+                    result?.let {
+
+                        val listOfLeaderBoardIds: ArrayList<String> = ArrayList()
+                        it.map {
+                            listOfLeaderBoardIds.add(it.id)
+                        }
+
+
+                        (application as LiveLikeApplication).sdk.getLeaderboardClients(
+                            listOfLeaderBoardIds,
+                            object : LiveLikeCallback<List<LeaderBoardUserDetails>>() {
+                                override fun onResponse(
+                                    result: List<LeaderBoardUserDetails>?,
+                                    error: String?
+                                ) {
+                                    error?.let {
+
+                                    }
+                                }
+                            })
+                    }
+                    error?.let {
+
+                    }
+                }
+            })
+
         val adapter = HeaderAdapter(
             progress_view,
             channelManager.selectedChannel.llProgram.toString(),
@@ -144,12 +178,20 @@ class WidgetOnlyActivity : AppCompatActivity() {
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
             UserProfileDelegate {
-            override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
-                val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
-                rewards_tv.text =  "At time ${SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().time)} : $text"
+            override fun userProfile(
+                userProfile: LiveLikeUser,
+                reward: Reward,
+                rewardSource: RewardSource
+            ) {
+                val text =
+                    "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
+                rewards_tv.text =
+                    "At time ${SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().time)} : $text"
                 println(text)
             }
         }
+
+
     }
 
     override fun onResume() {

@@ -9,6 +9,10 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
+import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
+import com.livelike.engagementsdk.core.data.models.LeaderboardClient
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
+import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 
 interface IEngagement {
@@ -29,6 +33,9 @@ interface IEngagement {
 
      /* Set user profile delegate to intercept any user related updates like rewards */
     var userProfileDelegate: UserProfileDelegate?
+
+
+    var leaderBoardDelegate: LeaderBoardDelegate?
 
 
     /** Override the default auto-generated chat nickname **/
@@ -95,9 +102,22 @@ interface IEngagement {
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
 
+    suspend fun getLeaderBoardEntryForCurrentUser(
+        leaderBoardId: String,
+        profileId: String,
+        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
+    )
+
     fun getLeaderBoardEntryForCurrentUserProfile(
         leaderBoardId: String,
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
+
+     fun getLeaderboardClients(
+        leaderBoardId: List<String>,
+        liveLikeCallback: LiveLikeCallback<List<LeaderBoardUserDetails>>
+    ): List<LeaderBoardUserDetails>
+
+
 
 }

@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
@@ -34,6 +35,7 @@ import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
+import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
@@ -122,6 +124,10 @@ internal class ContentSession(
     override fun getRewardItems(): List<RewardItem> {
        return programRepository.program?.rewardItems?: listOf()
     }
+
+//    override fun getLeaderboardClients(): List<LeaderBoardUserDetails> {
+//        return programRepository.program?.leaderboards?: listOf()
+//    }
 
     override var analyticService: AnalyticsService =
         MockAnalyticsService(clientId)

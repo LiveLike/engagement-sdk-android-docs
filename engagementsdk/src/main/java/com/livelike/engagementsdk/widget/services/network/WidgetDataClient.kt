@@ -101,6 +101,7 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                         rewardItemMapCache[reward.rewardId]?.let {
                             currentUserStream.latest()?.let { user->
                                 userProfileDelegate?.userProfile(user, Reward(it, reward.rewardItemAmount), RewardSource.WIDGETS)
+
                             }
                         }
                     }

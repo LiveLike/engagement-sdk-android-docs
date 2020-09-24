@@ -11,6 +11,7 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.respository.WidgetRepository
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -39,6 +40,8 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
     private var profileUrl: String = ""
 
     var userProfileDelegate: UserProfileDelegate? = null
+
+    var leaderBoardDelegate: LeaderBoardDelegate?=null
 
     val rewardItemMapCache : MutableMap<String,RewardItem>  = mutableMapOf()
 
