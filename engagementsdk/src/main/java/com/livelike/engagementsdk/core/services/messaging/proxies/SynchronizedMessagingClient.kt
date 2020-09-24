@@ -80,7 +80,12 @@ internal class SynchronizedMessagingClient(
                 if (foundMsg == null) {
                     queue.enqueue(event)
                 }
-                queue.elements.sortBy { it.message.get("pubnubMessageToken").asLong }
+                queue.elements.sortBy {
+                    if (it.message.has("pubnubMessageToken")) {
+                        return@sortBy it.message.get("pubnubMessageToken")?.asLong ?: 0L
+                    }
+                    return@sortBy 0L
+                }
                 queueMap[event.channel] = queue
             }
         }
