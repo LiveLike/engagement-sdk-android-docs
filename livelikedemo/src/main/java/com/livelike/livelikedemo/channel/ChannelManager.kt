@@ -38,6 +38,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
     }
 
     fun loadClientConfig(url: String? = null) {
+        println("ChannelManager.loadClientConfig->$url ->$channelConfigUrl")
         val request = Request.Builder()
             .url(url ?: channelConfigUrl)
             .build()
@@ -53,8 +54,17 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                     try {
                         val json = JSONObject(responseData)
                         val results = json.getJSONArray("results")
-                        nextUrl = json.getString("next")
-                        previousUrl = json.getString("previous")
+                        val nextUrl = json.getString("next")
+                        if (nextUrl != null && nextUrl != "null")
+                            this@ChannelManager.nextUrl = nextUrl
+                        else
+                            this@ChannelManager.nextUrl = null
+                        val previousUrl = json.getString("previous")
+                        if (previousUrl != null && previousUrl != "null")
+                            this@ChannelManager.previousUrl = previousUrl
+                        else
+                            this@ChannelManager.previousUrl = null
+
                         if (results.length() > 0) {
                             channelList.clear()
                         }

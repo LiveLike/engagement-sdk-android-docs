@@ -181,18 +181,20 @@ class MainActivity : AppCompatActivity() {
                     channelManager.selectedChannel = channels[which]
                     events_label.text = channelManager.selectedChannel.name
                 }
-                setPositiveButton(
-                    "Load Next"
-                ) { dialog, which ->
-                    channelManager.loadClientConfig(channelManager.nextUrl)
-                    dialog.dismiss()
-                }
-                setNeutralButton(
-                    "Load Previous"
-                ) { dialog, which ->
-                    channelManager.loadClientConfig(channelManager.previousUrl)
-                    dialog.dismiss()
-                }
+                if (channelManager.nextUrl?.isNotEmpty() == true)
+                    setPositiveButton(
+                        "Load Next"
+                    ) { dialog, which ->
+                        channelManager.loadClientConfig(channelManager.nextUrl)
+                        dialog.dismiss()
+                    }
+                if (channelManager.previousUrl?.isNotEmpty() == true)
+                    setNeutralButton(
+                        "Load Previous"
+                    ) { dialog, which ->
+                        channelManager.loadClientConfig(channelManager.previousUrl)
+                        dialog.dismiss()
+                    }
                 create()
             }.show()
         }
