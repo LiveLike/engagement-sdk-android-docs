@@ -160,6 +160,18 @@ class ExoPlayerActivity : AppCompatActivity() {
                     val channels = cm.getChannels()
                     AlertDialog.Builder(this).apply {
                         setTitle("Choose a channel to watch!")
+                        setPositiveButton(
+                            "Load Next"
+                        ) { dialog, which ->
+                            cm.loadClientConfig(cm.nextUrl)
+                            dialog.dismiss()
+                        }
+                        setNeutralButton(
+                            "Load Previous"
+                        ) { dialog, which ->
+                            cm.loadClientConfig(cm.previousUrl)
+                            dialog.dismiss()
+                        }
                         setItems(channels.map { it.name }.toTypedArray()) { _, which ->
                             cm.selectedChannel = channels[which]
                             privateGroupRoomId = null

@@ -181,6 +181,18 @@ class MainActivity : AppCompatActivity() {
                     channelManager.selectedChannel = channels[which]
                     events_label.text = channelManager.selectedChannel.name
                 }
+                setPositiveButton(
+                    "Load Next"
+                ) { dialog, which ->
+                    channelManager.loadClientConfig(channelManager.nextUrl)
+                    dialog.dismiss()
+                }
+                setNeutralButton(
+                    "Load Previous"
+                ) { dialog, which ->
+                    channelManager.loadClientConfig(channelManager.previousUrl)
+                    dialog.dismiss()
+                }
                 create()
             }.show()
         }
