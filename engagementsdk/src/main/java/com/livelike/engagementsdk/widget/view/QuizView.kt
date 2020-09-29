@@ -65,9 +65,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     val isUserCorrect =
                         adapter?.selectedPosition?.let {
                             if (it > -1) {
-                                adapter?.myDataset?.get(it)?.is_correct
+                                return@let adapter?.myDataset?.get(it)?.is_correct
                             }
-                            false
+                            return@let false
                         }
                             ?: false
                     val rootPath =
