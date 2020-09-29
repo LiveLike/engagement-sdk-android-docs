@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -16,12 +17,6 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
-import com.livelike.engagementsdk.core.data.models.LeaderBoard
-import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
-import com.livelike.engagementsdk.core.data.models.LeaderboardClient
-import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
@@ -54,11 +49,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
-
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import kotlin.random.Random
-
 
 class WidgetOnlyActivity : AppCompatActivity() {
     private lateinit var session: LiveLikeContentSession
@@ -83,8 +76,6 @@ class WidgetOnlyActivity : AppCompatActivity() {
         session = (application as LiveLikeApplication).createPublicSession(
             channelManager.selectedChannel.llProgram.toString(), allowTimeCodeGetter = false
         )
-
-
         val adapter = HeaderAdapter(
             progress_view,
             channelManager.selectedChannel.llProgram.toString(),
@@ -153,19 +144,23 @@ class WidgetOnlyActivity : AppCompatActivity() {
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
             UserProfileDelegate {
-            override fun userProfile(
-                userProfile: LiveLikeUser,
-                reward: Reward,
-                rewardSource: RewardSource
-            ) {
-                val text =
-                    "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
-                rewards_tv.text =
-                    "At time ${SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().time)} : $text"
+            override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
+                val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
+                rewards_tv.text =  "At time ${SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().time)} : $text"
                 println(text)
             }
         }
 
+        widget_view.postDelayed({
+            val availableRewards = session.getRewardItems().joinToString {rewardItem ->
+                rewardItem.name
+            }
+            AlertDialog.Builder(this).apply {
+                setTitle("Welcome! You have chance to win rewards!")
+                    .setMessage(availableRewards)
+                    .create()
+            }.show()
+        },2000)
 
     }
 

@@ -113,8 +113,8 @@ internal abstract class WidgetViewModel<T : Resource>(
                     function?.invoke()
                 } else {
                     state.onNext(WidgetState.LOCK_INTERACTION)
+                    widgetState.onNext(WidgetStates.RESULTS)
                 }
-                widgetState.onNext(WidgetStates.RESULTS)
                 timeoutStarted = false
             }
         }

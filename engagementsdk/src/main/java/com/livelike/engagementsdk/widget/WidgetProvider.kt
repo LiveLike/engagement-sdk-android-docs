@@ -261,6 +261,20 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         applyTheme(theme.widgets)
     }
 
+    open fun getCurrentState(): WidgetStates? {
+        return widgetViewModel?.widgetState?.latest()
+    }
+
+    open fun setState(widgetStates: WidgetStates) {
+        val nextStateOrdinal = widgetStates.ordinal
+        widgetViewModel?.widgetState?.onNext(
+            WidgetStates.values()[min(
+                nextStateOrdinal,
+                WidgetStates.FINISHED.ordinal
+            )]
+        )
+    }
+
     open fun moveToNextState() {
         val nextStateOrdinal = (widgetViewModel?.widgetState?.latest()?.ordinal ?: 0) + 1
         widgetViewModel?.widgetState?.onNext(
