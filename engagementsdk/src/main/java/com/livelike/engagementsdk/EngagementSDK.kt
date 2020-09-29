@@ -510,7 +510,7 @@ class EngagementSDK(
                     CoroutineScope(Dispatchers.IO).launch {
 
                         val job = ArrayList<Job>()
-                        for (i in 1 until leaderBoardId.size - 1) {
+                        for (i in 0 until leaderBoardId.size.toInt()) {
                             job.add(launch {
                                 val url = "${it.leaderboardDetailUrlTemplate?.replace(
                                     TEMPLATE_LEADER_BOARD_ID,
