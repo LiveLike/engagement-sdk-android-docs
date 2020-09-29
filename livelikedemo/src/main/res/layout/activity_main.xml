@@ -434,6 +434,14 @@
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
 
                 <Button
+                    android:id="@+id/leaderboard_rank"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="Leaderboard Position"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
+
+                <Button
                     android:id="@+id/widget_viewModel"
                     style="@style/TestAppButton"
                     android:layout_width="match_parent"

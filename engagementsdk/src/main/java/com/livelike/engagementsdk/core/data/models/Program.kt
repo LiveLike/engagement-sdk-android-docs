@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.core.data.models
 
 import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 
 internal data class Program(
     val programUrl: String,
@@ -51,6 +52,12 @@ data class LeaderBoard(
     @SerializedName("reward_item") val rewardItem: LeaderBoardReward
 )
 
+data class LeaderBoardForClient(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("reward_item") val rewardItem: RewardItem
+)
+
 data class RewardItem(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
@@ -86,7 +93,8 @@ data class LeaderboardClient(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
     @SerializedName("rewardItem") val rewardItem: RewardItem,
-    @SerializedName("currentUserPlacement") val currentUserPlacement: LeaderboardPlacement
+    @SerializedName("currentUserPlacement") val currentUserPlacement: LeaderboardPlacement,
+    @SerializedName("leaderboardDelegate")val leaderBoardDelegate: LeaderBoardDelegate
 )
 
 data class LeaderboardPlacement(

@@ -115,8 +115,8 @@ interface IEngagement {
 
      fun getLeaderboardClients(
         leaderBoardId: List<String>,
-        liveLikeCallback: LiveLikeCallback<List<LeaderBoardUserDetails>>
-    ): List<LeaderBoardUserDetails>
+        liveLikeCallback: LiveLikeCallback<LeaderboardClient>
+    )
 
 
 

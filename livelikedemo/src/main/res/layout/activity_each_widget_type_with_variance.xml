@@ -24,6 +24,8 @@
             android:layout_height="match_parent"
             android:background="@android:color/black" />
 
+
+
         <TextView
             android:id="@+id/rewards_tv"
             android:layout_width="match_parent"

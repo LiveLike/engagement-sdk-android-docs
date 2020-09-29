@@ -5,11 +5,13 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
+import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 
 /**
@@ -23,6 +25,8 @@ interface LiveLikeContentSession {
 
     /** The analytics services **/
     val chatSession: LiveLikeChatSession
+
+    var leaderBoardDelegate: LeaderBoardDelegate?
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -60,7 +64,9 @@ interface LiveLikeContentSession {
     fun getRewardItems() : List<RewardItem>
 
 //    /** Returns list of leaderboards associated to entered program */
-//    fun getLeaderboardClients() : List<LeaderBoardUserDetails>
+  fun getLeaderboardClients(leaderBoardId: List<String>,
+                            liveLikeCallback: LiveLikeCallback<LeaderboardClient>)
+
 
 }
 

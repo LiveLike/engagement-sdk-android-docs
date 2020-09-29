@@ -7,7 +7,10 @@ import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
+import com.livelike.engagementsdk.core.data.models.LeaderboardClient
+import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
@@ -19,6 +22,8 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.core.services.network.RequestType
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.gson
@@ -35,16 +40,18 @@ import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
-import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 import java.io.IOException
@@ -72,8 +79,15 @@ internal class ContentSession(
         errorDelegate, currentPlayheadTime
     )
 
+    override var leaderBoardDelegate: LeaderBoardDelegate? = null
+        set(value) {
+            field = value
+            userRepository.leaderBoardDelegate = value
+        }
+
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
+    private var engagementSDK: EngagementSDK? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -122,12 +136,99 @@ internal class ContentSession(
     }
 
     override fun getRewardItems(): List<RewardItem> {
-       return programRepository.program?.rewardItems?: listOf()
+        return programRepository.program?.rewardItems ?: listOf()
     }
 
-//    override fun getLeaderboardClients(): List<LeaderBoardUserDetails> {
-//        return programRepository.program?.leaderboards?: listOf()
-//    }
+    override fun getLeaderboardClients(
+        leaderBoardId: List<String>,
+        liveLikeCallback: LiveLikeCallback<LeaderboardClient>
+    ) {
+
+        userRepository.currentUserStream.subscribe(this) {
+            it?.let {
+                userRepository.currentUserStream.subscribe(this) { user ->
+                    userRepository.currentUserStream.unsubscribe(this)
+                    engagementSDK?.configurationStream?.unsubscribe(this)
+                    CoroutineScope(Dispatchers.IO).launch {
+
+                        val leaderBoardUrlTemplate = "leaderboard_detail_url_template\""
+                        val job = ArrayList<Job>()
+                        for (i in 1 until leaderBoardId.size - 1) {
+                            job.add(launch {
+                                val url = leaderBoardUrlTemplate?.replace(
+                                    TEMPLATE_LEADER_BOARD_ID,
+                                    leaderBoardId.get(i)
+                                )
+                                val result = llDataClient.remoteCall<LeaderBoardResource>(
+                                    url,
+                                    requestType = RequestType.GET,
+                                    accessToken = null
+                                )
+                                if (result is Result.Success) {
+                                    user?.let { user ->
+                                        val result2 = engagementSDK?.getLeaderBoardEntry(
+                                            engagementSDK?.configurationStream?.latest()!!,
+                                            result.data.id,
+                                            user.id
+                                        )
+                                        if (result2 is Result.Success) {
+                                            leaderBoardDelegate?.leaderBoard(
+                                                LeaderBoardForClient(
+                                                    result.data.id,
+                                                    result.data.name,
+                                                    result.data.rewardItem
+                                                ), LeaderboardPlacement(
+                                                    result2.data.rank
+                                                    ,
+                                                    result2.data.percentile_rank.toString(),
+                                                    result2.data.score
+                                                )
+                                            )
+                                            liveLikeCallback.onResponse(
+                                                LeaderboardClient(
+                                                    result.data.id,
+                                                    result.data.name,
+                                                    result.data.rewardItem,
+                                                    LeaderboardPlacement(
+                                                        result2.data.rank
+                                                        ,
+                                                        result2.data.percentile_rank.toString(),
+                                                        result2.data.score
+                                                    ),
+                                                    leaderBoardDelegate!!
+                                                )
+                                                , null
+                                            )
+                                        } else if (result2 is Result.Error) {
+                                            leaderBoardDelegate?.leaderBoard(
+                                                LeaderBoardForClient(
+                                                    result.data.id,
+                                                    result.data.name,
+                                                    result.data.rewardItem
+                                                ),
+                                                LeaderboardPlacement(0, " ", 0)
+                                            )
+
+                                        }
+//
+                                    }
+
+                                } else if (result is Result.Error) {
+                                    liveLikeCallback.onResponse(null, result.exception.message)
+                                }
+                            })
+
+
+                        }
+
+                        job.joinAll()
+                    }
+                }
+            }
+        }
+
+    }
+
 
     override var analyticService: AnalyticsService =
         MockAnalyticsService(clientId)

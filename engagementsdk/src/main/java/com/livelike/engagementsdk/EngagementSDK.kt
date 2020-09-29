@@ -19,7 +19,10 @@ import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryResult
+import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
 import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
+import com.livelike.engagementsdk.core.data.models.LeaderboardClient
+import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
 import com.livelike.engagementsdk.core.data.models.toLeadBoard
 import com.livelike.engagementsdk.core.data.models.toReward
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -41,7 +44,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
-import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import kotlinx.coroutines.CoroutineScope
@@ -495,11 +497,10 @@ class EngagementSDK(
 
     override fun getLeaderboardClients(
         leaderBoardId: List<String>,
-        liveLikeCallback: LiveLikeCallback<List<LeaderBoardUserDetails>>
-    ): List<LeaderBoardUserDetails> {
+        liveLikeCallback: LiveLikeCallback<LeaderboardClient>
+    ) {
 
-        // @kanav FYI concurrent modification will not happen now
-        val leaderBoardDataList = mutableListOf<LeaderBoardUserDetails>()
+        val leaderBoardClientList = mutableListOf<LeaderboardClient>()
 
         configurationStream.subscribe(this) {
             it?.let {
@@ -522,52 +523,67 @@ class EngagementSDK(
                                 )
                                 if (result is Result.Success) {
                                     user?.let { user ->
-                                        val result2 = getLeaderBoardEntry(it, result.data.id, user.id)
-                                        if(result2 is Result.Success){
-                                            leaderBoardDataList.add( LeaderBoardUserDetails(
-                                                result.data.toLeadBoard(),
-                                                result2.data
-                                            ))
+                                        val result2 =
+                                            getLeaderBoardEntry(it, result.data.id, user.id)
+                                        if (result2 is Result.Success) {
+                                            leaderBoardDelegate?.leaderBoard(
+                                                LeaderBoardForClient(
+                                                    result.data.id,
+                                                    result.data.name,
+                                                    result.data.rewardItem
+                                                ), LeaderboardPlacement(
+                                                    result2.data.rank
+                                                    ,
+                                                    result2.data.percentile_rank.toString(),
+                                                    result2.data.score
+                                                )
+                                            )
+//                                            leaderBoardClientList.add(LeaderboardClient(result.data.id,result.data.name,result.data.rewardItem,LeaderboardPlacement(result2.data.rank
+//                                            ,result2.data.percentile_rank.toString(),result2.data.score),leaderBoardDelegate!!))
+                                            liveLikeCallback.onResponse(
+                                                LeaderboardClient(
+                                                    result.data.id,
+                                                    result.data.name,
+                                                    result.data.rewardItem,
+                                                    LeaderboardPlacement(
+                                                        result2.data.rank
+                                                        ,
+                                                        result2.data.percentile_rank.toString(),
+                                                        result2.data.score
+                                                    ),
+                                                    leaderBoardDelegate!!
+                                                )
+                                                , null
+                                            )
+                                        } else if (result2 is Result.Error) {
+                                            leaderBoardDelegate?.leaderBoard(
+                                                LeaderBoardForClient(
+                                                    result.data.id,
+                                                    result.data.name,
+                                                    result.data.rewardItem
+                                                ),
+                                                LeaderboardPlacement(0, " ", 0)
+                                            )
+
                                         }
-//                                        CoroutineScope(Dispatchers.IO).launch {
-//                                            getLeaderBoardEntryForCurrentUser(
-//                                                result.data.id,
-//                                                user.id,
-//                                                object : LiveLikeCallback<LeaderBoardEntry>() {
-//                                                    override fun onResponse(
-//                                                        result2: LeaderBoardEntry?,
-//                                                        error: String?
-//                                                    ) {
-//                                                        result2?.let {
-//                                                            leaderBoardDataList.add(
-//                                                                LeaderBoardUserDetails(
-//                                                                    result.data.toLeadBoard(),
-//                                                                    result2
-//                                                                )
-//                                                            )
-//                                                        }
-//                                                        error?.let {
-//                                                        }
-//                                                    }
-//                                                })
-//                                        }
+//
                                     }
 
                                 } else if (result is Result.Error) {
-                                    // liveLikeCallback.onResponse(null, result.exception.message)
+                                    liveLikeCallback.onResponse(null, result.exception.message)
                                 }
                             })
 
 
                         }
+
                         job.joinAll()
-
-
                     }
                 }
             }
         }
-        return leaderBoardDataList.toList()
+
+
     }
 
 
@@ -754,7 +770,7 @@ class EngagementSDK(
         })
     }
 
-    private suspend fun getLeaderBoardEntry(
+    internal suspend fun getLeaderBoardEntry(
         sdkConfig: SdkConfiguration,
         leaderBoardId: String,
         profileId: String

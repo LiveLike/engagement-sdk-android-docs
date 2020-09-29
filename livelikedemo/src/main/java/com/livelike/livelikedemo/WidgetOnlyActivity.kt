@@ -17,8 +17,11 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
+import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
+import com.livelike.engagementsdk.core.data.models.LeaderboardClient
+import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
@@ -51,9 +54,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import kotlin.random.Random
+
 
 class WidgetOnlyActivity : AppCompatActivity() {
     private lateinit var session: LiveLikeContentSession
@@ -79,36 +84,6 @@ class WidgetOnlyActivity : AppCompatActivity() {
             channelManager.selectedChannel.llProgram.toString(), allowTimeCodeGetter = false
         )
 
-        (application as LiveLikeApplication).sdk.getLeaderBoardsForProgram(
-            channelManager.selectedChannel.llProgram.toString(),
-            object : LiveLikeCallback<List<LeaderBoard>>() {
-                override fun onResponse(result: List<LeaderBoard>?, error: String?) {
-                    result?.let {
-
-                        val listOfLeaderBoardIds: ArrayList<String> = ArrayList()
-                        it.map {
-                            listOfLeaderBoardIds.add(it.id)
-                        }
-
-
-                        (application as LiveLikeApplication).sdk.getLeaderboardClients(
-                            listOfLeaderBoardIds,
-                            object : LiveLikeCallback<List<LeaderBoardUserDetails>>() {
-                                override fun onResponse(
-                                    result: List<LeaderBoardUserDetails>?,
-                                    error: String?
-                                ) {
-                                    error?.let {
-
-                                    }
-                                }
-                            })
-                    }
-                    error?.let {
-
-                    }
-                }
-            })
 
         val adapter = HeaderAdapter(
             progress_view,
