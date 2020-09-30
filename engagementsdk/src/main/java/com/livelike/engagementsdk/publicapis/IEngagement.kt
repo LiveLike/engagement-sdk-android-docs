@@ -102,11 +102,6 @@ interface IEngagement {
         liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
     )
 
-    suspend fun getLeaderBoardEntryForCurrentUser(
-        leaderBoardId: String,
-        profileId: String,
-        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
-    )
 
     fun getLeaderBoardEntryForCurrentUserProfile(
         leaderBoardId: String,

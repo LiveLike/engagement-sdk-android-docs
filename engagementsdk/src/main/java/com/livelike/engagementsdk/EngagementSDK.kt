@@ -736,39 +736,6 @@ class EngagementSDK(
         })
     }
 
-    override suspend fun getLeaderBoardEntryForCurrentUser(
-        leaderBoardId: String,
-        profileId: String,
-        liveLikeCallback: LiveLikeCallback<LeaderBoardEntry>
-    ) {
-        configurationStream.subscribe(this) {
-            it?.let {
-                configurationStream.unsubscribe(this)
-                uiScope.launch {
-                    val result = getLeaderBoardEntry(it, leaderBoardId, profileId)
-                    if (result is Result.Success) {
-                        liveLikeCallback.onResponse(result.data, null)
-                        // leaderBoardDelegate?.leaderBoard(profileResul)
-                    } else if (result is Result.Error) {
-                        liveLikeCallback.onResponse(null, result.exception.message)
-                    }
-
-                }
-            }
-        }
-
-        getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
-            override fun onResponse(result: LeaderBoard?, error: String?) {
-                result?.let {
-                    uiScope.launch {
-                    }
-                }
-                error?.let {
-                    liveLikeCallback.onResponse(null, error)
-                }
-            }
-        })
-    }
 
     internal suspend fun getLeaderBoardEntry(
         sdkConfig: SdkConfiguration,
