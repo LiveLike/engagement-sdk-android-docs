@@ -15,7 +15,7 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
-import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
+
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.domain.Reward
