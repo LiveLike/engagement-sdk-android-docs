@@ -94,7 +94,7 @@ data class LeaderboardClient(
     @SerializedName("name") val name: String,
     @SerializedName("rewardItem") val rewardItem: RewardItem,
     @SerializedName("currentUserPlacement") val currentUserPlacement: LeaderboardPlacement,
-    @SerializedName("leaderboardDelegate")val leaderBoardDelegate: LeaderBoardDelegate
+    @SerializedName("leaderboardDelegate")val leaderBoardDelegate: LeaderBoardDelegate?
 )
 
 data class LeaderboardPlacement(

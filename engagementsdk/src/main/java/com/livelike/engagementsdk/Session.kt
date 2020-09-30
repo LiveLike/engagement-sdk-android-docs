@@ -26,7 +26,7 @@ interface LiveLikeContentSession {
     /** The analytics services **/
     val chatSession: LiveLikeChatSession
 
-    var leaderBoardDelegate: LeaderBoardDelegate?
+    var contentSessionleaderBoardDelegate: LeaderBoardDelegate?
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()

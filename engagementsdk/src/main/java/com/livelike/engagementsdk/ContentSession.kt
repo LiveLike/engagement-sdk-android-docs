@@ -79,7 +79,7 @@ internal class ContentSession(
         errorDelegate, currentPlayheadTime
     )
 
-    override var leaderBoardDelegate: LeaderBoardDelegate? = null
+    override var contentSessionleaderBoardDelegate: LeaderBoardDelegate? = null
         set(value) {
             field = value
             userRepository.leaderBoardDelegate = value
@@ -87,7 +87,7 @@ internal class ContentSession(
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
-    private var engagementSDK: EngagementSDK? = null
+    private var engagementSDK: EngagementSDK? = EngagementSDK(clientId,applicationContext)
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -143,90 +143,19 @@ internal class ContentSession(
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     ) {
+        engagementSDK?.getLeaderboardClients(leaderBoardId,liveLikeCallback)
 
-        userRepository.currentUserStream.subscribe(this) {
-            it?.let {
-                userRepository.currentUserStream.subscribe(this) { user ->
-                    userRepository.currentUserStream.unsubscribe(this)
-                    engagementSDK?.configurationStream?.unsubscribe(this)
-                    CoroutineScope(Dispatchers.IO).launch {
-
-                        val leaderBoardUrlTemplate = "leaderboard_detail_url_template\""
-                        val job = ArrayList<Job>()
-                        for (i in 0 until leaderBoardId.size.toInt()) {
-                            job.add(launch {
-                                val url = leaderBoardUrlTemplate?.replace(
-                                    TEMPLATE_LEADER_BOARD_ID,
-                                    leaderBoardId.get(i)
-                                )
-                                val result = llDataClient.remoteCall<LeaderBoardResource>(
-                                    url,
-                                    requestType = RequestType.GET,
-                                    accessToken = null
-                                )
-                                if (result is Result.Success) {
-                                    user?.let { user ->
-                                        val result2 = engagementSDK?.getLeaderBoardEntry(
-                                            engagementSDK?.configurationStream?.latest()!!,
-                                            result.data.id,
-                                            user.id
-                                        )
-                                        if (result2 is Result.Success) {
-                                            leaderBoardDelegate?.leaderBoard(
-                                                LeaderBoardForClient(
-                                                    result.data.id,
-                                                    result.data.name,
-                                                    result.data.rewardItem
-                                                ), LeaderboardPlacement(
-                                                    result2.data.rank
-                                                    ,
-                                                    result2.data.percentile_rank.toString(),
-                                                    result2.data.score
-                                                )
-                                            )
-                                            liveLikeCallback.onResponse(
-                                                LeaderboardClient(
-                                                    result.data.id,
-                                                    result.data.name,
-                                                    result.data.rewardItem,
-                                                    LeaderboardPlacement(
-                                                        result2.data.rank
-                                                        ,
-                                                        result2.data.percentile_rank.toString(),
-                                                        result2.data.score
-                                                    ),
-                                                    leaderBoardDelegate!!
-                                                )
-                                                , null
-                                            )
-                                        } else if (result2 is Result.Error) {
-                                            leaderBoardDelegate?.leaderBoard(
-                                                LeaderBoardForClient(
-                                                    result.data.id,
-                                                    result.data.name,
-                                                    result.data.rewardItem
-                                                ),
-                                                LeaderboardPlacement(0, " ", 0)
-                                            )
-
-                                        }
-//
-                                    }
-
-                                } else if (result is Result.Error) {
-                                    liveLikeCallback.onResponse(null, result.exception.message)
-                                }
-                            })
-
-
-                        }
-
-                        job.joinAll()
-                    }
+        engagementSDK?.leaderBoardDelegate =
+            object :
+                LeaderBoardDelegate {
+                override fun leaderBoard(
+                    leaderBoard: LeaderBoardForClient,
+                    currentUserPlacementDidChange: LeaderboardPlacement
+                ) {
+                    contentSessionleaderBoardDelegate?.leaderBoard(leaderBoard,currentUserPlacementDidChange)
                 }
-            }
-        }
 
+            }
     }
 
 
