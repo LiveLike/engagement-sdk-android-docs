@@ -13,10 +13,14 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.gson.Gson
 import com.livelike.engagementsdk.BuildConfig
+import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
+import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
+import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVote
+import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
@@ -161,6 +165,24 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     .create()
             }.show()
         },2000)
+
+        EngagementSDK.predictionWidgetVoteRepository = object : PredictionWidgetVoteRepository{
+            val predictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
+
+            override fun add(vote: PredictionWidgetVote, completion: () -> Unit) {
+                predictionWidgetVoteRepository.add(vote, completion)
+                AlertDialog.Builder(this@WidgetOnlyActivity).apply {
+                    setTitle("PredictionVoteRepo.add called")
+                        .setMessage("Sdk wants to store claim token : ${vote.claimToken}")
+                        .create()
+                }.show()
+            }
+
+            override fun get(predictionWidgetID: String): String? {
+               return predictionWidgetVoteRepository.get(predictionWidgetID)
+            }
+
+        }
 
     }
 
@@ -541,6 +563,12 @@ class WidgetOnlyActivity : AppCompatActivity() {
         private val TYPE_HEADER = 0
         private val TYPE_ITEM = 1
     }
+
+    override fun onDestroy() {
+        EngagementSDK.predictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
+        super.onDestroy()
+    }
+
 }
 
 data class PostType(
