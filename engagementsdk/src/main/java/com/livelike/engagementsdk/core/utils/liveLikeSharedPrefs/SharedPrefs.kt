@@ -7,6 +7,7 @@ private const val PREFERENCE_KEY_SESSION_ID = "SessionId"
 private const val PREFERENCE_KEY_ACCESS_TOKEN = "AccessToken"
 private const val PREFERENCE_KEY_NICKNAME = "Username"
 private const val PREFERENCE_KEY_USER_PIC = "Userpic"
+internal const val PREFERENCE_KEY_WIDGET_CLAIM_TOKEN = "claim_token"
 private const val BLOCKED_USERS = "blocked-users"
 private var mAppContext: Context? = null
 

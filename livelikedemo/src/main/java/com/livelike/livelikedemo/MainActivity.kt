@@ -46,6 +46,7 @@ import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.leaderboard_button
 import kotlinx.android.synthetic.main.activity_main.live_blog
+import kotlinx.android.synthetic.main.activity_main.leaderboard_rank
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
@@ -378,6 +379,15 @@ class MainActivity : AppCompatActivity() {
                 Intent(
                     this,
                     WidgetActivity::class.java
+                )
+            )
+        }
+
+        leaderboard_rank.setOnClickListener {
+            startActivity(
+                Intent(
+                    this,
+                    LeaderBoardPositionActitivty::class.java
                 )
             )
         }

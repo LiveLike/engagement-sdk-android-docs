@@ -4,6 +4,9 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.BuildConfig
+import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.core.data.models.VoteApiResponse
+import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.addAuthorizationBearer
@@ -12,16 +15,11 @@ import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
+import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVote
+import com.livelike.engagementsdk.widget.domain.Reward
+import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.util.SingleRunner
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addPoints
-import java.io.IOException
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
-import kotlin.coroutines.suspendCoroutine
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.FormBody
@@ -29,6 +27,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import java.io.IOException
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 internal interface WidgetDataClient {
     suspend fun voteAsync(
@@ -37,7 +40,9 @@ internal interface WidgetDataClient {
         accessToken: String? = null,
         body: RequestBody? = null,
         type: RequestType? = null,
-        useVoteUrl: Boolean = true
+        useVoteUrl: Boolean = true,
+        userRepository: UserRepository?,
+        widgetId: String? = null
     ): String?
 
     fun registerImpression(impressionUrl: String, accessToken: String?)
@@ -61,24 +66,46 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
         accessToken: String?,
         body: RequestBody?,
         type: RequestType?,
-        useVoteUrl: Boolean
+        useVoteUrl: Boolean,
+        userRepository: UserRepository?,
+        widgetId: String?
     ): String? {
         return singleRunner.afterPrevious {
+            val jsonObject : JsonObject
             if (voteUrl.isEmpty() || !useVoteUrl) {
-                voteUrl =
+                jsonObject =
                     postAsync(
                         widgetVotingUrl,
                         accessToken,
                         body,
                         type ?: RequestType.POST
-                    ).extractStringOrEmpty("url")
+                    )
             } else {
-                voteUrl = postAsync(
+                 jsonObject = postAsync(
                     voteUrl, accessToken, (body ?: FormBody.Builder()
                         .add("option_id", voteId)
                         .add("choice_id", voteId)
                         .build()), type ?: RequestType.PATCH
-                ).extractStringOrEmpty("url")
+                )
+            }
+            voteUrl = jsonObject.extractStringOrEmpty("url")
+            val voteApiResponse = gson.fromJson<VoteApiResponse>(jsonObject, VoteApiResponse::class.java)
+            voteApiResponse?.claimToken?.let {
+                widgetId?.let { widgetId->
+                    EngagementSDK.predictionWidgetVoteRepository.add(PredictionWidgetVote(widgetId,it)){}
+                }
+            }
+            voteApiResponse.rewards?.let {
+                for ( reward in it){
+                    userRepository?.run {
+                        rewardItemMapCache[reward.rewardId]?.let {
+                            currentUserStream.latest()?.let { user->
+                                userProfileDelegate?.userProfile(user, Reward(it, reward.rewardItemAmount), RewardSource.WIDGETS)
+
+                            }
+                        }
+                    }
+                }
             }
             return@afterPrevious voteUrl
         }

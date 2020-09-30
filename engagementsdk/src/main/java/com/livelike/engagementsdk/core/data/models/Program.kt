@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.core.data.models
 
 import com.google.gson.annotations.SerializedName
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 
 internal data class Program(
     val programUrl: String,
@@ -21,10 +22,11 @@ internal data class Program(
     val chatRooms: List<ChatRoom>?,
     val defaultChatRoom: ChatRoom?,
     val reportUrl: String?,
-    val leaderboards: List<LeaderBoardResource>
+    val leaderboards: List<LeaderBoardResource>,
+    val rewardItems : List<RewardItem>
 )
 
-internal data class LeaderBoardResource(
+data class LeaderBoardResource(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,
@@ -40,13 +42,23 @@ internal fun LeaderBoardResource.toLeadBoard(): LeaderBoard {
     return LeaderBoard(id, name, rewardItem.toReward())
 }
 
+internal fun LeaderboardClient.toLeaderBoard(): LeaderBoard {
+    return LeaderBoard(id,name,rewardItem.toReward())
+}
+
 data class LeaderBoard(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
     @SerializedName("reward_item") val rewardItem: LeaderBoardReward
 )
 
-internal data class RewardItem(
+data class LeaderBoardForClient(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("reward_item") val rewardItem: RewardItem
+)
+
+data class RewardItem(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,
@@ -76,6 +88,24 @@ data class LeaderBoardEntry(
     @SerializedName("score") val score: Int,
     @SerializedName("profile_nickname") val profile_nickname: String
 )
+
+data class LeaderboardClient(
+    @SerializedName("id") val id: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("rewardItem") val rewardItem: RewardItem,
+    @SerializedName("currentUserPlacement") val currentUserPlacement: LeaderboardPlacement,
+    @SerializedName("leaderboardDelegate")val leaderBoardDelegate: LeaderBoardDelegate?
+)
+
+data class LeaderboardPlacement(
+    @SerializedName("rank") val rank:Int,
+    @SerializedName("rankPercentile") val rankPercentile: String,
+    @SerializedName("score") val score: Int)
+
+
+
+
+
 
 data class LeaderBoardEntryPaginationResult(
     val count: Int = 0,
@@ -116,7 +146,9 @@ internal data class ProgramModel(
     val chatRooms: List<ChatRoom>?,
     @SerializedName("default_chat_room")
     val defaultChatRoom: ChatRoom?,
-    val leaderboards: List<LeaderBoardResource>
+    val leaderboards: List<LeaderBoardResource>,
+    @SerializedName("reward_items")
+    val rewardItems: List<RewardItem>
 )
 
 internal fun ProgramModel.toProgram(): Program {
@@ -138,7 +170,8 @@ internal fun ProgramModel.toProgram(): Program {
         chatRooms,
         defaultChatRoom,
         reportUrl,
-        leaderboards
+        leaderboards,
+        rewardItems
     )
 }
 
