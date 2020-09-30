@@ -153,7 +153,7 @@ internal class ContentSession(
 
                         val leaderBoardUrlTemplate = "leaderboard_detail_url_template\""
                         val job = ArrayList<Job>()
-                        for (i in 1 until leaderBoardId.size - 1) {
+                        for (i in 0 until leaderBoardId.size.toInt()) {
                             job.add(launch {
                                 val url = leaderBoardUrlTemplate?.replace(
                                     TEMPLATE_LEADER_BOARD_ID,
