@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
@@ -105,9 +106,21 @@ internal class ContentSession(
                         jsonObject.toString(),
                         PublishedWidgetListResponse::class.java
                     )
-                publishedWidgetListResponse?.results?.let {
-                    liveLikeCallback.onResponse(it, null)
+                publishedWidgetListResponse?.results?.filter {
+                    it?.let {
+                        var widgetType = it.kind
+                        widgetType = if (widgetType?.contains("follow-up") == true) {
+                            "$widgetType-updated"
+                        } else {
+                            "$widgetType-created"
+                        }
+                        return@filter WidgetType.fromString(widgetType) != null
+                    }
+                    return@filter false
                 }
+                    .let {
+                        liveLikeCallback.onResponse(it, null)
+                    }
             } catch (e: JsonParseException) {
                 e.printStackTrace()
                 liveLikeCallback.onResponse(null, e.message)
