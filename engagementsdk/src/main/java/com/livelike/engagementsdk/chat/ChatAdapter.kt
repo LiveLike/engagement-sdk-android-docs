@@ -339,8 +339,8 @@ internal class ChatRecyclerAdapter(
                                         )
                                     }
                                 }
-
-                                notifyItemChanged(currentChatReactionPopUpViewPos)
+                                //removing unecessary call
+                               // notifyItemChanged(currentChatReactionPopUpViewPos)
                             }
                         }
                     }

@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.core.AccessTokenDelegate
-import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
@@ -92,7 +91,6 @@ class EngagementSDK(
      * SDK Initialization logic.
      */
     init {
-        EnagagementSdkUncaughtExceptionHandler
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(
             applicationContext
@@ -612,18 +610,6 @@ class EngagementSDK(
                 }
             }
         }
-
-        getLeaderBoardDetails(leaderBoardId, object : LiveLikeCallback<LeaderBoard>() {
-            override fun onResponse(result: LeaderBoard?, error: String?) {
-                result?.let {
-                    uiScope.launch {
-                    }
-                }
-                error?.let {
-                    liveLikeCallback.onResponse(null, error)
-                }
-            }
-        })
     }
 
     override fun getLeaderBoardEntryForCurrentUserProfile(
