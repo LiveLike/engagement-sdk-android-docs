@@ -88,7 +88,7 @@ internal class ContentSession(
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
-    private var engagementSDK: EngagementSDK? = EngagementSDK(clientId,applicationContext)
+    internal var engagementSDK: EngagementSDK? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {

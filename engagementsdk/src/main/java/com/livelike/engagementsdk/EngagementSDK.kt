@@ -847,7 +847,9 @@ class EngagementSDK(
             applicationContext,
             programId,
             errorDelegate
-        ) { timecodeGetter.getTimecode() }
+        ) { timecodeGetter.getTimecode() }.apply {
+            this.engagementSDK=this@EngagementSDK
+        }
     }
 
     /**

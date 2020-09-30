@@ -26,7 +26,7 @@ internal data class Program(
     val rewardItems : List<RewardItem>
 )
 
-data class LeaderBoardResource(
+internal data class LeaderBoardResource(
     @SerializedName("id") val id: String,
     @SerializedName("url") val url: String,
     @SerializedName("client_id") val client_id: String,
