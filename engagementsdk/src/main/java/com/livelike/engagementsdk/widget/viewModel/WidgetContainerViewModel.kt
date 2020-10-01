@@ -23,11 +23,24 @@ import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
     var enableDefaultWidgetTransition: Boolean = true
+        set(value) {
+            field = value
+            if(value){
+                widgetContainer?.setOnTouchListener(
+                    swipeDismissTouchListener
+                )
+            }else{
+                widgetContainer?.setOnTouchListener(null)
+            }
+        }
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
     private lateinit var widgetViewThemeAttributes: WidgetViewThemeAttributes
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
     private var widgetContainer: FrameLayout? = null
     var analyticsService: AnalyticsService? = null
+
+    // Swipe to dismiss
+    var swipeDismissTouchListener: View.OnTouchListener? = null
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(
@@ -36,23 +49,25 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     ) {
         this.widgetContainer = widgetContainer
         this.widgetViewThemeAttributes = widgetViewThemeAttributes
-        // Swipe to dismiss
-        widgetContainer.setOnTouchListener(
-            SwipeDismissTouchListener(
-                widgetContainer,
-                null,
-                object : SwipeDismissTouchListener.DismissCallbacks {
-                    override fun canDismiss(token: Any?): Boolean {
-                        return true
-                    }
+        swipeDismissTouchListener = SwipeDismissTouchListener(
+            widgetContainer,
+            null,
+            object : SwipeDismissTouchListener.DismissCallbacks {
+                override fun canDismiss(token: Any?): Boolean {
+                    return true
+                }
 
-                    override fun onDismiss(view: View?, token: Any?) {
-                        dismissWidget?.invoke(DismissAction.SWIPE)
-                        dismissWidget = null
-                        removeViews()
-                    }
-                })
-        )
+                override fun onDismiss(view: View?, token: Any?) {
+                    dismissWidget?.invoke(DismissAction.SWIPE)
+                    dismissWidget = null
+                    removeViews()
+                }
+            })
+        if (enableDefaultWidgetTransition) {
+            widgetContainer.setOnTouchListener(
+                swipeDismissTouchListener
+            )
+        }
         currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
             if (pair != null)
                 widgetObserver(pair?.second, pair?.first)

@@ -339,7 +339,8 @@ internal class ChatRecyclerAdapter(
                                         )
                                     }
                                 }
-                                notifyItemChanged(currentChatReactionPopUpViewPos)
+                                //removing unecessary call
+                               // notifyItemChanged(currentChatReactionPopUpViewPos)
                             }
                         }
                     }
@@ -350,6 +351,9 @@ internal class ChatRecyclerAdapter(
                     checkItemIsAtTop -> R.style.ChatReactionAnimationReverse
                     else -> R.style.ChatReactionAnimation
                 }
+                //I had to specify the width and height in order to be shown on that version (which is still compatible with the rest of the versions as well).
+                width=ViewGroup.LayoutParams.WRAP_CONTENT
+                height=ViewGroup.LayoutParams.WRAP_CONTENT
                 showAtLocation(
                     v,
                     Gravity.NO_GRAVITY,

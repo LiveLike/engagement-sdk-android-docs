@@ -17,10 +17,13 @@ import java.net.URL
 
 class ChannelManager(private val channelConfigUrl: String, val appContext: Context) {
 
+    var nextUrl: String? = null
+    var previousUrl: String? = null
     private val client: OkHttpClient = OkHttpClient()
     private val mainHandler = Handler(Looper.getMainLooper())
     private val channelSelectListeners = mutableListOf<(Channel) -> Unit>()
     val channelList: MutableList<Channel> = mutableListOf()
+
     @NonNull
     var selectedChannel: Channel = NONE_CHANNEL
         set(channel) {
@@ -34,9 +37,10 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
         loadClientConfig()
     }
 
-    fun loadClientConfig() {
+    fun loadClientConfig(url: String? = null) {
+        println("ChannelManager.loadClientConfig->$url ->$channelConfigUrl")
         val request = Request.Builder()
-            .url(channelConfigUrl)
+            .url(url ?: channelConfigUrl)
             .build()
 
         val call = client.newCall(request)
@@ -50,6 +54,17 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                     try {
                         val json = JSONObject(responseData)
                         val results = json.getJSONArray("results")
+                        val nextUrl = json.getString("next")
+                        if (nextUrl != null && nextUrl != "null")
+                            this@ChannelManager.nextUrl = nextUrl
+                        else
+                            this@ChannelManager.nextUrl = null
+                        val previousUrl = json.getString("previous")
+                        if (previousUrl != null && previousUrl != "null")
+                            this@ChannelManager.previousUrl = previousUrl
+                        else
+                            this@ChannelManager.previousUrl = null
+
                         if (results.length() > 0) {
                             channelList.clear()
                         }

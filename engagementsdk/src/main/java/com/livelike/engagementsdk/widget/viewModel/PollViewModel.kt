@@ -127,7 +127,8 @@ internal class PollViewModel(
                     dataClient.voteAsync(
                         it,
                         myDataset[selectedPosition].id,
-                        userRepository.userAccessToken
+                        userRepository.userAccessToken,
+                        userRepository = userRepository
                     )
                 }
             }

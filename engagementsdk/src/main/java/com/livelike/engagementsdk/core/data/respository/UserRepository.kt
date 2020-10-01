@@ -4,12 +4,15 @@ import com.google.gson.JsonObject
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getNickename
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setNickname
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.respository.WidgetRepository
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
+import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -36,6 +39,13 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
         SubscriptionManager()
     private var profileUrl: String = ""
 
+    var userProfileDelegate: UserProfileDelegate? = null
+
+    var leaderBoardDelegate: LeaderBoardDelegate?=null
+
+    val rewardItemMapCache : MutableMap<String,RewardItem>  = mutableMapOf()
+
+
     /**
      * Create or init user according to passed access token.
      * If no access token new user profile will be created.
@@ -44,6 +54,9 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
     fun initUser(userAccessToken: String?, profileUrl: String) {
         this.profileUrl = profileUrl
         if (userAccessToken == null || userAccessToken.isEmpty()) {
+            logError { "The EngagementSDK is creating a new User Profile because it was initialized without an existing Access Token.\n" +
+                    "The created User Profile will be counted towards the Monthly Active Users (MAU) calculation.\n" +
+                    "For more information: https://docs.livelike.com/docs/user-profiles" }
             dataClient.createUserData(profileUrl) {
                 publishUser(it)
             }
@@ -110,6 +123,12 @@ internal class UserRepository(private val clientId: String) : WidgetRepository()
         currentUserStream.latest()?.apply {
             this.userPic = url
             currentUserStream.onNext(this)
+        }
+    }
+
+    fun updateRewardItemCache(rewardItems: List<RewardItem>) {
+        rewardItems.forEach {
+            rewardItemMapCache[it.id] = it
         }
     }
 }

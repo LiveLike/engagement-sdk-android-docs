@@ -71,6 +71,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
 //                viewModel?.data?.latest()?.let {
 //                    viewModel?.startDismissTimout(it.resource.timeout)
 //                }

@@ -24,7 +24,8 @@ internal open class Resource(
     val impression_count: String = "",
     val unique_impression_count: String = "",
     val engagement_count: String = "",
-    val engagement_precent: String = ""
+    val engagement_precent: String = "",
+    val claim_url: String? = null
 ) {
 
     init {
@@ -111,16 +112,3 @@ internal data class Option(
     }
 }
 
-internal data class Vote(
-    val id: String,
-    val url: String = "",
-    val choice_id: String = "",
-    val option_id: String = ""
-)
-
-internal data class Reward(
-    val id: String?,
-    val rank: Int?,
-    val new_points: Int?,
-    val points: Int?
-)
