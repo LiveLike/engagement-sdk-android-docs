@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
+import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.WidgetListener
@@ -32,6 +33,9 @@ import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.widget.domain.Reward
+import com.livelike.engagementsdk.widget.domain.RewardSource
+import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
@@ -160,6 +164,20 @@ class ExoPlayerActivity : AppCompatActivity() {
                     val channels = cm.getChannels()
                     AlertDialog.Builder(this).apply {
                         setTitle("Choose a channel to watch!")
+                        if (cm.nextUrl?.isNotEmpty() == true)
+                            setPositiveButton(
+                                "Load Next"
+                            ) { dialog, which ->
+                                cm.loadClientConfig(cm.nextUrl)
+                                dialog.dismiss()
+                            }
+                        if (cm.previousUrl?.isNotEmpty() == true)
+                            setNeutralButton(
+                                "Load Previous"
+                            ) { dialog, which ->
+                                cm.loadClientConfig(cm.previousUrl)
+                                dialog.dismiss()
+                            }
                         setItems(channels.map { it.name }.toTypedArray()) { _, which ->
                             cm.selectedChannel = channels[which]
                             privateGroupRoomId = null
@@ -277,6 +295,15 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
         if (isHideChatInput) {
             chat_view.isChatInputVisible = false
+        }
+
+        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object : UserProfileDelegate{
+            override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
+                val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
+                logsPreview.text = "$text \n\n ${logsPreview.text}"
+                fullLogs.text = "$text \n\n ${fullLogs.text}"
+                println(text)
+            }
         }
     }
 
@@ -492,8 +519,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             }
             for (pair in chatRoomLastTimeStampMap) {
                 val chatRoomId = pair.key
-                val timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
+                var timestamp = ((chatRoomLastTimeStampMap[chatRoomId]
                     ?: Calendar.getInstance().timeInMillis))
+                if (timestamp == 0L) timestamp = Calendar.getInstance().timeInMillis
                 logsPreview.text =
                     "Get Count: $timestamp roomId: $chatRoomId \n\n ${logsPreview.text}"
                 fullLogs.text =

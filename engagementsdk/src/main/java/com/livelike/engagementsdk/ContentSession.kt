@@ -7,6 +7,11 @@ import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
+import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
+import com.livelike.engagementsdk.core.data.models.LeaderboardClient
+import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
+import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -17,6 +22,8 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
+import com.livelike.engagementsdk.core.services.network.RequestType
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.gson
@@ -29,19 +36,23 @@ import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetManager
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
+import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 import java.io.IOException
@@ -69,8 +80,15 @@ internal class ContentSession(
         errorDelegate, currentPlayheadTime
     )
 
+    override var contentSessionleaderBoardDelegate: LeaderBoardDelegate? = null
+        set(value) {
+            field = value
+            userRepository.leaderBoardDelegate = value
+        }
+
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
+    internal var engagementSDK: EngagementSDK? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
         set(value) {
@@ -105,9 +123,21 @@ internal class ContentSession(
                         jsonObject.toString(),
                         PublishedWidgetListResponse::class.java
                     )
-                publishedWidgetListResponse?.results?.let {
-                    liveLikeCallback.onResponse(it, null)
+                publishedWidgetListResponse?.results?.filter {
+                    it?.let {
+                        var widgetType = it.kind
+                        widgetType = if (widgetType?.contains("follow-up") == true) {
+                            "$widgetType-updated"
+                        } else {
+                            "$widgetType-created"
+                        }
+                        return@filter WidgetType.fromString(widgetType) != null
+                    }
+                    return@filter false
                 }
+                    .let {
+                        liveLikeCallback.onResponse(it, null)
+                    }
             } catch (e: JsonParseException) {
                 e.printStackTrace()
                 liveLikeCallback.onResponse(null, e.message)
@@ -117,6 +147,30 @@ internal class ContentSession(
             }
         }
     }
+
+    override fun getRewardItems(): List<RewardItem> {
+        return programRepository.program?.rewardItems ?: listOf()
+    }
+
+    override fun getLeaderboardClients(
+        leaderBoardId: List<String>,
+        liveLikeCallback: LiveLikeCallback<LeaderboardClient>
+    ) {
+        engagementSDK?.getLeaderboardClients(leaderBoardId,liveLikeCallback)
+
+        engagementSDK?.leaderBoardDelegate =
+            object :
+                LeaderBoardDelegate {
+                override fun leaderBoard(
+                    leaderBoard: LeaderBoardForClient,
+                    currentUserPlacementDidChange: LeaderboardPlacement
+                ) {
+                    contentSessionleaderBoardDelegate?.leaderBoard(leaderBoard,currentUserPlacementDidChange)
+                }
+
+            }
+    }
+
 
     override var analyticService: AnalyticsService =
         MockAnalyticsService(clientId)
@@ -185,6 +239,7 @@ internal class ContentSession(
                             if (program !== null) {
                                 programRepository.program = program
                                 userRepository.rewardType = program.rewardsType
+                                userRepository.updateRewardItemCache(program.rewardItems)
                                 isGamificationEnabled =
                                     !program.rewardsType.equals(RewardsType.NONE.key)
                                 initializeWidgetMessaging(

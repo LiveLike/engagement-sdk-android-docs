@@ -128,7 +128,8 @@ internal class QuizViewModel(
                     dataClient.voteAsync(
                         url,
                         myDataset[selectedPosition].id,
-                        userRepository.userAccessToken
+                        userRepository.userAccessToken,
+                        userRepository = userRepository
                     )
                 }
             }

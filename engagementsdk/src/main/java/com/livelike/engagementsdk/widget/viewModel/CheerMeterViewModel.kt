@@ -136,7 +136,8 @@ internal class CheerMeterViewModel(
                 ),
                 accessToken = userRepository.userAccessToken,
                 type = voteState.requestType,
-                useVoteUrl = false
+                useVoteUrl = false,
+                userRepository = userRepository
             )
             voteUrl?.let {
                 voteState.voteUrl = it

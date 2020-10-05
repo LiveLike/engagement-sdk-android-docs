@@ -39,7 +39,7 @@ interface AnalyticsService {
     )
 
     fun trackSessionStarted()
-    fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean = false)
+    fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean = false,chatRoomId: String)
     fun trackMessageDisplayed(msgId: String, msg: String?, hasExternalImage: Boolean = false)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
@@ -183,7 +183,7 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
-    override fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean) {
+    override fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean,chatRoomId: String) {
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
@@ -358,6 +358,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     override fun trackFlagButtonPressed() {
         mixpanel.track(KEY_FLAG_BUTTON_PRESSED)
         eventObservers[clientId]?.invoke(KEY_KEYBOARD_SELECTED, JSONObject())
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackReportingMessage() {
@@ -365,6 +366,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put(KEY_REASON, "Reporting Message")
         mixpanel.track(KEY_FLAG_ACTION_SELECTED, properties)
         eventObservers[clientId]?.invoke(KEY_FLAG_ACTION_SELECTED, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackBlockingUser() {
@@ -372,6 +374,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put(KEY_REASON, "Blocking User")
         mixpanel.track(KEY_FLAG_ACTION_SELECTED, properties)
         eventObservers[clientId]?.invoke(KEY_FLAG_ACTION_SELECTED, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackCancelFlagUi() {
@@ -379,6 +382,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put(KEY_REASON, "Blocking User")
         mixpanel.track(KEY_FLAG_ACTION_SELECTED, properties)
         eventObservers[clientId]?.invoke(KEY_FLAG_ACTION_SELECTED, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun registerSuperAndPeopleProperty(event: Pair<String, String>) {
@@ -388,6 +392,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             mixpanel.people.set(this)
             eventObservers[clientId]?.invoke(event.first, this)
         }
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $event")
     }
 
     private fun getApplicationName(context: Context): String {
@@ -405,6 +410,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             mixpanel.people.set(this)
             eventObservers[clientId]?.invoke("Last Chat Status", this)
         }
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $status")
     }
 
     override fun trackLastWidgetStatus(status: Boolean) {
@@ -414,6 +420,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             mixpanel.people.set(this)
             eventObservers[clientId]?.invoke("Last Widget Status", this)
         }
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $status")
     }
 
     override fun trackConfiguration(internalAppName: String) {
@@ -422,6 +429,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             mixpanel.registerSuperPropertiesOnce(this)
             mixpanel.people.set(this)
         }
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $internalAppName")
     }
 
     private fun getKeyboardType(kType: KeyboardType): String {
@@ -452,6 +460,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         }
         mixpanel.track(KEY_KEYBOARD_HIDDEN, properties)
         eventObservers[clientId]?.invoke(KEY_KEYBOARD_HIDDEN, properties)
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $keyboardType $hideMethod"
+        )
     }
 
     override fun trackKeyboardOpen(keyboardType: KeyboardType) {
@@ -459,6 +471,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("Keyboard Type", getKeyboardType(keyboardType))
         mixpanel.track(KEY_KEYBOARD_SELECTED, properties)
         eventObservers[clientId]?.invoke(KEY_KEYBOARD_SELECTED, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $keyboardType")
     }
 
     override fun trackWidgetInteraction(
@@ -491,6 +504,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         val superProp = JSONObject()
         superProp.put("Time of Last Widget Interaction", timeOfLastInteraction)
         mixpanel.registerSuperProperties(superProp)
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionInfo"
+        )
     }
 
     override fun trackSessionStarted() {
@@ -503,6 +520,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         val properties = JSONObject()
         properties.put("Last Session started", timeNow)
         mixpanel.registerSuperProperties(properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
     override fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long) {
@@ -530,6 +548,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("Level", badgeLevel)
         mixpanel.track(KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED, properties)
         eventObservers[clientId]?.invoke(KEY_EVENT_BADGE_COLLECTED_BUTTON_PRESSED, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$badgeId $badgeLevel")
     }
 
     override fun trackChatReactionPanelOpen(messageId: String) {
@@ -537,6 +556,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put(CHAT_MESSAGE_ID, messageId)
         mixpanel.track(KEY_EVENT_CHAT_REACTION_PANEL_OPEN, properties)
         eventObservers[clientId]?.invoke(KEY_EVENT_CHAT_REACTION_PANEL_OPEN, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$messageId")
     }
 
     override fun trackChatReactionSelected(
@@ -557,6 +577,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             event, properties
         )
         eventObservers[clientId]?.invoke(event, properties)
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]$messageId $reactionId $isRemoved"
+        )
     }
 
     override fun trackAlertLinkOpened(alertId: String, programId: String, linkUrl: String) {
@@ -566,6 +590,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put(LINK_URL, linkUrl)
         mixpanel.track(KEY_EVENT_ALERT_LINK_OPENED, properties)
         eventObservers[clientId]?.invoke(KEY_EVENT_ALERT_LINK_OPENED, properties)
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}]$alertId $programId $linkUrl"
+        )
     }
 
     override fun registerSuperProperty(
@@ -579,16 +607,18 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
                 mixpanel.people.set(this)
             }
             eventObservers[clientId]?.invoke(analyticsSuperProperties.key, this)
+            Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]$value")
         }
     }
 
-    override fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean) {
+    override fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean,chatRoomId: String) {
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, msgId)
         properties.put("Character Length", (if (hasExternalImage) 0 else msg?.length ?: 0))
         properties.put("Sticker Count", msg?.findStickers()?.countMatches())
         properties.put("Sticker Shortcodes", msg?.findStickerCodes()?.allMatches())
         properties.put("Has External Image", hasExternalImage)
+        properties.put("Chat Room ID", chatRoomId)
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
         eventObservers[clientId]?.invoke(KEY_CHAT_MESSAGE_SENT, properties)
 
@@ -596,6 +626,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         val timeNow = parser.format(Date(System.currentTimeMillis()))
         superProp.put("Time of Last Chat Message", timeNow)
         mixpanel.registerSuperProperties(superProp)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
     override fun trackMessageDisplayed(msgId: String, msg: String?, hasExternalImage: Boolean) {
@@ -608,6 +639,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         )
         mixpanel.track(KEY_CHAT_MESSAGE_DISPLAYED, properties)
         eventObservers[clientId]?.invoke(KEY_CHAT_MESSAGE_DISPLAYED, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
     private fun Matcher.allMatches(): List<String> {
@@ -624,6 +656,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("Widget ID", id)
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_DISPLAYED, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
     override fun trackWidgetReceived(kind: String, id: String) {
@@ -637,6 +670,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         mixpanel.track(KEY_WIDGET_RECEIVED, properties)
         mixpanel.registerSuperProperties(properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_RECEIVED, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
     override fun trackWidgetDismiss(
@@ -677,6 +711,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             eventObservers[clientId]?.invoke(KEY_WIDGET_USER_DISMISS, properties)
 
             edit().putString("lastWidgetType", kind).apply()
+            Log.d(
+                "[Analytics]",
+                "[${object {}.javaClass.enclosingMethod?.name}] $kind $action $interactionInfo"
+            )
         }
     }
 
@@ -695,6 +733,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("interactionCount", interactionCount)
         mixpanel.track(KEY_WIDGET_INTERACTION, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_INTERACTION, properties)
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionType"
+        )
     }
 
     override fun trackOrientationChange(isPortrait: Boolean) {
@@ -708,6 +750,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             put("Last Device Orientation", if (isPortrait) "Portrait" else "Landscape")
             mixpanel.people.set(this)
         }
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $isPortrait")
     }
 
     override fun trackButtonTap(buttonName: String, extra: JsonObject) {
@@ -716,6 +759,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("extra", extra)
         mixpanel.track(KEY_ACTION_TAP, properties)
         eventObservers[clientId]?.invoke(KEY_ACTION_TAP, properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $buttonName")
     }
 
     override fun trackSession(sessionId: String) {
@@ -729,6 +773,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put("Nickname", username)
         mixpanel.registerSuperProperties(properties)
         eventObservers[clientId]?.invoke("Nickname", properties)
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $username")
     }
 
     companion object {
