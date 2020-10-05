@@ -88,7 +88,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 analyticsService?.trackWidgetDisplayed(
                     WidgetType.fromString(
                         widgetType ?: ""
-                    )?.toAnalyticsString() ?: "", widgetId
+                    )?.toAnalyticsString() ?: "", widgetId ,
+                    widgetView?.widgetInfos?.payload?.get("link_url").asString
                 )
             }
         }
