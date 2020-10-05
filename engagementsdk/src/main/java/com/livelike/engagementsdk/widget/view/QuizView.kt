@@ -85,7 +85,9 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.myDataset?.find { it.is_correct }?.id ?: ""
                 viewModel?.adapter?.userSelectedOptionId =
                     viewModel?.adapter?.selectedPosition?.let { it1 ->
-                        viewModel?.adapter?.myDataset?.get(it1)?.id
+                        if (it1 > -1)
+                            return@let viewModel?.adapter?.myDataset?.get(it1)?.id
+                        return@let null
                     } ?: ""
 
                 textRecyclerView.swapAdapter(viewModel?.adapter, false)

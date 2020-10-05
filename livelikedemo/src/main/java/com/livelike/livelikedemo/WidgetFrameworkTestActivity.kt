@@ -142,7 +142,11 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                     }
                 }
             }
+
+
         }
+
+
         radio_ready.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 widget_view.setState(WidgetStates.READY)

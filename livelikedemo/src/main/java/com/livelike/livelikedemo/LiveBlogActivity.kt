@@ -111,12 +111,9 @@ class LiveBlogActivity : AppCompatActivity() {
         override fun onBindViewHolder(viewHolder: TimeLineViewHolder, p1: Int) {
             val liveLikeWidget = list[p1]
             viewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
-            viewHolder.itemView.widget_view.displayWidget(
-                application.sdk,
-                liveLikeWidget
-            )
             viewHolder.itemView.txt_index.text = "$p1"
             viewHolder.itemView.widget_view.setState(widgetStates)
+//            viewHolder.itemView.widget_view.moveToNextState()
             val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'")
             try {
                 val date: Date = format.parse(liveLikeWidget.createdAt)
@@ -129,6 +126,7 @@ class LiveBlogActivity : AppCompatActivity() {
             viewHolder.itemView.widget_view.widgetLifeCycleEventsListener =
                 object : WidgetLifeCycleEventsListener() {
                     override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
+                        println("TimeLineAdapter.onWidgetPresented--->>>")
                     }
 
                     override fun onWidgetInteractionCompleted(widgetData: LiveLikeWidgetEntity) {
@@ -143,7 +141,71 @@ class LiveBlogActivity : AppCompatActivity() {
                     ) {
                         println("state = [${state}], widgetData = [${widgetData}]")
                     }
+                    //Commenting// scenario for WMT timeline mode
+/*                    private val job = SupervisorJob()
+//                    private val uiScope = CoroutineScope(Dispatchers.Main + job)
+//                    private val ioScope = CoroutineScope(Dispatchers.Default + job)
+//
+//                    var interactiveStateFirstTime = true
+//                    val statesMap = hashMapOf<String, WidgetStates>()
+//                    override fun onWidgetStateChange(
+//                        state: WidgetStates,
+//                        widgetData: LiveLikeWidgetEntity
+//                    ) {
+//                        println("TimeLineAdapter.onWidgetStateChange->>>>>>>>>>>$state ->${liveLikeWidget.kind}")
+//                        liveLikeWidget.id?.let { widgetId ->
+//                            if (statesMap.containsKey(widgetId)) {
+//                                statesMap.remove(widgetId)
+//                            }
+//                            statesMap.put(widgetId, state)
+//                            Log.d("HiveWidgets", "Put state $state for widget $widgetId")
+//                        }
+//                        when (state) {
+//                            WidgetStates.READY -> {
+//                                Log.d(
+//                                    "HiveWidgets",
+//                                    "Widget state -> ready:"
+//                                )
+//                                viewHolder.itemView.widget_view.moveToNextState()
+//                            }
+//                            WidgetStates.INTERACTING -> {
+//                                val delayMs =
+//                                    if (interactiveStateFirstTime) 500L else 30000L
+//                                interactiveStateFirstTime = false
+//                                Log.d(
+//                                    "HiveWidgets",
+//                                    "Widget state -> interacting for $delayMs ms: "
+//                                )
+//                                ioScope.launch {
+//                                    delay(
+//                                        delayMs
+//                                    )
+//                                    uiScope.launch { viewHolder.itemView.widget_view.moveToNextState() }
+//                                }
+//                            }
+//                            WidgetStates.RESULTS -> {
+//                                Log.d(
+//                                    "HiveWidgets",
+//                                    "Widget state -> results: "
+//                                )
+//                                ioScope.launch {
+//                                    delay(2000)
+//                                    uiScope.launch { viewHolder.itemView.widget_view.moveToNextState() }
+//                                }
+//                            }
+//                            WidgetStates.FINISHED -> {
+//                                Log.d(
+//                                    "HiveWidgets",
+//                                    "Widget state -> finished:"
+//                                )
+//                            }
+//                        }
+//                    }*/
                 }
+            viewHolder.itemView.widget_view.displayWidget(
+                application.sdk,
+                liveLikeWidget
+            )
             println("TimeLineAdapter.onBindViewHolder->$p1 ->${liveLikeWidget.kind} ->$widgetStates ->${viewHolder.itemView.widget_view.getCurrentState()}")
         }
 
