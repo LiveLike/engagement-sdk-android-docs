@@ -130,7 +130,7 @@ class LiveBlogActivity : AppCompatActivity() {
             viewHolder.itemView.widget_view.widgetLifeCycleEventsListener =
                 object : WidgetLifeCycleEventsListener() {
                     override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
-                        println("TimeLineAdapter.onWidgetPresented--->>>")
+
                     }
 
                     override fun onWidgetInteractionCompleted(widgetData: LiveLikeWidgetEntity) {
