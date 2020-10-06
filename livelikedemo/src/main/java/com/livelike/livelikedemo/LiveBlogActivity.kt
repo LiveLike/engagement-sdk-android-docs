@@ -111,6 +111,10 @@ class LiveBlogActivity : AppCompatActivity() {
         override fun onBindViewHolder(viewHolder: TimeLineViewHolder, p1: Int) {
             val liveLikeWidget = list[p1]
             viewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
+            viewHolder.itemView.widget_view.displayWidget(
+                application.sdk,
+                liveLikeWidget
+            )
             viewHolder.itemView.txt_index.text = "$p1"
             viewHolder.itemView.widget_view.setState(widgetStates)
 //            viewHolder.itemView.widget_view.moveToNextState()
@@ -202,10 +206,7 @@ class LiveBlogActivity : AppCompatActivity() {
 //                        }
 //                    }*/
                 }
-            viewHolder.itemView.widget_view.displayWidget(
-                application.sdk,
-                liveLikeWidget
-            )
+
             println("TimeLineAdapter.onBindViewHolder->$p1 ->${liveLikeWidget.kind} ->$widgetStates ->${viewHolder.itemView.widget_view.getCurrentState()}")
         }
 
