@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.Target
 import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
