@@ -173,7 +173,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }, {
                 viewModel?.dismissWidget(it)
             })
-            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
+            if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
+                widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
             logDebug { "showing QuizWidget" }
         }
         if (widget == null) {
