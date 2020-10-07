@@ -40,7 +40,10 @@ internal class AlertWidgetViewModel(
         currentWidgetType?.let { widgetType ->
             data.latest()?.program_id?.let {
                 analyticsService.trackAlertLinkOpened(
-                    currentWidgetId, it, linkUrl
+                    currentWidgetId,
+                    it,
+                    linkUrl,
+                    currentWidgetType
                 )
             }
             analyticsService.trackWidgetInteraction(
