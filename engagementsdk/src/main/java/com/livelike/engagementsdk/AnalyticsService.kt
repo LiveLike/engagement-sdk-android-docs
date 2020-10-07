@@ -654,7 +654,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         val properties = JSONObject()
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
-        linkUrl?.let { properties.put("Link URL", it) }
+        linkUrl?.let { properties.put(LINK_URL, it) }
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_DISPLAYED, properties)
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
