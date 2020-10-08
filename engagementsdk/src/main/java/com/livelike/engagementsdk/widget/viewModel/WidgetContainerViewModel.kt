@@ -89,7 +89,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     WidgetType.fromString(
                         widgetType ?: ""
                     )?.toAnalyticsString() ?: "", widgetId ,
-                    widgetView?.widgetInfos?.payload?.get("link_url").asString
+                    widgetView?.widgetInfos?.payload?.get("link_url")?.asString
                 )
             }
         }
