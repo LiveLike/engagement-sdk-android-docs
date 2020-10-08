@@ -51,7 +51,7 @@ interface AnalyticsService {
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
-    fun trackWidgetDisplayed(kind: String, id: String)
+    fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String? = null)
     fun trackWidgetDismiss(
         kind: String,
         id: String,
@@ -218,7 +218,7 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String) {
+    override fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String?) {
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
@@ -684,10 +684,11 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         return allMatches
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String) {
+    override fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String?) {
         val properties = JSONObject()
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
+        linkUrl?.let { properties.put(LINK_URL, it) }
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_DISPLAYED, properties)
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
