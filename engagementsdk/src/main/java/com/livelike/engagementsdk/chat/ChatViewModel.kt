@@ -291,27 +291,27 @@ internal class ChatViewModel(
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
         val url =
             Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
-        context.contentResolver.openAssetFileDescriptor(
-            url,
-            "r"
-        )?.use {
             uiScope.launch(Dispatchers.IO) {
-                val fileBytes = it.createInputStream().readBytes()
-                val imageUrl = dataClient.uploadImage(
-                    currentChatRoom!!.uploadUrl,
-                    null,
-                    fileBytes
-                )
-                chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                chatMessage.imageUrl = imageUrl
-                val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                chatMessage.image_width = bitmap.width
-                chatMessage.image_height = bitmap.height
-                val m = chatMessage.copy()
-                m.message = ""
-                chatListener?.onChatMessageSend(m, timedata)
-                bitmap.recycle()
-            }
+                context.contentResolver.openAssetFileDescriptor(
+                    url,
+                    "r"
+                )?.use {
+                    val fileBytes = it.createInputStream().readBytes()
+                    val imageUrl = dataClient.uploadImage(
+                        currentChatRoom!!.uploadUrl,
+                        null,
+                        fileBytes
+                    )
+                    chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                    chatMessage.imageUrl = imageUrl
+                    val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                    chatMessage.image_width = bitmap.width
+                    chatMessage.image_height = bitmap.height
+                    val m = chatMessage.copy()
+                    m.message = ""
+                    chatListener?.onChatMessageSend(m, timedata)
+                    bitmap.recycle()
+                }
         }
         Glide.with(context)
             .`as`(ByteArray::class.java)
