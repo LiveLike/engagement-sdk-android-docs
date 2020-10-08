@@ -30,8 +30,6 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -63,6 +61,8 @@ internal class ChatViewModel(
             chatAdapter.chatRoomId = value?.id
             chatAdapter.isPublicChat = isPublicRoom
         }
+
+    var avatarUrl: String? = null
 
     var stickerPackRepository: StickerPackRepository? = null
         set(value) {
@@ -101,10 +101,14 @@ internal class ChatViewModel(
 
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
-            "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(
-                CHAT_PROVIDER
-            )} check blocked:${getBlockedUsers()
-                .contains(message.senderId)} check deleted:${deletedMessages.contains(message.id)}"
+            "Chat display message: ${message.message} check1:${
+                message.channel != currentChatRoom?.channels?.chat?.get(
+                    CHAT_PROVIDER
+                )
+            } check blocked:${
+                getBlockedUsers()
+                    .contains(message.senderId)
+            } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         // Now the message is belongs to my currentChat Room
