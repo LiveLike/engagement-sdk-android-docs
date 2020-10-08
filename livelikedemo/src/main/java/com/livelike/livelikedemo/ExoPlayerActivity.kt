@@ -45,6 +45,7 @@ import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
+import kotlinx.android.synthetic.main.activity_exo_player.checkBox
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -106,6 +107,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         else -> listOf()
     }
     private lateinit var chatRoomLastTimeStampMap: MutableMap<String, Long>
+    private var showChatAvatar = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,7 +160,10 @@ class ExoPlayerActivity : AppCompatActivity() {
             }, 0, 100)
 
             setUpAdClickListeners()
-
+            checkBox.setOnClickListener {
+                showChatAvatar = !showChatAvatar
+                chat_view.toggleChatAvatar(showChatAvatar)
+            }
             selectChannelButton.setOnClickListener {
                 channelManager?.let { cm ->
                     val channels = cm.getChannels()
@@ -297,14 +302,20 @@ class ExoPlayerActivity : AppCompatActivity() {
             chat_view.isChatInputVisible = false
         }
 
-        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object : UserProfileDelegate{
-            override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
-                val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
-                logsPreview.text = "$text \n\n ${logsPreview.text}"
-                fullLogs.text = "$text \n\n ${fullLogs.text}"
-                println(text)
+        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate =
+            object : UserProfileDelegate {
+                override fun userProfile(
+                    userProfile: LiveLikeUser,
+                    reward: Reward,
+                    rewardSource: RewardSource
+                ) {
+                    val text =
+                        "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
+                    logsPreview.text = "$text \n\n ${logsPreview.text}"
+                    fullLogs.text = "$text \n\n ${fullLogs.text}"
+                    println(text)
+                }
             }
-        }
     }
 
     override fun onBackPressed() {

@@ -103,6 +103,11 @@ internal class ChatRecyclerAdapter(
         )
     }
 
+    fun toggleChatAvatar(showAvatar: Boolean) {
+        chatViewThemeAttribute.showChatAvatarLogo = showAvatar
+        notifyDataSetChanged()
+    }
+
     fun isReactionPopUpShowing(): Boolean {
         return chatPopUpView?.isShowing ?: false
     }
@@ -340,7 +345,7 @@ internal class ChatRecyclerAdapter(
                                     }
                                 }
                                 //removing unecessary call
-                               // notifyItemChanged(currentChatReactionPopUpViewPos)
+                                // notifyItemChanged(currentChatReactionPopUpViewPos)
                             }
                         }
                     }
@@ -352,8 +357,8 @@ internal class ChatRecyclerAdapter(
                     else -> R.style.ChatReactionAnimation
                 }
                 //I had to specify the width and height in order to be shown on that version (which is still compatible with the rest of the versions as well).
-                width=ViewGroup.LayoutParams.WRAP_CONTENT
-                height=ViewGroup.LayoutParams.WRAP_CONTENT
+                width = ViewGroup.LayoutParams.WRAP_CONTENT
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
                 showAtLocation(
                     v,
                     Gravity.NO_GRAVITY,

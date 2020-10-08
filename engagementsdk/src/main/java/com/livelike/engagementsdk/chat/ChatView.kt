@@ -246,6 +246,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
+    fun toggleChatAvatar(showAvatar: Boolean) {
+        viewModel?.chatAdapter?.toggleChatAvatar(showAvatar)
+    }
+
     /**
      * unix timestamp is passed as param
      * returns the formatted string to display
