@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#32373C</color>
     <color name="colorPrimaryDark">#90000000</color>
     <color name="colorAccent">#D81B60</color>
@@ -18,12 +18,6 @@
     <color name="livelike_quiz_bar_gradient_left">#5290E8</color>
     <color name="livelike_quiz_bar_gradient_right">#5290E8</color>
     <!-- PREDICTION -->
-    <color name="livelike_prediction_option_selected_border">#5290E8</color>
-    <color name="livelike_prediction_image_option_selected_border">#5290E8</color>
-    <color name="livelike_prediction_title_gradient_left">#5290E8</color>
-    <color name="livelike_prediction_title_gradient_right">#5290E8</color>
-    <color name="livelike_prediction_bar_gradient_left">#5290E8</color>
-    <color name="livelike_prediction_bar_gradient_right">#5290E8</color>
 
     <color name="livelike_correct_bar_gradient_left">#00c83c</color>
     <color name="livelike_correct_bar_gradient_right">#00c83c</color>
@@ -42,5 +36,6 @@
     <color name="livelike_image_slider_bg">#8A8A8F</color>
     <color name="livelike_image_slider_widget_result_end_color">#5290E8</color>
     <color name="livelike_image_slider_widget_result_center_color">#8A8A8F</color>
+
 
 </resources>
