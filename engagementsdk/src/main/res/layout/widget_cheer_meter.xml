@@ -80,7 +80,7 @@
                 android:paddingLeft="@dimen/livelike_cheer_meter_padding"
                 android:paddingTop="35dp"
                 android:paddingRight="@dimen/livelike_cheer_meter_padding"
-                android:paddingBottom="35dp">
+                android:paddingBottom="10dp">
 
                 <ImageView
                     android:id="@+id/img_logo_team_1"
