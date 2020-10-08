@@ -109,6 +109,10 @@ internal class ChatSession(
         }
     }
 
+    override fun toggleChatAvatar(showAvatar: Boolean) {
+        chatViewModel.chatAdapter.toggleChatAvatar(showAvatar)
+    }
+
     private fun updatingURls(
         clientId: String,
         stickerPackUrl: String,

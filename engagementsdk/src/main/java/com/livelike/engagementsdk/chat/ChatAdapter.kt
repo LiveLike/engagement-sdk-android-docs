@@ -92,6 +92,7 @@ internal class ChatRecyclerAdapter(
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
+    private var showChatAvatarLogo = true
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(
@@ -104,7 +105,7 @@ internal class ChatRecyclerAdapter(
     }
 
     fun toggleChatAvatar(showAvatar: Boolean) {
-        chatViewThemeAttribute.showChatAvatarLogo = showAvatar
+        showChatAvatarLogo = showAvatar
         notifyDataSetChanged()
     }
 
@@ -515,9 +516,8 @@ internal class ChatRecyclerAdapter(
                         )
                         layoutParam1.width = chatBubbleWidth
                         v.chatBubbleBackground.layoutParams = layoutParam1
-
                         v.img_chat_avatar.visibility =
-                            when (showChatAvatarLogo) {
+                            when (this@ChatRecyclerAdapter.showChatAvatarLogo) {
                                 true -> View.VISIBLE
                                 else -> View.GONE
                             }

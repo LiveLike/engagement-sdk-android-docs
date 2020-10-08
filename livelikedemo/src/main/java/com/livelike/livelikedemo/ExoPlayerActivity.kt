@@ -107,7 +107,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         else -> listOf()
     }
     private lateinit var chatRoomLastTimeStampMap: MutableMap<String, Long>
-    private var showChatAvatar = false
+    private var showChatAvatar = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,7 +162,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             setUpAdClickListeners()
             checkBox.setOnClickListener {
                 showChatAvatar = !showChatAvatar
-                chat_view.toggleChatAvatar(showChatAvatar)
+                privateGroupChatsession?.toggleChatAvatar(showChatAvatar)
+                session?.chatSession?.toggleChatAvatar(showChatAvatar)
             }
             selectChannelButton.setOnClickListener {
                 channelManager?.let { cm ->
