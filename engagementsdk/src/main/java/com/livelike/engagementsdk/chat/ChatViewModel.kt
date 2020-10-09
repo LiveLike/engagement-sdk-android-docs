@@ -30,8 +30,6 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -293,6 +291,28 @@ internal class ChatViewModel(
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
         val url =
             Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
+            uiScope.launch(Dispatchers.IO) {
+                context.contentResolver.openAssetFileDescriptor(
+                    url,
+                    "r"
+                )?.use {
+                    val fileBytes = it.createInputStream().readBytes()
+                    val imageUrl = dataClient.uploadImage(
+                        currentChatRoom!!.uploadUrl,
+                        null,
+                        fileBytes
+                    )
+                    chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                    chatMessage.imageUrl = imageUrl
+                    val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                    chatMessage.image_width = bitmap.width
+                    chatMessage.image_height = bitmap.height
+                    val m = chatMessage.copy()
+                    m.message = ""
+                    chatListener?.onChatMessageSend(m, timedata)
+                    bitmap.recycle()
+                }
+        }
         Glide.with(context)
             .`as`(ByteArray::class.java)
             .load(url)
@@ -307,20 +327,7 @@ internal class ChatViewModel(
                 ) {
                     try {
                         uiScope.launch(Dispatchers.IO) {
-                            val imageUrl = dataClient.uploadImage(
-                                currentChatRoom!!.uploadUrl,
-                                null,
-                                fileBytes
-                            )
-                            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                            chatMessage.imageUrl = imageUrl
-                            val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                            chatMessage.image_width = bitmap.width
-                            chatMessage.image_height = bitmap.height
-                            val m = chatMessage.copy()
-                            m.message = ""
-                            chatListener?.onChatMessageSend(m, timedata)
-                            bitmap.recycle()
+
                         }
                     } catch (e: IOException) {
                         e.printStackTrace()
