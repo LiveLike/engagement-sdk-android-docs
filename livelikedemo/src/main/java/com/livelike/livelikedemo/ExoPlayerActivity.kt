@@ -45,7 +45,6 @@ import com.livelike.livelikedemo.video.PlayerState
 import com.livelike.livelikedemo.video.VideoPlayer
 import kotlinx.android.synthetic.main.activity_exo_player.btn_my_widgets
 import kotlinx.android.synthetic.main.activity_exo_player.chat_room_button
-import kotlinx.android.synthetic.main.activity_exo_player.checkBox
 import kotlinx.android.synthetic.main.activity_exo_player.fullLogs
 import kotlinx.android.synthetic.main.activity_exo_player.live_blog
 import kotlinx.android.synthetic.main.activity_exo_player.logsPreview
@@ -160,11 +159,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             }, 0, 100)
 
             setUpAdClickListeners()
-            checkBox.setOnClickListener {
-                showChatAvatar = !showChatAvatar
-                privateGroupChatsession?.toggleChatAvatar(showChatAvatar)
-                session?.chatSession?.toggleChatAvatar(showChatAvatar)
-            }
+            showChatAvatar = intent.getBooleanExtra("showAvatar", true)
+
+
             selectChannelButton.setOnClickListener {
                 channelManager?.let { cm ->
                     val channels = cm.getChannels()
@@ -583,6 +580,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
 
         if (privateGroupRoomId != null) {
+            privateGroupChatsession?.toggleChatAvatar(showChatAvatar)
             privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
             txt_chat_room_id.visibility = View.VISIBLE
             txt_chat_room_title.visibility = View.VISIBLE
@@ -599,6 +597,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         } else if (session != null) {
             txt_chat_room_id.visibility = View.INVISIBLE
             txt_chat_room_title.visibility = View.INVISIBLE
+            session?.chatSession?.toggleChatAvatar(showChatAvatar)
             chat_view.setSession(session!!.chatSession)
         }
         this.session = session

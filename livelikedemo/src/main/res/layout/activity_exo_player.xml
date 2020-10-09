@@ -139,16 +139,5 @@
         app:layout_constraintBottom_toTopOf="@+id/live_blog"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:buttonTint="@android:color/white"
-        android:text="Chat Avatar Toggle"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/chatWidget" />
 
 </android.support.constraint.ConstraintLayout>

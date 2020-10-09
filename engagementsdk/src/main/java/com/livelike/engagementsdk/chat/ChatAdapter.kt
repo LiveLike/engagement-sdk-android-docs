@@ -92,7 +92,7 @@ internal class ChatRecyclerAdapter(
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
-    private var showChatAvatarLogo = true
+    var showChatAvatarLogo = true
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(
@@ -102,11 +102,6 @@ internal class ChatRecyclerAdapter(
                 false
             )
         )
-    }
-
-    fun toggleChatAvatar(showAvatar: Boolean) {
-        showChatAvatarLogo = showAvatar
-        notifyDataSetChanged()
     }
 
     fun isReactionPopUpShowing(): Boolean {
