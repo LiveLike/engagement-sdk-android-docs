@@ -26,11 +26,11 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     var enableDefaultWidgetTransition: Boolean = true
         set(value) {
             field = value
-            if(value){
+            if (value) {
                 widgetContainer?.setOnTouchListener(
                     swipeDismissTouchListener
                 )
-            }else{
+            } else {
                 widgetContainer?.setOnTouchListener(null)
             }
         }
