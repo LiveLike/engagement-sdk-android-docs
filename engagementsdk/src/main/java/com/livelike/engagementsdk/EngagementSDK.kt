@@ -577,7 +577,6 @@ class EngagementSDK(
 
                         }
 
-                        job.joinAll()
                     }
                 }
             }
