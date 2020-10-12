@@ -143,6 +143,10 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                 }
             }
 
+            override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
+
+            }
+
 
         }
 

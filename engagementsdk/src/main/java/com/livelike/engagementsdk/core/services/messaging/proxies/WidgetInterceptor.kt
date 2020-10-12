@@ -39,6 +39,7 @@ abstract class WidgetLifeCycleEventsListener {
     abstract fun onWidgetInteractionCompleted(widgetData: LiveLikeWidgetEntity)
     abstract fun onWidgetDismissed(widgetData: LiveLikeWidgetEntity)
     abstract fun onWidgetStateChange(state: WidgetStates, widgetData: LiveLikeWidgetEntity)
+    abstract fun onUserInteract(widgetData: LiveLikeWidgetEntity)
 // TODO    abstract fun onWidgetCancelled(reason: WidgetCancelReason, widgetData: LiveLikeWidgetEntity)
 }
 
@@ -78,7 +79,9 @@ class LiveLikeWidgetEntity {
 
         val description: String = "",
 
-        val is_correct: Boolean = false
+        val is_correct: Boolean = false,
+        var answer_count: Int? = 0,
+        var vote_count: Int? = 0
     )
 
     init {
