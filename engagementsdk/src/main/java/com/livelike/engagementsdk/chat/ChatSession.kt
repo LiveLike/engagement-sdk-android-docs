@@ -317,4 +317,7 @@ internal class ChatSession(
     ) {
         msgListener = messageListener
     }
+
+    override var avatarUrl: String? = null
+
 }

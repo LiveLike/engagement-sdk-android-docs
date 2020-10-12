@@ -31,6 +31,8 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
+import kotlinx.android.synthetic.main.activity_main.btn_avatar
+import kotlinx.android.synthetic.main.activity_main.btn_avatar_remove
 import kotlinx.android.synthetic.main.activity_main.btn_create
 import kotlinx.android.synthetic.main.activity_main.btn_join
 import kotlinx.android.synthetic.main.activity_main.btn_nick_name
@@ -40,13 +42,14 @@ import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
+import kotlinx.android.synthetic.main.activity_main.ed_avatar
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.leaderboard_button
-import kotlinx.android.synthetic.main.activity_main.live_blog
 import kotlinx.android.synthetic.main.activity_main.leaderboard_rank
+import kotlinx.android.synthetic.main.activity_main.live_blog
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
@@ -77,7 +80,8 @@ class MainActivity : AppCompatActivity() {
         var theme: Int,
         var keyboardClose: Boolean = true,
         var showNotification: Boolean = true,
-        var jsonTheme: String? = null
+        var jsonTheme: String? = null,
+        var avatarUrl: String? = null
     )
 
     private lateinit var channelManager: ChannelManager
@@ -392,7 +396,16 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        ed_avatar.setText("https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSmyhNs7yHwEYgBHE0MNK3H5YeDbCcf3BDF9A&usqp=CAU")
 
+        btn_avatar.setOnClickListener {
+            val url = ed_avatar.text.toString()
+            player.avatarUrl = url
+        }
+
+        btn_avatar_remove.setOnClickListener {
+            player.avatarUrl = null
+        }
 
         widgets_only_button.setOnClickListener {
             startActivity(playerDetailIntent(onlyWidget))
@@ -476,6 +489,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("theme", player.theme)
     intent.putExtra("jsonTheme", player.jsonTheme)
     intent.putExtra("showNotification", player.showNotification)
+    intent.putExtra("avatarUrl", player.avatarUrl)
     intent.putExtra(
         "keyboardClose", when (player.theme) {
             R.style.TurnerChatTheme -> player.keyboardClose

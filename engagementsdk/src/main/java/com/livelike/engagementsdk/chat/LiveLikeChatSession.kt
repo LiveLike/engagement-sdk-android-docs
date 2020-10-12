@@ -50,4 +50,7 @@ interface LiveLikeChatSession {
 
     /** Register a message count listner for the specified Chat Room */
     fun setMessageListener(messageListener: MessageListener)
+
+    /** Avatar Image Url  **/
+    var avatarUrl: String?
 }

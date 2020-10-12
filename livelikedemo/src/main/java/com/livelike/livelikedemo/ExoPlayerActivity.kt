@@ -297,14 +297,20 @@ class ExoPlayerActivity : AppCompatActivity() {
             chat_view.isChatInputVisible = false
         }
 
-        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object : UserProfileDelegate{
-            override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
-                val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
-                logsPreview.text = "$text \n\n ${logsPreview.text}"
-                fullLogs.text = "$text \n\n ${fullLogs.text}"
-                println(text)
+        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate =
+            object : UserProfileDelegate {
+                override fun userProfile(
+                    userProfile: LiveLikeUser,
+                    reward: Reward,
+                    rewardSource: RewardSource
+                ) {
+                    val text =
+                        "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
+                    logsPreview.text = "$text \n\n ${logsPreview.text}"
+                    fullLogs.text = "$text \n\n ${fullLogs.text}"
+                    println(text)
+                }
             }
-        }
     }
 
     override fun onBackPressed() {
@@ -569,9 +575,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                 (application as LiveLikeApplication).sdk.updateChatUserPic(it)
             }
         }
-
+        val avatarUrl = intent.getStringExtra("avatarUrl")
         if (privateGroupRoomId != null) {
             privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
+            privateGroupChatsession?.avatarUrl = avatarUrl
             txt_chat_room_id.visibility = View.VISIBLE
             txt_chat_room_title.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.getChatRoom(privateGroupRoomId!!,
@@ -585,6 +592,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 })
             chat_view.setSession(privateGroupChatsession!!)
         } else if (session != null) {
+            session?.chatSession?.avatarUrl = avatarUrl
             txt_chat_room_id.visibility = View.INVISIBLE
             txt_chat_room_title.visibility = View.INVISIBLE
             chat_view.setSession(session!!.chatSession)

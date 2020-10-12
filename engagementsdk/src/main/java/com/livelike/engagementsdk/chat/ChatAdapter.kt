@@ -544,6 +544,7 @@ internal class ChatRecyclerAdapter(
                                 Glide.with(context).load(it)
                                     .apply(options)
                                     .placeholder(chatUserPicDrawable)
+                                    .error(chatUserPicDrawable)
                                     .into(img_chat_avatar)
                             else
                                 img_chat_avatar.setImageDrawable(chatUserPicDrawable)
