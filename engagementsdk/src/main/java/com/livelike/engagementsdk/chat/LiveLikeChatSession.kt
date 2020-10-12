@@ -53,4 +53,7 @@ interface LiveLikeChatSession {
 
     /** Set the value of visibility of chat avatar **/
     fun toggleChatAvatar(showAvatar: Boolean)
+
+    /** Avatar Image Url  **/
+    var avatarUrl: String?
 }

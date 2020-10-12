@@ -151,12 +151,12 @@ class ChatViewThemeAttributes {
                     context,
                     getResourceId(
                         R.styleable.ChatView_userPicDrawable,
-                        R.drawable.ic_user_pic
+                        R.drawable.default_avatar
                     )
                 )
                 else -> ContextCompat.getDrawable(
                     context,
-                    R.drawable.ic_user_pic
+                    R.drawable.default_avatar
                 )
             }
 

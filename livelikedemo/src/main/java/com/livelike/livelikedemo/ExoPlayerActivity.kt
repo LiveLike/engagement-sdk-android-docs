@@ -578,10 +578,11 @@ class ExoPlayerActivity : AppCompatActivity() {
                 (application as LiveLikeApplication).sdk.updateChatUserPic(it)
             }
         }
-
+        val avatarUrl = intent.getStringExtra("avatarUrl")
         if (privateGroupRoomId != null) {
             privateGroupChatsession?.toggleChatAvatar(showChatAvatar)
             privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
+            privateGroupChatsession?.avatarUrl = avatarUrl
             txt_chat_room_id.visibility = View.VISIBLE
             txt_chat_room_title.visibility = View.VISIBLE
             (application as LiveLikeApplication).sdk.getChatRoom(privateGroupRoomId!!,
@@ -595,6 +596,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                 })
             chat_view.setSession(privateGroupChatsession!!)
         } else if (session != null) {
+            session?.chatSession?.avatarUrl = avatarUrl
             txt_chat_room_id.visibility = View.INVISIBLE
             txt_chat_room_title.visibility = View.INVISIBLE
             session?.chatSession?.toggleChatAvatar(showChatAvatar)
