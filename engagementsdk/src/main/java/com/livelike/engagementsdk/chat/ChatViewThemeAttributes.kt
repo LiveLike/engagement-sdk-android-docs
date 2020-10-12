@@ -16,7 +16,6 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 class ChatViewThemeAttributes {
     fun initAttributes(context: Context, typedArray: TypedArray?) {
         typedArray?.apply {
-            showChatAvatarLogo = getBoolean(R.styleable.ChatView_showChatAvatarLogo, false)
             chatAvatarCircle = getBoolean(R.styleable.ChatView_chatAvatarCircle, false)
             showStickerSend = getBoolean(R.styleable.ChatView_showStickerSend, true)
             showMessageDateTime = getBoolean(R.styleable.ChatView_showMessageTime, true)
@@ -571,7 +570,6 @@ class ChatViewThemeAttributes {
     var chatReactionRadius: Float = 4f
     var chatSelectedReactionRadius: Float = 4f
     var chatReactionPadding: Int = 0
-    var showChatAvatarLogo: Boolean = false
     var chatAvatarMarginRight: Int = AndroidResource.dpToPx(3)
     var chatAvatarMarginBottom: Int = AndroidResource.dpToPx(5)
     var chatAvatarMarginLeft: Int = AndroidResource.dpToPx(5)

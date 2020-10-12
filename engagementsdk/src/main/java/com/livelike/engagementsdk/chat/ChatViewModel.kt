@@ -62,6 +62,8 @@ internal class ChatViewModel(
             chatAdapter.isPublicChat = isPublicRoom
         }
 
+    var avatarUrl: String? = null
+
     var stickerPackRepository: StickerPackRepository? = null
         set(value) {
             field = value
@@ -99,10 +101,14 @@ internal class ChatViewModel(
 
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
-            "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(
-                CHAT_PROVIDER
-            )} check blocked:${getBlockedUsers()
-                .contains(message.senderId)} check deleted:${deletedMessages.contains(message.id)}"
+            "Chat display message: ${message.message} check1:${
+                message.channel != currentChatRoom?.channels?.chat?.get(
+                    CHAT_PROVIDER
+                )
+            } check blocked:${
+                getBlockedUsers()
+                    .contains(message.senderId)
+            } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         // Now the message is belongs to my currentChat Room

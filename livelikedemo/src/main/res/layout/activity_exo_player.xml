@@ -139,4 +139,5 @@
         app:layout_constraintBottom_toTopOf="@+id/live_blog"
         app:layout_constraintEnd_toEndOf="parent" />
 
+
 </android.support.constraint.ConstraintLayout>

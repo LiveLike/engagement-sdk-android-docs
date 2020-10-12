@@ -39,14 +39,15 @@ import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
+import kotlinx.android.synthetic.main.activity_main.chk_show_avatar
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
 import kotlinx.android.synthetic.main.activity_main.layout_overlay
 import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.leaderboard_button
-import kotlinx.android.synthetic.main.activity_main.live_blog
 import kotlinx.android.synthetic.main.activity_main.leaderboard_rank
+import kotlinx.android.synthetic.main.activity_main.live_blog
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
@@ -77,7 +78,8 @@ class MainActivity : AppCompatActivity() {
         var theme: Int,
         var keyboardClose: Boolean = true,
         var showNotification: Boolean = true,
-        var jsonTheme: String? = null
+        var jsonTheme: String? = null,
+        var showAvatar: Boolean = true
     )
 
     private lateinit var channelManager: ChannelManager
@@ -172,6 +174,10 @@ class MainActivity : AppCompatActivity() {
         chk_show_dismiss.isChecked = player.showNotification
         chk_show_dismiss.setOnCheckedChangeListener { buttonView, isChecked ->
             player.showNotification = isChecked
+        }
+        chk_show_avatar.isChecked = player.showAvatar
+        chk_show_avatar.setOnCheckedChangeListener { buttonView, isChecked ->
+            player.showAvatar = isChecked;
         }
 
         events_button.setOnClickListener {
@@ -476,6 +482,7 @@ fun Context.playerDetailIntent(player: MainActivity.PlayerInfo): Intent {
     intent.putExtra("theme", player.theme)
     intent.putExtra("jsonTheme", player.jsonTheme)
     intent.putExtra("showNotification", player.showNotification)
+    intent.putExtra("showAvatar", player.showAvatar)
     intent.putExtra(
         "keyboardClose", when (player.theme) {
             R.style.TurnerChatTheme -> player.keyboardClose
