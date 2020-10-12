@@ -157,6 +157,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 viewModel?.adapter?.apply {
                     val currentSelectionId = myDataset[selectedPosition]
                     viewModel?.currentVoteId?.onNext(currentSelectionId.id)
+                    widgetLifeCycleEventsListener?.onUserInteract(widgetData)
                 }
             }, type)
 

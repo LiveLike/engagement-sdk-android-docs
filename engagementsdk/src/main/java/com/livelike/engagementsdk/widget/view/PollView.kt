@@ -159,6 +159,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                     viewModel?.adapter?.selectedPosition ?: -1
                 )?.id ?: ""
                 viewModel?.currentVoteId?.onNext(selectedId)
+                widgetLifeCycleEventsListener?.onUserInteract(widgetData)
             }, type)
 
             widgetsTheme?.let {

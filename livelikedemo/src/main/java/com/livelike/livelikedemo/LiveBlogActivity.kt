@@ -145,6 +145,10 @@ class LiveBlogActivity : AppCompatActivity() {
                     ) {
                         println("state = [${state}], widgetData = [${widgetData}]")
                     }
+
+                    override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
+
+                    }
                     //Commenting// scenario for WMT timeline mode
 /*                    private val job = SupervisorJob()
 //                    private val uiScope = CoroutineScope(Dispatchers.Main + job)

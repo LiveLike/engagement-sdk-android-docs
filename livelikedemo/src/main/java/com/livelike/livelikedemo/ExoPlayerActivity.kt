@@ -415,6 +415,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                 ) {
                 }
 
+                override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
+
+                }
+
                 override fun onWidgetPresented(widgetData: LiveLikeWidgetEntity) {
                     val widgetDataJson = GsonBuilder().create().toJson(widgetData)
                     addLogs("onWidgetPresented : $widgetDataJson")
