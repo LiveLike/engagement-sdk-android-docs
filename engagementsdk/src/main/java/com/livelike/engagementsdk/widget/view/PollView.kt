@@ -67,11 +67,15 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     private fun stateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
+                isFirstInteraction = false
                 lockInteraction()
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
-                viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
+                viewModel?.results?.subscribe(javaClass.simpleName) {
+                    if (isFirstInteraction)
+                        resultsObserver(it)
+                }
 //                viewModel?.data?.latest()?.let {
 //                    viewModel?.startDismissTimout(it.resource.timeout)
 //                }
@@ -141,6 +145,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         }
     }
 
+    private var isFirstInteraction = false
+
     private fun resourceObserver(widget: PollWidget?) {
         widget?.apply {
             val optionList = resource.getMergedOptions() ?: return
@@ -160,6 +166,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 )?.id ?: ""
                 viewModel?.currentVoteId?.onNext(selectedId)
                 widgetLifeCycleEventsListener?.onUserInteract(widgetData)
+                isFirstInteraction = true
             }, type)
 
             widgetsTheme?.let {
