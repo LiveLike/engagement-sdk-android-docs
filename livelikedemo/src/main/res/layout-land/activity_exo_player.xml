@@ -133,4 +133,5 @@
         app:layout_constraintBottom_toTopOf="@+id/live_blog"
         app:layout_constraintEnd_toStartOf="@+id/chatWidget" />
 
+
 </android.support.constraint.ConstraintLayout>

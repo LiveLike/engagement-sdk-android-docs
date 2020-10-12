@@ -106,6 +106,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         else -> listOf()
     }
     private lateinit var chatRoomLastTimeStampMap: MutableMap<String, Long>
+    private var showChatAvatar = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,6 +159,8 @@ class ExoPlayerActivity : AppCompatActivity() {
             }, 0, 100)
 
             setUpAdClickListeners()
+            showChatAvatar = intent.getBooleanExtra("showAvatar", true)
+
 
             selectChannelButton.setOnClickListener {
                 channelManager?.let { cm ->
@@ -577,6 +580,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
         val avatarUrl = intent.getStringExtra("avatarUrl")
         if (privateGroupRoomId != null) {
+            privateGroupChatsession?.toggleChatAvatar(showChatAvatar)
             privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
             privateGroupChatsession?.avatarUrl = avatarUrl
             txt_chat_room_id.visibility = View.VISIBLE
@@ -595,6 +599,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             session?.chatSession?.avatarUrl = avatarUrl
             txt_chat_room_id.visibility = View.INVISIBLE
             txt_chat_room_title.visibility = View.INVISIBLE
+            session?.chatSession?.toggleChatAvatar(showChatAvatar)
             chat_view.setSession(session!!.chatSession)
         }
         this.session = session

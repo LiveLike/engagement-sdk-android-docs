@@ -285,7 +285,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                 }
             )
         showAvatar?.let {
-
+            privateGroupChatsession.toggleChatAvatar(it)
         }
         url?.let {
             privateGroupChatsession.avatarUrl = it

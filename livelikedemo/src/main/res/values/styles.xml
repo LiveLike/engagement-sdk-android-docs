@@ -15,7 +15,6 @@
     <style name="Default" parent="AppTheme">
         <item name="displayUserProfile">true</item>
         <item name="showMessageTime">true</item>
-        <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">true</item>
         <item name="chatBubbleWidth">wrap_content</item>
         <item name="chatBackgroundWidth">wrap_content</item>
@@ -65,7 +64,6 @@
         <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
         <item name="chatReactionDisplayCountColor">@android:color/black</item>
-        <item name="showChatAvatarLogo">true</item>
         <item name="chatAvatarCircle">false</item>
         <item name="chatAvatarHeight">36dp</item>
         <item name="chatAvatarWidth">32dp</item>

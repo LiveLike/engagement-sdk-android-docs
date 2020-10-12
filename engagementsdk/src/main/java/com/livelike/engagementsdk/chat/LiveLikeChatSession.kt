@@ -51,6 +51,9 @@ interface LiveLikeChatSession {
     /** Register a message count listner for the specified Chat Room */
     fun setMessageListener(messageListener: MessageListener)
 
+    /** Set the value of visibility of chat avatar **/
+    fun toggleChatAvatar(showAvatar: Boolean)
+
     /** Avatar Image Url  **/
     var avatarUrl: String?
 }
