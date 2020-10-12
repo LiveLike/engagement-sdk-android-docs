@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_widget_framework.radio_ready
 import kotlinx.android.synthetic.main.activity_widget_framework.radio_result
 import kotlinx.android.synthetic.main.activity_widget_framework.show_my_widget
 import kotlinx.android.synthetic.main.activity_widget_framework.show_widget
+import kotlinx.android.synthetic.main.activity_widget_framework.txt_widget_interact_listener
 import kotlinx.android.synthetic.main.activity_widget_framework.widget_view
 
 class WidgetFrameworkTestActivity : AppCompatActivity() {
@@ -142,12 +143,11 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                     }
                 }
             }
-
+            var count=0
             override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
-
+                count++
+                txt_widget_interact_listener.append("$count, ${widgetData.kind}\n")
             }
-
-
         }
 
 
