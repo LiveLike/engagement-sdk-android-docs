@@ -856,7 +856,7 @@ enum class DismissAction {
 const val CHAT_MESSAGE_ID = "Chat Message ID"
 const val ALERT_ID = "Alert Id"
 const val PROGRAM_ID = "Program ID"
-const val LINK_URL = "Link Url"
+const val LINK_URL = "Link URL"
 const val CHAT_REACTION_ID = "Chat Reaction ID"
 const val CHAT_ROOM_ID = "Chat Room ID"
 const val WIDGET_TYPE = "Widget Type"
