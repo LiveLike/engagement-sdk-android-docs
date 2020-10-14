@@ -584,7 +584,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         }
         val avatarUrl = intent.getStringExtra("avatarUrl")
         if (privateGroupRoomId != null) {
-            privateGroupChatsession?.toggleChatAvatar(showChatAvatar)
+            privateGroupChatsession?.shouldDisplayAvatar = showChatAvatar
             privateGroupChatsession?.enterChatRoom(privateGroupRoomId!!)
             privateGroupChatsession?.avatarUrl = avatarUrl
             txt_chat_room_id.visibility = View.VISIBLE
@@ -603,7 +603,7 @@ class ExoPlayerActivity : AppCompatActivity() {
             session?.chatSession?.avatarUrl = avatarUrl
             txt_chat_room_id.visibility = View.INVISIBLE
             txt_chat_room_title.visibility = View.INVISIBLE
-            session?.chatSession?.toggleChatAvatar(showChatAvatar)
+            session?.chatSession?.shouldDisplayAvatar = showChatAvatar
             chat_view.setSession(session!!.chatSession)
         }
         this.session = session
