@@ -749,7 +749,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     it.id,
                     it.message,
                     hasExternalImage,
-                    viewModel?.currentChatRoom?.id!!
+                    viewModel?.currentChatRoom?.id ?: ""
                 )
             }
         }
