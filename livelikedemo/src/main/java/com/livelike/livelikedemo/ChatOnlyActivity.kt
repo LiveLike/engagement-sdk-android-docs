@@ -273,7 +273,7 @@ class ChatOnlyActivity : AppCompatActivity() {
     ) {
         val session = sessionMap[chatRoomId]
         privateGroupChatsession =
-            session ?: (application as LiveLikeApplication).createPrivateSession(
+            session ?: (application as LiveLikeApplication).createPrivateSessionForMultiple(
                 errorDelegate = object : ErrorDelegate() {
                     override fun onError(error: String) {
                         checkForNetworkToRecreateActivity()
