@@ -39,9 +39,13 @@ import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_id
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_members_count
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_title
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_visibility
+import kotlinx.android.synthetic.main.chat_only_check_box.view.chk_avatar
+import kotlinx.android.synthetic.main.chat_only_check_box.view.ed_avatar
+
 
 class ChatOnlyActivity : AppCompatActivity() {
     private lateinit var privateGroupChatsession: LiveLikeChatSession
+    private val sessionMap: HashMap<String, LiveLikeChatSession> = hashMapOf()
     private var chatRoomList: ArrayList<ChatRoomInfo> = arrayListOf()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,8 +65,10 @@ class ChatOnlyActivity : AppCompatActivity() {
                 object : LiveLikeCallback<ChatRoomInfo>() {
                     override fun onResponse(result: ChatRoomInfo?, error: String?) {
                         val response = when {
-                            result != null -> "${result.title
-                                ?: "No Title"}(${result.id}),  Room Id copy to clipboard"
+                            result != null -> "${
+                                result.title
+                                    ?: "No Title"
+                            }(${result.id}),  Room Id copy to clipboard"
                             else -> error
                         }
                         val clipboard =
@@ -104,7 +110,28 @@ class ChatOnlyActivity : AppCompatActivity() {
                 setItems(chatRoomList.map { it.id }.toTypedArray()) { _, which ->
                     // On change of theme we need to create the session in order to pass new attribute of theme to widgets and chat
 //                    (application as LiveLikeApplication).removePrivateSession()
-                    changeChatRoom(chatRoomList.elementAt(which).id)
+                    val session = sessionMap[chatRoomList.elementAt(which).id]
+                    if (session == null) {
+                        val checkBoxView =
+                            View.inflate(this@ChatOnlyActivity, R.layout.chat_only_check_box, null)
+                        val builder = AlertDialog.Builder(this@ChatOnlyActivity)
+                        builder.setTitle("Avatar")
+                            .setView(checkBoxView)
+                            .setCancelable(false)
+                            .setPositiveButton("Done") { dialog, id ->
+                                val url = checkBoxView.ed_avatar.text.toString()
+                                changeChatRoom(
+                                    chatRoomList.elementAt(which).id,
+                                    checkBoxView.chk_avatar.isChecked,
+                                    url
+                                )
+                            }
+                            .show()
+                    } else {
+                        changeChatRoom(
+                            chatRoomList.elementAt(which).id
+                        )
+                    }
                 }
                 create()
             }.show()
@@ -239,9 +266,14 @@ class ChatOnlyActivity : AppCompatActivity() {
         }
     }
 
-    private fun changeChatRoom(chatRoomId: String) {
+    private fun changeChatRoom(
+        chatRoomId: String,
+        showAvatar: Boolean? = null,
+        url: String? = null
+    ) {
+        val session = sessionMap[chatRoomId]
         privateGroupChatsession =
-            (application as LiveLikeApplication).createPrivateSession(
+            session ?: (application as LiveLikeApplication).createPrivateSessionForMultiple(
                 errorDelegate = object : ErrorDelegate() {
                     override fun onError(error: String) {
                         checkForNetworkToRecreateActivity()
@@ -252,6 +284,13 @@ class ChatOnlyActivity : AppCompatActivity() {
                     }
                 }
             )
+        showAvatar?.let {
+            privateGroupChatsession.shouldDisplayAvatar = it
+        }
+        url?.let {
+            privateGroupChatsession.avatarUrl = it
+        }
+        sessionMap[chatRoomId] = privateGroupChatsession
         privateGroupChatsession.enterChatRoom(chatRoomId)
         txt_chat_room_id.visibility = View.VISIBLE
         txt_chat_room_title.visibility = View.VISIBLE

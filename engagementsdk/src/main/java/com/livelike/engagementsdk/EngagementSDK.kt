@@ -104,7 +104,6 @@ class EngagementSDK(
      * SDK Initialization logic.
      */
     init {
-        EnagagementSdkUncaughtExceptionHandler
         AndroidThreeTen.init(applicationContext) // Initialize DateTime lib
         initLiveLikeSharedPrefs(
             applicationContext
@@ -577,7 +576,6 @@ class EngagementSDK(
 
                         }
 
-                        job.joinAll()
                     }
                 }
             }

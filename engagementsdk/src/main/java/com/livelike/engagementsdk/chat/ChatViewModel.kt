@@ -30,8 +30,6 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -63,6 +61,8 @@ internal class ChatViewModel(
             chatAdapter.chatRoomId = value?.id
             chatAdapter.isPublicChat = isPublicRoom
         }
+
+    var avatarUrl: String? = null
 
     var stickerPackRepository: StickerPackRepository? = null
         set(value) {
@@ -101,10 +101,14 @@ internal class ChatViewModel(
 
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
-            "Chat display message: ${message.message} check1:${message.channel != currentChatRoom?.channels?.chat?.get(
-                CHAT_PROVIDER
-            )} check blocked:${getBlockedUsers()
-                .contains(message.senderId)} check deleted:${deletedMessages.contains(message.id)}"
+            "Chat display message: ${message.message} check1:${
+                message.channel != currentChatRoom?.channels?.chat?.get(
+                    CHAT_PROVIDER
+                )
+            } check blocked:${
+                getBlockedUsers()
+                    .contains(message.senderId)
+            } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
         // Now the message is belongs to my currentChat Room
@@ -226,11 +230,11 @@ internal class ChatViewModel(
     }
 
     override fun updateChatMessageTimeToken(messageId: String, timetoken: String) {
-        messageList.find {
-            it.id == messageId
-        }?.let { cm ->
-            cm.timetoken = timetoken.toLong()
-            uiScope.launch {
+        uiScope.launch {
+            messageList.find {
+                it.id == messageId
+            }?.let { cm ->
+                cm.timetoken = timetoken.toLong()
                 chatAdapter.submitList(ArrayList(messageList))
                 chatAdapter.notifyItemChanged(messageList.indexOf(cm))
                 eventStream.onNext(EVENT_NEW_MESSAGE)
@@ -293,6 +297,28 @@ internal class ChatViewModel(
     fun uploadAndPostImage(context: Context, chatMessage: ChatMessage, timedata: EpochTime) {
         val url =
             Uri.parse(chatMessage.message?.substring(1, (chatMessage.message?.length ?: 0) - 1))
+        uiScope.launch(Dispatchers.IO) {
+            context.contentResolver.openAssetFileDescriptor(
+                url,
+                "r"
+            )?.use {
+                val fileBytes = it.createInputStream().readBytes()
+                val imageUrl = dataClient.uploadImage(
+                    currentChatRoom!!.uploadUrl,
+                    null,
+                    fileBytes
+                )
+                chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                chatMessage.imageUrl = imageUrl
+                val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                chatMessage.image_width = bitmap.width
+                chatMessage.image_height = bitmap.height
+                val m = chatMessage.copy()
+                m.message = ""
+                chatListener?.onChatMessageSend(m, timedata)
+                bitmap.recycle()
+            }
+        }
         Glide.with(context)
             .`as`(ByteArray::class.java)
             .load(url)
@@ -307,20 +333,7 @@ internal class ChatViewModel(
                 ) {
                     try {
                         uiScope.launch(Dispatchers.IO) {
-                            val imageUrl = dataClient.uploadImage(
-                                currentChatRoom!!.uploadUrl,
-                                null,
-                                fileBytes
-                            )
-                            chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
-                            chatMessage.imageUrl = imageUrl
-                            val bitmap = BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
-                            chatMessage.image_width = bitmap.width
-                            chatMessage.image_height = bitmap.height
-                            val m = chatMessage.copy()
-                            m.message = ""
-                            chatListener?.onChatMessageSend(m, timedata)
-                            bitmap.recycle()
+
                         }
                     } catch (e: IOException) {
                         e.printStackTrace()

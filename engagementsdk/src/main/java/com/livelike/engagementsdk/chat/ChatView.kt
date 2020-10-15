@@ -729,7 +729,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             edittext_chat_message.text.toString().trim(),
             currentUser?.id ?: "empty-id",
             currentUser?.nickname ?: "John Doe",
-            currentUser?.userPic,
+            session?.avatarUrl,
             isFromMe = true,
             image_width = 100,
             image_height = 100
@@ -745,12 +745,14 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
                 edittext_chat_message.setText("")
                 snapToLive()
-                analyticsService.trackMessageSent(
-                    it.id,
-                    it.message,
-                    hasExternalImage,
-                    viewModel?.currentChatRoom?.id!!
-                )
+                viewModel?.currentChatRoom?.id?.let { id->
+                    analyticsService.trackMessageSent(
+                        it.id,
+                        it.message,
+                        hasExternalImage,
+                        id
+                    )
+                }
             }
         }
     }

@@ -8,13 +8,14 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.findStickerCodes
 import com.livelike.engagementsdk.chat.stickerKeyboard.findStickers
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
+import com.livelike.engagementsdk.widget.WidgetType
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.mixpanel.android.mpmetrics.MixpanelExtension
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.regex.Matcher
-import org.json.JSONObject
 
 /**
  * The base interface for the analytics. This will log events to any remote analytics provider.
@@ -39,12 +40,18 @@ interface AnalyticsService {
     )
 
     fun trackSessionStarted()
-    fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean = false,chatRoomId: String)
+    fun trackMessageSent(
+        msgId: String,
+        msg: String?,
+        hasExternalImage: Boolean = false,
+        chatRoomId: String
+    )
+
     fun trackMessageDisplayed(msgId: String, msg: String?, hasExternalImage: Boolean = false)
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
-    fun trackWidgetDisplayed(kind: String, id: String)
+    fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String? = null)
     fun trackWidgetDismiss(
         kind: String,
         id: String,
@@ -79,7 +86,13 @@ interface AnalyticsService {
     fun trackPointThisProgram(points: Int)
     fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)
     fun trackChatReactionPanelOpen(messageId: String)
-    fun trackAlertLinkOpened(alertId: String, programId: String, linkUrl: String)
+    fun trackAlertLinkOpened(
+        alertId: String,
+        programId: String,
+        linkUrl: String,
+        widgetType: WidgetType?
+    )
+
     fun trackChatReactionSelected(
         chatRoomId: String,
         messageId: String,
@@ -114,10 +127,15 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         )
     }
 
-    override fun trackAlertLinkOpened(alertId: String, programId: String, linkUrl: String) {
+    override fun trackAlertLinkOpened(
+        alertId: String,
+        programId: String,
+        linkUrl: String,
+        widgetType: WidgetType?
+    ) {
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}]$alertId $programId $linkUrl"
+            "[${object {}.javaClass.enclosingMethod?.name}]$alertId $programId $linkUrl ${widgetType?.getType()}"
         )
     }
 
@@ -183,7 +201,12 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}]")
     }
 
-    override fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean,chatRoomId: String) {
+    override fun trackMessageSent(
+        msgId: String,
+        msg: String?,
+        hasExternalImage: Boolean,
+        chatRoomId: String
+    ) {
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $msgId")
     }
 
@@ -195,7 +218,7 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String) {
+    override fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String?) {
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
@@ -583,11 +606,17 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         )
     }
 
-    override fun trackAlertLinkOpened(alertId: String, programId: String, linkUrl: String) {
+    override fun trackAlertLinkOpened(
+        alertId: String,
+        programId: String,
+        linkUrl: String,
+        widgetType: WidgetType?
+    ) {
         val properties = JSONObject()
         properties.put(ALERT_ID, alertId)
         properties.put(PROGRAM_ID, programId)
         properties.put(LINK_URL, linkUrl)
+        properties.put(WIDGET_TYPE, widgetType?.getType() ?: "")
         mixpanel.track(KEY_EVENT_ALERT_LINK_OPENED, properties)
         eventObservers[clientId]?.invoke(KEY_EVENT_ALERT_LINK_OPENED, properties)
         Log.d(
@@ -611,7 +640,12 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         }
     }
 
-    override fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean,chatRoomId: String) {
+    override fun trackMessageSent(
+        msgId: String,
+        msg: String?,
+        hasExternalImage: Boolean,
+        chatRoomId: String
+    ) {
         val properties = JSONObject()
         properties.put(CHAT_MESSAGE_ID, msgId)
         properties.put("Character Length", (if (hasExternalImage) 0 else msg?.length ?: 0))
@@ -650,10 +684,11 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         return allMatches
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String) {
+    override fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String?) {
         val properties = JSONObject()
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
+        linkUrl?.let { properties.put(LINK_URL, it) }
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_DISPLAYED, properties)
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
@@ -821,6 +856,7 @@ enum class DismissAction {
 const val CHAT_MESSAGE_ID = "Chat Message ID"
 const val ALERT_ID = "Alert Id"
 const val PROGRAM_ID = "Program ID"
-const val LINK_URL = "Link Url"
+const val LINK_URL = "Link URL"
 const val CHAT_REACTION_ID = "Chat Reaction ID"
 const val CHAT_ROOM_ID = "Chat Room ID"
+const val WIDGET_TYPE = "Widget Type"

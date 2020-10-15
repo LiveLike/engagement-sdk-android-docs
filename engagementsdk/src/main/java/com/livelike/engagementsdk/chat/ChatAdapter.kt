@@ -92,6 +92,7 @@ internal class ChatRecyclerAdapter(
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
     private var chatPopUpView: ChatActionsPopupView? = null
+    var showChatAvatarLogo = true
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
         return ViewHolder(
@@ -340,7 +341,7 @@ internal class ChatRecyclerAdapter(
                                     }
                                 }
                                 //removing unecessary call
-                               // notifyItemChanged(currentChatReactionPopUpViewPos)
+                                // notifyItemChanged(currentChatReactionPopUpViewPos)
                             }
                         }
                     }
@@ -352,8 +353,8 @@ internal class ChatRecyclerAdapter(
                     else -> R.style.ChatReactionAnimation
                 }
                 //I had to specify the width and height in order to be shown on that version (which is still compatible with the rest of the versions as well).
-                width=ViewGroup.LayoutParams.WRAP_CONTENT
-                height=ViewGroup.LayoutParams.WRAP_CONTENT
+                width = ViewGroup.LayoutParams.WRAP_CONTENT
+                height = ViewGroup.LayoutParams.WRAP_CONTENT
                 showAtLocation(
                     v,
                     Gravity.NO_GRAVITY,
@@ -510,9 +511,8 @@ internal class ChatRecyclerAdapter(
                         )
                         layoutParam1.width = chatBubbleWidth
                         v.chatBubbleBackground.layoutParams = layoutParam1
-
                         v.img_chat_avatar.visibility =
-                            when (showChatAvatarLogo) {
+                            when (this@ChatRecyclerAdapter.showChatAvatarLogo) {
                                 true -> View.VISIBLE
                                 else -> View.GONE
                             }
@@ -544,6 +544,7 @@ internal class ChatRecyclerAdapter(
                                 Glide.with(context).load(it)
                                     .apply(options)
                                     .placeholder(chatUserPicDrawable)
+                                    .error(chatUserPicDrawable)
                                     .into(img_chat_avatar)
                             else
                                 img_chat_avatar.setImageDrawable(chatUserPicDrawable)

@@ -242,6 +242,11 @@ enum class WidgetType(val event: String) {
         private val map = values().associateBy(WidgetType::event)
         fun fromString(type: String) = map[type]
     }
+
+    fun getType(): String {
+        return event.replace("created", "").replace("updated", "")
+            .replace("-", "")
+    }
 }
 
 internal fun MessagingClient.asWidgetManager(

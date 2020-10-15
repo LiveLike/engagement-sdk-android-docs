@@ -109,6 +109,12 @@ internal class ChatSession(
         }
     }
 
+    override var shouldDisplayAvatar: Boolean
+        get() = chatViewModel.chatAdapter.showChatAvatarLogo
+        set(value) {
+            chatViewModel.chatAdapter.showChatAvatarLogo = value
+        }
+
     private fun updatingURls(
         clientId: String,
         stickerPackUrl: String,
@@ -317,4 +323,7 @@ internal class ChatSession(
     ) {
         msgListener = messageListener
     }
+
+    override var avatarUrl: String? = null
+
 }

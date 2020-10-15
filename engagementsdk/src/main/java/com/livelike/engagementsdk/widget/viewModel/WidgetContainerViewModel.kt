@@ -6,6 +6,7 @@ import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.google.gson.JsonPrimitive
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.Stream
@@ -85,10 +86,15 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         }
         if (widgetContainer != null) {
             widgetView?.widgetId?.let { widgetId ->
+                var linkUrl : String? = null
+                if(widgetView?.widgetInfos?.payload?.get("link_url") is JsonPrimitive){
+                    linkUrl = widgetView?.widgetInfos?.payload?.get("link_url")?.asString
+                }
                 analyticsService?.trackWidgetDisplayed(
                     WidgetType.fromString(
                         widgetType ?: ""
-                    )?.toAnalyticsString() ?: "", widgetId
+                    )?.toAnalyticsString() ?: "", widgetId ,
+                    linkUrl
                 )
             }
         }
