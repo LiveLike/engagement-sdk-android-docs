@@ -273,7 +273,7 @@ class ChatOnlyActivity : AppCompatActivity() {
     ) {
         val session = sessionMap[chatRoomId]
         privateGroupChatsession =
-            session ?: (application as LiveLikeApplication).createPrivateSession(
+            session ?: (application as LiveLikeApplication).createPrivateSessionForMultiple(
                 errorDelegate = object : ErrorDelegate() {
                     override fun onError(error: String) {
                         checkForNetworkToRecreateActivity()
@@ -285,7 +285,7 @@ class ChatOnlyActivity : AppCompatActivity() {
                 }
             )
         showAvatar?.let {
-            privateGroupChatsession.toggleChatAvatar(it)
+            privateGroupChatsession.shouldDisplayAvatar = it
         }
         url?.let {
             privateGroupChatsession.avatarUrl = it

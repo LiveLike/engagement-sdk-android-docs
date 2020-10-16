@@ -52,7 +52,7 @@ interface LiveLikeChatSession {
     fun setMessageListener(messageListener: MessageListener)
 
     /** Set the value of visibility of chat avatar **/
-    fun toggleChatAvatar(showAvatar: Boolean)
+    var shouldDisplayAvatar: Boolean
 
     /** Avatar Image Url  **/
     var avatarUrl: String?

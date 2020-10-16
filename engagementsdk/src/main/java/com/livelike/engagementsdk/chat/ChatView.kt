@@ -745,12 +745,14 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
                 edittext_chat_message.setText("")
                 snapToLive()
-                analyticsService.trackMessageSent(
-                    it.id,
-                    it.message,
-                    hasExternalImage,
-                    viewModel?.currentChatRoom?.id!!
-                )
+                viewModel?.currentChatRoom?.id?.let { id->
+                    analyticsService.trackMessageSent(
+                        it.id,
+                        it.message,
+                        hasExternalImage,
+                        id
+                    )
+                }
             }
         }
     }

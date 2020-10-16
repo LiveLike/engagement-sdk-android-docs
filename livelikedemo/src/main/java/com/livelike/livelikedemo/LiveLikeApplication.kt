@@ -113,6 +113,13 @@ class LiveLikeApplication : Application() {
         return privateGroupChatsession as LiveLikeChatSession
     }
 
+    fun createPrivateSessionForMultiple(
+        errorDelegate: ErrorDelegate? = null,
+        timecodeGetter: EngagementSDK.TimecodeGetter? = null
+    ): LiveLikeChatSession {
+        return sdk.createChatSession(timecodeGetter ?: this.timecodeGetter, errorDelegate)
+    }
+
     companion object {
         const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
 //            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"

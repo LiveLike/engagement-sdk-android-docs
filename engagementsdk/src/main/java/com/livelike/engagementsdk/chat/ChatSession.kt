@@ -109,9 +109,11 @@ internal class ChatSession(
         }
     }
 
-    override fun toggleChatAvatar(showAvatar: Boolean) {
-        chatViewModel.chatAdapter.showChatAvatarLogo = showAvatar
-    }
+    override var shouldDisplayAvatar: Boolean
+        get() = chatViewModel.chatAdapter.showChatAvatarLogo
+        set(value) {
+            chatViewModel.chatAdapter.showChatAvatarLogo = value
+        }
 
     private fun updatingURls(
         clientId: String,
