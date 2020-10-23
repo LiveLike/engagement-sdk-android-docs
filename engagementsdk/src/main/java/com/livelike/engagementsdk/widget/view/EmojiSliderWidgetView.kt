@@ -53,7 +53,14 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
     }
 
     override fun showResults() {
-        val result = viewModel.results.latest()
+        val didUserVote = viewModel.currentVote.latest().isNullOrEmpty().not()
+        val result = when (didUserVote) {
+            true -> viewModel.results.latest()
+            else -> viewModel.data.latest()
+        }
+        if (!didUserVote) {
+            image_slider.progress = result?.averageMagnitude ?: 0.0f
+        }
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }
