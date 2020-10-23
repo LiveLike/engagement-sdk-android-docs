@@ -3,7 +3,7 @@
     android:shape="rectangle">
 
     <gradient
-        android:angle="0"
+        android:angle="@integer/cheer_meter_team2_gradient_angle"
         android:endColor="@color/cheer_meter_team2_color2"
         android:startColor="@color/cheer_meter_team2_color" />
 </shape>

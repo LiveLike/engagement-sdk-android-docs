@@ -5,10 +5,10 @@
         android:endColor="@color/livelike_prediction_title_gradient_right"
         android:startColor="@color/livelike_prediction_title_gradient_left" />
     <padding
-        android:bottom="10dp"
-        android:left="16dp"
-        android:right="34dp"
-        android:top="10dp" />
+        android:bottom="@dimen/livelike_prediction_title_padding_bottom"
+        android:left="@dimen/livelike_prediction_title_padding_left"
+        android:right="@dimen/livelike_prediction_title_padding_right"
+        android:top="@dimen/livelike_prediction_title_padding_top" />
     <corners
         android:topLeftRadius="@dimen/livelike_button_corner_radius"
         android:topRightRadius="@dimen/livelike_button_corner_radius" />
