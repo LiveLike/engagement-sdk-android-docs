@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -46,7 +47,7 @@ internal class CheerMeterViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel() {
+) : BaseViewModel(), LiveLikeWidgetMediator {
 
     var totalVoteCount = 0
 
@@ -208,7 +209,7 @@ internal class CheerMeterViewModel(
         }
     }
 
-    fun dismissWidget(action: DismissAction) {
+    override fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
                 it.toAnalyticsString(),
@@ -233,6 +234,15 @@ internal class CheerMeterViewModel(
         currentWidgetType = null
         viewModelJob.cancel("Widget Cleanup")
     }
+
+    override val voteResults: Stream<MutableMap<String, Int>>
+        get() = TODO("Not yet implemented")
+
+    override fun submitVote(optionID: String) {
+//        TODO("Not yet implemented")
+    }
+
+
 }
 
 data class CheerMeterVoteState(

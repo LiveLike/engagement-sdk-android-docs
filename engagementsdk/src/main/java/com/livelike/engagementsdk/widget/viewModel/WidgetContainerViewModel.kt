@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
@@ -42,6 +43,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
     // Swipe to dismiss
     var swipeDismissTouchListener: View.OnTouchListener? = null
+
+    var widgetViewViewFactory : LiveLikeWidgetViewFactory?=null
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(

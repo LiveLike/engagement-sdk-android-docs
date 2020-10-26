@@ -22,6 +22,7 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetProvider
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
@@ -62,6 +63,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     }
 
     private var session: LiveLikeContentSession? = null
+
+    var widgetViewFactory: LiveLikeWidgetViewFactory? = null
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
