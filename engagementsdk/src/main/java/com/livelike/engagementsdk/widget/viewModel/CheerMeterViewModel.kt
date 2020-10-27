@@ -21,8 +21,10 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
@@ -41,7 +43,7 @@ internal class CheerMeterWidget(
 )
 
 internal class CheerMeterViewModel(
-    widgetInfos: WidgetInfos,
+    val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
@@ -61,7 +63,7 @@ internal class CheerMeterViewModel(
     private var pushVoteJob: Job? = null
     private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
-    val results: SubscriptionManager<Resource> =
+    val results: Stream<Resource> =
         SubscriptionManager()
     val
             voteEnd: SubscriptionManager<Boolean> =
@@ -237,13 +239,19 @@ internal class CheerMeterViewModel(
     }
 
     override val widgetData: LiveLikeWidget
-        get() = TODO("Not yet implemented")
+        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 
-    override val voteResults: Stream<LiveLikeWidget>
-        get() = TODO("Not yet implemented")
+
+    override val voteResults: Stream<LiveLikeWidgetResult>
+        get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun submitVote(optionID: String) {
-//        TODO("Not yet implemented")
+        data.currentData?.let { widget ->
+            val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
+            widget.resource.getMergedOptions()?.indexOf(option)?.let {
+                incrementVoteCount(it)
+            }
+        }
     }
 
 
