@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
@@ -235,8 +236,9 @@ internal class CheerMeterViewModel(
         viewModelJob.cancel("Widget Cleanup")
     }
 
-    override val voteResults: Stream<MutableMap<String, Int>>
+    override val voteResults: Stream<LiveLikeWidget>
         get() = TODO("Not yet implemented")
+
 
     override fun submitVote(optionID: String) {
 //        TODO("Not yet implemented")
