@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.Stream
 
 interface LiveLikeWidgetMediator {
 
+    val widgetData : LiveLikeWidget
 
     val voteResults : Stream<LiveLikeWidget>
 

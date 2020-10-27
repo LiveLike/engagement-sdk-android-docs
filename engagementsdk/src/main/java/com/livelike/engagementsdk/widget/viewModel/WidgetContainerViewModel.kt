@@ -12,7 +12,6 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
@@ -82,7 +81,13 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
         removeViews()
-        if (widgetView != null) {
+        var customView :View?= null;
+        if(widgetView?.widgetViewModel is CheerMeterWidgetmodel){
+            customView = widgetViewViewFactory?.createCheerMeterView(widgetView?.widgetViewModel as CheerMeterWidgetmodel)
+        }
+        if(customView !=null){
+            displayWidget(customView)
+        } else if (widgetView != null) {
             widgetView.widgetViewModel?.enableDefaultWidgetTransition =
                 enableDefaultWidgetTransition
             displayWidget(widgetView)
@@ -103,21 +108,21 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         }
     }
 
-    private fun displayWidget(view: SpecifiedWidgetView?) {
-        if (view != null) {
+    private fun displayWidget(view: View) {
+
+        if (view is SpecifiedWidgetView) {
             dismissWidget = view.dismissFunc
-            (view.parent as ViewGroup?)?.removeAllViews() // Clean the view parent in case of reuse
             view.widgetViewThemeAttributes.apply {
                 widgetWinAnimation = widgetViewThemeAttributes.widgetWinAnimation
                 widgetLoseAnimation = widgetViewThemeAttributes.widgetLoseAnimation
                 widgetDrawAnimation = widgetViewThemeAttributes.widgetDrawAnimation
             }
             view.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
-            widgetContainer?.addView(view)
             logDebug { "NOW - Show WidgetInfos" }
-        } else {
-            logError { "Can't display view of this type" }
         }
+
+        (view.parent as ViewGroup?)?.removeAllViews() // Clean the view parent in case of reuse
+        widgetContainer?.addView(view)
     }
 
     internal fun removeViews() {
