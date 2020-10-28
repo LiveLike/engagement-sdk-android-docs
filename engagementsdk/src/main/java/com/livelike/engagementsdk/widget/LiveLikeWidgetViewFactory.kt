@@ -9,6 +9,4 @@ interface LiveLikeWidgetViewFactory {
     fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel
     ) : View?
 
-
-
 }
