@@ -65,6 +65,10 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     private var session: LiveLikeContentSession? = null
 
     var widgetViewFactory: LiveLikeWidgetViewFactory? = null
+        set(value) {
+            widgetContainerViewModel?.widgetViewViewFactory = value
+            field = value
+        }
 
     fun setSession(session: LiveLikeContentSession) {
         this.session = session
@@ -75,6 +79,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel?.currentWidgetViewStream?.unsubscribe(WidgetContainerViewModel::class.java)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
+        widgetContainerViewModel?.widgetViewViewFactory = widgetViewFactory
         session.livelikeThemeStream.onNext(engagementSDKTheme)
         session.widgetStream.subscribe(this) {
             it?.let {

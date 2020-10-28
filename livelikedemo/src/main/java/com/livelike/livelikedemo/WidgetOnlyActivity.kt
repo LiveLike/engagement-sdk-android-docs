@@ -19,14 +19,13 @@ import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
-import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVote
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
-import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
+import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
 import com.livelike.livelikedemo.models.AlertRequest
@@ -151,19 +150,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
         widget_view.setSession(session)
 
         widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
-            override fun getWidgetView(
-                widgetType: WidgetType,
-                widgetData: LiveLikeWidget,
-                widgetMediator: LiveLikeWidgetMediator
-            ): View? {
-                when (widgetType) {
-                    WidgetType.CHEER_METER -> {
-                        val customCheerMeter = CustomCheerMeter(this@WidgetOnlyActivity)
-                        return customCheerMeter
-                    }
+            override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
+                println("WidgetOnlyActivity.createCheerMeterView")
+                return CustomCheerMeter(this@WidgetOnlyActivity).apply {
+                    cheerMeterWidgetModel = viewModel
                 }
-                return null
             }
+
         }
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
