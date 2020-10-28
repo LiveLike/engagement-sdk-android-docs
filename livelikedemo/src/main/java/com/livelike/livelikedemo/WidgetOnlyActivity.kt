@@ -148,15 +148,15 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         })
         widget_view.setSession(session)
-
-        widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
-            override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
-                println("WidgetOnlyActivity.createCheerMeterView")
-                return CustomCheerMeter(this@WidgetOnlyActivity).apply {
-                    cheerMeterWidgetModel = viewModel
+        if (intent.getBooleanExtra("customCheerMeter", false)) {
+            widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
+                override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
+                    println("WidgetOnlyActivity.createCheerMeterView")
+                    return CustomCheerMeter(this@WidgetOnlyActivity).apply {
+                        cheerMeterWidgetModel = viewModel
+                    }
                 }
             }
-
         }
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
