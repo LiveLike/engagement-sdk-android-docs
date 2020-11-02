@@ -6,6 +6,8 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeWidget
+import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -19,8 +21,10 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
@@ -39,14 +43,14 @@ internal class CheerMeterWidget(
 )
 
 internal class CheerMeterViewModel(
-    widgetInfos: WidgetInfos,
+    val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel() {
+) : BaseViewModel(), CheerMeterWidgetmodel {
 
     var totalVoteCount = 0
 
@@ -59,7 +63,7 @@ internal class CheerMeterViewModel(
     private var pushVoteJob: Job? = null
     private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
-    val results: SubscriptionManager<Resource> =
+    val results: Stream<Resource> =
         SubscriptionManager()
     val
             voteEnd: SubscriptionManager<Boolean> =
@@ -208,7 +212,7 @@ internal class CheerMeterViewModel(
         }
     }
 
-    fun dismissWidget(action: DismissAction) {
+    override fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
                 it.toAnalyticsString(),
@@ -233,6 +237,24 @@ internal class CheerMeterViewModel(
         currentWidgetType = null
         viewModelJob.cancel("Widget Cleanup")
     }
+
+    override val widgetData: LiveLikeWidget
+        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
+
+
+    override val voteResults: Stream<LiveLikeWidgetResult>
+        get() = results.map { it.toLiveLikeWidgetResult() }
+
+    override fun submitVote(optionID: String) {
+        data.currentData?.let { widget ->
+            val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
+            widget.resource.getMergedOptions()?.indexOf(option)?.let {
+                incrementVoteCount(it)
+            }
+        }
+    }
+
+
 }
 
 data class CheerMeterVoteState(
