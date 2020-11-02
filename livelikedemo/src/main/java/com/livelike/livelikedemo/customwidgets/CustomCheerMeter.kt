@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
+import android.os.CountDownTimer
 import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
@@ -11,16 +12,21 @@ import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_1
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_2
+import kotlinx.android.synthetic.main.custom_cheer_meter.view.progress_bar
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.speed_view_1
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.speed_view_2
+import kotlinx.android.synthetic.main.custom_cheer_meter.view.txt_team1
+import kotlinx.android.synthetic.main.custom_cheer_meter.view.txt_team2
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
+
 
 /**
  * TODO: document your custom view class.
  */
 class CustomCheerMeter : ConstraintLayout {
 
+    private lateinit var mCountDownTimer: CountDownTimer
     var cheerMeterWidgetModel: CheerMeterWidgetmodel? = null
 
 
@@ -57,8 +63,11 @@ class CustomCheerMeter : ConstraintLayout {
                 val perVt2 = (vt2.toFloat() / total.toFloat()) * 100
                 speed_view_1.setSpeedAt(perVt1)
                 speed_view_2.setSpeedAt(perVt2)
+                txt_team1.text = "$perVt1"
+                txt_team2.text = "$perVt2"
             }
         }
+
         cheerMeterWidgetModel?.widgetData?.let { livelikeWidget ->
 
             Glide.with(context)
@@ -76,12 +85,31 @@ class CustomCheerMeter : ConstraintLayout {
                 cheerMeterWidgetModel?.submitVote(livelikeWidget.options?.get(1)?.id!!)
             }
 
+
             println("CustomCheerMeter.onAttachedToWindow->${livelikeWidget.timeout}")
 
             val handler = Handler()
             handler.postDelayed({
                 cheerMeterWidgetModel?.dismissWidget(DismissAction.TIMEOUT)
+                mCountDownTimer.onFinish()
             }, parseDuration(livelikeWidget.timeout ?: ""))
+
+            var i = 0
+            val timer = parseDuration(livelikeWidget.timeout ?: "")
+            mCountDownTimer = object : CountDownTimer(timer, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    i++
+                    progress_bar.progress = (i * 100 / (timer / 1000)).toInt()
+                }
+
+                override fun onFinish() {
+                    //Do what you want
+                    i++
+                    progress_bar.progress = 100
+                }
+            }
+            mCountDownTimer.start()
+
         }
     }
 
