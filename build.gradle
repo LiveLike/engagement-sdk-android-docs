@@ -38,6 +38,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url 'https://repo.gradle.org/gradle/libs-releases' }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradleVersion}"
