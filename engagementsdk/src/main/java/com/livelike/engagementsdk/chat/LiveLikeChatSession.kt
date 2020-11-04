@@ -11,9 +11,6 @@ import java.util.Calendar
  */
 interface LiveLikeChatSession {
 
-    /** The analytics services **/
-    val analyticService: AnalyticsService
-
     /** Return the playheadTime for this session.*/
     fun getPlayheadTime(): EpochTime
 

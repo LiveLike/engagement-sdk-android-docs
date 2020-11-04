@@ -263,7 +263,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         if (this.session === session) return // setting it multiple times same view with same session have a weird behaviour will debug later.
         hideGamification()
         this.session = session.apply {
-            analyticService.trackOrientationChange(resources.configuration.orientation == 1)
+            (session as ChatSession).analyticsService.trackOrientationChange(resources.configuration.orientation == 1)
         }
 
         viewModel?.apply {
@@ -642,7 +642,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
                 setOnFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
-                        session?.analyticService?.trackKeyboardOpen(KeyboardType.STANDARD)
+                        (session as? ChatSession)?.analyticsService?.trackKeyboardOpen(KeyboardType.STANDARD)
                         hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
                     }
                 }
@@ -662,7 +662,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
     private fun showStickerKeyboard() {
         uiScope.launch {
             hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
-            session?.analyticService?.trackKeyboardOpen(KeyboardType.STICKER)
+            (session as? ChatSession)?.analyticsService?.trackKeyboardOpen(KeyboardType.STICKER)
             delay(200) // delay to make sure the keyboard is hidden
             findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
         }
@@ -745,7 +745,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 }
                 edittext_chat_message.setText("")
                 snapToLive()
-                viewModel?.currentChatRoom?.id?.let { id->
+                viewModel?.currentChatRoom?.id?.let { id ->
                     analyticsService.trackMessageSent(
                         it.id,
                         it.message,

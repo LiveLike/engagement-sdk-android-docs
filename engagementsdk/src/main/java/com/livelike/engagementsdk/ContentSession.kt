@@ -63,6 +63,7 @@ internal class ContentSession(
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val programId: String,
+    internal val analyticService: AnalyticsService,
     private val errorDelegate: ErrorDelegate? = null,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
@@ -77,6 +78,7 @@ internal class ContentSession(
         userRepository,
         applicationContext,
         true,
+        analyticService,
         errorDelegate, currentPlayheadTime
     )
 
@@ -172,8 +174,6 @@ internal class ContentSession(
     }
 
 
-    override var analyticService: AnalyticsService =
-        MockAnalyticsService(clientId)
     private val llDataClient =
         EngagementDataClientImpl()
     private val widgetDataClient = WidgetDataClientImpl()
@@ -217,12 +217,7 @@ internal class ContentSession(
             .subscribe(this) {
                 it?.let { pair ->
                     val configuration = pair.second
-                    analyticService =
-                        MixpanelAnalytics(
-                            applicationContext,
-                            configuration.mixpanelToken,
-                            configuration.clientId
-                        )
+
                     logDebug { "analyticService created" }
                     widgetContainer.analyticsService = analyticService
                     analyticService.trackSession(pair.first.id)

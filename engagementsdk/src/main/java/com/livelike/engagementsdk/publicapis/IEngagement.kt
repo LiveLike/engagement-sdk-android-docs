@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.publicapis
 
+import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
@@ -18,6 +19,8 @@ import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 interface IEngagement {
 
 //    TODO add remaining public SDK functions in this interface
+    /** The analytics services **/
+    val analyticService: AnalyticsService
 
     /**
      *  Returns access token associated with user to be used for future sdk initialization.
