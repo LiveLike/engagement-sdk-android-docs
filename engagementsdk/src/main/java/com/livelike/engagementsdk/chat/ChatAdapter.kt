@@ -416,6 +416,7 @@ internal class ChatRecyclerAdapter(
                 chatPopUpView?.dismiss()
             chatPopUpView = null
             if (mRecyclerView?.isComputingLayout == false) {
+                //Add check for checking computing and check with current adapter position
                 if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                     try {
                         notifyItemChanged(currentChatReactionPopUpViewPos)
