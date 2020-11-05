@@ -44,6 +44,7 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
+import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
@@ -415,8 +416,13 @@ internal class ChatRecyclerAdapter(
                 chatPopUpView?.dismiss()
             chatPopUpView = null
             if (mRecyclerView?.isComputingLayout == false) {
-                if (currentChatReactionPopUpViewPos > -1) {
-                    notifyItemChanged(currentChatReactionPopUpViewPos)
+                if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
+                    try {
+                        notifyItemChanged(currentChatReactionPopUpViewPos)
+                    } catch (e: IllegalStateException) {
+                        e.printStackTrace()
+                        logError { e.message }
+                    }
                 }
                 currentChatReactionPopUpViewPos = -1
                 updateBackground()
