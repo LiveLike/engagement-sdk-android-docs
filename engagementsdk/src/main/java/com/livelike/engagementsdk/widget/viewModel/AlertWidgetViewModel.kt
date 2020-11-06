@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.widget.viewModel
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
@@ -15,10 +16,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal class AlertWidgetViewModel(
-    widgetInfos: WidgetInfos,
+    val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     private val onDismiss: () -> Unit
-) : BaseViewModel() {
+) : BaseViewModel() , AlertWidgetModel {
     private var timeoutStarted = false
     var data: SubscriptionManager<Alert?> =
         SubscriptionManager()
@@ -69,6 +70,14 @@ internal class AlertWidgetViewModel(
         cleanup()
         viewModelJob.cancel()
     }
+
+    override fun finish() {
+        onDismiss()
+        cleanup()
+    }
+    override val widgetData: LiveLikeWidget
+        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
+
 
     fun startDismissTimout(timeout: String, onDismiss: () -> Unit) {
         if (!timeoutStarted && timeout.isNotEmpty()) {

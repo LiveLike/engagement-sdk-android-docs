@@ -54,11 +54,62 @@ class CustomCheerMeter : ConstraintLayout {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         cheerMeterWidgetModel?.voteResults?.subscribe(this.javaClass) {
-
+            val op1 = it?.choices?.get(0)
+            val op2 = it?.choices?.get(1)
+            val vt1 = op1?.vote_count ?: 0
+            val vt2 = op2?.vote_count ?: 0
+            val total = vt1 + vt2
+            if (total > 0) {
+                val perVt1 = (vt1.toFloat() / total.toFloat()) * 100
+                val perVt2 = (vt2.toFloat() / total.toFloat()) * 100
+                speed_view_1.setSpeedAt(perVt1)
+                speed_view_2.setSpeedAt(perVt2)
+                txt_team1.text = "$perVt1"
+                txt_team2.text = "$perVt2"
+            }
         }
 
         cheerMeterWidgetModel?.widgetData?.let { livelikeWidget ->
 
+            Glide.with(context)
+                .load(livelikeWidget.options?.get(0)?.imageUrl)
+                .into(btn_1)
+
+            Glide.with(context)
+                .load(livelikeWidget.options?.get(1)?.imageUrl)
+                .into(btn_2)
+
+            btn_1.setOnClickListener {
+                cheerMeterWidgetModel?.submitVote(livelikeWidget.options?.get(0)?.id!!)
+            }
+            btn_2.setOnClickListener {
+                cheerMeterWidgetModel?.submitVote(livelikeWidget.options?.get(1)?.id!!)
+            }
+
+
+            println("CustomCheerMeter.onAttachedToWindow->${livelikeWidget.timeout}")
+
+            val handler = Handler()
+            handler.postDelayed({
+                cheerMeterWidgetModel?.finish()
+                mCountDownTimer.onFinish()
+            }, parseDuration(livelikeWidget.timeout ?: ""))
+
+            var i = 0
+            val timer = parseDuration(livelikeWidget.timeout ?: "")
+            mCountDownTimer = object : CountDownTimer(timer, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    i++
+                    progress_bar.progress = (i * 100 / (timer / 1000)).toInt()
+                }
+
+                override fun onFinish() {
+                    //Do what you want
+                    i++
+                    progress_bar.progress = 100
+                }
+            }
+            mCountDownTimer.start()
 
         }
     }

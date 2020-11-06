@@ -212,7 +212,12 @@ internal class CheerMeterViewModel(
         }
     }
 
-    override fun dismissWidget(action: DismissAction) {
+    override fun finish() {
+        onDismiss()
+        cleanUp()
+    }
+
+     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
                 it.toAnalyticsString(),
