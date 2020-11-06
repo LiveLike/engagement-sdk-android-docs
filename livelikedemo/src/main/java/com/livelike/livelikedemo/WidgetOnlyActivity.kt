@@ -27,7 +27,7 @@ import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.channel.ChannelManager
-import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomCheerMeter2
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
 import com.livelike.livelikedemo.models.CheerMeterRequestResponse
@@ -152,7 +152,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
                 override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
                     println("WidgetOnlyActivity.createCheerMeterView")
-                    return CustomCheerMeter(this@WidgetOnlyActivity).apply {
+                    return CustomCheerMeter2(this@WidgetOnlyActivity).apply {
                         cheerMeterWidgetModel = viewModel
                     }
                 }
@@ -412,7 +412,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 null,
                                 programId,
                                 question,
-                                "PT10S"
+                                "PT30S"
                             )
                             else -> null
                         }
