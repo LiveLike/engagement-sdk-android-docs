@@ -87,6 +87,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         var customView :View?= null;
         if(widgetView?.widgetViewModel is CheerMeterWidgetmodel){
             customView = widgetViewViewFactory?.createCheerMeterView(widgetView?.widgetViewModel as CheerMeterWidgetmodel)
+        }else if(widgetView?.widgetViewModel is AlertWidgetModel){
+            customView = widgetViewViewFactory?.createAlertWidgetView(widgetView?.widgetViewModel as AlertWidgetModel)
         }
         if(customView !=null){
             displayWidget(customView)

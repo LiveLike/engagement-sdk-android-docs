@@ -28,6 +28,7 @@ import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -159,7 +160,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 }
 
                 override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
-                    return null;
+                    return return CustomAlertWidget(this@WidgetOnlyActivity).apply {
+                        alertModel = alertWidgetModel
+                    }
                 }
             }
         }
