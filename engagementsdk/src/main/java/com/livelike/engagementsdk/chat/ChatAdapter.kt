@@ -415,7 +415,7 @@ internal class ChatRecyclerAdapter(
             if (chatPopUpView?.isShowing == true)
                 chatPopUpView?.dismiss()
             chatPopUpView = null
-            if (mRecyclerView?.isComputingLayout == false) {
+            if (mRecyclerView?.isComputingLayout == false && mRecyclerView?.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                 //Add check for checking computing and check with current adapter position
                 if (currentChatReactionPopUpViewPos > -1 && currentChatReactionPopUpViewPos == adapterPosition) {
                     try {
