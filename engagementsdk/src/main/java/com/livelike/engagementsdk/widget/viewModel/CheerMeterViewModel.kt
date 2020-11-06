@@ -245,6 +245,7 @@ internal class CheerMeterViewModel(
     override val voteResults: Stream<LiveLikeWidgetResult>
         get() = results.map { it.toLiveLikeWidgetResult() }
 
+
     override fun submitVote(optionID: String) {
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }

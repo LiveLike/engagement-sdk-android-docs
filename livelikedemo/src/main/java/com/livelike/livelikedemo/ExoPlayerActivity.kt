@@ -33,12 +33,16 @@ import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
+import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
+import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
@@ -159,8 +163,22 @@ class ExoPlayerActivity : AppCompatActivity() {
             }, 0, 100)
 
             setUpAdClickListeners()
-            showChatAvatar = intent.getBooleanExtra("showAvatar", true)
 
+            showChatAvatar = intent.getBooleanExtra("showAvatar", true)
+            if (intent.getBooleanExtra("customCheerMeter", false)) {
+                widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
+                    override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
+                        println("WidgetOnlyActivity.createCheerMeterView")
+                        return CustomCheerMeter(this@ExoPlayerActivity).apply {
+                            cheerMeterWidgetModel = viewModel
+                        }
+                    }
+
+                    override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
+                        return null
+                    }
+                }
+            }
 
             selectChannelButton.setOnClickListener {
                 channelManager?.let { cm ->
