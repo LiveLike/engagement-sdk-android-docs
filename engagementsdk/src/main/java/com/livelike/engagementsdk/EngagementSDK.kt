@@ -14,7 +14,6 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.core.AccessTokenDelegate
-import com.livelike.engagementsdk.core.EnagagementSdkUncaughtExceptionHandler
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
@@ -50,7 +49,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import java.io.IOException
@@ -92,6 +90,8 @@ class EngagementSDK(
             field = value
             userRepository.leaderBoardDelegate = value
         }
+    override var analyticService: Stream<AnalyticsService> =
+        SubscriptionManager()
 
     private val job = SupervisorJob()
 
@@ -128,6 +128,11 @@ class EngagementSDK(
         dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)
+                analyticService.onNext(MixpanelAnalytics(
+                    applicationContext,
+                    it.data.mixpanelToken,
+                    it.data.clientId
+                ))
                 userRepository.initUser(accessTokenDelegate!!.getAccessToken(), it.data.profileUrl)
             } else {
                 errorDelegate?.onError(
@@ -469,10 +474,12 @@ class EngagementSDK(
             it?.let {
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
-                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
-                        TEMPLATE_LEADER_BOARD_ID,
-                        leaderBoardId
-                    )}"
+                    val url = "${
+                        it.leaderboardDetailUrlTemplate?.replace(
+                            TEMPLATE_LEADER_BOARD_ID,
+                            leaderBoardId
+                        )
+                    }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
                         requestType = RequestType.GET,
@@ -511,10 +518,12 @@ class EngagementSDK(
                         val job = ArrayList<Job>()
                         for (i in 0 until leaderBoardId.size.toInt()) {
                             job.add(launch {
-                                val url = "${it.leaderboardDetailUrlTemplate?.replace(
-                                    TEMPLATE_LEADER_BOARD_ID,
-                                    leaderBoardId.get(i)
-                                )}"
+                                val url = "${
+                                    it.leaderboardDetailUrlTemplate?.replace(
+                                        TEMPLATE_LEADER_BOARD_ID,
+                                        leaderBoardId.get(i)
+                                    )
+                                }"
                                 val result = dataClient.remoteCall<LeaderBoardResource>(
                                     url,
                                     requestType = RequestType.GET,
@@ -531,8 +540,7 @@ class EngagementSDK(
                                                     result.data.name,
                                                     result.data.rewardItem
                                                 ), LeaderboardPlacement(
-                                                    result2.data.rank
-                                                    ,
+                                                    result2.data.rank,
                                                     result2.data.percentile_rank.toString(),
                                                     result2.data.score
                                                 )
@@ -545,14 +553,12 @@ class EngagementSDK(
                                                     result.data.name,
                                                     result.data.rewardItem,
                                                     LeaderboardPlacement(
-                                                        result2.data.rank
-                                                        ,
+                                                        result2.data.rank,
                                                         result2.data.percentile_rank.toString(),
                                                         result2.data.score
                                                     ),
                                                     leaderBoardDelegate!!
-                                                )
-                                                , null
+                                                ), null
                                             )
                                         } else if (result2 is Result.Error) {
                                             leaderBoardDelegate?.leaderBoard(
@@ -618,10 +624,12 @@ class EngagementSDK(
                     val liveLikeCallback = pair.second.second
                     val entriesUrl = when (pair.first) {
                         LiveLikePagination.FIRST -> {
-                            val url = "${it.leaderboardDetailUrlTemplate?.replace(
-                                TEMPLATE_LEADER_BOARD_ID,
-                                leaderBoardId
-                            )}"
+                            val url = "${
+                                it.leaderboardDetailUrlTemplate?.replace(
+                                    TEMPLATE_LEADER_BOARD_ID,
+                                    leaderBoardId
+                                )
+                            }"
                             val result = dataClient.remoteCall<LeaderBoardResource>(
                                 url,
                                 requestType = RequestType.GET,
@@ -655,8 +663,7 @@ class EngagementSDK(
                                         it.next != null,
                                         it.results
                                     )
-                                }
-                                ,
+                                },
                                 null
                             )
                         } else if (listResult is Result.Error) {
@@ -690,10 +697,12 @@ class EngagementSDK(
             it?.let {
                 configurationStream.unsubscribe(this)
                 uiScope.launch {
-                    val url = "${it.leaderboardDetailUrlTemplate?.replace(
-                        TEMPLATE_LEADER_BOARD_ID,
-                        leaderBoardId
-                    )}"
+                    val url = "${
+                        it.leaderboardDetailUrlTemplate?.replace(
+                            TEMPLATE_LEADER_BOARD_ID,
+                            leaderBoardId
+                        )
+                    }"
                     val result = dataClient.remoteCall<LeaderBoardResource>(
                         url,
                         requestType = RequestType.GET,
@@ -740,10 +749,12 @@ class EngagementSDK(
         leaderBoardId: String,
         profileId: String
     ): Result<LeaderBoardEntry> {
-        val url = "${sdkConfig.leaderboardDetailUrlTemplate?.replace(
-            TEMPLATE_LEADER_BOARD_ID,
-            leaderBoardId
-        )}"
+        val url = "${
+            sdkConfig.leaderboardDetailUrlTemplate?.replace(
+                TEMPLATE_LEADER_BOARD_ID,
+                leaderBoardId
+            )
+        }"
         val result = dataClient.remoteCall<LeaderBoardResource>(
             url,
             requestType = RequestType.GET,
@@ -816,6 +827,7 @@ class EngagementSDK(
             userRepository,
             applicationContext,
             programId,
+            analyticService,
             errorDelegate
         ) { EpochTime(0) }
     }
@@ -844,9 +856,10 @@ class EngagementSDK(
             userRepository,
             applicationContext,
             programId,
+            analyticService,
             errorDelegate
         ) { timecodeGetter.getTimecode() }.apply {
-            this.engagementSDK=this@EngagementSDK
+            this.engagementSDK = this@EngagementSDK
         }
     }
 
@@ -865,6 +878,7 @@ class EngagementSDK(
             userRepository,
             applicationContext,
             false,
+            analyticService,
             errorDelegate
         ) { timecodeGetter.getTimecode() }
     }
@@ -913,6 +927,7 @@ class EngagementSDK(
     companion object {
         @JvmStatic
         var enableDebug: Boolean = false
+
         @JvmStatic
         var predictionWidgetVoteRepository: PredictionWidgetVoteRepository =
             LocalPredictionWidgetVoteRepository()

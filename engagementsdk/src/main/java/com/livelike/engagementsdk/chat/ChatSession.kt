@@ -7,7 +7,6 @@ import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.MixpanelAnalytics
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -44,6 +43,7 @@ internal class ChatSession(
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val isPublicRoom: Boolean = true,
+    internal val analyticsServiceStream: Stream<AnalyticsService>,
     private val errorDelegate: ErrorDelegate? = null,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {
@@ -55,8 +55,6 @@ internal class ChatSession(
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
 
-    // TODO get analytics service by moving it to SDK level instewad of program
-    override var analyticService: AnalyticsService = MockAnalyticsService(clientId)
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
             userRepository.currentUserStream,
@@ -84,12 +82,8 @@ internal class ChatSession(
     init {
         contentSessionScope.launch {
             configurationUserPairFlow.collect { pair ->
-                analyticService = MixpanelAnalytics(
-                    applicationContext,
-                    pair.first.mixpanelToken,
-                    pair.first.clientId
-                )
-                chatViewModel.analyticsService = analyticService
+
+                chatViewModel.analyticsService = analyticsServiceStream.latest()!!
                 val liveLikeUser = pair.second
                 chatRepository =
                     ChatRepository(
@@ -172,7 +166,7 @@ internal class ChatSession(
     private fun initializeChatMessaging(
         currentPlayheadTime: () -> EpochTime
     ) {
-        analyticService.trackLastChatStatus(true)
+        analyticsServiceStream.latest()!!.trackLastChatStatus(true)
         chatClient = chatRepository?.establishChatMessagingConnection()
 
         pubnubMessagingClient = chatClient as PubnubChatMessagingClient
