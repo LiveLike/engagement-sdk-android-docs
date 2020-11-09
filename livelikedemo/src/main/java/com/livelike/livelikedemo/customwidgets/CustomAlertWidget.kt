@@ -3,8 +3,10 @@ package com.livelike.livelikedemo.customwidgets
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
+import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
 import com.livelike.livelikedemo.R
+import kotlinx.android.synthetic.main.custom_alert_widget.view.bodyImage
 import kotlinx.android.synthetic.main.custom_alert_widget.view.bodyText
 
 
@@ -34,9 +36,9 @@ class CustomAlertWidget : ConstraintLayout{
 
         bodyText.text = alertModel.widgetData.title
         alertModel.widgetData.imageUrl?.let {
-//            Glide.with(context)
-//                .load(it)
-//                .into(bodyImage)
+            Glide.with(context)
+                .load(it)
+                .into(bodyImage)
         }
     }
 

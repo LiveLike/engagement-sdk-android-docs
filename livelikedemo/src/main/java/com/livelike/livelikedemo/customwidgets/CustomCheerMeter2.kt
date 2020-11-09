@@ -3,7 +3,6 @@ package com.livelike.livelikedemo.customwidgets
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
-import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_1
@@ -66,7 +65,7 @@ class CustomCheerMeter2 : ConstraintLayout {
                 cheerMeterWidgetModel?.submitVote(option2?.id!!)
             }
             img_close.setOnClickListener {
-                cheerMeterWidgetModel?.dismissWidget(DismissAction.TAP_X)
+                cheerMeterWidgetModel?.finish()
             }
         }
     }
