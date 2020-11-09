@@ -20,7 +20,7 @@ interface IEngagement {
 
 //    TODO add remaining public SDK functions in this interface
     /** The analytics services **/
-    val analyticService: AnalyticsService
+    val analyticService: Stream<AnalyticsService>
 
     /**
      *  Returns access token associated with user to be used for future sdk initialization.

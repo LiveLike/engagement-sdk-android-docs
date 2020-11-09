@@ -90,8 +90,8 @@ class EngagementSDK(
             field = value
             userRepository.leaderBoardDelegate = value
         }
-    override var analyticService: AnalyticsService =
-        MockAnalyticsService(clientId)
+    override var analyticService: Stream<AnalyticsService> =
+        SubscriptionManager()
 
     private val job = SupervisorJob()
 
@@ -128,12 +128,11 @@ class EngagementSDK(
         dataClient.getEngagementSdkConfig(url) {
             if (it is Result.Success) {
                 configurationStream.onNext(it.data)
-                analyticService =
-                    MixpanelAnalytics(
-                        applicationContext,
-                        it.data.mixpanelToken,
-                        it.data.clientId
-                    )
+                analyticService.onNext(MixpanelAnalytics(
+                    applicationContext,
+                    it.data.mixpanelToken,
+                    it.data.clientId
+                ))
                 userRepository.initUser(accessTokenDelegate!!.getAccessToken(), it.data.profileUrl)
             } else {
                 errorDelegate?.onError(

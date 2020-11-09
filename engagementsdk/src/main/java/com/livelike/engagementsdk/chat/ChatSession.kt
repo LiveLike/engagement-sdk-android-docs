@@ -43,7 +43,7 @@ internal class ChatSession(
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val isPublicRoom: Boolean = true,
-    internal val analyticsService: AnalyticsService,
+    internal val analyticsServiceStream: Stream<AnalyticsService>,
     private val errorDelegate: ErrorDelegate? = null,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeChatSession {
@@ -83,7 +83,7 @@ internal class ChatSession(
         contentSessionScope.launch {
             configurationUserPairFlow.collect { pair ->
 
-                chatViewModel.analyticsService = analyticsService
+                chatViewModel.analyticsService = analyticsServiceStream.latest()!!
                 val liveLikeUser = pair.second
                 chatRepository =
                     ChatRepository(
@@ -166,7 +166,7 @@ internal class ChatSession(
     private fun initializeChatMessaging(
         currentPlayheadTime: () -> EpochTime
     ) {
-        analyticsService.trackLastChatStatus(true)
+        analyticsServiceStream.latest()!!.trackLastChatStatus(true)
         chatClient = chatRepository?.establishChatMessagingConnection()
 
         pubnubMessagingClient = chatClient as PubnubChatMessagingClient
