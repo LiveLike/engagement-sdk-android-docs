@@ -7,7 +7,6 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
 import com.bumptech.glide.Glide
-import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_1
@@ -90,7 +89,7 @@ class CustomCheerMeter : ConstraintLayout {
 
             val handler = Handler()
             handler.postDelayed({
-                cheerMeterWidgetModel?.dismissWidget(DismissAction.TIMEOUT)
+                cheerMeterWidgetModel?.finish()
                 mCountDownTimer.onFinish()
             }, parseDuration(livelikeWidget.timeout ?: ""))
 

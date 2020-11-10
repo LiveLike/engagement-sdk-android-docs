@@ -25,8 +25,10 @@ import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRe
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
+import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -154,6 +156,12 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     println("WidgetOnlyActivity.createCheerMeterView")
                     return CustomCheerMeter(this@WidgetOnlyActivity).apply {
                         cheerMeterWidgetModel = viewModel
+                    }
+                }
+
+                override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
+                    return return CustomAlertWidget(this@WidgetOnlyActivity).apply {
+                        alertModel = alertWidgetModel
                     }
                 }
             }
@@ -412,7 +420,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 null,
                                 programId,
                                 question,
-                                "PT10S"
+                                "PT30S"
                             )
                             else -> null
                         }

@@ -37,6 +37,7 @@ import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
+import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.channel.Channel
@@ -171,6 +172,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                         return CustomCheerMeter(this@ExoPlayerActivity).apply {
                             cheerMeterWidgetModel = viewModel
                         }
+                    }
+
+                    override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
+                        return null
                     }
                 }
             }
