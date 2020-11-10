@@ -7,7 +7,6 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
 import com.bumptech.glide.Glide
-import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_1
@@ -19,7 +18,6 @@ import kotlinx.android.synthetic.main.custom_cheer_meter.view.txt_team1
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.txt_team2
 import org.threeten.bp.Duration
 import org.threeten.bp.format.DateTimeParseException
-import java.time.format.DateTimeParseException
 
 
 /**

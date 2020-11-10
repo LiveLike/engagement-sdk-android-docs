@@ -33,7 +33,10 @@ class CustomAlertWidget : ConstraintLayout{
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
         inflate(context, R.layout.custom_alert_widget, this)
+    }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
         bodyText.text = alertModel.widgetData.title
         alertModel.widgetData.imageUrl?.let {
             Glide.with(context)
