@@ -431,6 +431,8 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
+        (application as LiveLikeApplication).removePublicSession()
+        (application as LiveLikeApplication).removePrivateSession()
     }
 
     fun setupJsonThemesFilePath(files: Array<out String>?) {
