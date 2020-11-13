@@ -223,6 +223,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
         session.pause()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        (application as LiveLikeApplication).removePublicSession()
+    }
+
     inner class HeaderAdapter(
         val progressBar: ProgressBar,
         val programId: String,
