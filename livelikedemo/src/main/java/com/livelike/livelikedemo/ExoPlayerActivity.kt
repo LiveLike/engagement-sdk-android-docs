@@ -340,6 +340,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                 this.finishAfterTransition()
             }
         } else {
+            (application as LiveLikeApplication).removePublicSession()
+            (application as LiveLikeApplication).removePrivateSession()
             super.onBackPressed()
         }
     }
