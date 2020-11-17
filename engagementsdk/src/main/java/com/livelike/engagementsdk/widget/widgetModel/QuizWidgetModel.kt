@@ -6,5 +6,5 @@ import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 
 interface QuizWidgetModel : LiveLikeWidgetMediator {
     val voteResults: Stream<LiveLikeWidgetResult>
-    fun submitVote(optionID: String)
+    fun lockInAnswer(optionID: String)
 }

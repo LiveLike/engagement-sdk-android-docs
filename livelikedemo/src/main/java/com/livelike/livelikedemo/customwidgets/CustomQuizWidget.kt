@@ -35,10 +35,10 @@ class CustomQuizWidget : ConstraintLayout {
         super.onAttachedToWindow()
         quizWidgetModel?.widgetData?.let { liveLikeWidget ->
             button2.setOnClickListener {
-                quizWidgetModel?.submitVote(liveLikeWidget.choices!![0]!!.id!!)
+                quizWidgetModel?.lockInAnswer(liveLikeWidget.choices!![0]!!.id!!)
             }
             button3.setOnClickListener {
-                quizWidgetModel?.submitVote(liveLikeWidget.choices!![1]!!.id!!)
+                quizWidgetModel?.lockInAnswer(liveLikeWidget.choices!![1]!!.id!!)
             }
         }
         quizWidgetModel?.voteResults?.subscribe(this) {
