@@ -16,11 +16,14 @@ import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_quiz_widget.view.imageView2
 import kotlinx.android.synthetic.main.custom_quiz_widget.view.rcyl_quiz_list
 import kotlinx.android.synthetic.main.quiz_image_list_item.view.imageButton2
+import kotlinx.android.synthetic.main.quiz_image_list_item.view.textView8
 import kotlinx.android.synthetic.main.quiz_list_item.view.button4
+import kotlinx.android.synthetic.main.quiz_list_item.view.textView7
 
 class CustomQuizWidget : ConstraintLayout {
     var quizWidgetModel: QuizWidgetModel? = null
     var isImage = false
+
     constructor(context: Context) : super(context) {
         init(null, 0)
     }
@@ -56,6 +59,7 @@ class CustomQuizWidget : ConstraintLayout {
                 quizWidgetModel?.voteResults?.subscribe(this) { result ->
                     val op =
                         result?.choices?.find { option -> option.id == adapter.getSelectedOption()?.id }
+                    adapter.getSelectedOption()
                     op?.let { option ->
                         Toast.makeText(
                             context, when (option.is_correct) {
@@ -63,6 +67,12 @@ class CustomQuizWidget : ConstraintLayout {
                                 else -> "Incorrect"
                             }, Toast.LENGTH_SHORT
                         ).show()
+                    }
+                    result?.choices?.let { options ->
+                        options.forEach { op ->
+                            adapter.optionIdCount[op.id] = op.answer_count ?: 0
+                        }
+                        adapter.notifyDataSetChanged()
                     }
                 }
             }
@@ -82,12 +92,12 @@ class CustomQuizWidget : ConstraintLayout {
 class QuizListAdapter(
     private val context: Context,
     private val isImage: Boolean,
-    private val list: ArrayList<OptionsItem>,
+    val list: ArrayList<OptionsItem>,
     private val onSelectListener: OnSelectListener
 ) :
     RecyclerView.Adapter<QuizListAdapter.QuizListItemViewHolder>() {
     private var selectedIndex = -1
-
+    val optionIdCount: HashMap<String, Int> = hashMapOf()
     fun getSelectedOption(): OptionsItem? = when (selectedIndex > -1) {
         true -> list[selectedIndex]
         else -> null
@@ -117,12 +127,14 @@ class QuizListAdapter(
             } else {
                 holder.itemView.imageButton2.setBackgroundColor(Color.GRAY)
             }
+            holder.itemView.textView8.text = "${optionIdCount[item.id!!] ?: 0}"
             holder.itemView.imageButton2.setOnClickListener {
                 selectedIndex = holder.adapterPosition
                 notifyDataSetChanged()
                 onSelectListener.onSelectOption(item)
             }
         } else {
+            holder.itemView.textView7.text = "${optionIdCount[item.id!!] ?: 0}"
             holder.itemView.button4.text = "${item.description}"
             if (selectedIndex == index) {
                 holder.itemView.button4.setBackgroundColor(Color.BLUE)
