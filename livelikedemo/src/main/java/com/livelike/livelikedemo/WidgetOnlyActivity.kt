@@ -152,28 +152,32 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         })
         widget_view.setSession(session)
-        widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
-            override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
-                println("WidgetOnlyActivity.createCheerMeterView")
-                if (intent.getBooleanExtra("customCheerMeter", false))
+        if (intent.getBooleanExtra("customCheerMeter", false))
+            widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
+                override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
                     return CustomCheerMeter(this@WidgetOnlyActivity).apply {
                         cheerMeterWidgetModel = viewModel
                     }
-                return null
-            }
-
-            override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
-                return return CustomAlertWidget(this@WidgetOnlyActivity).apply {
-                    alertModel = alertWidgetModel
                 }
-            }
 
-            override fun createQuizWidgetView(quizWidgetModel: QuizWidgetModel): View? {
-                return CustomQuizWidget(this@WidgetOnlyActivity).apply {
-                    this.quizWidgetModel = quizWidgetModel
+                override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
+                    return return CustomAlertWidget(this@WidgetOnlyActivity).apply {
+                        alertModel = alertWidgetModel
+                    }
                 }
+
+                override fun createQuizWidgetView(
+                    quizWidgetModel: QuizWidgetModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomQuizWidget(this@WidgetOnlyActivity).apply {
+                        this.quizWidgetModel = quizWidgetModel
+                        this.isImage = isImage
+                    }
+                }
+
+
             }
-        }
 
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :

@@ -17,7 +17,7 @@ interface LiveLikeWidgetViewFactory {
     ): View?
 
     fun createQuizWidgetView(
-        quizWidgetModel: QuizWidgetModel
+        quizWidgetModel: QuizWidgetModel, isImage: Boolean
     ): View?
 
 
