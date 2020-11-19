@@ -38,11 +38,13 @@ import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
-import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import com.livelike.livelikedemo.video.PlayerState
@@ -165,10 +167,9 @@ class ExoPlayerActivity : AppCompatActivity() {
             setUpAdClickListeners()
 
             showChatAvatar = intent.getBooleanExtra("showAvatar", true)
-            if (intent.getBooleanExtra("customCheerMeter", false)) {
+            if (intent.getBooleanExtra("customCheerMeter", false))
                 widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
                     override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
-                        println("WidgetOnlyActivity.createCheerMeterView")
                         return CustomCheerMeter(this@ExoPlayerActivity).apply {
                             cheerMeterWidgetModel = viewModel
                         }
@@ -177,8 +178,18 @@ class ExoPlayerActivity : AppCompatActivity() {
                     override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
                         return null
                     }
+
+                    override fun createQuizWidgetView(
+                        quizWidgetModel: QuizWidgetModel,
+                        isImage: Boolean
+                    ): View? {
+                        return CustomQuizWidget(this@ExoPlayerActivity).apply {
+                            this.quizWidgetModel = quizWidgetModel
+                            this.isImage = isImage
+                        }
+                    }
                 }
-            }
+
 
             selectChannelButton.setOnClickListener {
                 channelManager?.let { cm ->
@@ -340,6 +351,8 @@ class ExoPlayerActivity : AppCompatActivity() {
                 this.finishAfterTransition()
             }
         } else {
+            (application as LiveLikeApplication).removePublicSession()
+            (application as LiveLikeApplication).removePrivateSession()
             super.onBackPressed()
         }
     }

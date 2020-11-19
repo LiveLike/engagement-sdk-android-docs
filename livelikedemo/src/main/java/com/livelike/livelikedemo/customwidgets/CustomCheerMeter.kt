@@ -7,10 +7,11 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
 import com.bumptech.glide.Glide
-import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_1
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_2
+import kotlinx.android.synthetic.main.custom_cheer_meter.view.img_close
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.progress_bar
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.speed_view_1
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.speed_view_2
@@ -62,8 +63,8 @@ class CustomCheerMeter : ConstraintLayout {
                 val perVt2 = (vt2.toFloat() / total.toFloat()) * 100
                 speed_view_1.setSpeedAt(perVt1)
                 speed_view_2.setSpeedAt(perVt2)
-                txt_team1.text = "$perVt1"
-                txt_team2.text = "$perVt2"
+                txt_team1.text = "$vt1\n$perVt1"
+                txt_team2.text = "$vt2\n$perVt2"
             }
         }
 
@@ -83,9 +84,10 @@ class CustomCheerMeter : ConstraintLayout {
             btn_2.setOnClickListener {
                 cheerMeterWidgetModel?.submitVote(livelikeWidget.options?.get(1)?.id!!)
             }
-
-
-            println("CustomCheerMeter.onAttachedToWindow->${livelikeWidget.timeout}")
+            img_close.setOnClickListener {
+                cheerMeterWidgetModel?.finish()
+                mCountDownTimer.cancel()
+            }
 
             val handler = Handler()
             handler.postDelayed({

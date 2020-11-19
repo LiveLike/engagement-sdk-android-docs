@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagi
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -61,7 +62,6 @@ internal class CheerMeterViewModel(
     var voteStateList: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
 
     private var pushVoteJob: Job? = null
-    private val VOTE_THRASHHOLD = 10
     private var pubnub: PubnubMessagingClient? = null
     val results: Stream<Resource> =
         SubscriptionManager()
@@ -114,11 +114,6 @@ internal class CheerMeterViewModel(
     }
 
     private fun wouldSendVote() {
-        voteStateList.forEach {
-            if (it.voteCount > VOTE_THRASHHOLD) {
-                uiScope.launch { pushVoteStateData(it) }
-            }
-        }
         if (pushVoteJob == null || pushVoteJob?.isCompleted == false) {
             pushVoteJob?.cancel()
             pushVoteJob = uiScope.launch {
@@ -126,12 +121,14 @@ internal class CheerMeterViewModel(
                 voteStateList.forEach {
                     pushVoteStateData(it)
                 }
+                pushVoteJob = null
             }
         }
     }
 
     private suspend fun pushVoteStateData(voteState: CheerMeterVoteState) {
         if (voteState.voteCount > 0) {
+            val count = voteState.voteCount
             val voteUrl = dataClient.voteAsync(
                 voteState.voteUrl,
                 body = RequestBody.create(
@@ -147,7 +144,10 @@ internal class CheerMeterViewModel(
                 voteState.voteUrl = it
                 voteState.requestType = RequestType.PATCH
             }
-            voteState.voteCount = 0
+            if (count < voteState.voteCount)
+                voteState.voteCount = voteState.voteCount - count
+            else
+                voteState.voteCount = 0
         }
     }
 
@@ -217,7 +217,7 @@ internal class CheerMeterViewModel(
         cleanUp()
     }
 
-     fun dismissWidget(action: DismissAction) {
+    fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             analyticsService.trackWidgetDismiss(
                 it.toAnalyticsString(),

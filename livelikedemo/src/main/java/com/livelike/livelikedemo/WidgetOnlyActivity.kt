@@ -26,10 +26,12 @@ import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
-import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
 import com.livelike.livelikedemo.models.CheerMeterRequestResponse
@@ -150,10 +152,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         })
         widget_view.setSession(session)
-        if (intent.getBooleanExtra("customCheerMeter", false)) {
+        if (intent.getBooleanExtra("customCheerMeter", false))
             widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
                 override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
-                    println("WidgetOnlyActivity.createCheerMeterView")
                     return CustomCheerMeter(this@WidgetOnlyActivity).apply {
                         cheerMeterWidgetModel = viewModel
                     }
@@ -164,8 +165,20 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         alertModel = alertWidgetModel
                     }
                 }
+
+                override fun createQuizWidgetView(
+                    quizWidgetModel: QuizWidgetModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomQuizWidget(this@WidgetOnlyActivity).apply {
+                        this.quizWidgetModel = quizWidgetModel
+                        this.isImage = isImage
+                    }
+                }
+
+
             }
-        }
+
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
             UserProfileDelegate {
@@ -221,6 +234,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         session.pause()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        (application as LiveLikeApplication).removePublicSession()
     }
 
     inner class HeaderAdapter(
