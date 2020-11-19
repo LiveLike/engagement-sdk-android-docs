@@ -167,27 +167,28 @@ class ExoPlayerActivity : AppCompatActivity() {
             setUpAdClickListeners()
 
             showChatAvatar = intent.getBooleanExtra("showAvatar", true)
-
-            widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
-                override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
-                    println("WidgetOnlyActivity.createCheerMeterView")
-                    if (intent.getBooleanExtra("customCheerMeter", false))
+            if (intent.getBooleanExtra("customCheerMeter", false))
+                widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
+                    override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
                         return CustomCheerMeter(this@ExoPlayerActivity).apply {
                             cheerMeterWidgetModel = viewModel
                         }
-                    return null
-                }
+                    }
 
-                override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
-                    return null
-                }
+                    override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
+                        return null
+                    }
 
-                override fun createQuizWidgetView(quizWidgetModel: QuizWidgetModel): View? {
-                    return CustomQuizWidget(this@ExoPlayerActivity).apply {
-                        this.quizWidgetModel = quizWidgetModel
+                    override fun createQuizWidgetView(
+                        quizWidgetModel: QuizWidgetModel,
+                        isImage: Boolean
+                    ): View? {
+                        return CustomQuizWidget(this@ExoPlayerActivity).apply {
+                            this.quizWidgetModel = quizWidgetModel
+                            this.isImage = isImage
+                        }
                     }
                 }
-            }
 
 
             selectChannelButton.setOnClickListener {

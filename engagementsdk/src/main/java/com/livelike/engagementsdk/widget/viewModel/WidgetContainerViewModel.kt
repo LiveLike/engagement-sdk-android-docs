@@ -98,7 +98,10 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             }
             is QuizWidgetModel -> {
                 customView =
-                    widgetViewViewFactory?.createQuizWidgetView(widgetView.widgetViewModel as QuizWidgetModel)
+                    widgetViewViewFactory?.createQuizWidgetView(
+                        widgetView.widgetViewModel as QuizWidgetModel,
+                        WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                    )
             }
         }
         if (customView != null) {
