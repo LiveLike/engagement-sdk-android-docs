@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagi
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay

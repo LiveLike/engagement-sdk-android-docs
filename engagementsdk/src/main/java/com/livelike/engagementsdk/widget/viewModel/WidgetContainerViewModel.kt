@@ -18,6 +18,8 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 // TODO remove view references from this view model, also clean content session for same.
 
@@ -43,7 +45,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     // Swipe to dismiss
     var swipeDismissTouchListener: View.OnTouchListener? = null
 
-    var widgetViewViewFactory : LiveLikeWidgetViewFactory?=null
+    var widgetViewViewFactory: LiveLikeWidgetViewFactory? = null
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(
@@ -74,7 +76,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
             if (pair != null)
                 widgetObserver(pair?.second, pair?.first)
-            else{
+            else {
                 removeViews()
             }
         }
@@ -84,13 +86,22 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
         removeViews()
-        var customView :View?= null;
-        if(widgetView?.widgetViewModel is CheerMeterWidgetmodel){
-            customView = widgetViewViewFactory?.createCheerMeterView(widgetView?.widgetViewModel as CheerMeterWidgetmodel)
-        }else if(widgetView?.widgetViewModel is AlertWidgetModel){
-            customView = widgetViewViewFactory?.createAlertWidgetView(widgetView?.widgetViewModel as AlertWidgetModel)
+        var customView: View? = null;
+        when (widgetView?.widgetViewModel) {
+            is CheerMeterWidgetmodel -> {
+                customView =
+                    widgetViewViewFactory?.createCheerMeterView(widgetView.widgetViewModel as CheerMeterWidgetmodel)
+            }
+            is AlertWidgetModel -> {
+                customView =
+                    widgetViewViewFactory?.createAlertWidgetView(widgetView.widgetViewModel as AlertWidgetModel)
+            }
+            is QuizWidgetModel -> {
+                customView =
+                    widgetViewViewFactory?.createQuizWidgetView(widgetView.widgetViewModel as QuizWidgetModel)
+            }
         }
-        if(customView !=null){
+        if (customView != null) {
             displayWidget(customView)
         } else if (widgetView != null) {
             widgetView.widgetViewModel?.enableDefaultWidgetTransition =
@@ -99,14 +110,14 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         }
         if (widgetContainer != null) {
             widgetView?.widgetId?.let { widgetId ->
-                var linkUrl : String? = null
-                if(widgetView?.widgetInfos?.payload?.get("link_url") is JsonPrimitive){
-                    linkUrl = widgetView?.widgetInfos?.payload?.get("link_url")?.asString
+                var linkUrl: String? = null
+                if (widgetView.widgetInfos.payload.get("link_url") is JsonPrimitive) {
+                    linkUrl = widgetView.widgetInfos.payload.get("link_url")?.asString
                 }
                 analyticsService?.trackWidgetDisplayed(
                     WidgetType.fromString(
                         widgetType ?: ""
-                    )?.toAnalyticsString() ?: "", widgetId ,
+                    )?.toAnalyticsString() ?: "", widgetId,
                     linkUrl
                 )
             }

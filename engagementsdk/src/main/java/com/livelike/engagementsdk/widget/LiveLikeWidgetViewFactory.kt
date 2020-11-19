@@ -2,17 +2,23 @@ package com.livelike.engagementsdk.widget
 
 import android.view.View
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
-import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 interface LiveLikeWidgetViewFactory {
 
 
-    fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel
-    ) : View?
+    fun createCheerMeterView(
+        cheerMeterWidgetModel: CheerMeterWidgetmodel
+    ): View?
 
-    fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel
-    ) : View?
+    fun createAlertWidgetView(
+        alertWidgetModel: AlertWidgetModel
+    ): View?
 
+    fun createQuizWidgetView(
+        quizWidgetModel: QuizWidgetModel
+    ): View?
 
 
 }

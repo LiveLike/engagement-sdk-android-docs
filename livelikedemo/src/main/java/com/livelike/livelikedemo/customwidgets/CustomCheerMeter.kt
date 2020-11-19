@@ -7,7 +7,7 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
 import com.bumptech.glide.Glide
-import com.livelike.engagementsdk.widget.viewModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_1
 import kotlinx.android.synthetic.main.custom_cheer_meter.view.btn_2
