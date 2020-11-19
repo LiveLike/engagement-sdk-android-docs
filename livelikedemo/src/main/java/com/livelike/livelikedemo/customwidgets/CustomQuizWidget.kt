@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.OptionsItem
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.R
+import kotlinx.android.synthetic.main.custom_quiz_widget.view.button2
 import kotlinx.android.synthetic.main.custom_quiz_widget.view.imageView2
 import kotlinx.android.synthetic.main.custom_quiz_widget.view.rcyl_quiz_list
 import kotlinx.android.synthetic.main.quiz_image_list_item.view.imageButton2
@@ -49,17 +50,18 @@ class CustomQuizWidget : ConstraintLayout {
         quizWidgetModel?.widgetData?.let { liveLikeWidget ->
             liveLikeWidget.choices?.let {
                 val adapter =
-                    QuizListAdapter(context, isImage, ArrayList(it.map { item -> item!! }),
-                        object : QuizListAdapter.OnSelectListener {
-                            override fun onSelectOption(optionsItem: OptionsItem) {
-                                quizWidgetModel?.lockInAnswer(optionsItem.id!!)
-                            }
-                        })
+                    QuizListAdapter(context, isImage, ArrayList(it.map { item -> item!! }))
                 rcyl_quiz_list.adapter = adapter
+                button2.setOnClickListener {
+                    adapter.getSelectedOption()?.let { item ->
+                        if (adapter.optionIdCount.isEmpty())
+                            quizWidgetModel?.lockInAnswer(item.id!!)
+                    }
+                }
                 quizWidgetModel?.voteResults?.subscribe(this) { result ->
                     val op =
                         result?.choices?.find { option -> option.id == adapter.getSelectedOption()?.id }
-                    adapter.getSelectedOption()
+
                     op?.let { option ->
                         Toast.makeText(
                             context, when (option.is_correct) {
@@ -79,6 +81,7 @@ class CustomQuizWidget : ConstraintLayout {
             imageView2.setOnClickListener {
                 quizWidgetModel?.finish()
             }
+
         }
 
     }
@@ -92,8 +95,7 @@ class CustomQuizWidget : ConstraintLayout {
 class QuizListAdapter(
     private val context: Context,
     private val isImage: Boolean,
-    val list: ArrayList<OptionsItem>,
-    private val onSelectListener: OnSelectListener
+    val list: ArrayList<OptionsItem>
 ) :
     RecyclerView.Adapter<QuizListAdapter.QuizListItemViewHolder>() {
     private var selectedIndex = -1
@@ -128,10 +130,20 @@ class QuizListAdapter(
                 holder.itemView.imageButton2.setBackgroundColor(Color.GRAY)
             }
             holder.itemView.textView8.text = "${optionIdCount[item.id!!] ?: 0}"
+            optionIdCount[item.id!!]?.let {
+                if (selectedIndex == index) {
+                    if (item.isCorrect == true) {
+                        holder.itemView.imageButton2.setBackgroundColor(Color.GREEN)
+                    } else {
+                        holder.itemView.imageButton2.setBackgroundColor(Color.RED)
+                    }
+                }
+            }
             holder.itemView.imageButton2.setOnClickListener {
-                selectedIndex = holder.adapterPosition
-                notifyDataSetChanged()
-                onSelectListener.onSelectOption(item)
+                if (optionIdCount[item.id!!] == null) {
+                    selectedIndex = holder.adapterPosition
+                    notifyDataSetChanged()
+                }
             }
         } else {
             holder.itemView.textView7.text = "${optionIdCount[item.id!!] ?: 0}"
@@ -141,18 +153,24 @@ class QuizListAdapter(
             } else {
                 holder.itemView.button4.setBackgroundColor(Color.GRAY)
             }
+            optionIdCount[item.id!!]?.let {
+                if (selectedIndex == index) {
+                    if (item.isCorrect == true) {
+                        holder.itemView.button4.setBackgroundColor(Color.GREEN)
+                    } else {
+                        holder.itemView.button4.setBackgroundColor(Color.RED)
+                    }
+                }
+            }
             holder.itemView.button4.setOnClickListener {
-                selectedIndex = holder.adapterPosition
-                notifyDataSetChanged()
-                onSelectListener.onSelectOption(item)
+                if (optionIdCount[item.id!!] == null) {
+                    selectedIndex = holder.adapterPosition
+                    notifyDataSetChanged()
+                }
             }
         }
 
     }
 
     override fun getItemCount(): Int = list.size
-
-    interface OnSelectListener {
-        fun onSelectOption(optionsItem: OptionsItem)
-    }
 }
