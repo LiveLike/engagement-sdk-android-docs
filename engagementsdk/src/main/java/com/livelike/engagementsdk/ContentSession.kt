@@ -8,7 +8,6 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
-import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.core.data.models.LeaderboardPlacement
 import com.livelike.engagementsdk.core.data.models.RewardItem
@@ -22,8 +21,6 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.logAnalytics
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
 import com.livelike.engagementsdk.core.services.messaging.proxies.withPreloader
 import com.livelike.engagementsdk.core.services.network.EngagementDataClientImpl
-import com.livelike.engagementsdk.core.services.network.RequestType
-import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.combineLatestOnce
 import com.livelike.engagementsdk.core.utils.gson
@@ -47,12 +44,10 @@ import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZonedDateTime
 import java.io.IOException
@@ -63,6 +58,7 @@ internal class ContentSession(
     private val userRepository: UserRepository,
     private val applicationContext: Context,
     private val programId: String,
+    internal val analyticServiceStream: Stream<AnalyticsService>,
     private val errorDelegate: ErrorDelegate? = null,
     private val currentPlayheadTime: () -> EpochTime
 ) : LiveLikeContentSession {
@@ -77,6 +73,7 @@ internal class ContentSession(
         userRepository,
         applicationContext,
         true,
+        analyticServiceStream,
         errorDelegate, currentPlayheadTime
     )
 
@@ -156,7 +153,7 @@ internal class ContentSession(
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     ) {
-        engagementSDK?.getLeaderboardClients(leaderBoardId,liveLikeCallback)
+        engagementSDK?.getLeaderboardClients(leaderBoardId, liveLikeCallback)
 
         engagementSDK?.leaderBoardDelegate =
             object :
@@ -165,15 +162,16 @@ internal class ContentSession(
                     leaderBoard: LeaderBoardForClient,
                     currentUserPlacementDidChange: LeaderboardPlacement
                 ) {
-                    contentSessionleaderBoardDelegate?.leaderBoard(leaderBoard,currentUserPlacementDidChange)
+                    contentSessionleaderBoardDelegate?.leaderBoard(
+                        leaderBoard,
+                        currentUserPlacementDidChange
+                    )
                 }
 
             }
     }
 
 
-    override var analyticService: AnalyticsService =
-        MockAnalyticsService(clientId)
     private val llDataClient =
         EngagementDataClientImpl()
     private val widgetDataClient = WidgetDataClientImpl()
@@ -210,24 +208,19 @@ internal class ContentSession(
     init {
         userRepository.currentUserStream.subscribe(this) {
             it?.let {
-                analyticService.trackUsername(it.nickname)
+                analyticServiceStream.latest()!!.trackUsername(it.nickname)
             }
         }
         userRepository.currentUserStream.combineLatestOnce(sdkConfiguration, this.hashCode())
             .subscribe(this) {
                 it?.let { pair ->
                     val configuration = pair.second
-                    analyticService =
-                        MixpanelAnalytics(
-                            applicationContext,
-                            configuration.mixpanelToken,
-                            configuration.clientId
-                        )
+
                     logDebug { "analyticService created" }
-                    widgetContainer.analyticsService = analyticService
-                    analyticService.trackSession(pair.first.id)
-                    analyticService.trackUsername(pair.first.nickname)
-                    analyticService.trackConfiguration(configuration.name ?: "")
+                    widgetContainer.analyticsService = analyticServiceStream.latest()
+                    analyticServiceStream.latest()!!.trackSession(pair.first.id)
+                    analyticServiceStream.latest()!!.trackUsername(pair.first.nickname)
+                    analyticServiceStream.latest()!!.trackConfiguration(configuration.name ?: "")
 
                     if (programId.isNotEmpty()) {
                         llDataClient.getProgramData(
@@ -249,19 +242,23 @@ internal class ContentSession(
                                 )
                                 chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
                                 program.analyticsProps.forEach { map ->
-                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                    analyticServiceStream.latest()
+                                        ?.registerSuperAndPeopleProperty(map.key to map.value)
                                 }
                                 configuration.analyticsProps.forEach { map ->
-                                    analyticService.registerSuperAndPeopleProperty(map.key to map.value)
+                                    analyticServiceStream.latest()
+                                        ?.registerSuperAndPeopleProperty(map.key to map.value)
                                 }
                                 contentSessionScope.launch {
                                     if (isGamificationEnabled) programRepository.fetchProgramRank()
                                 }
-                                startObservingForGamificationAnalytics(
-                                    analyticService,
-                                    programRepository.programGamificationProfileStream,
-                                    programRepository.rewardType
-                                )
+                                analyticServiceStream.latest()!!.let {
+                                    startObservingForGamificationAnalytics(
+                                        it,
+                                        programRepository.programGamificationProfileStream,
+                                        programRepository.rewardType
+                                    )
+                                }
                             }
                         }
                     }
@@ -331,19 +328,19 @@ internal class ContentSession(
             logError { "Widget Initialization Failed due no uuid compliant user id received for user" }
             return
         }
-        analyticService.trackLastWidgetStatus(true)
+        analyticServiceStream.latest()!!.trackLastWidgetStatus(true)
         widgetClient =
             PubnubMessagingClient(
                 config.pubNubKey,
                 uuid
-            ).filter().logAnalytics(analyticService).withPreloader(applicationContext)
+            ).filter().logAnalytics(analyticServiceStream.latest()!!).withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .asWidgetManager(
                     widgetDataClient,
                     currentWidgetViewStream,
                     applicationContext,
                     widgetInterceptor,
-                    analyticService,
+                    analyticServiceStream.latest()!!,
                     config,
                     userRepository,
                     programRepository,
@@ -364,8 +361,8 @@ internal class ContentSession(
         logVerbose { "Pausing the Session" }
         widgetClient?.stop()
         pubnubClientForMessageCount?.stop()
-        analyticService.trackLastChatStatus(false)
-        analyticService.trackLastWidgetStatus(false)
+        analyticServiceStream.latest()!!.trackLastChatStatus(false)
+        analyticServiceStream.latest()!!.trackLastWidgetStatus(false)
     }
 
     override fun resume() {
@@ -378,8 +375,8 @@ internal class ContentSession(
         widgetClient?.start()
         pubnubClientForMessageCount?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
-        analyticService.trackLastChatStatus(true)
-        analyticService.trackLastWidgetStatus(true)
+        analyticServiceStream.latest()!!.trackLastChatStatus(true)
+        analyticServiceStream.latest()!!.trackLastWidgetStatus(true)
     }
 
     override fun close() {
@@ -393,7 +390,7 @@ internal class ContentSession(
             destroy()
         }
         currentWidgetViewStream.clear()
-        analyticService.trackLastChatStatus(false)
-        analyticService.trackLastWidgetStatus(false)
+        analyticServiceStream.latest()!!.trackLastChatStatus(false)
+        analyticServiceStream.latest()!!.trackLastWidgetStatus(false)
     }
 }

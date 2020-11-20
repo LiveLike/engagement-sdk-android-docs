@@ -10,4 +10,7 @@
     <integer name="image_option_gradient_angle">-90</integer>
     <integer name="image_option_percent_bar_gradient_angle">0</integer>
     <integer name="livelike_chat_background_gradient_angle">90</integer>
+    <integer name="cheer_meter_team1_gradient_angle">0</integer>
+    <integer name="cheer_meter_team2_gradient_angle">0</integer>
+    <integer name="chat_bottom_bar_gradient_angle">-90</integer>
 </resources>

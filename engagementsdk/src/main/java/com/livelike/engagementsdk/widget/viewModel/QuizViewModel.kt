@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
@@ -24,18 +25,21 @@ import com.livelike.engagementsdk.core.utils.debounce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logVerbose
+import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.domain.GamificationManager
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
+import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -45,7 +49,7 @@ internal class QuizWidget(
 )
 
 internal class QuizViewModel(
-    widgetInfos: WidgetInfos,
+    private val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
     val context: Context,
@@ -53,7 +57,7 @@ internal class QuizViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel() {
+) : BaseViewModel(), QuizWidgetModel {
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
@@ -248,7 +252,37 @@ internal class QuizViewModel(
         interactionData.reset()
     }
 
+    override val widgetData: LiveLikeWidget
+        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
+
+    override val voteResults: Stream<LiveLikeWidgetResult>
+        get() = results.map { it.toLiveLikeWidgetResult() }
+
+    override fun lockInAnswer(optionID: String) {
+        data.currentData?.let { widget ->
+            val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
+            widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
+                val url =  widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
+                url?.let {
+                    uiScope.launch {
+                        dataClient.voteAsync(
+                            url,
+                            widget.resource.getMergedOptions()!![position].id,
+                            userRepository.userAccessToken,
+                            userRepository = userRepository
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun onOptionClicked() {
         interactionData.incrementInteraction()
+    }
+
+    override fun finish() {
+        onDismiss()
+        cleanUp()
     }
 }

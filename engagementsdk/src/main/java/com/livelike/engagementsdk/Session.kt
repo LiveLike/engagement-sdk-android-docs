@@ -20,8 +20,6 @@ import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
  */
 interface LiveLikeContentSession {
 
-    /** The analytics services **/
-    val analyticService: AnalyticsService
 
     /** The analytics services **/
     val chatSession: LiveLikeChatSession

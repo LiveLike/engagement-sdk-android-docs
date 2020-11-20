@@ -12,12 +12,14 @@ import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.logError
+import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 // TODO remove view references from this view model, also clean content session for same.
 
@@ -42,6 +44,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
     // Swipe to dismiss
     var swipeDismissTouchListener: View.OnTouchListener? = null
+
+    var widgetViewViewFactory: LiveLikeWidgetViewFactory? = null
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(
@@ -72,6 +76,9 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         currentWidgetViewStream.subscribe(WidgetContainerViewModel::class.java) { pair ->
             if (pair != null)
                 widgetObserver(pair?.second, pair?.first)
+            else {
+                removeViews()
+            }
         }
         // Show / Hide animation
         widgetContainer.layoutTransition = LayoutTransition()
@@ -79,42 +86,62 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
         removeViews()
-        if (widgetView != null) {
+        var customView: View? = null;
+        when (widgetView?.widgetViewModel) {
+            is CheerMeterWidgetmodel -> {
+                customView =
+                    widgetViewViewFactory?.createCheerMeterView(widgetView.widgetViewModel as CheerMeterWidgetmodel)
+            }
+            is AlertWidgetModel -> {
+                customView =
+                    widgetViewViewFactory?.createAlertWidgetView(widgetView.widgetViewModel as AlertWidgetModel)
+            }
+            is QuizWidgetModel -> {
+                customView =
+                    widgetViewViewFactory?.createQuizWidgetView(
+                        widgetView.widgetViewModel as QuizWidgetModel,
+                        WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                    )
+            }
+        }
+        if (customView != null) {
+            displayWidget(customView)
+        } else if (widgetView != null) {
             widgetView.widgetViewModel?.enableDefaultWidgetTransition =
                 enableDefaultWidgetTransition
             displayWidget(widgetView)
         }
         if (widgetContainer != null) {
             widgetView?.widgetId?.let { widgetId ->
-                var linkUrl : String? = null
-                if(widgetView?.widgetInfos?.payload?.get("link_url") is JsonPrimitive){
-                    linkUrl = widgetView?.widgetInfos?.payload?.get("link_url")?.asString
+                var linkUrl: String? = null
+                if (widgetView.widgetInfos.payload.get("link_url") is JsonPrimitive) {
+                    linkUrl = widgetView.widgetInfos.payload.get("link_url")?.asString
                 }
                 analyticsService?.trackWidgetDisplayed(
                     WidgetType.fromString(
                         widgetType ?: ""
-                    )?.toAnalyticsString() ?: "", widgetId ,
+                    )?.toAnalyticsString() ?: "", widgetId,
                     linkUrl
                 )
             }
         }
     }
 
-    private fun displayWidget(view: SpecifiedWidgetView?) {
-        if (view != null) {
+    private fun displayWidget(view: View) {
+
+        if (view is SpecifiedWidgetView) {
             dismissWidget = view.dismissFunc
-            (view.parent as ViewGroup?)?.removeAllViews() // Clean the view parent in case of reuse
             view.widgetViewThemeAttributes.apply {
                 widgetWinAnimation = widgetViewThemeAttributes.widgetWinAnimation
                 widgetLoseAnimation = widgetViewThemeAttributes.widgetLoseAnimation
                 widgetDrawAnimation = widgetViewThemeAttributes.widgetDrawAnimation
             }
             view.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
-            widgetContainer?.addView(view)
             logDebug { "NOW - Show WidgetInfos" }
-        } else {
-            logError { "Can't display view of this type" }
         }
+
+        (view.parent as ViewGroup?)?.removeAllViews() // Clean the view parent in case of reuse
+        widgetContainer?.addView(view)
     }
 
     internal fun removeViews() {

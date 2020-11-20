@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#80F70404">
+    android:color="@color/ripple_effect_team2_color">
 
     <item android:id="@android:id/mask">
         <shape android:shape="oval">
-            <solid android:color="#80F70404" />
+            <solid android:color="@color/ripple_effect_team2_mask_color" />
             <stroke
-                android:width="2dp"
-                android:color="#F70404" />
+                android:width="@dimen/ripple_effect_team2_stroke_width"
+                android:color="@color/ripple_effect_team2_stroke_color" />
         </shape>
     </item>
 </ripple>

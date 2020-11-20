@@ -18,13 +18,20 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
+import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.data.respository.LocalPredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVote
 import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRepository
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
+import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
+import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
 import com.livelike.livelikedemo.models.CheerMeterRequestResponse
@@ -145,18 +152,51 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         })
         widget_view.setSession(session)
+        if (intent.getBooleanExtra("customCheerMeter", false))
+            widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
+                override fun createCheerMeterView(viewModel: CheerMeterWidgetmodel): View? {
+                    return CustomCheerMeter(this@WidgetOnlyActivity).apply {
+                        cheerMeterWidgetModel = viewModel
+                    }
+                }
+
+                override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
+                    return return CustomAlertWidget(this@WidgetOnlyActivity).apply {
+                        alertModel = alertWidgetModel
+                    }
+                }
+
+                override fun createQuizWidgetView(
+                    quizWidgetModel: QuizWidgetModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomQuizWidget(this@WidgetOnlyActivity).apply {
+                        this.quizWidgetModel = quizWidgetModel
+                        this.isImage = isImage
+                    }
+                }
+
+
+            }
+
 
         (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = object :
             UserProfileDelegate {
-            override fun userProfile(userProfile: LiveLikeUser, reward: Reward, rewardSource: RewardSource) {
-                val text = "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
-                rewards_tv.text =  "At time ${SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().time)} : $text"
+            override fun userProfile(
+                userProfile: LiveLikeUser,
+                reward: Reward,
+                rewardSource: RewardSource
+            ) {
+                val text =
+                    "rewards recieved from ${rewardSource.name} : id is ${reward.rewardItem}, amount is ${reward.amount}"
+                rewards_tv.text =
+                    "At time ${SimpleDateFormat("hh:mm:ss").format(Calendar.getInstance().time)} : $text"
                 println(text)
             }
         }
 
         widget_view.postDelayed({
-            val availableRewards = session.getRewardItems().joinToString {rewardItem ->
+            val availableRewards = session.getRewardItems().joinToString { rewardItem ->
                 rewardItem.name
             }
             AlertDialog.Builder(this).apply {
@@ -164,9 +204,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     .setMessage(availableRewards)
                     .create()
             }.show()
-        },2000)
+        }, 2000)
 
-        EngagementSDK.predictionWidgetVoteRepository = object : PredictionWidgetVoteRepository{
+        EngagementSDK.predictionWidgetVoteRepository = object : PredictionWidgetVoteRepository {
             val predictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
 
             override fun add(vote: PredictionWidgetVote, completion: () -> Unit) {
@@ -179,7 +219,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
 
             override fun get(predictionWidgetID: String): String? {
-               return predictionWidgetVoteRepository.get(predictionWidgetID)
+                return predictionWidgetVoteRepository.get(predictionWidgetID)
             }
 
         }
@@ -194,6 +234,11 @@ class WidgetOnlyActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         session.pause()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        (application as LiveLikeApplication).removePublicSession()
     }
 
     inner class HeaderAdapter(
@@ -393,7 +438,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 null,
                                 programId,
                                 question,
-                                "PT10S"
+                                "PT30S"
                             )
                             else -> null
                         }
