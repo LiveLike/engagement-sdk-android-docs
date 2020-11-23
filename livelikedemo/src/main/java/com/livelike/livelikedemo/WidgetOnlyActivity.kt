@@ -25,8 +25,9 @@ import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRe
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
-import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
@@ -174,6 +175,13 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         this.quizWidgetModel = quizWidgetModel
                         this.isImage = isImage
                     }
+                }
+
+                override fun createPollWidgetView(
+                    pollWidgetModel: PollWidgetModel,
+                    isImage: Boolean
+                ): View? {
+                    return null
                 }
 
 

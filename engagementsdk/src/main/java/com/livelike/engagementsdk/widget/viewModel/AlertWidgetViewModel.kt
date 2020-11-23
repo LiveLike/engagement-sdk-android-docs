@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.Alert
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

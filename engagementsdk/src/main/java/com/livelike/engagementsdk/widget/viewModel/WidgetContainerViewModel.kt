@@ -18,7 +18,9 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 // TODO remove view references from this view model, also clean content session for same.
@@ -101,6 +103,13 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     widgetViewViewFactory?.createQuizWidgetView(
                         widgetView.widgetViewModel as QuizWidgetModel,
                         WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                    )
+            }
+            is PollWidgetModel -> {
+                customView =
+                    widgetViewViewFactory?.createPollWidgetView(
+                        widgetView.widgetViewModel as PollWidgetModel,
+                        WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_POLL
                     )
             }
         }
