@@ -5,6 +5,10 @@ import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
+/**
+ * WidgetView Factory is responsible for providing the instance of custom widget ui.
+ **/
+
 interface LiveLikeWidgetViewFactory {
 
 
