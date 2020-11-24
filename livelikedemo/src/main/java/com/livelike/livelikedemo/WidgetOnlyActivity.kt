@@ -32,6 +32,7 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -181,7 +182,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     pollWidgetModel: PollWidgetModel,
                     isImage: Boolean
                 ): View? {
-                    return null
+                    return CustomPollWidget(this@WidgetOnlyActivity).apply {
+                        this.pollWidgetModel = pollWidgetModel
+                        this.isImage = isImage
+                    }
                 }
 
 

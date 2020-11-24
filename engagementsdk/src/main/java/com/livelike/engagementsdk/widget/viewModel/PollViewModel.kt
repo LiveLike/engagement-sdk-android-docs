@@ -257,7 +257,7 @@ internal class PollViewModel(
     override val voteResults: Stream<LiveLikeWidgetResult>
         get() = results.map { it.toLiveLikeWidgetResult() }
 
-    override fun lockInAnswer(optionID: String) {
+    override fun vote(optionID: String) {
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->

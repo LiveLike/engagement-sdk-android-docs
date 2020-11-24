@@ -45,6 +45,7 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.Channel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
