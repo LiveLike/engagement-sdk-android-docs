@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
@@ -24,12 +25,14 @@ import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logVerbose
+import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.adapters.WidgetOptionsViewAdapter
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.domain.GamificationManager
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
@@ -38,6 +41,8 @@ import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addWidgetPred
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
+import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
+import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
@@ -48,7 +53,7 @@ internal class PredictionWidget(
 )
 
 internal class PredictionViewModel(
-    widgetInfos: WidgetInfos,
+    val widgetInfos: WidgetInfos,
     private val appContext: Context,
     private val analyticsService: AnalyticsService,
     sdkConfiguration: EngagementSDK.SdkConfiguration,
@@ -56,7 +61,7 @@ internal class PredictionViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel() {
+) : BaseViewModel() , PredictionWidgetViewModel, FollowUpWidgetViewModel {
     var followUp: Boolean = false
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
@@ -312,6 +317,35 @@ internal class PredictionViewModel(
         return it.resource.text_prediction_id
     }
 
+    override val widgetData: LiveLikeWidget
+        get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
+
+    override val voteResults: Stream<LiveLikeWidgetResult>
+        get() = results.map { it.toLiveLikeWidgetResult() }
+
+    override fun finish() {
+        onDismiss()
+        cleanUp()
+    }
+
+    override fun lockInAnswer(optionID: String) {
+        data.currentData?.let { widget ->
+            val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
+            widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
+                val url =  widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
+                url?.let {
+                    uiScope.launch {
+                        dataClient.voteAsync(
+                            url,
+                            widget.resource.getMergedOptions()!![position].id,
+                            userRepository.userAccessToken,
+                            userRepository = userRepository
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     @Suppress("USELESS_ELVIS")
     private suspend fun vote() {
