@@ -19,6 +19,7 @@ import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
@@ -87,7 +88,18 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
         removeViews()
-        var customView: View? = null;
+        var customView: View? = null
+
+        if (WidgetType.fromString(widgetType!!) == WidgetType.TEXT_PREDICTION_FOLLOW_UP ||
+            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION_FOLLOW_UP){
+            customView =
+                widgetViewViewFactory?.createPredictionFollowupWidgetView(
+                    widgetView?.widgetViewModel as FollowUpWidgetViewModel,
+                    WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                )
+        }
+
+        if(customView == null){
         when (widgetView?.widgetViewModel) {
             is CheerMeterWidgetmodel -> {
                 customView =
@@ -111,6 +123,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                         WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
                     )
             }
+        }
         }
         if (customView != null) {
             displayWidget(customView)
