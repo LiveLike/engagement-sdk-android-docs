@@ -53,7 +53,7 @@ class CustomPollWidget : ConstraintLayout {
                 rcyl_poll_list.adapter = adapter
                 adapter.pollListener = object : PollListAdapter.PollListener {
                     override fun onSelectOption(id: String) {
-                        pollWidgetModel?.vote(id)
+                        pollWidgetModel?.submitVote(id)
                     }
                 }
                 button2.visibility = View.GONE
