@@ -3,6 +3,7 @@ package com.livelike.livelikedemo.customwidgets
 import android.content.Context
 import android.graphics.Color
 import android.support.constraint.ConstraintLayout
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -48,6 +49,9 @@ class CustomPollWidget : ConstraintLayout {
         super.onAttachedToWindow()
         pollWidgetModel?.widgetData?.let { liveLikeWidget ->
             liveLikeWidget.options?.let {
+                if (it.size > 2) {
+                    rcyl_poll_list.layoutManager = GridLayoutManager(context, 2)
+                }
                 val adapter =
                     PollListAdapter(context, isImage, ArrayList(it.map { item -> item!! }))
                 rcyl_poll_list.adapter = adapter
