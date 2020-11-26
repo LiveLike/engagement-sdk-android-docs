@@ -65,7 +65,6 @@ internal class PredictionViewModel(
         get() = programRepository?.rewardType ?: RewardsType.NONE
     val data: SubscriptionManager<PredictionWidget?> =
         SubscriptionManager()
-    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
     //    var state: Stream<String?> =
 //        SubscriptionManager() // confirmation, followup
     var results: Stream<Resource> =
