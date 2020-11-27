@@ -25,12 +25,14 @@ import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRe
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
-import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -172,6 +174,16 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 ): View? {
                     return CustomQuizWidget(this@WidgetOnlyActivity).apply {
                         this.quizWidgetModel = quizWidgetModel
+                        this.isImage = isImage
+                    }
+                }
+
+                override fun createPollWidgetView(
+                    pollWidgetModel: PollWidgetModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomPollWidget(this@WidgetOnlyActivity).apply {
+                        this.pollWidgetModel = pollWidgetModel
                         this.isImage = isImage
                     }
                 }
