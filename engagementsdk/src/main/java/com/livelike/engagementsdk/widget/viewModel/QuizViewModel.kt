@@ -35,8 +35,6 @@ import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -70,7 +68,6 @@ internal class QuizViewModel(
     val currentVoteId: SubscriptionManager<String?> =
         SubscriptionManager()
     private val debouncedVoteId = currentVoteId.debounce()
-    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
 //    var state: Stream<String> =
 //        SubscriptionManager() // results
 
@@ -262,16 +259,9 @@ internal class QuizViewModel(
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
-                val url =  widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
+                val url = widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
                 url?.let {
-                    uiScope.launch {
-                        dataClient.voteAsync(
-                            url,
-                            widget.resource.getMergedOptions()!![position].id,
-                            userRepository.userAccessToken,
-                            userRepository = userRepository
-                        )
-                    }
+                    voteApi(it, widget.resource.getMergedOptions()!![position].id, userRepository)
                 }
             }
         }

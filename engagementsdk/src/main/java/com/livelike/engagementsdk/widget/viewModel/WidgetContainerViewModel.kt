@@ -18,8 +18,10 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.util.SwipeDismissTouchListener
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
+import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
@@ -99,31 +101,38 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 )
         }
 
-        if(customView == null){
-        when (widgetView?.widgetViewModel) {
-            is CheerMeterWidgetmodel -> {
-                customView =
-                    widgetViewViewFactory?.createCheerMeterView(widgetView.widgetViewModel as CheerMeterWidgetmodel)
+        if(customView == null) {
+            when (widgetView?.widgetViewModel) {
+                is CheerMeterWidgetmodel -> {
+                    customView =
+                        widgetViewViewFactory?.createCheerMeterView(widgetView.widgetViewModel as CheerMeterWidgetmodel)
+                }
+                is AlertWidgetModel -> {
+                    customView =
+                        widgetViewViewFactory?.createAlertWidgetView(widgetView.widgetViewModel as AlertWidgetModel)
+                }
+                is QuizWidgetModel -> {
+                    customView =
+                        widgetViewViewFactory?.createQuizWidgetView(
+                            widgetView.widgetViewModel as QuizWidgetModel,
+                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                        )
+                }
+                is PredictionWidgetViewModel -> {
+                    customView =
+                        widgetViewViewFactory?.createPredictionWidgetView(
+                            widgetView.widgetViewModel as PredictionWidgetViewModel,
+                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                        )
+                }
+                is PollWidgetModel -> {
+                    customView =
+                        widgetViewViewFactory?.createPollWidgetView(
+                            widgetView.widgetViewModel as PollWidgetModel,
+                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_POLL
+                        )
+                }
             }
-            is AlertWidgetModel -> {
-                customView =
-                    widgetViewViewFactory?.createAlertWidgetView(widgetView.widgetViewModel as AlertWidgetModel)
-            }
-            is QuizWidgetModel -> {
-                customView =
-                    widgetViewViewFactory?.createQuizWidgetView(
-                        widgetView.widgetViewModel as QuizWidgetModel,
-                        WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
-                    )
-            }
-            is PredictionWidgetViewModel->{
-                customView =
-                    widgetViewViewFactory?.createPredictionWidgetView(
-                        widgetView.widgetViewModel as PredictionWidgetViewModel,
-                        WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
-                    )
-            }
-        }
         }
         if (customView != null) {
             displayWidget(customView)

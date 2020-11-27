@@ -40,9 +40,6 @@ internal class EmojiSliderWidgetViewModel(
     onDismiss,
     analyticsService
 ) {
-
-    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
-
     private var pubnub: MessagingClient? = null
 
     init {
