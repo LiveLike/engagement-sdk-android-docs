@@ -35,6 +35,7 @@ import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
 import com.livelike.livelikedemo.customwidgets.CustomPollWidget
+import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -183,7 +184,10 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     predictionViewModel: PredictionWidgetViewModel,
                     isImage: Boolean
                 ): View? {
-                    return null
+                    return CustomPredictionWidget(this@WidgetOnlyActivity).apply {
+                        this.predictionWidgetViewModel = predictionViewModel
+                        this.isImage = isImage
+                    }
                 }
 
                 override fun createPredictionFollowupWidgetView(

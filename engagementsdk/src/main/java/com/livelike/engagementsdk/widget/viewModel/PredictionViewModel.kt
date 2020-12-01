@@ -35,8 +35,6 @@ import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.addWidgetPredictionVoted
 import com.livelike.engagementsdk.widget.utils.livelikeSharedPrefs.getWidgetPredictionVotedAnswerIdOrEmpty
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
@@ -333,14 +331,7 @@ internal class PredictionViewModel(
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
                 val url =  widget.resource.getMergedOptions()!![position].getMergedVoteUrl()
                 url?.let {
-                    uiScope.launch {
-                        dataClient.voteAsync(
-                            url,
-                            widget.resource.getMergedOptions()!![position].id,
-                            userRepository.userAccessToken,
-                            userRepository = userRepository
-                        )
-                    }
+                    voteApi(it, widget.resource.getMergedOptions()!![position].id, userRepository)
                 }
             }
         }
