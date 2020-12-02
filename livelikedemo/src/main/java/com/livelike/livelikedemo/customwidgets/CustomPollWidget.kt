@@ -90,7 +90,7 @@ class PollListAdapter(
     val list: ArrayList<OptionsItem>
 ) :
     RecyclerView.Adapter<PollListAdapter.PollListItemViewHolder>() {
-    private var selectedIndex = -1
+    var selectedIndex = -1
     val optionIdCount: HashMap<String, Int> = hashMapOf()
     fun getSelectedOption(): OptionsItem? = when (selectedIndex > -1) {
         true -> list[selectedIndex]

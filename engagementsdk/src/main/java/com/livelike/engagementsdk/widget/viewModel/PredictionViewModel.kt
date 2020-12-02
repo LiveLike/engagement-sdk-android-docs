@@ -320,6 +320,15 @@ internal class PredictionViewModel(
     override val voteResults: Stream<LiveLikeWidgetResult>
         get() = results.map { it.toLiveLikeWidgetResult() }
 
+    override fun getPredictionVoteId(): String? {
+        val resource = data.currentData?.resource
+        return getWidgetPredictionVotedAnswerIdOrEmpty(if (resource?.text_prediction_id.isNullOrEmpty()) resource?.image_prediction_id else resource?.text_prediction_id)
+    }
+
+    override fun claimRewards() {
+       claimPredictionRewards()
+    }
+
     override fun finish() {
         onDismiss()
         cleanUp()
@@ -334,6 +343,8 @@ internal class PredictionViewModel(
                     voteApi(it, widget.resource.getMergedOptions()!![position].id, userRepository)
                 }
             }
+            // Save widget id and voted option for followup widget
+            addWidgetPredictionVoted(widget.resource.id ?: "", option?.id ?: "")
         }
     }
 

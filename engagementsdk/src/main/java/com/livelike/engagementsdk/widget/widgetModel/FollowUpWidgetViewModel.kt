@@ -12,4 +12,16 @@ interface FollowUpWidgetViewModel : LiveLikeWidgetMediator {
      */
     val voteResults: Stream<LiveLikeWidgetResult>
 
+
+    /**
+     * return the prediction option Id which it was voted previously
+     **/
+    fun getPredictionVoteId() : String?
+
+    /**
+     * claim earned rewards if any for the chosen prediction
+     **/
+    fun claimRewards()
+
+
 }

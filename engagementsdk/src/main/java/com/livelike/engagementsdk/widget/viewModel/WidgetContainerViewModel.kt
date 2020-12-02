@@ -97,7 +97,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             customView =
                 widgetViewViewFactory?.createPredictionFollowupWidgetView(
                     widgetView?.widgetViewModel as FollowUpWidgetViewModel,
-                    WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                    WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION_FOLLOW_UP
                 )
         }
 
@@ -122,7 +122,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     customView =
                         widgetViewViewFactory?.createPredictionWidgetView(
                             widgetView.widgetViewModel as PredictionWidgetViewModel,
-                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_QUIZ
+                            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION
                         )
                 }
                 is PollWidgetModel -> {

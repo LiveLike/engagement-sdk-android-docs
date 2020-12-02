@@ -1,29 +1,22 @@
 package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
-import android.graphics.Color
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import com.bumptech.glide.Glide
-import com.livelike.engagementsdk.OptionsItem
+import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_poll_widget.view.button2
 import kotlinx.android.synthetic.main.custom_poll_widget.view.imageView2
 import kotlinx.android.synthetic.main.custom_poll_widget.view.rcyl_poll_list
-import kotlinx.android.synthetic.main.quiz_image_list_item.view.imageButton2
-import kotlinx.android.synthetic.main.quiz_image_list_item.view.textView8
-import kotlinx.android.synthetic.main.quiz_list_item.view.button4
-import kotlinx.android.synthetic.main.quiz_list_item.view.textView7
 
 class CustomPredictionWidget : ConstraintLayout {
     var predictionWidgetViewModel: PredictionWidgetViewModel? = null
+    var followUpWidgetViewModel: FollowUpWidgetViewModel? = null
     var isImage = false
+    var isFollowUp = false
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -47,7 +40,14 @@ class CustomPredictionWidget : ConstraintLayout {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        predictionWidgetViewModel?.widgetData?.let { liveLikeWidget ->
+        var widgetData = predictionWidgetViewModel?.widgetData
+        var voteResults = predictionWidgetViewModel?.voteResults
+        if(isFollowUp){
+            widgetData = followUpWidgetViewModel?.widgetData
+            voteResults = followUpWidgetViewModel?.voteResults
+        }
+
+        widgetData?.let { liveLikeWidget ->
             liveLikeWidget.options?.let {
                 if (it.size > 2) {
                     rcyl_poll_list.layoutManager = GridLayoutManager(context, 2)
@@ -61,7 +61,7 @@ class CustomPredictionWidget : ConstraintLayout {
                     }
                 }
                 button2.visibility = View.GONE
-                predictionWidgetViewModel?.voteResults?.subscribe(this) { result ->
+                voteResults?.subscribe(this) { result ->
                     result?.choices?.let { options ->
                         options.forEach { op ->
                             adapter.optionIdCount[op.id] = op.vote_count ?: 0
@@ -69,9 +69,16 @@ class CustomPredictionWidget : ConstraintLayout {
                         adapter.notifyDataSetChanged()
                     }
                 }
+                if(isFollowUp){
+                    rcyl_poll_list.setOnTouchListener { _, _ ->  true }
+                    adapter.selectedIndex = it.indexOfFirst { option-> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
+                    adapter.notifyDataSetChanged()
+                    followUpWidgetViewModel?.claimRewards()
+                }
             }
             imageView2.setOnClickListener {
                 predictionWidgetViewModel?.finish()
+                followUpWidgetViewModel?.finish()
             }
         }
     }
@@ -82,73 +89,3 @@ class CustomPredictionWidget : ConstraintLayout {
     }
 }
 
-class PredictionListAdapter(
-    private val context: Context,
-    private val isImage: Boolean,
-    val list: ArrayList<OptionsItem>
-) :
-    RecyclerView.Adapter<PredictionListAdapter.PredictionListItemViewHolder>() {
-    private var selectedIndex = -1
-    val optionIdCount: HashMap<String, Int> = hashMapOf()
-    fun getSelectedOption(): OptionsItem? = when (selectedIndex > -1) {
-        true -> list[selectedIndex]
-        else -> null
-    }
-
-    var pollListener: PollListener? = null
-
-    interface PollListener {
-        fun onSelectOption(id: String)
-    }
-
-    class PredictionListItemViewHolder(view: View) : RecyclerView.ViewHolder(view)
-
-    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): PredictionListItemViewHolder {
-        return PredictionListItemViewHolder(
-            LayoutInflater.from(p0.context!!).inflate(
-                when (isImage) {
-                    true -> R.layout.quiz_image_list_item
-                    else -> R.layout.quiz_list_item
-                }, p0, false
-            )
-        )
-    }
-
-    override fun onBindViewHolder(holder: PredictionListItemViewHolder, index: Int) {
-        val item = list[index]
-        if (isImage) {
-            Glide.with(context)
-                .load(item.imageUrl)
-                .into(holder.itemView.imageButton2)
-            if (selectedIndex == index) {
-                holder.itemView.imageButton2.setBackgroundColor(Color.BLUE)
-            } else {
-                holder.itemView.imageButton2.setBackgroundColor(Color.GRAY)
-            }
-            holder.itemView.textView8.text = "${optionIdCount[item.id!!] ?: 0}"
-
-            holder.itemView.imageButton2.setOnClickListener {
-                selectedIndex = holder.adapterPosition
-                pollListener?.onSelectOption(item.id!!)
-                notifyDataSetChanged()
-            }
-        } else {
-            holder.itemView.textView7.text = "${optionIdCount[item.id!!] ?: 0}"
-            holder.itemView.button4.text = "${item.description}"
-            if (selectedIndex == index) {
-                holder.itemView.button4.setBackgroundColor(Color.BLUE)
-            } else {
-                holder.itemView.button4.setBackgroundColor(Color.GRAY)
-            }
-
-            holder.itemView.button4.setOnClickListener {
-                selectedIndex = holder.adapterPosition
-                pollListener?.onSelectOption(item.id!!)
-                notifyDataSetChanged()
-            }
-        }
-
-    }
-
-    override fun getItemCount(): Int = list.size
-}
