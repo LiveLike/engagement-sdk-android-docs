@@ -40,6 +40,8 @@ import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
+import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.Channel
@@ -191,6 +193,18 @@ class ExoPlayerActivity : AppCompatActivity() {
                         }
                     }
 
+                    override fun createPredictionWidgetView(
+                        predictionViewModel: PredictionWidgetViewModel,
+                        isImage: Boolean
+                    ): View? {
+                        return null
+                    }
+
+                    override fun createPredictionFollowupWidgetView(
+                        followUpWidgetViewModel: FollowUpWidgetViewModel,  isImage: Boolean
+                    ): View? {
+                        return null
+                    }
                     override fun createPollWidgetView(
                         pollWidgetModel: PollWidgetModel,
                         isImage: Boolean
