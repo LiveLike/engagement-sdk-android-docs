@@ -296,7 +296,7 @@ internal class PredictionViewModel(
                         useVoteUrl = false,
                         body = FormBody.Builder()
                             .add("claim_token", EngagementSDK.predictionWidgetVoteRepository.get(
-                                (getPredictionId(it)?:""))).build(),
+                                (getPredictionId(it)?:""))?:"").build(),
                         type = RequestType.POST,
                         accessToken = userRepository.userAccessToken,
                         userRepository = userRepository,
