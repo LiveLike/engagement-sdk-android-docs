@@ -68,6 +68,9 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
                 override fun onDismiss(view: View?, token: Any?) {
                     dismissWidget?.invoke(DismissAction.SWIPE)
+                    if (currentWidgetViewStream.latest() != null) {
+                        currentWidgetViewStream.onNext(null)
+                    }
                     dismissWidget = null
                     removeViews()
                 }
@@ -93,7 +96,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         var customView: View? = null
 
         if (WidgetType.fromString(widgetType!!) == WidgetType.TEXT_PREDICTION_FOLLOW_UP ||
-            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION_FOLLOW_UP){
+            WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_PREDICTION_FOLLOW_UP
+        ) {
             customView =
                 widgetViewViewFactory?.createPredictionFollowupWidgetView(
                     widgetView?.widgetViewModel as FollowUpWidgetViewModel,
@@ -101,7 +105,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 )
         }
 
-        if(customView == null) {
+        if (customView == null) {
             when (widgetView?.widgetViewModel) {
                 is CheerMeterWidgetmodel -> {
                     customView =
