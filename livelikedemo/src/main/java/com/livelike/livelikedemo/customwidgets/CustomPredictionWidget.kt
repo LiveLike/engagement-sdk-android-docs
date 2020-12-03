@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
 import android.util.AttributeSet
@@ -69,23 +70,33 @@ class CustomPredictionWidget : ConstraintLayout {
                         adapter.notifyDataSetChanged()
                     }
                 }
-                if (isFollowUp) {
+                if(isFollowUp){
                     it.forEach { op ->
                         adapter.optionIdCount[op?.id!!] = op.voteCount ?: 0
                     }
-                    rcyl_poll_list.setOnTouchListener { _, _ -> true }
-                    adapter.selectedIndex =
-                        it.indexOfFirst { option -> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
+                    adapter.isFollowUp = true
+                    adapter.selectedIndex = it.indexOfFirst { option-> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
                     adapter.notifyDataSetChanged()
                     followUpWidgetViewModel?.claimRewards()
                 }
             }
             imageView2.setOnClickListener {
-                predictionWidgetViewModel?.finish()
-                followUpWidgetViewModel?.finish()
+                finish()
             }
+
+            val handler = Handler()
+            handler.postDelayed({
+                finish()
+            }, (liveLikeWidget.timeout ?: "").parseDuration())
+
         }
     }
+
+    private fun finish() {
+        predictionWidgetViewModel?.finish()
+        followUpWidgetViewModel?.finish()
+    }
+
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()

@@ -92,6 +92,9 @@ class PollListAdapter(
     RecyclerView.Adapter<PollListAdapter.PollListItemViewHolder>() {
     var selectedIndex = -1
     val optionIdCount: HashMap<String, Int> = hashMapOf()
+
+    var isFollowUp = false
+
     fun getSelectedOption(): OptionsItem? = when (selectedIndex > -1) {
         true -> list[selectedIndex]
         else -> null
@@ -144,9 +147,11 @@ class PollListAdapter(
             }
 
             holder.itemView.button4.setOnClickListener {
-                selectedIndex = holder.adapterPosition
-                pollListener?.onSelectOption(item.id!!)
-                notifyDataSetChanged()
+                if(!isFollowUp) {
+                    selectedIndex = holder.adapterPosition
+                    pollListener?.onSelectOption(item.id!!)
+                    notifyDataSetChanged()
+                }
             }
         }
 
