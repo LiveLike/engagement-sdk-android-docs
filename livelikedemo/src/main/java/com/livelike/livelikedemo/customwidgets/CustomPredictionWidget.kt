@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
 import android.util.AttributeSet
@@ -77,11 +78,22 @@ class CustomPredictionWidget : ConstraintLayout {
                 }
             }
             imageView2.setOnClickListener {
-                predictionWidgetViewModel?.finish()
-                followUpWidgetViewModel?.finish()
+                finish()
             }
+
+            val handler = Handler()
+            handler.postDelayed({
+                finish()
+            }, (liveLikeWidget.timeout ?: "").parseDuration())
+
         }
     }
+
+    private fun finish() {
+        predictionWidgetViewModel?.finish()
+        followUpWidgetViewModel?.finish()
+    }
+
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
