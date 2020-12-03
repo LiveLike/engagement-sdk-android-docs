@@ -58,7 +58,7 @@ class CustomPredictionWidget : ConstraintLayout {
                 rcyl_poll_list.adapter = adapter
                 adapter.pollListener = object : PollListAdapter.PollListener {
                     override fun onSelectOption(id: String) {
-                        predictionWidgetViewModel?.lockInAnswer(id)
+                        predictionWidgetViewModel?.lockInVote(id)
                     }
                 }
                 button2.visibility = View.GONE

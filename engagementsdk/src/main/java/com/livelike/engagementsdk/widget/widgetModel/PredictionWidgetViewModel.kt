@@ -13,8 +13,8 @@ interface PredictionWidgetViewModel : LiveLikeWidgetMediator {
     val voteResults: Stream<LiveLikeWidgetResult>
 
     /**
-     * lock the answer for quiz
+     * lock the answer for prediction
      */
-    fun lockInAnswer(optionID: String)
+    fun lockInVote(optionID: String)
 
 }
