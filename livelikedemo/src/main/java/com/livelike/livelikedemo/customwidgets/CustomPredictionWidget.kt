@@ -70,7 +70,7 @@ class CustomPredictionWidget : ConstraintLayout {
                     }
                 }
                 if(isFollowUp){
-                    rcyl_poll_list.setOnTouchListener { _, _ ->  true }
+                    adapter.isFollowUp = true
                     adapter.selectedIndex = it.indexOfFirst { option-> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
                     adapter.notifyDataSetChanged()
                     followUpWidgetViewModel?.claimRewards()
