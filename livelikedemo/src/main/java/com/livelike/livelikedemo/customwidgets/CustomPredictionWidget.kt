@@ -42,7 +42,7 @@ class CustomPredictionWidget : ConstraintLayout {
         super.onAttachedToWindow()
         var widgetData = predictionWidgetViewModel?.widgetData
         var voteResults = predictionWidgetViewModel?.voteResults
-        if(isFollowUp){
+        if (isFollowUp) {
             widgetData = followUpWidgetViewModel?.widgetData
             voteResults = followUpWidgetViewModel?.voteResults
         }
@@ -69,9 +69,13 @@ class CustomPredictionWidget : ConstraintLayout {
                         adapter.notifyDataSetChanged()
                     }
                 }
-                if(isFollowUp){
-                    rcyl_poll_list.setOnTouchListener { _, _ ->  true }
-                    adapter.selectedIndex = it.indexOfFirst { option-> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
+                if (isFollowUp) {
+                    it.forEach { op ->
+                        adapter.optionIdCount[op?.id!!] = op.voteCount ?: 0
+                    }
+                    rcyl_poll_list.setOnTouchListener { _, _ -> true }
+                    adapter.selectedIndex =
+                        it.indexOfFirst { option -> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
                     adapter.notifyDataSetChanged()
                     followUpWidgetViewModel?.claimRewards()
                 }
