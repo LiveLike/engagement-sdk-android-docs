@@ -25,12 +25,17 @@ import com.livelike.engagementsdk.widget.data.respository.PredictionWidgetVoteRe
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
-import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
+import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomPollWidget
+import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
 import com.livelike.livelikedemo.models.AlertRequest
 import com.livelike.livelikedemo.models.AlertResponse
@@ -175,7 +180,35 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         this.isImage = isImage
                     }
                 }
+                override fun createPredictionWidgetView(
+                    predictionViewModel: PredictionWidgetViewModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomPredictionWidget(this@WidgetOnlyActivity).apply {
+                        this.predictionWidgetViewModel = predictionViewModel
+                        this.isImage = isImage
+                    }
+                }
 
+                override fun createPredictionFollowupWidgetView(
+                    followUpWidgetViewModel: FollowUpWidgetViewModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomPredictionWidget(this@WidgetOnlyActivity).apply {
+                        this.followUpWidgetViewModel = followUpWidgetViewModel
+                        this.isImage = isImage
+                        this.isFollowUp = true
+                    }
+                }
+                override fun createPollWidgetView(
+                    pollWidgetModel: PollWidgetModel,
+                    isImage: Boolean
+                ): View? {
+                    return CustomPollWidget(this@WidgetOnlyActivity).apply {
+                        this.pollWidgetModel = pollWidgetModel
+                        this.isImage = isImage
+                    }
+                }
 
             }
 

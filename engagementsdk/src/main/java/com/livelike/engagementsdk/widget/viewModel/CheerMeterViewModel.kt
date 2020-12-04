@@ -75,7 +75,6 @@ internal class CheerMeterViewModel(
     private val interactionData = AnalyticsWidgetInteractionInfo()
     var animationEggTimerProgress = 0f
     var animationProgress = 0f
-    private val dataClient: WidgetDataClient = WidgetDataClientImpl()
 
     init {
         sdkConfiguration.pubNubKey.let {

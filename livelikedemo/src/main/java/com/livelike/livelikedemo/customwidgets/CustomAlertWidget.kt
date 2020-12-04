@@ -4,7 +4,7 @@ import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import com.bumptech.glide.Glide
-import com.livelike.engagementsdk.widget.viewModel.AlertWidgetModel
+import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_alert_widget.view.bodyImage
 import kotlinx.android.synthetic.main.custom_alert_widget.view.bodyText

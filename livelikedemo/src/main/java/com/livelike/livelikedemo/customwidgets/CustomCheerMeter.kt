@@ -93,10 +93,10 @@ class CustomCheerMeter : ConstraintLayout {
             handler.postDelayed({
                 cheerMeterWidgetModel?.finish()
                 mCountDownTimer.onFinish()
-            }, parseDuration(livelikeWidget.timeout ?: ""))
+            }, (livelikeWidget.timeout ?: "").parseDuration())
 
             var i = 0
-            val timer = parseDuration(livelikeWidget.timeout ?: "")
+            val timer = (livelikeWidget.timeout ?: "").parseDuration()
             mCountDownTimer = object : CountDownTimer(timer, 1000) {
                 override fun onTick(millisUntilFinished: Long) {
                     i++
@@ -119,13 +119,14 @@ class CustomCheerMeter : ConstraintLayout {
         cheerMeterWidgetModel?.voteResults?.unsubscribe(this.javaClass)
     }
 
-    private fun parseDuration(durationString: String): Long {
-        var timeout = 7000L
-        try {
-            timeout = Duration.parse(durationString).toMillis()
-        } catch (e: DateTimeParseException) {
-            Log.e("Error", "Duration $durationString can't be parsed.")
-        }
-        return timeout
+
+}
+fun String.parseDuration(): Long {
+    var timeout = 7000L
+    try {
+        timeout = Duration.parse(this).toMillis()
+    } catch (e: DateTimeParseException) {
+        Log.e("Error", "Duration $this can't be parsed.")
     }
+    return timeout
 }
