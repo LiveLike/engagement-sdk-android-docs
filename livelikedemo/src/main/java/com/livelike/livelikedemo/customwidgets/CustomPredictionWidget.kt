@@ -1,6 +1,7 @@
 package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
 import android.util.AttributeSet
@@ -42,7 +43,7 @@ class CustomPredictionWidget : ConstraintLayout {
         super.onAttachedToWindow()
         var widgetData = predictionWidgetViewModel?.widgetData
         var voteResults = predictionWidgetViewModel?.voteResults
-        if(isFollowUp){
+        if (isFollowUp) {
             widgetData = followUpWidgetViewModel?.widgetData
             voteResults = followUpWidgetViewModel?.voteResults
         }
@@ -57,7 +58,7 @@ class CustomPredictionWidget : ConstraintLayout {
                 rcyl_poll_list.adapter = adapter
                 adapter.pollListener = object : PollListAdapter.PollListener {
                     override fun onSelectOption(id: String) {
-                        predictionWidgetViewModel?.lockInAnswer(id)
+                        predictionWidgetViewModel?.lockInVote(id)
                     }
                 }
                 button2.visibility = View.GONE
@@ -70,18 +71,32 @@ class CustomPredictionWidget : ConstraintLayout {
                     }
                 }
                 if(isFollowUp){
-                    rcyl_poll_list.setOnTouchListener { _, _ ->  true }
+                    it.forEach { op ->
+                        adapter.optionIdCount[op?.id!!] = op.voteCount ?: 0
+                    }
+                    adapter.isFollowUp = true
                     adapter.selectedIndex = it.indexOfFirst { option-> option?.id == followUpWidgetViewModel?.getPredictionVoteId() }
                     adapter.notifyDataSetChanged()
                     followUpWidgetViewModel?.claimRewards()
                 }
             }
             imageView2.setOnClickListener {
-                predictionWidgetViewModel?.finish()
-                followUpWidgetViewModel?.finish()
+                finish()
             }
+
+            val handler = Handler()
+            handler.postDelayed({
+                finish()
+            }, (liveLikeWidget.timeout ?: "").parseDuration())
+
         }
     }
+
+    private fun finish() {
+        predictionWidgetViewModel?.finish()
+        followUpWidgetViewModel?.finish()
+    }
+
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()

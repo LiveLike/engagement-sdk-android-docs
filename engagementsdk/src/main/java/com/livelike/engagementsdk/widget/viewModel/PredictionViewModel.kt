@@ -334,7 +334,7 @@ internal class PredictionViewModel(
         cleanUp()
     }
 
-    override fun lockInAnswer(optionID: String) {
+    override fun lockInVote(optionID: String) {
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
