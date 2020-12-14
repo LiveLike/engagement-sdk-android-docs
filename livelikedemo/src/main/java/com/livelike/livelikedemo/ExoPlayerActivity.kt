@@ -41,6 +41,7 @@ import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
+import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -211,6 +212,10 @@ class ExoPlayerActivity : AppCompatActivity() {
                     ): View? {
                         return null
                     }
+                    override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
+                        return null
+                    }
+
                 }
 
 
