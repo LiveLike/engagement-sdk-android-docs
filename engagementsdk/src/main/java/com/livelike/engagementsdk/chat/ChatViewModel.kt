@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.MockAnalyticsService
+import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 internal class ChatViewModel(
+    private val applicationContext: Context,
     val userStream: Stream<LiveLikeUser>,
     val isPublicRoom: Boolean,
     val animationEventsStream: SubscriptionManager<ViewAnimationEvents>? = null,
@@ -214,7 +216,7 @@ internal class ChatViewModel(
             messageList.find {
                 it.id.toLowerCase() == messageId
             }?.apply {
-                message = "This message has been removed."
+                message = applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                 isDeleted = true
             }
             uiScope.launch {
