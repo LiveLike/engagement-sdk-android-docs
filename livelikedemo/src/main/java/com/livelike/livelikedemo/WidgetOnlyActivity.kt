@@ -463,7 +463,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 null,
                                 programId,
                                 question,
-                                "PT10S"
+                                "PT15S"
                             )
                             cheerMeter -> CheerMeterRequestResponse(
                                 "tap",
