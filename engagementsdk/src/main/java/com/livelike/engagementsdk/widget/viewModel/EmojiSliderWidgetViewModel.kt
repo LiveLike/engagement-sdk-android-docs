@@ -3,6 +3,8 @@ package com.livelike.engagementsdk.widget.viewModel
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeWidget
+import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
@@ -13,13 +15,14 @@ import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.ImageSliderEntity
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
+import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
 
@@ -39,7 +42,7 @@ internal class EmojiSliderWidgetViewModel(
     widgetMessagingClient,
     onDismiss,
     analyticsService
-) {
+), ImageSliderWidgetModel {
     private var pubnub: MessagingClient? = null
 
     init {
@@ -112,6 +115,23 @@ internal class EmojiSliderWidgetViewModel(
             )
             logDebug { "dismiss EmojiSlider Widget, reason:${action.name}" }
         }
+    }
+
+
+    override val widgetData: LiveLikeWidget
+        get() = gson.fromJson(widgetInfos?.payload, LiveLikeWidget::class.java)
+
+    override val voteResults: Stream<LiveLikeWidgetResult>
+        get() = results.map { it.toLiveLikeWidgetResult() }
+
+
+    override fun finish() {
+        onDismiss()
+        onClear()
+    }
+
+    override fun lockInVote(magnitude: Double) {
+        vote(magnitude.toString())
     }
 
     override fun onClear() {

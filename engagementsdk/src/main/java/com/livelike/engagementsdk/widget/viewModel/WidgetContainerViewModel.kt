@@ -21,6 +21,7 @@ import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
+import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -134,6 +135,12 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                         widgetViewViewFactory?.createPollWidgetView(
                             widgetView.widgetViewModel as PollWidgetModel,
                             WidgetType.fromString(widgetType!!) == WidgetType.IMAGE_POLL
+                        )
+                }
+                is ImageSliderWidgetModel -> {
+                    customView =
+                        widgetViewViewFactory?.createImageSliderWidgetView(
+                            widgetView.widgetViewModel as ImageSliderWidgetModel
                         )
                 }
             }
