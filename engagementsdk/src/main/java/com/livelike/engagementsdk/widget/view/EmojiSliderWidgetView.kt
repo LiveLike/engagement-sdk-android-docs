@@ -58,10 +58,14 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
             true -> viewModel.results.latest()
             else -> viewModel.data.latest()
         }
-        if (!didUserVote) {
-            image_slider.progress = result?.averageMagnitude ?: 0.0f
-        }
         image_slider.averageProgress = result?.averageMagnitude ?: image_slider.progress
+
+        //Commenting this code as we have to update image and red pointer both iin resul stage
+//        if (!didUserVote) {
+        result?.averageMagnitude?.let {
+            image_slider.progress = it
+        }
+//        }
         logDebug { "EmojiSlider Widget showing result value:${image_slider.averageProgress}" }
     }
 
@@ -111,10 +115,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                 image_slider.positionListener = { magnitude ->
                     viewModel.currentVote.onNext(
                         "${
-                            magnitude.toBigDecimal().setScale(
-                                2,
-                                RoundingMode.UP
-                            ).toFloat()
+                        magnitude.toBigDecimal().setScale(
+                            2,
+                            RoundingMode.UP
+                        ).toFloat()
                         }"
                     )
                 }
