@@ -17,8 +17,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class CustomImageSlider : ConstraintLayout {
-
-
+    
     lateinit var imageSliderWidgetModel: ImageSliderWidgetModel
 
     constructor(context: Context) : super(context) {
@@ -53,7 +52,6 @@ class CustomImageSlider : ConstraintLayout {
             gauge_seek_bar.progressChangedCallback = {
                 slide(it)
             }
-
         }
 
         imageSliderWidgetModel.voteResults.subscribe(this) {
