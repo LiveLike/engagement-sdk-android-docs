@@ -7,17 +7,12 @@ import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_image_slider.view.gauge_seek_bar
 import kotlinx.android.synthetic.main.custom_image_slider.view.imageButton3
+import kotlinx.android.synthetic.main.custom_image_slider.view.imageButton4
 import kotlinx.android.synthetic.main.custom_image_slider.view.txt_result
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope.coroutineContext
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 
 class CustomImageSlider : ConstraintLayout {
-    
+
     lateinit var imageSliderWidgetModel: ImageSliderWidgetModel
 
     constructor(context: Context) : super(context) {
@@ -46,14 +41,15 @@ class CustomImageSlider : ConstraintLayout {
             widget.options?.get(0)?.imageUrl?.let {
                 gauge_seek_bar.setThumbImage(it)
             }
-            val slide = debounce<Float>(500, coroutineContext) {
-                imageSliderWidgetModel.lockInVote(it.toDouble())
-            }
-            gauge_seek_bar.progressChangedCallback = {
-                slide(it)
-            }
         }
-
+        gauge_seek_bar.progressChangedCallback = {
+            println("CustomImageSlider.onAttachedToWindow->$it")
+        }
+        imageButton4.setOnClickListener {
+            println("CustomImageSlider.onAttachedToWindow VOTED ${gauge_seek_bar.getProgress().toDouble()}")
+            imageSliderWidgetModel.lockInVote(gauge_seek_bar.getProgress().toDouble())
+            gauge_seek_bar.interactive = false
+        }
         imageSliderWidgetModel.voteResults.subscribe(this) {
             it?.let {
                 txt_result.text = "Result: ${it.averageMagnitude}"
@@ -61,22 +57,6 @@ class CustomImageSlider : ConstraintLayout {
         }
         imageButton3.setOnClickListener {
             imageSliderWidgetModel.finish()
-        }
-    }
-
-    private fun <T> debounce(
-        delayMs: Long = 500L,
-        coroutineContext: CoroutineContext,
-        f: (T) -> Unit
-    ): (T) -> Unit {
-        var debounceJob: Job? = null
-        return { param: T ->
-            if (debounceJob?.isCompleted != false) {
-                debounceJob = CoroutineScope(coroutineContext).launch {
-                    delay(delayMs)
-                    f(param)
-                }
-            }
         }
     }
 
