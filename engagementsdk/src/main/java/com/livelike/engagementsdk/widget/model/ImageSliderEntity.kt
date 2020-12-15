@@ -10,4 +10,8 @@ internal data class ImageSliderEntity(
     @field:SerializedName("vote_url")
     val voteUrl: String
 
-) : Resource()
+) : Resource(){
+    override fun toLiveLikeWidgetResult(): LiveLikeWidgetResult {
+        return LiveLikeWidgetResult( getMergedOptions(), averageMagnitude)
+    }
+}

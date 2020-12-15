@@ -35,6 +35,7 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomImageSlider
 import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
@@ -181,6 +182,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         this.isImage = isImage
                     }
                 }
+
                 override fun createPredictionWidgetView(
                     predictionViewModel: PredictionWidgetViewModel,
                     isImage: Boolean
@@ -201,6 +203,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         this.isFollowUp = true
                     }
                 }
+
                 override fun createPollWidgetView(
                     pollWidgetModel: PollWidgetModel,
                     isImage: Boolean
@@ -212,7 +215,9 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 }
 
                 override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
-                    return null
+                    return CustomImageSlider(this@WidgetOnlyActivity).apply {
+                        this.imageSliderWidgetModel = imageSliderWidgetModel
+                    }
                 }
 
             }

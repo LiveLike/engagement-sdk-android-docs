@@ -51,7 +51,7 @@ internal open class Resource(
         }
     }
 
-    fun toLiveLikeWidgetResult(): LiveLikeWidgetResult {
+    open fun toLiveLikeWidgetResult(): LiveLikeWidgetResult {
             return LiveLikeWidgetResult( getMergedOptions(), null)
     }
 }
