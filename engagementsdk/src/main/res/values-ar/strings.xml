@@ -6,7 +6,7 @@
     <string name="points_tutorial_title">بداية عظيمة!</string>
     <string name="flag_ui_title">مشكلة؟</string>
     <string name="flag_ui_reporting_message">تم الإبلاغ عن هذه الرسالة إلى الوسطاء. شكرا لك.</string>
-    <string name="flag_ui_blocking_message">لن ترى رسائل بعد الآ</string>
+    <string name="flag_ui_blocking_message">لن ترى رسائل بعد الآ %s </string>
     <string name="flag_ui_blocking_title">منع هذا المستخدم</string>
     <string name="flag_ui_reporting_title">الإبلاغ عن رسالة</string>
     <string name="chat_deleted_message_redacted">منقح</string>
