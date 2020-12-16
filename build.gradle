@@ -47,15 +47,22 @@ buildscript {
         classpath "com.github.dcendents:android-maven-gradle-plugin:$mavenPluginVersion"
         classpath "com.bugsnag:bugsnag-android-gradle-plugin:$bugsnagVersion"
     }
+
 }
 
 plugins {
     id "org.sonarqube" version "2.7.1"
 }
 
+
+
 allprojects {
     repositories {
         google()
         jcenter()
+    }
+
+    sonarqube {
+        androidVariant 'stagingDebug'
     }
 }

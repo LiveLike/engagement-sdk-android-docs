@@ -26,4 +26,8 @@
     <string name="team_one">team one</string>
     <string name="team_two">team two</string>
     <string name="winner">winner</string>
+    <string name="livelike_chat_recent_stickers_empty_message">You haven’t posted any stickers yet.\n\nGo post it!</string>
+    <string name="livelike_chat_message_deleted_message">This message has been removed.</string>
+    <string name="livelike_chat_alert_blocked_confirm">OK</string>
+    <string name="livelike_chat_report_message_confirm">OK</string>
 </resources>
