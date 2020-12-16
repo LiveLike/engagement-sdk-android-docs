@@ -95,7 +95,7 @@ internal abstract class WidgetViewModel<T : Resource>(
                 }
                 delay(2000)
                 state.onNext(WidgetState.SHOW_RESULTS)
-                delay(1000)
+                delay(2000)
                 state.onNext(WidgetState.SHOW_GAMIFICATION)
             }
         }
