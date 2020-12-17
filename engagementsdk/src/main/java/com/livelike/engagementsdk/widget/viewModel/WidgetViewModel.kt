@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 // TODO inherit all widget viewModels from here and  add widget common code here.
 internal abstract class WidgetViewModel<T : Resource>(
-    private val onDismiss: () -> Unit,
+    protected val onDismiss: () -> Unit,
     val analyticsService: AnalyticsService
 ) : BaseViewModel() {
 
@@ -95,7 +95,7 @@ internal abstract class WidgetViewModel<T : Resource>(
                 }
                 delay(2000)
                 state.onNext(WidgetState.SHOW_RESULTS)
-                delay(1000)
+                delay(2000)
                 state.onNext(WidgetState.SHOW_GAMIFICATION)
             }
         }

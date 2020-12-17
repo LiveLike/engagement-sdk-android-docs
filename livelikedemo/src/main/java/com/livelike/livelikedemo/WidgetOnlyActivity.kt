@@ -28,12 +28,14 @@ import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
+import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.customwidgets.CustomAlertWidget
 import com.livelike.livelikedemo.customwidgets.CustomCheerMeter
+import com.livelike.livelikedemo.customwidgets.CustomImageSlider
 import com.livelike.livelikedemo.customwidgets.CustomPollWidget
 import com.livelike.livelikedemo.customwidgets.CustomPredictionWidget
 import com.livelike.livelikedemo.customwidgets.CustomQuizWidget
@@ -180,6 +182,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         this.isImage = isImage
                     }
                 }
+
                 override fun createPredictionWidgetView(
                     predictionViewModel: PredictionWidgetViewModel,
                     isImage: Boolean
@@ -200,6 +203,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                         this.isFollowUp = true
                     }
                 }
+
                 override fun createPollWidgetView(
                     pollWidgetModel: PollWidgetModel,
                     isImage: Boolean
@@ -207,6 +211,12 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     return CustomPollWidget(this@WidgetOnlyActivity).apply {
                         this.pollWidgetModel = pollWidgetModel
                         this.isImage = isImage
+                    }
+                }
+
+                override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
+                    return CustomImageSlider(this@WidgetOnlyActivity).apply {
+                        this.imageSliderWidgetModel = imageSliderWidgetModel
                     }
                 }
 
@@ -463,7 +473,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                                 null,
                                 programId,
                                 question,
-                                "PT10S"
+                                "PT15S"
                             )
                             cheerMeter -> CheerMeterRequestResponse(
                                 "tap",

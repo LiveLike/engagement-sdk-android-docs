@@ -14,6 +14,7 @@ import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.MockAnalyticsService
+import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.ViewAnimationEvents
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 internal class ChatViewModel(
+    private val applicationContext: Context,
     val userStream: Stream<LiveLikeUser>,
     val isPublicRoom: Boolean,
     val animationEventsStream: SubscriptionManager<ViewAnimationEvents>? = null,
@@ -115,7 +117,7 @@ internal class ChatViewModel(
         if (allMessageList.isEmpty())
             allMessageList.add(message)
         else
-            allMessageList.first().let {
+            allMessageList.first()?.let {
                 if (message.timetoken != 0L && it.timetoken > message.timetoken) {
                     allMessageList.add(0, message)
                 } else {
@@ -142,7 +144,7 @@ internal class ChatViewModel(
                 isFromMe = userStream.latest()?.id == senderId
             })
         } else {
-            messageList.first().let {
+            messageList.first()?.let {
                 if (message.timetoken != 0L && it.timetoken > message.timetoken) {
                     messageList.add(0, message.apply {
                         isFromMe = userStream.latest()?.id == senderId
@@ -214,7 +216,7 @@ internal class ChatViewModel(
             messageList.find {
                 it.id.toLowerCase() == messageId
             }?.apply {
-                message = "This message has been removed."
+                message = applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                 isDeleted = true
             }
             uiScope.launch {
@@ -347,7 +349,7 @@ internal class ChatViewModel(
         const val EVENT_NEW_MESSAGE = "new-message"
         const val EVENT_MESSAGE_DELETED = "deletion"
         const val EVENT_MESSAGE_TIMETOKEN_UPDATED = "id-updated"
-        const val EVENT_LOADING_COMPLETE = "loading-complete"
+        const val EVENT_LOADING_COMPLETE = "loading-complete"  
         const val EVENT_LOADING_STARTED = "loading-started"
         const val EVENT_REACTION_ADDED = "reaction-added"
         const val EVENT_REACTION_REMOVED = "reaction-removed"

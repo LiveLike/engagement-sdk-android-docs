@@ -143,7 +143,7 @@ internal class ChatRecyclerAdapter(
                             msg.senderDisplayName
                         )
                     )
-                    setPositiveButton("OK") { _, _ ->
+                    setPositiveButton(context.getString(R.string.livelike_chat_alert_blocked_confirm)) { _, _ ->
                         analyticsService.trackBlockingUser()
                         blockUser(
                             msg.senderId
@@ -155,7 +155,7 @@ internal class ChatRecyclerAdapter(
             v.context.getString(R.string.flag_ui_reporting_title) to { msg: ChatMessage ->
                 AlertDialog.Builder(v.context).apply {
                     setMessage(context.getString(R.string.flag_ui_reporting_message))
-                    setPositiveButton("OK") { _, _ ->
+                    setPositiveButton(context.getString(R.string.livelike_chat_report_message_confirm)) { _, _ ->
                         analyticsService.trackReportingMessage()
                         reporter(msg)
                     }

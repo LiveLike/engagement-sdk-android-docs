@@ -57,6 +57,7 @@ internal class ChatSession(
 
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
+            applicationContext,
             userRepository.currentUserStream,
             isPublicRoom,
             null

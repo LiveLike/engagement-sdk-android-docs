@@ -14,11 +14,11 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal|center_vertical|center"
-        android:text="You haven’t posted any stickers yet.\n\nGo post it!"
+        android:text="@string/livelike_chat_recent_stickers_empty_message"
         android:textColor="#66ffffff"
         android:textSize="15sp"
         android:visibility="gone"
-        tools:text="You haven’t posted any stickers yet.\n\nGo post it!" />
+        tools:text="@string/livelike_chat_recent_stickers_empty_message" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvStickers"
