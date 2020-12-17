@@ -1,0 +1,8 @@
+User-agent: *
+
+Disallow: /
+
+
+
+Sitemap: https://livelike.github.io/engagement-sdk-android-docs/sitemap.xml
+

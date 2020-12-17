@@ -1,0 +1,4282 @@
+<!DOCTYPE HTML>
+<!--
+    Editorial by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+<title>LiveLike API Docs</title>
+
+
+
+
+<meta charset="utf-8"/>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+<meta name="generator" content="Orchid 0.20.0-SNAPSHOT"/>
+<link rel="icon" href="https://livelike.github.io/engagement-sdk-android-docs/favicon.ico">
+
+
+<meta name="robots" content="index, follow">
+
+
+
+<title>AnalyticsService</title>
+
+
+<meta name="description" content="The Android API documentation">
+
+
+
+
+
+<script>
+    window.site = {"orchidVersion":"0.20.0-SNAPSHOT","baseUrl":"https://livelike.github.io/engagement-sdk-android-docs","environment":"debug","version":"1.0.0"};
+</script>
+
+
+
+
+
+<!-- start:debug info -->
+
+<!-- THEME -->
+<!-- Type: Editorial -->
+<!-- Class: com.eden.orchid.editorial.EditorialTheme -->
+
+<!-- PAGE -->
+<!-- Type: classes -->
+<!-- Class: com.eden.orchid.sourcedoc.page.SourceDocPage -->
+<!-- Layout: index -->
+<!-- Resolved Layout: templates/layouts/index.peb -->
+<!-- Page Template: kotlindocInterface, sourceDocPage, classes, page -->
+<!-- Resolved Page Template: templates/pages/sourceDocPage.peb -->
+
+<!-- RESOURCE -->
+<!-- Class: com.eden.orchid.sourcedoc.page.SourceDocResource -->
+<!-- Source Filename:  -->
+
+<!-- COMPLETE PAGE CONFIGURATION -->
+<script>
+    window.allData = {"reference":{"path":"kotlindoc","baseUrl":"https://livelike.github.io/engagement-sdk-android-docs","fileName":"com/livelike/engagementsdk/analyticsservice","extension":"html","usePrettyUrl":true,"link":"https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticsservice"},"description":"","title":"AnalyticsService"};
+</script>
+
+<!-- end:debug info -->
+
+
+
+
+    <!-- start:inject meta-components -->
+    
+        
+            
+        
+    
+    <!-- end:inject meta-components -->
+
+
+
+    <!-- start:inject meta-components -->
+    
+    <!-- end:inject meta-components -->
+
+
+
+
+
+<!-- start:inject styles -->
+<link rel="stylesheet" type="text/css" href="https://livelike.github.io/engagement-sdk-android-docs/Editorial/f7499ef6/assets/css/editorial_main.css"  />
+<link rel="stylesheet" type="text/css" href="https://livelike.github.io/engagement-sdk-android-docs/Editorial/f7499ef6/assets/css/editorial_orchidCustomizations.css"  />
+<link rel="stylesheet" type="text/css" href="https://livelike.github.io/engagement-sdk-android-docs/Editorial/f7499ef6/assets/css/orchidSearch.css"  />
+<link rel="stylesheet" type="text/css" href="https://livelike.github.io/engagement-sdk-android-docs/assets/css/orchidSearch.css"  />
+<link rel="stylesheet" type="text/css" href="https://livelike.github.io/engagement-sdk-android-docs/assets/css/orchidSourceDoc.css"  />
+<!-- end:inject styles -->
+
+</head>
+<body class="is-loading">
+
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <div class="inner">
+
+            <!-- Header -->
+            
+                <header id="header">
+    <a href="https://livelike.github.io/engagement-sdk-android-docs" class="logo">Android EngagementSDK</a>
+    <ul class="icons">
+    
+    
+        <li>
+            <a href="https://github.com/livelike/engagement-sdk-android-docs" class="icon fa-github">
+                <span class="label">github</span>
+            </a>
+        </li>
+    
+    
+    </ul>
+</header>
+            
+            
+            
+            
+                <section id="pageContent">
+                    <header class="major"><h2>AnalyticsService</h2></header>
+                    <article>
+                        
+    <!-- start:inject components -->
+    
+        
+            
+                
+                    
+                        <div class="sourcedoc-page orchid-sourcedoc content">
+  
+<div class="sourcedoc-section section-root section-level-1" id="AnalyticsService">
+
+
+  <h1 class="sourcedoc-section section-name">AnalyticsService</h1>
+  
+    <div class="sourcedoc-section section-element" id="553aa357ad490fec27551ed35b6f1d9a2769f33b">
+      
+      <p class="sourcedoc-section section-signature">
+        <code>interface <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticsservice">AnalyticsService</a></code>
+      </p>
+      <div class="sourcedoc-section section-comments"><p>The base interface for the analytics. This will log events to any remote analytics provider.</p>
+</div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-2" id="methods">
+
+
+  <h2 class="sourcedoc-section section-name">Methods</h2>
+  
+    <div class="sourcedoc-section section-element" id="7a31f22c637b3543146b2e3e0e9fc593d3ef251c">
+      
+      <h3 class="sourcedoc-section element-name">setEventObserver</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun setEventObserver(eventObserver: (String, JSONObject)-&gt;Unit)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"><p><span eventObserver="">Set an analytics event observer </span>. It will intercept analytics events.</p>
+</div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="eaf1b9910d8d08e3ba85834b0918c9886f37ac8b">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="fcedf0a7379d7922ebcc517c8fcd878db92780a5">
+        <td class="sourcedoc-section section-signature">
+          <code>eventObserver: (String, JSONObject)-&gt;Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="c095b7aa2152e557fa6950c00b0bb259abdc4b0d">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="d53f85272422b0c2fcb8391f68f5f8ffd862425e">
+      
+      <h3 class="sourcedoc-section element-name">registerSuperProperty</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun registerSuperProperty(analyticsSuperProperties: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/analytics/analyticssuperproperties">AnalyticsSuperProperties</a>, value: Any?)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="602e6da2444b7c725e8ffdede924132c2be0a45b">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="e6fc68b5cd81b768d1cdefb2dc64ab7fc9b1158f">
+        <td class="sourcedoc-section section-signature">
+          <code>analyticsSuperProperties: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/analytics/analyticssuperproperties">AnalyticsSuperProperties</a></code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="40a09638ccc7bcf0940f36220a9d610abbadf0fa">
+        <td class="sourcedoc-section section-signature">
+          <code>value: Any?</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="e136334bfb888e8cfdc442d7d7484cbcb335b482">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="a45d39113ee2b58684bfe48665800f4cc6078aeb">
+      
+      <h3 class="sourcedoc-section element-name">registerSuperAndPeopleProperty</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun registerSuperAndPeopleProperty(event: Pair<String, String>&lt;String, String&gt;)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="09705f8c3f55e0242a54cf773ad247258585ad51">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="5c8cff0a86d50765e3b836b66dcdf96dc13b5c65">
+        <td class="sourcedoc-section section-signature">
+          <code>event: Pair<String, String>&lt;String, String&gt;</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="14e345771e73a604b6e4745bd17d6979215a0ea5">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="a0155965f6a7a589acbf225c3e06e4c4bdc5d583">
+      
+      <h3 class="sourcedoc-section element-name">trackConfiguration</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackConfiguration(internalAppName: String)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="33672de15aca773550810275da6217d8d268f486">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="87291909f489310616267fb857d0b46cf2ba6abf">
+        <td class="sourcedoc-section section-signature">
+          <code>internalAppName: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="594433238396de66b86d6747e93aeb9dfae8e65f">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="64ac0e80cd132f4fe3bf304490f335dcf2c3df01">
+      
+      <h3 class="sourcedoc-section element-name">trackWidgetInteraction</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackWidgetInteraction(kind: String, id: String, interactionInfo: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticswidgetinteractioninfo">AnalyticsWidgetInteractionInfo</a>)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="0a7b568872c7638ee8e4db7f337fa9a54400cda7">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="853acd7c7044e57ccbd119440a4fa2d80f09e77a">
+        <td class="sourcedoc-section section-signature">
+          <code>kind: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="e1f6ec0980aa862c68cbaa8110e74551ae83ddd6">
+        <td class="sourcedoc-section section-signature">
+          <code>id: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="7ccd75ba0ef50e2e46b89be995a7590642b8c245">
+        <td class="sourcedoc-section section-signature">
+          <code>interactionInfo: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticswidgetinteractioninfo">AnalyticsWidgetInteractionInfo</a></code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="e620974387a5371bcc43edf22575e6c90ec86386">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="cec67cb8e9822d81ab1715be76807971354bb06c">
+      
+      <h3 class="sourcedoc-section element-name">trackSessionStarted</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackSessionStarted()</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="a87b98f7b9b8f1392e5868e03545eb68e40b3a69">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="1c75630cca949badb1a44ae320008190f1c412e9">
+      
+      <h3 class="sourcedoc-section element-name">trackMessageSent</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackMessageSent(msgId: String, msg: String?, hasExternalImage: Boolean, chatRoomId: String)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="17d51d1cd099fc1067a048fa5796aa2cbd1b87f9">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="127ecec9eb1021566c2a5900871343458ae9a43d">
+        <td class="sourcedoc-section section-signature">
+          <code>msgId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="2300643e75c6011a1d7b990bbc58e5798d8316bc">
+        <td class="sourcedoc-section section-signature">
+          <code>msg: String?</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="c1b58d6aad06b02b326d7bcb99910d754b597098">
+        <td class="sourcedoc-section section-signature">
+          <code>hasExternalImage: Boolean</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="0dfd77d148f9a00e841bf3bd26285772329c4843">
+        <td class="sourcedoc-section section-signature">
+          <code>chatRoomId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="1c1c76ee1d356311bc403760365e73c7f8cdc85b">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="90f25581dba9f38aa19566f10a91d783e978ffcd">
+      
+      <h3 class="sourcedoc-section element-name">trackMessageDisplayed</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackMessageDisplayed(msgId: String, msg: String?, hasExternalImage: Boolean)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="535f6ed71cd5cff9e252bdaddc7f1672f1daa01b">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="127ecec9eb1021566c2a5900871343458ae9a43d">
+        <td class="sourcedoc-section section-signature">
+          <code>msgId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="2300643e75c6011a1d7b990bbc58e5798d8316bc">
+        <td class="sourcedoc-section section-signature">
+          <code>msg: String?</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="c1b58d6aad06b02b326d7bcb99910d754b597098">
+        <td class="sourcedoc-section section-signature">
+          <code>hasExternalImage: Boolean</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="9f4832bf8e58725c51ee523fb4e9d410bf118ab7">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="4a086640d6bff84e19fb10872e787fc8c9ff5ace">
+      
+      <h3 class="sourcedoc-section element-name">trackLastChatStatus</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackLastChatStatus(status: Boolean)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="db9bae512b80cd28bc18998a7cd466cc90e04f49">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="4b3769574a2c123fb2e78f007ed048dd56373584">
+        <td class="sourcedoc-section section-signature">
+          <code>status: Boolean</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="4e3ffcf5fecc6e0fde7aafeea1a15289a0b49eb4">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="5b0947c3829744ccf546f776c127db192dcb3297">
+      
+      <h3 class="sourcedoc-section element-name">trackLastWidgetStatus</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackLastWidgetStatus(status: Boolean)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="9ed61d654ae35b6a6ffe6233a4d1c40c8f30f790">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="4b3769574a2c123fb2e78f007ed048dd56373584">
+        <td class="sourcedoc-section section-signature">
+          <code>status: Boolean</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="c5dd6d1c4f32ab6e2b6c744ec01ab3939860c121">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="3e4110b859b3fa06fe29cc2604f279746ad68840">
+      
+      <h3 class="sourcedoc-section element-name">trackWidgetReceived</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackWidgetReceived(kind: String, id: String)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="34a33e3e3e836c1a17920812dfc8b254526cfbd9">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="853acd7c7044e57ccbd119440a4fa2d80f09e77a">
+        <td class="sourcedoc-section section-signature">
+          <code>kind: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="e1f6ec0980aa862c68cbaa8110e74551ae83ddd6">
+        <td class="sourcedoc-section section-signature">
+          <code>id: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="1744e521b9011806107567598695cf8d02184568">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="eafef3626ef9e34779be856f3d99527105817fda">
+      
+      <h3 class="sourcedoc-section element-name">trackWidgetDisplayed</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String?)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="f3896781bc47460049b71cfece49a717b639b38f">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="853acd7c7044e57ccbd119440a4fa2d80f09e77a">
+        <td class="sourcedoc-section section-signature">
+          <code>kind: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="e1f6ec0980aa862c68cbaa8110e74551ae83ddd6">
+        <td class="sourcedoc-section section-signature">
+          <code>id: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="3719f3f66adc2e281195f736f6bdf636933ec41f">
+        <td class="sourcedoc-section section-signature">
+          <code>linkUrl: String?</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="498304d756bb3d24feace3792fcb79d0704fdc86">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="ebac857a47c0f405c970c6664eff6d4f07d50b25">
+      
+      <h3 class="sourcedoc-section element-name">trackWidgetDismiss</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackWidgetDismiss(kind: String, id: String, interactionInfo: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticswidgetinteractioninfo">AnalyticsWidgetInteractionInfo</a>, interactable: Boolean?, action: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/dismissaction">DismissAction</a>)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="458428c381670aa74e6d50fd71f1dd92d795f85b">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="853acd7c7044e57ccbd119440a4fa2d80f09e77a">
+        <td class="sourcedoc-section section-signature">
+          <code>kind: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="e1f6ec0980aa862c68cbaa8110e74551ae83ddd6">
+        <td class="sourcedoc-section section-signature">
+          <code>id: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="7ccd75ba0ef50e2e46b89be995a7590642b8c245">
+        <td class="sourcedoc-section section-signature">
+          <code>interactionInfo: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticswidgetinteractioninfo">AnalyticsWidgetInteractionInfo</a></code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="fb908b4cfbd38220a91b517a546b63260fd78b3c">
+        <td class="sourcedoc-section section-signature">
+          <code>interactable: Boolean?</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="f4ff4960e100e28a9c2f136ab79b1ef1c446f84d">
+        <td class="sourcedoc-section section-signature">
+          <code>action: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/dismissaction">DismissAction</a></code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="f1870c76b01c702a074f178c560750fd35b9a72a">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="84511f411ec8dd03bfeefac485b5dee863efc754">
+      
+      <h3 class="sourcedoc-section element-name">trackInteraction</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackInteraction(kind: String, id: String, interactionType: String, interactionCount: Int)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="e71fca1e5f880810fae66fd7ecd2d745d68b09b1">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="853acd7c7044e57ccbd119440a4fa2d80f09e77a">
+        <td class="sourcedoc-section section-signature">
+          <code>kind: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="e1f6ec0980aa862c68cbaa8110e74551ae83ddd6">
+        <td class="sourcedoc-section section-signature">
+          <code>id: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="a87ef28bb579c681e6212969d3ac968b55717792">
+        <td class="sourcedoc-section section-signature">
+          <code>interactionType: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="1b2c709e443e968dc951a0cb2ce33577baf58ba1">
+        <td class="sourcedoc-section section-signature">
+          <code>interactionCount: Int</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="ccb0f7d26a8c97f8b85cd4db53a0b496237b7cc5">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="6608a1628772bbe416abf5746d38727fa45846d5">
+      
+      <h3 class="sourcedoc-section element-name">trackOrientationChange</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackOrientationChange(isPortrait: Boolean)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="4d8d6583987c7c8754e4042bf786170a85a9500c">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="dfcaf032ecc83e8dae1b785ae92e65db7c4e4c88">
+        <td class="sourcedoc-section section-signature">
+          <code>isPortrait: Boolean</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="e9e3fcd10307bc444e9de512dff36494c8a85de7">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="0912754c4a8a990c848ab067c05efef35c8780f2">
+      
+      <h3 class="sourcedoc-section element-name">trackSession</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackSession(sessionId: String)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="2d7bc76e509d78eecfe7dc75083656009b340b86">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="5adbae6e6219eb9bf9aaedf866a807bb5972a410">
+        <td class="sourcedoc-section section-signature">
+          <code>sessionId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="c9f5694441538b6c3e47c8037ba07dac30c284e1">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="1b6db0ad000c30a7c79abb1ead4cf16c008c2410">
+      
+      <h3 class="sourcedoc-section element-name">trackButtonTap</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackButtonTap(buttonName: String, extra: JsonObject)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="3b73cba8af65e68ad04707dada70c907b2b93fb0">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="9167e96bf0f158b6642f8291b49e7a98e7df4ad2">
+        <td class="sourcedoc-section section-signature">
+          <code>buttonName: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="0bdbbe21521fd2b2fe8cf515c4b9c47064777a5a">
+        <td class="sourcedoc-section section-signature">
+          <code>extra: JsonObject</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="66dc24741b8170d7da184bf95abbaa306e42fe0d">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="6f78542f7c130785d17d070642e5738d20b1015e">
+      
+      <h3 class="sourcedoc-section element-name">trackUsername</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackUsername(username: String)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="b2819ee5c1964c41ce7fa843d8b7935c20310bf5">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="cbf6a7217614dadc5296cd5ac0bd90aa0e457e0c">
+        <td class="sourcedoc-section section-signature">
+          <code>username: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="c50d7d8ef4a70ee0baa3627628a0ab9137ff3a97">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="141985fab45e9a5a7f6909c5b3718ac31037e576">
+      
+      <h3 class="sourcedoc-section element-name">trackKeyboardOpen</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackKeyboardOpen(keyboardType: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardtype">KeyboardType</a>)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="501dec8548e365fb368d3871551969af144f2f59">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="d68d6002126d6046a819abee2da5a2ae120537da">
+        <td class="sourcedoc-section section-signature">
+          <code>keyboardType: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardtype">KeyboardType</a></code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="66a34724119fccc10fbe07009b47f7e556982c5e">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="1761009a6084e7984d6c4af9a38fc54069bde992">
+      
+      <h3 class="sourcedoc-section element-name">trackKeyboardClose</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackKeyboardClose(keyboardType: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardtype">KeyboardType</a>, hideMethod: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardhidereason">KeyboardHideReason</a>, chatMessageId: String?)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="f5c8f0244a3552d5278fcfe4fbbfc04bf958107a">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="d68d6002126d6046a819abee2da5a2ae120537da">
+        <td class="sourcedoc-section section-signature">
+          <code>keyboardType: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardtype">KeyboardType</a></code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="35c8bce6de74ea294cfc82e9838c870e2178a9f8">
+        <td class="sourcedoc-section section-signature">
+          <code>hideMethod: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardhidereason">KeyboardHideReason</a></code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="1b2a7f6535e7c188643211de8577b1474171087f">
+        <td class="sourcedoc-section section-signature">
+          <code>chatMessageId: String?</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="9e582e7e210b5bbd6df830a3233d09e9e7e13f6f">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="0ad25676fd447b8d452d23000a21bc6453ac0b37">
+      
+      <h3 class="sourcedoc-section element-name">trackFlagButtonPressed</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackFlagButtonPressed()</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="2d3fef2c6e60815b112917ff880361c12c3405be">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="b12133f1441594354dd94b668b25b43c8ff22687">
+      
+      <h3 class="sourcedoc-section element-name">trackReportingMessage</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackReportingMessage()</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="6fdcf09f65aa4a395f5a61f28e6dbf074c8689a8">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="6fffa0c2d73d28ddb0e95a128535b4a2e0bf01b5">
+      
+      <h3 class="sourcedoc-section element-name">trackBlockingUser</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackBlockingUser()</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="d3293d6b1ca6e0af2c59d29757343bcd6a816f31">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="d747fefc05e9dc3adc550aad1969ec9bdba0543f">
+      
+      <h3 class="sourcedoc-section element-name">trackCancelFlagUi</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackCancelFlagUi()</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="9c19cf89825ef5bbc4677264e847a28d9fbce7fd">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="19434491ea0ef3505a8f197dc90b911cc68ecbeb">
+      
+      <h3 class="sourcedoc-section element-name">trackPointTutorialSeen</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackPointTutorialSeen(completionType: String, secondsSinceStart: Long)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="0126e4e14eab2d95d4b3071a89febcd61c344e46">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="bb4cc9b36a641005fdcc94dfd3576b5a8f1e1c3b">
+        <td class="sourcedoc-section section-signature">
+          <code>completionType: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="095a25ca36d308a0886bea551b1047a178e1832f">
+        <td class="sourcedoc-section section-signature">
+          <code>secondsSinceStart: Long</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="620c16c4b89e4e6e6d72a0b1183c1504fd4f17ca">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="4e392716445299d45159c7fb263989050b56db65">
+      
+      <h3 class="sourcedoc-section element-name">trackPointThisProgram</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackPointThisProgram(points: Int)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="2090dc716e6788982812cb8489a4f0863e0e0bc8">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="855d231e21f9c283ccb7eeda525e847bbdf95927">
+        <td class="sourcedoc-section section-signature">
+          <code>points: Int</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="f7b205668ac22ac185fe09468f080698ad6bd954">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="2c7946001a99d37aec1541fa6681dbac2c9a6ba8">
+      
+      <h3 class="sourcedoc-section element-name">trackBadgeCollectedButtonPressed</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackBadgeCollectedButtonPressed(badgeId: String, badgeLevel: Int)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="78bbbea7b31f6c5291f0b5f4d085d9677e88d252">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="157855dced019b32e1bc48557c9fb21034895c75">
+        <td class="sourcedoc-section section-signature">
+          <code>badgeId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="e40c2e523f11ed99397aadad7297c45b2430b99a">
+        <td class="sourcedoc-section section-signature">
+          <code>badgeLevel: Int</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="be9950049e31b4bd8c040c37bba03c323ec8cb5a">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="14d36bfdfda26664e040a19eea4d18054262d217">
+      
+      <h3 class="sourcedoc-section element-name">trackChatReactionPanelOpen</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackChatReactionPanelOpen(messageId: String)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="632d3924688e679922235eee714152c5bbf5f9ac">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="731eaab1f9d51663cfe9a38d31eef8ca483fb0b5">
+        <td class="sourcedoc-section section-signature">
+          <code>messageId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="ab5cb02c4b94530920ff88a6718a183ea387a7f7">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="b0aea241315ed0617cef589ecc07407a660298a6">
+      
+      <h3 class="sourcedoc-section element-name">trackAlertLinkOpened</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackAlertLinkOpened(alertId: String, programId: String, linkUrl: String, widgetType: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgettype">WidgetType</a>?)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="507a488100ae85a0f09760cdb93abaf498c3ea51">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="31e8a844ed34501085c36c7730c82c5a121fd6db">
+        <td class="sourcedoc-section section-signature">
+          <code>alertId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="cec7c4fc1a6efb964dd1e81dfd7d8fc4fac9599f">
+        <td class="sourcedoc-section section-signature">
+          <code>programId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="abcb3389b6039c6abd11ed0e5ee1953bdb773401">
+        <td class="sourcedoc-section section-signature">
+          <code>linkUrl: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="de3d201b3ea09b8f59ab0c6fb41638a1b120f11d">
+        <td class="sourcedoc-section section-signature">
+          <code>widgetType: <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgettype">WidgetType</a>?</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="fe608b8397416f2f15aa13411ab9dbed5ac2401c">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+    <div class="sourcedoc-section section-element" id="28c647c6508ab6b265861b8c45da7122c394fc91">
+      
+      <h3 class="sourcedoc-section element-name">trackChatReactionSelected</h3>
+      
+      <p class="sourcedoc-section section-signature">
+        <code>abstract fun trackChatReactionSelected(chatRoomId: String, messageId: String, reactionId: String, isRemoved: Boolean)</code>
+      </p>
+      <div class="sourcedoc-section section-comments"></div>
+
+      
+      
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="943521e97274801d3c69a76584e44ca5f3cd11db">
+
+
+  <p class="sourcedoc-section section-name"><strong>Parameters</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="0dfd77d148f9a00e841bf3bd26285772329c4843">
+        <td class="sourcedoc-section section-signature">
+          <code>chatRoomId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="731eaab1f9d51663cfe9a38d31eef8ca483fb0b5">
+        <td class="sourcedoc-section section-signature">
+          <code>messageId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="d50627668259f040cea4ad884ebd799b43c7aa78">
+        <td class="sourcedoc-section section-signature">
+          <code>reactionId: String</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      <tr class="sourcedoc-section section-element" id="e175d47146b3a199e6fc588bd2a2ee531a99b7d2">
+        <td class="sourcedoc-section section-signature">
+          <code>isRemoved: Boolean</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+          
+<div class="sourcedoc-section section-root section-level-3" id="11081d26bf4fd36ba7e3b86cecb67f29d6fa15d3">
+
+
+  <p class="sourcedoc-section section-name"><strong>ReturnValue</strong></p>
+
+  <div class="table-container">
+    <table class="table is-fullwidth is-bordered">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      
+      <tr class="sourcedoc-section section-element" id="f6b935ab337145efdeadda28cae18aa89a845e36">
+        <td class="sourcedoc-section section-signature">
+          <code>Unit</code>
+        </td>
+        <td class="sourcedoc-section section-comments content">
+        
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+  </div>
+
+
+</div>
+
+        
+      
+    </div>
+  
+
+</div>
+
+        
+      
+    </div>
+  
+
+</div>
+
+</div>
+
+
+
+
+
+
+                    
+                
+            
+        
+    
+    <!-- end:inject components -->
+
+
+                    </article>
+                </section>
+            
+        </div>
+        <hr>
+
+        <!-- Page Footer -->
+        <div class="inner">
+    <footer id="footer">
+        <div class="clearfix">
+            
+            
+        </div>
+    </footer>
+</div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+    <div class="inner">
+
+        <!-- Search -->
+        <section id="search" class="alt">
+            <form data-orchid-search="">
+                <input type="text" name="query" id="query" placeholder="Search"/>
+            </form>
+            <div class="box" id="search-results" data-orchid-search-results style="display: none;">
+                <b>Search Results</b>
+                <ul></ul>
+            </div>
+            <div class="box" id="search-progress" data-orchid-search-progress style="display: none;">
+                <div class="loader">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Menu -->
+        <nav id="siteNav" class="menu">
+                <img src=https://livelike.github.io/engagement-sdk-android-docs/assets/media/livelikelogo_scale-0.85.png >
+            <ul class="top-level">
+                
+                    
+    
+    <li>
+        <a class="subheader">API Docs</a>
+    </li>
+    
+
+                
+                    
+    <li>
+        <span class="opener">Classes</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/accesstokendelegate">AccessTokenDelegate</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/alertwidgetmodel">AlertWidgetModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/alertwidgetthemecomponent">AlertWidgetThemeComponent</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticsservice">AnalyticsService</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/analytics/analyticssuperproperties">AnalyticsSuperProperties</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticswidgetinteractioninfo">AnalyticsWidgetInteractionInfo</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticswidgetspecificinfo">AnalyticsWidgetSpecificInfo</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/backgroundproperty">BackgroundProperty</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/models/badge">Badge</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators/baseeasingmethod">BaseEasingMethod</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/basetheme">BaseTheme</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/baseviewmodel">BaseViewModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators/bounceeaseout">BounceEaseOut</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators/bounceeaseoutinterpolator">BounceEaseOutInterpolator</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/chatroominfo">ChatRoomInfo</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/remote/chatroommemberlistresponse">ChatRoomMemberListResponse</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/remote/chatroommembership">ChatRoomMembership</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/chatview">ChatView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/chatviewthemeattributes">ChatViewThemeAttributes</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/cheermetertheme">CheerMeterTheme</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/cheermeterview">CheerMeterView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/cheermetervotestate">CheerMeterVoteState</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/cheermeterwidgetmodel">CheerMeterWidgetmodel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/collectbadgewidgetview">CollectBadgeWidgetView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/confirmmessageview">ConfirmMessageView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/createdby">CreatedBy</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/dismissaction">DismissAction</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagescrollstate/dragging">Dragging</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/earnedreward">EarnedReward</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators/baseeasingmethod/easinglistener">EasingListener</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/eggtimerclosebuttonview">EggTimerCloseButtonView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/engagementsdk">EngagementSDK</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/epochtime">EpochTime</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network/result/error">Error</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/errordelegate">ErrorDelegate</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/followupwidgetviewmodel">FollowUpWidgetViewModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/fontfamilyprovider">FontFamilyProvider</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/fontweight">FontWeight</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/format">Format</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/fragmentclicklistener">FragmentClickListener</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/iengagement">IEngagement</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagescrollstate/idle">Idle</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/imageslidertheme">ImageSliderTheme</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/imagesliderwidgetmodel">ImageSliderWidgetModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardhidereason">KeyboardHideReason</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardtype">KeyboardType</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboard">LeaderBoard</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/leaderboarddelegate">LeaderBoardDelegate</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardentry">LeaderBoardEntry</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardentrypaginationresult">LeaderBoardEntryPaginationResult</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardforclient">LeaderBoardForClient</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardreward">LeaderBoardReward</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/leaderboarduserdetails">LeaderBoardUserDetails</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardclient">LeaderboardClient</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardplacement">LeaderboardPlacement</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/livelikecallback">LiveLikeCallback</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/livelikechatmessage">LiveLikeChatMessage</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/livelikechatsession">LiveLikeChatSession</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/livelikecontentsession">LiveLikeContentSession</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/livelikeengagementtheme">LiveLikeEngagementTheme</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/remote/livelikepagination">LiveLikePagination</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/livelikeuser">LiveLikeUser</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/livelikeuserapi">LiveLikeUserApi</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/livelikewidget">LiveLikeWidget</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/livelikewidgetentity">LiveLikeWidgetEntity</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/livelikewidgetmediator">LiveLikeWidgetMediator</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/model/livelikewidgetresult">LiveLikeWidgetResult</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/livelikewidgetviewfactory">LiveLikeWidgetViewFactory</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/respository/localpredictionwidgetvoterepository">LocalPredictionWidgetVoteRepository</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/loglevel">LogLevel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/messagelistener">MessageListener</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/mixpanelanalytics">MixpanelAnalytics</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/mockanalyticsservice">MockAnalyticsService</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/livelikewidgetentity/option">Option</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/model/option">Option</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/optionsitem">OptionsItem</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/optionswidgetthemecomponent">OptionsWidgetThemeComponent</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/pagersnaphelperverbose">PagerSnapHelperVerbose</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/pagersnapscrolllistener">PagerSnapScrollListener</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/pointview">PointView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/pointstutorialview">PointsTutorialView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/pollview">PollView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/pollwidgetmodel">PollWidgetModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/predictionview">PredictionView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/predictionwidgetviewmodel">PredictionWidgetViewModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/respository/predictionwidgetvote">PredictionWidgetVote</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/respository/predictionwidgetvoterepository">PredictionWidgetVoteRepository</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/models/programgamificationprofile">ProgramGamificationProfile</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/progressionmeterview">ProgressionMeterView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/models/publishedwidgetlistresponse">PublishedWidgetListResponse</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/quizview">QuizView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/quizwidgetmodel">QuizWidgetModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagescrollstate">RVPageScrollState</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagersnaphelperlistenable">RVPagerSnapHelperListenable</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagerstatelistener">RVPagerStateListener</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/reactionsitem">ReactionsItem</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network/requesttype">RequestType</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network/result">Result</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/reward">Reward</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/rewarditem">RewardItem</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/rewardsource">RewardSource</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/rewardstype">RewardsType</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/richcontentedittext">RichContentEditText</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/serverdatavalidationexception">ServerDataValidationException</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagescrollstate/settling">Settling</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/util/singlerunner">SingleRunner</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/util/spanninglinearlayoutmanager">SpanningLinearLayoutManager</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/specifiedwidgetview">SpecifiedWidgetView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/sticker">Sticker</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickeradapter">StickerAdapter</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickercollectionadapter">StickerCollectionAdapter</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickercollectionviewholder">StickerCollectionViewHolder</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerdiffcallback">StickerDiffCallback</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerkeyboardview">StickerKeyboardView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerkeyboardviewmodel">StickerKeyboardViewModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerpack">StickerPack</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerpackrepository">StickerPackRepository</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerpackresults">StickerPackResults</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickeradapter/stickerviewholder">StickerViewHolder</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/stream">Stream</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network/result/success">Success</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/engagementsdk/timecodegetter">TimecodeGetter</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/titleview">TitleView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/userprofiledelegate">UserProfileDelegate</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/verticalspaceitemdecoration">VerticalSpaceItemDecoration</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/viewmodel">ViewModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewstyleprops">ViewStyleProps</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/visibility">Visibility</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/visiblepagestate">VisiblePageState</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/voteapiresponse">VoteApiResponse</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetbasethemecomponent">WidgetBaseThemeComponent</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/widgetcancelreason">WidgetCancelReason</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/widgetcontainerviewmodel">WidgetContainerViewModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widgetinfos">WidgetInfos</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/widgetinterceptor">WidgetInterceptor</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/widgetlifecycleeventslistener">WidgetLifeCycleEventsListener</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widgetlistener">WidgetListener</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/widgetstate">WidgetState</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/widgetstates">WidgetStates</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/widgettestview">WidgetTestView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgettype">WidgetType</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/widgetview">WidgetView</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetviewthemeattributes">WidgetViewThemeAttributes</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetstheme">WidgetsTheme</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+                    
+    <li>
+        <span class="opener">Packages</span>
+        <ul>
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk">c.l.e</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat">c.l.e.chat</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/chatreaction">c.l.e.chat.chatreaction</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data">c.l.e.chat.data</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/remote">c.l.e.chat.data.remote</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/repository">c.l.e.chat.data.repository</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/services/messaging/pubnub">c.l.e.chat.services.messaging.pubnub</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/services/network">c.l.e.chat.services.network</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard">c.l.e.chat.stickerKeyboard</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/utils/livelikesharedprefs">c.l.e.chat.utils.liveLikeSharedPrefs</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core">c.l.e.core</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/analytics">c.l.e.core.analytics</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models">c.l.e.core.data.models</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/respository">c.l.e.core.data.respository</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/exceptionhelpers">c.l.e.core.exceptionhelpers</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging">c.l.e.core.services.messaging</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies">c.l.e.core.services.messaging.proxies</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network">c.l.e.core.services.network</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils">c.l.e.core.utils</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators">c.l.e.core.utils.animators</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/livelikesharedprefs">c.l.e.core.utils.liveLikeSharedPrefs</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis">c.l.e.publicapis</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget">c.l.e.widget</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/adapters">c.l.e.widget.adapters</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/models">c.l.e.widget.data.models</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/respository">c.l.e.widget.data.respository</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain">c.l.e.widget.domain</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/model">c.l.e.widget.model</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/services/messaging/pubnub">c.l.e.widget.services.messaging.pubnub</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/services/network">c.l.e.widget.services.network</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/util">c.l.e.widget.util</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/utils">c.l.e.widget.utils</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/utils/livelikesharedprefs">c.l.e.widget.utils.livelikeSharedPrefs</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view">c.l.e.widget.view</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components">c.l.e.widget.view.components</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/imageslider">c.l.e.widget.view.components.imageslider</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel">c.l.e.widget.viewModel</a>
+    </li>
+    
+
+        
+            
+    
+    <li>
+        <a href="https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel">c.l.e.widget.widgetModel</a>
+    </li>
+    
+
+        
+        </ul>
+    </li>
+
+                
+            </ul>
+        </nav>
+        
+        <nav class="menu">
+            <header class="major">
+                <h2>AnalyticsService</h2>
+            </header>
+            <ul class="top-level">
+                
+                    
+    
+    <li>
+        <a href="#methods">Methods</a>
+    </li>
+    
+
+                
+            </ul>
+        </nav>
+        
+
+        <!-- Section -->
+
+        <!-- Footer -->
+        <footer id="footer">
+         <p class="copyright text-center">&copy; LiveLike Android EngagementSDK. 
+         <br>All rights reserved. 
+         <br><a href="https://livelike.com">Official Website</a></p>
+        </footer>
+
+    </div>
+</div>
+</div>
+
+<!-- start:inject scripts -->
+<script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script  src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+<script  src="https://livelike.github.io/engagement-sdk-android-docs/Editorial/f7499ef6/assets/js/editorial_util.js"></script>
+<script  src="https://livelike.github.io/engagement-sdk-android-docs/Editorial/f7499ef6/assets/js/editorial_main.js"></script>
+<script  src="https://livelike.github.io/engagement-sdk-android-docs/Editorial/f7499ef6/assets/js/editorial_orchidCustomizations.js"></script>
+<script  src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script  src="https://unpkg.com/lunr/lunr.js"></script>
+<script  src="https://livelike.github.io/engagement-sdk-android-docs/assets/js/orchidSearch.js"></script>
+<!-- end:inject scripts -->
+
+</body>
+</html>

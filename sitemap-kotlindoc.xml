@@ -1,0 +1,1105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/iengagement</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/livelikechatmessage</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/errordelegate</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/livelikeuserapi</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/publicapis/livelikecallback</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/exceptionhelpers</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators/baseeasingmethod</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators/baseeasingmethod/easinglistener</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators/bounceeaseoutinterpolator</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/animators/bounceeaseout</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/livelikesharedprefs</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/utils/loglevel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/respository</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardforclient</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardentrypaginationresult</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardclient</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/rewarditem</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardentry</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/earnedreward</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboard</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/rewardstype</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardplacement</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/leaderboardreward</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/data/models/voteapiresponse</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network/requesttype</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network/result</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network/result/error</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/network/result/success</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/widgetlifecycleeventslistener</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/livelikewidgetentity</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/livelikewidgetentity/option</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/widgetinterceptor</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/services/messaging/proxies/widgetcancelreason</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/analytics</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/analytics/analyticssuperproperties</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/accesstokendelegate</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/core/serverdatavalidationexception</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/widgetstate</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/widgetcontainerviewmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/viewmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/livelikewidgetmediator</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/widgetstates</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/cheermetervotestate</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewmodel/baseviewmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/util</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/util/spanninglinearlayoutmanager</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/util/singlerunner</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/followupwidgetviewmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/alertwidgetmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/imagesliderwidgetmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/quizwidgetmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/pollwidgetmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/cheermeterwidgetmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetmodel/predictionwidgetviewmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/utils</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/utils/livelikesharedprefs</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/adapters</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/model</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/model/livelikewidgetresult</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/model/option</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/imageslider</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/pointstutorialview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/pointview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/titleview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/eggtimerclosebuttonview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/confirmmessageview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/components/progressionmeterview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/quizview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/predictionview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/widgetview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/pollview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/cheermeterview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/widgettestview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/view/collectbadgewidgetview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/respository</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/respository/predictionwidgetvote</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/respository/predictionwidgetvoterepository</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/respository/localpredictionwidgetvoterepository</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/models</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/models/publishedwidgetlistresponse</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/models/programgamificationprofile</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/data/models/badge</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/reward</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/userprofiledelegate</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/leaderboarddelegate</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/leaderboarduserdetails</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/domain/rewardsource</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/services/network</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/services/messaging/pubnub</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/livelikewidgetviewfactory</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetstheme</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/specifiedwidgetview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/backgroundproperty</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/viewstyleprops</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetbasethemecomponent</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/alertwidgetthemecomponent</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/fontweight</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgettype</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/imageslidertheme</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/basetheme</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/format</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/optionswidgetthemecomponent</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/widgetviewthemeattributes</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widget/cheermetertheme</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/chatreaction</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/utils/livelikesharedprefs</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerpackrepository</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagerstatelistener</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/pagersnaphelperverbose</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerkeyboardviewmodel</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickeradapter</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickeradapter/stickerviewholder</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagescrollstate</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagescrollstate/idle</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagescrollstate/dragging</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagescrollstate/settling</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickercollectionadapter</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerpackresults</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerkeyboardview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/rvpagersnaphelperlistenable</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickercollectionviewholder</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/visiblepagestate</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/fragmentclicklistener</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/pagersnapscrolllistener</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerpack</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/sticker</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/stickerkeyboard/stickerdiffcallback</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/repository</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/remote</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/remote/chatroommemberlistresponse</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/remote/livelikepagination</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/data/remote/chatroommembership</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/services/network</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/services/messaging/pubnub</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/chatviewthemeattributes</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/richcontentedittext</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/chatview</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/visibility</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/verticalspaceitemdecoration</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/livelikechatsession</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/chat/chatroominfo</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticswidgetspecificinfo</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/createdby</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widgetlistener</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/engagementsdk</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/engagementsdk/timecodegetter</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/livelikewidget</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardtype</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/reactionsitem</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/livelikeengagementtheme</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/keyboardhidereason</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/stream</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/widgetinfos</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/optionsitem</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/mockanalyticsservice</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticsservice</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/livelikecontentsession</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/fontfamilyprovider</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/messagelistener</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/epochtime</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/analyticswidgetinteractioninfo</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/dismissaction</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/mixpanelanalytics</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    <url>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/kotlindoc/com/livelike/engagementsdk/livelikeuser</loc>
+        <lastmod>2020-12-17</lastmod>
+        <priority>0.0</priority>
+        
+    </url>
+    
+</urlset>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd"
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-assets.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-external.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-changelog.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-forms.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-home.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-kotlindoc.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-pages.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-wiki.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-sitemap.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>https://livelike.github.io/engagement-sdk-android-docs/sitemap-indices.xml</loc>
+        <lastmod>2020-12-17</lastmod>
+    </sitemap>
+    
+</sitemapindex>

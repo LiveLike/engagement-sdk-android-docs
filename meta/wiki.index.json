@@ -1,0 +1,19 @@
+{
+  "ownKey": "wiki",
+  "childrenPages": {"wiki": {
+    "ownKey": "wiki",
+    "ownPages": [{
+      "reference": {
+        "path": "",
+        "baseUrl": "https://livelike.github.io/engagement-sdk-android-docs",
+        "fileName": "wiki",
+        "extension": "html",
+        "usePrettyUrl": true,
+        "link": "https://livelike.github.io/engagement-sdk-android-docs/wiki"
+      },
+      "description": "",
+      "title": "Wiki",
+      "content": "<html>\n <head><\/head>\n <body>\n  <p>Welcome to the EngagementSDK API documentation<\/p> \n <\/body>\n<\/html>\n"
+    }]
+  }}
+}

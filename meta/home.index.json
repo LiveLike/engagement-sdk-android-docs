@@ -1,0 +1,31 @@
+{
+  "ownKey": "home",
+  "ownPages": [
+    {
+      "reference": {
+        "path": "",
+        "baseUrl": "https://livelike.github.io/engagement-sdk-android-docs",
+        "fileName": "",
+        "extension": "html",
+        "usePrettyUrl": true,
+        "link": "https://livelike.github.io/engagement-sdk-android-docs"
+      },
+      "description": "",
+      "title": "Home",
+      "content": "<h1 id=\"livelike-engagement-sdk\"><a href=\"#livelike-engagement-sdk\" id=\"livelike-engagement-sdk\" class=\"anchor\"><\/a>LiveLike Engagement SDK<\/h1>\n<p>Welcome to the LiveLike Engagement Suite documentation hub where you can find all the information you need to get started with adding interactivity to your apps.<\/p>\n<p>The LiveLike SDK enhances live video experiences in mobile apps and on the web. Interactive polls, quizzes, mini-games, and more can be broadcast alongside the video without spoiling the action. The users watching and playing along can chat with everyone else, or just their friends, while they earn points and collect rewards for participating.<\/p>\n<p>This is the documentation to our API. You can find the product documentation here: <a href=\"https://docs.livelike.com/\">https://docs.livelike.com/<\/a><\/p>\n<p><img src=\"https://livelike.github.io/engagement-sdk-android-docs/assets/media/isometry2.jpg\" alt=\"alt text\" /><\/p>\n"
+    },
+    {
+      "reference": {
+        "path": "",
+        "baseUrl": "https://livelike.github.io/engagement-sdk-android-docs",
+        "fileName": "404",
+        "extension": "html",
+        "usePrettyUrl": false,
+        "link": "https://livelike.github.io/engagement-sdk-android-docs/404.html"
+      },
+      "description": "",
+      "title": "Not Found",
+      "content": ""
+    }
+  ]
+}
