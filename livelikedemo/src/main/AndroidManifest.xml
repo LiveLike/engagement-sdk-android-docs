@@ -21,7 +21,8 @@
         android:versionName="1"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
-        <activity android:name=".LeaderBoardPositionActitivty"></activity>
+        <activity android:name=".SampleAppActivity"></activity>
+        <activity android:name=".LeaderBoardPositionActitivty" />
         <activity android:name=".LeaderBoardActivity" />
         <activity android:name=".WidgetActivity" />
         <activity

@@ -333,7 +333,8 @@ internal class ContentSession(
             PubnubMessagingClient(
                 config.pubNubKey,
                 uuid
-            ).filter().logAnalytics(analyticServiceStream.latest()!!).withPreloader(applicationContext)
+            ).filter().logAnalytics(analyticServiceStream.latest()!!)
+                .withPreloader(applicationContext)
                 .syncTo(currentPlayheadTime)
                 .asWidgetManager(
                     widgetDataClient,
@@ -361,8 +362,8 @@ internal class ContentSession(
         logVerbose { "Pausing the Session" }
         widgetClient?.stop()
         pubnubClientForMessageCount?.stop()
-        analyticServiceStream.latest()!!.trackLastChatStatus(false)
-        analyticServiceStream.latest()!!.trackLastWidgetStatus(false)
+        analyticServiceStream.latest()?.trackLastChatStatus(false)
+        analyticServiceStream.latest()?.trackLastWidgetStatus(false)
     }
 
     override fun resume() {
@@ -375,8 +376,8 @@ internal class ContentSession(
         widgetClient?.start()
         pubnubClientForMessageCount?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
-        analyticServiceStream.latest()!!.trackLastChatStatus(true)
-        analyticServiceStream.latest()!!.trackLastWidgetStatus(true)
+        analyticServiceStream.latest()?.trackLastChatStatus(true)
+        analyticServiceStream.latest()?.trackLastWidgetStatus(true)
     }
 
     override fun close() {
@@ -390,8 +391,8 @@ internal class ContentSession(
             destroy()
         }
         currentWidgetViewStream.clear()
-        analyticServiceStream.latest()!!.trackLastChatStatus(false)
-        analyticServiceStream.latest()!!.trackLastWidgetStatus(false)
+        analyticServiceStream.latest()?.trackLastChatStatus(false)
+        analyticServiceStream.latest()?.trackLastWidgetStatus(false)
     }
 
 }
