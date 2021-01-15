@@ -17,7 +17,6 @@ class WidgetActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_widget)
 
-
         // to get intent received from MainActivity
 
         // This will create an instance of Engagement viewmodel which can be used to creating session and initialization

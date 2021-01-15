@@ -79,7 +79,7 @@
         <item name="chatSendButtonPaddingRight">2dp</item>
         <item name="chatSendButtonPaddingTop">0dp</item>
         <item name="chatSendButtonPaddingBottom">0dp</item>
-        <item name="userPicDrawable">@drawable/ic_user_pic</item>
+        <item name="userPicDrawable">@drawable/ic_chat_reaction_turner</item>
         <item name="chatSendDrawable">@drawable/ic_send_turner</item>
         <item name="chatSendBackground">@drawable/send_chat_blue_circle_back</item>
         <item name="chatBubblePaddingLeft">8dp</item>
@@ -98,6 +98,7 @@
         <item name="stickerRecentEmptyTextColor">@color/livelike_black</item>
         <item name="chatMessageBottomBorderHeight">1dp</item>
         <item name="chatMessageBottomBorderColor">#efeff4</item>
+        <item name="chatStickerSendDrawable">@drawable/ic_chat_reaction_default</item>
         <item name="reaction_icon">@drawable/ic_chat_reaction_turner</item>
         <item name="reaction_hint_enable">true</item>
     </style>
