@@ -34,7 +34,9 @@ internal data class ChatRoom(
     @SerializedName("reaction_packs_url")
     val reactionPacksUrl: String,
     @SerializedName("visibility")
-    val visibility: Visibility? = null
+    val visibility: Visibility? = null,
+    @SerializedName("muted_status_url")
+    val mutedStatusUrl: String?=null
 
 )
 

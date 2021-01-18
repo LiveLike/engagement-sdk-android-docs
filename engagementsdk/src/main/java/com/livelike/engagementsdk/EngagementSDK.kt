@@ -8,11 +8,13 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.Visibility
+import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMemberListResponse
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.chat.data.remote.UserChatRoomListResponse
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
+import com.livelike.engagementsdk.chat.data.repository.ChatRoomRepository
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
@@ -36,6 +38,7 @@ import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.getSharedAccess
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.initLiveLikeSharedPrefs
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.setSharedAccessToken
 import com.livelike.engagementsdk.core.utils.map
+import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.IEngagement
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -49,6 +52,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import okhttp3.RequestBody
 import java.io.IOException
@@ -99,6 +106,17 @@ class EngagementSDK(
     private val sdkScope = CoroutineScope(Dispatchers.Default + job)
 
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
+
+
+    // sdk config-user flow that can be collected by collect which is suspendably instead of using rx style combine on 2 seperate async results
+    // TODO add util fun to convert streams to flow
+    private val configurationUserPairFlow = flow {
+        while (configurationStream.latest() == null || userRepository.currentUserStream.latest() == null) {
+            delay(1000)
+        }
+        emit(Pair( userRepository.currentUserStream.latest()!!,configurationStream.latest()!!))
+    }
+
 
     /**
      * SDK Initialization logic.
@@ -588,6 +606,51 @@ class EngagementSDK(
         }
 
 
+    }
+
+
+    override fun getChatUserMutedStatus(
+        chatRoomId: String,
+        liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>
+    ) {
+        sdkScope.launch {
+            getChatRoom(chatRoomId).collect {
+                if (it is Result.Success) {
+                    configurationUserPairFlow.collect { pair ->
+                        liveLikeCallback.processResult(
+                            ChatRoomRepository.getUserRoomMuteStatus(
+                                it.data.mutedStatusUrl ?: "".replace("{profile_id}", pair.first.id)
+                            )
+                        )
+                    }
+                } else if (it is Result.Error) {
+                    liveLikeCallback.processResult(it)
+                }
+            }
+        }
+    }
+
+    internal suspend fun getChatRoom(chatRoomId: String): Flow<Result<ChatRoom>> {
+        return flow {
+            configurationUserPairFlow.collect {
+                it.let { pair ->
+                    val chatRepository =
+                        ChatRepository(
+                            pair.second.pubNubKey,
+                            pair.first.accessToken,
+                            pair.first.id,
+                            MockAnalyticsService(),
+                            pair.second.pubnubPublishKey,
+                            origin = pair.second.pubnubOrigin
+                        )
+
+                    val chatRoomResult = chatRepository.fetchChatRoom(
+                        chatRoomId, pair.second.chatRoomDetailUrlTemplate
+                    )
+                    emit(chatRoomResult)
+                }
+            }
+        }
     }
 
 
