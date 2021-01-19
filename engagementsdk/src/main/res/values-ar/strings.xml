@@ -31,4 +31,5 @@
     <string name="livelike_chat_message_deleted_message">تمت إزالة هذه الرسالة.</string>
     <string name="livelike_chat_alert_blocked_confirm">حسنا</string>
     <string name="livelike_chat_report_message_confirm">حسنا</string>
+    <string name="send_message_failed_access_denied">"لا يمكنك إرسال رسالة "</string>
 </resources>

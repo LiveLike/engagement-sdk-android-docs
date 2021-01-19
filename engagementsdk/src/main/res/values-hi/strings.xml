@@ -31,4 +31,5 @@
     <string name="livelike_chat_message_deleted_message">यह संदेश हटा दिया गया है।</string>
     <string name="livelike_chat_alert_blocked_confirm">ठीक</string>
     <string name="livelike_chat_report_message_confirm">ठीक</string>
+    <string name="send_message_failed_access_denied">"आप एक संदेश नहीं भेज सकते "</string>
 </resources>
