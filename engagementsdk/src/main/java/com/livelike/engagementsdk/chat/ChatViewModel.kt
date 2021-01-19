@@ -184,6 +184,15 @@ internal class ChatViewModel(
         }
     }
 
+    override fun errorSendingMessage(error: MessageError) {
+        if (error.equals(MessageError.DENIED_MESSAGE_PUBLISH)) {
+            val newMsgList = ArrayList(messageList)
+            newMsgList.remove(newMsgList.findLast { it.isFromMe })
+            chatAdapter.submitList(newMsgList)
+            eventStream.onNext(EVENT_MESSAGE_CANNOT_SEND)
+        }
+    }
+
     override fun addMessageReaction(
         isOwnReaction: Boolean,
         messagePubnubToken: Long,
@@ -353,5 +362,6 @@ internal class ChatViewModel(
         const val EVENT_LOADING_STARTED = "loading-started"
         const val EVENT_REACTION_ADDED = "reaction-added"
         const val EVENT_REACTION_REMOVED = "reaction-removed"
+        const val EVENT_MESSAGE_CANNOT_SEND = "message_cannot_send"  // case 0 : occurs when user is muted inside a room and sends a message
     }
 }

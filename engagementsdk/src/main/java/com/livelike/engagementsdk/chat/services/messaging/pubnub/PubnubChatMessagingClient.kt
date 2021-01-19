@@ -9,6 +9,7 @@ import com.livelike.engagementsdk.REACTION_CREATED
 import com.livelike.engagementsdk.chat.ChatMessage
 import com.livelike.engagementsdk.chat.ChatMessageReaction
 import com.livelike.engagementsdk.chat.ChatViewModel
+import com.livelike.engagementsdk.chat.MessageError
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEvent
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_CREATED
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType.IMAGE_DELETED
@@ -171,7 +172,12 @@ internal class PubnubChatMessagingClient(
                         logDebug { "pub timetoken: " + result?.timetoken!! }
                         it.resume(true)
                     } else {
-                        it.resume(false)
+                        if(status.statusCode == 403){
+                            listener?.onClientMessageError(this@PubnubChatMessagingClient, com.livelike.engagementsdk.core.services.messaging.Error(MessageError.DENIED_MESSAGE_PUBLISH.name,""))
+                            it.resume(true)
+                        }else{
+                            it.resume(false)
+                        }
                     }
                 }
             })
