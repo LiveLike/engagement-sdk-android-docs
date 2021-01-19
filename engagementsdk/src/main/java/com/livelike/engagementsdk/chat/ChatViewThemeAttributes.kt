@@ -127,7 +127,7 @@ class ChatViewThemeAttributes {
             }
 
             val sendStickerDrawable = TypedValue()
-            getValue(R.styleable.ChatView_chatStickerSendDrawable, sendDrawable)
+            getValue(R.styleable.ChatView_chatStickerSendDrawable, sendStickerDrawable)
 
             chatStickerSendDrawable = when (sendStickerDrawable.type) {
                 TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
@@ -144,7 +144,7 @@ class ChatViewThemeAttributes {
             }
 
             val userPicDrawable = TypedValue()
-            getValue(R.styleable.ChatView_userPicDrawable, sendDrawable)
+            getValue(R.styleable.ChatView_userPicDrawable, userPicDrawable)
 
             chatUserPicDrawable = when (userPicDrawable.type) {
                 TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(

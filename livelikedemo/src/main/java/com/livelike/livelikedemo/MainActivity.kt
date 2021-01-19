@@ -56,6 +56,7 @@ import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
 import kotlinx.android.synthetic.main.activity_main.progressBar
+import kotlinx.android.synthetic.main.activity_main.sample_app
 import kotlinx.android.synthetic.main.activity_main.sdk_version
 import kotlinx.android.synthetic.main.activity_main.textView2
 import kotlinx.android.synthetic.main.activity_main.themes_button
@@ -189,6 +190,9 @@ class MainActivity : AppCompatActivity() {
         chk_custom_cheer_meter.setOnCheckedChangeListener { buttonView, isChecked ->
             player.customCheerMeter = isChecked
             onlyWidget.customCheerMeter = isChecked
+        }
+        sample_app.setOnClickListener {
+            startActivity(Intent(this, SampleAppActivity::class.java))
         }
 
         events_button.setOnClickListener {

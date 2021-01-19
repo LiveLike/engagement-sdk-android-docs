@@ -17,6 +17,7 @@ import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoomMembership
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
+import com.livelike.engagementsdk.publicapis.ChatUserMuteStatus
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.activity_chat_only.btn_change
@@ -24,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_chat_only.btn_chat_room_members
 import kotlinx.android.synthetic.main.activity_chat_only.btn_create
 import kotlinx.android.synthetic.main.activity_chat_only.btn_delete
 import kotlinx.android.synthetic.main.activity_chat_only.btn_join
+import kotlinx.android.synthetic.main.activity_chat_only.btn_mute_status
 import kotlinx.android.synthetic.main.activity_chat_only.btn_refresh
 import kotlinx.android.synthetic.main.activity_chat_only.btn_visibility
 import kotlinx.android.synthetic.main.activity_chat_only.chat_view
@@ -33,6 +35,7 @@ import kotlinx.android.synthetic.main.activity_chat_only.prg_create
 import kotlinx.android.synthetic.main.activity_chat_only.prg_delete
 import kotlinx.android.synthetic.main.activity_chat_only.prg_join
 import kotlinx.android.synthetic.main.activity_chat_only.prg_members
+import kotlinx.android.synthetic.main.activity_chat_only.prg_mute
 import kotlinx.android.synthetic.main.activity_chat_only.prg_refresh
 import kotlinx.android.synthetic.main.activity_chat_only.prg_visibility
 import kotlinx.android.synthetic.main.activity_chat_only.txt_chat_room_id
@@ -104,6 +107,34 @@ class ChatOnlyActivity : AppCompatActivity() {
                     }
                 })
         }
+
+
+        btn_mute_status.setOnClickListener {
+            val id = ed_chat_room_id.text.toString()
+            if (id.isEmpty()) {
+                showToast("Enter Room Id First")
+                return@setOnClickListener
+            }
+            prg_join.visibility = View.VISIBLE
+            (application as LiveLikeApplication).sdk.getChatUserMutedStatus(id,
+                object : LiveLikeCallback<ChatUserMuteStatus>() {
+                    override fun onResponse(result: ChatUserMuteStatus?, error: String?) {
+                        result?.let {
+                            btn_mute_status.post{
+                                showToast("User is ${if(result.isMuted)" " else "not "}muted ")
+                            }
+                        }
+                        error?.let {
+                            btn_mute_status.post {
+                                showToast(it)
+                            }
+                        }
+                        prg_mute.visibility = View.INVISIBLE
+                    }
+                })
+        }
+
+
         btn_change.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle("Select a private group")

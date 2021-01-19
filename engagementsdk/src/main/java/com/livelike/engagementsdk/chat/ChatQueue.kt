@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.chat
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
+import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.core.utils.gson
@@ -31,6 +32,14 @@ internal class ChatQueue(upstream: MessagingClient) :
     override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
         publishMessage(gson.toJson(message), message.channel, timeData)
     }
+
+    override fun onClientMessageError(client: MessagingClient, error: Error) {
+        super.onClientMessageError(client, error)
+        if(error.type.equals(MessageError.DENIED_MESSAGE_PUBLISH.name)){
+            renderer?.errorSendingMessage(MessageError.DENIED_MESSAGE_PUBLISH)
+        }
+    }
+
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         when (event.message.get("event").asString) {
@@ -96,4 +105,8 @@ internal class ChatQueue(upstream: MessagingClient) :
 
 internal fun MessagingClient.toChatQueue(): ChatQueue {
     return ChatQueue(this)
+}
+
+internal enum class MessageError {
+    DENIED_MESSAGE_PUBLISH
 }

@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.support.constraint.ConstraintLayout
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -310,6 +311,16 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                             initEmptyView()
                             delay(400)
                             showLoadingSpinner()
+                        }
+                    }
+                    ChatViewModel.EVENT_MESSAGE_CANNOT_SEND -> {
+                        uiScope.launch {
+                            AlertDialog.Builder(context).apply {
+                                setMessage(context.getString(R.string.send_message_failed_access_denied))
+                                setPositiveButton(context.getString(R.string.livelike_chat_report_message_confirm)) { _, _ ->
+                                }
+                                create()
+                            }.show()
                         }
                     }
                 }

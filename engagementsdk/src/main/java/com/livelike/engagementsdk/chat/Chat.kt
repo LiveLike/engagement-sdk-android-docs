@@ -20,6 +20,8 @@ internal interface ChatRenderer {
     )
 
     fun removeMessageReaction(messagePubnubToken: Long, emojiId: String)
+
+    fun errorSendingMessage(error: MessageError)
 }
 
 /**

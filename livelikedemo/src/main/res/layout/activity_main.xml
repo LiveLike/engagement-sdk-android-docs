@@ -476,6 +476,14 @@
                     android:layout_height="75dp"
                     android:text="Timeline"
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
+
+                <Button
+                    android:id="@+id/sample_app"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="Sample App"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
