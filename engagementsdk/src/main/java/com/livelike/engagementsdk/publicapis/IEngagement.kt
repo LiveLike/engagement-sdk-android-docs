@@ -10,10 +10,9 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.data.models.LeaderBoard
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntry
 import com.livelike.engagementsdk.core.data.models.LeaderBoardEntryPaginationResult
-import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
-import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
 
 interface IEngagement {
@@ -115,6 +114,9 @@ interface IEngagement {
         leaderBoardId: List<String>,
         liveLikeCallback: LiveLikeCallback<LeaderboardClient>
     )
+
+    fun getChatUserMutedStatus(chatRoomId: String,
+                               liveLikeCallback: LiveLikeCallback<ChatUserMuteStatus>)
 
 
 
