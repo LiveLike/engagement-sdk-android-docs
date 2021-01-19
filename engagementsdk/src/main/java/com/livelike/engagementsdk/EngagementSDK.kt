@@ -617,9 +617,10 @@ class EngagementSDK(
             getChatRoom(chatRoomId).collect {
                 if (it is Result.Success) {
                     configurationUserPairFlow.collect { pair ->
+                        val url = it.data.mutedStatusUrlTemplate ?: ""
                         liveLikeCallback.processResult(
                             ChatRoomRepository.getUserRoomMuteStatus(
-                                it.data.mutedStatusUrl ?: "".replace("{profile_id}", pair.first.id)
+                                url.replace(TEMPLATE_PROFILE_ID, pair.first.id)
                             )
                         )
                     }
