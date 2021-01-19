@@ -186,9 +186,9 @@ internal class ChatViewModel(
 
     override fun errorSendingMessage(error: MessageError) {
         if (error.equals(MessageError.DENIED_MESSAGE_PUBLISH)) {
-            val newMsgList = ArrayList(messageList)
-            newMsgList.remove(newMsgList.findLast { it.isFromMe })
-            chatAdapter.submitList(newMsgList)
+            val messageList = ArrayList(messageList)
+            messageList.remove(messageList.findLast { it.isFromMe })
+            chatAdapter.submitList(messageList)
             eventStream.onNext(EVENT_MESSAGE_CANNOT_SEND)
         }
     }
