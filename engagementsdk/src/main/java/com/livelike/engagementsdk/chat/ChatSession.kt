@@ -238,9 +238,7 @@ internal class ChatSession(
                         chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
                 }
                 pubnubClientForMessageCount?.getMessageCountV1(channel, startTimestamp)?.run {
-                    contentSessionScope.launch(Dispatchers.Main.immediate){
-                        callback.processResult(this@run)
-                    }
+                    callback.processResult(this)
                 }
             }
         }
