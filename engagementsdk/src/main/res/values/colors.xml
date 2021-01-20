@@ -114,6 +114,9 @@
     <color name="ripple_effect_team2_color">#80F70404</color>
     <color name="ripple_effect_team2_stroke_color">#F70404</color>
     <color name="ripple_effect_team2_mask_color">#80F70404</color>
+    <color name="livelike_sticker_keyboard_tab_background_color">#282828</color>
+    <color name="livelike_sticker_keyboard_tab_indicator_color">#D1D1D1</color>
+    <color name="livelike_sticker_keyboard_empty_text_color">#66ffffff</color>
 
 
 </resources>

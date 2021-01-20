@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/emoji_keyboard"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="@dimen/livelike_sticker_keyboard_height"
     android:orientation="vertical"
     android:visibility="visible">
 
@@ -23,12 +23,12 @@
     <android.support.design.widget.TabLayout
         android:id="@+id/pager_tab"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#282828"
+        android:layout_height="@dimen/livelike_sticker_keyboard_tab_height"
+        android:background="@color/livelike_sticker_keyboard_tab_background_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tabIndicatorColor="#D1D1D1"
+        app:tabIndicatorColor="@color/livelike_sticker_keyboard_tab_indicator_color"
         app:tabMaxWidth="60dp"
         app:tabMode="scrollable" />
 

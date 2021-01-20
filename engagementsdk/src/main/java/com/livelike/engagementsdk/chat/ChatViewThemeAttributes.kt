@@ -514,6 +514,38 @@ class ChatViewThemeAttributes {
                 R.styleable.ChatView_reaction_icon,
                 R.drawable.ic_chat_reaction_default
             )
+            chatReactionIconsMarginLeft = getDimensionPixelOffset(
+                R.styleable.ChatView_reaction_icons_margin_left,
+                AndroidResource.dpToPx(0)
+            )
+            chatReactionIconsMarginBottom = getDimensionPixelOffset(
+                R.styleable.ChatView_reaction_icons_margin_bottom,
+                AndroidResource.dpToPx(0)
+            )
+            chatReactionIconsMarginRight = getDimensionPixelOffset(
+                R.styleable.ChatView_reaction_icons_margin_right,
+                AndroidResource.dpToPx(3)
+            )
+            chatReactionIconsMarginTop = getDimensionPixelOffset(
+                R.styleable.ChatView_reaction_icons_margin_top,
+                AndroidResource.dpToPx(5)
+            )
+            chatReactionCountMarginLeft = getDimensionPixelOffset(
+                R.styleable.ChatView_reaction_count_margin_left,
+                AndroidResource.dpToPx(0)
+            )
+            chatReactionCountMarginBottom = getDimensionPixelOffset(
+                R.styleable.ChatView_reaction_count_margin_bottom,
+                AndroidResource.dpToPx(0)
+            )
+            chatReactionCountMarginRight = getDimensionPixelOffset(
+                R.styleable.ChatView_reaction_count_margin_right,
+                AndroidResource.dpToPx(18)
+            )
+            chatReactionCountMarginTop = getDimensionPixelOffset(
+                R.styleable.ChatView_reaction_count_margin_top,
+                AndroidResource.dpToPx(4)
+            )
         }
     }
 
@@ -590,4 +622,12 @@ class ChatViewThemeAttributes {
     var chatMessageBottomBorderHeight: Int = 0
     var chatReactionHintEnable: Boolean = false
     var chatReactionHintIcon: Int = R.drawable.ic_chat_reaction_turner
+    var chatReactionIconsMarginLeft: Int = AndroidResource.dpToPx(0)
+    var chatReactionIconsMarginTop: Int = AndroidResource.dpToPx(5)
+    var chatReactionIconsMarginRight: Int = AndroidResource.dpToPx(3)
+    var chatReactionIconsMarginBottom: Int = AndroidResource.dpToPx(0)
+    var chatReactionCountMarginLeft: Int = AndroidResource.dpToPx(0)
+    var chatReactionCountMarginTop: Int = AndroidResource.dpToPx(4)
+    var chatReactionCountMarginRight: Int = AndroidResource.dpToPx(18)
+    var chatReactionCountMarginBottom: Int = AndroidResource.dpToPx(0)
 }
