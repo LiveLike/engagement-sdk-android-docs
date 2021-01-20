@@ -14,9 +14,10 @@
         layout="@layout/chat_input"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="@dimen/livelike_chat_input_box_margin_left"
+        android:layout_marginTop="@dimen/livelike_chat_input_box_margin_top"
+        android:layout_marginRight="@dimen/livelike_chat_input_box_margin_right"
+        android:layout_marginBottom="@dimen/livelike_chat_input_box_margin_bottom"
         app:layout_constraintBottom_toTopOf="@id/sticker_keyboard"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -68,10 +69,10 @@
 
     <ImageButton
         android:id="@+id/snap_live"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="28dp"
+        android:layout_width="@dimen/livelike_snap_live_width"
+        android:layout_height="@dimen/livelike_snap_live_height"
+        android:layout_marginEnd="@dimen/livelike_snap_live_margin_end"
+        android:layout_marginRight="@dimen/livelike_snap_live_margin_right"
         android:alpha="0"
         android:background="@color/livelike_transparent"
         android:contentDescription="@string/snap_to_live"
@@ -88,7 +89,7 @@
     <com.livelike.engagementsdk.chat.stickerKeyboard.StickerKeyboardView
         android:id="@+id/sticker_keyboard"
         android:layout_width="0dp"
-        android:layout_height="200dp"
+        android:layout_height="@dimen/livelike_sticker_keyboard_height"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

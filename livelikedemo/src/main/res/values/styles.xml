@@ -71,7 +71,7 @@
         <item name="chatAvatarMarginLeft">16dp</item>
         <item name="chatAvatarMarginRight">5dp</item>
         <item name="chatAvatarMarginBottom">0dp</item>
-        <item name="chatAvatarMarginTop">1dp</item>
+        <item name="chatAvatarMarginTop">10dp</item>
         <item name="sendButtonHeight">38dp</item>
         <item name="sendButtonWidth">38dp</item>
 
@@ -101,6 +101,8 @@
         <item name="chatStickerSendDrawable">@drawable/ic_chat_reaction_default</item>
         <item name="reaction_icon">@drawable/ic_chat_reaction_turner</item>
         <item name="reaction_hint_enable">true</item>
+        <item name="reaction_icons_margin_top">15dp</item>
+        <item name="reaction_count_icons_margin_top">13dp</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">

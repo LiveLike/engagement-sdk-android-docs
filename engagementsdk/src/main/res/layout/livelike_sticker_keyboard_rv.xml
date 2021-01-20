@@ -15,8 +15,8 @@
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal|center_vertical|center"
         android:text="@string/livelike_chat_recent_stickers_empty_message"
-        android:textColor="#66ffffff"
-        android:textSize="15sp"
+        android:textColor="@color/livelike_sticker_keyboard_empty_text_color"
+        android:textSize="@dimen/livelike_sticker_keyboard_empty_text_size"
         android:visibility="gone"
         tools:text="@string/livelike_chat_recent_stickers_empty_message" />
 
