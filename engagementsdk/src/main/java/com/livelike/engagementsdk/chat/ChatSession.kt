@@ -26,6 +26,7 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -237,7 +238,9 @@ internal class ChatSession(
                         chatRepository?.establishChatMessagingConnection() as PubnubChatMessagingClient
                 }
                 pubnubClientForMessageCount?.getMessageCountV1(channel, startTimestamp)?.run {
-                    callback.processResult(this)
+                    GlobalScope.launch(Dispatchers.Main.immediate){
+                        callback.processResult(this@run)
+                    }
                 }
             }
         }

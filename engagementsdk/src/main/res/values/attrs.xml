@@ -127,6 +127,15 @@
         <attr name="chatMessageBottomBorderColor" format="color" />
         <attr name="reaction_hint_enable" format="boolean" />
         <attr name="reaction_icon" format="reference" />
+        <attr name="reaction_icons_margin_top" format="dimension" />
+        <attr name="reaction_icons_margin_right" format="dimension" />
+        <attr name="reaction_icons_margin_left" format="dimension" />
+        <attr name="reaction_icons_margin_bottom" format="dimension" />
+        <attr name="reaction_count_icons_margin_top" format="dimension" />
+        <attr name="reaction_count_icons_margin_right" format="dimension" />
+        <attr name="reaction_count_icons_margin_left" format="dimension" />
+        <attr name="reaction_count_icons_margin_bottom" format="dimension" />
+
     </declare-styleable>
 
     <declare-styleable name="PointView">

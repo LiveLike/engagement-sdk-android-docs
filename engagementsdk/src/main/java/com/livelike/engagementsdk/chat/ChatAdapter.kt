@@ -631,6 +631,23 @@ internal class ChatRecyclerAdapter(
                             context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_display_size)
                         rel_reactions_lay.removeAllViews()
 
+                        val chatReactionParam =
+                            rel_reactions_lay.layoutParams as ConstraintLayout.LayoutParams
+                        chatReactionParam.leftMargin = chatReactionIconsMarginLeft
+                        chatReactionParam.rightMargin = chatReactionIconsMarginRight
+                        chatReactionParam.topMargin = chatReactionIconsMarginTop
+                        chatReactionParam.bottomMargin = chatReactionIconsMarginBottom
+                        rel_reactions_lay.layoutParams = chatReactionParam
+
+                        val chatReactionCountParam =
+                            txt_chat_reactions_count.layoutParams as ConstraintLayout.LayoutParams
+                        chatReactionCountParam.leftMargin = chatReactionCountMarginLeft
+                        chatReactionCountParam.rightMargin = chatReactionCountMarginRight
+                        chatReactionCountParam.topMargin = chatReactionCountMarginTop
+                        chatReactionCountParam.bottomMargin = chatReactionCountMarginBottom
+                        txt_chat_reactions_count.layoutParams = chatReactionCountParam
+
+
                         // TODO need to check for updating list and work on remove the reaction with animation
                         emojiCountMap.keys.filter { return@filter (emojiCountMap[it] ?: 0) > 0 }
                             .forEachIndexed { index, reactionId ->
@@ -657,6 +674,7 @@ internal class ChatRecyclerAdapter(
                                     }
                                 }
                             }
+
                         txt_chat_reactions_count.setTextColor(chatReactionDisplayCountColor)
                         val sumCount = emojiCountMap.values.sum()
                         val isReactionsAvaiable =
