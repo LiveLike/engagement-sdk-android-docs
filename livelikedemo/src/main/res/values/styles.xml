@@ -102,7 +102,7 @@
         <item name="reaction_icon">@drawable/ic_chat_reaction_turner</item>
         <item name="reaction_hint_enable">true</item>
         <item name="reaction_icons_margin_top">15dp</item>
-        <item name="reaction_count_icons_margin_top">13dp</item>
+        <item name="reaction_count_margin_top">13dp</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">
