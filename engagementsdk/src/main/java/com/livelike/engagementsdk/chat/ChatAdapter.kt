@@ -52,6 +52,7 @@ import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatBubbleBackground
 import kotlinx.android.synthetic.main.default_chat_cell.view.chatMessage
+import kotlinx.android.synthetic.main.default_chat_cell.view.chat_constraint_box
 import kotlinx.android.synthetic.main.default_chat_cell.view.chat_nickname
 import kotlinx.android.synthetic.main.default_chat_cell.view.img_chat_avatar
 import kotlinx.android.synthetic.main.default_chat_cell.view.message_date_time
@@ -637,6 +638,10 @@ internal class ChatRecyclerAdapter(
                         chatReactionParam.rightMargin = chatReactionIconsMarginRight
                         chatReactionParam.topMargin = chatReactionIconsMarginTop
                         chatReactionParam.bottomMargin = chatReactionIconsMarginBottom
+                        if (chatReactionIconsPositionAtBottom) {
+                            chatReactionParam.topToTop = ConstraintLayout.LayoutParams.UNSET
+                            chatReactionParam.bottomToBottom = chat_constraint_box.id
+                        }
                         rel_reactions_lay.layoutParams = chatReactionParam
 
                         val chatReactionCountParam =
@@ -645,6 +650,10 @@ internal class ChatRecyclerAdapter(
                         chatReactionCountParam.rightMargin = chatReactionCountMarginRight
                         chatReactionCountParam.topMargin = chatReactionCountMarginTop
                         chatReactionCountParam.bottomMargin = chatReactionCountMarginBottom
+                        if (chatReactionCountPositionAtBottom) {
+                            chatReactionCountParam.topToTop = ConstraintLayout.LayoutParams.UNSET
+                            chatReactionCountParam.bottomToBottom = chat_constraint_box.id
+                        }
                         txt_chat_reactions_count.layoutParams = chatReactionCountParam
 
 
