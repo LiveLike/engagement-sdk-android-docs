@@ -669,7 +669,7 @@ internal class ChatRecyclerAdapter(
                                         val paramsImage: FrameLayout.LayoutParams =
                                             FrameLayout.LayoutParams(size, size)
                                         paramsImage.gravity = Gravity.LEFT
-                                        val left = ((size / 1.2) * (index)).toInt()
+                                        val left = ((size / chatReactionIconsFactor) * (index)).toInt()
                                         paramsImage.setMargins(left, 0, 0, 0)
                                         rel_reactions_lay.addView(imageView, paramsImage)
                                         imageView.bringToFront()

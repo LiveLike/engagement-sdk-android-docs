@@ -550,6 +550,8 @@ class ChatViewThemeAttributes {
                 getBoolean(R.styleable.ChatView_reaction_icon_position_bottom, false)
             chatReactionCountPositionAtBottom =
                 getBoolean(R.styleable.ChatView_reaction_count_icons_position_bottom, false)
+            chatReactionIconsFactor =
+                getFloat(R.styleable.ChatView_reaction_icons_gap_factor, 1.2f)
         }
     }
 
@@ -636,4 +638,5 @@ class ChatViewThemeAttributes {
     var chatReactionCountMarginBottom: Int = AndroidResource.dpToPx(0)
     var chatReactionIconsPositionAtBottom: Boolean = false
     var chatReactionCountPositionAtBottom: Boolean = false
+    var chatReactionIconsFactor: Float = 1.2f
 }

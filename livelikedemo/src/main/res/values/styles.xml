@@ -56,8 +56,8 @@
         <item name="chatMarginTop">0dp</item>
         <item name="chatMarginLeft">0dp</item>
         <item name="chatMarginRight">0dp</item>
-        <item name="chatReactionXPosition">120dp</item>
-        <item name="chatReactionYPosition">25dp</item>
+        <item name="chatReactionXPosition">180dp</item>
+        <item name="chatReactionYPosition">5dp</item>
         <item name="chatReactionElevation">6dp</item>
         <item name="chatReactionRadius">20dp</item>
         <item name="chatSelectedReactionRadius">14dp</item>
@@ -98,13 +98,13 @@
         <item name="stickerRecentEmptyTextColor">@color/livelike_black</item>
         <item name="chatMessageBottomBorderHeight">1dp</item>
         <item name="chatMessageBottomBorderColor">#efeff4</item>
-        <item name="chatStickerSendDrawable">@drawable/ic_chat_reaction_default</item>
         <item name="reaction_icon">@drawable/ic_chat_reaction_turner</item>
         <item name="reaction_hint_enable">true</item>
         <item name="reaction_icons_margin_bottom">10dp</item>
         <item name="reaction_count_icons_margin_bottom">11dp</item>
         <item name="reaction_icon_position_bottom">true</item>
         <item name="reaction_count_icons_position_bottom">true</item>
+        <item name="reaction_icons_gap_factor">0.93</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">
