@@ -464,6 +464,7 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
                         }
+
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
