@@ -41,7 +41,7 @@
         <item name="chatBubbleWidth">match_parent</item>
         <item name="chatBackgroundWidth">0dp</item>
         <item name="chatBackground">#FFF</item>
-        <item name="chatReactionMessageBackHighlightedBackground">#66502878</item>
+        <item name="chatReactionMessageBackHighlightedBackground">#FFF</item>
         <item name="usernameColor">#000</item>
         <item name="stickerIconTintColor">#1675E7</item>
         <item name="otherUsernameColor">#000</item>
@@ -56,8 +56,8 @@
         <item name="chatMarginTop">0dp</item>
         <item name="chatMarginLeft">0dp</item>
         <item name="chatMarginRight">0dp</item>
-        <item name="chatReactionXPosition">180dp</item>
-        <item name="chatReactionYPosition">5dp</item>
+        <item name="chatReactionXPosition">238dp</item>
+        <item name="chatReactionYPosition">-30dp</item>
         <item name="chatReactionElevation">6dp</item>
         <item name="chatReactionRadius">20dp</item>
         <item name="chatSelectedReactionRadius">14dp</item>
@@ -105,6 +105,7 @@
         <item name="reaction_icon_position_bottom">true</item>
         <item name="reaction_count_icons_position_bottom">true</item>
         <item name="reaction_icons_gap_factor">0.93</item>
+        <item name="chatReactionModerationFlagVisible">false</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">

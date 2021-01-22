@@ -138,6 +138,7 @@
         <attr name="reaction_icon_position_bottom" format="boolean"/>
         <attr name="reaction_count_icons_position_bottom" format="boolean"/>
         <attr name="reaction_icons_gap_factor" format="float"/>
+        <attr name="chatReactionModerationFlagVisible" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="PointView">
