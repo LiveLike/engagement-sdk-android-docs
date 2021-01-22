@@ -531,19 +531,19 @@ class ChatViewThemeAttributes {
                 AndroidResource.dpToPx(5)
             )
             chatReactionCountMarginLeft = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_count_icons_margin_left,
+                R.styleable.ChatView_reaction_count_margin_left,
                 AndroidResource.dpToPx(0)
             )
             chatReactionCountMarginBottom = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_count_icons_margin_bottom,
+                R.styleable.ChatView_reaction_count_margin_bottom,
                 AndroidResource.dpToPx(0)
             )
             chatReactionCountMarginRight = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_count_icons_margin_right,
+                R.styleable.ChatView_reaction_count_margin_right,
                 AndroidResource.dpToPx(18)
             )
             chatReactionCountMarginTop = getDimensionPixelOffset(
-                R.styleable.ChatView_reaction_count_icons_margin_top,
+                R.styleable.ChatView_reaction_count_margin_top,
                 AndroidResource.dpToPx(4)
             )
         }

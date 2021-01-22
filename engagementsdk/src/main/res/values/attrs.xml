@@ -131,10 +131,10 @@
         <attr name="reaction_icons_margin_right" format="dimension" />
         <attr name="reaction_icons_margin_left" format="dimension" />
         <attr name="reaction_icons_margin_bottom" format="dimension" />
-        <attr name="reaction_count_icons_margin_top" format="dimension" />
-        <attr name="reaction_count_icons_margin_right" format="dimension" />
-        <attr name="reaction_count_icons_margin_left" format="dimension" />
-        <attr name="reaction_count_icons_margin_bottom" format="dimension" />
+        <attr name="reaction_count_margin_top" format="dimension" />
+        <attr name="reaction_count_margin_right" format="dimension" />
+        <attr name="reaction_count_margin_left" format="dimension" />
+        <attr name="reaction_count_margin_bottom" format="dimension" />
 
     </declare-styleable>
 
