@@ -265,7 +265,7 @@ class MainActivity : AppCompatActivity() {
                     player.theme = when (which) {
                         0 -> R.style.Default
                         1 -> {
-                            EngagementSDK.enableDebug = true
+                            EngagementSDK.enableDebug = false
                             R.style.TurnerChatTheme
                         }
                         2 -> {
@@ -277,7 +277,7 @@ class MainActivity : AppCompatActivity() {
                     onlyWidget.theme = when (which) {
                         0 -> R.style.Default
                         1 -> {
-                            EngagementSDK.enableDebug = true
+                            EngagementSDK.enableDebug = false
                             R.style.TurnerChatTheme
                         }
                         2 -> {
