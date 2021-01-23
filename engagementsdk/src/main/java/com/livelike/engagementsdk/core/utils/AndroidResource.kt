@@ -36,6 +36,14 @@ internal class AndroidResource {
             return (dp * scale + 0.5f).toInt()
         }
 
+        fun spToPx(sp: Float): Float {
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP,
+                sp,
+                Resources.getSystem().displayMetrics
+            )
+        }
+
         fun pxToDp(px: Int): Int {
             val scale = Resources.getSystem().displayMetrics.density
             return ((px - 0.5f) / scale).toInt()

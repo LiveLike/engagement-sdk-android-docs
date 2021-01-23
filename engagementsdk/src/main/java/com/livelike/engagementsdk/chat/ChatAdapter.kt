@@ -22,6 +22,7 @@ import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -437,6 +438,28 @@ internal class ChatRecyclerAdapter(
                 time = this@toTimeString
             })
 
+        private fun setCustomFontWithTextStyle(
+            textView: TextView,
+            fontPath: String?,
+            textStyle: Int
+        ) {
+            if (fontPath != null) {
+                try {
+                    val typeFace =
+                        Typeface.createFromAsset(
+                            textView.context.assets,
+                            fontPath
+                        )
+                    textView.setTypeface(typeFace, textStyle)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    textView.setTypeface(null, textStyle)
+                }
+            } else {
+                textView.setTypeface(null, textStyle)
+            }
+        }
+
         @SuppressLint("SetTextI18n")
         private fun setMessage(
             message: ChatMessage?
@@ -464,6 +487,19 @@ internal class ChatRecyclerAdapter(
                             chat_nickname.setTextColor(chatOtherNickNameColor)
                             chat_nickname.text = message.senderDisplayName
                         }
+                        chat_nickname.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatUserNameTextSize)
+                        chat_nickname.isAllCaps = chatUserNameTextAllCaps
+                        setCustomFontWithTextStyle(
+                            chat_nickname,
+                            chatUserNameCustomFontPath,
+                            chatUserNameTextStyle
+                        )
+                        chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatMessageTextSize)
+                        setCustomFontWithTextStyle(
+                            chatMessage,
+                            chatMessageCustomFontPath,
+                            chatMessageTextStyle
+                        )
 
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
@@ -479,6 +515,17 @@ internal class ChatRecyclerAdapter(
                                     message.getUnixTimeStamp()
                                 )
                             }
+                            v.message_date_time.setTextSize(
+                                TypedValue.COMPLEX_UNIT_PX,
+                                chatMessageTimeTextSize
+                            )
+                            setCustomFontWithTextStyle(
+                                v.message_date_time,
+                                chatMessageTimeCustomFontPath,
+                                chatMessageTimeTextStyle
+                            )
+                            v.message_date_time.isAllCaps = chatMessageTimeTextAllCaps
+                            v.message_date_time.setTextColor(chatMessageTimeTextColor)
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }
@@ -629,8 +676,6 @@ internal class ChatRecyclerAdapter(
                         }
 
                         var imageView: ImageView
-                        val size =
-                            context.resources.getDimensionPixelSize(R.dimen.livelike_chat_reaction_display_size)
                         rel_reactions_lay.removeAllViews()
 
                         val chatReactionParam =
@@ -639,6 +684,7 @@ internal class ChatRecyclerAdapter(
                         chatReactionParam.rightMargin = chatReactionIconsMarginRight
                         chatReactionParam.topMargin = chatReactionIconsMarginTop
                         chatReactionParam.bottomMargin = chatReactionIconsMarginBottom
+                        chatReactionParam.height = chatReactionDisplaySize
                         if (chatReactionIconsPositionAtBottom) {
                             chatReactionParam.topToTop = ConstraintLayout.LayoutParams.UNSET
                             chatReactionParam.bottomToBottom = chat_constraint_box.id
@@ -657,7 +703,15 @@ internal class ChatRecyclerAdapter(
                         }
                         txt_chat_reactions_count.layoutParams = chatReactionCountParam
 
-
+                        setCustomFontWithTextStyle(
+                            txt_chat_reactions_count,
+                            chatReactionDisplayCountCustomFontPath,
+                            chatReactionDisplayCountTextStyle
+                        )
+                        txt_chat_reactions_count.setTextSize(
+                            TypedValue.COMPLEX_UNIT_PX,
+                            chatReactionDisplayCountTextSize
+                        )
                         // TODO need to check for updating list and work on remove the reaction with animation
                         emojiCountMap.keys.filter { return@filter (emojiCountMap[it] ?: 0) > 0 }
                             .forEachIndexed { index, reactionId ->
@@ -666,12 +720,15 @@ internal class ChatRecyclerAdapter(
                                     val reaction = chatReactionRepository?.getReaction(reactionId)
                                     reaction?.let { reaction ->
                                         imageView.contentDescription = reaction.name
-                                        imageView.loadImage(reaction.file, size)
+                                        imageView.loadImage(reaction.file, chatReactionDisplaySize)
                                         val paramsImage: FrameLayout.LayoutParams =
-                                            FrameLayout.LayoutParams(size, size)
+                                            FrameLayout.LayoutParams(
+                                                chatReactionDisplaySize,
+                                                chatReactionDisplaySize
+                                            )
                                         paramsImage.gravity = Gravity.LEFT
                                         val left =
-                                            ((size / chatReactionIconsFactor) * (index)).toInt()
+                                            ((chatReactionDisplaySize / chatReactionIconsFactor) * (index)).toInt()
                                         paramsImage.setMargins(left, 0, 0, 0)
                                         rel_reactions_lay.addView(imageView, paramsImage)
                                         imageView.bringToFront()
@@ -697,7 +754,10 @@ internal class ChatRecyclerAdapter(
                                 context.getString(R.string.you_can_add_reaction_hint)
                             imageView.setImageResource(chatViewThemeAttribute.chatReactionHintIcon)
                             val params: FrameLayout.LayoutParams =
-                                FrameLayout.LayoutParams(size, size)
+                                FrameLayout.LayoutParams(
+                                    chatReactionDisplaySize,
+                                    chatReactionDisplaySize
+                                )
                             rel_reactions_lay.addView(imageView, params)
                         }
 

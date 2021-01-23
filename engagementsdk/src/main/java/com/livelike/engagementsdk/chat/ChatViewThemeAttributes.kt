@@ -554,6 +554,45 @@ class ChatViewThemeAttributes {
                 getFloat(R.styleable.ChatView_reaction_icons_gap_factor, 1.2f)
             chatReactionModerationFlagVisible =
                 getBoolean(R.styleable.ChatView_chatReactionModerationFlagVisible, true)
+            chatUserNameTextStyle = getInt(R.styleable.ChatView_chatUserNameTextStyle, 0)
+            chatUserNameCustomFontPath = getString(R.styleable.ChatView_chatUserNameCustomFontPath)
+            chatUserNameTextAllCaps =
+                getBoolean(R.styleable.ChatView_chatUserNameTextAllCaps, false)
+            chatUserNameTextSize = getDimension(
+                R.styleable.ChatView_chatUserNameTextSize,
+                AndroidResource.spToPx(12.0f)
+            )
+            chatMessageCustomFontPath = getString(R.styleable.ChatView_chatMessageCustomFontPath)
+            chatMessageTextStyle = getInt(R.styleable.ChatView_chatMessageTextStyle, 0)
+            chatMessageTextSize = getDimension(
+                R.styleable.ChatView_chatMessageTextSize,
+                AndroidResource.spToPx(12.0f)
+            )
+            chatMessageTimeCustomFontPath =
+                getString(R.styleable.ChatView_chatMessageTimeCustomFontPath)
+            chatMessageTimeTextSize = getDimension(
+                R.styleable.ChatView_chatMessageTimeTextSize,
+                AndroidResource.spToPx(10.0f)
+            )
+            chatMessageTimeTextStyle = getInt(R.styleable.ChatView_chatMessageTimeTextStyle, 0)
+            chatMessageTimeTextAllCaps =
+                getBoolean(R.styleable.ChatView_chatMessageTimeTextAllCaps, false)
+            chatMessageTimeTextColor = getColor(
+                R.styleable.ChatView_chatMessageTimeTextColor,
+                ContextCompat.getColor(context, android.R.color.black)
+            )
+            chatReactionDisplayCountTextStyle =
+                getInt(R.styleable.ChatView_chatReactionDisplayCountTextStyle, 0)
+            chatReactionDisplayCountCustomFontPath =
+                getString(R.styleable.ChatView_chatReactionDisplayCountCustomFontPath)
+            chatReactionDisplayCountTextSize = getDimension(
+                R.styleable.ChatView_chatReactionDisplayCountTextSize,
+                AndroidResource.spToPx(11f)
+            )
+            chatReactionDisplaySize = getDimensionPixelSize(
+                R.styleable.ChatView_chatReactionDisplaySize,
+                AndroidResource.dpToPx(12)
+            )
         }
     }
 
@@ -629,7 +668,7 @@ class ChatViewThemeAttributes {
     var chatMessageTopBorderHeight: Int = 0
     var chatMessageBottomBorderHeight: Int = 0
     var chatReactionHintEnable: Boolean = false
-    var chatReactionHintIcon: Int = R.drawable.ic_chat_reaction_turner
+    var chatReactionHintIcon: Int = R.drawable.ic_chat_reaction_default
     var chatReactionIconsMarginLeft: Int = AndroidResource.dpToPx(0)
     var chatReactionIconsMarginTop: Int = AndroidResource.dpToPx(5)
     var chatReactionIconsMarginRight: Int = AndroidResource.dpToPx(3)
@@ -642,4 +681,20 @@ class ChatViewThemeAttributes {
     var chatReactionCountPositionAtBottom: Boolean = false
     var chatReactionIconsFactor: Float = 1.2f
     var chatReactionModerationFlagVisible: Boolean = true
+    var chatUserNameTextStyle: Int = 0
+    var chatUserNameCustomFontPath: String? = null
+    var chatUserNameTextAllCaps: Boolean = false
+    var chatUserNameTextSize: Float = AndroidResource.spToPx(12.0f)
+    var chatMessageCustomFontPath: String? = null
+    var chatMessageTextStyle: Int = 0
+    var chatMessageTextSize: Float = AndroidResource.spToPx(12.0f)
+    var chatMessageTimeCustomFontPath: String? = null
+    var chatMessageTimeTextSize: Float = AndroidResource.spToPx(10.0f)
+    var chatMessageTimeTextStyle: Int = 0
+    var chatMessageTimeTextAllCaps: Boolean = false
+    var chatMessageTimeTextColor: Int = Color.BLACK
+    var chatReactionDisplayCountTextStyle: Int = 0
+    var chatReactionDisplayCountCustomFontPath: String? = null
+    var chatReactionDisplayCountTextSize: Float = AndroidResource.spToPx(11f)
+    var chatReactionDisplaySize: Int = AndroidResource.dpToPx(12)
 }
