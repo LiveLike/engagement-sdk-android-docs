@@ -256,6 +256,12 @@ internal class PollViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun submitVote(optionID: String) {
+        currentWidgetType?.let {
+            analyticsService.trackWidgetEngaged(
+                it.toAnalyticsString(),
+                currentWidgetId
+            )
+        }
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->

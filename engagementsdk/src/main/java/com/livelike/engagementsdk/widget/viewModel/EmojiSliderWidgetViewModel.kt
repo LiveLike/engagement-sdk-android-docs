@@ -131,6 +131,12 @@ internal class EmojiSliderWidgetViewModel(
     }
 
     override fun lockInVote(magnitude: Double) {
+        currentWidgetType?.let {
+            analyticsService.trackWidgetEngaged(
+                it.toAnalyticsString(),
+                currentWidgetId
+            )
+        }
         vote(magnitude.toString())
     }
 
