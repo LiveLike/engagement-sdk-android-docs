@@ -55,7 +55,7 @@ internal class QuizViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel(), QuizWidgetModel {
+) : BaseViewModel(analyticsService), QuizWidgetModel {
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
@@ -256,6 +256,7 @@ internal class QuizViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun lockInAnswer(optionID: String) {
+        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->

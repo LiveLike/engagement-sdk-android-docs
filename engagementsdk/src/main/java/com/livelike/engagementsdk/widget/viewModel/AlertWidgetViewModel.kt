@@ -20,7 +20,7 @@ internal class AlertWidgetViewModel(
     val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     private val onDismiss: () -> Unit
-) : BaseViewModel() , AlertWidgetModel {
+) : BaseViewModel(analyticsService) , AlertWidgetModel {
     private var timeoutStarted = false
     var data: SubscriptionManager<Alert?> =
         SubscriptionManager()
@@ -76,6 +76,12 @@ internal class AlertWidgetViewModel(
         onDismiss()
         cleanup()
     }
+
+    override fun alertLinkClicked(url : String) {
+        onClickLink(url)
+        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+    }
+
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 

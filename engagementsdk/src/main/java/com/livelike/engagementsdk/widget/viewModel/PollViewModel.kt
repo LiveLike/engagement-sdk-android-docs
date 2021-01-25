@@ -55,7 +55,7 @@ internal class PollViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     private val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel(), PollWidgetModel {
+) : BaseViewModel(analyticsService), PollWidgetModel {
     lateinit var onWidgetInteractionCompleted: () -> Unit
 
     //    TODO remove points for all view models and make it follow dry, move it to gamification stream
@@ -256,6 +256,7 @@ internal class PollViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun submitVote(optionID: String) {
+        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
