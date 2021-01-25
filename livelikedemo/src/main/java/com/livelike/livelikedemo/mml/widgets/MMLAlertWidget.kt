@@ -1,16 +1,19 @@
-package com.livelike.livelikedemo.customwidgets
+package com.livelike.livelikedemo.mml.widgets
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat.startActivity
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
+import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.livelikedemo.R
+import com.livelike.livelikedemo.customwidgets.parseDuration
 import kotlinx.android.synthetic.main.mml_alert_widget.view.btn_link
 import kotlinx.android.synthetic.main.mml_alert_widget.view.img_alert
 import kotlinx.android.synthetic.main.mml_alert_widget.view.time_bar
@@ -22,12 +25,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
-
-class CustomAlertWidget : ConstraintLayout {
+class MMLAlertWidget : ConstraintLayout {
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
     var isTimeLine: Boolean = false
     lateinit var alertModel: AlertWidgetModel
+
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -46,15 +49,18 @@ class CustomAlertWidget : ConstraintLayout {
     }
 
     private fun init(attrs: AttributeSet?, defStyle: Int) {
-        inflate(context, R.layout.custom_alert_widget, this)
+        inflate(context, R.layout.mml_alert_widget, this)
     }
+
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         alertModel.widgetData.let { likeWidget ->
 
             txt_title.text = likeWidget.title
+            setCustomFontWithTextStyle(txt_title, "fonts/RingsideExtraWide-Black.otf")
             txt_description.text = likeWidget.text
+            setCustomFontWithTextStyle(txt_description, "fonts/RingsideRegular-Book.otf")
             likeWidget.imageUrl?.let {
                 img_alert.visibility = View.VISIBLE
                 Glide.with(context)
@@ -71,7 +77,7 @@ class CustomAlertWidget : ConstraintLayout {
                                 Intent.FLAG_ACTIVITY_NEW_TASK
                             )
                         if (universalLinkIntent.resolveActivity(context.packageManager) != null) {
-                            startActivity(context, universalLinkIntent, Bundle.EMPTY)
+                            ContextCompat.startActivity(context, universalLinkIntent, Bundle.EMPTY)
                         }
                     }
                 }
@@ -87,6 +93,27 @@ class CustomAlertWidget : ConstraintLayout {
                     alertModel.finish()
                 }
             }
+        }
+    }
+
+    private fun setCustomFontWithTextStyle(
+        textView: TextView,
+        fontPath: String?
+    ) {
+        if (fontPath != null) {
+            try {
+                val typeFace =
+                    Typeface.createFromAsset(
+                        textView.context.assets,
+                        fontPath
+                    )
+                textView.setTypeface(typeFace, Typeface.NORMAL)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                textView.setTypeface(null, Typeface.NORMAL)
+            }
+        } else {
+            textView.setTypeface(null, Typeface.NORMAL)
         }
     }
 

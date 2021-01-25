@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <com.livelike.livelikedemo.mml.TimeBar
+        android:id="@+id/time_bar"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="#FFC500" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="21dp"
+        android:text="EMOJI SLIDER"
+        android:textSize="11sp" />
+
+
+    <TextView
+        android:id="@+id/slider_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:text="Who was graduated from UCLA?" />
+
+    <com.livelike.livelikedemo.mml.widgets.utils.imageslider.ImageSlider
+        android:id="@+id/image_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:allow_reselection="true"
+        app:register_touches_outside_thumb="true" />
+</LinearLayout>

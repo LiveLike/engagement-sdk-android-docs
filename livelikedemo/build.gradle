@@ -99,9 +99,10 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
     implementation 'com.github.angads25:filepicker:1.1.1'
+    implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
 
     implementation 'com.github.anastr:speedviewlib:1.5.3'
-
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
 }
 
