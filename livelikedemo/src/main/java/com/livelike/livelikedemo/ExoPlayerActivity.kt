@@ -605,17 +605,19 @@ class ExoPlayerActivity : AppCompatActivity() {
                     object :
                         LiveLikeCallback<Byte>() {
                         override fun onResponse(result: Byte?, error: String?) {
-                            logsPreview.text =
-                                "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
-                            fullLogs.text =
-                                "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${fullLogs.text}"
-                            Log.v(
-                                "Here",
-                                "Count Read channel : $chatRoomId lasttimestamp:$timestamp count: $result"
-                            )
-                            result?.let {
-                                messageCount[chatRoomId] =
-                                    (messageCount[chatRoomId] ?: 0) + result
+                            runOnUiThread {
+                                logsPreview.text =
+                                    "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${logsPreview.text}"
+                                fullLogs.text =
+                                    "Count Result: $timestamp roomId: $chatRoomId count: $result \n\n ${fullLogs.text}"
+                                Log.v(
+                                    "Here",
+                                    "Count Read channel : $chatRoomId lasttimestamp:$timestamp count: $result"
+                                )
+                                result?.let {
+                                    messageCount[chatRoomId] =
+                                        (messageCount[chatRoomId] ?: 0) + result
+                                }
                             }
                         }
                     })

@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 internal abstract class WidgetViewModel<T : Resource>(
     protected val onDismiss: () -> Unit,
     val analyticsService: AnalyticsService
-) : BaseViewModel() {
+) : BaseViewModel(analyticsService) {
 
     var widgetInfos: WidgetInfos? = null
     var sdkConfiguration: EngagementSDK.SdkConfiguration? = null

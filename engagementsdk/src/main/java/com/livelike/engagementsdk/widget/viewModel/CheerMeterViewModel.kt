@@ -27,8 +27,6 @@ import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import kotlinx.coroutines.Job
@@ -51,7 +49,7 @@ internal class CheerMeterViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel(), CheerMeterWidgetmodel {
+) : BaseViewModel(analyticsService), CheerMeterWidgetmodel {
 
     var totalVoteCount = 0
 
@@ -251,6 +249,7 @@ internal class CheerMeterViewModel(
 
 
     override fun submitVote(optionID: String) {
+        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let {
