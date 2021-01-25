@@ -29,14 +29,12 @@ class ChatFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         (activity as? MMLActivity)?.session?.let {
-            println("ChatFragment.onActivityCreated")
             chat_view.setSession(it.chatSession)
             chat_view.isChatInputVisible = false
             val emptyView =
                 LayoutInflater.from(context).inflate(R.layout.empty_chat_data_view, null)
             chat_view.emptyChatBackgroundView = emptyView
             chat_view.allowMediaFromKeyboard = false
-
         }
     }
 

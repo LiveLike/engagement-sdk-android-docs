@@ -17,7 +17,7 @@ class MMLActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_m_m_l)
         val sharedPreference = getSharedPreferences("MMLSharedPrefs", Context.MODE_PRIVATE)
-        engagementSDK = EngagementSDK("mOBYul18quffrBDuq2IACKtVuLbUzXIPye5S3bq5", applicationContext, accessTokenDelegate = object :
+        engagementSDK = EngagementSDK("3WtkbrjmyPFUHTSckcVVUlikAAdHEy1P0zqqczF0", applicationContext, accessTokenDelegate = object :
             AccessTokenDelegate {
             override fun getAccessToken(): String? {
                 return sharedPreference.getString("accessToken", null)
@@ -28,7 +28,7 @@ class MMLActivity : AppCompatActivity() {
             }
         })
 
-        session = engagementSDK.createContentSession("e1550318-d5f4-4e82-b910-c24332179a69")
+        session = engagementSDK.createContentSession("000301a4-34ca-4e8c-9e4d-da05499c0bf2")
         val sectionsPagerAdapter =
             SectionsPagerAdapter(
                 supportFragmentManager

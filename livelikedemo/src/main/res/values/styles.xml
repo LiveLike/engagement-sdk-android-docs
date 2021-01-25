@@ -109,7 +109,7 @@
         <item name="reaction_count_icons_position_bottom">true</item>
         <item name="reaction_icons_gap_factor">0.93</item>
         <item name="chatReactionModerationFlagVisible">false</item>
-        <item name="chatUserNameCustomFontPath">fonts/RingsideWide-Medium.otf</item>
+        <item name="chatUserNameCustomFontPath">fonts/RingsideExtraWide-Book.otf</item>
         <item name="chatUserNameTextAllCaps">true</item>
         <item name="chatUserNameTextSize">12sp</item>
         <item name="chatMessageCustomFontPath">fonts/RingsideRegular-Book.otf</item>
@@ -119,7 +119,7 @@
         <item name="chatMessageTimeTextAllCaps">true</item>
         <item name="chatMessageTimeTextColor">#000000</item>
         <item name="chatReactionDisplayCountTextSize">10sp</item>
-        <item name="chatReactionDisplayCountCustomFontPath">fonts/RingsideWide-Black.otf</item>
+        <item name="chatReactionDisplayCountCustomFontPath">fonts/RingsideExtraWide-Black.otf</item>
         <item name="chatReactionDisplayCountTextStyle">bold</item>
         <item name="chatReactionDisplaySize">12dp</item>
     </style>
