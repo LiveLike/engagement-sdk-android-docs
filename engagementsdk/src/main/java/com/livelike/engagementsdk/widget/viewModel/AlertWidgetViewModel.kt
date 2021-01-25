@@ -76,6 +76,12 @@ internal class AlertWidgetViewModel(
         onDismiss()
         cleanup()
     }
+
+    override fun alertLinkClicked(url : String) {
+        onClickLink(url)
+        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+    }
+
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 

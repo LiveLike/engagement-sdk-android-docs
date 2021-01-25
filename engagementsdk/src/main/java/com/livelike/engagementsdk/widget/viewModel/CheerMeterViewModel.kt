@@ -249,12 +249,7 @@ internal class CheerMeterViewModel(
 
 
     override fun submitVote(optionID: String) {
-        currentWidgetType?.let {
-            analyticsService.trackWidgetEngaged(
-                it.toAnalyticsString(),
-                currentWidgetId
-            )
-        }
+        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let {
