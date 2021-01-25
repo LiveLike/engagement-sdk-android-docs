@@ -1,13 +1,16 @@
 package com.livelike.engagementsdk.widget.viewModel
 
+import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
+import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel : ViewModel() {
+abstract class BaseViewModel(private val analyticsService: AnalyticsService) : ViewModel() {
 
     internal val widgetState: Stream<WidgetStates> =
         SubscriptionManager<WidgetStates>(emitOnSubscribe = true)
@@ -27,6 +30,13 @@ abstract class BaseViewModel : ViewModel() {
                 userRepository = userRepository
             )
         }
+    }
+
+    fun trackWidgetEngagedAnalytics(currentWidgetType: WidgetType, currentWidgetId: String): Unit {
+        analyticsService.trackWidgetEngaged(
+            currentWidgetType.toAnalyticsString(),
+            currentWidgetId
+        )
     }
 }
 

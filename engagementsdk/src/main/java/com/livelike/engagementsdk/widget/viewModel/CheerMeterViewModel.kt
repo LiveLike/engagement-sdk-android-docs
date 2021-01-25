@@ -49,7 +49,7 @@ internal class CheerMeterViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel(), CheerMeterWidgetmodel {
+) : BaseViewModel(analyticsService), CheerMeterWidgetmodel {
 
     var totalVoteCount = 0
 

@@ -20,7 +20,7 @@ internal class AlertWidgetViewModel(
     val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
     private val onDismiss: () -> Unit
-) : BaseViewModel() , AlertWidgetModel {
+) : BaseViewModel(analyticsService) , AlertWidgetModel {
     private var timeoutStarted = false
     var data: SubscriptionManager<Alert?> =
         SubscriptionManager()

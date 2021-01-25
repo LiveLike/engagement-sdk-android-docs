@@ -59,7 +59,7 @@ internal class PredictionViewModel(
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel() , PredictionWidgetViewModel, FollowUpWidgetViewModel {
+) : BaseViewModel(analyticsService) , PredictionWidgetViewModel, FollowUpWidgetViewModel {
     var followUp: Boolean = false
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
@@ -336,10 +336,7 @@ internal class PredictionViewModel(
 
     override fun lockInVote(optionID: String) {
         currentWidgetType?.let {
-            analyticsService.trackWidgetEngaged(
-                it.toAnalyticsString(),
-                currentWidgetId
-            )
+            trackWidgetEngagedAnalytics(it, currentWidgetId)
         }
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
