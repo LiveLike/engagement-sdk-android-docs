@@ -11,6 +11,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.livelike.engagementsdk.OptionsItem
 import com.livelike.livelikedemo.R
+import com.livelike.livelikedemo.mml.widgets.utils.setCustomFontWithTextStyle
+import kotlinx.android.synthetic.main.mml_poll_widget.view.txt_title
 import kotlinx.android.synthetic.main.poll_image_list_item.view.imageView
 import kotlinx.android.synthetic.main.poll_image_list_item.view.lay_poll_img_option
 import kotlinx.android.synthetic.main.poll_image_list_item.view.progressBar
@@ -60,6 +62,7 @@ class PollListAdapter(
             if (optionIdCount.containsKey(item.id)) {
                 holder.itemView.progressBar.visibility = View.VISIBLE
                 holder.itemView.textView2.visibility = View.VISIBLE
+                setCustomFontWithTextStyle(holder.itemView.textView2, "fonts/RingsideCompressed-Bold.otf")
                 val total = optionIdCount.values.reduce { acc, i -> acc + i }
                 val percent = when (total > 0) {
                     true -> (optionIdCount[item.id!!]!!.toFloat() / total.toFloat()) * 100
@@ -72,22 +75,19 @@ class PollListAdapter(
                 holder.itemView.textView2.visibility = View.GONE
             }
             holder.itemView.textView.text = "${item.description}"
+            setCustomFontWithTextStyle(holder.itemView.textView, "fonts/RingsideRegular-Book.otf")
             if (selectedIndex == index) {
                 holder.itemView.lay_poll_img_option.setBackgroundResource(R.drawable.image_option_background_selected_drawable)
                 holder.itemView.progressBar.progressDrawable = ContextCompat.getDrawable(
                     context,
                     R.drawable.custom_progress_color_options_selected
                 )
-                holder.itemView.textView2.setTextColor(Color.WHITE)
-                holder.itemView.textView.setTextColor(Color.WHITE)
             } else {
                 holder.itemView.lay_poll_img_option.setBackgroundResource(R.drawable.image_option_background_stroke_drawable)
                 holder.itemView.progressBar.progressDrawable = ContextCompat.getDrawable(
                     context,
                     R.drawable.custom_progress_color_options
                 )
-                holder.itemView.textView2.setTextColor(Color.BLACK)
-                holder.itemView.textView.setTextColor(Color.BLACK)
             }
             if (!isTimeLine)
                 holder.itemView.lay_poll_img_option.setOnClickListener {
@@ -104,6 +104,7 @@ class PollListAdapter(
                     true -> (optionIdCount[item.id!!]!!.toFloat() / total.toFloat()) * 100
                     else -> 0F
                 }
+                setCustomFontWithTextStyle(holder.itemView.txt_percent, "fonts/RingsideCompressed-Bold.otf")
                 holder.itemView.txt_percent.text = "$percent %"
                 holder.itemView.progressBar_text.progress = percent.toInt()
             } else {
@@ -111,18 +112,15 @@ class PollListAdapter(
                 holder.itemView.progressBar_text.visibility = View.INVISIBLE
             }
             holder.itemView.text_poll_item.text = "${item.description}"
+            setCustomFontWithTextStyle(holder.itemView.text_poll_item, "fonts/RingsideRegular-Book.otf")
             if (selectedIndex == index) {
                 holder.itemView.lay_poll_text_option.setBackgroundResource(R.drawable.image_option_background_selected_drawable)
-                holder.itemView.text_poll_item.setTextColor(Color.WHITE)
-                holder.itemView.txt_percent.setTextColor(Color.WHITE)
                 holder.itemView.progressBar_text.progressDrawable = ContextCompat.getDrawable(
                     context,
                     R.drawable.custom_progress_color_options_selected
                 )
             } else {
                 holder.itemView.lay_poll_text_option.setBackgroundResource(R.drawable.image_option_background_stroke_drawable)
-                holder.itemView.text_poll_item.setTextColor(Color.BLACK)
-                holder.itemView.txt_percent.setTextColor(Color.BLACK)
                 holder.itemView.progressBar_text.progressDrawable = ContextCompat.getDrawable(
                     context,
                     R.drawable.custom_progress_color_options

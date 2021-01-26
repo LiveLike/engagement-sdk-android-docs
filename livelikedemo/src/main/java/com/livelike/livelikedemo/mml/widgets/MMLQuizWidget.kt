@@ -7,13 +7,12 @@ import android.util.AttributeSet
 import android.view.View
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.R
-import com.livelike.livelikedemo.mml.widgets.adapter.ImageOptionsWidgetAdapter
+import com.livelike.livelikedemo.mml.widgets.adapter.QuizListAdapter
 import com.livelike.livelikedemo.mml.widgets.model.LiveLikeWidgetOption
+import com.livelike.livelikedemo.mml.widgets.utils.getFormattedTime
 import com.livelike.livelikedemo.mml.widgets.utils.parseDuration
-import kotlinx.android.synthetic.main.mml_quiz_widget.view.lottie_animation_view
-import kotlinx.android.synthetic.main.mml_quiz_widget.view.quiz_rv
-import kotlinx.android.synthetic.main.mml_quiz_widget.view.quiz_title
-import kotlinx.android.synthetic.main.mml_quiz_widget.view.time_bar
+import com.livelike.livelikedemo.mml.widgets.utils.setCustomFontWithTextStyle
+import kotlinx.android.synthetic.main.mml_quiz_widget.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,7 +23,7 @@ import kotlinx.coroutines.launch
 
 class MMLQuizWidget : ConstraintLayout {
     lateinit var quizWidgetModel: QuizWidgetModel
-    private lateinit var adapter: ImageOptionsWidgetAdapter
+    private lateinit var adapter: QuizListAdapter
     private var quizAnswerJob: Job? = null
     var isTimeLine = false
 
@@ -74,7 +73,7 @@ class MMLQuizWidget : ConstraintLayout {
         quizWidgetModel.widgetData.let { liveLikeWidget ->
             liveLikeWidget.choices?.let {
                 adapter =
-                    ImageOptionsWidgetAdapter(
+                    QuizListAdapter(
                         context,
                         ArrayList(it.map { item ->
                             LiveLikeWidgetOption(
@@ -97,6 +96,12 @@ class MMLQuizWidget : ConstraintLayout {
                 quiz_rv.layoutManager = GridLayoutManager(context, 2)
                 quiz_rv.adapter = adapter
             }
+            liveLikeWidget.createdAt?.let {
+                setCustomFontWithTextStyle(txt_time, "fonts/RingsideRegular-Book.otf")
+                txt_time.text = getFormattedTime(it)
+            }
+            quiz_title.text = liveLikeWidget.question
+            setCustomFontWithTextStyle(quiz_title, "fonts/RingsideExtraWide-Black.otf")
             // TODO  change sdk api for duration, it should passes duration in millis, parsing should be done at sdk side.
             if (isTimeLine) {
                 time_bar.visibility = View.INVISIBLE
@@ -121,7 +126,6 @@ class MMLQuizWidget : ConstraintLayout {
             } else {
                 val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
                 time_bar.startTimer(timeMillis)
-                quiz_title.text = liveLikeWidget.question
 
                 uiScope.async {
                     delay(timeMillis)

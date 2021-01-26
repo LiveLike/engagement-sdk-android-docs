@@ -10,9 +10,12 @@ import android.view.View
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.mml.widgets.adapter.PollListAdapter
+import com.livelike.livelikedemo.mml.widgets.utils.getFormattedTime
 import com.livelike.livelikedemo.mml.widgets.utils.parseDuration
+import com.livelike.livelikedemo.mml.widgets.utils.setCustomFontWithTextStyle
 import kotlinx.android.synthetic.main.mml_poll_widget.view.rcyl_poll_list
 import kotlinx.android.synthetic.main.mml_poll_widget.view.time_bar
+import kotlinx.android.synthetic.main.mml_poll_widget.view.txt_time
 import kotlinx.android.synthetic.main.mml_poll_widget.view.txt_title
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,7 +54,11 @@ class MMLPollWidget : ConstraintLayout {
         super.onAttachedToWindow()
         pollWidgetModel?.widgetData?.let { liveLikeWidget ->
             txt_title.text = liveLikeWidget.question
-
+            setCustomFontWithTextStyle(txt_title, "fonts/RingsideExtraWide-Black.otf")
+            liveLikeWidget.createdAt?.let {
+                setCustomFontWithTextStyle(txt_time, "fonts/RingsideRegular-Book.otf")
+                txt_time.text = getFormattedTime(it)
+            }
             liveLikeWidget.options?.let { list ->
                 if (isImage) {
                     rcyl_poll_list.layoutManager = GridLayoutManager(context, 2)

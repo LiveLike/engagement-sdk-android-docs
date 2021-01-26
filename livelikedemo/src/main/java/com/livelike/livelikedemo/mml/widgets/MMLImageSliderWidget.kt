@@ -9,12 +9,15 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.livelikedemo.R
+import com.livelike.livelikedemo.mml.widgets.utils.getFormattedTime
 import com.livelike.livelikedemo.mml.widgets.utils.imageslider.ScaleDrawable
 import com.livelike.livelikedemo.mml.widgets.utils.imageslider.ThumbDrawable
 import com.livelike.livelikedemo.mml.widgets.utils.parseDuration
+import com.livelike.livelikedemo.mml.widgets.utils.setCustomFontWithTextStyle
 import kotlinx.android.synthetic.main.mml_image_slider.view.image_slider
 import kotlinx.android.synthetic.main.mml_image_slider.view.slider_title
 import kotlinx.android.synthetic.main.mml_image_slider.view.time_bar
+import kotlinx.android.synthetic.main.mml_image_slider.view.txt_time
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +58,11 @@ class MMLImageSliderWidget : ConstraintLayout {
         super.onAttachedToWindow()
         imageSliderWidgetModel.widgetData.let { widget ->
             slider_title.text = widget.question
+            setCustomFontWithTextStyle(slider_title, "fonts/RingsideExtraWide-Black.otf")
+            widget.createdAt?.let {
+                setCustomFontWithTextStyle(txt_time, "fonts/RingsideRegular-Book.otf")
+                txt_time.text = getFormattedTime(it)
+            }
             val size = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 36f,

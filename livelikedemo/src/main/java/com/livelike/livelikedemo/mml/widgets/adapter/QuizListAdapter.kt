@@ -9,18 +9,19 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.mml.widgets.model.LiveLikeWidgetOption
+import com.livelike.livelikedemo.mml.widgets.utils.setCustomFontWithTextStyle
 import kotlinx.android.synthetic.main.image_option_list_item.view.option_iv
 import kotlinx.android.synthetic.main.image_option_list_item.view.option_tv
 import kotlinx.android.synthetic.main.image_option_list_item.view.result_bar
 import kotlinx.android.synthetic.main.image_option_list_item.view.result_tv
 import kotlin.math.max
 
-class ImageOptionsWidgetAdapter(
+class QuizListAdapter(
     private val context: Context,
     var list: ArrayList<LiveLikeWidgetOption>,
     private val optionSelectListener: (LiveLikeWidgetOption) -> Unit
 ) :
-    RecyclerView.Adapter<ImageOptionsWidgetAdapter.ImageOptionsListItemViewHolder>() {
+    RecyclerView.Adapter<QuizListAdapter.ImageOptionsListItemViewHolder>() {
 
 
     var isResultState: Boolean = false
@@ -58,12 +59,14 @@ class ImageOptionsWidgetAdapter(
     ) {
         val liveLikeWidgetOption = list[position]
         holder.view.option_tv.text = liveLikeWidgetOption.description
+        setCustomFontWithTextStyle(holder.view.option_tv, "fonts/RingsideRegular-Book.otf")
         Glide.with(context).load(liveLikeWidgetOption.imageUrl).into(holder.view.option_iv)
 
         if (isResultState && isResultAvailable) {
             holder.view.result_bar.visibility = View.VISIBLE
             holder.view.result_tv.visibility = View.VISIBLE
             holder.view.setOnClickListener(null)
+            setCustomFontWithTextStyle(holder.view.result_tv, "fonts/RingsideCompressed-Bold.otf")
             holder.view.result_tv.text = "${liveLikeWidgetOption.percentage ?: 0}%"
             holder.view.result_bar.pivotX = 0f
             holder.view.result_bar.scaleX =
@@ -133,14 +136,10 @@ class ImageOptionsWidgetAdapter(
     inner class ImageOptionsListItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun selectOption() {
-            view.option_tv.setTextColor(ContextCompat.getColor(context, android.R.color.white))
-            view.result_tv.setTextColor(ContextCompat.getColor(context, android.R.color.white))
             view.setBackgroundResource(R.drawable.image_option_background_selected_drawable)
         }
 
         fun unSelectOption() {
-            view.option_tv.setTextColor(ContextCompat.getColor(context, android.R.color.black))
-            view.result_tv.setTextColor(ContextCompat.getColor(context, android.R.color.black))
             view.setBackgroundResource(R.drawable.image_option_background_stroke_drawable)
         }
     }

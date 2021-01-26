@@ -16,6 +16,9 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.mml.MMLActivity
 import com.livelike.livelikedemo.mml.widgets.MMLAlertWidget
+import com.livelike.livelikedemo.mml.widgets.MMLImageSliderWidget
+import com.livelike.livelikedemo.mml.widgets.MMLPollWidget
+import com.livelike.livelikedemo.mml.widgets.MMLQuizWidget
 import kotlinx.android.synthetic.main.fragment_widgets.widget_view
 
 class WidgetsFragment : Fragment() {
@@ -48,7 +51,9 @@ class WidgetsFragment : Fragment() {
                     quizWidgetModel: QuizWidgetModel,
                     isImage: Boolean
                 ): View? {
-                    return null
+                    return MMLQuizWidget(context!!).apply {
+                        this.quizWidgetModel = quizWidgetModel
+                    }
                 }
 
                 override fun createPredictionWidgetView(
@@ -69,11 +74,16 @@ class WidgetsFragment : Fragment() {
                     pollWidgetModel: PollWidgetModel,
                     isImage: Boolean
                 ): View? {
-                    return null
+                    return MMLPollWidget(context!!).apply {
+                        this.isImage = isImage
+                        this.pollWidgetModel = pollWidgetModel
+                    }
                 }
 
                 override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
-                    return null
+                    return MMLImageSliderWidget(context!!).apply {
+                        this.imageSliderWidgetModel = imageSliderWidgetModel
+                    }
                 }
             }
         }

@@ -2,22 +2,23 @@ package com.livelike.livelikedemo.mml.widgets
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
-import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.customwidgets.parseDuration
+import com.livelike.livelikedemo.mml.widgets.utils.getFormattedTime
+import com.livelike.livelikedemo.mml.widgets.utils.setCustomFontWithTextStyle
 import kotlinx.android.synthetic.main.mml_alert_widget.view.btn_link
 import kotlinx.android.synthetic.main.mml_alert_widget.view.img_alert
 import kotlinx.android.synthetic.main.mml_alert_widget.view.time_bar
 import kotlinx.android.synthetic.main.mml_alert_widget.view.txt_description
+import kotlinx.android.synthetic.main.mml_alert_widget.view.txt_time
 import kotlinx.android.synthetic.main.mml_alert_widget.view.txt_title
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,6 +68,10 @@ class MMLAlertWidget : ConstraintLayout {
                     .load(it)
                     .into(img_alert)
             }
+            likeWidget.createdAt?.let {
+                setCustomFontWithTextStyle(txt_time, "fonts/RingsideRegular-Book.otf")
+                txt_time.text = getFormattedTime(it)
+            }
             likeWidget.linkLabel?.let {
                 btn_link.visibility = View.VISIBLE
                 btn_link.text = it
@@ -93,27 +98,6 @@ class MMLAlertWidget : ConstraintLayout {
                     alertModel.finish()
                 }
             }
-        }
-    }
-
-    private fun setCustomFontWithTextStyle(
-        textView: TextView,
-        fontPath: String?
-    ) {
-        if (fontPath != null) {
-            try {
-                val typeFace =
-                    Typeface.createFromAsset(
-                        textView.context.assets,
-                        fontPath
-                    )
-                textView.setTypeface(typeFace, Typeface.NORMAL)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                textView.setTypeface(null, Typeface.NORMAL)
-            }
-        } else {
-            textView.setTypeface(null, Typeface.NORMAL)
         }
     }
 
