@@ -19,11 +19,9 @@ import kotlinx.android.synthetic.main.mml_timeline_view.view.timeline_rv
 
 class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession, val sdk : EngagementSDK) : FrameLayout(context) {
 
-
     private var adapter: TimeLineViewAdapter
 
     init {
-
         inflate(context, R.layout.mml_timeline_view, this)
         adapter =
             TimeLineViewAdapter(
@@ -32,7 +30,7 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
             )
         timeline_rv.adapter = adapter
         timeline_rv.layoutManager = LinearLayoutManager(context)
-        iniatlizePastPublishedWidgets();
+        iniatlizePastPublishedWidgets()
     }
 
 
@@ -71,8 +69,6 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
         session.pause()
         session.widgetStream.unsubscribe(this)
     }
-
-
 
     class TimeLineViewAdapter(private val context: Context, private val sdk: EngagementSDK) :
         RecyclerView.Adapter<TimeLineItemViewHolder>() {
