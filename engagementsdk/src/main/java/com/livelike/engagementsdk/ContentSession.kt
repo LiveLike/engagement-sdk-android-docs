@@ -83,8 +83,6 @@ internal class ContentSession(
             userRepository.leaderBoardDelegate = value
         }
 
-    private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
-    private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
     internal var engagementSDK: EngagementSDK? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
@@ -361,7 +359,6 @@ internal class ContentSession(
     override fun pause() {
         logVerbose { "Pausing the Session" }
         widgetClient?.stop()
-        pubnubClientForMessageCount?.stop()
         analyticServiceStream.latest()?.trackLastChatStatus(false)
         analyticServiceStream.latest()?.trackLastWidgetStatus(false)
     }
@@ -374,7 +371,6 @@ internal class ContentSession(
             isSetSessionCalled = false
         }
         widgetClient?.start()
-        pubnubClientForMessageCount?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticServiceStream.latest()?.trackLastChatStatus(true)
         analyticServiceStream.latest()?.trackLastWidgetStatus(true)
@@ -385,9 +381,6 @@ internal class ContentSession(
         contentSessionScope.cancel()
         uiScope.cancel()
         widgetClient?.run {
-            destroy()
-        }
-        pubnubClientForMessageCount?.run {
             destroy()
         }
         currentWidgetViewStream.clear()

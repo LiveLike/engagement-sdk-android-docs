@@ -1,8 +1,6 @@
 package com.livelike.engagementsdk.widget.viewModel
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
@@ -14,17 +12,11 @@ import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.core.services.messaging.ClientMessage
-import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.core.services.messaging.Error
-import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.debounce
 import com.livelike.engagementsdk.core.utils.gson
 import com.livelike.engagementsdk.core.utils.logDebug
-import com.livelike.engagementsdk.core.utils.logVerbose
 import com.livelike.engagementsdk.core.utils.map
 import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
@@ -34,7 +26,6 @@ import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -49,13 +40,13 @@ internal class QuizWidget(
 internal class QuizViewModel(
     private val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
-    sdkConfiguration: EngagementSDK.SdkConfiguration,
+    private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     val context: Context,
     var onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel(), QuizWidgetModel {
+) : BaseViewModel(analyticsService), QuizWidgetModel {
     var points: Int? = null
     val gamificationProfile: Stream<ProgramGamificationProfile>
         get() = programRepository?.programGamificationProfileStream ?: SubscriptionManager()
@@ -76,7 +67,6 @@ internal class QuizViewModel(
     var animationProgress = 0f
     internal var animationPath = ""
     var voteUrl: String? = null
-    private var pubnub: PubnubMessagingClient? = null
     var animationEggTimerProgress = 0f
 
     private var currentWidgetId: String = ""
@@ -84,31 +74,7 @@ internal class QuizViewModel(
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
     init {
-        sdkConfiguration.pubNubKey.let {
-            pubnub =
-                PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
-            pubnub?.addMessagingEventListener(object : MessagingEventListener {
-                override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-                    val widgetType = event.message.get("event").asString ?: ""
-                    logVerbose { "type is : $widgetType" }
-                    val payload = event.message["payload"].asJsonObject
-                    Handler(Looper.getMainLooper()).post {
-                        results.onNext(
-                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
-                        )
-                    }
-                }
 
-                override fun onClientMessageError(client: MessagingClient, error: Error) {
-                }
-
-                override fun onClientMessageStatus(
-                    client: MessagingClient,
-                    status: ConnectionStatus
-                ) {
-                }
-            })
-        }
         debouncedVoteId.subscribe(javaClass) {
             if (it != null) {
                 vote()
@@ -146,7 +112,7 @@ internal class QuizViewModel(
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
-                pubnub?.subscribe(listOf(resource.subscribe_channel))
+                subscribeWidgetResults(resource.subscribe_channel,sdkConfiguration,userRepository.currentUserStream,widgetInfos.widgetId,results)
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
                     QuizWidget(
                         it,
@@ -233,7 +199,7 @@ internal class QuizViewModel(
 
     private fun cleanUp() {
         vote() // Vote on dismiss
-        pubnub?.unsubscribeAll()
+        unsubscribeWidgetResults()
         timeoutStarted = false
         adapter = null
         animationProgress = 0f
@@ -256,6 +222,7 @@ internal class QuizViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun lockInAnswer(optionID: String) {
+        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->

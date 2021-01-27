@@ -1,7 +1,5 @@
 package com.livelike.engagementsdk.widget.viewModel
 
-import android.os.Handler
-import android.os.Looper
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
@@ -11,11 +9,6 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.core.services.messaging.ClientMessage
-import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.core.services.messaging.Error
-import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
@@ -26,9 +19,6 @@ import com.livelike.engagementsdk.widget.WidgetManager
 import com.livelike.engagementsdk.widget.WidgetType
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClient
-import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import kotlinx.coroutines.Job
@@ -46,12 +36,12 @@ internal class CheerMeterWidget(
 internal class CheerMeterViewModel(
     val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
-    sdkConfiguration: EngagementSDK.SdkConfiguration,
+    private val sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
     val widgetMessagingClient: WidgetManager? = null
-) : BaseViewModel(), CheerMeterWidgetmodel {
+) : BaseViewModel(analyticsService), CheerMeterWidgetmodel {
 
     var totalVoteCount = 0
 
@@ -62,7 +52,6 @@ internal class CheerMeterViewModel(
     var voteStateList: MutableList<CheerMeterVoteState> = mutableListOf<CheerMeterVoteState>()
 
     private var pushVoteJob: Job? = null
-    private var pubnub: PubnubMessagingClient? = null
     val results: Stream<Resource> =
         SubscriptionManager()
     val
@@ -77,29 +66,7 @@ internal class CheerMeterViewModel(
     var animationProgress = 0f
 
     init {
-        sdkConfiguration.pubNubKey.let {
-            pubnub =
-                PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
-            pubnub?.addMessagingEventListener(object : MessagingEventListener {
-                override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-                    val widgetType = event.message.get("event").asString ?: ""
-                    logDebug { "type is : $widgetType" }
-                    val payload = event.message["payload"].asJsonObject
-                    Handler(Looper.getMainLooper()).post {
-                        results.onNext(
-                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
-                        )
-                    }
-                }
 
-                override fun onClientMessageError(client: MessagingClient, error: Error) {}
-                override fun onClientMessageStatus(
-                    client: MessagingClient,
-                    status: ConnectionStatus
-                ) {
-                }
-            })
-        }
         widgetObserver(widgetInfos)
     }
 
@@ -175,8 +142,7 @@ internal class CheerMeterViewModel(
                         )
                     )
                 }
-
-                pubnub?.subscribe(listOf(resource.subscribe_channel))
+                subscribeWidgetResults(resource.subscribe_channel,sdkConfiguration,userRepository.currentUserStream,widgetInfos.widgetId,results)
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
                     CheerMeterWidget(
                         it,
@@ -232,7 +198,7 @@ internal class CheerMeterViewModel(
     }
 
     private fun cleanUp() {
-        pubnub?.unsubscribeAll()
+        unsubscribeWidgetResults()
         data.onNext(null)
         results.onNext(null)
         animationEggTimerProgress = 0f
@@ -251,6 +217,7 @@ internal class CheerMeterViewModel(
 
 
     override fun submitVote(optionID: String) {
+        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let {

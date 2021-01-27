@@ -39,6 +39,11 @@ interface AnalyticsService {
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
 
+    fun trackWidgetEngaged(
+        kind: String,
+        id: String
+    )
+
     fun trackSessionStarted()
     fun trackMessageSent(
         msgId: String,
@@ -194,6 +199,13 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d(
             "[Analytics]",
             "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionInfo"
+        )
+    }
+
+    override fun trackWidgetEngaged(kind: String, id: String) {
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind "
         )
     }
 
@@ -533,6 +545,18 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         )
     }
 
+    override fun trackWidgetEngaged(kind: String, id: String) {
+        val properties = JSONObject()
+        properties.put("Widget Type", kind)
+        properties.put("Widget ID", id)
+        mixpanel.track(KEY_WIDGET_ENGAGED, properties)
+        eventObservers[clientId]?.invoke(KEY_WIDGET_ENGAGED, properties)
+        Log.d(
+            "[Analytics]",
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $id"
+        )
+    }
+
     override fun trackSessionStarted() {
         val firstTimeProperties = JSONObject()
         val timeNow = parser.format(Date(System.currentTimeMillis()))
@@ -817,6 +841,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         const val KEY_WIDGET_RECEIVED = "Widget_Received"
         const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
         const val KEY_WIDGET_INTERACTION = "Widget Interacted"
+        const val KEY_WIDGET_ENGAGED = "Widget Engaged"
         const val KEY_WIDGET_USER_DISMISS = "Widget Dismissed"
         const val KEY_ORIENTATION_CHANGED = "Orientation_Changed"
         const val KEY_ACTION_TAP = "Action_Tap"
