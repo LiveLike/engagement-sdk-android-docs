@@ -137,8 +137,9 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
     }
 
     override fun subscribe(channels: List<String>) {
-        pubnub.subscribe().channels(channels).execute()
-        subscribedChannels.addAll(channels)
+        val newChannels = channels.filter { !subscribedChannels.contains(it) }
+        pubnub.subscribe().channels(newChannels).execute()
+        subscribedChannels.addAll(newChannels)
     }
 
     override fun unsubscribe(channels: List<String>) {
