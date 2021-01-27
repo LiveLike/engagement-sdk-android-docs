@@ -4,9 +4,9 @@ import android.graphics.Typeface
 import android.util.Log
 import android.widget.TextView
 import org.threeten.bp.Duration
+import org.threeten.bp.format.DateTimeParseException
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
 
