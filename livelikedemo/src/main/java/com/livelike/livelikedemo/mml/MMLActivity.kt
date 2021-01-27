@@ -7,13 +7,12 @@ import android.support.v7.app.AppCompatActivity
 import com.livelike.livelikedemo.R
 
 class MMLActivity : AppCompatActivity() {
-    lateinit var liveLikeSDKHelper: com.example.mmlengagementsdk.LiveLikeSDKHelper
-
+    lateinit var liveLikeSDKHelper: com.example.mmlengagementsdk.LiveLikeSDKIntegrationManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_m_m_l)
 
-        liveLikeSDKHelper = com.example.mmlengagementsdk.LiveLikeSDKHelper(
+        liveLikeSDKHelper = com.example.mmlengagementsdk.LiveLikeSDKIntegrationManager(
             applicationContext,
             "3WtkbrjmyPFUHTSckcVVUlikAAdHEy1P0zqqczF0",
             "000301a4-34ca-4e8c-9e4d-da05499c0bf2"

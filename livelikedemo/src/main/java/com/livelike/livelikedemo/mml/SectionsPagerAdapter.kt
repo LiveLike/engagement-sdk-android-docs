@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter
 
 class SectionsPagerAdapter(
     fm: FragmentManager,
-    liveLikeSDKHelper: com.example.mmlengagementsdk.LiveLikeSDKHelper
+    liveLikeSDKHelper: com.example.mmlengagementsdk.LiveLikeSDKIntegrationManager
 ) :
     FragmentPagerAdapter(fm) {
     private val fragments =

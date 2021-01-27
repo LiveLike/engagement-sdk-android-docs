@@ -5,10 +5,12 @@ import android.support.v4.app.Fragment
 import com.example.mmlengagementsdk.fragments.ChatFragment
 import com.example.mmlengagementsdk.fragments.WidgetsFragment
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate
-
-class LiveLikeSDKHelper(
+/**
+ * LiveLike MMl-2021 entry point for integration
+ * This class provides the fragment required to place in chat tab and interact tab as shown @link{https://www.figma.com/proto/Naz9dNAqgZm2xGoFI0pYiz/MML?scaling=min-zoom&node-id=139%3A81}
+ **/
+class LiveLikeSDKIntegrationManager(
     private val applicationContext: Context,
     private val clientId: String,
     private val programId: String
@@ -28,14 +30,6 @@ class LiveLikeSDKHelper(
         })
     private val session = engagementSDK.createContentSession(programId)
 
-    fun getSession(): LiveLikeContentSession {
-        return session
-    }
-
-    fun getEngagementSDK(): EngagementSDK {
-        return engagementSDK
-    }
-
     fun getChatFragment(): Fragment {
         val chatFragment = ChatFragment()
         chatFragment.setSession(session.chatSession)
@@ -45,7 +39,7 @@ class LiveLikeSDKHelper(
     fun getWidgetsFragment(): Fragment {
         return WidgetsFragment().apply {
             sdk = engagementSDK
-            session = this@LiveLikeSDKHelper.session
+            session = this@LiveLikeSDKIntegrationManager.session
         }
     }
 }
