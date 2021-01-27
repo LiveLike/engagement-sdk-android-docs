@@ -180,7 +180,7 @@ internal class ContentSession(
     private val currentWidgetViewStream =
         SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-    val widgetStream = SubscriptionManager<LiveLikeWidget>()
+    override val widgetStream = SubscriptionManager<LiveLikeWidget>()
     private val programRepository =
         ProgramRepository(
             programId,
