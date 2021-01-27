@@ -15,8 +15,8 @@ class MMLActivity : AppCompatActivity() {
 
         liveLikeSDKHelper = LiveLikeSDKHelper(
             applicationContext,
-            "3WtkbrjmyPFUHTSckcVVUlikAAdHEy1P0zqqczF0",
-            "000301a4-34ca-4e8c-9e4d-da05499c0bf2"
+            "pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6",
+            "e7df6164-bbc9-47d0-b7e8-ad4c86fa2e26"
         )
         val sectionsPagerAdapter =
             SectionsPagerAdapter(

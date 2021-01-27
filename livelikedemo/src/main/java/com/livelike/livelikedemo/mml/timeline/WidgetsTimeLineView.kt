@@ -14,12 +14,8 @@ import com.livelike.engagementsdk.OptionsItem
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.R
-import kotlinx.android.synthetic.main.mml_timeline_item.view.widget_time
 import kotlinx.android.synthetic.main.mml_timeline_item.view.widget_view
 import kotlinx.android.synthetic.main.mml_timeline_view.view.timeline_rv
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession, val sdk : EngagementSDK) : FrameLayout(context) {
 
@@ -31,6 +27,7 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
         inflate(context, R.layout.mml_timeline_view, this)
         adapter =
             TimeLineViewAdapter(
+                context,
                 sdk
             )
         timeline_rv.adapter = adapter
@@ -74,7 +71,7 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
 
 
 
-    class TimeLineViewAdapter(private val sdk: EngagementSDK) :
+    class TimeLineViewAdapter(private val context: Context, private val sdk: EngagementSDK) :
         RecyclerView.Adapter<TimeLineItemViewHolder>() {
 
         init {
@@ -95,21 +92,11 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
 
         override fun onBindViewHolder(itemViewHolder: TimeLineItemViewHolder, p1: Int) {
             val liveLikeWidget = list[p1].liveLikeWidget
+            itemViewHolder.itemView.widget_view.widgetViewFactory = TimeLineWidgetFactory(context = context ,widgetList = list)
             itemViewHolder.itemView.widget_view.displayWidget(
                 sdk,
                 liveLikeWidget
             )
-
-            val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'")
-            try {
-                val date: Date = format.parse(liveLikeWidget.createdAt)
-                val dateFormat = SimpleDateFormat("MMM dd', 'HH:mm'Z'")
-                val dateTime = dateFormat.format(date)
-                itemViewHolder.itemView.widget_time.text = dateTime
-            } catch (e: ParseException) {
-                e.printStackTrace()
-            }
-
         }
 
         override fun getItemCount(): Int = list.size
