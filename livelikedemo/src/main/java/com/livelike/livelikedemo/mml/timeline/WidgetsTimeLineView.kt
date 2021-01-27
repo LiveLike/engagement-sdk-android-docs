@@ -105,6 +105,9 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
 
         override fun getItemCount(): Int = list.size
 
+        override fun getItemId(position: Int): Long {
+            return list[position].liveLikeWidget.id.hashCode().toLong()
+        }
     }
 
     class TimeLineItemViewHolder(view: View) : RecyclerView.ViewHolder(view)
