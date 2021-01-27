@@ -126,6 +126,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
 
     private var widgetListener: WidgetListener? = null
 
+    @Deprecated("use widgetStream exposed in LiveLikeContentSession")
     fun setWidgetListener(widgetListener: WidgetListener) {
         this.widgetListener = widgetListener
     }

@@ -107,7 +107,15 @@ internal class WidgetManager(
     private val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+        super.onClientMessageEvent(client, event)
         logDebug { "Message received at WidgetManager" }
+        val payload = event.message["payload"].asJsonObject
+            widgetStream.onNext(
+                gson.fromJson(
+                    payload.toString(),
+                    LiveLikeWidget::class.java
+                )
+            )
         messageQueue.add(MessageHolder(client, event))
         if (!widgetOnScreen) {
             publishNextInQueue()
@@ -166,12 +174,6 @@ internal class WidgetManager(
         val widgetId = payload["id"].asString
 
         handler.post {
-            widgetStream.onNext(
-                gson.fromJson(
-                    payload.toString(),
-                    LiveLikeWidget::class.java
-                )
-            )
             currentWidgetViewStream.onNext(
                 Pair(
                     widgetType,
