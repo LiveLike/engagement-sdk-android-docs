@@ -42,10 +42,10 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
     private fun iniatlizePastPublishedWidgets() {
         session.getPublishedWidgets(
             LiveLikePagination.FIRST,
-            object : LiveLikeCallback<List<LiveLikeWidget?>>() {
-                override fun onResponse(result: List<LiveLikeWidget?>?, error: String?) {
+            object : LiveLikeCallback<List<LiveLikeWidget>>() {
+                override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
                     result?.let { list ->
-                        adapter.list.addAll(list.map {  TimelineWidgetResource(false, it!!) })
+                        adapter.list.addAll(list.map {  TimelineWidgetResource(false, it) })
                         adapter.notifyDataSetChanged()
                     }
                 }
