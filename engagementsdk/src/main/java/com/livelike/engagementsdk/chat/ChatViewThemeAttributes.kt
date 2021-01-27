@@ -593,6 +593,8 @@ class ChatViewThemeAttributes {
                 R.styleable.ChatView_chatReactionDisplaySize,
                 AndroidResource.dpToPx(12)
             )
+            chatReactionPanelGravity =
+                getInt(R.styleable.ChatView_chatReactionPanelGravity, Gravity.NO_GRAVITY)
         }
     }
 
@@ -697,4 +699,5 @@ class ChatViewThemeAttributes {
     var chatReactionDisplayCountCustomFontPath: String? = null
     var chatReactionDisplayCountTextSize: Float = AndroidResource.spToPx(11f)
     var chatReactionDisplaySize: Int = AndroidResource.dpToPx(12)
+    var chatReactionPanelGravity: Int = Gravity.NO_GRAVITY
 }

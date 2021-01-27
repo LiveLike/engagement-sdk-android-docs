@@ -33,7 +33,11 @@
         <item name="chatReactionMessageBubbleHighlightedBackground">
             @drawable/ic_chat_message_highlighted_bubble_rounded_rectangle
         </item>
+        <item name="chatMessageTimeTextColor">@android:color/white</item>
         <item name="chatUserNameTextStyle">bold</item>
+        <item name="chatReactionXPosition">120dp</item>
+        <item name="chatReactionYPosition">-5dp</item>
+        <item name="chatReactionPanelGravity">center|top</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme">
@@ -57,8 +61,6 @@
         <item name="chatMarginTop">0dp</item>
         <item name="chatMarginLeft">0dp</item>
         <item name="chatMarginRight">0dp</item>
-        <item name="chatReactionXPosition">238dp</item>
-        <item name="chatReactionYPosition">-30dp</item>
         <item name="chatReactionElevation">6dp</item>
         <item name="chatReactionRadius">20dp</item>
         <item name="chatSelectedReactionRadius">14dp</item>
@@ -122,6 +124,9 @@
         <item name="chatReactionDisplayCountCustomFontPath">fonts/RingsideExtraWide-Black.otf</item>
         <item name="chatReactionDisplayCountTextStyle">bold</item>
         <item name="chatReactionDisplaySize">12dp</item>
+        <item name="chatReactionXPosition">0dp</item>
+        <item name="chatReactionYPosition">-55dp</item>
+        <item name="chatReactionPanelGravity">right|bottom</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">

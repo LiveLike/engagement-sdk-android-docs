@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.recyclerview.extensions.ListAdapter
@@ -46,7 +47,6 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.liveLikeSharedPrefs.blockUser
 import com.livelike.engagementsdk.core.utils.logError
-import com.livelike.engagementsdk.widget.view.getLocationOnScreen
 import com.livelike.engagementsdk.widget.view.loadImage
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_bottom
 import kotlinx.android.synthetic.main.default_chat_cell.view.border_top
@@ -254,11 +254,20 @@ internal class ChatRecyclerAdapter(
             if (chatPopUpView?.isShowing == true)
                 chatPopUpView?.dismiss()
 
-            val locationOnScreen = v.getLocationOnScreen()
-            var y = locationOnScreen.y - chatViewThemeAttribute.chatReactionY
-            if (checkItemIsAtTop) {
-                y = locationOnScreen.y + v.height + 30
+            var y = chatViewThemeAttribute.chatReactionY
+            if (chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP
+                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.RIGHT
+                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.LEFT
+                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.CENTER
+                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.START
+                || chatViewThemeAttribute.chatReactionPanelGravity == Gravity.TOP or Gravity.END
+            ) {
+                y -= v.height
+                if (checkItemIsAtTop) {
+                    y += v.height
+                }
             }
+
             chatPopUpView = ChatActionsPopupView(
                 v.context,
                 chatReactionRepository,
@@ -358,12 +367,17 @@ internal class ChatRecyclerAdapter(
                 //I had to specify the width and height in order to be shown on that version (which is still compatible with the rest of the versions as well).
                 width = ViewGroup.LayoutParams.WRAP_CONTENT
                 height = ViewGroup.LayoutParams.WRAP_CONTENT
-                showAtLocation(
-                    v,
-                    Gravity.NO_GRAVITY,
-                    locationOnScreen.x + chatViewThemeAttribute.chatReactionX,
-                    y
-                )
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    showAsDropDown(
+                        v,
+                        chatViewThemeAttribute.chatReactionX,
+                        y,
+                        chatViewThemeAttribute.chatReactionPanelGravity
+                    )
+                } else {
+                    showAsDropDown(v, chatViewThemeAttribute.chatReactionX, y)
+                }
                 message?.id?.let {
                     analyticsService.trackChatReactionPanelOpen(it)
                 }
