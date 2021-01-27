@@ -7,13 +7,13 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.livelikedemo.R
-import com.livelike.livelikedemo.mml.MMLActivity
 import kotlinx.android.synthetic.main.fragment_chat.chat_view
 
 
 class ChatFragment : Fragment() {
-
+    private var session: LiveLikeChatSession? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,15 +27,20 @@ class ChatFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        (activity as? MMLActivity)?.session?.let {
-            chat_view.setSession(it.chatSession)
-            chat_view.isChatInputVisible = false
-            val emptyView =
-                LayoutInflater.from(context).inflate(R.layout.empty_chat_data_view, null)
-            chat_view.emptyChatBackgroundView = emptyView
-            chat_view.allowMediaFromKeyboard = false
+        chat_view.post {
+            session?.let {
+                chat_view.setSession(it)
+                chat_view.isChatInputVisible = false
+                val emptyView =
+                    LayoutInflater.from(context).inflate(R.layout.empty_chat_data_view, null)
+                chat_view.emptyChatBackgroundView = emptyView
+                chat_view.allowMediaFromKeyboard = false
+            }
         }
+    }
+
+    fun setSession(session: LiveLikeChatSession) {
+        this.session = session
     }
 
 }

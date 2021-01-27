@@ -3,16 +3,15 @@ package com.livelike.livelikedemo.mml
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import com.livelike.livelikedemo.mml.fragments.ChatFragment
-import com.livelike.livelikedemo.mml.fragments.WidgetsFragment
 
 
 class SectionsPagerAdapter(
-    fm: FragmentManager
+    fm: FragmentManager,
+    liveLikeSDKHelper: LiveLikeSDKHelper
 ) :
     FragmentPagerAdapter(fm) {
     private val fragments =
-        arrayListOf(ChatFragment(), WidgetsFragment())
+        arrayListOf(liveLikeSDKHelper.getChatFragment(), liveLikeSDKHelper.getWidgetsFragment())
 
     override fun getItem(position: Int): Fragment {
         return fragments[position]
