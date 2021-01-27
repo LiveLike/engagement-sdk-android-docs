@@ -10,7 +10,6 @@ import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.mml.timeline.WidgetsTimeLineView
 import kotlinx.android.synthetic.main.fragment_widgets.root_view
-import kotlinx.android.synthetic.main.fragment_widgets.widget_view
 
 class WidgetsFragment : Fragment() {
     lateinit var sdk: EngagementSDK

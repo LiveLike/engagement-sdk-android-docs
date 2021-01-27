@@ -67,9 +67,9 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
             )
             session.getPublishedWidgets(
                 LiveLikePagination.FIRST,
-                object : LiveLikeCallback<List<LiveLikeWidget?>>() {
+                object : LiveLikeCallback<List<LiveLikeWidget>>() {
                     override fun onResponse(
-                        result: List<LiveLikeWidget?>?,
+                        result: List<LiveLikeWidget>?,
                         error: String?
                     ) {
                         error?.let {
