@@ -55,11 +55,11 @@ class MMLQuizWidget : ConstraintLayout {
         lottie_animation_view?.apply {
             if (adapter.selectedOptionItem?.isCorrect == false) {
                 setAnimation(
-                    "GSW_incorrect.json"
+                    "mml/quiz_incorrect.json"
                 )
             } else {
                 setAnimation(
-                    "GSW_correct.json"
+                    "mml/quiz_correct.json"
                 )
             }
             playAnimation()

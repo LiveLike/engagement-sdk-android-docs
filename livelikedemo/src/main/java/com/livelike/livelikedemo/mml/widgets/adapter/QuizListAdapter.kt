@@ -10,10 +10,10 @@ import com.bumptech.glide.Glide
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.mml.widgets.model.LiveLikeWidgetOption
 import com.livelike.livelikedemo.mml.widgets.utils.setCustomFontWithTextStyle
-import kotlinx.android.synthetic.main.image_option_list_item.view.option_iv
-import kotlinx.android.synthetic.main.image_option_list_item.view.option_tv
-import kotlinx.android.synthetic.main.image_option_list_item.view.result_bar
-import kotlinx.android.synthetic.main.image_option_list_item.view.result_tv
+import kotlinx.android.synthetic.main.mml_image_option_list_item.view.option_iv
+import kotlinx.android.synthetic.main.mml_image_option_list_item.view.option_tv
+import kotlinx.android.synthetic.main.mml_image_option_list_item.view.result_bar
+import kotlinx.android.synthetic.main.mml_image_option_list_item.view.result_tv
 import kotlin.math.max
 
 class QuizListAdapter(
@@ -42,7 +42,7 @@ class QuizListAdapter(
     ): ImageOptionsListItemViewHolder {
         return ImageOptionsListItemViewHolder(
             LayoutInflater.from(context).inflate(
-                R.layout.image_option_list_item,
+                R.layout.mml_image_option_list_item,
                 parent,
                 false
             )
@@ -136,11 +136,11 @@ class QuizListAdapter(
     inner class ImageOptionsListItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun selectOption() {
-            view.setBackgroundResource(R.drawable.image_option_background_selected_drawable)
+            view.setBackgroundResource(R.drawable.mml_image_option_background_selected_drawable)
         }
 
         fun unSelectOption() {
-            view.setBackgroundResource(R.drawable.image_option_background_stroke_drawable)
+            view.setBackgroundResource(R.drawable.mml_image_option_background_stroke_drawable)
         }
     }
 

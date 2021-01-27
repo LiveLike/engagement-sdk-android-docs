@@ -16,6 +16,7 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.mml.MMLActivity
 import com.livelike.livelikedemo.mml.widgets.MMLAlertWidget
+import com.livelike.livelikedemo.mml.widgets.MMLCheerMeterWidget
 import com.livelike.livelikedemo.mml.widgets.MMLImageSliderWidget
 import com.livelike.livelikedemo.mml.widgets.MMLPollWidget
 import com.livelike.livelikedemo.mml.widgets.MMLQuizWidget
@@ -38,7 +39,9 @@ class WidgetsFragment : Fragment() {
             widget_view.setSession(it)
             widget_view.widgetViewFactory = object : LiveLikeWidgetViewFactory {
                 override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
-                    return null
+                    return MMLCheerMeterWidget(context!!).apply {
+                        this.cheerMeterWidgetModel = cheerMeterWidgetModel
+                    }
                 }
 
                 override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {

@@ -56,10 +56,10 @@ class MMLImageSliderWidget : ConstraintLayout {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        imageSliderWidgetModel.widgetData.let { widget ->
-            slider_title.text = widget.question
+        imageSliderWidgetModel.widgetData.let { liveLikeWidget ->
+            slider_title.text = liveLikeWidget.question
             setCustomFontWithTextStyle(slider_title, "fonts/RingsideExtraWide-Black.otf")
-            widget.createdAt?.let {
+            liveLikeWidget.createdAt?.let {
                 setCustomFontWithTextStyle(txt_time, "fonts/RingsideRegular-Book.otf")
                 txt_time.text = getFormattedTime(it)
             }
@@ -71,7 +71,7 @@ class MMLImageSliderWidget : ConstraintLayout {
             uiScope.launch {
                 val list = mutableListOf<Deferred<Bitmap>>()
                 withContext(Dispatchers.IO) {
-                    widget.options?.forEach {
+                    liveLikeWidget.options?.forEach {
                         list.add(
                             async {
                                 Glide.with(context)
@@ -97,12 +97,12 @@ class MMLImageSliderWidget : ConstraintLayout {
                 }
             }
             if (isTimeLine) {
-                image_slider.averageProgress = widget.averageMagnitude
+                image_slider.averageProgress = liveLikeWidget.averageMagnitude
                 time_bar.visibility = View.INVISIBLE
                 image_slider.isUserSeekable = false
             } else {
                 image_slider.isUserSeekable = true
-                val timeMillis = widget.timeout?.parseDuration() ?: 5000
+                val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
                 time_bar.startTimer(timeMillis)
                 uiScope.async {
                     delay(timeMillis)

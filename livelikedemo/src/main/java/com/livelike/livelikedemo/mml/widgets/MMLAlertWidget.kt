@@ -56,29 +56,29 @@ class MMLAlertWidget : ConstraintLayout {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        alertModel.widgetData.let { likeWidget ->
+        alertModel.widgetData.let { liveLikeWidget ->
 
-            txt_title.text = likeWidget.title
+            txt_title.text = liveLikeWidget.title
             setCustomFontWithTextStyle(txt_title, "fonts/RingsideExtraWide-Black.otf")
-            txt_description.text = likeWidget.text
+            txt_description.text = liveLikeWidget.text
             setCustomFontWithTextStyle(txt_description, "fonts/RingsideRegular-Book.otf")
-            likeWidget.imageUrl?.let {
+            liveLikeWidget.imageUrl?.let {
                 img_alert.visibility = View.VISIBLE
                 Glide.with(context)
                     .load(it)
                     .into(img_alert)
             }
-            likeWidget.createdAt?.let {
+            liveLikeWidget.createdAt?.let {
                 setCustomFontWithTextStyle(txt_time, "fonts/RingsideRegular-Book.otf")
                 txt_time.text = getFormattedTime(it)
             }
-            likeWidget.linkLabel?.let {
+            liveLikeWidget.linkLabel?.let {
                 btn_link.visibility = View.VISIBLE
                 btn_link.text = it
-                likeWidget.linkUrl?.let {
+                liveLikeWidget.linkUrl?.let {
                     btn_link.setOnClickListener {
                         val universalLinkIntent =
-                            Intent(Intent.ACTION_VIEW, Uri.parse(likeWidget.linkUrl)).setFlags(
+                            Intent(Intent.ACTION_VIEW, Uri.parse(liveLikeWidget.linkUrl)).setFlags(
                                 Intent.FLAG_ACTIVITY_NEW_TASK
                             )
                         if (universalLinkIntent.resolveActivity(context.packageManager) != null) {
@@ -90,7 +90,7 @@ class MMLAlertWidget : ConstraintLayout {
             if (isTimeLine) {
                 time_bar.visibility = View.INVISIBLE
             } else {
-                val timeMillis = likeWidget.timeout?.parseDuration() ?: 5000
+                val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
                 time_bar.visibility = View.VISIBLE
                 time_bar.startTimer(timeMillis)
                 uiScope.async {

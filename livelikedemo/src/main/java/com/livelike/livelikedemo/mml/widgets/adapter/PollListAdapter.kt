@@ -1,7 +1,6 @@
 package com.livelike.livelikedemo.mml.widgets.adapter
 
 import android.content.Context
-import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -12,16 +11,15 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.livelike.engagementsdk.OptionsItem
 import com.livelike.livelikedemo.R
 import com.livelike.livelikedemo.mml.widgets.utils.setCustomFontWithTextStyle
-import kotlinx.android.synthetic.main.mml_poll_widget.view.txt_title
-import kotlinx.android.synthetic.main.poll_image_list_item.view.imageView
-import kotlinx.android.synthetic.main.poll_image_list_item.view.lay_poll_img_option
-import kotlinx.android.synthetic.main.poll_image_list_item.view.progressBar
-import kotlinx.android.synthetic.main.poll_image_list_item.view.textView
-import kotlinx.android.synthetic.main.poll_image_list_item.view.textView2
-import kotlinx.android.synthetic.main.poll_text_list_item.view.lay_poll_text_option
-import kotlinx.android.synthetic.main.poll_text_list_item.view.progressBar_text
-import kotlinx.android.synthetic.main.poll_text_list_item.view.text_poll_item
-import kotlinx.android.synthetic.main.poll_text_list_item.view.txt_percent
+import kotlinx.android.synthetic.main.mml_poll_image_list_item.view.imageView
+import kotlinx.android.synthetic.main.mml_poll_image_list_item.view.lay_poll_img_option
+import kotlinx.android.synthetic.main.mml_poll_image_list_item.view.progressBar
+import kotlinx.android.synthetic.main.mml_poll_image_list_item.view.textView
+import kotlinx.android.synthetic.main.mml_poll_image_list_item.view.textView2
+import kotlinx.android.synthetic.main.mml_poll_text_list_item.view.lay_poll_text_option
+import kotlinx.android.synthetic.main.mml_poll_text_list_item.view.progressBar_text
+import kotlinx.android.synthetic.main.mml_poll_text_list_item.view.text_poll_item
+import kotlinx.android.synthetic.main.mml_poll_text_list_item.view.txt_percent
 
 class PollListAdapter(
     private val context: Context,
@@ -45,8 +43,8 @@ class PollListAdapter(
         return PollListItemViewHolder(
             LayoutInflater.from(p0.context!!).inflate(
                 when (isImage) {
-                    true -> R.layout.poll_image_list_item
-                    else -> R.layout.poll_text_list_item
+                    true -> R.layout.mml_poll_image_list_item
+                    else -> R.layout.mml_poll_text_list_item
                 }, p0, false
             )
         )
@@ -77,13 +75,13 @@ class PollListAdapter(
             holder.itemView.textView.text = "${item.description}"
             setCustomFontWithTextStyle(holder.itemView.textView, "fonts/RingsideRegular-Book.otf")
             if (selectedIndex == index) {
-                holder.itemView.lay_poll_img_option.setBackgroundResource(R.drawable.image_option_background_selected_drawable)
+                holder.itemView.lay_poll_img_option.setBackgroundResource(R.drawable.mml_image_option_background_selected_drawable)
                 holder.itemView.progressBar.progressDrawable = ContextCompat.getDrawable(
                     context,
                     R.drawable.custom_progress_color_options_selected
                 )
             } else {
-                holder.itemView.lay_poll_img_option.setBackgroundResource(R.drawable.image_option_background_stroke_drawable)
+                holder.itemView.lay_poll_img_option.setBackgroundResource(R.drawable.mml_image_option_background_stroke_drawable)
                 holder.itemView.progressBar.progressDrawable = ContextCompat.getDrawable(
                     context,
                     R.drawable.custom_progress_color_options
@@ -114,13 +112,13 @@ class PollListAdapter(
             holder.itemView.text_poll_item.text = "${item.description}"
             setCustomFontWithTextStyle(holder.itemView.text_poll_item, "fonts/RingsideRegular-Book.otf")
             if (selectedIndex == index) {
-                holder.itemView.lay_poll_text_option.setBackgroundResource(R.drawable.image_option_background_selected_drawable)
+                holder.itemView.lay_poll_text_option.setBackgroundResource(R.drawable.mml_image_option_background_selected_drawable)
                 holder.itemView.progressBar_text.progressDrawable = ContextCompat.getDrawable(
                     context,
                     R.drawable.custom_progress_color_options_selected
                 )
             } else {
-                holder.itemView.lay_poll_text_option.setBackgroundResource(R.drawable.image_option_background_stroke_drawable)
+                holder.itemView.lay_poll_text_option.setBackgroundResource(R.drawable.mml_image_option_background_stroke_drawable)
                 holder.itemView.progressBar_text.progressDrawable = ContextCompat.getDrawable(
                     context,
                     R.drawable.custom_progress_color_options

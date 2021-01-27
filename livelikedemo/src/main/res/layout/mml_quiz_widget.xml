@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                tools:listitem="@layout/image_option_list_item"
+                tools:listitem="@layout/mml_image_option_list_item"
                 tools:spanCount="2" />
 
             <TextView

@@ -6,7 +6,7 @@
     android:layout_height="60dp"
     android:layout_marginRight="16dp"
     android:layout_marginBottom="8dp"
-    android:background="@drawable/image_option_background_stroke_drawable">
+    android:background="@drawable/mml_image_option_background_stroke_drawable">
 
     <ImageView
         android:id="@+id/option_iv"
