@@ -51,7 +51,10 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
 
     private fun observeForLiveWidgets() {
         session.widgetStream.subscribe(this) {
-            it?.let { adapter.list.add(0, TimelineWidgetResource(true, it)) }
+            it?.let {
+                adapter.list.add(0, TimelineWidgetResource(true, it))
+                adapter.notifyDataSetChanged()
+            }
         }
 
     }
@@ -93,6 +96,7 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
         override fun onBindViewHolder(itemViewHolder: TimeLineItemViewHolder, p1: Int) {
             val liveLikeWidget = list[p1].liveLikeWidget
             itemViewHolder.itemView.widget_view.widgetViewFactory = TimeLineWidgetFactory(context = context ,widgetList = list)
+            itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
             itemViewHolder.itemView.widget_view.displayWidget(
                 sdk,
                 liveLikeWidget
