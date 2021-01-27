@@ -78,8 +78,8 @@ class LiveBlogActivity : AppCompatActivity() {
         progress_bar.visibility = View.VISIBLE
         session.getPublishedWidgets(
             liveLikePagination,
-            object : LiveLikeCallback<List<LiveLikeWidget?>>() {
-                override fun onResponse(result: List<LiveLikeWidget?>?, error: String?) {
+            object : LiveLikeCallback<List<LiveLikeWidget>>() {
+                override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
                     result?.let { list ->
                         adapter.list.addAll(list.map { it!! })
                         adapter.notifyDataSetChanged()

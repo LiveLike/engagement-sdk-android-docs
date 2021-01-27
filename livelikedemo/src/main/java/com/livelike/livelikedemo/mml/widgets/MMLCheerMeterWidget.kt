@@ -157,4 +157,9 @@ class MMLCheerMeterWidget : ConstraintLayout {
             img_winner_anim.playAnimation()
         }
     }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        cheerMeterWidgetModel?.finish()
+    }
 }
