@@ -33,6 +33,11 @@
         <item name="chatReactionMessageBubbleHighlightedBackground">
             @drawable/ic_chat_message_highlighted_bubble_rounded_rectangle
         </item>
+        <item name="chatMessageTimeTextColor">@android:color/white</item>
+        <item name="chatUserNameTextStyle">bold</item>
+        <item name="chatReactionXPosition">120dp</item>
+        <item name="chatReactionYPosition">-5dp</item>
+        <item name="chatReactionPanelGravity">center|top</item>
     </style>
 
     <style name="TurnerChatTheme" parent="AppTheme">
@@ -41,11 +46,11 @@
         <item name="chatBubbleWidth">match_parent</item>
         <item name="chatBackgroundWidth">0dp</item>
         <item name="chatBackground">#FFF</item>
-        <item name="chatReactionMessageBackHighlightedBackground">#66502878</item>
+        <item name="chatReactionMessageBackHighlightedBackground">#FFF</item>
         <item name="usernameColor">#000</item>
         <item name="stickerIconTintColor">#1675E7</item>
         <item name="otherUsernameColor">#000</item>
-        <item name="messageColor">#5f5f5f</item>
+        <item name="messageColor">#181818</item>
         <item name="chatInputViewBackground">#FFF</item>
         <item name="chatDisplayBackground">#fff</item>
         <item name="chatViewBackground">#FFF</item>
@@ -56,17 +61,15 @@
         <item name="chatMarginTop">0dp</item>
         <item name="chatMarginLeft">0dp</item>
         <item name="chatMarginRight">0dp</item>
-        <item name="chatReactionXPosition">120dp</item>
-        <item name="chatReactionYPosition">25dp</item>
         <item name="chatReactionElevation">6dp</item>
         <item name="chatReactionRadius">20dp</item>
         <item name="chatSelectedReactionRadius">14dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatInputBackground">@drawable/rounded_color_input_background</item>
-        <item name="chatReactionDisplayCountColor">@android:color/black</item>
-        <item name="chatAvatarCircle">false</item>
-        <item name="chatAvatarHeight">36dp</item>
-        <item name="chatAvatarWidth">32dp</item>
+        <item name="chatReactionDisplayCountColor">#181818</item>
+        <item name="chatAvatarCircle">true</item>
+        <item name="chatAvatarHeight">40dp</item>
+        <item name="chatAvatarWidth">40dp</item>
         <item name="chatAvatarGravity">top</item>
         <item name="chatAvatarMarginLeft">16dp</item>
         <item name="chatAvatarMarginRight">5dp</item>
@@ -79,7 +82,7 @@
         <item name="chatSendButtonPaddingRight">2dp</item>
         <item name="chatSendButtonPaddingTop">0dp</item>
         <item name="chatSendButtonPaddingBottom">0dp</item>
-        <item name="userPicDrawable">@drawable/ic_chat_reaction_turner</item>
+        <item name="userPicDrawable">@drawable/ic_user_pic</item>
         <item name="chatSendDrawable">@drawable/ic_send_turner</item>
         <item name="chatSendBackground">@drawable/send_chat_blue_circle_back</item>
         <item name="chatBubblePaddingLeft">8dp</item>
@@ -98,11 +101,32 @@
         <item name="stickerRecentEmptyTextColor">@color/livelike_black</item>
         <item name="chatMessageBottomBorderHeight">1dp</item>
         <item name="chatMessageBottomBorderColor">#efeff4</item>
-        <item name="chatStickerSendDrawable">@drawable/ic_chat_reaction_default</item>
         <item name="reaction_icon">@drawable/ic_chat_reaction_turner</item>
         <item name="reaction_hint_enable">true</item>
         <item name="reaction_icons_margin_top">15dp</item>
-        <item name="reaction_count_icons_margin_top">13dp</item>
+        <item name="reaction_icons_margin_bottom">10dp</item>
+        <item name="reaction_icon_position_bottom">true</item>
+        <item name="reaction_count_margin_top">13dp</item>
+        <item name="reaction_count_margin_bottom">11dp</item>
+        <item name="reaction_count_icons_position_bottom">true</item>
+        <item name="reaction_icons_gap_factor">0.93</item>
+        <item name="chatReactionModerationFlagVisible">false</item>
+        <item name="chatUserNameCustomFontPath">fonts/RingsideExtraWide-Book.otf</item>
+        <item name="chatUserNameTextAllCaps">true</item>
+        <item name="chatUserNameTextSize">12sp</item>
+        <item name="chatMessageCustomFontPath">fonts/RingsideRegular-Book.otf</item>
+        <item name="chatMessageTextSize">14sp</item>
+        <item name="chatMessageTimeTextSize">10sp</item>
+        <item name="chatMessageTimeCustomFontPath">fonts/RingsideRegular-Book.otf</item>
+        <item name="chatMessageTimeTextAllCaps">true</item>
+        <item name="chatMessageTimeTextColor">#000000</item>
+        <item name="chatReactionDisplayCountTextSize">10sp</item>
+        <item name="chatReactionDisplayCountCustomFontPath">fonts/RingsideExtraWide-Black.otf</item>
+        <item name="chatReactionDisplayCountTextStyle">bold</item>
+        <item name="chatReactionDisplaySize">12dp</item>
+        <item name="chatReactionXPosition">0dp</item>
+        <item name="chatReactionYPosition">-55dp</item>
+        <item name="chatReactionPanelGravity">right|bottom</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">

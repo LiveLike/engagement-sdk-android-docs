@@ -58,20 +58,24 @@ internal class ChatActionsPopupView(
                 )
             }
 
-            if (!isOwnMessage && isPublichat) {
-                contentView.moderation_flag_lay.apply {
-                    visibility = View.VISIBLE
-                    setOnClickListener {
-                        dismiss()
-                        flagClick.onClick(it)
+            if (chatReactionModerationFlagVisible) {
+                if (!isOwnMessage && isPublichat) {
+                    contentView.moderation_flag_lay.apply {
+                        setOnClickListener {
+                            dismiss()
+                            flagClick.onClick(it)
+                        }
+                        radius = chatReactionRadius
+                        setCardBackgroundColor(chatReactionPanelColor)
                     }
-                    radius = chatReactionRadius
-                    setCardBackgroundColor(chatReactionPanelColor)
+                    contentView.moderation_flag.setColorFilter(
+                        chatReactionFlagTintColor
+                    )
                 }
-                contentView.moderation_flag.setColorFilter(
-                    chatReactionFlagTintColor
-                )
+            } else {
+                contentView.moderation_flag_lay.visibility = View.GONE
             }
+
             setOnDismissListener(hideFloatingUi)
             isOutsideTouchable = true
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
