@@ -1,0 +1,130 @@
+package com.example.mmlengagementsdk.widgets
+
+import android.content.Context
+import android.graphics.Bitmap
+import android.support.constraint.ConstraintLayout
+import android.util.AttributeSet
+import android.util.TypedValue
+import android.view.View
+import com.bumptech.glide.Glide
+import com.example.mmlengagementsdk.R
+import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
+import com.example.mmlengagementsdk.widgets.utils.getFormattedTime
+import com.example.mmlengagementsdk.widgets.utils.imageslider.ScaleDrawable
+import com.example.mmlengagementsdk.widgets.utils.imageslider.ThumbDrawable
+import com.example.mmlengagementsdk.widgets.utils.parseDuration
+import com.example.mmlengagementsdk.widgets.utils.setCustomFontWithTextStyle
+import kotlinx.android.synthetic.main.mml_image_slider.view.image_slider
+import kotlinx.android.synthetic.main.mml_image_slider.view.slider_title
+import kotlinx.android.synthetic.main.mml_image_slider.view.time_bar
+import kotlinx.android.synthetic.main.mml_image_slider.view.txt_time
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class MMLImageSliderWidget : ConstraintLayout {
+    lateinit var imageSliderWidgetModel: ImageSliderWidgetModel
+    var isTimeLine = false
+    private val job = SupervisorJob()
+    private val uiScope = CoroutineScope(Dispatchers.Main + job)
+
+    constructor(context: Context) : super(context) {
+        init(null, 0)
+    }
+
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        init(attrs, 0)
+    }
+
+    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
+        context,
+        attrs,
+        defStyle
+    ) {
+        init(attrs, defStyle)
+    }
+
+    private fun init(attrs: AttributeSet?, defStyle: Int) {
+        inflate(context, R.layout.mml_image_slider, this)
+    }
+
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        imageSliderWidgetModel.widgetData.let { liveLikeWidget ->
+            slider_title.text = liveLikeWidget.question
+            setCustomFontWithTextStyle(slider_title, "fonts/RingsideExtraWide-Black.otf")
+            liveLikeWidget.createdAt?.let {
+                setCustomFontWithTextStyle(txt_time, "fonts/RingsideRegular-Book.otf")
+                txt_time.text = getFormattedTime(it)
+            }
+            val size = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                36f,
+                resources.displayMetrics
+            ).toInt()
+            uiScope.launch {
+                val list = mutableListOf<Deferred<Bitmap>>()
+                withContext(Dispatchers.IO) {
+                    liveLikeWidget.options?.forEach {
+                        list.add(
+                            async {
+                                Glide.with(context)
+                                    .asBitmap()
+                                    .load(it?.imageUrl)
+                                    .centerCrop().submit(size, size).get()
+                            }
+                        )
+                    }
+                    val drawableList = list.map { t ->
+                        ScaleDrawable(
+                            t.await()
+                        )
+                    }
+                    withContext(Dispatchers.Main) {
+                        val drawable =
+                            ThumbDrawable(
+                                drawableList,
+                                .5f
+                            )
+                        image_slider.thumbDrawable = drawable
+                    }
+                }
+            }
+            if (isTimeLine) {
+                image_slider.averageProgress = liveLikeWidget.averageMagnitude
+                time_bar.visibility = View.INVISIBLE
+                image_slider.isUserSeekable = false
+            } else {
+                image_slider.isUserSeekable = true
+                val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
+                time_bar.startTimer(timeMillis)
+                uiScope.async {
+                    delay(timeMillis)
+                    imageSliderWidgetModel.lockInVote(image_slider.progress.toDouble())
+                    delay(5000)
+                    imageSliderWidgetModel.finish()
+                }
+                imageSliderWidgetModel.voteResults.subscribe(this) {
+                    it?.let {
+                        image_slider.averageProgress = it.averageMagnitude
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        imageSliderWidgetModel.voteResults.unsubscribe(this)
+        imageSliderWidgetModel.finish()
+    }
+
+}

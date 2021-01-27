@@ -101,7 +101,7 @@
         <item name="stickerRecentEmptyTextColor">@color/livelike_black</item>
         <item name="chatMessageBottomBorderHeight">1dp</item>
         <item name="chatMessageBottomBorderColor">#efeff4</item>
-        <item name="reaction_icon">@drawable/ic_mml_chat_reaction</item>
+        <item name="reaction_icon">@drawable/ic_chat_reaction</item>
         <item name="reaction_hint_enable">true</item>
         <item name="reaction_icons_margin_top">15dp</item>
         <item name="reaction_icons_margin_bottom">10dp</item>

@@ -95,6 +95,7 @@ dependencies {
     //TODO  define configuration: 'release' for release variant currently it is not building in it.
 
     implementation project(path: ':pluginexoplayer')
+    implementation project(path: ':mmlengagementsdk')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
