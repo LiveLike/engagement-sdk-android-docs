@@ -43,8 +43,9 @@ class LiveLikeSDKHelper(
     }
 
     fun getWidgetsFragment(): Fragment {
-        val widgetsFragment = WidgetsFragment()
-        widgetsFragment.setSession(session)
-        return widgetsFragment
+        return WidgetsFragment().apply {
+            sdk = engagementSDK
+            session = this@LiveLikeSDKHelper.session
+        }
     }
 }
