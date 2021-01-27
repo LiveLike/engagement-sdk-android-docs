@@ -164,6 +164,7 @@ class MMLQuizWidget : ConstraintLayout {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         quizWidgetModel.voteResults.unsubscribe(this)
+        quizWidgetModel?.finish()
     }
 
 

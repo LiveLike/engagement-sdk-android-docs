@@ -113,5 +113,6 @@ class MMLPollWidget : ConstraintLayout {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         pollWidgetModel?.voteResults?.unsubscribe(this)
+        pollWidgetModel?.finish()
     }
 }

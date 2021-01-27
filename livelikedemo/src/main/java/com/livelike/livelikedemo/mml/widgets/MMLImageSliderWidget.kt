@@ -124,6 +124,7 @@ class MMLImageSliderWidget : ConstraintLayout {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         imageSliderWidgetModel.voteResults.unsubscribe(this)
+        imageSliderWidgetModel.finish()
     }
 
 }
