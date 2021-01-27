@@ -68,9 +68,9 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         }
     }
 
-    fun unSubscribeWidgetResults() {
+    fun unsubscribeWidgetResults() {
         subscribedWidgetChannelName?.let {
-            LiveLikeWidgetMessagingService.unSubscribeWidgetChannel(it, this)
+            LiveLikeWidgetMessagingService.unsubscribeWidgetChannel(it, this)
         }
     }
 

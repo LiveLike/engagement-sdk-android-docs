@@ -54,7 +54,7 @@ import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagi
          widgetEventStream?.subscribe(key, observer)
      }
 
-     internal fun unSubscribeWidgetChannel(
+     internal fun unsubscribeWidgetChannel(
          channelName: String,
          key: Any
      ) {
