@@ -81,10 +81,15 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                     }
                     pollWidgetModel?.voteResults?.subscribe(this@MMLPollWidget) { result ->
                         result?.choices?.let { options ->
+                            var change = false
                             options.forEach { op ->
+                                if (!adapter.optionIdCount.containsKey(op.id) || adapter.optionIdCount[op.id] != op.vote_count) {
+                                    change = true
+                                }
                                 adapter.optionIdCount[op.id] = op.vote_count ?: 0
                             }
-                            adapter.notifyDataSetChanged()
+                            if (change)
+                                adapter.notifyDataSetChanged()
                         }
                         livelikeWidgetResult = result
                     }
@@ -104,7 +109,7 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (isTimeLine) {
+        if (!isTimeLine) {
             pollWidgetModel?.voteResults?.unsubscribe(this)
             pollWidgetModel?.finish()
         }

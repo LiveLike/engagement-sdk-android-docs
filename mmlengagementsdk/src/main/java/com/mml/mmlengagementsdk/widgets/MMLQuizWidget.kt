@@ -149,7 +149,7 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
                 adapter.list = ArrayList(options.map { item ->
                     LiveLikeWidgetOption(
                         item.second.id,
-                        item.second.description ?: "",
+                        item.second.description,
                         item.first.is_correct,
                         item.second.imageUrl,
                         (((item.first.answer_count ?: 0) * 100) / totalVotes)
@@ -163,7 +163,7 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (isTimeLine) {
+        if (!isTimeLine) {
             quizWidgetModel.voteResults.unsubscribe(this)
             quizWidgetModel.finish()
         }

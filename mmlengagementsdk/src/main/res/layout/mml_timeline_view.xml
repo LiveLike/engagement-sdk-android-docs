@@ -10,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        app:reverseLayout="true"
+        app:stackFromEnd="true"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
 </android.support.constraint.ConstraintLayout>

@@ -94,11 +94,13 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                     imageSliderWidgetModel.lockInVote(image_slider.progress.toDouble())
                     imageSliderWidgetModel.voteResults.subscribe(this@MMLImageSliderWidget) {
                         it?.let {
-                            image_slider.averageProgress = it.averageMagnitude
+                            if (image_slider.averageProgress != it.averageMagnitude) {
+                                image_slider.averageProgress = it.averageMagnitude
+                            }
                         }
                         livelikeWidgetResult = it
                     }
-                    delay(5000)
+                    delay(2000)
                     isTimeLine = true
                     imageSliderWidgetModel.voteResults.unsubscribe(this@MMLImageSliderWidget)
                 }
