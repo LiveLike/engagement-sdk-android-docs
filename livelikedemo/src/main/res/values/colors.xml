@@ -54,4 +54,16 @@
     </array>
 
 
+    <color name="livelike_default_text_color" tools:ignore="PrivateResource">#FFFFFF</color>
+    <color name="incorrect_result_bar_color">#e41e0c</color>
+    <color name="correct_result_bar_color">#00c265</color>
+    <color name="default_result_bar_color">#c1c2ca</color>
+    <color name="selected_result_bar_color">#2196F3</color>
+    <color name="image_slider_widget_result_center_color">#e84403</color>
+    <color name="image_slider_widget_result_end_color">#fdd275</color>
+    <color name="image_slider_gradient_start">#fdd275</color>
+    <color name="image_slider_gradient_end">#e84403</color>
+    <color name="image_slider_bg">#e6e6e6</color>
+    <color name="widget_time_bar_color">#FFC500</color>
+
 </resources>

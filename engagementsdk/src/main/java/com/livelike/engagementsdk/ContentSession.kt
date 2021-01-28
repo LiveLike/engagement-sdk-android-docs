@@ -5,7 +5,6 @@ import android.widget.FrameLayout
 import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
@@ -101,7 +100,7 @@ internal class ContentSession(
 
     override fun getPublishedWidgets(
         liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget?>>
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ) {
         uiScope.launch {
             val defaultUrl =
@@ -178,7 +177,7 @@ internal class ContentSession(
     private val currentWidgetViewStream =
         SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-    val widgetStream = SubscriptionManager<LiveLikeWidget>()
+    override val widgetStream = SubscriptionManager<LiveLikeWidget>()
     private val programRepository =
         ProgramRepository(
             programId,

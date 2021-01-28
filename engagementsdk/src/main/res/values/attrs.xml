@@ -131,11 +131,62 @@
         <attr name="reaction_icons_margin_right" format="dimension" />
         <attr name="reaction_icons_margin_left" format="dimension" />
         <attr name="reaction_icons_margin_bottom" format="dimension" />
+        <attr name="reaction_icon_position_bottom" format="boolean" />
+        <attr name="reaction_count_icons_position_bottom" format="boolean" />
+        <attr name="reaction_icons_gap_factor" format="float" />
+        <attr name="chatReactionModerationFlagVisible" format="boolean" />
         <attr name="reaction_count_margin_top" format="dimension" />
         <attr name="reaction_count_margin_right" format="dimension" />
         <attr name="reaction_count_margin_left" format="dimension" />
         <attr name="reaction_count_margin_bottom" format="dimension" />
-
+        <attr name="chatUserNameTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+        <attr name="chatUserNameCustomFontPath" format="string" />
+        <attr name="chatUserNameTextAllCaps" format="boolean" />
+        <attr name="chatUserNameTextSize" format="dimension" />
+        <attr name="chatMessageCustomFontPath" format="string" />
+        <attr name="chatMessageTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+        <attr name="chatMessageTextSize" format="dimension" />
+        <attr name="chatMessageTimeCustomFontPath" format="string" />
+        <attr name="chatMessageTimeTextSize" format="dimension" />
+        <attr name="chatMessageTimeTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+        <attr name="chatMessageTimeTextAllCaps" format="boolean" />
+        <attr name="chatMessageTimeTextColor" format="color" />
+        <attr name="chatReactionDisplayCountTextStyle">
+            <flag name="normal" value="0" />
+            <flag name="bold" value="1" />
+            <flag name="italic" value="2" />
+        </attr>
+        <attr name="chatReactionDisplayCountCustomFontPath" format="string" />
+        <attr name="chatReactionDisplayCountTextSize" format="dimension" />
+        <attr name="chatReactionDisplaySize" format="dimension" />
+        <attr name="chatReactionPanelGravity">
+            <flag name="bottom" value="80" />
+            <flag name="center" value="17" />
+            <flag name="center_horizontal" value="1" />
+            <flag name="center_vertical" value="16" />
+            <flag name="clip_horizontal" value="8" />
+            <flag name="clip_vertical" value="128" />
+            <flag name="end" value="8388613" />
+            <flag name="fill" value="119" />
+            <flag name="fill_horizontal" value="7" />
+            <flag name="fill_vertical" value="112" />
+            <flag name="left" value="3" />
+            <flag name="right" value="5" />
+            <flag name="start" value="8388611" />
+            <flag name="top" value="48" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="PointView">

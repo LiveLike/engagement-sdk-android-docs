@@ -14,5 +14,5 @@ data class PublishedWidgetListResponse(
     val count: Int? = null,
 
     @field:SerializedName("results")
-    val results: List<LiveLikeWidget?>? = null
+    val results: List<LiveLikeWidget>? = null
 )

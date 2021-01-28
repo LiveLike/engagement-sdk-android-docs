@@ -4,7 +4,6 @@ import android.widget.FrameLayout
 import com.google.gson.JsonObject
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.core.data.models.LeaderBoardResource
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
 import com.livelike.engagementsdk.core.data.models.RewardItem
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
@@ -12,7 +11,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
-import com.livelike.engagementsdk.widget.domain.LeaderBoardUserDetails
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -25,6 +23,11 @@ interface LiveLikeContentSession {
     val chatSession: LiveLikeChatSession
 
     var contentSessionleaderBoardDelegate: LeaderBoardDelegate?
+
+   val  widgetStream : Stream<LiveLikeWidget>
+
+//    /** All the new incoming widgets on current session will be published on this stream */
+//    val widgetStream : Stream<LiveLikeWidget>
 
     /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
     fun pause()
@@ -56,7 +59,7 @@ interface LiveLikeContentSession {
     /** set value of style for widget **/
     fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes)
 
-    fun getPublishedWidgets(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget?>>)
+    fun getPublishedWidgets(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>)
 
     /** Returns list of reward item associated to entered program */
     fun getRewardItems() : List<RewardItem>

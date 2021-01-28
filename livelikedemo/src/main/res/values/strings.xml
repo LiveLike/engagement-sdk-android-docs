@@ -55,4 +55,9 @@
     <string name="widget_framework">Widget Framework</string>
     <string name="build_details">Build Details</string>
     <string name="chat_list_is_empty">Chat List is Empty</string>
+    <string name="title_activity_m_m_l">MMLActivity</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
