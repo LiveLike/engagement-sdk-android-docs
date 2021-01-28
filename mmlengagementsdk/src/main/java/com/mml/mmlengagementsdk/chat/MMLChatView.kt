@@ -2,37 +2,21 @@ package com.mml.mmlengagementsdk.chat
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
-import android.util.AttributeSet
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import kotlinx.android.synthetic.main.mml_chat_view.view.chat_view
 
-class MMLChatView : ConstraintLayout {
+class MMLChatView(context: Context) : ConstraintLayout(context) {
 
     var chatSession: LiveLikeChatSession? = null
 
-    constructor(context: Context) : super(context) {
-        init(null, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
-        init(attrs, defStyle)
-    }
-
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    init {
         val contextThemeWrapper: Context =
             ContextThemeWrapper(context, R.style.MMLChatTheme)
         inflate(contextThemeWrapper, R.layout.mml_chat_view, this)
+
     }
 
     override fun onAttachedToWindow() {

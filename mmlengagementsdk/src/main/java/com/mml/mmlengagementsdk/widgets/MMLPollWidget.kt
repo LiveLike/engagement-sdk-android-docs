@@ -5,7 +5,6 @@ import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.AttributeSet
 import android.view.View
 import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
@@ -23,30 +22,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
-class MMLPollWidget : ConstraintLayout {
+class MMLPollWidget(context: Context) : ConstraintLayout(context) {
     var pollWidgetModel: PollWidgetModel? = null
     var isImage = false
     var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-    constructor(context: Context) : super(context) {
-        init(null, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
-        init(attrs, defStyle)
-    }
-
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    init {
         inflate(context, R.layout.mml_poll_widget, this)
     }
 

@@ -3,7 +3,6 @@ package com.mml.mmlengagementsdk.widgets
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
-import android.util.AttributeSet
 import android.view.View
 import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -12,7 +11,11 @@ import com.mml.mmlengagementsdk.widgets.model.LiveLikeWidgetOption
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.parseDuration
 import com.mml.mmlengagementsdk.widgets.utils.setCustomFontWithTextStyle
-import kotlinx.android.synthetic.main.mml_quiz_widget.view.*
+import kotlinx.android.synthetic.main.mml_quiz_widget.view.lottie_animation_view
+import kotlinx.android.synthetic.main.mml_quiz_widget.view.quiz_rv
+import kotlinx.android.synthetic.main.mml_quiz_widget.view.quiz_title
+import kotlinx.android.synthetic.main.mml_quiz_widget.view.time_bar
+import kotlinx.android.synthetic.main.mml_quiz_widget.view.txt_time
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,7 +24,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MMLQuizWidget : ConstraintLayout {
+class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
     lateinit var quizWidgetModel: QuizWidgetModel
     private lateinit var adapter: QuizListAdapter
     private var quizAnswerJob: Job? = null
@@ -30,25 +33,8 @@ class MMLQuizWidget : ConstraintLayout {
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-    constructor(context: Context) : super(context) {
-        init(null, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
-        init(attrs, defStyle)
-    }
-
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    init {
         inflate(context, R.layout.mml_quiz_widget, this)
-
     }
 
     private fun showResultAnimation() {

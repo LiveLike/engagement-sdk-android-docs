@@ -3,7 +3,6 @@ package com.mml.mmlengagementsdk.widgets
 import android.content.Context
 import android.graphics.Bitmap
 import android.support.constraint.ConstraintLayout
-import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
 import com.bumptech.glide.Glide
@@ -27,32 +26,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MMLImageSliderWidget : ConstraintLayout {
+class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
     lateinit var imageSliderWidgetModel: ImageSliderWidgetModel
     var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-    constructor(context: Context) : super(context) {
-        init(null, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
-        init(attrs, defStyle)
-    }
-
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    init {
         inflate(context, R.layout.mml_image_slider, this)
     }
-
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

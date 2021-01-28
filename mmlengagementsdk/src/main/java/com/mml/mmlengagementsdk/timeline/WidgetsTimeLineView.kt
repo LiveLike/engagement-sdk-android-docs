@@ -17,7 +17,11 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import kotlinx.android.synthetic.main.mml_timeline_item.view.widget_view
 import kotlinx.android.synthetic.main.mml_timeline_view.view.timeline_rv
 
-class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession, val sdk : EngagementSDK) : FrameLayout(context) {
+class WidgetsTimeLineView(
+    context: Context,
+    val session: LiveLikeContentSession,
+    val sdk: EngagementSDK
+) : FrameLayout(context) {
 
     private var adapter: TimeLineViewAdapter
 
@@ -33,14 +37,13 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
         initializePastPublishedWidgets()
     }
 
-
     private fun initializePastPublishedWidgets() {
         session.getPublishedWidgets(
             LiveLikePagination.FIRST,
             object : LiveLikeCallback<List<LiveLikeWidget>>() {
                 override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
                     result?.let { list ->
-                        adapter.list.addAll(list.map {  TimelineWidgetResource(false, it) })
+                        adapter.list.addAll(list.map { TimelineWidgetResource(false, it) })
                         adapter.notifyDataSetChanged()
                     }
                 }
@@ -54,7 +57,6 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
                 adapter.notifyDataSetChanged()
             }
         }
-
     }
 
     override fun onAttachedToWindow() {
@@ -62,7 +64,6 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
         session.resume()
         observeForLiveWidgets()
     }
-
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
@@ -91,7 +92,8 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
 
         override fun onBindViewHolder(itemViewHolder: TimeLineItemViewHolder, p1: Int) {
             val liveLikeWidget = list[p1].liveLikeWidget
-            itemViewHolder.itemView.widget_view.widgetViewFactory = TimeLineWidgetFactory(context = context ,widgetList = list)
+            itemViewHolder.itemView.widget_view.widgetViewFactory =
+                TimeLineWidgetFactory(context = context, widgetList = list)
             itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
             itemViewHolder.itemView.widget_view.displayWidget(
                 sdk,
@@ -108,6 +110,10 @@ class WidgetsTimeLineView(context: Context, val session : LiveLikeContentSession
 
     class TimeLineItemViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    data class TimelineWidgetResource (var isActive:Boolean = false, val liveLikeWidget: LiveLikeWidget, var selectedOptionitem : OptionsItem?=null)
+    data class TimelineWidgetResource(
+        var isActive: Boolean = false,
+        val liveLikeWidget: LiveLikeWidget,
+        var selectedOptionitem: OptionsItem? = null
+    )
 
 }

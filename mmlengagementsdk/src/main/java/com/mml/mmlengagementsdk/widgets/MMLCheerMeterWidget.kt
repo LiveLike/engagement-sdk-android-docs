@@ -2,7 +2,6 @@ package com.mml.mmlengagementsdk.widgets
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
-import android.util.AttributeSet
 import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
@@ -30,7 +29,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
-class MMLCheerMeterWidget : ConstraintLayout {
+class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
 
     lateinit var cheerMeterWidgetModel: CheerMeterWidgetmodel
     var winnerOptionItem: OptionsItem? = null
@@ -38,24 +37,7 @@ class MMLCheerMeterWidget : ConstraintLayout {
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
-    constructor(context: Context) : super(context) {
-        init(null, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
-        init(attrs, defStyle)
-    }
-
-
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    init {
         inflate(context, R.layout.mml_cheer_meter, this)
     }
 
@@ -93,7 +75,7 @@ class MMLCheerMeterWidget : ConstraintLayout {
                 }
             }
 
-            setCustomFontWithTextStyle(txt_title,"fonts/RingsideExtraWide-Black.otf")
+            setCustomFontWithTextStyle(txt_title, "fonts/RingsideExtraWide-Black.otf")
             txt_title.text = liveLikeWidget.question
             liveLikeWidget.createdAt?.let {
                 setCustomFontWithTextStyle(txt_time, "fonts/RingsideRegular-Book.otf")

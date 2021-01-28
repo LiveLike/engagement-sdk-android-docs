@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
-import android.util.AttributeSet
 import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
@@ -26,30 +25,13 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
-class MMLAlertWidget : ConstraintLayout {
+class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
     var isTimeLine: Boolean = false
     lateinit var alertModel: AlertWidgetModel
 
-
-    constructor(context: Context) : super(context) {
-        init(null, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
-        context,
-        attrs,
-        defStyle
-    ) {
-        init(attrs, defStyle)
-    }
-
-    private fun init(attrs: AttributeSet?, defStyle: Int) {
+    init {
         inflate(context, R.layout.mml_alert_widget, this)
     }
 
