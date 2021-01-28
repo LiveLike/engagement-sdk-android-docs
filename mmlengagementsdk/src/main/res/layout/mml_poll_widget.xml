@@ -11,7 +11,7 @@
     <com.mml.mmlengagementsdk.widgets.utils.TimeBar
         android:id="@+id/time_bar"
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="@dimen/widget_time_bar_height"
         android:background="#FFC500" />
 
     <LinearLayout

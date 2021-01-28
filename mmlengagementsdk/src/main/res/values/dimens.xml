@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="rounded_corner_box_radius">4dp</dimen>
+    <dimen name="widget_time_bar_height">4dp</dimen>
 </resources>
