@@ -11,7 +11,7 @@
         android:background="@android:color/white"
         android:orientation="vertical">
 
-        <com.example.mmlengagementsdk.widgets.utils.TimeBar
+        <com.mml.mmlengagementsdk.widgets.utils.TimeBar
             android:id="@+id/time_bar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/widget_time_bar_height"

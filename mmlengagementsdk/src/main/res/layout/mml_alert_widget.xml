@@ -7,7 +7,7 @@
     android:background="@drawable/mml_background"
     android:orientation="vertical">
 
-    <com.example.mmlengagementsdk.widgets.utils.TimeBar
+    <com.mml.mmlengagementsdk.widgets.utils.TimeBar
         android:id="@+id/time_bar"
         android:layout_width="match_parent"
         android:layout_height="5dp"

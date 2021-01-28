@@ -7,7 +7,7 @@
     android:background="@drawable/mml_background"
     android:orientation="vertical">
 
-    <com.example.mmlengagementsdk.widgets.utils.TimeBar
+    <com.mml.mmlengagementsdk.widgets.utils.TimeBar
         android:id="@+id/time_bar"
         android:layout_width="match_parent"
         android:layout_height="5dp"
@@ -29,7 +29,7 @@
             android:textStyle="bold"
             tools:text="Who was graduated from UCLA?" />
 
-        <com.example.mmlengagementsdk.widgets.utils.imageslider.ImageSlider
+        <com.mml.mmlengagementsdk.widgets.utils.imageslider.ImageSlider
             android:id="@+id/image_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

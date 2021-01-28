@@ -43,6 +43,24 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    flavorDimensions 'default'
+    productFlavors {
+        staging {
+            dimension 'default'
+            buildConfigField "String", "APP_CLIENT_ID", '"vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-staging.livelikecdn.com/api/v1/programs/?client_id=vLgjH7dF0uX4J4FQJK3ncMkVmsCdLWhJ0qPtsbk7"'
+        }
+        production {
+            dimension 'default'
+            buildConfigField "String", "APP_CLIENT_ID", '"8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast.livelikecdn.com/api/v1/programs/?client_id=8PqSNDgIVHnXuJuGte1HdvOjOqhCFE1ZCR3qhqaS"'
+        }
+        qatesting {
+            dimension 'default'
+            buildConfigField "String", "APP_CLIENT_ID", '"pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
+            buildConfigField "String", "TEST_CONFIG_URL", '"https://cf-blast-qa.livelikecdn.com/api/v1/programs/?client_id=pnODbVXg0UI80s0l2aH5Y7FOuGbftoAdSNqpdvo6"'
+        }
+    }
 }
 
 repositories {
@@ -60,7 +78,10 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //sdk
-    implementation 'com.livelike.android-engagement-sdk:engagementsdk:2.12-aplha0'
+    //implementation 'com.livelike.android-engagement-sdk:engagementsdk:2.12-aplha0'
+    debugApi project(path: ':engagementsdk')
+    releaseApi project(path: ':engagementsdk')
+
 
     implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
     implementation "com.airbnb.android:lottie:$lottieVersion"
