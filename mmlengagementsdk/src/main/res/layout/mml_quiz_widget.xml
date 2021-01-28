@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:textColor="#000000"
-                android:textSize="@dimen/widget_title_size"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 tools:text="Who was graduated from UCLA?" />
 
