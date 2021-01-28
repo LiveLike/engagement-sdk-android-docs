@@ -41,7 +41,10 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
         alertModel.widgetData.let { liveLikeWidget ->
             txt_title.text = liveLikeWidget.title
             setCustomFontWithTextStyle(txt_title, "fonts/RingsideExtraWide-Black.otf")
-            txt_description.text = liveLikeWidget.text
+            liveLikeWidget.text?.let {
+                txt_description.visibility = View.VISIBLE
+                txt_description.text = liveLikeWidget.text
+            }
             setCustomFontWithTextStyle(txt_description, "fonts/RingsideRegular-Book.otf")
             liveLikeWidget.imageUrl?.let {
                 img_alert.visibility = View.VISIBLE

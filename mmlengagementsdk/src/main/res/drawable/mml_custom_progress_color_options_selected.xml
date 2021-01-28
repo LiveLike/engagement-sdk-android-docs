@@ -19,10 +19,10 @@
                 <corners android:radius="5dip" />
                 <gradient
                     android:angle="270"
-                    android:centerColor="#2196F3"
+                    android:centerColor="@color/poll_progress_bar_color"
                     android:centerY="0.75"
-                    android:endColor="#2196F3"
-                    android:startColor="#2196F3" />
+                    android:endColor="@color/poll_progress_bar_color"
+                    android:startColor="@color/poll_progress_bar_color" />
             </shape>
         </clip>
     </item>
@@ -33,8 +33,8 @@
                 <corners android:radius="5dip" />
                 <gradient
                     android:angle="270"
-                    android:endColor="#2196F3"
-                    android:startColor="#2196F3" />
+                    android:endColor="@color/poll_progress_bar_color"
+                    android:startColor="@color/poll_progress_bar_color" />
             </shape>
         </clip>
     </item>

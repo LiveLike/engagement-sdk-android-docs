@@ -11,12 +11,12 @@
         android:id="@+id/time_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/widget_time_bar_height"
-        android:background="#FFC500" />
+        android:background="@color/mml_time_bar_color" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="16dp"
         android:orientation="vertical">
 
         <TextView
@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:textColor="#000000"
+            android:textColor="@color/mml_widget_title_color"
             android:textSize="15sp"
             android:textStyle="bold"
             tools:text="Who was graduated from UCLA?" />
@@ -40,9 +40,9 @@
             android:id="@+id/txt_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="@dimen/timer_margin_top"
             android:textAllCaps="true"
-            android:textColor="@android:color/black"
+            android:textColor="@color/mml_widget_title_color"
             android:textSize="10sp"
             tools:text="Jan 19,10:10 AM" />
     </LinearLayout>

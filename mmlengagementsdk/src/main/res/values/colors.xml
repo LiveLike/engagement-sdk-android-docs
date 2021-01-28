@@ -9,5 +9,10 @@
     <color name="image_slider_gradient_start">#fdd275</color>
     <color name="image_slider_gradient_end">#e84403</color>
     <color name="image_slider_bg">#e6e6e6</color>
-    <color name="widget_time_bar_color">#FFC500</color>
+    <color name="mml_time_bar_color">#fac83c</color>
+    <color name="mml_widget_title_color">#17171d</color>
+    <color name="poll_progress_bar_color">#0079c2</color>
+    <color name="cheer_meter_team1_bg_color">#0079c2</color>
+    <color name="mml_cheer_meter_team2_bg_color">#e41e0c</color>
+    <color name="mml_alert_link_btn_text_color">#fdfdfd</color>
 </resources>
