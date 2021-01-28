@@ -4,7 +4,7 @@ import android.content.Context
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.core.AccessTokenDelegate
 import com.mml.mmlengagementsdk.chat.MMLChatView
-import com.mml.mmlengagementsdk.timeline.WidgetsTimeLineView
+import com.mml.mmlengagementsdk.widgets.timeline.WidgetsTimeLineView
 
 /**
  * LiveLike MMl-2021 entry point for integration

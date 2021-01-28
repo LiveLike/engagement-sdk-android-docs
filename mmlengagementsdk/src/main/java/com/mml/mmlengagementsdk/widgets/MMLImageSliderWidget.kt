@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.imageslider.ScaleDrawable
@@ -31,6 +32,7 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
     var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
+    var livelikeWidgetResult: LiveLikeWidgetResult? = null
 
     init {
         inflate(context, R.layout.mml_image_slider, this)
@@ -79,7 +81,8 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                 }
             }
             if (isTimeLine) {
-                image_slider.averageProgress = liveLikeWidget.averageMagnitude
+                image_slider.averageProgress =
+                    livelikeWidgetResult?.averageMagnitude ?: liveLikeWidget.averageMagnitude
                 time_bar.visibility = View.INVISIBLE
                 image_slider.isUserSeekable = false
             } else {
@@ -89,24 +92,26 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                 uiScope.async {
                     delay(timeMillis)
                     imageSliderWidgetModel.lockInVote(image_slider.progress.toDouble())
-                    delay(5000)
-                    imageSliderWidgetModel.finish()
-                }
-                imageSliderWidgetModel.voteResults.subscribe(this) {
-                    it?.let {
-                        image_slider.averageProgress = it.averageMagnitude
+                    imageSliderWidgetModel.voteResults.subscribe(this@MMLImageSliderWidget) {
+                        it?.let {
+                            image_slider.averageProgress = it.averageMagnitude
+                        }
+                        livelikeWidgetResult = it
                     }
+                    delay(5000)
+                    isTimeLine = true
+                    imageSliderWidgetModel.voteResults.unsubscribe(this@MMLImageSliderWidget)
                 }
             }
         }
-
-
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        imageSliderWidgetModel.voteResults.unsubscribe(this)
-        imageSliderWidgetModel.finish()
+        if (!isTimeLine) {
+            imageSliderWidgetModel.voteResults.unsubscribe(this)
+            imageSliderWidgetModel.finish()
+        }
     }
 
 }

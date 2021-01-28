@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.mmlengagementsdk.R
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.mml.mmlengagementsdk.widgets.adapter.PollListAdapter
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
@@ -28,6 +29,7 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
     var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
+    var livelikeWidgetResult: LiveLikeWidgetResult? = null
 
     init {
         inflate(context, R.layout.mml_poll_widget, this)
@@ -64,6 +66,11 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                             adapter.optionIdCount[op.id!!] = op.voteCount ?: 0
                         }
                     }
+                    livelikeWidgetResult?.choices?.let { options ->
+                        options.forEach { op ->
+                            adapter.optionIdCount[op.id] = op.vote_count ?: 0
+                        }
+                    }
                     adapter.notifyDataSetChanged()
                     time_bar.visibility = View.INVISIBLE
                 } else {
@@ -72,20 +79,22 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                             pollWidgetModel?.submitVote(id)
                         }
                     }
-                    pollWidgetModel?.voteResults?.subscribe(this) { result ->
+                    pollWidgetModel?.voteResults?.subscribe(this@MMLPollWidget) { result ->
                         result?.choices?.let { options ->
                             options.forEach { op ->
                                 adapter.optionIdCount[op.id] = op.vote_count ?: 0
                             }
                             adapter.notifyDataSetChanged()
                         }
+                        livelikeWidgetResult = result
                     }
                     val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
                     time_bar.startTimer(timeMillis)
 
                     uiScope.async {
                         delay(timeMillis)
-                        pollWidgetModel?.finish()
+                        isTimeLine = true
+                        pollWidgetModel?.voteResults?.unsubscribe(this@MMLPollWidget)
                     }
                 }
             }
@@ -95,7 +104,9 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        pollWidgetModel?.voteResults?.unsubscribe(this)
-        pollWidgetModel?.finish()
+        if (isTimeLine) {
+            pollWidgetModel?.voteResults?.unsubscribe(this)
+            pollWidgetModel?.finish()
+        }
     }
 }

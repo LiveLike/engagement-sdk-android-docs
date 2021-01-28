@@ -39,7 +39,6 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         alertModel.widgetData.let { liveLikeWidget ->
-
             txt_title.text = liveLikeWidget.title
             setCustomFontWithTextStyle(txt_title, "fonts/RingsideExtraWide-Black.otf")
             txt_description.text = liveLikeWidget.text
@@ -77,11 +76,9 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
                 time_bar.startTimer(timeMillis)
                 uiScope.async {
                     delay(timeMillis)
-                    alertModel.finish()
+                    isTimeLine = true
                 }
             }
         }
     }
-
-
 }

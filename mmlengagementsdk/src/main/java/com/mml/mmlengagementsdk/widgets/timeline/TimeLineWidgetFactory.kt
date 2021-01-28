@@ -1,12 +1,7 @@
-package com.mml.mmlengagementsdk.timeline
+package com.mml.mmlengagementsdk.widgets.timeline
 
 import android.content.Context
 import android.view.View
-import com.mml.mmlengagementsdk.widgets.MMLAlertWidget
-import com.mml.mmlengagementsdk.widgets.MMLCheerMeterWidget
-import com.mml.mmlengagementsdk.widgets.MMLImageSliderWidget
-import com.mml.mmlengagementsdk.widgets.MMLPollWidget
-import com.mml.mmlengagementsdk.widgets.MMLQuizWidget
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.viewModel.LiveLikeWidgetMediator
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
@@ -16,10 +11,15 @@ import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
+import com.mml.mmlengagementsdk.widgets.MMLAlertWidget
+import com.mml.mmlengagementsdk.widgets.MMLCheerMeterWidget
+import com.mml.mmlengagementsdk.widgets.MMLImageSliderWidget
+import com.mml.mmlengagementsdk.widgets.MMLPollWidget
+import com.mml.mmlengagementsdk.widgets.MMLQuizWidget
 
 class TimeLineWidgetFactory(
     val context: Context,
-    private val widgetList: List<WidgetsTimeLineView.TimelineWidgetResource>
+    private val widgetList: List<TimelineWidgetResource>
 ) : LiveLikeWidgetViewFactory {
 
     override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
