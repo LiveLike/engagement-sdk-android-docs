@@ -39,10 +39,12 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         alertModel.widgetData.let { liveLikeWidget ->
-
             txt_title.text = liveLikeWidget.title
             setCustomFontWithTextStyle(txt_title, "fonts/RingsideExtraWide-Black.otf")
-            txt_description.text = liveLikeWidget.text
+            liveLikeWidget.text?.let {
+                txt_description.visibility = View.VISIBLE
+                txt_description.text = liveLikeWidget.text
+            }
             setCustomFontWithTextStyle(txt_description, "fonts/RingsideRegular-Book.otf")
             liveLikeWidget.imageUrl?.let {
                 img_alert.visibility = View.VISIBLE
@@ -77,11 +79,9 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
                 time_bar.startTimer(timeMillis)
                 uiScope.async {
                     delay(timeMillis)
-                    alertModel.finish()
+                    isTimeLine = true
                 }
             }
         }
     }
-
-
 }

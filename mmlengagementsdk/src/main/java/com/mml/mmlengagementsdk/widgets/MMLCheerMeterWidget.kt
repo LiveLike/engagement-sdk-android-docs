@@ -6,6 +6,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.OptionsItem
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.parseDuration
@@ -33,6 +34,7 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
 
     lateinit var cheerMeterWidgetModel: CheerMeterWidgetmodel
     var winnerOptionItem: OptionsItem? = null
+    var livelikeWidgetResult: LiveLikeWidgetResult? = null
     var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
@@ -49,8 +51,8 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                 time_bar.visibility = View.INVISIBLE
                 val op1 = liveLikeWidget.options?.get(0)
                 val op2 = liveLikeWidget.options?.get(1)
-                val vt1 = op1?.voteCount ?: 0
-                val vt2 = op2?.voteCount ?: 0
+                val vt1 = op1?.voteCount ?: livelikeWidgetResult?.choices?.get(0)?.vote_count ?: 0
+                val vt2 = op2?.voteCount ?: livelikeWidgetResult?.choices?.get(1)?.vote_count ?: 0
                 val total = vt1 + vt2
                 if (total > 0) {
                     val perVt1 = (vt1.toFloat() / total) * 100
@@ -70,8 +72,8 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                 uiScope.async {
                     delay(timeMillis)
                     showWinnerAnimation()
-                    delay(5000)
-                    cheerMeterWidgetModel.finish()
+                    isTimeLine = true
+                    cheerMeterWidgetModel.voteResults.unsubscribe(this@MMLCheerMeterWidget)
                 }
             }
 
@@ -103,29 +105,30 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                                 cheerMeterWidgetModel.submitVote(op.id!!)
                             }
                     }
-                    cheerMeterWidgetModel.voteResults.subscribe(this) {
-                        it?.let {
-                            val op1 = it.choices?.get(0)
-                            val op2 = it.choices?.get(1)
-                            val vt1 = op1?.vote_count ?: 0
-                            val vt2 = op2?.vote_count ?: 0
-                            val total = vt1 + vt2
-                            if (total > 0) {
-                                val perVt1 = (vt1.toFloat() / total) * 100
-                                val perVt2 = (vt2.toFloat() / total) * 100
-                                prg_cheer_team_1.progress = perVt1.toInt()
-                                prg_cheer_team_2.progress = perVt2.toInt()
-                                winnerOptionItem = if (perVt1 > perVt2) {
-                                    options[0]
-                                } else {
-                                    options[1]
+                    if (!isTimeLine)
+                        cheerMeterWidgetModel.voteResults.subscribe(this@MMLCheerMeterWidget) {
+                            it?.let {
+                                val op1 = it.choices?.get(0)
+                                val op2 = it.choices?.get(1)
+                                val vt1 = op1?.vote_count ?: 0
+                                val vt2 = op2?.vote_count ?: 0
+                                val total = vt1 + vt2
+                                if (total > 0) {
+                                    val perVt1 = (vt1.toFloat() / total) * 100
+                                    val perVt2 = (vt2.toFloat() / total) * 100
+                                    prg_cheer_team_1.progress = perVt1.toInt()
+                                    prg_cheer_team_2.progress = perVt2.toInt()
+                                    winnerOptionItem = if (perVt1 > perVt2) {
+                                        options[0]
+                                    } else {
+                                        options[1]
+                                    }
                                 }
+                                livelikeWidgetResult = it
                             }
                         }
-                    }
                 }
             }
-
         }
     }
 
@@ -142,6 +145,9 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        cheerMeterWidgetModel?.finish()
+        if (!isTimeLine) {
+            cheerMeterWidgetModel.voteResults.unsubscribe(this)
+            cheerMeterWidgetModel.finish()
+        }
     }
 }

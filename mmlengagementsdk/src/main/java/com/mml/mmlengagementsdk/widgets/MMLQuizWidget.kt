@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import com.example.mmlengagementsdk.R
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.mml.mmlengagementsdk.widgets.adapter.QuizListAdapter
 import com.mml.mmlengagementsdk.widgets.model.LiveLikeWidgetOption
@@ -29,7 +30,7 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
     private lateinit var adapter: QuizListAdapter
     private var quizAnswerJob: Job? = null
     var isTimeLine = false
-
+    var livelikeWidgetResult: LiveLikeWidgetResult? = null
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
 
@@ -92,9 +93,9 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
             if (isTimeLine) {
                 time_bar.visibility = View.INVISIBLE
                 val totalVotes = liveLikeWidget.choices?.sumBy { it?.answerCount ?: 0 } ?: 0
+                adapter.isResultState = true
+                adapter.isResultAvailable = true
                 liveLikeWidget.choices?.zip(adapter.list)?.let { options ->
-                    adapter.isResultState = true
-                    adapter.isResultAvailable = true
                     adapter.list = ArrayList(options.map { item ->
                         LiveLikeWidgetOption(
                             item.second.id,
@@ -107,12 +108,24 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
                             }
                         )
                     })
-                    adapter.notifyDataSetChanged()
                 }
+                livelikeWidgetResult?.choices?.zip(adapter.list)?.let { options ->
+                    adapter.isResultAvailable = true
+                    adapter.list = ArrayList(options.map { item ->
+                        LiveLikeWidgetOption(
+                            item.second.id,
+                            item.second.description ?: "",
+                            item.first.is_correct,
+                            item.second.imageUrl,
+                            (((item.first.answer_count ?: 0) * 100) / totalVotes)
+                        )
+                    })
+                }
+                adapter.notifyDataSetChanged()
             } else {
                 val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
                 time_bar.startTimer(timeMillis)
-
+                subscribeToVoteResults()
                 uiScope.async {
                     delay(timeMillis)
                     adapter.isResultState = true
@@ -120,23 +133,23 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
                     adapter.selectedOptionItem?.let {
                         showResultAnimation()
                         delay(2000)
+                        isTimeLine = true
+                        quizWidgetModel.voteResults.unsubscribe(this@MMLQuizWidget)
                     }
-                    quizWidgetModel.finish()
                 }
             }
         }
-        subscribeToVoteResults()
     }
 
     private fun subscribeToVoteResults() {
-        quizWidgetModel.voteResults.subscribe(this) { result ->
+        quizWidgetModel.voteResults.subscribe(this@MMLQuizWidget) { result ->
             val totalVotes = result?.choices?.sumBy { it.answer_count ?: 0 } ?: 0
             result?.choices?.zip(adapter.list)?.let { options ->
                 adapter.isResultAvailable = true
                 adapter.list = ArrayList(options.map { item ->
                     LiveLikeWidgetOption(
                         item.second.id,
-                        item.second.description ?: "",
+                        item.second.description,
                         item.first.is_correct,
                         item.second.imageUrl,
                         (((item.first.answer_count ?: 0) * 100) / totalVotes)
@@ -144,13 +157,16 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
                 })
                 adapter.notifyDataSetChanged()
             }
+            livelikeWidgetResult = result
         }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        quizWidgetModel.voteResults.unsubscribe(this)
-        quizWidgetModel?.finish()
+        if (!isTimeLine) {
+            quizWidgetModel.voteResults.unsubscribe(this)
+            quizWidgetModel.finish()
+        }
     }
 
 
