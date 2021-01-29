@@ -24,14 +24,14 @@ import kotlinx.android.synthetic.main.mml_poll_text_list_item.view.txt_percent
 class PollListAdapter(
     private val context: Context,
     private val isImage: Boolean,
-    private val list: ArrayList<OptionsItem>,
-    private val isTimeLine: Boolean
+    private val list: ArrayList<OptionsItem>
+
 ) :
     RecyclerView.Adapter<PollListAdapter.PollListItemViewHolder>() {
     var selectedIndex = -1
     val optionIdCount: HashMap<String, Int> = hashMapOf()
     var pollListener: PollListener? = null
-
+    var isTimeLine: Boolean = false
 
     interface PollListener {
         fun onSelectOption(id: String)
@@ -60,7 +60,10 @@ class PollListAdapter(
             if (optionIdCount.containsKey(item.id)) {
                 holder.itemView.progressBar.visibility = View.VISIBLE
                 holder.itemView.textView2.visibility = View.VISIBLE
-                setCustomFontWithTextStyle(holder.itemView.textView2, "fonts/RingsideCompressed-Bold.otf")
+                setCustomFontWithTextStyle(
+                    holder.itemView.textView2,
+                    "fonts/RingsideCompressed-Bold.otf"
+                )
                 val total = optionIdCount.values.reduce { acc, i -> acc + i }
                 val percent = when (total > 0) {
                     true -> (optionIdCount[item.id!!]!!.toFloat() / total.toFloat()) * 100
@@ -93,6 +96,8 @@ class PollListAdapter(
                     pollListener?.onSelectOption(item.id!!)
                     notifyDataSetChanged()
                 }
+            else
+                holder.itemView.lay_poll_img_option.setOnClickListener(null)
         } else {
             if (optionIdCount.containsKey(item.id)) {
                 holder.itemView.txt_percent.visibility = View.VISIBLE
@@ -102,7 +107,10 @@ class PollListAdapter(
                     true -> (optionIdCount[item.id!!]!!.toFloat() / total.toFloat()) * 100
                     else -> 0F
                 }
-                setCustomFontWithTextStyle(holder.itemView.txt_percent, "fonts/RingsideCompressed-Bold.otf")
+                setCustomFontWithTextStyle(
+                    holder.itemView.txt_percent,
+                    "fonts/RingsideCompressed-Bold.otf"
+                )
                 holder.itemView.txt_percent.text = "$percent %"
                 holder.itemView.progressBar_text.progress = percent.toInt()
             } else {
@@ -110,7 +118,10 @@ class PollListAdapter(
                 holder.itemView.progressBar_text.visibility = View.INVISIBLE
             }
             holder.itemView.text_poll_item.text = "${item.description}"
-            setCustomFontWithTextStyle(holder.itemView.text_poll_item, "fonts/RingsideRegular-Book.otf")
+            setCustomFontWithTextStyle(
+                holder.itemView.text_poll_item,
+                "fonts/RingsideRegular-Book.otf"
+            )
             if (selectedIndex == index) {
                 holder.itemView.lay_poll_text_option.setBackgroundResource(R.drawable.mml_image_option_background_selected_drawable)
                 holder.itemView.progressBar_text.progressDrawable = ContextCompat.getDrawable(
@@ -130,6 +141,8 @@ class PollListAdapter(
                     pollListener?.onSelectOption(item.id!!)
                     notifyDataSetChanged()
                 }
+            else
+                holder.itemView.lay_poll_text_option.setOnClickListener(null)
         }
 
     }

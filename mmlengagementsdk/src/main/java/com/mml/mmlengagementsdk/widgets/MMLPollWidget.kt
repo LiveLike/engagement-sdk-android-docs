@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.mmlengagementsdk.R
-import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.mml.mmlengagementsdk.widgets.adapter.PollListAdapter
 import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
@@ -58,12 +57,12 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                     PollListAdapter(
                         context,
                         isImage,
-                        ArrayList(list.map { item -> item!! }),
-                        timelineWidgetResource?.isActive == false
+                        ArrayList(list.map { item -> item!! })
                     )
                 rcyl_poll_list.adapter = adapter
 
                 if (timelineWidgetResource?.isActive == false) {
+                    adapter.isTimeLine = true
                     list.forEach { op ->
                         op?.let {
                             adapter.optionIdCount[op.id!!] = op.voteCount ?: 0
@@ -111,6 +110,8 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                     uiScope.async {
                         delay(remainingTimeMillis)
                         timelineWidgetResource?.isActive = false
+                        adapter.isTimeLine = true
+                        adapter.notifyDataSetChanged()
                         pollWidgetModel?.voteResults?.unsubscribe(this@MMLPollWidget)
                     }
                 }

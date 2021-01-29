@@ -7,7 +7,6 @@ import android.util.TypedValue
 import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
-import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
@@ -85,7 +84,8 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
             }
             if (timelineWidgetResource?.isActive == false) {
                 image_slider.averageProgress =
-                    timelineWidgetResource?.liveLikeWidgetResult?.averageMagnitude ?: liveLikeWidget.averageMagnitude
+                    timelineWidgetResource?.liveLikeWidgetResult?.averageMagnitude
+                        ?: liveLikeWidget.averageMagnitude
                 time_bar.visibility = View.INVISIBLE
                 image_slider.isUserSeekable = false
             } else {
@@ -111,6 +111,7 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                         }
                         timelineWidgetResource?.liveLikeWidgetResult = it
                     }
+                    image_slider.isUserSeekable = false
                     delay(2000)
                     timelineWidgetResource?.isActive = false
                     imageSliderWidgetModel.voteResults.unsubscribe(this@MMLImageSliderWidget)
