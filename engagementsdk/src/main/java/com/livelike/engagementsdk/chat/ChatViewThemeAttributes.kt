@@ -585,6 +585,8 @@ class ChatViewThemeAttributes {
                 getInt(R.styleable.ChatView_chatReactionDisplayCountTextStyle, 0)
             chatReactionDisplayCountCustomFontPath =
                 getString(R.styleable.ChatView_chatReactionDisplayCountCustomFontPath)
+            chatReactionPanelCountCustomFontPath =
+                getString(R.styleable.ChatView_chatReactionPanelCountCustomFontPath)
             chatReactionDisplayCountTextSize = getDimension(
                 R.styleable.ChatView_chatReactionDisplayCountTextSize,
                 AndroidResource.spToPx(11f)
@@ -697,6 +699,7 @@ class ChatViewThemeAttributes {
     var chatMessageTimeTextColor: Int = Color.BLACK
     var chatReactionDisplayCountTextStyle: Int = 0
     var chatReactionDisplayCountCustomFontPath: String? = null
+    var chatReactionPanelCountCustomFontPath: String? = null
     var chatReactionDisplayCountTextSize: Float = AndroidResource.spToPx(11f)
     var chatReactionDisplaySize: Int = AndroidResource.dpToPx(12)
     var chatReactionPanelGravity: Int = Gravity.NO_GRAVITY

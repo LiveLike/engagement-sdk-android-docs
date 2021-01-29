@@ -187,6 +187,7 @@
             <flag name="start" value="8388611" />
             <flag name="top" value="48" />
         </attr>
+        <attr name="chatReactionPanelCountCustomFontPath" format="string" />
     </declare-styleable>
 
     <declare-styleable name="PointView">
