@@ -8,10 +8,10 @@ import com.mml.mmlengagementsdk.widgets.timeline.WidgetsTimeLineView
 
 /**
  * LiveLike MMl-2021 entry point for integration
- * This class provides the fragment required to place in chat tab and interact tab as shown @link{https://www.figma.com/proto/Naz9dNAqgZm2xGoFI0pYiz/MML?scaling=min-zoom&node-id=139%3A81}
+ * This class provides the views required to place in chat tab and interact tab as shown @link{https://www.figma.com/proto/Naz9dNAqgZm2xGoFI0pYiz/MML?scaling=min-zoom&node-id=139%3A81}
  **/
 class LiveLikeSDKIntegrationManager(
-    private val applicationContext: Context,
+    val applicationContext: Context,
     private val clientId: String,
     private val programId: String
 ) {
@@ -30,6 +30,7 @@ class LiveLikeSDKIntegrationManager(
         })
     private val session = engagementSDK.createContentSession(programId)
 
+
     fun getChatView(context: Context): MMLChatView {
         return MMLChatView(context).apply {
             this.chatSession = session.chatSession
@@ -39,5 +40,20 @@ class LiveLikeSDKIntegrationManager(
     fun getWidgetsView(context: Context): WidgetsTimeLineView {
         return WidgetsTimeLineView(context, session, engagementSDK)
     }
+
+    /** Pause the current Chat and widget sessions. This generally happens when ads are presented */
+    fun pause(){
+        session.pause()
+    }
+
+    /** Resume the current Chat and widget sessions. This generally happens when ads are completed */
+    fun resume(){
+        session.resume()
+    }
+    /** Closes the current session. Basically, it should be called to cleanup/teardown resources used*/
+    fun destroy(){
+        session.close()
+    }
+
 
 }
