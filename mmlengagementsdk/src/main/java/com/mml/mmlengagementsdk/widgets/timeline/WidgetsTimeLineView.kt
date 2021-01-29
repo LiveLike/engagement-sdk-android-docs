@@ -59,13 +59,11 @@ class WidgetsTimeLineView(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        session.resume()
         observeForLiveWidgets()
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        session.pause()
         session.widgetStream.unsubscribe(this)
     }
 
