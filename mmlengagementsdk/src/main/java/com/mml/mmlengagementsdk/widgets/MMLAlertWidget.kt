@@ -24,6 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import java.util.Calendar
 import kotlin.math.max
@@ -32,7 +33,6 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
 
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
-    var isTimeLine: Boolean = false
     lateinit var alertModel: AlertWidgetModel
     var timelineWidgetResource: TimelineWidgetResource? = null
 
@@ -76,7 +76,7 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
                     }
                 }
             }
-            if (isTimeLine) {
+            if (timelineWidgetResource?.isActive == false) {
                 time_bar.visibility = View.GONE
             } else {
                 if (timelineWidgetResource?.startTime == null) {
@@ -89,11 +89,19 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
                 time_bar.visibility = View.VISIBLE
                 time_bar.startTimer(timeMillis, remainingTimeMillis)
                 uiScope.async {
-                    delay(timeMillis)
-                    isTimeLine = true
+                    delay(remainingTimeMillis)
+                    timelineWidgetResource?.isActive = false
                     time_bar.visibility = View.GONE
                 }
             }
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        if (timelineWidgetResource?.isActive == true) {
+            job.cancel()
+            uiScope.cancel()
         }
     }
 }

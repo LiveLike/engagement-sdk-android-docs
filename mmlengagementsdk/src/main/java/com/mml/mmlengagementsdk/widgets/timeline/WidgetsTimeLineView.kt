@@ -37,7 +37,8 @@ class WidgetsTimeLineView(
             object : LiveLikeCallback<List<LiveLikeWidget>>() {
                 override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
                     result?.let { list ->
-                        adapter.list.addAll(list.reversed().map { TimelineWidgetResource(false, it) })
+                        adapter.list.addAll(
+                            list.map { TimelineWidgetResource(false, it) })
                         adapter.notifyDataSetChanged()
                     }
                 }
@@ -48,9 +49,9 @@ class WidgetsTimeLineView(
         session.widgetStream.subscribe(this) {
             it?.let {
                 Handler(Looper.getMainLooper()).post {
-                    adapter.list.add(TimelineWidgetResource(true, it))
-                    adapter.notifyItemInserted(adapter.list.size - 1)
-                    timeline_rv.smoothScrollToPosition(adapter.list.size - 1)
+                    adapter.list.add(0, TimelineWidgetResource(true, it))
+                    adapter.notifyItemInserted(0)
+                    timeline_rv.smoothScrollToPosition(0)
                 }
             }
         }

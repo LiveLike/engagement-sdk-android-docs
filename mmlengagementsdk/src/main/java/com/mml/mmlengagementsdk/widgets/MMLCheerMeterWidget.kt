@@ -6,7 +6,6 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.OptionsItem
-import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
 import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
@@ -29,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import java.util.Calendar
 import kotlin.math.max
@@ -37,11 +37,10 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
 
     lateinit var cheerMeterWidgetModel: CheerMeterWidgetmodel
     var winnerOptionItem: OptionsItem? = null
-    var livelikeWidgetResult: LiveLikeWidgetResult? = null
-    var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
     var timelineWidgetResource: TimelineWidgetResource? = null
+
     init {
         inflate(context, R.layout.mml_cheer_meter, this)
     }
@@ -50,12 +49,16 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
         super.onAttachedToWindow()
         cheerMeterWidgetModel.widgetData.let { liveLikeWidget ->
 
-            if (isTimeLine) {
+            if (timelineWidgetResource?.isActive == false) {
                 time_bar.visibility = View.INVISIBLE
                 val op1 = liveLikeWidget.options?.get(0)
                 val op2 = liveLikeWidget.options?.get(1)
-                val vt1 = op1?.voteCount ?: livelikeWidgetResult?.choices?.get(0)?.vote_count ?: 0
-                val vt2 = op2?.voteCount ?: livelikeWidgetResult?.choices?.get(1)?.vote_count ?: 0
+                val vt1 = timelineWidgetResource?.liveLikeWidgetResult?.choices?.get(0)?.vote_count
+                    ?: op1?.voteCount ?: 0
+                val vt2 =
+                    timelineWidgetResource?.liveLikeWidgetResult?.choices?.get(1)?.vote_count
+                        ?: op2?.voteCount
+                        ?: 0
                 val total = vt1 + vt2
                 if (total > 0) {
                     val perVt1 = (vt1.toFloat() / total) * 100
@@ -81,9 +84,9 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                 time_bar.startTimer(timeMillis, remainingTimeMillis)
 
                 uiScope.async {
-                    delay(timeMillis)
+                    delay(remainingTimeMillis)
                     showWinnerAnimation()
-                    isTimeLine = true
+                    timelineWidgetResource?.isActive = false
                     cheerMeterWidgetModel.voteResults.unsubscribe(this@MMLCheerMeterWidget)
                 }
             }
@@ -102,7 +105,7 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                         Glide.with(context)
                             .load(op.imageUrl)
                             .into(img_cheer_team_1)
-                        if (!isTimeLine)
+                        if (timelineWidgetResource?.isActive == true)
                             frame_cheer_team_1.setOnClickListener {
                                 cheerMeterWidgetModel.submitVote(op.id!!)
                             }
@@ -111,12 +114,12 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                         Glide.with(context)
                             .load(op.imageUrl)
                             .into(img_cheer_team_2)
-                        if (!isTimeLine)
+                        if (timelineWidgetResource?.isActive == true)
                             frame_cheer_team_2.setOnClickListener {
                                 cheerMeterWidgetModel.submitVote(op.id!!)
                             }
                     }
-                    if (!isTimeLine)
+                    if (timelineWidgetResource?.isActive == true)
                         cheerMeterWidgetModel.voteResults.subscribe(this@MMLCheerMeterWidget) {
                             it?.let {
                                 val op1 = it.choices?.get(0)
@@ -135,7 +138,7 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                                         options[1]
                                     }
                                 }
-                                livelikeWidgetResult = it
+                                timelineWidgetResource?.liveLikeWidgetResult = it
                             }
                         }
                 }
@@ -156,7 +159,9 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (!isTimeLine) {
+        if (timelineWidgetResource?.isActive == true) {
+            job.cancel()
+            uiScope.cancel()
             cheerMeterWidgetModel.voteResults.unsubscribe(this)
             cheerMeterWidgetModel.finish()
         }

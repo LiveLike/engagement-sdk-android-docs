@@ -24,6 +24,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,11 +33,10 @@ import kotlin.math.max
 
 class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
     lateinit var imageSliderWidgetModel: ImageSliderWidgetModel
-    var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
-    var livelikeWidgetResult: LiveLikeWidgetResult? = null
     var timelineWidgetResource: TimelineWidgetResource? = null
+
     init {
         inflate(context, R.layout.mml_image_slider, this)
     }
@@ -83,9 +83,9 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                     }
                 }
             }
-            if (isTimeLine) {
+            if (timelineWidgetResource?.isActive == false) {
                 image_slider.averageProgress =
-                    livelikeWidgetResult?.averageMagnitude ?: liveLikeWidget.averageMagnitude
+                    timelineWidgetResource?.liveLikeWidgetResult?.averageMagnitude ?: liveLikeWidget.averageMagnitude
                 time_bar.visibility = View.INVISIBLE
                 image_slider.isUserSeekable = false
             } else {
@@ -101,7 +101,7 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                 time_bar.startTimer(timeMillis, remainingTimeMillis)
 
                 uiScope.async {
-                    delay(timeMillis)
+                    delay(remainingTimeMillis)
                     imageSliderWidgetModel.lockInVote(image_slider.progress.toDouble())
                     imageSliderWidgetModel.voteResults.subscribe(this@MMLImageSliderWidget) {
                         it?.let {
@@ -109,10 +109,10 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                                 image_slider.averageProgress = it.averageMagnitude
                             }
                         }
-                        livelikeWidgetResult = it
+                        timelineWidgetResource?.liveLikeWidgetResult = it
                     }
                     delay(2000)
-                    isTimeLine = true
+                    timelineWidgetResource?.isActive = false
                     imageSliderWidgetModel.voteResults.unsubscribe(this@MMLImageSliderWidget)
                 }
             }
@@ -121,7 +121,9 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (!isTimeLine) {
+        if (timelineWidgetResource?.isActive == true) {
+            job.cancel()
+            uiScope.cancel()
             imageSliderWidgetModel.voteResults.unsubscribe(this)
             imageSliderWidgetModel.finish()
         }

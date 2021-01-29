@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import java.util.Calendar
 import kotlin.math.max
@@ -29,11 +30,10 @@ import kotlin.math.max
 class MMLPollWidget(context: Context) : ConstraintLayout(context) {
     var pollWidgetModel: PollWidgetModel? = null
     var isImage = false
-    var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
-    var livelikeWidgetResult: LiveLikeWidgetResult? = null
     var timelineWidgetResource: TimelineWidgetResource? = null
+
     init {
         inflate(context, R.layout.mml_poll_widget, this)
     }
@@ -59,17 +59,17 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                         context,
                         isImage,
                         ArrayList(list.map { item -> item!! }),
-                        isTimeLine
+                        timelineWidgetResource?.isActive == false
                     )
                 rcyl_poll_list.adapter = adapter
 
-                if (isTimeLine) {
+                if (timelineWidgetResource?.isActive == false) {
                     list.forEach { op ->
                         op?.let {
                             adapter.optionIdCount[op.id!!] = op.voteCount ?: 0
                         }
                     }
-                    livelikeWidgetResult?.choices?.let { options ->
+                    timelineWidgetResource?.liveLikeWidgetResult?.choices?.let { options ->
                         options.forEach { op ->
                             adapter.optionIdCount[op.id] = op.vote_count ?: 0
                         }
@@ -94,7 +94,7 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                             if (change)
                                 adapter.notifyDataSetChanged()
                         }
-                        livelikeWidgetResult = result
+                        timelineWidgetResource?.liveLikeWidgetResult = result
                     }
 
                     if (timelineWidgetResource?.startTime == null) {
@@ -102,14 +102,15 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                     }
                     val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
                     val timeDiff =
-                        Calendar.getInstance().timeInMillis - (timelineWidgetResource?.startTime ?: 0L)
+                        Calendar.getInstance().timeInMillis - (timelineWidgetResource?.startTime
+                            ?: 0L)
                     val remainingTimeMillis = max(0, timeMillis - timeDiff)
                     time_bar.visibility = View.VISIBLE
                     time_bar.startTimer(timeMillis, remainingTimeMillis)
 
                     uiScope.async {
-                        delay(timeMillis)
-                        isTimeLine = true
+                        delay(remainingTimeMillis)
+                        timelineWidgetResource?.isActive = false
                         pollWidgetModel?.voteResults?.unsubscribe(this@MMLPollWidget)
                     }
                 }
@@ -120,7 +121,9 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (!isTimeLine) {
+        if (timelineWidgetResource?.isActive == true) {
+            job.cancel()
+            uiScope.cancel()
             pollWidgetModel?.voteResults?.unsubscribe(this)
             pollWidgetModel?.finish()
         }
