@@ -59,8 +59,9 @@ internal class ChatActionsPopupView(
             }
 
             if (chatReactionModerationFlagVisible) {
-                if (!isOwnMessage && isPublichat) {
+                if (!isOwnMessage) {
                     contentView.moderation_flag_lay.apply {
+                        visibility = View.VISIBLE
                         setOnClickListener {
                             dismiss()
                             flagClick.onClick(it)
