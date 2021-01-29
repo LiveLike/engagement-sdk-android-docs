@@ -33,6 +33,7 @@ class TimeLineWidgetFactory(
         return MMLAlertWidget(context).apply {
             this.alertModel = alertWidgetModel
             this.isTimeLine = !isWidgetActive(alertWidgetModel)
+            timelineWidgetResource = widgetList.find { it.liveLikeWidget.id == alertWidgetModel.widgetData.id }
         }
     }
 

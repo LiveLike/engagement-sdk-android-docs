@@ -28,5 +28,14 @@ class TimeBar : View {
         }
     }
 
+    fun startTimer(totalTime: Long, remainingTime: Long) {
+        time_bar.pivotX = 0f
+        val scaleX = (totalTime - remainingTime) / totalTime.toFloat()
+        ObjectAnimator.ofFloat(time_bar, "scaleX", scaleX, 1f).apply {
+            this.duration = remainingTime
+            start()
+        }
+    }
+
 
 }

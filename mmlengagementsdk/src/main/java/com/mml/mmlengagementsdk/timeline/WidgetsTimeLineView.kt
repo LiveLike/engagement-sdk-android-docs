@@ -54,7 +54,9 @@ class WidgetsTimeLineView(
         session.widgetStream.subscribe(this) {
             it?.let {
                 adapter.list.add(0, TimelineWidgetResource(true, it))
-                adapter.notifyDataSetChanged()
+                timeline_rv.post {
+                    adapter.notifyDataSetChanged()
+                }
             }
         }
     }
@@ -113,7 +115,8 @@ class WidgetsTimeLineView(
     data class TimelineWidgetResource(
         var isActive: Boolean = false,
         val liveLikeWidget: LiveLikeWidget,
-        var selectedOptionitem: OptionsItem? = null
+        var selectedOptionitem: OptionsItem? = null,
+        var startTime : Long? = null
     )
 
 }
