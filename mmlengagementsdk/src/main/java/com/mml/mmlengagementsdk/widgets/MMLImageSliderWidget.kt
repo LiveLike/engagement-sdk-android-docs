@@ -7,7 +7,6 @@ import android.util.TypedValue
 import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
-import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
