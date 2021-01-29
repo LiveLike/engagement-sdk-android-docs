@@ -3,16 +3,22 @@ package com.livelike.livelikedemo.customwidgets
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
+import android.view.View
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_alert_widget.view.bodyImage
 import kotlinx.android.synthetic.main.custom_alert_widget.view.bodyText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 
-class CustomAlertWidget : ConstraintLayout{
-
-
+class CustomAlertWidget : ConstraintLayout {
+    private val job = SupervisorJob()
+    private val uiScope = CoroutineScope(Dispatchers.Main + job)
     lateinit var alertModel: AlertWidgetModel
 
     constructor(context: Context) : super(context) {
@@ -37,14 +43,22 @@ class CustomAlertWidget : ConstraintLayout{
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        bodyText.text = alertModel.widgetData.title
-        alertModel.widgetData.imageUrl?.let {
-            Glide.with(context)
-                .load(it)
-                .into(bodyImage)
+        alertModel.widgetData.let { likeWidget ->
+
+            bodyText.text = likeWidget.title
+            likeWidget.imageUrl?.let {
+                bodyImage.visibility = View.VISIBLE
+                Glide.with(context)
+                    .load(it)
+                    .into(bodyImage)
+            }
+            val timeMillis = likeWidget.timeout?.parseDuration() ?: 5000
+            uiScope.async {
+                delay(timeMillis)
+                alertModel.finish()
+            }
         }
     }
-
 
 
 }

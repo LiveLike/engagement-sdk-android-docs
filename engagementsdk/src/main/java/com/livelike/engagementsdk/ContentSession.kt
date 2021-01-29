@@ -5,7 +5,6 @@ import android.widget.FrameLayout
 import com.google.gson.JsonParseException
 import com.livelike.engagementsdk.chat.ChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
-import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.core.analytics.AnalyticsSuperProperties
 import com.livelike.engagementsdk.core.data.models.LeaderBoardForClient
 import com.livelike.engagementsdk.core.data.models.LeaderboardClient
@@ -83,8 +82,6 @@ internal class ContentSession(
             userRepository.leaderBoardDelegate = value
         }
 
-    private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
-    private var privateGroupPubnubClient: PubnubChatMessagingClient? = null
     internal var engagementSDK: EngagementSDK? = null
     private var isGamificationEnabled: Boolean = false
     override var widgetInterceptor: WidgetInterceptor? = null
@@ -103,7 +100,7 @@ internal class ContentSession(
 
     override fun getPublishedWidgets(
         liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget?>>
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ) {
         uiScope.launch {
             val defaultUrl =
@@ -180,7 +177,7 @@ internal class ContentSession(
     private val currentWidgetViewStream =
         SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-    val widgetStream = SubscriptionManager<LiveLikeWidget>()
+    override val widgetStream = SubscriptionManager<LiveLikeWidget>()
     private val programRepository =
         ProgramRepository(
             programId,
@@ -361,7 +358,6 @@ internal class ContentSession(
     override fun pause() {
         logVerbose { "Pausing the Session" }
         widgetClient?.stop()
-        pubnubClientForMessageCount?.stop()
         analyticServiceStream.latest()?.trackLastChatStatus(false)
         analyticServiceStream.latest()?.trackLastWidgetStatus(false)
     }
@@ -374,7 +370,6 @@ internal class ContentSession(
             isSetSessionCalled = false
         }
         widgetClient?.start()
-        pubnubClientForMessageCount?.start()
         if (isGamificationEnabled) contentSessionScope.launch { programRepository.fetchProgramRank() }
         analyticServiceStream.latest()?.trackLastChatStatus(true)
         analyticServiceStream.latest()?.trackLastWidgetStatus(true)
@@ -385,9 +380,6 @@ internal class ContentSession(
         contentSessionScope.cancel()
         uiScope.cancel()
         widgetClient?.run {
-            destroy()
-        }
-        pubnubClientForMessageCount?.run {
             destroy()
         }
         currentWidgetViewStream.clear()

@@ -28,10 +28,10 @@ internal abstract class WidgetViewModel<T : Resource>(
 ) : BaseViewModel(analyticsService) {
 
     var widgetInfos: WidgetInfos? = null
-    var sdkConfiguration: EngagementSDK.SdkConfiguration? = null
+    lateinit var sdkConfiguration: EngagementSDK.SdkConfiguration
     var widgetMessagingClient: WidgetManager? = null
     var programRepository: ProgramRepository? = null
-    var userRepository: UserRepository? = null
+    lateinit var userRepository: UserRepository
 
     constructor(
         widgetInfos: WidgetInfos,

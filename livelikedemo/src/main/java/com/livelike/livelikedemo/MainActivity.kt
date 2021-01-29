@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.livelikedemo.channel.ChannelManager
+import com.livelike.livelikedemo.mml.MMLActivity
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
 import kotlinx.android.synthetic.main.activity_main.btn_avatar
@@ -52,6 +53,7 @@ import kotlinx.android.synthetic.main.activity_main.layout_side_panel
 import kotlinx.android.synthetic.main.activity_main.leaderboard_button
 import kotlinx.android.synthetic.main.activity_main.leaderboard_rank
 import kotlinx.android.synthetic.main.activity_main.live_blog
+import kotlinx.android.synthetic.main.activity_main.mml_app
 import kotlinx.android.synthetic.main.activity_main.nicknameText
 import kotlinx.android.synthetic.main.activity_main.private_group_button
 import kotlinx.android.synthetic.main.activity_main.private_group_label
@@ -265,7 +267,7 @@ class MainActivity : AppCompatActivity() {
                     player.theme = when (which) {
                         0 -> R.style.Default
                         1 -> {
-                            EngagementSDK.enableDebug = true
+                            EngagementSDK.enableDebug = false
                             R.style.TurnerChatTheme
                         }
                         2 -> {
@@ -277,7 +279,7 @@ class MainActivity : AppCompatActivity() {
                     onlyWidget.theme = when (which) {
                         0 -> R.style.Default
                         1 -> {
-                            EngagementSDK.enableDebug = true
+                            EngagementSDK.enableDebug = false
                             R.style.TurnerChatTheme
                         }
                         2 -> {
@@ -434,6 +436,9 @@ class MainActivity : AppCompatActivity() {
                     ChatOnlyActivity::class.java
                 )
             )
+        }
+        mml_app.setOnClickListener {
+            startActivity(Intent(this@MainActivity,MMLActivity::class.java))
         }
         (application as LiveLikeApplication).removePublicSession()
         (application as LiveLikeApplication).removePrivateSession()

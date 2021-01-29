@@ -75,7 +75,8 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         (session as ContentSession?)?.isSetSessionCalled = true
         session.setWidgetViewThemeAttribute(widgetViewThemeAttributes)
         session.setWidgetContainer(this, widgetViewThemeAttributes)
-        session.analyticServiceStream.latest()?.trackOrientationChange(resources.configuration.orientation == 1)
+        session.analyticServiceStream.latest()
+            ?.trackOrientationChange(resources.configuration.orientation == 1)
         widgetContainerViewModel?.currentWidgetViewStream?.unsubscribe(WidgetContainerViewModel::class.java)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
@@ -126,6 +127,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
 
     private var widgetListener: WidgetListener? = null
 
+    @Deprecated("use widgetStream exposed in LiveLikeContentSession")
     fun setWidgetListener(widgetListener: WidgetListener) {
         this.widgetListener = widgetListener
     }
@@ -154,38 +156,27 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 widgetType = "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
-            if (widgetContainerViewModel?.currentWidgetViewStream?.latest() == null) {
-                widgetContainerViewModel?.currentWidgetViewStream?.onNext(
-                    Pair(
-                        widgetType,
-                        WidgetProvider()
-                            .get(
-                                null,
-                                WidgetInfos(widgetType, widgetResourceJson, widgetId),
-                                context,
-                                MockAnalyticsService(),
-                                sdk.configurationStream.latest()!!,
-                                {
-                                    widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
-                                },
-                                sdk.userRepository,
-                                null,
-                                SubscriptionManager(),
-                                widgetViewThemeAttributes,
-                                engagementSDKTheme
-                            )
-                    )
+            widgetContainerViewModel?.currentWidgetViewStream?.onNext(
+                Pair(
+                    widgetType,
+                    WidgetProvider()
+                        .get(
+                            null,
+                            WidgetInfos(widgetType, widgetResourceJson, widgetId),
+                            context,
+                            MockAnalyticsService(),
+                            sdk.configurationStream.latest()!!,
+                            {
+                                widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
+                            },
+                            sdk.userRepository,
+                            null,
+                            SubscriptionManager(),
+                            widgetViewThemeAttributes,
+                            engagementSDKTheme
+                        )
                 )
-            } else {
-                widgetContainerViewModel?.currentWidgetViewStream?.subscribe(this) {
-                    if (it == null) {
-                        widgetContainerViewModel?.currentWidgetViewStream?.unsubscribe(this)
-                        post {
-                            displayWidget(sdk, widgetResourceJson)
-                        }
-                    }
-                }
-            }
+            )
         } catch (ex: Exception) {
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()

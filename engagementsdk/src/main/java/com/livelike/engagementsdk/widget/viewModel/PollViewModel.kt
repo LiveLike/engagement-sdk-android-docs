@@ -1,7 +1,5 @@
 package com.livelike.engagementsdk.widget.viewModel
 
-import android.os.Handler
-import android.os.Looper
 import android.support.v7.widget.RecyclerView
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
@@ -14,11 +12,6 @@ import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.data.models.RewardsType
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
-import com.livelike.engagementsdk.core.services.messaging.ClientMessage
-import com.livelike.engagementsdk.core.services.messaging.ConnectionStatus
-import com.livelike.engagementsdk.core.services.messaging.Error
-import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.debounce
@@ -32,9 +25,6 @@ import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.domain.GamificationManager
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.model.Resource
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClientReplay
-import com.livelike.engagementsdk.widget.services.messaging.pubnub.asBehaviourSubject
 import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
@@ -50,7 +40,7 @@ internal class PollWidget(
 internal class PollViewModel(
     private val widgetInfos: WidgetInfos,
     private val analyticsService: AnalyticsService,
-    sdkConfiguration: EngagementSDK.SdkConfiguration,
+    val sdkConfiguration: EngagementSDK.SdkConfiguration,
     val onDismiss: () -> Unit,
     private val userRepository: UserRepository,
     private val programRepository: ProgramRepository? = null,
@@ -79,7 +69,6 @@ internal class PollViewModel(
     var animationResultsProgress = 0f
     private var animationPath = ""
     var voteUrl: String? = null
-    private var pubnub: PubnubMessagingClientReplay? = null
     var animationEggTimerProgress = 0f
     private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
@@ -88,30 +77,30 @@ internal class PollViewModel(
     private val widgetSpecificInfo = AnalyticsWidgetSpecificInfo()
 
     init {
-        sdkConfiguration.pubNubKey.let {
-            pubnub =
-                PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
-                    ?.asBehaviourSubject()
-            pubnub?.addMessagingEventListener(object : MessagingEventListener {
-                override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
-                    val widgetType = event.message.get("event").asString ?: ""
-                    logDebug { "type is : $widgetType" }
-                    val payload = event.message["payload"].asJsonObject
-                    Handler(Looper.getMainLooper()).post {
-                        results.onNext(
-                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
-                        )
-                    }
-                }
-
-                override fun onClientMessageError(client: MessagingClient, error: Error) {}
-                override fun onClientMessageStatus(
-                    client: MessagingClient,
-                    status: ConnectionStatus
-                ) {
-                }
-            })
-        }
+//        sdkConfiguration.pubNubKey.let {
+//            pubnub =
+//                PubnubMessagingClient.getInstance(it, userRepository.currentUserStream.latest()?.id)
+//                    ?.asBehaviourSubject()
+//            pubnub?.addMessagingEventListener(object : MessagingEventListener {
+//                override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
+//                    val widgetType = event.message.get("event").asString ?: ""
+//                    logDebug { "type is : $widgetType" }
+//                    val payload = event.message["payload"].asJsonObject
+//                    Handler(Looper.getMainLooper()).post {
+//                        results.onNext(
+//                            gson.fromJson(payload.toString(), Resource::class.java) ?: null
+//                        )
+//                    }
+//                }
+//
+//                override fun onClientMessageError(client: MessagingClient, error: Error) {}
+//                override fun onClientMessageStatus(
+//                    client: MessagingClient,
+//                    status: ConnectionStatus
+//                ) {
+//                }
+//            })
+//        }
 
         debouncer.subscribe(javaClass.simpleName) {
             if (it != null) vote()
@@ -146,7 +135,7 @@ internal class PollViewModel(
             val resource =
                 gson.fromJson(widgetInfos.payload.toString(), Resource::class.java) ?: null
             resource?.apply {
-                pubnub?.subscribe(listOf(resource.subscribe_channel))
+                subscribeWidgetResults(resource.subscribe_channel,sdkConfiguration,userRepository.currentUserStream,widgetInfos.widgetId,results)
                 data.onNext(WidgetType.fromString(widgetInfos.type)?.let {
                     PollWidget(
                         it,
@@ -225,7 +214,7 @@ internal class PollViewModel(
 
     private fun cleanUp() {
         vote() // Vote on dismiss
-        pubnub?.unsubscribeAll()
+        unsubscribeWidgetResults()
         timeoutStarted = false
         adapter = null
         animationResultsProgress = 0f

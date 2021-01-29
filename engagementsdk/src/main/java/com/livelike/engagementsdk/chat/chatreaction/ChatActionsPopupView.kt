@@ -58,20 +58,25 @@ internal class ChatActionsPopupView(
                 )
             }
 
-            if (!isOwnMessage && isPublichat) {
-                contentView.moderation_flag_lay.apply {
-                    visibility = View.VISIBLE
-                    setOnClickListener {
-                        dismiss()
-                        flagClick.onClick(it)
+            if (chatReactionModerationFlagVisible) {
+                if (!isOwnMessage) {
+                    contentView.moderation_flag_lay.apply {
+                        visibility = View.VISIBLE
+                        setOnClickListener {
+                            dismiss()
+                            flagClick.onClick(it)
+                        }
+                        radius = chatReactionRadius
+                        setCardBackgroundColor(chatReactionPanelColor)
                     }
-                    radius = chatReactionRadius
-                    setCardBackgroundColor(chatReactionPanelColor)
+                    contentView.moderation_flag.setColorFilter(
+                        chatReactionFlagTintColor
+                    )
                 }
-                contentView.moderation_flag.setColorFilter(
-                    chatReactionFlagTintColor
-                )
+            } else {
+                contentView.moderation_flag_lay.visibility = View.GONE
             }
+
             setOnDismissListener(hideFloatingUi)
             isOutsideTouchable = true
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -159,7 +164,21 @@ internal class ChatActionsPopupView(
                 gravity = Gravity.RIGHT
                 text = formattedReactionCount(count)
                 setTextColor(chatViewThemeAttributes.chatReactionPanelCountColor)
-                setTypeface(null, Typeface.BOLD)
+                if (chatViewThemeAttributes.chatReactionPanelCountCustomFontPath != null) {
+                    try {
+                        val typeFace =
+                            Typeface.createFromAsset(
+                                context.assets,
+                                chatViewThemeAttributes.chatReactionPanelCountCustomFontPath
+                            )
+                        setTypeface(typeFace, Typeface.BOLD)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        setTypeface(null, Typeface.BOLD)
+                    }
+                } else {
+                    setTypeface(null, Typeface.BOLD)
+                }
                 setTextSize(
                     TypedValue.COMPLEX_UNIT_PX,
                     context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size)
@@ -198,6 +217,7 @@ internal class ChatActionsPopupView(
             contentView.chat_reaction_background_card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED)
         }, 500)
     }
+
 }
 
 internal interface SelectReactionListener {

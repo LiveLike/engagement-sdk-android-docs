@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="livelike_chat_message_date_time_margin_top">16dp</dimen>
+
+
+    <dimen name="rounded_corner_box_radius">4dp</dimen>
+    <dimen name="widget_time_bar_height">4dp</dimen>
+    <dimen name="timer_margin_top">16dp</dimen>
+</resources>
