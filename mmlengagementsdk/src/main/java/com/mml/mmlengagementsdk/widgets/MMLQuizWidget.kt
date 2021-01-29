@@ -3,12 +3,15 @@ package com.mml.mmlengagementsdk.widgets
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 import com.mml.mmlengagementsdk.widgets.adapter.QuizListAdapter
 import com.mml.mmlengagementsdk.widgets.model.LiveLikeWidgetOption
+import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.parseDuration
 import com.mml.mmlengagementsdk.widgets.utils.setCustomFontWithTextStyle
@@ -24,6 +27,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import kotlin.math.max
 
 class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
     lateinit var quizWidgetModel: QuizWidgetModel
@@ -31,8 +36,10 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
     private var quizAnswerJob: Job? = null
     var isTimeLine = false
     var livelikeWidgetResult: LiveLikeWidgetResult? = null
+    var isImage = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
+    var timelineWidgetResource: TimelineWidgetResource? = null
 
     init {
         inflate(context, R.layout.mml_quiz_widget, this)
@@ -59,9 +66,18 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
         super.onAttachedToWindow()
         quizWidgetModel.widgetData.let { liveLikeWidget ->
             liveLikeWidget.choices?.let {
+
+                if (isImage) {
+                    quiz_rv.layoutManager = GridLayoutManager(context, 2)
+                } else {
+                    quiz_rv.layoutManager =
+                        LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+                }
+
                 adapter =
                     QuizListAdapter(
                         context,
+                        isImage,
                         ArrayList(it.map { item ->
                             LiveLikeWidgetOption(
                                 item?.id!!,
@@ -123,8 +139,16 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
                 }
                 adapter.notifyDataSetChanged()
             } else {
+
+                if (timelineWidgetResource?.startTime == null) {
+                    timelineWidgetResource?.startTime = Calendar.getInstance().timeInMillis
+                }
                 val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
-                time_bar.startTimer(timeMillis)
+                val timeDiff =
+                    Calendar.getInstance().timeInMillis - (timelineWidgetResource?.startTime ?: 0L)
+                val remainingTimeMillis = max(0, timeMillis - timeDiff)
+                time_bar.visibility = View.VISIBLE
+                time_bar.startTimer(timeMillis, remainingTimeMillis)
                 subscribeToVoteResults()
                 uiScope.async {
                     delay(timeMillis)

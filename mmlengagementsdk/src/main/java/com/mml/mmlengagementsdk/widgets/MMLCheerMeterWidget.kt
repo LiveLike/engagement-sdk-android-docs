@@ -8,6 +8,7 @@ import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.OptionsItem
 import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
+import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.parseDuration
 import com.mml.mmlengagementsdk.widgets.utils.setCustomFontWithTextStyle
@@ -29,6 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import java.util.Calendar
+import kotlin.math.max
 
 class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
 
@@ -38,7 +41,7 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
     var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
-
+    var timelineWidgetResource: TimelineWidgetResource? = null
     init {
         inflate(context, R.layout.mml_cheer_meter, this)
     }
@@ -67,8 +70,16 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                     showWinnerAnimation()
                 }
             } else {
+                if (timelineWidgetResource?.startTime == null) {
+                    timelineWidgetResource?.startTime = Calendar.getInstance().timeInMillis
+                }
                 val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
-                time_bar.startTimer(timeMillis)
+                val timeDiff =
+                    Calendar.getInstance().timeInMillis - (timelineWidgetResource?.startTime ?: 0L)
+                val remainingTimeMillis = max(0, timeMillis - timeDiff)
+                time_bar.visibility = View.VISIBLE
+                time_bar.startTimer(timeMillis, remainingTimeMillis)
+
                 uiScope.async {
                     delay(timeMillis)
                     showWinnerAnimation()

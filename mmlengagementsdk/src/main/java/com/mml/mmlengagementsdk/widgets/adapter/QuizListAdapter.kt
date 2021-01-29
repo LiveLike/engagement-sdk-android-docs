@@ -18,6 +18,7 @@ import kotlin.math.max
 
 class QuizListAdapter(
     private val context: Context,
+    private val isImage : Boolean,
     var list: ArrayList<LiveLikeWidgetOption>,
     private val optionSelectListener: (LiveLikeWidgetOption) -> Unit
 ) :
@@ -41,12 +42,13 @@ class QuizListAdapter(
         viewType: Int
     ): ImageOptionsListItemViewHolder {
         return ImageOptionsListItemViewHolder(
-            LayoutInflater.from(context).inflate(
-                R.layout.mml_image_option_list_item,
-                parent,
-                false
+                LayoutInflater.from(parent.context!!).inflate(
+                    when (isImage) {
+                        true -> R.layout.mml_image_option_list_item
+                        else -> R.layout.mml_text_option_list_item
+                    }, parent, false
+                )
             )
-        )
     }
 
     override fun getItemCount(): Int {
@@ -60,7 +62,8 @@ class QuizListAdapter(
         val liveLikeWidgetOption = list[position]
         holder.view.option_tv.text = liveLikeWidgetOption.description
         setCustomFontWithTextStyle(holder.view.option_tv, "fonts/RingsideRegular-Book.otf")
-        Glide.with(context).load(liveLikeWidgetOption.imageUrl).into(holder.view.option_iv)
+        if(isImage)
+            Glide.with(context).load(liveLikeWidgetOption.imageUrl).into(holder.view.option_iv)
 
         if (isResultState && isResultAvailable) {
             holder.view.result_bar.visibility = View.VISIBLE

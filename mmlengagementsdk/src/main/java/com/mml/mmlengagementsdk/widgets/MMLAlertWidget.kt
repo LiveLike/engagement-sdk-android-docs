@@ -10,6 +10,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
+import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.parseDuration
 import com.mml.mmlengagementsdk.widgets.utils.setCustomFontWithTextStyle
@@ -24,12 +25,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import java.util.Calendar
+import kotlin.math.max
 
 class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
+
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
     var isTimeLine: Boolean = false
     lateinit var alertModel: AlertWidgetModel
+    var timelineWidgetResource: TimelineWidgetResource? = null
 
     init {
         inflate(context, R.layout.mml_alert_widget, this)
@@ -72,14 +77,21 @@ class MMLAlertWidget(context: Context) : ConstraintLayout(context) {
                 }
             }
             if (isTimeLine) {
-                time_bar.visibility = View.INVISIBLE
+                time_bar.visibility = View.GONE
             } else {
+                if (timelineWidgetResource?.startTime == null) {
+                    timelineWidgetResource?.startTime = Calendar.getInstance().timeInMillis
+                }
                 val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
+                val timeDiff =
+                    Calendar.getInstance().timeInMillis - (timelineWidgetResource?.startTime ?: 0L)
+                val remainingTimeMillis = max(0, timeMillis - timeDiff)
                 time_bar.visibility = View.VISIBLE
-                time_bar.startTimer(timeMillis)
+                time_bar.startTimer(timeMillis, remainingTimeMillis)
                 uiScope.async {
                     delay(timeMillis)
                     isTimeLine = true
+                    time_bar.visibility = View.GONE
                 }
             }
         }

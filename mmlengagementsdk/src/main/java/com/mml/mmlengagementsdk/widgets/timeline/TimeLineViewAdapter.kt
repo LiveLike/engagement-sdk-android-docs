@@ -59,5 +59,6 @@ data class TimelineWidgetResource(
     var isActive: Boolean = false,
     val liveLikeWidget: LiveLikeWidget,
     var selectedOptionitem: OptionsItem? = null,
-    var liveLikeWidgetResult: LiveLikeWidgetResult? = null
+    var liveLikeWidgetResult: LiveLikeWidgetResult? = null,
+    var startTime : Long? = null
 )
