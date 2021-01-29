@@ -105,7 +105,9 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
             // TODO  change sdk api for duration, it should passes duration in millis, parsing should be done at sdk side.
             if (timelineWidgetResource?.isActive == false) {
                 time_bar.visibility = View.INVISIBLE
-                val totalVotes = liveLikeWidget.choices?.sumBy { it?.answerCount ?: 0 } ?: 0
+                val totalVotes = timelineWidgetResource?.liveLikeWidgetResult?.choices?.sumBy {
+                    it.answer_count ?: 0
+                } ?: liveLikeWidget.choices?.sumBy { it?.answerCount ?: 0 } ?: 0
                 adapter.isResultState = true
                 adapter.isResultAvailable = true
                 liveLikeWidget.choices?.zip(adapter.list)?.let { options ->
@@ -128,7 +130,7 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
                         adapter.list = ArrayList(options.map { item ->
                             LiveLikeWidgetOption(
                                 item.second.id,
-                                item.second.description ?: "",
+                                item.second.description,
                                 item.first.is_correct,
                                 item.second.imageUrl,
                                 when (totalVotes > 0) {
@@ -153,6 +155,7 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
                 subscribeToVoteResults()
                 uiScope.async {
                     delay(remainingTimeMillis)
+                    time_bar.visibility = View.GONE
                     adapter.isResultState = true
                     adapter.notifyDataSetChanged()
                     adapter.selectedOptionItem?.let {

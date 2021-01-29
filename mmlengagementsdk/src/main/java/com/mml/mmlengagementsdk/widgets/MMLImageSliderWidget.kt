@@ -111,6 +111,7 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                         }
                         timelineWidgetResource?.liveLikeWidgetResult = it
                     }
+                    time_bar.visibility = View.GONE
                     image_slider.isUserSeekable = false
                     delay(2000)
                     timelineWidgetResource?.isActive = false

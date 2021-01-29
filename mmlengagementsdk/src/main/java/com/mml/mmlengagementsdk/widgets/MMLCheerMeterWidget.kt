@@ -92,6 +92,7 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                     frame_cheer_team_2.setBackgroundResource(R.drawable.mml_cheer_meter_background_stroke_drawable)
                     timelineWidgetResource?.isActive = false
                     cheerMeterWidgetModel.voteResults.unsubscribe(this@MMLCheerMeterWidget)
+                    time_bar.visibility = View.GONE
                 }
             }
 

@@ -113,6 +113,7 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                         adapter.isTimeLine = true
                         adapter.notifyDataSetChanged()
                         pollWidgetModel?.voteResults?.unsubscribe(this@MMLPollWidget)
+                        time_bar.visibility = View.GONE
                     }
                 }
             }
