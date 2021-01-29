@@ -94,7 +94,6 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
                             quizWidgetModel.lockInAnswer(option.id ?: "")
                         }
                     }
-                quiz_rv.layoutManager = GridLayoutManager(context, 2)
                 quiz_rv.adapter = adapter
             }
             liveLikeWidget.createdAt?.let {
