@@ -86,6 +86,10 @@ class MMLCheerMeterWidget(context: Context) : ConstraintLayout(context) {
                 uiScope.async {
                     delay(remainingTimeMillis)
                     showWinnerAnimation()
+                    frame_cheer_team_1.setOnClickListener(null)
+                    frame_cheer_team_2.setOnClickListener(null)
+                    frame_cheer_team_1.setBackgroundResource(R.drawable.mml_cheer_meter_background_stroke_drawable)
+                    frame_cheer_team_2.setBackgroundResource(R.drawable.mml_cheer_meter_background_stroke_drawable)
                     timelineWidgetResource?.isActive = false
                     cheerMeterWidgetModel.voteResults.unsubscribe(this@MMLCheerMeterWidget)
                 }

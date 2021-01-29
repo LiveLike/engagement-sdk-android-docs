@@ -7,6 +7,8 @@
         android:left="2dp"
         android:right="2dp"
         android:top="2dp" />
-    <solid android:color="@android:color/black" />
+    <stroke
+        android:width="2dp"
+        android:color="@color/mml_cheer_meter_team2_bg_color" />
 
 </shape>
