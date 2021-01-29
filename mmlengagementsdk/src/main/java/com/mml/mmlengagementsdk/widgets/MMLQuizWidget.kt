@@ -3,6 +3,8 @@ package com.mml.mmlengagementsdk.widgets
 import android.content.Context
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.mmlengagementsdk.R
 import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
@@ -11,6 +13,7 @@ import com.mml.mmlengagementsdk.widgets.model.LiveLikeWidgetOption
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.parseDuration
 import com.mml.mmlengagementsdk.widgets.utils.setCustomFontWithTextStyle
+import kotlinx.android.synthetic.main.mml_poll_widget.view.rcyl_poll_list
 import kotlinx.android.synthetic.main.mml_quiz_widget.view.lottie_animation_view
 import kotlinx.android.synthetic.main.mml_quiz_widget.view.quiz_rv
 import kotlinx.android.synthetic.main.mml_quiz_widget.view.quiz_title
@@ -29,6 +32,7 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
     private lateinit var adapter: QuizListAdapter
     private var quizAnswerJob: Job? = null
     var isTimeLine = false
+    var isImage = false
 
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
@@ -58,9 +62,18 @@ class MMLQuizWidget(context: Context) : ConstraintLayout(context) {
         super.onAttachedToWindow()
         quizWidgetModel.widgetData.let { liveLikeWidget ->
             liveLikeWidget.choices?.let {
+
+                if (isImage) {
+                    rcyl_poll_list.layoutManager = GridLayoutManager(context, 2)
+                } else {
+                    rcyl_poll_list.layoutManager =
+                        LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+                }
+
                 adapter =
                     QuizListAdapter(
                         context,
+                        isImage,
                         ArrayList(it.map { item ->
                             LiveLikeWidgetOption(
                                 item?.id!!,
