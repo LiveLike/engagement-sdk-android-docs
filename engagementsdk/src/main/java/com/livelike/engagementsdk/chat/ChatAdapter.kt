@@ -474,6 +474,15 @@ internal class ChatRecyclerAdapter(
             }
         }
 
+        private fun setLetterSpacingForTextView(textView: TextView, letterSpacing: Float) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                textView.letterSpacing = letterSpacing
+            } else {
+                textView.textScaleX = letterSpacing
+
+            }
+        }
+
         @SuppressLint("SetTextI18n")
         private fun setMessage(
             message: ChatMessage?
@@ -508,13 +517,14 @@ internal class ChatRecyclerAdapter(
                             chatUserNameCustomFontPath,
                             chatUserNameTextStyle
                         )
+                        setLetterSpacingForTextView(chat_nickname, chatUserNameTextLetterSpacing)
                         chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatMessageTextSize)
                         setCustomFontWithTextStyle(
                             chatMessage,
                             chatMessageCustomFontPath,
                             chatMessageTextStyle
                         )
-
+                        setLetterSpacingForTextView(chatMessage, chatMessageTextLetterSpacing)
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
@@ -540,6 +550,10 @@ internal class ChatRecyclerAdapter(
                             )
                             v.message_date_time.isAllCaps = chatMessageTimeTextAllCaps
                             v.message_date_time.setTextColor(chatMessageTimeTextColor)
+                            setLetterSpacingForTextView(
+                                v.message_date_time,
+                                chatMessageTimeTextLetterSpacing
+                            )
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }
