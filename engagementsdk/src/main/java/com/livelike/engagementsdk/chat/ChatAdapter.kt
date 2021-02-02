@@ -477,9 +477,6 @@ internal class ChatRecyclerAdapter(
         private fun setLetterSpacingForTextView(textView: TextView, letterSpacing: Float) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 textView.letterSpacing = letterSpacing
-            } else {
-                textView.textScaleX = letterSpacing
-
             }
         }
 
