@@ -55,6 +55,4 @@
         <item name="android:windowEnterAnimation">@anim/chat_reaction_popup_show_animation_reverse
         </item>
     </style>
-
-
 </resources>
