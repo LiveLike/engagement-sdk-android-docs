@@ -7,8 +7,8 @@ import android.util.TypedValue
 import android.view.View
 import com.bumptech.glide.Glide
 import com.example.mmlengagementsdk.R
-import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
+import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.imageslider.ScaleDrawable
 import com.mml.mmlengagementsdk.widgets.utils.imageslider.ThumbDrawable
@@ -23,16 +23,18 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Calendar
+import kotlin.math.max
 
 class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
     lateinit var imageSliderWidgetModel: ImageSliderWidgetModel
-    var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
-    var livelikeWidgetResult: LiveLikeWidgetResult? = null
+    var timelineWidgetResource: TimelineWidgetResource? = null
 
     init {
         inflate(context, R.layout.mml_image_slider, this)
@@ -80,17 +82,26 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                     }
                 }
             }
-            if (isTimeLine) {
+            if (timelineWidgetResource?.isActive == false) {
                 image_slider.averageProgress =
-                    livelikeWidgetResult?.averageMagnitude ?: liveLikeWidget.averageMagnitude
+                    timelineWidgetResource?.liveLikeWidgetResult?.averageMagnitude
+                        ?: liveLikeWidget.averageMagnitude
                 time_bar.visibility = View.INVISIBLE
                 image_slider.isUserSeekable = false
             } else {
                 image_slider.isUserSeekable = true
+                if (timelineWidgetResource?.startTime == null) {
+                    timelineWidgetResource?.startTime = Calendar.getInstance().timeInMillis
+                }
                 val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
-                time_bar.startTimer(timeMillis)
+                val timeDiff =
+                    Calendar.getInstance().timeInMillis - (timelineWidgetResource?.startTime ?: 0L)
+                val remainingTimeMillis = max(0, timeMillis - timeDiff)
+                time_bar.visibility = View.VISIBLE
+                time_bar.startTimer(timeMillis, remainingTimeMillis)
+
                 uiScope.async {
-                    delay(timeMillis)
+                    delay(remainingTimeMillis)
                     imageSliderWidgetModel.lockInVote(image_slider.progress.toDouble())
                     imageSliderWidgetModel.voteResults.subscribe(this@MMLImageSliderWidget) {
                         it?.let {
@@ -98,10 +109,12 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
                                 image_slider.averageProgress = it.averageMagnitude
                             }
                         }
-                        livelikeWidgetResult = it
+                        timelineWidgetResource?.liveLikeWidgetResult = it
                     }
+                    time_bar.visibility = View.GONE
+                    image_slider.isUserSeekable = false
                     delay(2000)
-                    isTimeLine = true
+                    timelineWidgetResource?.isActive = false
                     imageSliderWidgetModel.voteResults.unsubscribe(this@MMLImageSliderWidget)
                 }
             }
@@ -110,7 +123,9 @@ class MMLImageSliderWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (!isTimeLine) {
+        if (timelineWidgetResource?.isActive == true) {
+            job.cancel()
+            uiScope.cancel()
             imageSliderWidgetModel.voteResults.unsubscribe(this)
             imageSliderWidgetModel.finish()
         }

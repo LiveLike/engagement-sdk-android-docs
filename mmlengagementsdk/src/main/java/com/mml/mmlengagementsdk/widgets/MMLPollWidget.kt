@@ -7,9 +7,9 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.mmlengagementsdk.R
-import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.mml.mmlengagementsdk.widgets.adapter.PollListAdapter
+import com.mml.mmlengagementsdk.widgets.timeline.TimelineWidgetResource
 import com.mml.mmlengagementsdk.widgets.utils.getFormattedTime
 import com.mml.mmlengagementsdk.widgets.utils.parseDuration
 import com.mml.mmlengagementsdk.widgets.utils.setCustomFontWithTextStyle
@@ -21,15 +21,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import java.util.Calendar
+import kotlin.math.max
 
 class MMLPollWidget(context: Context) : ConstraintLayout(context) {
     var pollWidgetModel: PollWidgetModel? = null
     var isImage = false
-    var isTimeLine = false
     private val job = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + job)
-    var livelikeWidgetResult: LiveLikeWidgetResult? = null
+    var timelineWidgetResource: TimelineWidgetResource? = null
 
     init {
         inflate(context, R.layout.mml_poll_widget, this)
@@ -55,18 +57,18 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                     PollListAdapter(
                         context,
                         isImage,
-                        ArrayList(list.map { item -> item!! }),
-                        isTimeLine
+                        ArrayList(list.map { item -> item!! })
                     )
                 rcyl_poll_list.adapter = adapter
 
-                if (isTimeLine) {
+                if (timelineWidgetResource?.isActive == false) {
+                    adapter.isTimeLine = true
                     list.forEach { op ->
                         op?.let {
                             adapter.optionIdCount[op.id!!] = op.voteCount ?: 0
                         }
                     }
-                    livelikeWidgetResult?.choices?.let { options ->
+                    timelineWidgetResource?.liveLikeWidgetResult?.choices?.let { options ->
                         options.forEach { op ->
                             adapter.optionIdCount[op.id] = op.vote_count ?: 0
                         }
@@ -91,15 +93,27 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
                             if (change)
                                 adapter.notifyDataSetChanged()
                         }
-                        livelikeWidgetResult = result
+                        timelineWidgetResource?.liveLikeWidgetResult = result
+                    }
+
+                    if (timelineWidgetResource?.startTime == null) {
+                        timelineWidgetResource?.startTime = Calendar.getInstance().timeInMillis
                     }
                     val timeMillis = liveLikeWidget.timeout?.parseDuration() ?: 5000
-                    time_bar.startTimer(timeMillis)
+                    val timeDiff =
+                        Calendar.getInstance().timeInMillis - (timelineWidgetResource?.startTime
+                            ?: 0L)
+                    val remainingTimeMillis = max(0, timeMillis - timeDiff)
+                    time_bar.visibility = View.VISIBLE
+                    time_bar.startTimer(timeMillis, remainingTimeMillis)
 
                     uiScope.async {
-                        delay(timeMillis)
-                        isTimeLine = true
+                        delay(remainingTimeMillis)
+                        timelineWidgetResource?.isActive = false
+                        adapter.isTimeLine = true
+                        adapter.notifyDataSetChanged()
                         pollWidgetModel?.voteResults?.unsubscribe(this@MMLPollWidget)
+                        time_bar.visibility = View.GONE
                     }
                 }
             }
@@ -109,7 +123,9 @@ class MMLPollWidget(context: Context) : ConstraintLayout(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (!isTimeLine) {
+        if (timelineWidgetResource?.isActive == true) {
+            job.cancel()
+            uiScope.cancel()
             pollWidgetModel?.voteResults?.unsubscribe(this)
             pollWidgetModel?.finish()
         }
