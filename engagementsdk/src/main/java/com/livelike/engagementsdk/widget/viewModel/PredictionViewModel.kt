@@ -134,7 +134,6 @@ internal class PredictionViewModel(
                 uiScope.launch {
                     delay(AndroidResource.parseDuration(timeout))
                     confirmationState(widgetViewThemeAttributes)
-                    widgetState.onNext(WidgetStates.RESULTS)
                 }
             }
         }
@@ -233,6 +232,7 @@ internal class PredictionViewModel(
                     interactionData
                 )
             }
+            widgetState.onNext(WidgetStates.RESULTS)
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
         }
