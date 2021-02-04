@@ -6,14 +6,18 @@ clone:
 definitions:
   caches:
     sonar: ~/.sonar/cache  # Caching SonarCloud artifacts will speed up your build
+    gradlewrapper: ~/.gradle/wrapper
   steps:
     - step: &build-test-sonarcloud
         name: Build, test and analyze on SonarCloud
         caches:
           - gradle
           - sonar
+          - gradlewrapper
         script:
-          - ./gradlew build sonarqube
+          - pipe: sonarsource/sonarcloud-scan:1.2.0
+          - pipe: sonarsource/sonarcloud-quality-gate:0.1.4
+          - ./gradlew lintProductionRelease
         artifacts:
           - build/libs/**
 
@@ -33,6 +37,7 @@ pipelines:                 # More info here: https://confluence.atlassian.com/bi
             - pipe: bugsnag-integrations/bugsnag-build-report:0.2.2
               variables:
                 API_KEY: 'abb12b7b7d7868c07733e3e3808656c8'
+
   pull-requests:
     '**':
       - step: *build-test-sonarcloud
