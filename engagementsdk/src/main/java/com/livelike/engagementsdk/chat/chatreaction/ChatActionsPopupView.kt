@@ -183,6 +183,15 @@ internal class ChatActionsPopupView(
                     TypedValue.COMPLEX_UNIT_PX,
                     context.resources.getDimension(R.dimen.livelike_chat_reaction_popup_text_size)
                 )
+                visibility = if (!chatViewThemeAttributes.chatReactionPanelCountVisibleIfZero) {
+                    if (count > 0) {
+                        View.VISIBLE
+                    } else {
+                        View.INVISIBLE
+                    }
+                } else {
+                    View.VISIBLE
+                }
             }
             relativeLayout.addView(
                 imageView,

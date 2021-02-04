@@ -597,6 +597,8 @@ class ChatViewThemeAttributes {
             )
             chatReactionPanelGravity =
                 getInt(R.styleable.ChatView_chatReactionPanelGravity, Gravity.NO_GRAVITY)
+            chatReactionPanelCountVisibleIfZero =
+                getBoolean(R.styleable.ChatView_chatReactionPanelCountVisibleIfZero, true)
         }
     }
 
@@ -703,4 +705,5 @@ class ChatViewThemeAttributes {
     var chatReactionDisplayCountTextSize: Float = AndroidResource.spToPx(11f)
     var chatReactionDisplaySize: Int = AndroidResource.dpToPx(12)
     var chatReactionPanelGravity: Int = Gravity.NO_GRAVITY
+    var chatReactionPanelCountVisibleIfZero: Boolean = true
 }

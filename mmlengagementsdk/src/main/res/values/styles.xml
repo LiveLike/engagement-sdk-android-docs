@@ -85,6 +85,7 @@
         <item name="chatReactionPanelGravity">right|bottom</item>
         <item name="chatReactionPanelCountColor">@color/mml_chat_text_color</item>
         <item name="chatReactionPanelCountCustomFontPath">fonts/RingsideExtraWide-Black.otf</item>
+        <item name="chatReactionPanelCountVisibleIfZero">false</item>
     </style>
 
 </resources>
