@@ -18,12 +18,11 @@ class TimeBar : View {
         defStyle
     )
 
-
-    fun startTimer(time: Long) {
-//            time_bar.measure( View.MeasureSpec.EXACTLY, View.MeasureSpec.EXACTLY)
+    fun startTimer(totalTime: Long, remainingTime: Long) {
         time_bar.pivotX = 0f
-        ObjectAnimator.ofFloat(time_bar, "scaleX", 0f, 1f).apply {
-            this.duration = time
+        val scaleX = (totalTime - remainingTime) / totalTime.toFloat()
+        ObjectAnimator.ofFloat(time_bar, "scaleX", scaleX, 1f).apply {
+            this.duration = remainingTime
             start()
         }
     }

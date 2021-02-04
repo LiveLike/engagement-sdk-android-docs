@@ -43,7 +43,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/mml_cheer_meter_btn_selector">
+                    android:background="@drawable/mml_cheer_meter_team1_btn_selector">
 
                     <ProgressBar
                         android:id="@+id/prg_cheer_team_1"
@@ -74,7 +74,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@drawable/mml_cheer_meter_btn_selector">
+                    android:background="@drawable/mml_cheer_meter_team2_btn_selector">
 
                     <ProgressBar
                         android:id="@+id/prg_cheer_team_2"

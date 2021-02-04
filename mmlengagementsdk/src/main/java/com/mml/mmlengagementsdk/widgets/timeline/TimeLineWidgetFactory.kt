@@ -25,14 +25,14 @@ class TimeLineWidgetFactory(
     override fun createCheerMeterView(cheerMeterWidgetModel: CheerMeterWidgetmodel): View? {
         return MMLCheerMeterWidget(context).apply {
             this.cheerMeterWidgetModel = cheerMeterWidgetModel
-            this.isTimeLine = !isWidgetActive(cheerMeterWidgetModel)
+            timelineWidgetResource = widgetList.find { it.liveLikeWidget.id == cheerMeterWidgetModel.widgetData.id }
         }
     }
 
     override fun createAlertWidgetView(alertWidgetModel: AlertWidgetModel): View? {
         return MMLAlertWidget(context).apply {
             this.alertModel = alertWidgetModel
-            this.isTimeLine = !isWidgetActive(alertWidgetModel)
+            timelineWidgetResource = widgetList.find { it.liveLikeWidget.id == alertWidgetModel.widgetData.id }
         }
     }
 
@@ -41,8 +41,9 @@ class TimeLineWidgetFactory(
         isImage: Boolean
     ): View? {
         return MMLQuizWidget(context).apply {
+            this.isImage = isImage
             this.quizWidgetModel = quizWidgetModel
-            this.isTimeLine = !isWidgetActive(quizWidgetModel)
+            timelineWidgetResource = widgetList.find { it.liveLikeWidget.id == quizWidgetModel.widgetData.id }
         }
     }
 
@@ -67,14 +68,14 @@ class TimeLineWidgetFactory(
         return MMLPollWidget(context).apply {
             this.isImage = isImage
             this.pollWidgetModel = pollWidgetModel
-            this.isTimeLine = !isWidgetActive(pollWidgetModel)
+            timelineWidgetResource = widgetList.find { it.liveLikeWidget.id == pollWidgetModel.widgetData.id }
         }
     }
 
     override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
         return MMLImageSliderWidget(context).apply {
             this.imageSliderWidgetModel = imageSliderWidgetModel
-            this.isTimeLine = !isWidgetActive(imageSliderWidgetModel)
+            timelineWidgetResource = widgetList.find { it.liveLikeWidget.id == imageSliderWidgetModel.widgetData.id }
         }
     }
 
