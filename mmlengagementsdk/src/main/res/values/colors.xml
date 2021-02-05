@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="mml_chat_text_color">#17171d</color>
-    <color name="livelike_chat_reaction_selected_background_color">#12000000</color>
+    <color name="livelike_chat_reaction_selected_background_color">#2AA323</color>
 
     <color name="incorrect_result_bar_color">#e41e0c</color>
     <color name="correct_result_bar_color">#00c265</color>
