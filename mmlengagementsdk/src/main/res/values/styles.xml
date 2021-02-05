@@ -86,6 +86,9 @@
         <item name="chatReactionPanelCountColor">@color/mml_chat_text_color</item>
         <item name="chatReactionPanelCountCustomFontPath">fonts/RingsideExtraWide-Black.otf</item>
         <item name="chatReactionPanelCountVisibleIfZero">false</item>
+        <item name="chatMessageTimeTextLetterSpacing">0.1</item>
+        <item name="chatMessageTextLetterSpacing">0.0</item>
+        <item name="chatUserNameTextLetterSpacing">0.0</item>
     </style>
 
 </resources>

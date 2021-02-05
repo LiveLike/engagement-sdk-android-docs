@@ -117,6 +117,8 @@
     <color name="livelike_sticker_keyboard_tab_background_color">#282828</color>
     <color name="livelike_sticker_keyboard_tab_indicator_color">#D1D1D1</color>
     <color name="livelike_sticker_keyboard_empty_text_color">#66ffffff</color>
+    <color name="livelike_snap_live_color">#FFF</color>
+    <color name="livelike_snap_live_icon_color">#000</color>
 
 
 </resources>
