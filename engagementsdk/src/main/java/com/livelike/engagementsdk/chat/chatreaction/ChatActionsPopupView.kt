@@ -109,6 +109,7 @@ internal class ChatActionsPopupView(
             val cardView = CardView(context)
             cardView.cardElevation = 0f
             cardView.setContentPadding(5, 5, 8, 5)
+            cardView.setBackgroundColor(Color.TRANSPARENT)
             val relativeLayout = RelativeLayout(context)
             val countView = TextView(context)
             val imageView = ImageView(context)

@@ -597,6 +597,12 @@ class ChatViewThemeAttributes {
             )
             chatReactionPanelGravity =
                 getInt(R.styleable.ChatView_chatReactionPanelGravity, Gravity.NO_GRAVITY)
+            chatMessageTimeTextLetterSpacing =
+                getFloat(R.styleable.ChatView_chatMessageTimeTextLetterSpacing, 0.0f)
+            chatMessageTextLetterSpacing =
+                getFloat(R.styleable.ChatView_chatMessageTextLetterSpacing, 0.0f)
+            chatUserNameTextLetterSpacing =
+                getFloat(R.styleable.ChatView_chatUserNameTextLetterSpacing, 0.0f)
         }
     }
 
@@ -697,6 +703,9 @@ class ChatViewThemeAttributes {
     var chatMessageTimeTextStyle: Int = 0
     var chatMessageTimeTextAllCaps: Boolean = false
     var chatMessageTimeTextColor: Int = Color.BLACK
+    var chatMessageTimeTextLetterSpacing: Float = 0.0f
+    var chatUserNameTextLetterSpacing: Float = 0.0f
+    var chatMessageTextLetterSpacing: Float = 0.0f
     var chatReactionDisplayCountTextStyle: Int = 0
     var chatReactionDisplayCountCustomFontPath: String? = null
     var chatReactionPanelCountCustomFontPath: String? = null
