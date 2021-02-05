@@ -494,11 +494,6 @@ internal class ChatRecyclerAdapter(
 
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
-                        if (message.isDeleted) {
-                            chatMessage.setTypeface(null, Typeface.ITALIC)
-                        } else {
-                            chatMessage.setTypeface(null, Typeface.NORMAL)
-                        }
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text =
@@ -519,7 +514,10 @@ internal class ChatRecyclerAdapter(
                         setCustomFontWithTextStyle(
                             chatMessage,
                             chatMessageCustomFontPath,
-                            chatMessageTextStyle
+                            when (isDeleted) {
+                                true -> Typeface.ITALIC
+                                else -> chatMessageTextStyle
+                            }
                         )
                         setLetterSpacingForTextView(chatMessage, chatMessageTextLetterSpacing)
                         if (chatViewThemeAttribute.showMessageDateTime) {
