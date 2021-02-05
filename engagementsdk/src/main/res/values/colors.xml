@@ -104,7 +104,7 @@
     <color name="livelike_image_slider_widget_result_center_color">#FF2D2D</color>
     <color name="livelike_sticker_recent_empty_text_color">#66ffffff</color>
     <color name="livelike_chatMessage_timestamp_text_color">#666666</color>
-    <color name="livelike_chat_reaction_selected_background_color">#33000000</color>
+
     <color name="livelike_alert_slider_background_color">#90000000</color>
     <color name="chat_bottom_bar_gradient_end_color">#00000000</color>
     <color name="chat_bottom_bar_gradient_start_color">#000000</color>
@@ -119,6 +119,5 @@
     <color name="livelike_sticker_keyboard_empty_text_color">#66ffffff</color>
     <color name="livelike_snap_live_color">#FFF</color>
     <color name="livelike_snap_live_icon_color">#000</color>
-
-
+    <color name="livelike_chat_reaction_selected_background_color">#33000000</color>
 </resources>
