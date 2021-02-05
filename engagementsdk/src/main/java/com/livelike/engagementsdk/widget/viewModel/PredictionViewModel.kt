@@ -32,6 +32,7 @@ import com.livelike.engagementsdk.widget.utils.toAnalyticsString
 import com.livelike.engagementsdk.widget.view.addGamificationAnalyticsData
 import com.livelike.engagementsdk.widget.widgetModel.FollowUpWidgetViewModel
 import com.livelike.engagementsdk.widget.widgetModel.PredictionWidgetViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.FormBody
@@ -79,7 +80,6 @@ internal class PredictionViewModel(
     }
 
     private fun widgetObserver(widgetInfos: WidgetInfos?) {
-        cleanUp()
         if (widgetInfos != null) {
             val type = WidgetType.fromString(widgetInfos.type)
             if (type == WidgetType.IMAGE_PREDICTION ||
@@ -210,6 +210,7 @@ internal class PredictionViewModel(
         }
 
         adapter?.selectionLocked = true
+        widgetState.onNext(WidgetStates.RESULTS)
         logDebug { "Prediction Widget selected Position:${adapter?.selectedPosition}" }
         uiScope.launch {
             vote()
@@ -223,8 +224,6 @@ internal class PredictionViewModel(
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
-            unsubscribeWidgetResults()
-//            state.onNext("confirmation")
             currentWidgetType?.let {
                 analyticsService.trackWidgetInteraction(
                     it.toAnalyticsString(),
@@ -232,16 +231,14 @@ internal class PredictionViewModel(
                     interactionData
                 )
             }
-            widgetState.onNext(WidgetStates.RESULTS)
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
         }
     }
 
     private fun cleanUp() {
-        uiScope.launch {
-            vote()
-        }
+        unsubscribeWidgetResults()
+        uiScope.cancel()
         timeoutStarted = false
         adapter = null
         animationProgress = 0f
