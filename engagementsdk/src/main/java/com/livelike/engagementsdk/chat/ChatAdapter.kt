@@ -474,6 +474,12 @@ internal class ChatRecyclerAdapter(
             }
         }
 
+        private fun setLetterSpacingForTextView(textView: TextView, letterSpacing: Float) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                textView.letterSpacing = letterSpacing
+            }
+        }
+
         @SuppressLint("SetTextI18n")
         private fun setMessage(
             message: ChatMessage?
@@ -488,11 +494,6 @@ internal class ChatRecyclerAdapter(
 
                     chatViewThemeAttribute.apply {
                         v.chatMessage.setTextColor(chatMessageColor)
-                        if (message.isDeleted) {
-                            chatMessage.setTypeface(null, Typeface.ITALIC)
-                        } else {
-                            chatMessage.setTypeface(null, Typeface.NORMAL)
-                        }
                         if (message.isFromMe) {
                             chat_nickname.setTextColor(chatNickNameColor)
                             chat_nickname.text =
@@ -508,13 +509,17 @@ internal class ChatRecyclerAdapter(
                             chatUserNameCustomFontPath,
                             chatUserNameTextStyle
                         )
+                        setLetterSpacingForTextView(chat_nickname, chatUserNameTextLetterSpacing)
                         chatMessage.setTextSize(TypedValue.COMPLEX_UNIT_PX, chatMessageTextSize)
                         setCustomFontWithTextStyle(
                             chatMessage,
                             chatMessageCustomFontPath,
-                            chatMessageTextStyle
+                            when (isDeleted) {
+                                true -> Typeface.ITALIC
+                                else -> chatMessageTextStyle
+                            }
                         )
-
+                        setLetterSpacingForTextView(chatMessage, chatMessageTextLetterSpacing)
                         if (chatViewThemeAttribute.showMessageDateTime) {
                             v.message_date_time.visibility = View.VISIBLE
                             if (EngagementSDK.enableDebug) {
@@ -540,6 +545,10 @@ internal class ChatRecyclerAdapter(
                             )
                             v.message_date_time.isAllCaps = chatMessageTimeTextAllCaps
                             v.message_date_time.setTextColor(chatMessageTimeTextColor)
+                            setLetterSpacingForTextView(
+                                v.message_date_time,
+                                chatMessageTimeTextLetterSpacing
+                            )
                         } else {
                             v.message_date_time.visibility = View.GONE
                         }

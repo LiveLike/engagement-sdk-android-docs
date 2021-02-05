@@ -156,4 +156,10 @@
     <dimen name="livelike_chat_input_send_button_padding_bottom">5dp</dimen>
     <dimen name="livelike_sticker_keyboard_tab_height">40dp</dimen>
     <dimen name="livelike_sticker_keyboard_empty_text_size">15sp</dimen>
+    <dimen name="livelike_snap_live_margin_bottom">0dp</dimen>
+    <dimen name="livelike_snap_live_margin_left">0dp</dimen>
+    <dimen name="livelike_snap_live_margin_start">0dp</dimen>
+    <dimen name="livelike_snap_live_radius">15dp</dimen>
+    <dimen name="livelike_snap_live_elevation">4dp</dimen>
+    <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
 </resources>

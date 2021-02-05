@@ -30,6 +30,8 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
+    private lateinit var currentWidgetId: String
+    private lateinit var currentWidgetType: String
     var enableDefaultWidgetTransition: Boolean = true
         set(value) {
             field = value
@@ -68,7 +70,14 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 }
 
                 override fun onDismiss(view: View?, token: Any?) {
-                    dismissWidget?.invoke(DismissAction.SWIPE)
+                    if(dismissWidget == null){
+                        analyticsService?.trackWidgetDismiss(
+                            currentWidgetType, currentWidgetId, null, null,
+                            DismissAction.SWIPE
+                        )
+                    }else {
+                        dismissWidget?.invoke(DismissAction.SWIPE)
+                    }
                     if (currentWidgetViewStream.latest() != null) {
                         currentWidgetViewStream.onNext(null)
                     }
@@ -158,10 +167,12 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 if (widgetView.widgetInfos.payload.get("link_url") is JsonPrimitive) {
                     linkUrl = widgetView.widgetInfos.payload.get("link_url")?.asString
                 }
+                currentWidgetType = WidgetType.fromString(
+                    widgetType ?: ""
+                )?.toAnalyticsString() ?: ""
+                currentWidgetId = widgetId
                 analyticsService?.trackWidgetDisplayed(
-                    WidgetType.fromString(
-                        widgetType ?: ""
-                    )?.toAnalyticsString() ?: "", widgetId,
+                    currentWidgetType, widgetId,
                     linkUrl
                 )
             }

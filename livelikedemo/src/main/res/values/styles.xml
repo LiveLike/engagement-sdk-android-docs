@@ -127,6 +127,7 @@
         <item name="chatReactionXPosition">0dp</item>
         <item name="chatReactionYPosition">-55dp</item>
         <item name="chatReactionPanelGravity">right|bottom</item>
+        <item name="chatReactionPanelCountVisibleIfZero">false</item>
     </style>
 
     <style name="CustomChatReactionTheme" parent="Default">
