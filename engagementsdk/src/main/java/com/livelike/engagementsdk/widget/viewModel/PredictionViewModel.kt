@@ -224,8 +224,6 @@ internal class PredictionViewModel(
                     interactionData.addGamificationAnalyticsData(pts)
                 }
             }
-//            unsubscribeWidgetResults()
-//            state.onNext("confirmation")
             currentWidgetType?.let {
                 analyticsService.trackWidgetInteraction(
                     it.toAnalyticsString(),
