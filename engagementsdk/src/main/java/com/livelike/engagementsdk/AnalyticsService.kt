@@ -60,7 +60,7 @@ interface AnalyticsService {
     fun trackWidgetDismiss(
         kind: String,
         id: String,
-        interactionInfo: AnalyticsWidgetInteractionInfo,
+        interactionInfo: AnalyticsWidgetInteractionInfo?,
         interactable: Boolean?,
         action: DismissAction
     )
@@ -237,7 +237,7 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
     override fun trackWidgetDismiss(
         kind: String,
         id: String,
-        interactionInfo: AnalyticsWidgetInteractionInfo,
+        interactionInfo: AnalyticsWidgetInteractionInfo?,
         interactable: Boolean?,
         action: DismissAction
     ) {
@@ -735,7 +735,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     override fun trackWidgetDismiss(
         kind: String,
         id: String,
-        interactionInfo: AnalyticsWidgetInteractionInfo,
+        interactionInfo: AnalyticsWidgetInteractionInfo?,
         interactable: Boolean?,
         action: DismissAction
     ) {
@@ -749,21 +749,24 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             else -> ""
         }
 
-        val timeNow = System.currentTimeMillis()
-        val timeSinceLastTap = (timeNow - interactionInfo.timeOfLastInteraction).toFloat() / 1000
-        val timeSinceStart = (timeNow - interactionInfo.timeOfFirstDisplay).toFloat() / 1000
 
         val interactionState =
-            if (interactable != null && interactable) "Open To Interaction" else "Closed To Interaction"
+            if (interactable == null) null else (if (interactable) "Open To Interaction" else "Closed To Interaction")
         val packageName = context.packageName ?: ""
         context.getSharedPreferences("$packageName-analytics", Context.MODE_PRIVATE).apply {
             val properties = JSONObject()
             properties.put("Widget Type", kind)
             properties.put("Widget ID", id)
-            properties.put("Number Of Taps", interactionInfo.interactionCount)
             properties.put("Dismiss Action", dismissAction)
-            properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
-            properties.put("Dismiss Seconds Since Start", timeSinceStart)
+
+            interactionInfo?.let {
+                properties.put("Number Of Taps", interactionInfo.interactionCount)
+                val timeNow = System.currentTimeMillis()
+                val timeSinceLastTap = (timeNow - interactionInfo.timeOfLastInteraction).toFloat() / 1000
+                val timeSinceStart = (timeNow - interactionInfo.timeOfFirstDisplay).toFloat() / 1000
+                properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
+                properties.put("Dismiss Seconds Since Start", timeSinceStart)
+            }
             properties.put("Interactable State", interactionState)
             properties.put("Last Widget Type", getString("lastWidgetType", ""))
             mixpanel.track(KEY_WIDGET_USER_DISMISS, properties)
