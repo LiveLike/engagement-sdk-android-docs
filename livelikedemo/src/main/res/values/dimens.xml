@@ -14,4 +14,9 @@
     <dimen name="widget_type_label_size">11sp</dimen>
     <dimen name="widget_title_size">15sp</dimen>
     <dimen name="rounded_corner_box_radius">4dp</dimen>
+
+    <dimen name="livelike_snap_live_margin_bottom">0dp</dimen>
+    <dimen name="livelike_snap_live_margin_left">0dp</dimen>
+    <dimen name="livelike_snap_live_margin_start">0dp</dimen>
+    <item name="livelike_snap_live_horizontal_bias" format="float" type="dimen">1.0</item>
 </resources>
