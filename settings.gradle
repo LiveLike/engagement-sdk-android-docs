@@ -1,2 +1,1 @@
-include ':mmlengagementsdk'
 include ':livelikedemo', ':engagementsdk', ':pluginexoplayer', ':docs'

@@ -485,13 +485,6 @@
                     android:text="Sample App"
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
 
-                <Button
-                    android:id="@+id/mml_app"
-                    style="@style/TestAppButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="75dp"
-                    android:text="MML App"
-                    app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
