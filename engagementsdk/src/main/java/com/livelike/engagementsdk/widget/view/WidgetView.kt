@@ -156,6 +156,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 widgetType = "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
+            widgetContainerViewModel?.analyticsService = sdk.analyticService.latest()
             widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                 Pair(
                     widgetType,
