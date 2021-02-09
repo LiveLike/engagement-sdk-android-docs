@@ -346,7 +346,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         } else {
             // checkForNetworkToRecreateActivity()
         }
-        if (themeCurrent == R.style.TurnerChatTheme) {
+        if (themeCurrent == R.style.MMLChatTheme) {
             val emptyView =
                 LayoutInflater.from(this).inflate(R.layout.empty_chat_data_view, null)
             chat_view.emptyChatBackgroundView = emptyView
@@ -385,7 +385,7 @@ class ExoPlayerActivity : AppCompatActivity() {
     }
 
     private fun testKeyboardDismissUseCase(themeCurrent: Int) {
-        if (themeCurrent == R.style.TurnerChatTheme) {
+        if (themeCurrent == R.style.MMLChatTheme) {
             chat_view.sentMessageListener = {
                 chat_view.dismissKeyboard()
             }

@@ -156,6 +156,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 widgetType = "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
+            widgetContainerViewModel?.analyticsService = sdk.analyticService.latest()
             widgetContainerViewModel?.currentWidgetViewStream?.onNext(
                 Pair(
                     widgetType,
@@ -164,7 +165,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             null,
                             WidgetInfos(widgetType, widgetResourceJson, widgetId),
                             context,
-                            MockAnalyticsService(),
+                            sdk.analyticService.latest() ?: MockAnalyticsService(),
                             sdk.configurationStream.latest()!!,
                             {
                                 widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
