@@ -164,7 +164,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                             null,
                             WidgetInfos(widgetType, widgetResourceJson, widgetId),
                             context,
-                            MockAnalyticsService(),
+                            sdk.analyticService.latest() ?: MockAnalyticsService(),
                             sdk.configurationStream.latest()!!,
                             {
                                 widgetContainerViewModel?.currentWidgetViewStream?.onNext(null)
