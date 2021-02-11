@@ -734,9 +734,6 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onResume() {
         session?.resume()
         privateGroupChatsession?.resume()
-        if (!adsPlaying) {
-            player?.start()
-        }
         super.onResume()
     }
 
