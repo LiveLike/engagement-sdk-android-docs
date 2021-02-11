@@ -37,7 +37,6 @@ import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
 import com.livelike.engagementsdk.widget.domain.UserProfileDelegate
-import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResponse
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.widgetModel.AlertWidgetModel
 import com.livelike.engagementsdk.widget.widgetModel.CheerMeterWidgetmodel
@@ -284,12 +283,12 @@ class ExoPlayerActivity : AppCompatActivity() {
                                     })
                             } else {
                                 session?.getPublishedWidgets(LiveLikePagination.FIRST,
-                                    object : LiveLikeCallback<LiveLikeWidgetResponse>() {
+                                    object : LiveLikeCallback<List<LiveLikeWidget>>() {
                                         override fun onResponse(
-                                            result: LiveLikeWidgetResponse?,
+                                            result: List<LiveLikeWidget>?,
                                             error: String?
                                         ) {
-                                            result?.list?.map { it!! }.let {
+                                            result?.map { it!! }.let {
                                                 DialogUtils.showMyWidgetsDialog(context,
                                                     (application as LiveLikeApplication).sdk,
                                                     ArrayList(it),

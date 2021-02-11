@@ -38,7 +38,6 @@ import com.livelike.engagementsdk.widget.asWidgetManager
 import com.livelike.engagementsdk.widget.data.models.ProgramGamificationProfile
 import com.livelike.engagementsdk.widget.data.models.PublishedWidgetListResponse
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
-import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResponse
 import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagingClient
 import com.livelike.engagementsdk.widget.services.network.WidgetDataClientImpl
 import com.livelike.engagementsdk.widget.viewModel.WidgetContainerViewModel
@@ -101,7 +100,7 @@ internal class ContentSession(
 
     override fun getPublishedWidgets(
         liveLikePagination: LiveLikePagination,
-        liveLikeCallback: LiveLikeCallback<LiveLikeWidgetResponse>
+        liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>
     ) {
         uiScope.launch {
             val defaultUrl =
@@ -135,11 +134,8 @@ internal class ContentSession(
                     }
                         .let {
                             liveLikeCallback.onResponse(
-                                LiveLikeWidgetResponse(
-                                    it,
-                                    publishedWidgetListResponse?.next != null,
-                                    publishedWidgetListResponse?.previous != null
-                                ), null
+                                it
+                                , null
                             )
                         }
                 }
