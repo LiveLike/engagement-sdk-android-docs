@@ -75,9 +75,7 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
                         error?.let {
                             Toast.makeText(applicationContext, "$it", Toast.LENGTH_SHORT).show()
                         }
-                        println("WidgetFrameworkTestActivity.onResponse->${result?.size}")
-
-                        result?.map { it!! }.let { list ->
+                        result?.map { it!! }?.let { list ->
                             DialogUtils.showMyWidgetsDialog(this@WidgetFrameworkTestActivity,
                                 (application as LiveLikeApplication).sdk,
                                 ArrayList(list),
