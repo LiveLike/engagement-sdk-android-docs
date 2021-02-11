@@ -710,7 +710,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        player?.stop()
+        player?.release()
     }
 
     override fun onDestroy() {
@@ -719,6 +719,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         timer.purge()
         player?.release()
         session?.widgetInterceptor = null
+        privateGroupChatsession?.close()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onDestroy()
     }
@@ -726,11 +727,13 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onPause() {
         session?.pause()
         privateGroupChatsession?.pause()
+        player?.release()
         super.onPause()
     }
 
     override fun onResume() {
         session?.resume()
+        player?.start()
         privateGroupChatsession?.resume()
         super.onResume()
     }
