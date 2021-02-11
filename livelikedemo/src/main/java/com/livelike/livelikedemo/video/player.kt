@@ -78,9 +78,6 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
 
     /** responsible for starting the player, with the media source provided */
     override fun start() {
-        if(player == null){
-
-        }
         player?.prepare(mediaSource)
         player?.playWhenReady = true
         player?.seekToDefaultPosition()
