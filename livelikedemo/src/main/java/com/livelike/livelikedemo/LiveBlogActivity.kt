@@ -6,12 +6,14 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResponse
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.activity_live_blog.btn_load_more
 import kotlinx.android.synthetic.main.activity_live_blog.progress_bar
@@ -78,11 +80,24 @@ class LiveBlogActivity : AppCompatActivity() {
         progress_bar.visibility = View.VISIBLE
         session.getPublishedWidgets(
             liveLikePagination,
-            object : LiveLikeCallback<List<LiveLikeWidget>>() {
-                override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
-                    result?.let { list ->
+            object : LiveLikeCallback<LiveLikeWidgetResponse>() {
+                override fun onResponse(result: LiveLikeWidgetResponse?, error: String?) {
+                    result?.list?.let { list ->
                         adapter.list.addAll(list.map { it!! })
                         adapter.notifyDataSetChanged()
+                        Toast.makeText(this@LiveBlogActivity, "Has Next:${result?.hasNext}, Has Previous:${result?.hasPrevious}", Toast.LENGTH_SHORT).show()
+                    }
+                    error?.let {
+                        Toast.makeText(this@LiveBlogActivity, "$it", Toast.LENGTH_SHORT).show()
+                    }
+                    if (result == null) {
+                        if (error == null) {
+                            Toast.makeText(
+                                this@LiveBlogActivity,
+                                "Reached End of List",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             })

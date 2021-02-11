@@ -11,6 +11,8 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.WidgetViewThemeAttributes
 import com.livelike.engagementsdk.widget.domain.LeaderBoardDelegate
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResponse
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResult
 
 /**
  *  Represents a Content Session which LiveLike uses to deliver widgets and associate user with the Chat
@@ -59,7 +61,7 @@ interface LiveLikeContentSession {
     /** set value of style for widget **/
     fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes)
 
-    fun getPublishedWidgets(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>)
+    fun getPublishedWidgets(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<LiveLikeWidgetResponse>)
 
     /** Returns list of reward item associated to entered program */
     fun getRewardItems() : List<RewardItem>

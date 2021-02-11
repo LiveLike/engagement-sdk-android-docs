@@ -12,6 +12,7 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.model.LiveLikeWidgetResponse
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
@@ -67,17 +68,17 @@ class WidgetFrameworkTestActivity : AppCompatActivity() {
             )
             session.getPublishedWidgets(
                 LiveLikePagination.FIRST,
-                object : LiveLikeCallback<List<LiveLikeWidget>>() {
+                object : LiveLikeCallback<LiveLikeWidgetResponse>() {
                     override fun onResponse(
-                        result: List<LiveLikeWidget>?,
+                        result: LiveLikeWidgetResponse?,
                         error: String?
                     ) {
                         error?.let {
                             Toast.makeText(applicationContext, "$it", Toast.LENGTH_SHORT).show()
                         }
-                        println("WidgetFrameworkTestActivity.onResponse->${result?.size}")
+                        println("WidgetFrameworkTestActivity.onResponse->${result?.list?.size}")
 
-                        result?.map { it!! }.let { list ->
+                        result?.list?.map { it!! }?.let { list ->
                             DialogUtils.showMyWidgetsDialog(this@WidgetFrameworkTestActivity,
                                 (application as LiveLikeApplication).sdk,
                                 ArrayList(list),
