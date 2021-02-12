@@ -126,10 +126,13 @@ internal class ChatRecyclerAdapter(
         mRecyclerView = null
     }
 
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        holder.hideFloatingUI()
-        super.onViewDetachedFromWindow(holder)
-    }
+    /** Commenting this code for now so QA finalize whether old issues are coming or not
+    Flowing code helps in accessbility related issues
+    **/
+//    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+//        holder.hideFloatingUI()
+//        super.onViewDetachedFromWindow(holder)
+//    }
 
     inner class ViewHolder(val v: View) : RecyclerView.ViewHolder(v), View.OnLongClickListener,
         View.OnClickListener {
