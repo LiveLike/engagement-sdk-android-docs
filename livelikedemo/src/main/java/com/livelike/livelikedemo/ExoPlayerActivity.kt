@@ -710,7 +710,7 @@ class ExoPlayerActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        player?.release()
+        player?.stop()
     }
 
     override fun onDestroy() {
@@ -727,14 +727,16 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onPause() {
         session?.pause()
         privateGroupChatsession?.pause()
-        player?.release()
+        player?.stop()
         super.onPause()
     }
 
     override fun onResume() {
         session?.resume()
-        player?.start()
         privateGroupChatsession?.resume()
+        if (!adsPlaying) {
+            player?.start()
+        }
         super.onResume()
     }
 
