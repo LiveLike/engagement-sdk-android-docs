@@ -269,6 +269,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
 
         viewModel?.apply {
+            chatAdapter.currentChatReactionPopUpViewPos = -1
             chatAdapter.chatViewThemeAttribute = chatAttribute
             chatAdapter.messageTimeFormatter = { time ->
                 formatMessageDateTime(time)
@@ -437,7 +438,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     count: Int
                 ) = Unit
             })
-
             button_emoji.setOnClickListener {
                 if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard(
                     KeyboardHideReason.CHANGING_KEYBOARD_TYPE

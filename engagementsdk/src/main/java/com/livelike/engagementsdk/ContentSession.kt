@@ -107,31 +107,38 @@ internal class ContentSession(
                 "${BuildConfig.CONFIG_URL}programs/$programId/widgets/?status=published&ordering=recent"
             val url = when (liveLikePagination) {
                 LiveLikePagination.FIRST -> defaultUrl
-                LiveLikePagination.NEXT -> publishedWidgetListResponse?.next ?: defaultUrl
-                LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous ?: defaultUrl
+                LiveLikePagination.NEXT -> publishedWidgetListResponse?.next
+                LiveLikePagination.PREVIOUS -> publishedWidgetListResponse?.previous
             }
             try {
-                val jsonObject = widgetDataClient.getAllPublishedWidgets(url)
-                publishedWidgetListResponse =
-                    gson.fromJson(
-                        jsonObject.toString(),
-                        PublishedWidgetListResponse::class.java
-                    )
-                publishedWidgetListResponse?.results?.filter {
-                    it?.let {
-                        var widgetType = it.kind
-                        widgetType = if (widgetType?.contains("follow-up") == true) {
-                            "$widgetType-updated"
-                        } else {
-                            "$widgetType-created"
+                if (url == null) {
+                    liveLikeCallback.onResponse(null, null)
+                } else {
+                    val jsonObject = widgetDataClient.getAllPublishedWidgets(url)
+                    publishedWidgetListResponse =
+                        gson.fromJson(
+                            jsonObject.toString(),
+                            PublishedWidgetListResponse::class.java
+                        )
+                    publishedWidgetListResponse?.results?.filter {
+                        it?.let {
+                            var widgetType = it.kind
+                            widgetType = if (widgetType?.contains("follow-up") == true) {
+                                "$widgetType-updated"
+                            } else {
+                                "$widgetType-created"
+                            }
+                            return@filter WidgetType.fromString(widgetType) != null
                         }
-                        return@filter WidgetType.fromString(widgetType) != null
+                        return@filter false
                     }
-                    return@filter false
+                        .let {
+                            liveLikeCallback.onResponse(
+                                it
+                                , null
+                            )
+                        }
                 }
-                    .let {
-                        liveLikeCallback.onResponse(it, null)
-                    }
             } catch (e: JsonParseException) {
                 e.printStackTrace()
                 liveLikeCallback.onResponse(null, e.message)
@@ -139,6 +146,7 @@ internal class ContentSession(
                 e.printStackTrace()
                 liveLikeCallback.onResponse(null, e.message)
             }
+
         }
     }
 

@@ -59,6 +59,9 @@ interface LiveLikeContentSession {
     /** set value of style for widget **/
     fun setWidgetViewThemeAttribute(widgetViewThemeAttributes: WidgetViewThemeAttributes)
 
+    /**
+     * if the result is empty that means there is no data further and user reached end of list
+     * **/
     fun getPublishedWidgets(liveLikePagination: LiveLikePagination, liveLikeCallback: LiveLikeCallback<List<LiveLikeWidget>>)
 
     /** Returns list of reward item associated to entered program */

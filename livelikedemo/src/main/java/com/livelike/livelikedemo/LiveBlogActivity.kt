@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
@@ -83,6 +84,18 @@ class LiveBlogActivity : AppCompatActivity() {
                     result?.let { list ->
                         adapter.list.addAll(list.map { it!! })
                         adapter.notifyDataSetChanged()
+                    }
+                    error?.let {
+                        Toast.makeText(this@LiveBlogActivity, "$it", Toast.LENGTH_SHORT).show()
+                    }
+                    if (result == null) {
+                        if (error == null) {
+                            Toast.makeText(
+                                this@LiveBlogActivity,
+                                "Reached End of List",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
             })

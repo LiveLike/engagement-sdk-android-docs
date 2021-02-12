@@ -719,6 +719,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         timer.purge()
         player?.release()
         session?.widgetInterceptor = null
+        privateGroupChatsession?.close()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onDestroy()
     }
@@ -726,12 +727,16 @@ class ExoPlayerActivity : AppCompatActivity() {
     override fun onPause() {
         session?.pause()
         privateGroupChatsession?.pause()
+        player?.stop()
         super.onPause()
     }
 
     override fun onResume() {
         session?.resume()
         privateGroupChatsession?.resume()
+        if (!adsPlaying) {
+            player?.start()
+        }
         super.onResume()
     }
 

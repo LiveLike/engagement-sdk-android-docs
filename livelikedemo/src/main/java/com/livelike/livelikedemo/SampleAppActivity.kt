@@ -20,6 +20,7 @@ class SampleAppActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Default)
         setContentView(R.layout.activity_sample_app)
         initSDK()
     }
@@ -59,6 +60,7 @@ class SampleAppActivity : AppCompatActivity() {
                         }
                     })
                 chat_view.setSession(session!!.chatSession)
+
                 widget_view.setSession(session!!)
             }
         }

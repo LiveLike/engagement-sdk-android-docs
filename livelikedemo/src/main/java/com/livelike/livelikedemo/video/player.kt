@@ -28,11 +28,17 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
     private var mediaSource: MediaSource = buildMediaSource(Uri.EMPTY)
     private var playerState = PlayerState()
 
+
+    /** initialization of exoplayer with provided media source */
     private fun initializePlayer(uri: Uri, state: PlayerState, useHls: Boolean = true) {
         playerView.requestFocus()
 
-        player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector())
-            .also { playerView.player = it }
+        /** here exoplayer instance was getting created each time, so a check has been added if the instance of player
+        has not been created before then only instantiation is needed else not */
+        if(player == null) {
+            player = ExoPlayerFactory.newSimpleInstance(context, DefaultTrackSelector())
+                .also { playerView.player = it }
+        }
 
         mediaSource = if (useHls) buildHLSMediaSource(uri) else buildMediaSource(uri)
         playerState = state
@@ -58,6 +64,8 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         ).createMediaSource(uri)
     }
 
+    /** responsible for building media sources, the player needs media source instance to
+     * play the content */
     private fun buildHLSMediaSource(uri: Uri): HlsMediaSource {
         return HlsMediaSource.Factory(DefaultDataSourceFactory(context, "LLDemoApp"))
             .createMediaSource(uri)
@@ -67,23 +75,28 @@ class ExoPlayerImpl(private val context: Context, private val playerView: Player
         initializePlayer(uri, startState)
     }
 
+
+    /** responsible for starting the player, with the media source provided */
     override fun start() {
         player?.prepare(mediaSource)
-        with(playerState) {
-            player?.playWhenReady = true
-            player?.seekToDefaultPosition()
-        }
+        player?.playWhenReady = true
+        player?.seekToDefaultPosition()
     }
 
+
+    /** responsible for stopping the player */
     override fun stop() {
         with(playerState) {
             position = player?.currentPosition ?: 0
             window = player?.currentWindowIndex ?: 0
             whenReady = false
         }
+        player?.playWhenReady = false
         player?.stop()
     }
 
+
+    /** responsible for stopping the player and releasing it */
     override fun release() {
         player?.stop()
         player?.release()
