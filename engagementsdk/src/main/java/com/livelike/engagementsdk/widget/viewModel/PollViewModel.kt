@@ -197,11 +197,14 @@ internal class PollViewModel(
             }
 
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                data.latest()?.resource?.program_id?.let { it1 ->
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        it1,
+                        interactionData
+                    )
+                }
             }
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)

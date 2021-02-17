@@ -77,11 +77,14 @@ internal abstract class WidgetViewModel<T : Resource>(
     internal open fun confirmInteraction() {
         if (currentVote.latest() != null) {
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                programRepository?.programId?.let { programId ->
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        programId,
+                        interactionData
+                    )
+                }
             }
             uiScope.launch {
                 data.currentData?.rewards_url?.let {

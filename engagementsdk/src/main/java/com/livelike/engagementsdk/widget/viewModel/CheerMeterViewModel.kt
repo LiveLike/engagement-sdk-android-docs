@@ -119,11 +119,14 @@ internal class CheerMeterViewModel(
 
     fun voteEnd() {
         currentWidgetType?.let {
-            analyticsService.trackWidgetInteraction(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData
-            )
+            data.latest()?.resource?.program_id?.let { programId ->
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData
+                )
+            }
         }
     }
 
@@ -155,11 +158,14 @@ internal class CheerMeterViewModel(
             interactionData.widgetDisplayed()
 
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                data.latest()?.resource?.program_id?.let { programId ->
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        programId,
+                        interactionData
+                    )
+                }
             }
         }
     }

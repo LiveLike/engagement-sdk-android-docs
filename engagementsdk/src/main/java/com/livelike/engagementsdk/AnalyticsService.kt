@@ -36,6 +36,7 @@ interface AnalyticsService {
     fun trackWidgetInteraction(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
 
@@ -194,6 +195,7 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
     override fun trackWidgetInteraction(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     ) {
         Log.d(
@@ -512,12 +514,14 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     override fun trackWidgetInteraction(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     ) {
         val properties = JSONObject()
         val timeOfLastInteraction = parser.format(Date(interactionInfo.timeOfLastInteraction))
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
+        properties.put(PROGRAM_ID,programId)
         properties.put(
             "First Tap Time",
             parser.format(Date(interactionInfo.timeOfFirstInteraction))
@@ -541,7 +545,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         mixpanel.registerSuperProperties(superProp)
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionInfo"
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionInfo $programId"
         )
     }
 

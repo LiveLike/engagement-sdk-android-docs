@@ -188,11 +188,14 @@ internal class QuizViewModel(
             }
 //            state.onNext("results")
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                data.latest()?.resource?.program_id?.let { it1 ->
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        it1,
+                        interactionData
+                    )
+                }
             }
         }
     }

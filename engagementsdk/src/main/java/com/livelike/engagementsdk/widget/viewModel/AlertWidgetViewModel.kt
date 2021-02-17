@@ -48,11 +48,14 @@ internal class AlertWidgetViewModel(
                     currentWidgetType
                 )
             }
-            analyticsService.trackWidgetInteraction(
-                widgetType.toAnalyticsString(),
-                currentWidgetId,
-                interactionData
-            )
+            data.latest()?.program_id?.let {
+                analyticsService.trackWidgetInteraction(
+                    widgetType.toAnalyticsString(),
+                    currentWidgetId,
+                    it,
+                    interactionData
+                )
+            }
         }
     }
 

@@ -225,11 +225,14 @@ internal class PredictionViewModel(
                 }
             }
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                data.latest()?.resource?.program_id?.let { programId ->
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        programId,
+                        interactionData
+                    )
+                }
             }
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
