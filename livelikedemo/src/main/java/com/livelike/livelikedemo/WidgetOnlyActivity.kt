@@ -238,19 +238,22 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         }
 
-        // check added to prevent crash - ES - 1466
-        if(!isFinishing) {
+
             widget_view.postDelayed({
                 val availableRewards = session.getRewardItems().joinToString { rewardItem ->
                     rewardItem.name
                 }
-                AlertDialog.Builder(this).apply {
-                    setTitle("Welcome! You have chance to win rewards!")
-                        .setMessage(availableRewards)
-                        .create()
-                }.show()
+                // check added to prevent crash - ES - 1466
+                if(!isFinishing) {
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Welcome! You have chance to win rewards!")
+                            .setMessage(availableRewards)
+                            .create()
+                    }.show()
+                }
+
             }, 2000)
-        }
+
 
         EngagementSDK.predictionWidgetVoteRepository = object : PredictionWidgetVoteRepository {
             val predictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
