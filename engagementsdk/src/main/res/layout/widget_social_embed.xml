@@ -13,7 +13,7 @@
         android:id="@+id/txtTitleBackground"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/alert_notification_label_background"
+        android:background="@drawable/social_comment_label_background"
         app:layout_constraintBottom_toBottomOf="@+id/titleView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

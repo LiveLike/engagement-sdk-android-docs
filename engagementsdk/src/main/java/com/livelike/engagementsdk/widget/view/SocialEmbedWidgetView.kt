@@ -8,7 +8,6 @@ import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -17,14 +16,11 @@ import android.webkit.WebViewClient
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.R
-import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.SpecifiedWidgetView
-import com.livelike.engagementsdk.widget.WidgetsTheme
 import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.widget_social_embed.view.progress_bar
-import kotlinx.android.synthetic.main.widget_social_embed.view.social_embed_container
 import kotlinx.android.synthetic.main.widget_social_embed.view.titleView
 import kotlinx.android.synthetic.main.widget_social_embed.view.web_view
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.textEggTimer
@@ -103,7 +99,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
                     Log.d("widget", "onPageFinished")
-
+                    progress_bar.hide()
                 }
 
                 override fun onPageCommitVisible(view: WebView?, url: String?) {
