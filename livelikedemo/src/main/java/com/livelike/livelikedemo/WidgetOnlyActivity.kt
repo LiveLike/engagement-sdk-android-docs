@@ -244,7 +244,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     rewardItem.name
                 }
                 // check added to prevent crash - ES - 1466
-                if(!isFinishing) {
+                if(!(isFinishing || isDestroyed)) {
                     AlertDialog.Builder(this).apply {
                         setTitle("Welcome! You have chance to win rewards!")
                             .setMessage(availableRewards)
