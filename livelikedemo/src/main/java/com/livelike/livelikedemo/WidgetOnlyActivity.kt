@@ -619,7 +619,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
 
             private val authorization = "Authorization"
-            private var accessToken: String =
+            private var  accessToken: String =
                 "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
 
             private suspend fun postAPI(
