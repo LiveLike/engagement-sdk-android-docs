@@ -48,7 +48,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
     private var widgetContainer: FrameLayout? = null
     var analyticsService: AnalyticsService? = null
-    var programId:String?= null
+    private var programId:String?= null
 
     // Swipe to dismiss
     var swipeDismissTouchListener: View.OnTouchListener? = null
@@ -167,16 +167,21 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         if (widgetContainer != null) {
             widgetView?.widgetId?.let { widgetId ->
                 var linkUrl: String? = null
+
                 if (widgetView.widgetInfos.payload.get("link_url") is JsonPrimitive) {
                     linkUrl = widgetView.widgetInfos.payload.get("link_url")?.asString
                 }
+                if (widgetView.widgetInfos.payload.get("program_id") is JsonPrimitive) {
+                    programId = widgetView.widgetInfos.payload.get("program_id")?.asString
+                }
+
                 currentWidgetType = WidgetType.fromString(
                     widgetType ?: ""
                 )?.toAnalyticsString() ?: ""
                 currentWidgetId = widgetId
-                programId?.let {
+                programId?.let { programId->
                     analyticsService?.trackWidgetDisplayed(
-                        currentWidgetType, widgetId, it,
+                        currentWidgetType, widgetId, programId,
                         linkUrl
                     )
                 }
