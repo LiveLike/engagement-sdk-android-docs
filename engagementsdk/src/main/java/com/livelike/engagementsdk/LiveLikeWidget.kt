@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk
 
 import com.google.gson.annotations.SerializedName
+import com.livelike.engagementsdk.widget.data.models.SocialEmbedItem
 
 data class LiveLikeWidget(
 
@@ -109,7 +110,13 @@ data class LiveLikeWidget(
     @field:SerializedName("average_magnitude")
     val averageMagnitude: Float?,
     @field:SerializedName("vote_url")
-    val voteUrl: String
+    val voteUrl: String,
+
+    // fields related to social embed widget
+    @field:SerializedName("items")
+    val socialEmbedItems: List<SocialEmbedItem>?,
+    @field:SerializedName("comment")
+    val comment: String?
 )
 
 data class CreatedBy(
