@@ -71,6 +71,7 @@ internal class EmojiSliderWidgetViewModel(
             widgetState.onNext(WidgetStates.READY)
         }
         currentWidgetId = widgetInfos.widgetId
+        programId = data.currentData?.program_id.toString()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
         interactionData.widgetDisplayed()
     }
@@ -78,16 +79,15 @@ internal class EmojiSliderWidgetViewModel(
     override fun dismissWidget(action: DismissAction) {
         super.dismissWidget(action)
         currentWidgetType?.let {
-            data.currentData?.program_id?.let { it1 ->
                 analyticsService.trackWidgetDismiss(
                     it.toAnalyticsString(),
                     currentWidgetId,
-                    it1,
+                    programId,
                     interactionData,
                     false,
                     action
                 )
-            }
+
             logDebug { "dismiss EmojiSlider Widget, reason:${action.name}" }
         }
     }

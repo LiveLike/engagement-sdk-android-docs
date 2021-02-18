@@ -71,6 +71,7 @@ internal class PollViewModel(
     var voteUrl: String? = null
     var animationEggTimerProgress = 0f
     private var currentWidgetId: String = ""
+    private var programId:String = ""
     private var currentWidgetType: WidgetType? = null
 
     private val interactionData = AnalyticsWidgetInteractionInfo()
@@ -144,6 +145,7 @@ internal class PollViewModel(
                 })
             }
             currentWidgetId = widgetInfos.widgetId
+            programId = data?.currentData?.resource?.program_id.toString()
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
         }
@@ -161,7 +163,6 @@ internal class PollViewModel(
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            data.currentData?.resource?.program_id?.let { programId ->
                 analyticsService.trackWidgetDismiss(
                     it.toAnalyticsString(),
                     currentWidgetId,
@@ -170,7 +171,7 @@ internal class PollViewModel(
                     adapter?.selectionLocked,
                     action
                 )
-            }
+
         }
         widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Poll Widget, reason:${action.name}" }
@@ -200,14 +201,13 @@ internal class PollViewModel(
             }
 
             currentWidgetType?.let {
-                data.latest()?.resource?.program_id?.let { it1 ->
                     analyticsService.trackWidgetInteraction(
                         it.toAnalyticsString(),
                         currentWidgetId,
-                        it1,
+                        programId,
                         interactionData
                     )
-                }
+
             }
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
@@ -251,11 +251,10 @@ internal class PollViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun submitVote(optionID: String) {
-        data?.latest()?.resource?.program_id?.let {
             trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
-                it
+                programId
             )
-        }
+
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->

@@ -69,6 +69,7 @@ internal abstract class WidgetViewModel<T : Resource>(
     var animationEggTimerProgress = 0f
 
     var currentWidgetId: String = ""
+    var programId: String = ""
     var currentWidgetType: WidgetType? = null
 
     val interactionData = AnalyticsWidgetInteractionInfo()

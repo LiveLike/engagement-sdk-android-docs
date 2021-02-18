@@ -70,6 +70,7 @@ internal class QuizViewModel(
     var animationEggTimerProgress = 0f
 
     private var currentWidgetId: String = ""
+    private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
@@ -149,7 +150,6 @@ internal class QuizViewModel(
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            data.currentData?.resource?.program_id?.let { programId ->
                 analyticsService.trackWidgetDismiss(
                     it.toAnalyticsString(),
                     currentWidgetId,
@@ -158,7 +158,7 @@ internal class QuizViewModel(
                     adapter?.selectionLocked,
                     action
                 )
-            }
+
         }
         widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Quiz Widget, reason:${action.name}" }
@@ -191,14 +191,13 @@ internal class QuizViewModel(
             }
 //            state.onNext("results")
             currentWidgetType?.let {
-                data.latest()?.resource?.program_id?.let { it1 ->
                     analyticsService.trackWidgetInteraction(
                         it.toAnalyticsString(),
                         currentWidgetId,
-                        it1,
+                        programId,
                         interactionData
                     )
-                }
+
             }
         }
     }
@@ -228,11 +227,10 @@ internal class QuizViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun lockInAnswer(optionID: String) {
-        data.latest()?.resource?.program_id?.let {
             trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
-                it
+                programId
             )
-        }
+
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->

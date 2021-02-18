@@ -72,12 +72,11 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
                 override fun onDismiss(view: View?, token: Any?) {
                     if(dismissWidget == null){
-                        programId?.let {
                             analyticsService?.trackWidgetDismiss(
-                                currentWidgetType, currentWidgetId, it,null, null,
+                                currentWidgetType, currentWidgetId, programId,null, null,
                                 DismissAction.SWIPE
                             )
-                        }
+
                     }else {
                         dismissWidget?.invoke(DismissAction.SWIPE)
                     }
@@ -172,17 +171,19 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     linkUrl = widgetView.widgetInfos.payload.get("link_url")?.asString
                 }
 
-                programId = widgetView.widgetInfos.payload.get("program_id").toString() ?: ""
+                if (widgetView.widgetInfos.payload.get("program_id") is JsonPrimitive) {
+                    programId = widgetView.widgetInfos.payload.get("program_id").asString
+                }
+
                 currentWidgetType = WidgetType.fromString(
                     widgetType ?: ""
                 )?.toAnalyticsString() ?: ""
                 currentWidgetId = widgetId
-                programId?.let {
                     analyticsService?.trackWidgetDisplayed(
-                        currentWidgetType, widgetId, it,
+                        currentWidgetType, widgetId, programId,
                         linkUrl
                     )
-                }
+
             }
         }
     }

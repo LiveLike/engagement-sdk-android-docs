@@ -26,6 +26,7 @@ internal class AlertWidgetViewModel(
         SubscriptionManager()
 
     private var currentWidgetId: String = ""
+    private var programId:String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
@@ -34,6 +35,7 @@ internal class AlertWidgetViewModel(
         widgetState.onNext(WidgetStates.READY)
         interactionData.widgetDisplayed()
         currentWidgetId = widgetInfos.widgetId
+        programId =  data?.currentData?.program_id.toString()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
 
@@ -61,7 +63,6 @@ internal class AlertWidgetViewModel(
 
     internal fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            data?.currentData?.program_id?.let { programId ->
                 analyticsService.trackWidgetDismiss(
                     it.toAnalyticsString(),
                     currentWidgetId,
@@ -70,7 +71,7 @@ internal class AlertWidgetViewModel(
                     false,
                     action
                 )
-            }
+
         }
         logDebug { "dismiss Alert Widget, reason:${action.name}" }
         onDismiss()
