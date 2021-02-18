@@ -48,7 +48,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
     private var widgetContainer: FrameLayout? = null
     var analyticsService: AnalyticsService? = null
-    private var programId:String?= null
+    private lateinit var programId: String
 
     // Swipe to dismiss
     var swipeDismissTouchListener: View.OnTouchListener? = null
@@ -72,9 +72,9 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
                 override fun onDismiss(view: View?, token: Any?) {
                     if(dismissWidget == null){
-                        programId?.let {programId ->
+                        programId?.let {
                             analyticsService?.trackWidgetDismiss(
-                                currentWidgetType, currentWidgetId, programId,null, null,
+                                currentWidgetType, currentWidgetId, it,null, null,
                                 DismissAction.SWIPE
                             )
                         }
@@ -171,17 +171,15 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 if (widgetView.widgetInfos.payload.get("link_url") is JsonPrimitive) {
                     linkUrl = widgetView.widgetInfos.payload.get("link_url")?.asString
                 }
-                if (widgetView.widgetInfos.payload.get("program_id") is JsonPrimitive) {
-                    programId = widgetView.widgetInfos.payload.get("program_id")?.asString
-                }
 
+                programId = widgetView.widgetInfos.payload.get("program_id").toString() ?: ""
                 currentWidgetType = WidgetType.fromString(
                     widgetType ?: ""
                 )?.toAnalyticsString() ?: ""
                 currentWidgetId = widgetId
-                programId?.let { programId->
+                programId?.let {
                     analyticsService?.trackWidgetDisplayed(
-                        currentWidgetType, widgetId, programId,
+                        currentWidgetType, widgetId, it,
                         linkUrl
                     )
                 }
