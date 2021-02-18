@@ -149,13 +149,16 @@ internal class QuizViewModel(
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticsService.trackWidgetDismiss(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData,
-                adapter?.selectionLocked,
-                action
-            )
+            data.currentData?.resource?.program_id?.let { programId ->
+                analyticsService.trackWidgetDismiss(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData,
+                    adapter?.selectionLocked,
+                    action
+                )
+            }
         }
         widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Quiz Widget, reason:${action.name}" }
@@ -225,7 +228,11 @@ internal class QuizViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun lockInAnswer(optionID: String) {
-        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+        data.latest()?.resource?.program_id?.let {
+            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+                it
+            )
+        }
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->

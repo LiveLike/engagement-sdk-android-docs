@@ -78,13 +78,16 @@ internal class EmojiSliderWidgetViewModel(
     override fun dismissWidget(action: DismissAction) {
         super.dismissWidget(action)
         currentWidgetType?.let {
-            analyticsService.trackWidgetDismiss(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData,
-                false,
-                action
-            )
+            data.currentData?.program_id?.let { it1 ->
+                analyticsService.trackWidgetDismiss(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    it1,
+                    interactionData,
+                    false,
+                    action
+                )
+            }
             logDebug { "dismiss EmojiSlider Widget, reason:${action.name}" }
         }
     }
@@ -103,7 +106,11 @@ internal class EmojiSliderWidgetViewModel(
     }
 
     override fun lockInVote(magnitude: Double) {
-        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+        data.latest()?.program_id?.let {
+            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+                it
+            )
+        }
         vote(magnitude.toString())
     }
 

@@ -56,7 +56,7 @@ internal class ContentSession(
     sdkConfiguration: Stream<EngagementSDK.SdkConfiguration>,
     private val userRepository: UserRepository,
     private val applicationContext: Context,
-    private val programId: String,
+    internal val programId: String,
     internal val analyticServiceStream: Stream<AnalyticsService>,
     private val errorDelegate: ErrorDelegate? = null,
     private val currentPlayheadTime: () -> EpochTime

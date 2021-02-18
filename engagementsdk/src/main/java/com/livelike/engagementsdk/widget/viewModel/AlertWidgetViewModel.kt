@@ -61,13 +61,16 @@ internal class AlertWidgetViewModel(
 
     internal fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticsService.trackWidgetDismiss(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData,
-                false,
-                action
-            )
+            data?.currentData?.program_id?.let { programId ->
+                analyticsService.trackWidgetDismiss(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData,
+                    false,
+                    action
+                )
+            }
         }
         logDebug { "dismiss Alert Widget, reason:${action.name}" }
         onDismiss()
@@ -82,7 +85,11 @@ internal class AlertWidgetViewModel(
 
     override fun alertLinkClicked(url : String) {
         onClickLink(url)
-        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+        data.latest()?.program_id?.let {
+            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+                it
+            )
+        }
     }
 
     override val widgetData: LiveLikeWidget

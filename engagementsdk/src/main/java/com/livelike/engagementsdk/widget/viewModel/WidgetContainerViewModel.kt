@@ -48,6 +48,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
     private var widgetContainer: FrameLayout? = null
     var analyticsService: AnalyticsService? = null
+    var programId:String?= null
 
     // Swipe to dismiss
     var swipeDismissTouchListener: View.OnTouchListener? = null
@@ -71,10 +72,12 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
 
                 override fun onDismiss(view: View?, token: Any?) {
                     if(dismissWidget == null){
-                        analyticsService?.trackWidgetDismiss(
-                            currentWidgetType, currentWidgetId, null, null,
-                            DismissAction.SWIPE
-                        )
+                        programId?.let {programId ->
+                            analyticsService?.trackWidgetDismiss(
+                                currentWidgetType, currentWidgetId, programId,null, null,
+                                DismissAction.SWIPE
+                            )
+                        }
                     }else {
                         dismissWidget?.invoke(DismissAction.SWIPE)
                     }
@@ -171,10 +174,12 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                     widgetType ?: ""
                 )?.toAnalyticsString() ?: ""
                 currentWidgetId = widgetId
-                analyticsService?.trackWidgetDisplayed(
-                    currentWidgetType, widgetId,
-                    linkUrl
-                )
+                programId?.let {
+                    analyticsService?.trackWidgetDisplayed(
+                        currentWidgetType, widgetId, it,
+                        linkUrl
+                    )
+                }
             }
         }
     }
