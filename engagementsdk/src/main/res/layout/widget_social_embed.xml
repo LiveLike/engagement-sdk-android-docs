@@ -9,6 +9,19 @@
     tools:visibility="visible">
 
 
+
+    <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
+        android:id="@+id/textEggTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
     <View
         android:id="@+id/txtTitleBackground"
         android:layout_width="0dp"
@@ -17,9 +30,9 @@
         app:layout_constraintBottom_toBottomOf="@+id/titleView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/titleView" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.livelike.engagementsdk.widget.view.components.TitleView
+    <TextView
         android:id="@+id/titleView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -31,27 +44,24 @@
         android:paddingBottom="10dp"
         app:layout_constraintEnd_toStartOf="@+id/textEggTimer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
-        android:id="@+id/textEggTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/titleView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/titleView"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textAllCaps="true"
+        android:textColor="@color/livelike_header_text_color"
+        android:textSize="@dimen/livelike_header_text_size"
+        android:textStyle="bold"
+        app:fontFamily="@font/livelike_header_font"
+        tools:text="jkfj ksjfh sjf jfsg jkfh jfdh hfg kfj kfjd gkfjhgfskj lkfs j hkfdj hgkjfdh g"/>
 
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/rounded_corner_with_background"
-        app:layout_constraintTop_toBottomOf="@id/titleView">
+        app:layout_constraintTop_toBottomOf="@id/titleView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:ignore="WebViewLayout">
 
 
         <WebView

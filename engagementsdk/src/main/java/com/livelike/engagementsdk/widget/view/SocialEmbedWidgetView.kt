@@ -41,15 +41,15 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+
+        viewModel?.data?.latest()?.let {
+            inflate(context, it)
+        }
+
         viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
-            widgetStates?.let {
-                when (widgetStates) {
-                    WidgetStates.READY -> {viewModel?.data?.latest()?.let {
-                            inflate(context, it)
-                        }
-                    }}
-                if (viewModel?.enableDefaultWidgetTransition!= false) {
-                    defaultStateTransitionManager(widgetStates)
+            widgetStates?.let { state ->
+                if (viewModel?.enableDefaultWidgetTransition != false) {
+                    defaultStateTransitionManager(state)
                 }
             }
         }
@@ -76,68 +76,68 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
 
 
     private fun inflate(context: Context, liveLikeWidget: LiveLikeWidget) {
-        LayoutInflater.from(context)
-            .inflate(R.layout.widget_social_embed, this, true) as ConstraintLayout
+        if (titleView == null) {
+            LayoutInflater.from(context)
+                .inflate(R.layout.widget_social_embed, this, true) as ConstraintLayout
 
-        titleView.title = liveLikeWidget.comment ?: ""
+            titleView.text = liveLikeWidget.comment ?: ""
 
-        liveLikeWidget.socialEmbedItems?.get(0)?.let { oembed ->
-            web_view.settings.javaScriptEnabled = true
-            web_view.settings.domStorageEnabled = true
+            liveLikeWidget.socialEmbedItems?.get(0)?.let { oembed ->
+                web_view.settings.javaScriptEnabled = true
+                web_view.settings.domStorageEnabled = true
 
-//                            if (viewModel?.enableDefaultWidgetTransition == true) {
-            showTimer(liveLikeWidget.timeout ?: "", 0f, textEggTimer, {
-            }, {
-                viewModel?.dismissWidget(it)
-            })
-            web_view.loadDataWithBaseURL(
-                oembed.oEmbed.providerUrl,
-                oembed.oEmbed.html, "text/html", "utf-8", ""
-            )
+                showTimer(liveLikeWidget.timeout ?: "", 0f, textEggTimer, {
+                }, {
+                    viewModel?.dismissWidget(it)
+                })
+                web_view.loadDataWithBaseURL(
+                    oembed.oEmbed.providerUrl,
+                    oembed.oEmbed.html, "text/html", "utf-8", ""
+                )
 
-            web_view.webViewClient = object : WebViewClient() {
+                web_view.webViewClient = object : WebViewClient() {
 
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    super.onPageFinished(view, url)
-                    Log.d("widget", "onPageFinished")
-                    progress_bar.hide()
-                }
-
-                override fun onPageCommitVisible(view: WebView?, url: String?) {
-                    super.onPageCommitVisible(view, url)
-                    Log.d("widget", "onPageCommitVisible")
-                    progress_bar.hide()
-                }
-
-                override fun onLoadResource(view: WebView?, url: String?) {
-                    super.onLoadResource(view, url)
-                }
-
-                override fun shouldInterceptRequest(
-                    view: WebView?,
-                    request: WebResourceRequest?
-                ): WebResourceResponse? {
-                    return super.shouldInterceptRequest(view, request)
-                }
-
-                override fun shouldOverrideUrlLoading(
-                    view: WebView?,
-                    request: WebResourceRequest?
-                ): Boolean {
-                    progress_bar.hide()
-
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        request?.url?.let { url ->
-                            openLink(context, url?.toString())
-                        }
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                        Log.d("widget", "onPageFinished")
+                        progress_bar.hide()
                     }
-                    return true
-                }
 
+                    override fun onPageCommitVisible(view: WebView?, url: String?) {
+                        super.onPageCommitVisible(view, url)
+                        Log.d("widget", "onPageCommitVisible")
+                        progress_bar.hide()
+                    }
+
+                    override fun onLoadResource(view: WebView?, url: String?) {
+                        super.onLoadResource(view, url)
+                    }
+
+                    override fun shouldInterceptRequest(
+                        view: WebView?,
+                        request: WebResourceRequest?
+                    ): WebResourceResponse? {
+                        return super.shouldInterceptRequest(view, request)
+                    }
+
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest?
+                    ): Boolean {
+                        progress_bar.hide()
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            request?.url?.let { url ->
+                                openLink(context, url?.toString())
+                            }
+                        }
+                        return true
+                    }
+
+
+                }
 
             }
-
-
         }
     }
 
