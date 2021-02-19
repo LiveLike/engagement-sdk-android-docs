@@ -122,6 +122,7 @@ internal class QuizViewModel(
                 })
             }
             currentWidgetId = widgetInfos.widgetId
+            programId = data.latest()?.resource?.program_id.toString()
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
         } else {
