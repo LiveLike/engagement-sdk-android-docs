@@ -238,16 +238,22 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
         }
 
-        widget_view.postDelayed({
-            val availableRewards = session.getRewardItems().joinToString { rewardItem ->
-                rewardItem.name
-            }
-            AlertDialog.Builder(this).apply {
-                setTitle("Welcome! You have chance to win rewards!")
-                    .setMessage(availableRewards)
-                    .create()
-            }.show()
-        }, 2000)
+
+            widget_view.postDelayed({
+                val availableRewards = session.getRewardItems().joinToString { rewardItem ->
+                    rewardItem.name
+                }
+                // check added to prevent crash - ES - 1466
+                if(!(isFinishing || isDestroyed)) {
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Welcome! You have chance to win rewards!")
+                            .setMessage(availableRewards)
+                            .create()
+                    }.show()
+                }
+
+            }, 2000)
+
 
         EngagementSDK.predictionWidgetVoteRepository = object : PredictionWidgetVoteRepository {
             val predictionWidgetVoteRepository = LocalPredictionWidgetVoteRepository()
@@ -619,7 +625,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
             }
 
             private val authorization = "Authorization"
-            private var accessToken: String =
+            private var  accessToken: String =
                 "Bearer db1GX0KrnGWwSOplsMTLJpFBbLds15TbULIxr6J189sabhDdbsrKoA"
 
             private suspend fun postAPI(
