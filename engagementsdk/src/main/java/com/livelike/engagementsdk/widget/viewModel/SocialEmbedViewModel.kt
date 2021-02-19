@@ -25,7 +25,6 @@ internal class SocialEmbedViewModel(
     var data: SubscriptionManager<LiveLikeWidget> =
         SubscriptionManager()
 
-    private var currentWidgetId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
@@ -33,22 +32,24 @@ internal class SocialEmbedViewModel(
         data.onNext(gson.fromJson(widgetInfos.payload.toString(), LiveLikeWidget::class.java) ?: null)
         widgetState.onNext(WidgetStates.READY)
         interactionData.widgetDisplayed()
-        currentWidgetId = widgetInfos.widgetId
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
 
 
     internal fun dismissWidget(action: DismissAction) {
-        currentWidgetType?.let {
-            analyticsService.trackWidgetDismiss(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData,
-                false,
-                action
-            )
+        data.latest()?.let { data ->
+            currentWidgetType?.let {
+                analyticsService.trackWidgetDismiss(
+                    it.toAnalyticsString(),
+                    widgetInfos.widgetId,
+                    data.programId ?: "",
+                    interactionData,
+                    false,
+                    action
+                )
+            }
         }
-        logDebug { "dismiss Alert Widget, reason:${action.name}" }
+        logDebug { "dismiss Social embed Widget, reason:${action.name}" }
         onDismiss()
         cleanup()
         viewModelJob.cancel()
@@ -71,7 +72,6 @@ internal class SocialEmbedViewModel(
         data.onNext(null)
         timeoutStarted = false
         currentWidgetType = null
-        currentWidgetId = ""
         interactionData.reset()
     }
 
