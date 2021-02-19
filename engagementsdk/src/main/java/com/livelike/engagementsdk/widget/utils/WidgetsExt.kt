@@ -17,5 +17,6 @@ fun WidgetType.toAnalyticsString(): String {
         WidgetType.COLLECT_BADGE -> "Collect Badge"
         WidgetType.CHEER_METER -> "Cheer Meter"
         WidgetType.IMAGE_SLIDER -> "Image Slider"
+        WidgetType.SOCIAL_EMBED -> "Social Embed"
     }
 }

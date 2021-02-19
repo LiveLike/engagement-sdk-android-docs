@@ -37,6 +37,9 @@
     <color name="livelike_alert_label_background_shadow">#000000</color>
     <color name="livelike_alert_link_background_color">@android:color/transparent</color>
 
+    <color name="livelike_social_embed_label_gradient_right">#f5515f</color>
+    <color name="livelike_social_embed_label_gradient_left">#9f041b</color>
+
     <color name="livelike_default_title_gradient_left">#003264</color>
     <color name="livelike_default_title_gradient_right">#0096c8</color>
     <color name="livelike_default_option_selected_border">#00b4c8</color>

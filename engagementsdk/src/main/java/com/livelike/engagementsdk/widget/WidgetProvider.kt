@@ -29,6 +29,7 @@ import com.livelike.engagementsdk.widget.WidgetType.IMAGE_PREDICTION_FOLLOW_UP
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_QUIZ
 import com.livelike.engagementsdk.widget.WidgetType.IMAGE_SLIDER
 import com.livelike.engagementsdk.widget.WidgetType.POINTS_TUTORIAL
+import com.livelike.engagementsdk.widget.WidgetType.SOCIAL_EMBED
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_POLL
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION
 import com.livelike.engagementsdk.widget.WidgetType.TEXT_PREDICTION_FOLLOW_UP
@@ -41,6 +42,7 @@ import com.livelike.engagementsdk.widget.view.EmojiSliderWidgetView
 import com.livelike.engagementsdk.widget.view.PollView
 import com.livelike.engagementsdk.widget.view.PredictionView
 import com.livelike.engagementsdk.widget.view.QuizView
+import com.livelike.engagementsdk.widget.view.SocialEmbedWidgetView
 import com.livelike.engagementsdk.widget.view.components.EggTimerCloseButtonView
 import com.livelike.engagementsdk.widget.view.components.PointsTutorialView
 import com.livelike.engagementsdk.widget.viewModel.AlertWidgetViewModel
@@ -52,6 +54,7 @@ import com.livelike.engagementsdk.widget.viewModel.PointTutorialWidgetViewModel
 import com.livelike.engagementsdk.widget.viewModel.PollViewModel
 import com.livelike.engagementsdk.widget.viewModel.PredictionViewModel
 import com.livelike.engagementsdk.widget.viewModel.QuizViewModel
+import com.livelike.engagementsdk.widget.viewModel.SocialEmbedViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
@@ -163,6 +166,13 @@ internal class WidgetProvider {
                 widgetViewModel = EmojiSliderWidgetViewModel(
                     widgetInfos, analyticsService, sdkConfiguration, onDismiss,
                     userRepository, programRepository, widgetMessagingClient
+                )
+            }
+            SOCIAL_EMBED -> SocialEmbedWidgetView(context).apply {
+                this.widgetsTheme = liveLikeEngagementTheme?.widgets
+                this.fontFamilyProvider = liveLikeEngagementTheme?.fontFamilyProvider
+                widgetViewModel = SocialEmbedViewModel(
+                    widgetInfos, analyticsService, onDismiss
                 )
             }
             else -> null
