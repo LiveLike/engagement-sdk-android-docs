@@ -143,6 +143,24 @@ class ChatViewThemeAttributes {
                 )
             }
 
+
+            val sendKeyboardStickerDrawable = TypedValue()
+            getValue(R.styleable.ChatView_chatStickerKeyboardSendDrawable, sendKeyboardStickerDrawable)
+
+            chatStickerKeyboardSendDrawable = when (sendKeyboardStickerDrawable.type) {
+                TypedValue.TYPE_REFERENCE, TypedValue.TYPE_STRING -> ContextCompat.getDrawable(
+                    context,
+                    getResourceId(
+                        R.styleable.ChatView_chatStickerKeyboardSendDrawable,
+                        R.drawable.ic_chat_keyboard
+                    )
+                )
+                else -> ContextCompat.getDrawable(
+                    context,
+                    R.drawable.ic_chat_keyboard
+                )
+            }
+
             val userPicDrawable = TypedValue()
             getValue(R.styleable.ChatView_userPicDrawable, userPicDrawable)
 
@@ -638,6 +656,7 @@ class ChatViewThemeAttributes {
     var chatDisplayBackgroundRes: Drawable? = null
     var chatSendDrawable: Drawable? = null
     var chatStickerSendDrawable: Drawable? = null
+    var chatStickerKeyboardSendDrawable: Drawable? = null
     var chatUserPicDrawable: Drawable? = null
     var chatSendBackgroundDrawable: Drawable? = null
     var chatMessageColor: Int = Color.TRANSPARENT
