@@ -722,7 +722,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         player?.release()
         session?.widgetInterceptor = null
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        privateGroupChatsession?.close()
         super.onDestroy()
     }
 
