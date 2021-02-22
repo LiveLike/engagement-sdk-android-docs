@@ -779,6 +779,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
     }
 
+
+    /**
+     * This function is used to send message, that user enters
+     **/
     private fun sendMessageNow() {
         if (edittext_chat_message.text.isNullOrBlank()) {
             // Do nothing if the message is blank or empty
@@ -821,6 +825,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
+    /**
+     * used for hiding the Snap to live button
+     * snap to love is mainly responsible for showing user the latest message
+     * if user is already at the latest message,then usually this icon remain hidden
+     **/
     private fun hideSnapToLive() {
         logDebug { "Chat hide Snap to Live: $showingSnapToLive" }
         if (!showingSnapToLive)
@@ -830,6 +839,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         animateSnapToLiveButton()
     }
 
+    /**
+     * used for showing the Snap to Live button
+     **/
     private fun showSnapToLive() {
         logDebug { "Chat show Snap to Live: $showingSnapToLive" }
         if (showingSnapToLive)
@@ -838,6 +850,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         snap_live.visibility = View.VISIBLE
         animateSnapToLiveButton()
     }
+
 
     private fun animateSnapToLiveButton() {
         snapToLiveAnimation?.cancel()
