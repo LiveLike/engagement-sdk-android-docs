@@ -74,11 +74,12 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         }
     }
 
-    fun trackWidgetEngagedAnalytics(currentWidgetType: WidgetType?, currentWidgetId: String): Unit {
+    fun trackWidgetEngagedAnalytics(currentWidgetType: WidgetType?, currentWidgetId: String, programId: String): Unit {
         currentWidgetType?.let {
             analyticsService.trackWidgetEngaged(
                 currentWidgetType.toAnalyticsString(),
-                currentWidgetId
+                currentWidgetId,
+                programId
             )
         }
     }

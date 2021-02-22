@@ -71,6 +71,7 @@ internal class PollViewModel(
     var voteUrl: String? = null
     var animationEggTimerProgress = 0f
     private var currentWidgetId: String = ""
+    private var programId:String = ""
     private var currentWidgetType: WidgetType? = null
 
     private val interactionData = AnalyticsWidgetInteractionInfo()
@@ -144,6 +145,7 @@ internal class PollViewModel(
                 })
             }
             currentWidgetId = widgetInfos.widgetId
+            programId = data?.currentData?.resource?.program_id.toString()
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
         }
@@ -161,13 +163,15 @@ internal class PollViewModel(
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticsService.trackWidgetDismiss(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData,
-                adapter?.selectionLocked,
-                action
-            )
+                analyticsService.trackWidgetDismiss(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData,
+                    adapter?.selectionLocked,
+                    action
+                )
+
         }
         widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Poll Widget, reason:${action.name}" }
@@ -197,11 +201,13 @@ internal class PollViewModel(
             }
 
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        programId,
+                        interactionData
+                    )
+
             }
             delay(3000)
             dismissWidget(DismissAction.TIMEOUT)
@@ -245,7 +251,10 @@ internal class PollViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun submitVote(optionID: String) {
-        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+                programId
+            )
+
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->

@@ -70,6 +70,7 @@ internal class QuizViewModel(
     var animationEggTimerProgress = 0f
 
     private var currentWidgetId: String = ""
+    private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
@@ -121,6 +122,7 @@ internal class QuizViewModel(
                 })
             }
             currentWidgetId = widgetInfos.widgetId
+            programId = data.latest()?.resource?.program_id.toString()
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
         } else {
@@ -149,13 +151,15 @@ internal class QuizViewModel(
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticsService.trackWidgetDismiss(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData,
-                adapter?.selectionLocked,
-                action
-            )
+                analyticsService.trackWidgetDismiss(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData,
+                    adapter?.selectionLocked,
+                    action
+                )
+
         }
         widgetState.onNext(WidgetStates.FINISHED)
         logDebug { "dismiss Quiz Widget, reason:${action.name}" }
@@ -188,11 +192,13 @@ internal class QuizViewModel(
             }
 //            state.onNext("results")
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        programId,
+                        interactionData
+                    )
+
             }
         }
     }
@@ -222,7 +228,10 @@ internal class QuizViewModel(
         get() = results.map { it.toLiveLikeWidgetResult() }
 
     override fun lockInAnswer(optionID: String) {
-        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+                programId
+            )
+
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let { position ->
