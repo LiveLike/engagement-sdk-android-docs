@@ -69,6 +69,7 @@ internal abstract class WidgetViewModel<T : Resource>(
     var animationEggTimerProgress = 0f
 
     var currentWidgetId: String = ""
+    var programId: String = ""
     var currentWidgetType: WidgetType? = null
 
     val interactionData = AnalyticsWidgetInteractionInfo()
@@ -77,11 +78,14 @@ internal abstract class WidgetViewModel<T : Resource>(
     internal open fun confirmInteraction() {
         if (currentVote.latest() != null) {
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                programRepository?.programId?.let { programId ->
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        programId,
+                        interactionData
+                    )
+                }
             }
             uiScope.launch {
                 data.currentData?.rewards_url?.let {

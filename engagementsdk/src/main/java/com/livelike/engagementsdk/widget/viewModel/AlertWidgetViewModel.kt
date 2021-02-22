@@ -26,6 +26,7 @@ internal class AlertWidgetViewModel(
         SubscriptionManager()
 
     private var currentWidgetId: String = ""
+    private var programId:String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
 
@@ -34,6 +35,7 @@ internal class AlertWidgetViewModel(
         widgetState.onNext(WidgetStates.READY)
         interactionData.widgetDisplayed()
         currentWidgetId = widgetInfos.widgetId
+        programId =  data?.currentData?.program_id.toString()
         currentWidgetType = WidgetType.fromString(widgetInfos.type)
     }
 
@@ -48,23 +50,28 @@ internal class AlertWidgetViewModel(
                     currentWidgetType
                 )
             }
-            analyticsService.trackWidgetInteraction(
-                widgetType.toAnalyticsString(),
-                currentWidgetId,
-                interactionData
-            )
+            data.latest()?.program_id?.let {
+                analyticsService.trackWidgetInteraction(
+                    widgetType.toAnalyticsString(),
+                    currentWidgetId,
+                    it,
+                    interactionData
+                )
+            }
         }
     }
 
     internal fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticsService.trackWidgetDismiss(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData,
-                false,
-                action
-            )
+                analyticsService.trackWidgetDismiss(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData,
+                    false,
+                    action
+                )
+
         }
         logDebug { "dismiss Alert Widget, reason:${action.name}" }
         onDismiss()
@@ -79,7 +86,11 @@ internal class AlertWidgetViewModel(
 
     override fun alertLinkClicked(url : String) {
         onClickLink(url)
-        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+        data.latest()?.program_id?.let {
+            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+                it
+            )
+        }
     }
 
     override val widgetData: LiveLikeWidget

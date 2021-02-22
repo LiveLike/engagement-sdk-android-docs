@@ -36,12 +36,14 @@ interface AnalyticsService {
     fun trackWidgetInteraction(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     )
 
     fun trackWidgetEngaged(
         kind: String,
-        id: String
+        id: String,
+        programId: String
     )
 
     fun trackSessionStarted()
@@ -56,10 +58,11 @@ interface AnalyticsService {
     fun trackLastChatStatus(status: Boolean)
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
-    fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String? = null)
+    fun trackWidgetDisplayed(kind: String, id: String, programId: String, linkUrl: String? = null)
     fun trackWidgetDismiss(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo?,
         interactable: Boolean?,
         action: DismissAction
@@ -194,18 +197,19 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
     override fun trackWidgetInteraction(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     ) {
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionInfo"
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId $interactionInfo"
         )
     }
 
-    override fun trackWidgetEngaged(kind: String, id: String) {
+    override fun trackWidgetEngaged(kind: String, id: String, programId: String) {
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}] $kind "
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId "
         )
     }
 
@@ -230,13 +234,14 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String?) {
-        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
+    override fun trackWidgetDisplayed(kind: String, id: String, programId: String, linkUrl: String?) {
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId")
     }
 
     override fun trackWidgetDismiss(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo?,
         interactable: Boolean?,
         action: DismissAction
@@ -512,12 +517,14 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     override fun trackWidgetInteraction(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo
     ) {
         val properties = JSONObject()
         val timeOfLastInteraction = parser.format(Date(interactionInfo.timeOfLastInteraction))
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
+        properties.put(PROGRAM_ID,programId)
         properties.put(
             "First Tap Time",
             parser.format(Date(interactionInfo.timeOfFirstInteraction))
@@ -541,19 +548,20 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         mixpanel.registerSuperProperties(superProp)
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}] $kind $interactionInfo"
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId $interactionInfo"
         )
     }
 
-    override fun trackWidgetEngaged(kind: String, id: String) {
+    override fun trackWidgetEngaged(kind: String, id: String, programId: String) {
         val properties = JSONObject()
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
+        properties.put(PROGRAM_ID, programId)
         mixpanel.track(KEY_WIDGET_ENGAGED, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_ENGAGED, properties)
         Log.d(
             "[Analytics]",
-            "[${object {}.javaClass.enclosingMethod?.name}] $kind $id"
+            "[${object {}.javaClass.enclosingMethod?.name}] $kind $id $programId"
         )
     }
 
@@ -708,14 +716,15 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         return allMatches
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String, linkUrl: String?) {
+    override fun trackWidgetDisplayed(kind: String, id: String, programId: String, linkUrl: String?) {
         val properties = JSONObject()
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
+        properties.put(PROGRAM_ID, programId)
         linkUrl?.let { properties.put(LINK_URL, it) }
         mixpanel.track(KEY_WIDGET_DISPLAYED, properties)
         eventObservers[clientId]?.invoke(KEY_WIDGET_DISPLAYED, properties)
-        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId")
     }
 
     override fun trackWidgetReceived(kind: String, id: String) {
@@ -735,6 +744,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
     override fun trackWidgetDismiss(
         kind: String,
         id: String,
+        programId: String,
         interactionInfo: AnalyticsWidgetInteractionInfo?,
         interactable: Boolean?,
         action: DismissAction
@@ -758,6 +768,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             properties.put("Widget Type", kind)
             properties.put("Widget ID", id)
             properties.put("Dismiss Action", dismissAction)
+            properties.put(PROGRAM_ID,programId)
 
             interactionInfo?.let {
                 properties.put("Number Of Taps", interactionInfo.interactionCount)
@@ -775,7 +786,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             edit().putString("lastWidgetType", kind).apply()
             Log.d(
                 "[Analytics]",
-                "[${object {}.javaClass.enclosingMethod?.name}] $kind $action $interactionInfo"
+                "[${object {}.javaClass.enclosingMethod?.name}] $kind $action $programId $interactionInfo"
             )
         }
     }
