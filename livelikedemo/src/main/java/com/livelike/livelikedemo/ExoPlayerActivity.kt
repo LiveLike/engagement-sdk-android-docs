@@ -31,6 +31,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetIntercep
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
+import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
@@ -201,16 +202,18 @@ class ExoPlayerActivity : AppCompatActivity() {
                     }
 
                     override fun createPredictionFollowupWidgetView(
-                        followUpWidgetViewModel: FollowUpWidgetViewModel,  isImage: Boolean
+                        followUpWidgetViewModel: FollowUpWidgetViewModel, isImage: Boolean
                     ): View? {
                         return null
                     }
+
                     override fun createPollWidgetView(
                         pollWidgetModel: PollWidgetModel,
                         isImage: Boolean
                     ): View? {
                         return null
                     }
+
                     override fun createImageSliderWidgetView(imageSliderWidgetModel: ImageSliderWidgetModel): View? {
                         return null
                     }
@@ -501,12 +504,11 @@ class ExoPlayerActivity : AppCompatActivity() {
         if (privateGroupChatsession == null) {
             privateGroupChatsession =
                 (application as LiveLikeApplication).createPrivateSession(
-//                    errorDelegate = object : ErrorDelegate() {
-//                        override fun onError(error: String) {
-//                            checkForNetworkToRecreateActivity()
-//                        }
-//                    }
-
+                    errorDelegate = object : ErrorDelegate() {
+                        override fun onError(error: String) {
+                            Log.e("TAG", "onError: $error")
+                        }
+                    }
                 )
             privateGroupChatsession?.setMessageListener(object : MessageListener {
                 override fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage) {
@@ -719,7 +721,6 @@ class ExoPlayerActivity : AppCompatActivity() {
         timer.purge()
         player?.release()
         session?.widgetInterceptor = null
-        privateGroupChatsession?.close()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onDestroy()
     }
