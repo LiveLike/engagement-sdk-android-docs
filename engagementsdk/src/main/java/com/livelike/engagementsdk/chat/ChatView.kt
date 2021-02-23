@@ -461,6 +461,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
+    /**
+     * checks if any chats are available
+     * if not/ empty list this shows a empty chat background
+     */
     private fun checkEmptyChat() {
         emptyChatBackgroundView?.let {
             it.visibility = if ((viewModel?.messageList?.size ?: 0) == 0)
@@ -688,7 +692,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      * used for hiding sticker keyboard / sticker view
      **/
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
-            chatAttribute?.apply {
+            chatAttribute.apply {
                 button_emoji.setImageDrawable(chatStickerSendDrawable)
             }
 
@@ -712,7 +716,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             delay(200) // delay to make sure the keyboard is hidden
             findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
 
-            chatAttribute?.apply {
+            chatAttribute.apply {
                 button_emoji.setImageDrawable(chatStickerKeyboardSendDrawable)
             }
         }
