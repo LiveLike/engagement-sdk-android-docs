@@ -90,6 +90,7 @@
         <attr name="chatReactionPadding" format="dimension" />
         <attr name="chatSendDrawable" format="reference" />
         <attr name="chatStickerSendDrawable" format="reference" />
+        <attr name="chatStickerKeyboardSendDrawable" format="reference" />
         <attr name="userPicDrawable" format="reference" />
         <attr name="chatSendBackground" format="reference|color" />
         <attr name="chatAvatarCircle" format="boolean" />
