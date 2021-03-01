@@ -37,6 +37,8 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
             sdk,
             liveLikeWidget
         )
+        itemViewHolder.itemView.widget_view.setState(timelineWidgetResource.widgetState)
+
     }
 
     override fun getItemCount(): Int = list.size
