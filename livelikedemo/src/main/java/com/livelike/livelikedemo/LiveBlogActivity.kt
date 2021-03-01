@@ -1,26 +1,19 @@
 package com.livelike.livelikedemo
 
+import WidgetsTimeLineView
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
-import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
-import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
-import kotlinx.android.synthetic.main.activity_live_blog.btn_load_more
-import kotlinx.android.synthetic.main.activity_live_blog.progress_bar
-import kotlinx.android.synthetic.main.activity_live_blog.radio_finished
-import kotlinx.android.synthetic.main.activity_live_blog.radio_interaction
-import kotlinx.android.synthetic.main.activity_live_blog.radio_ready
-import kotlinx.android.synthetic.main.activity_live_blog.radio_result
-import kotlinx.android.synthetic.main.activity_live_blog.rcyl_timeline
+import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
 import kotlinx.android.synthetic.main.time_line_item.view.txt_index
 import kotlinx.android.synthetic.main.time_line_item.view.txt_time
 import kotlinx.android.synthetic.main.time_line_item.view.widget_view
@@ -31,6 +24,7 @@ import java.util.Date
 class LiveBlogActivity : AppCompatActivity() {
 
     private lateinit var adapter: TimeLineAdapter
+
     private lateinit var session: LiveLikeContentSession
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,65 +36,15 @@ class LiveBlogActivity : AppCompatActivity() {
             channel.llProgram.toString(),
             null
         )
-        adapter = TimeLineAdapter((application as LiveLikeApplication))
-        rcyl_timeline.adapter = adapter
-        btn_load_more.setOnClickListener {
-            loadData(LiveLikePagination.NEXT)
-        }
-        radio_ready.isChecked = true
-        radio_ready.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                adapter.widgetStates = WidgetStates.READY
-                adapter.notifyDataSetChanged()
-            }
-        }
-        radio_interaction.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                adapter.widgetStates = WidgetStates.INTERACTING
-                adapter.notifyDataSetChanged()
-            }
-        }
-        radio_result.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                adapter.widgetStates = WidgetStates.RESULTS
-                adapter.notifyDataSetChanged()
-            }
-        }
-        radio_finished.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                adapter.widgetStates = WidgetStates.FINISHED
-                adapter.notifyDataSetChanged()
-            }
-        }
-        loadData(LiveLikePagination.FIRST)
+        val timeLineView = WidgetsTimeLineView(
+            this,
+            WidgetTimeLineViewModel(session),
+            (application as LiveLikeApplication).sdk
+        )
+        timeline_container.addView(timeLineView)
     }
 
-    private fun loadData(liveLikePagination: LiveLikePagination) {
-        progress_bar.visibility = View.VISIBLE
-        session.getPublishedWidgets(
-            liveLikePagination,
-            object : LiveLikeCallback<List<LiveLikeWidget>>() {
-                override fun onResponse(result: List<LiveLikeWidget>?, error: String?) {
-                    result?.let { list ->
-                        adapter.list.addAll(list.map { it!! })
-                        adapter.notifyDataSetChanged()
-                    }
-                    error?.let {
-                        Toast.makeText(this@LiveBlogActivity, "$it", Toast.LENGTH_SHORT).show()
-                    }
-                    if (result == null) {
-                        if (error == null) {
-                            Toast.makeText(
-                                this@LiveBlogActivity,
-                                "Reached End of List",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
-            })
-        progress_bar.visibility = View.GONE
-    }
+
 
     class TimeLineAdapter(private val application: LiveLikeApplication) :
         RecyclerView.Adapter<TimeLineViewHolder>() {
@@ -162,66 +106,6 @@ class LiveBlogActivity : AppCompatActivity() {
                     override fun onUserInteract(widgetData: LiveLikeWidgetEntity) {
 
                     }
-                    //Commenting// scenario for WMT timeline mode
-/*                    private val job = SupervisorJob()
-//                    private val uiScope = CoroutineScope(Dispatchers.Main + job)
-//                    private val ioScope = CoroutineScope(Dispatchers.Default + job)
-//
-//                    var interactiveStateFirstTime = true
-//                    val statesMap = hashMapOf<String, WidgetStates>()
-//                    override fun onWidgetStateChange(
-//                        state: WidgetStates,
-//                        widgetData: LiveLikeWidgetEntity
-//                    ) {
-//                        println("TimeLineAdapter.onWidgetStateChange->>>>>>>>>>>$state ->${liveLikeWidget.kind}")
-//                        liveLikeWidget.id?.let { widgetId ->
-//                            if (statesMap.containsKey(widgetId)) {
-//                                statesMap.remove(widgetId)
-//                            }
-//                            statesMap.put(widgetId, state)
-//                            Log.d("HiveWidgets", "Put state $state for widget $widgetId")
-//                        }
-//                        when (state) {
-//                            WidgetStates.READY -> {
-//                                Log.d(
-//                                    "HiveWidgets",
-//                                    "Widget state -> ready:"
-//                                )
-//                                viewHolder.itemView.widget_view.moveToNextState()
-//                            }
-//                            WidgetStates.INTERACTING -> {
-//                                val delayMs =
-//                                    if (interactiveStateFirstTime) 500L else 30000L
-//                                interactiveStateFirstTime = false
-//                                Log.d(
-//                                    "HiveWidgets",
-//                                    "Widget state -> interacting for $delayMs ms: "
-//                                )
-//                                ioScope.launch {
-//                                    delay(
-//                                        delayMs
-//                                    )
-//                                    uiScope.launch { viewHolder.itemView.widget_view.moveToNextState() }
-//                                }
-//                            }
-//                            WidgetStates.RESULTS -> {
-//                                Log.d(
-//                                    "HiveWidgets",
-//                                    "Widget state -> results: "
-//                                )
-//                                ioScope.launch {
-//                                    delay(2000)
-//                                    uiScope.launch { viewHolder.itemView.widget_view.moveToNextState() }
-//                                }
-//                            }
-//                            WidgetStates.FINISHED -> {
-//                                Log.d(
-//                                    "HiveWidgets",
-//                                    "Widget state -> finished:"
-//                                )
-//                            }
-//                        }
-//                    }*/
                 }
 
             println("TimeLineAdapter.onBindViewHolder->$p1 ->${liveLikeWidget.kind} ->$widgetStates ->${viewHolder.itemView.widget_view.getCurrentState()}")
