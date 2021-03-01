@@ -19,12 +19,14 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
      **/
     val timeLineWidgets = mutableListOf<TimelineWidgetResource>()
 
-    val timeLineWidgetsStream : Stream<List<TimelineWidgetResource>> = SubscriptionManager(false)
+    val timeLineWidgetsStream: Stream<Pair<WidgetApiSource, List<TimelineWidgetResource>>> =
+        SubscriptionManager(false)
 
     var decideWidgetInteractivity: DecideWidgetInteractivity? = null
 
     init {
-       loadPastPublishedWidgets(LiveLikePagination.FIRST)
+        loadPastPublishedWidgets(LiveLikePagination.FIRST)
+        observeForLiveWidgets()
     }
 
 
@@ -36,13 +38,13 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                     result?.let { list ->
                         val widgets = list.map {
                             TimelineWidgetResource(
-                                decideWidgetInteraction(it, TimeLineWidgetApiSource.HISTORY_API),
+                                decideWidgetInteraction(it, WidgetApiSource.HISTORY_API),
                                 it
                             )
                         }
                         timeLineWidgets.addAll(widgets)
                         uiScope.launch {
-                            timeLineWidgetsStream.onNext(widgets)
+                            timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
                         }
                     }
                 }
@@ -52,36 +54,43 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     /**
      * this call load the next available page of past published widgets on this program.
      **/
-    fun loadMore(){
+    fun loadMore() {
         loadPastPublishedWidgets(LiveLikePagination.NEXT)
     }
 
     private fun observeForLiveWidgets() {
         contentSession.widgetStream.subscribe(this) {
             it?.let {
-                val widget =  TimelineWidgetResource(
-                    decideWidgetInteraction(it, TimeLineWidgetApiSource.REALTIME_API),
+                val widget = TimelineWidgetResource(
+                    decideWidgetInteraction(it, WidgetApiSource.REALTIME_API),
                     it
                 )
-               uiScope.launch {
-                   timeLineWidgetsStream.onNext(mutableListOf(widget))
-               }
+                uiScope.launch {
+                    timeLineWidgetsStream.onNext(
+                        Pair(
+                            WidgetApiSource.REALTIME_API,
+                            mutableListOf(widget)
+                        )
+                    )
+                }
             }
         }
     }
 
 
-    fun wouldAllowWidgetInteraction(liveLikeWidget: LiveLikeWidget) : Boolean{
-        return timeLineWidgets.find { it.liveLikeWidget.id == liveLikeWidget.id }?.
-                    widgetState == WidgetStates.INTERACTING
+    fun wouldAllowWidgetInteraction(liveLikeWidget: LiveLikeWidget): Boolean {
+        return timeLineWidgets.find { it.liveLikeWidget.id == liveLikeWidget.id }?.widgetState == WidgetStates.INTERACTING
     }
 
-    private fun decideWidgetInteraction(liveLikeWidget: LiveLikeWidget, timeLineWidgetApiSource: TimeLineWidgetApiSource ) : WidgetStates{
+    private fun decideWidgetInteraction(
+        liveLikeWidget: LiveLikeWidget,
+        timeLineWidgetApiSource: WidgetApiSource
+    ): WidgetStates {
         var isInteractive = false
-        isInteractive = if(decideWidgetInteractivity!=null){
-            decideWidgetInteractivity?.wouldAllowWidgetInteraction(liveLikeWidget)?:false
-        }else{
-            timeLineWidgetApiSource == TimeLineWidgetApiSource.REALTIME_API
+        isInteractive = if (decideWidgetInteractivity != null) {
+            decideWidgetInteractivity?.wouldAllowWidgetInteraction(liveLikeWidget) ?: false
+        } else {
+            timeLineWidgetApiSource == WidgetApiSource.REALTIME_API
         }
         return if (isInteractive) WidgetStates.INTERACTING else WidgetStates.RESULTS
     }
@@ -90,7 +99,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
      * Call this method to close down all connections and scopes, it should be called from onClear() method
      * of android viewmodel. In case landscape not supported then onDestroy.
      */
-    fun clear(){
+    fun clear() {
         uiScope.cancel()
         contentSession.widgetStream.unsubscribe(this)
     }
@@ -98,14 +107,13 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
 }
 
 
-
 // Timeline view will have default implementation
 interface DecideWidgetInteractivity {
-//    TODO discuss with team if there is a requirement to add TimeLineWidgetApiSource as param in this function
-    fun wouldAllowWidgetInteraction(widget : LiveLikeWidget) : Boolean
+    //    TODO discuss with team if there is a requirement to add TimeLineWidgetApiSource as param in this function
+    fun wouldAllowWidgetInteraction(widget: LiveLikeWidget): Boolean
 }
 
-enum class TimeLineWidgetApiSource{
+enum class WidgetApiSource {
     REALTIME_API,
     HISTORY_API
 }
