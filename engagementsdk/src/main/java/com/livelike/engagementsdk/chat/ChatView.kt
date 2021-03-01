@@ -843,7 +843,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        chatdisplay.adapter = null
     }
 
     companion object {
