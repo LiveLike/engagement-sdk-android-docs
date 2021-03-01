@@ -58,17 +58,15 @@ internal class AlertWidgetView : SpecifiedWidgetView {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        viewModel?.data?.subscribe(javaClass) {
+            logDebug { "showing the Alert WidgetView" }
+            it?.let {
+                inflate(context, it)
+            }
+        }
         viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
             logDebug { "Current State: $widgetStates" }
             widgetStates?.let {
-                when (widgetStates) {
-                    WidgetStates.READY -> {
-                        viewModel?.data?.latest()?.let {
-                            logDebug { "showing the Alert WidgetView" }
-                            inflate(context, it)
-                        }
-                    }
-                }
                 if (viewModel?.enableDefaultWidgetTransition == true) {
                     defaultStateTransitionManager(widgetStates)
                 }
