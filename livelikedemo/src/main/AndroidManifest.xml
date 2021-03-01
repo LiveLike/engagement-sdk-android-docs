@@ -21,6 +21,10 @@
         android:versionName="1"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
+        <activity
+            android:name=".MainActivity2"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".SampleAppActivity" />
         <activity android:name=".LeaderBoardPositionActitivty" />
         <activity android:name=".LeaderBoardActivity" />
