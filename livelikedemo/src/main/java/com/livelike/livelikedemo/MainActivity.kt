@@ -65,6 +65,7 @@ import kotlinx.android.synthetic.main.activity_main.themes_json_label
 import kotlinx.android.synthetic.main.activity_main.themes_label
 import kotlinx.android.synthetic.main.activity_main.toggle_auto_keyboard_hide
 import kotlinx.android.synthetic.main.activity_main.txt_nickname_server
+import kotlinx.android.synthetic.main.activity_main.view_pager_sample
 import kotlinx.android.synthetic.main.activity_main.widget_viewModel
 import kotlinx.android.synthetic.main.activity_main.widgets_framework_button
 import kotlinx.android.synthetic.main.activity_main.widgets_only_button
@@ -318,6 +319,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             chatRoomIds = getStringSet(CHAT_ROOM_LIST, mutableSetOf()) ?: mutableSetOf()
+        }
+
+        view_pager_sample.setOnClickListener {
+            startActivity(Intent(this, MainActivity2::class.java))
         }
 
         btn_create.setOnClickListener {

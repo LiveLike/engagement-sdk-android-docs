@@ -260,6 +260,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         return DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER.format(dateTime)
     }
 
+
+    /**
+     * chat session is loaded through this
+     */
     fun setSession(session: LiveLikeChatSession) {
         if (this.session === session) return // setting it multiple times same view with same session have a weird behaviour will debug later.
         hideGamification()
@@ -438,14 +442,29 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                     count: Int
                 ) = Unit
             })
+
+
+            /**
+             * stickers are loaded when emoji btn is clicked
+             * if sticker keyboard is already visible, then this image changes to qwerty button
+             * and on click of qwerty button normal keyboard opens
+             * and in case normal keyboard is already visible then this changes to emoji button
+             */
             button_emoji.setOnClickListener {
-                if (sticker_keyboard.visibility == View.GONE) showStickerKeyboard() else hideStickerKeyboard(
-                    KeyboardHideReason.CHANGING_KEYBOARD_TYPE
-                )
+                    if (sticker_keyboard.visibility == View.GONE) {
+                        showStickerKeyboard()
+                    } else {
+                        hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
+                        showKeyboard()
+                    }
             }
         }
     }
 
+    /**
+     * checks if any chats are available
+     * if not/ empty list this shows a empty chat background
+     */
     private fun checkEmptyChat() {
         emptyChatBackgroundView?.let {
             it.visibility = if ((viewModel?.messageList?.size ?: 0) == 0)
@@ -455,6 +474,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
+
+    /**
+     * stickers keyboard initialization process
+     */
     private fun initStickerKeyboard(
         stickerKeyboardView: StickerKeyboardView,
         chatViewModel: ChatViewModel
@@ -542,7 +565,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 
-    // Hide keyboard when clicking outside of the EditText
+    /**
+     * Hides keyboard on clicking outside of edittext
+     */
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         val v = context.scanForActivity()?.currentFocus
 
@@ -556,7 +581,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
             val x = ev.rawX + v.left - scrcoords[0]
             val y = ev.rawY + v.top - scrcoords[1]
             val outsideStickerKeyboardBound =
-                (v.bottom - sticker_keyboard.height - button_chat_send.height)
+                (v.bottom - sticker_keyboard.height - button_chat_send.height - button_emoji.height)
             // Added check for image_height greater than 0 so bound position for touch should be above the send icon
             if (!edittext_chat_message.isTouching) {
                 if (y < v.top || y > v.bottom || (y < outsideStickerKeyboardBound)) {
@@ -663,15 +688,26 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
+    /**
+     * used for hiding sticker keyboard / sticker view
+     **/
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
-        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
-            //            if (visibility == View.VISIBLE) {
+            chatAttribute.apply {
+                button_emoji.setImageDrawable(chatStickerSendDrawable)
+            }
+
+            findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
+                //            if (visibility == View.VISIBLE) {
 //                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
 //            }
             visibility = View.GONE
         }
     }
 
+
+    /**
+     * used for showing sticker keyboard / sticker view
+     **/
     private fun showStickerKeyboard() {
         uiScope.launch {
             hideKeyboard(KeyboardHideReason.MESSAGE_SENT)
@@ -679,6 +715,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 ?.trackKeyboardOpen(KeyboardType.STICKER)
             delay(200) // delay to make sure the keyboard is hidden
             findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.visibility = View.VISIBLE
+
+            chatAttribute.apply {
+                button_emoji.setImageDrawable(chatStickerKeyboardSendDrawable)
+            }
         }
     }
 
@@ -704,6 +744,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }, time)
     }
 
+    /**
+     * this is used to hide default keyboard
+     **/
     private fun hideKeyboard(reason: KeyboardHideReason) {
         val inputManager =
             context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -715,6 +758,17 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 //        session?.analyticService?.trackKeyboardClose(KeyboardType.STANDARD, reason)
         setBackButtonInterceptor(this)
     }
+
+
+    /**
+     * this is used to show default keyboard
+     **/
+    private fun showKeyboard() {
+        edittext_chat_message.requestFocus()
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        imm!!.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
+    }
+
 
     /**
      * use this to listen messages sent from this view
@@ -729,6 +783,10 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         hideStickerKeyboard(KeyboardHideReason.EXPLICIT_CALL)
     }
 
+
+    /**
+     * This function is used to send message, that user enters
+     **/
     private fun sendMessageNow() {
         if (edittext_chat_message.text.isNullOrBlank()) {
             // Do nothing if the message is blank or empty
@@ -771,6 +829,11 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
+    /**
+     * used for hiding the Snap to live button
+     * snap to love is mainly responsible for showing user the latest message
+     * if user is already at the latest message,then usually this icon remain hidden
+     **/
     private fun hideSnapToLive() {
         logDebug { "Chat hide Snap to Live: $showingSnapToLive" }
         if (!showingSnapToLive)
@@ -780,6 +843,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         animateSnapToLiveButton()
     }
 
+    /**
+     * used for showing the Snap to Live button
+     **/
     private fun showSnapToLive() {
         logDebug { "Chat show Snap to Live: $showingSnapToLive" }
         if (showingSnapToLive)
@@ -788,6 +854,7 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         snap_live.visibility = View.VISIBLE
         animateSnapToLiveButton()
     }
+
 
     private fun animateSnapToLiveButton() {
         snapToLiveAnimation?.cancel()
@@ -843,7 +910,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        chatdisplay.adapter = null
     }
 
     companion object {

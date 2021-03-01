@@ -74,10 +74,10 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         this.session = session
         (session as ContentSession?)?.isSetSessionCalled = true
         session.setWidgetViewThemeAttribute(widgetViewThemeAttributes)
+        widgetContainerViewModel?.currentWidgetViewStream?.unsubscribe(WidgetContainerViewModel::class.java)
         session.setWidgetContainer(this, widgetViewThemeAttributes)
         session.analyticServiceStream.latest()
             ?.trackOrientationChange(resources.configuration.orientation == 1)
-        widgetContainerViewModel?.currentWidgetViewStream?.unsubscribe(WidgetContainerViewModel::class.java)
         widgetContainerViewModel = (session as ContentSession?)?.widgetContainer
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
         widgetContainerViewModel?.widgetViewViewFactory = widgetViewFactory

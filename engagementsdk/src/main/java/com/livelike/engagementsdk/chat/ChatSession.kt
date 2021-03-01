@@ -26,7 +26,6 @@ import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -56,6 +55,7 @@ internal class ChatSession(
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
 
+    private var isClosed = false
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
             applicationContext,
@@ -117,6 +117,11 @@ internal class ChatSession(
         reactionPacksUrl: String,
         reportUrl: String?
     ) {
+        if (isClosed) {
+            logError { "Session is closed" }
+            errorDelegate?.onError("Session is closed")
+            return
+        }
         contentSessionScope.launch {
             configurationUserPairFlow.collect { pair ->
                 chatViewModel.stickerPackRepository =
@@ -146,6 +151,7 @@ internal class ChatSession(
             destroy()
         }
         contentSessionScope.cancel()
+        isClosed = true
     }
 
     // TODO remove proxy message listener by having pipe in chat data layers/chain that tranforms pubnub channel to room
@@ -198,6 +204,11 @@ internal class ChatSession(
         val requestId = UUID.randomUUID()
         chatSessionIdleStream.subscribe(requestId) {
             if (it == true) {
+                if (isClosed) {
+                    logError { "Session is closed" }
+                    errorDelegate?.onError("Session is closed")
+                    return@subscribe
+                }
                 contentSessionScope.launch {
                     configurationUserPairFlow.collect { pair ->
                         logDebug { "fetch ChatRoom" }

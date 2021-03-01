@@ -246,10 +246,14 @@ internal class ContentSession(
                                     pair.first.id
                                 )
                                 chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
-                                program.analyticsProps.forEach { map ->
+
+                               /* commented, since programId and programTitle doesn't need
+                               * to be a part of super properties */
+
+                               /* program.analyticsProps.forEach { map ->
                                     analyticServiceStream.latest()
                                         ?.registerSuperAndPeopleProperty(map.key to map.value)
-                                }
+                                }*/
                                 configuration.analyticsProps.forEach { map ->
                                     analyticServiceStream.latest()
                                         ?.registerSuperAndPeopleProperty(map.key to map.value)

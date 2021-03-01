@@ -60,6 +60,7 @@ internal class CheerMeterViewModel(
     val data: SubscriptionManager<CheerMeterWidget> =
         SubscriptionManager()
     private var currentWidgetId: String = ""
+    private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
     var animationEggTimerProgress = 0f
@@ -119,11 +120,14 @@ internal class CheerMeterViewModel(
 
     fun voteEnd() {
         currentWidgetType?.let {
-            analyticsService.trackWidgetInteraction(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData
-            )
+            data.latest()?.resource?.program_id?.let { programId ->
+                analyticsService.trackWidgetInteraction(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData
+                )
+            }
         }
     }
 
@@ -151,15 +155,18 @@ internal class CheerMeterViewModel(
                 })
             }
             currentWidgetId = widgetInfos.widgetId
+            programId = data.latest()?.resource?.program_id.toString()
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
 
             currentWidgetType?.let {
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    interactionData
-                )
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        programId,
+                        interactionData
+                    )
+
             }
         }
     }
@@ -184,13 +191,16 @@ internal class CheerMeterViewModel(
 
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
-            analyticsService.trackWidgetDismiss(
-                it.toAnalyticsString(),
-                currentWidgetId,
-                interactionData,
-                false,
-                action
-            )
+            data.currentData?.resource?.program_id?.let { programId ->
+                analyticsService.trackWidgetDismiss(
+                    it.toAnalyticsString(),
+                    currentWidgetId,
+                    programId,
+                    interactionData,
+                    false,
+                    action
+                )
+            }
         }
         logDebug { "dismiss Alert Widget, reason:${action.name}" }
         onDismiss()
@@ -217,7 +227,10 @@ internal class CheerMeterViewModel(
 
 
     override fun submitVote(optionID: String) {
-        trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId)
+            trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
+                programId
+            )
+
         data.currentData?.let { widget ->
             val option = widget.resource.getMergedOptions()?.find { it.id == optionID }
             widget.resource.getMergedOptions()?.indexOf(option)?.let {

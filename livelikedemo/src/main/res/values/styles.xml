@@ -96,6 +96,7 @@
         <item name="chatMessageBottomBorderHeight">1dp</item>
         <item name="chatMessageBottomBorderColor">#efeff4</item>
         <item name="reaction_icon">@drawable/ic_chat_reaction_turner</item>
+        <item name="chatStickerKeyboardSendDrawable">@drawable/ic_keyboard</item>
         <item name="reaction_hint_enable">true</item>
         <item name="reaction_icons_margin_top">0dp</item>
         <item name="reaction_icons_margin_bottom">18dp</item>
