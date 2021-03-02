@@ -12,8 +12,8 @@ import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
-import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinner
-import kotlinx.android.synthetic.main.livelike_timeline_view.view.snap_live
+import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
+import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_snap_live
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_rv
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,12 +28,12 @@ class WidgetsTimeLineView(
     private var snapToLiveAnimation: AnimatorSet? = null
     private var showingSnapToLive: Boolean = false
     private var isFirstItemVisible = false
-    private var autoScroll = false
+    private var autoScrollTimeline = false
 
 
     init {
         inflate(context, R.layout.livelike_timeline_view, this)
-        showLoadingSpinner()
+        showLoadingSpinnerForTimeline()
         adapter =
             TimeLineViewAdapter(
                 context,
@@ -91,26 +91,26 @@ class WidgetsTimeLineView(
             ) {
                 val firstVisible = lm.findFirstVisibleItemPosition()
                 val topHasBeenReached = firstVisible == 0
-                if (!autoScroll)
+                if (!autoScrollTimeline)
                     isFirstItemVisible = if (topHasBeenReached) {
-                        hideSnapToLive()
+                        hideSnapToLiveForWidgets()
                         true
                     } else {
-                        showSnapToLive()
+                        showSnapToLiveForWidgets()
                         false
                     }
                 if (topHasBeenReached) {
-                    autoScroll = false
+                    autoScrollTimeline = false
                 }
             }
         })
 
-        snap_live.setOnClickListener {
-            autoScroll = true
-            snapToLive()
+        timeline_snap_live.setOnClickListener {
+            autoScrollTimeline = true
+            snapToLiveForTimeline()
         }
 
-            timeLineViewModel.eventStream.subscribe(javaClass.simpleName) {
+            timeLineViewModel.widgetEventStream.subscribe(javaClass.simpleName) {
                 logDebug { "Widget timeline event stream : $it" }
                 when (it) {
 
@@ -118,14 +118,14 @@ class WidgetsTimeLineView(
                         timeLineViewModel.uiScope.launch {
                             // Added delay to avoid UI glitch when recycler view is loading
                             delay(500)
-                            hideLoadingSpinner()
+                            hideLoadingSpinnerForTimeline()
 
                         }
                     }
                     WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
                         timeLineViewModel.uiScope.launch {
                             delay(400)
-                            showLoadingSpinner()
+                            showLoadingSpinnerForTimeline()
                         }
                     }
 
@@ -134,14 +134,14 @@ class WidgetsTimeLineView(
     }
 
 
-    private fun showLoadingSpinner() {
-        loadingSpinner.visibility = View.VISIBLE
+    private fun showLoadingSpinnerForTimeline() {
+        loadingSpinnerTimeline.visibility = View.VISIBLE
         timeline_rv.visibility = View.GONE
-        snap_live.visibility = View.GONE
+        timeline_snap_live.visibility = View.GONE
     }
 
-    private fun hideLoadingSpinner() {
-        loadingSpinner.visibility = View.GONE
+    private fun hideLoadingSpinnerForTimeline() {
+        loadingSpinnerTimeline.visibility = View.GONE
         timeline_rv.visibility = View.VISIBLE
     }
 
@@ -152,12 +152,12 @@ class WidgetsTimeLineView(
      * snap to live is mainly responsible for showing user the latest widget
      * if user is already at the latest widget,then usually this icon remain hidden
      **/
-    private fun hideSnapToLive() {
+    private fun hideSnapToLiveForWidgets() {
         logDebug { "Widget Timeline hide Snap to Live: $showingSnapToLive" }
         if (!showingSnapToLive)
             return
         showingSnapToLive = false
-        snap_live.visibility = View.GONE
+        timeline_snap_live.visibility = View.GONE
         animateSnapToLiveButton()
     }
 
@@ -165,20 +165,20 @@ class WidgetsTimeLineView(
     /**
      * used for showing the Snap to Live button
      **/
-    private fun showSnapToLive() {
+    private fun showSnapToLiveForWidgets() {
         logDebug { "Wdget Timeline show Snap to Live: $showingSnapToLive" }
         if (showingSnapToLive)
             return
         showingSnapToLive = true
-        snap_live.visibility = View.VISIBLE
+        timeline_snap_live.visibility = View.VISIBLE
         animateSnapToLiveButton()
     }
 
 
 
-    private fun snapToLive() {
+    private fun snapToLiveForTimeline() {
         timeline_rv?.let { rv ->
-            hideSnapToLive()
+            hideSnapToLiveForWidgets()
             timeLineViewModel.timeLineWidgets?.size?.let {
                 timeline_rv.postDelayed({
                     rv.smoothScrollToPosition(0)
@@ -192,22 +192,22 @@ class WidgetsTimeLineView(
         snapToLiveAnimation?.cancel()
 
         val translateAnimation = ObjectAnimator.ofFloat(
-            snap_live,
+            timeline_snap_live,
             "translationY",
-            if (showingSnapToLive) 0f else AndroidResource.dpToPx( SNAP_TO_LIVE_ANIMATION_DESTINATION)
+            if (showingSnapToLive) 0f else AndroidResource.dpToPx(TIMELINE_SNAP_TO_LIVE_ANIMATION_DESTINATION)
                 .toFloat()
         )
-        translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
+        translateAnimation?.duration = TIMELINE_SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
         val alphaAnimation =
-            ObjectAnimator.ofFloat(snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
-        alphaAnimation.duration = (SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION).toLong()
+            ObjectAnimator.ofFloat(timeline_snap_live, "alpha", if (showingSnapToLive) 1f else 0f)
+        alphaAnimation.duration = (TIMELINE_SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION).toLong()
         alphaAnimation.addListener(object : Animator.AnimatorListener {
             override fun onAnimationEnd(animation: Animator) {
-                snap_live.visibility = if (showingSnapToLive) View.VISIBLE else View.GONE
+                timeline_snap_live.visibility = if (showingSnapToLive) View.VISIBLE else View.GONE
             }
 
             override fun onAnimationStart(animation: Animator) {
-                snap_live.visibility = if (showingSnapToLive) View.GONE else View.VISIBLE
+                timeline_snap_live.visibility = if (showingSnapToLive) View.GONE else View.VISIBLE
             }
 
             override fun onAnimationCancel(animation: Animator) {}
@@ -228,13 +228,13 @@ class WidgetsTimeLineView(
 
     private fun unsubscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.unsubscribe(this)
-        timeLineViewModel.eventStream.unsubscribe(this)
+        timeLineViewModel.widgetEventStream.unsubscribe(this)
     }
 
     companion object {
-        const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
-        const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
-        const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
+        const val TIMELINE_SNAP_TO_LIVE_ANIMATION_DURATION = 400F
+        const val TIMELINE_SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
+        const val TIMELINE_SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
 
     }
 

@@ -23,7 +23,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
         SubscriptionManager(false)
 
     var decideWidgetInteractivity: DecideWidgetInteractivity? = null
-    internal val eventStream: Stream<String> =
+    internal val widgetEventStream: Stream<String> =
         SubscriptionManager(false)
 
     init {
@@ -50,7 +50,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                         uiScope.launch {
                             timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
                         }
-                        eventStream.onNext(WIDGET_LOADING_COMPLETE)
+                        widgetEventStream.onNext(WIDGET_LOADING_COMPLETE)
                     }
                 }
             })
