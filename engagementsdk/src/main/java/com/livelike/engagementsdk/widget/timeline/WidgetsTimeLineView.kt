@@ -15,6 +15,8 @@ import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinner
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.snap_live
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_rv
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class WidgetsTimeLineView(
     context: Context,
@@ -31,6 +33,7 @@ class WidgetsTimeLineView(
 
     init {
         inflate(context, R.layout.livelike_timeline_view, this)
+        showLoadingSpinner()
         adapter =
             TimeLineViewAdapter(
                 context,
@@ -40,7 +43,6 @@ class WidgetsTimeLineView(
         timeline_rv.layoutManager = LinearLayoutManager(context)
         timeline_rv.adapter = adapter
         initListeners()
-
     }
 
 //    /**
@@ -87,8 +89,7 @@ class WidgetsTimeLineView(
                 dy: Int
             ) {
                 val firstVisible = lm.findFirstVisibleItemPosition()
-
-                val topHasBeenReached = firstVisible - 4 <= 0
+                val topHasBeenReached = firstVisible == 0
                 if (!autoScroll)
                     isFirstItemVisible = if (topHasBeenReached) {
                         hideSnapToLive()
@@ -107,6 +108,28 @@ class WidgetsTimeLineView(
             autoScroll = true
             snapToLive()
         }
+
+            timeLineViewModel.eventStream.subscribe(javaClass.simpleName) {
+                logDebug { "Widget timeline event stream : $it" }
+                when (it) {
+
+                    WidgetTimeLineViewModel.WIDGET_LOADING_COMPLETE -> {
+                        timeLineViewModel.uiScope.launch {
+                            // Added delay to avoid UI glitch when recycler view is loading
+                            delay(500)
+                            hideLoadingSpinner()
+
+                        }
+                    }
+                    WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
+                        timeLineViewModel.uiScope.launch {
+                            delay(400)
+                            showLoadingSpinner()
+                        }
+                    }
+
+                }
+            }
     }
 
 
@@ -204,12 +227,14 @@ class WidgetsTimeLineView(
 
     private fun unsubscribeForTimelineWidgets() {
         timeLineViewModel.timeLineWidgetsStream.unsubscribe(this)
+        timeLineViewModel.eventStream.unsubscribe(this)
     }
 
     companion object {
         const val SNAP_TO_LIVE_ANIMATION_DURATION = 400F
         const val SNAP_TO_LIVE_ALPHA_ANIMATION_DURATION = 320F
         const val SNAP_TO_LIVE_ANIMATION_DESTINATION = 50
+
     }
 
 

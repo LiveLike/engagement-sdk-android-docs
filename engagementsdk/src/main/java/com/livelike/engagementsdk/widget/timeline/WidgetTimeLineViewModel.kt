@@ -4,6 +4,7 @@ import TimelineWidgetResource
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
+import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -23,13 +24,17 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
         SubscriptionManager(false)
 
     var decideWidgetInteractivity: DecideWidgetInteractivity? = null
+    internal val eventStream: Stream<String> =
+        SubscriptionManager(false)
 
     init {
         loadPastPublishedWidgets(LiveLikePagination.FIRST)
         observeForLiveWidgets()
     }
 
-
+    /**
+     * load history widgets (published)
+     **/
     private fun loadPastPublishedWidgets(page: LiveLikePagination) {
         contentSession.getPublishedWidgets(
             page,
@@ -46,6 +51,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                         uiScope.launch {
                             timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
                         }
+                        eventStream.onNext(WIDGET_LOADING_COMPLETE)
                     }
                 }
             })
@@ -102,6 +108,14 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     fun clear() {
         uiScope.cancel()
         contentSession.widgetStream.unsubscribe(this)
+    }
+
+    /**
+     * used for widget loading starting / completed
+     **/
+    companion object {
+        const val WIDGET_LOADING_COMPLETE = "loading-complete"
+        const val WIDGET_LOADING_STARTED = "loading-started"
     }
 
 }
