@@ -30,6 +30,9 @@ class WidgetsTimeLineView(
     private var isFirstItemVisible = false
     private var autoScroll = false
 
+    //Variable for checking progressbar loading or not
+   // private var isLoading: Boolean = false
+
 
     init {
         inflate(context, R.layout.livelike_timeline_view, this)
@@ -73,6 +76,7 @@ class WidgetsTimeLineView(
                         adapter.itemCount
                     )
                 }
+               // adapter.isLoadingAdded = false
             }
         }
     }
@@ -101,6 +105,18 @@ class WidgetsTimeLineView(
                 if (topHasBeenReached) {
                     autoScroll = false
                 }
+
+                if (!adapter.isLoadingAdded)
+                {
+                    //findLastCompletelyVisibleItemPostition() returns position of last fully visible view.
+                    ////It checks, fully visible view is the last one.
+                    if (lm.findLastCompletelyVisibleItemPosition() == adapter.list.size - 1)
+                    {
+                        timeLineViewModel.loadMore()
+                        adapter.isLoadingAdded = true
+                    }
+                }
+
             }
         })
 

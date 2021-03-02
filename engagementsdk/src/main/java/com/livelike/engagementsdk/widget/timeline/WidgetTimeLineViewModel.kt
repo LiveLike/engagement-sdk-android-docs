@@ -7,6 +7,7 @@ import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
@@ -47,6 +48,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                                 it
                             )
                         }
+                        logDebug { "api called" }
                         timeLineWidgets.addAll(widgets)
                         uiScope.launch {
                             timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
