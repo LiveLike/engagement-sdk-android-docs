@@ -4,7 +4,6 @@ import TimelineWidgetResource
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -64,6 +63,10 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
         loadPastPublishedWidgets(LiveLikePagination.NEXT)
     }
 
+
+    /**
+     * this will be responsible for observing real time widgets (when published)
+     **/
     private fun observeForLiveWidgets() {
         contentSession.widgetStream.subscribe(this) {
             it?.let {
@@ -111,7 +114,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     }
 
     /**
-     * used for widget loading starting / completed
+     * used for timeline widget loading starting / completed
      **/
     companion object {
         const val WIDGET_LOADING_COMPLETE = "loading-complete"

@@ -79,6 +79,7 @@ class WidgetsTimeLineView(
 
     /**
      * view click listeners
+     * snap to live added
      **/
     private fun initListeners(){
         val lm = timeline_rv.layoutManager as LinearLayoutManager
@@ -148,7 +149,7 @@ class WidgetsTimeLineView(
 
     /**
      * used for hiding the Snap to live button
-     * snap to live is mainly responsible for showing user the latest widget received
+     * snap to live is mainly responsible for showing user the latest widget
      * if user is already at the latest widget,then usually this icon remain hidden
      **/
     private fun hideSnapToLive() {
