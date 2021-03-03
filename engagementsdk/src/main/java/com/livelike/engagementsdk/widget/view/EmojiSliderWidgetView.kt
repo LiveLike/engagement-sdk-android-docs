@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget.view
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -23,7 +24,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 import java.math.RoundingMode
+import java.util.concurrent.ExecutionException
 
 internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = null) :
     GenericSpecifiedWidgetView<ImageSliderEntity, EmojiSliderWidgetViewModel>(context, attr) {
@@ -98,13 +101,23 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                         resource.options?.forEach {
                             list.add(
                                 async {
-                                    Glide.with(context)
-                                        .asBitmap()
-                                        .load(it.image_url).centerCrop().submit(size, size).get()
+                                    try {
+                                        Glide.with(context)
+                                            .asBitmap()
+                                            .load(it.image_url)
+                                            .centerCrop()
+                                            .submit(size, size)
+                                            .get()
+                                    } catch (e: Exception) {
+                                        BitmapFactory.decodeResource(
+                                            context.resources,
+                                            R.drawable.default_avatar
+                                        )
+                                    }
                                 }
                             )
                         }
-                        val drawableList = list.map { t -> ScaleDrawable(t.await()) }
+                        val drawableList = list.mapNotNull { t -> ScaleDrawable(t.await()) }
                         withContext(Dispatchers.Main) {
                             val drawable = ThumbDrawable(drawableList, .5f)
                             image_slider.thumbDrawable = drawable
