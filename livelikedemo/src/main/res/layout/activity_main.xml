@@ -201,7 +201,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/chk_show_dismiss" />
 
                 <CheckBox
-                    android:id="@+id/chk_custom_cheer_meter"
+                    android:id="@+id/chk_custom_widgets_ui"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="6dp"

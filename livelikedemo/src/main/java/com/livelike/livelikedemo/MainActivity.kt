@@ -41,7 +41,7 @@ import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
-import kotlinx.android.synthetic.main.activity_main.chk_custom_cheer_meter
+import kotlinx.android.synthetic.main.activity_main.chk_custom_widgets_ui
 import kotlinx.android.synthetic.main.activity_main.chk_show_avatar
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
 import kotlinx.android.synthetic.main.activity_main.ed_avatar
@@ -188,9 +188,11 @@ class MainActivity : AppCompatActivity() {
             player.showAvatar = isChecked;
         }
 
-        chk_custom_cheer_meter.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_custom_widgets_ui.setOnCheckedChangeListener { buttonView, isChecked ->
             player.customCheerMeter = isChecked
             onlyWidget.customCheerMeter = isChecked
+
+            LiveLikeApplication.showCustomWidgetsUI = isChecked
         }
         sample_app.setOnClickListener {
             startActivity(Intent(this, SampleAppActivity::class.java))

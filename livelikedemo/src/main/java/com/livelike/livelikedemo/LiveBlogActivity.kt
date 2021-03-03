@@ -13,6 +13,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidget
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
+import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
 import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
 import kotlinx.android.synthetic.main.time_line_item.view.txt_index
 import kotlinx.android.synthetic.main.time_line_item.view.txt_time
@@ -23,7 +24,6 @@ import java.util.Date
 
 class LiveBlogActivity : AppCompatActivity() {
 
-    private lateinit var adapter: TimeLineAdapter
 
     private lateinit var session: LiveLikeContentSession
 
@@ -36,11 +36,15 @@ class LiveBlogActivity : AppCompatActivity() {
             channel.llProgram.toString(),
             null
         )
+        val timeLineViewModel = WidgetTimeLineViewModel(session)
         val timeLineView = WidgetsTimeLineView(
             this,
-            WidgetTimeLineViewModel(session),
+            timeLineViewModel,
             (application as LiveLikeApplication).sdk
         )
+        if(LiveLikeApplication.showCustomWidgetsUI){
+            timeLineView.widgetViewFactory = TimeLineWidgetFactory(this,timeLineViewModel.timeLineWidgets)
+        }
         timeline_container.addView(timeLineView)
     }
 

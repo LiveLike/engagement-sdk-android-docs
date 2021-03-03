@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+    <com.livelike.livelikedemo.customwidgets.timeline.TimeBar
+        android:id="@+id/time_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_time_bar_height"
+        android:background="@color/mml_time_bar_color" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingTop="32dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="32dp">
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/mml_widget_title_color"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="Do you tthink head coach teve Kerveill retire after session?" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcyl_poll_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/mml_poll_image_list_item" />
+
+        <TextView
+            android:id="@+id/txt_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:letterSpacing="0.1"
+            android:textColor="@color/mml_widget_title_color"
+            android:textSize="10sp"
+            tools:text="Jan 19,10:10 AM" />
+    </LinearLayout>
+</LinearLayout>
