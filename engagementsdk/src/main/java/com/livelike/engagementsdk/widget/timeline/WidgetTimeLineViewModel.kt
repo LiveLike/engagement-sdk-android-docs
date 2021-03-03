@@ -1,11 +1,9 @@
 package com.livelike.engagementsdk.widget.timeline
 
 import TimelineWidgetResource
-import android.widget.Toast
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
-import com.livelike.engagementsdk.chat.ChatViewModel
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -26,7 +24,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
         SubscriptionManager(false)
 
     var decideWidgetInteractivity: DecideWidgetInteractivity? = null
-    internal val eventStream: Stream<String> =
+    internal val widgetEventStream: Stream<String> =
         SubscriptionManager(false)
 
     init {
@@ -55,15 +53,14 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                             timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
                         }
                     }
-
                     // this means that published result is finished, there are no more to display
                     if (result == null) {
                         if (error == null) {
                             logDebug { "timeline list finished" }
-                            eventStream.onNext(WIDGET_TIMELINE_END)
+                            widgetEventStream.onNext(WIDGET_TIMELINE_END)
                         }
                     }
-                    eventStream.onNext(WIDGET_LOADING_COMPLETE)
+                    widgetEventStream.onNext(WIDGET_LOADING_COMPLETE)
                 }
             })
     }
@@ -126,7 +123,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     }
 
     /**
-     * used for widget loading starting / completed
+     * used for timeline widget loading starting / completed
      **/
     companion object {
         const val WIDGET_LOADING_COMPLETE = "loading-complete"
