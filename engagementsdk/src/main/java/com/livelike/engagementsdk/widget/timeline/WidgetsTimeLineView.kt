@@ -1,3 +1,4 @@
+
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
@@ -10,11 +11,12 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
-import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_snap_live
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_rv
+import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_snap_live
 import kotlinx.coroutines.launch
 
 class WidgetsTimeLineView(
@@ -33,7 +35,15 @@ class WidgetsTimeLineView(
     // before loading more.
     private val visibleThreshold = 2
 
-
+    /**
+     * For custom widgets to show on this timeline, set implementation of widget view factory
+     * @see <a href="https://docs.livelike.com/docs/livelikewidgetviewfactory">Docs reference</a>
+     **/
+    var widgetViewFactory: LiveLikeWidgetViewFactory? = null
+        set(value) {
+            adapter.widgetViewFactory= value
+            field = value
+        }
 
     init {
         inflate(context, R.layout.livelike_timeline_view, this)

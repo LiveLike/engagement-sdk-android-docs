@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_item.view.widget_view
 
@@ -17,6 +18,7 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
         setHasStableIds(true)
     }
 
+    var widgetViewFactory: LiveLikeWidgetViewFactory?=null
     val list: ArrayList<TimelineWidgetResource> = arrayListOf()
     var isLoadingInProgress = false
     var isEndReached = false
@@ -59,6 +61,7 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
             val timelineWidgetResource = list[p1]
             val liveLikeWidget = timelineWidgetResource.liveLikeWidget
             itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
+            itemViewHolder.itemView.widget_view.widgetViewFactory = widgetViewFactory
             itemViewHolder.itemView.widget_view.displayWidget(
                 sdk,
                 liveLikeWidget
