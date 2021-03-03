@@ -121,11 +121,6 @@ class WidgetsTimeLineView(
                         timeLineViewModel.loadMore()
                         adapter.isLoadingAdded = true
                     }
-
-                   /* if (lm.findLastCompletelyVisibleItemPosition() == adapter.list.size - 1) {
-                        timeLineViewModel.loadMore()
-                        adapter.isLoadingAdded = true
-                    }*/
                 }
             }
         })
