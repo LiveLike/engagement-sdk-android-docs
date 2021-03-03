@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.widget.timeline
 
 import TimelineWidgetResource
+import android.widget.Toast
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
@@ -48,13 +49,21 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                                 it
                             )
                         }
-                        logDebug { "api called" }
                         timeLineWidgets.addAll(widgets)
+                        logDebug { "timeline widget total ${timeLineWidgets.size}" }
                         uiScope.launch {
                             timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
                         }
-                        eventStream.onNext(WIDGET_LOADING_COMPLETE)
                     }
+
+                    // this means that published result is finished, there are no more to display
+                    if (result == null) {
+                        if (error == null) {
+                            logDebug { "timeline list finished" }
+                            eventStream.onNext(WIDGET_TIMELINE_END)
+                        }
+                    }
+                    eventStream.onNext(WIDGET_LOADING_COMPLETE)
                 }
             })
     }
@@ -66,6 +75,10 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
         loadPastPublishedWidgets(LiveLikePagination.NEXT)
     }
 
+
+    /**
+     * observe the live (real time) widgets
+     **/
     private fun observeForLiveWidgets() {
         contentSession.widgetStream.subscribe(this) {
             it?.let {
@@ -118,6 +131,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     companion object {
         const val WIDGET_LOADING_COMPLETE = "loading-complete"
         const val WIDGET_LOADING_STARTED = "loading-started"
+        const val WIDGET_TIMELINE_END = "timeline-reached"
     }
 
 }

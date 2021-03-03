@@ -10,6 +10,7 @@ import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinner
@@ -30,8 +31,10 @@ class WidgetsTimeLineView(
     private var isFirstItemVisible = false
     private var autoScroll = false
 
-    //Variable for checking progressbar loading or not
-   // private var isLoading: Boolean = false
+    // The minimum amount of items to have below your current scroll position
+    // before loading more.
+    private val visibleThreshold = 2
+
 
 
     init {
@@ -69,14 +72,15 @@ class WidgetsTimeLineView(
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
+                    adapter.isLoadingAdded = false
                 } else {
                     adapter.list.addAll(pair.second)
                     adapter.notifyItemRangeInserted(
                         adapter.itemCount - pair.second.size,
                         adapter.itemCount
                     )
+                    adapter.isLoadingAdded = false
                 }
-               // adapter.isLoadingAdded = false
             }
         }
     }
@@ -106,17 +110,22 @@ class WidgetsTimeLineView(
                     autoScroll = false
                 }
 
-                if (!adapter.isLoadingAdded)
-                {
-                    //findLastCompletelyVisibleItemPostition() returns position of last fully visible view.
-                    ////It checks, fully visible view is the last one.
-                    if (lm.findLastCompletelyVisibleItemPosition() == adapter.list.size - 1)
-                    {
+                /**
+                 * load more on scrolled (pagination)
+                 **/
+                if (!adapter.isLoadingAdded && !adapter.isEndReached) {
+                    val totalItemCount = lm.itemCount
+                    val lastVisibleItem = lm.findLastVisibleItemPosition()
+                    if (totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                         timeLineViewModel.loadMore()
                         adapter.isLoadingAdded = true
                     }
-                }
 
+                   /* if (lm.findLastCompletelyVisibleItemPosition() == adapter.list.size - 1) {
+                        timeLineViewModel.loadMore()
+                        adapter.isLoadingAdded = true
+                    }*/
+                }
             }
         })
 
@@ -137,6 +146,17 @@ class WidgetsTimeLineView(
 
                         }
                     }
+
+                    WidgetTimeLineViewModel.WIDGET_TIMELINE_END -> {
+                        timeLineViewModel.uiScope.launch {
+                            // Added delay to avoid UI glitch when recycler view is loading
+                            delay(300)
+                            adapter.isLoadingAdded = true
+                            adapter.isEndReached = true
+                            adapter.notifyItemChanged(adapter.list.size - 1)
+                        }
+                    }
+
                     WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
                         timeLineViewModel.uiScope.launch {
                             delay(400)
@@ -168,7 +188,6 @@ class WidgetsTimeLineView(
      * if user is already at the latest widget,then usually this icon remain hidden
      **/
     private fun hideSnapToLive() {
-        logDebug { "Widget Timeline hide Snap to Live: $showingSnapToLive" }
         if (!showingSnapToLive)
             return
         showingSnapToLive = false
@@ -181,7 +200,6 @@ class WidgetsTimeLineView(
      * used for showing the Snap to Live button
      **/
     private fun showSnapToLive() {
-        logDebug { "Wdget Timeline show Snap to Live: $showingSnapToLive" }
         if (showingSnapToLive)
             return
         showingSnapToLive = true
@@ -209,7 +227,7 @@ class WidgetsTimeLineView(
         val translateAnimation = ObjectAnimator.ofFloat(
             snap_live,
             "translationY",
-            if (showingSnapToLive) 0f else AndroidResource.dpToPx( SNAP_TO_LIVE_ANIMATION_DESTINATION)
+            if (showingSnapToLive) 0f else AndroidResource.dpToPx(SNAP_TO_LIVE_ANIMATION_DESTINATION)
                 .toFloat()
         )
         translateAnimation?.duration = SNAP_TO_LIVE_ANIMATION_DURATION.toLong()

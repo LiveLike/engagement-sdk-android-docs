@@ -19,6 +19,7 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
 
     val list: ArrayList<TimelineWidgetResource> = arrayListOf()
     var isLoadingAdded = false
+    var isEndReached = false
 
     override fun onCreateViewHolder(p0: ViewGroup, viewtype: Int): RecyclerView.ViewHolder {
         return when (viewtype){
@@ -45,34 +46,11 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
 
             else -> throw IllegalArgumentException("Different View type")
         }
-
-
-
-
-       /* return TimeLineItemViewHolder(
-            LayoutInflater.from(p0.context).inflate(R.layout.livelike_timeline_item, p0, false)
-        )*/
     }
 
-   /* override fun getItemViewType(position: Int): Int {
-        return position
-    }*/
 
-  /*  override fun onBindViewHolder(itemViewHolder: TimeLineItemViewHolder, p1: Int) {
-        val timelineWidgetResource = list[p1]
-        val liveLikeWidget = timelineWidgetResource.liveLikeWidget
-        itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
-        itemViewHolder.itemView.widget_view.displayWidget(
-            sdk,
-            liveLikeWidget
-        )
-        itemViewHolder.itemView.widget_view.setState(timelineWidgetResource.widgetState)
-
-    }*/
-
-    override fun getItemViewType(position: Int): Int
-    {
-        return if (position == list.size - 1 && isLoadingAdded) VIEW_TYPE_PROGRESS else VIEW_TYPE_DATA
+    override fun getItemViewType(position: Int): Int {
+        return if (position == list.size - 1 && isLoadingAdded && !isEndReached) VIEW_TYPE_PROGRESS else VIEW_TYPE_DATA
     }
 
 
@@ -100,7 +78,7 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
     companion object
     {
         private const val VIEW_TYPE_DATA = 0
-        private const val VIEW_TYPE_PROGRESS = 1
+        private const val VIEW_TYPE_PROGRESS = 1 // for load more // progress view type
     }
 
 }
