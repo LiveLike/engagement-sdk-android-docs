@@ -6,6 +6,7 @@ import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
+import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
@@ -47,11 +48,18 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                             )
                         }
                         timeLineWidgets.addAll(widgets)
+                        logDebug { "timeline widget total ${timeLineWidgets.size}" }
                         uiScope.launch {
                             timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
                         }
-                        widgetEventStream.onNext(WIDGET_LOADING_COMPLETE)
                     }
+                    // this means that published result is finished, there are no more to display
+                    if (result == null && error == null) {
+                            logDebug { "timeline list finished" }
+                            widgetEventStream.onNext(WIDGET_TIMELINE_END)
+
+                    }
+                    widgetEventStream.onNext(WIDGET_LOADING_COMPLETE)
                 }
             })
     }
@@ -65,7 +73,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
 
 
     /**
-     * this will be responsible for observing real time widgets (when published)
+     * observe the live (real time) widgets
      **/
     private fun observeForLiveWidgets() {
         contentSession.widgetStream.subscribe(this) {
@@ -119,6 +127,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     companion object {
         const val WIDGET_LOADING_COMPLETE = "loading-complete"
         const val WIDGET_LOADING_STARTED = "loading-started"
+        const val WIDGET_TIMELINE_END = "timeline-reached"
     }
 
 }

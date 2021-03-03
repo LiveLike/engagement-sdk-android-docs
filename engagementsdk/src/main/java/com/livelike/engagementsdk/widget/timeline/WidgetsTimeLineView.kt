@@ -15,7 +15,6 @@ import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_snap_live
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_rv
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class WidgetsTimeLineView(
@@ -29,6 +28,11 @@ class WidgetsTimeLineView(
     private var showingSnapToLive: Boolean = false
     private var isFirstItemVisible = false
     private var autoScrollTimeline = false
+
+    // The minimum amount of items to have below your current scroll position
+    // before loading more.
+    private val visibleThreshold = 2
+
 
 
     init {
@@ -66,12 +70,14 @@ class WidgetsTimeLineView(
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
+                    adapter.isLoadingInProgress = false
                 } else {
                     adapter.list.addAll(pair.second)
                     adapter.notifyItemRangeInserted(
                         adapter.itemCount - pair.second.size,
                         adapter.itemCount
                     )
+                    adapter.isLoadingInProgress = false
                 }
             }
         }
@@ -102,6 +108,18 @@ class WidgetsTimeLineView(
                 if (topHasBeenReached) {
                     autoScrollTimeline = false
                 }
+
+                /**
+                 * load more on scrolled (pagination)
+                 **/
+                if (!adapter.isLoadingInProgress && !adapter.isEndReached) {
+                    val totalItemCount = lm.itemCount
+                    val lastVisibleItem = lm.findLastVisibleItemPosition()
+                    if (totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                        timeLineViewModel.loadMore()
+                        adapter.isLoadingInProgress = true
+                    }
+                }
             }
         })
 
@@ -116,15 +134,20 @@ class WidgetsTimeLineView(
 
                     WidgetTimeLineViewModel.WIDGET_LOADING_COMPLETE -> {
                         timeLineViewModel.uiScope.launch {
-                            // Added delay to avoid UI glitch when recycler view is loading
-                            delay(500)
                             hideLoadingSpinnerForTimeline()
 
                         }
                     }
+
+                    WidgetTimeLineViewModel.WIDGET_TIMELINE_END -> {
+                        timeLineViewModel.uiScope.launch {
+                            adapter.isEndReached = true
+                            adapter.notifyItemChanged(adapter.list.size - 1)
+                        }
+                    }
+
                     WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
                         timeLineViewModel.uiScope.launch {
-                            delay(400)
                             showLoadingSpinnerForTimeline()
                         }
                     }
