@@ -67,6 +67,8 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
                 liveLikeWidget
             )
             itemViewHolder.itemView.widget_view.setState(timelineWidgetResource.widgetState)
+            // TODO remove after state persistance, for now changing state to result after first display as interaction
+            timelineWidgetResource.widgetState = WidgetStates.RESULTS
         }
     }
 
