@@ -18,7 +18,7 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
     }
 
     val list: ArrayList<TimelineWidgetResource> = arrayListOf()
-    var isLoadingAdded = false
+    var isLoadingInProgress = false
     var isEndReached = false
 
     override fun onCreateViewHolder(p0: ViewGroup, viewtype: Int): RecyclerView.ViewHolder {
@@ -50,7 +50,7 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
 
 
     override fun getItemViewType(position: Int): Int {
-        return if (position == list.size - 1 && isLoadingAdded && !isEndReached) VIEW_TYPE_PROGRESS else VIEW_TYPE_DATA
+        return if (position == list.size - 1 && isLoadingInProgress && !isEndReached) VIEW_TYPE_PROGRESS else VIEW_TYPE_DATA
     }
 
 

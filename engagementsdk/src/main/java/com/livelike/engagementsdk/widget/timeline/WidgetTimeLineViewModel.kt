@@ -54,11 +54,10 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                         }
                     }
                     // this means that published result is finished, there are no more to display
-                    if (result == null) {
-                        if (error == null) {
+                    if (result == null && error == null) {
                             logDebug { "timeline list finished" }
                             widgetEventStream.onNext(WIDGET_TIMELINE_END)
-                        }
+
                     }
                     widgetEventStream.onNext(WIDGET_LOADING_COMPLETE)
                 }
