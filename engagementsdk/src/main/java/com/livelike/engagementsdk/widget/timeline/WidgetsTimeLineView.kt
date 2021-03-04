@@ -80,7 +80,7 @@ class WidgetsTimeLineView(
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
-                    adapter.isLoadingInProgress = false
+                    wouldRetreatToActiveWidgetPosition()
                 } else {
                     adapter.list.addAll(pair.second)
                     adapter.notifyItemRangeInserted(
@@ -90,6 +90,17 @@ class WidgetsTimeLineView(
                     adapter.isLoadingInProgress = false
                 }
             }
+        }
+    }
+
+    /**
+     *this will check for visible position, if it is 0 then it will scroll to top
+     **/
+    private fun wouldRetreatToActiveWidgetPosition() {
+        val shouldRetreatToTopPosition =
+            (timeline_rv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() == 0
+        if (shouldRetreatToTopPosition) {
+            timeline_rv.smoothScrollToPosition(0)
         }
     }
 
