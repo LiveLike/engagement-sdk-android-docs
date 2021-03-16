@@ -2,7 +2,7 @@ package com.livelike.livelikedemo
 
 import WidgetsTimeLineView
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory

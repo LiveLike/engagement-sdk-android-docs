@@ -2,10 +2,10 @@ package com.livelike.livelikedemo
 
 import android.app.ProgressDialog
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,9 +94,17 @@ class LeaderBoardActivity : AppCompatActivity() {
             "Loading. Please wait...", true
         )
         rcyl_leader_board.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(
+                this,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
         rcyl_leader_board_entries.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(
+                this,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
         ed_txt_program_id.setText("47c14e1d-5786-401e-a850-22c5a91a5399") //QA
         //ed_txt_program_id.setText("6834f1fd-f24d-4538-ba51-63544f9d78eb")//Prod
 

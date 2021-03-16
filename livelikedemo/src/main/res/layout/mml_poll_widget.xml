@@ -32,13 +32,13 @@
             android:textStyle="bold"
             tools:text="Do you tthink head coach teve Kerveill retire after session?" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcyl_poll_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="vertical"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/mml_poll_image_list_item" />
 
         <TextView

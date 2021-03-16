@@ -1,10 +1,10 @@
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,10 +59,18 @@ class MMLPollWidget(
             txt_title.text = liveLikeWidget.question
             liveLikeWidget.options?.let { list ->
                 if (isImage) {
-                    rcyl_poll_list.layoutManager = GridLayoutManager(context, 2)
+                    rcyl_poll_list.layoutManager =
+                        GridLayoutManager(
+                            context,
+                            2
+                        )
                 } else {
                     rcyl_poll_list.layoutManager =
-                        LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+                        LinearLayoutManager(
+                            context,
+                            RecyclerView.VERTICAL,
+                            false
+                        )
                 }
                 val adapter =
                     PollListAdapter(
