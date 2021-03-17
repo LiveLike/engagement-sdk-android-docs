@@ -405,7 +405,7 @@ internal class ImageSlider @JvmOverloads constructor(
     override fun onSaveInstanceState(): Parcelable? {
         // Force our ancestor class to save its state
         val superState = super.onSaveInstanceState()
-        return SavedState(superState).apply { progress = this@ImageSlider.progress }
+        return superState?.let { SavedState(it).apply { progress = this@ImageSlider.progress } }
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {

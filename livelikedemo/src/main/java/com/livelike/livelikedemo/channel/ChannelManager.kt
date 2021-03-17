@@ -47,7 +47,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
         val call = client.newCall(request)
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("ChannelMgr", e?.message)
+                e?.message?.let { Log.e("ChannelMgr", it) }
             }
 
             override fun onResponse(call: okhttp3.Call, response: Response) {
@@ -83,7 +83,7 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                             }
                         }
                     } catch (e: JSONException) {
-                        Log.e("ChannelMger", e.message)
+                        e.message?.let { Log.e("ChannelMger", it) }
                     }
                 }
             }

@@ -74,10 +74,10 @@ class ChatOnlyActivity : AppCompatActivity() {
                             }(${result.id}),  Room Id copy to clipboard"
                             else -> error
                         }
-                        val clipboard =
+                        var clipboard =
                             getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val clip = ClipData.newPlainText("copied ChatRoomId", result?.id)
-                        clipboard.primaryClip = clip
+                        var clip = ClipData.newPlainText("copied ChatRoomId", result?.id)
+                        clipboard.setPrimaryClip(clip)
                         response?.let { it1 -> showToast(it1) }
 
                         ed_chat_room_title.setText("")
