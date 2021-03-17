@@ -14,9 +14,9 @@ buildscript {
         expressoVersion = "3.0.2"
         exoplayerVersion = "2.9.3"
         coroutinesVersion = "1.3.0-RC"
-        glideVersion = '4.9.0'
+        glideVersion = '4.12.0'
         gradleVersion = '3.5.0'
-        gsonVersion = '2.8.5'
+        gsonVersion = '2.8.6'
         junitVersion = '4.13.2'
         kotlinVersion = '1.3.41'
         ktlintVersion = '0.30.0'
@@ -25,10 +25,9 @@ buildscript {
         multidexVersion = '1.0.3'
         mixpanelVersion = '5.5.2'
         mockitoVersion = '2.18.3'
-        okhttpVersion = '3.11.0'
+        okhttpVersion = '4.0.1'
         pubnubVersion = '4.29.2'
         gsonVersion = '2.8.6'
-        okhttpVersion = '3.9.1'
         supportTestVersion = '1.0.2'
         supportLibraryVersion = '28.0.0'
         threetenabpVersion = "1.1.2"
