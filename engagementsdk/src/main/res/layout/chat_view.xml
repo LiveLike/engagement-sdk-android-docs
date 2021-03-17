@@ -96,7 +96,7 @@
             android:background="@color/livelike_transparent"
             android:contentDescription="@string/snap_to_live"
             android:scaleType="fitXY"
-            android:tint="@color/livelike_snap_live_icon_color"
+            app:tint="@color/livelike_snap_live_icon_color"
             app:srcCompat="@drawable/ic_chat_ic_live" />
     </androidx.cardview.widget.CardView>
 
