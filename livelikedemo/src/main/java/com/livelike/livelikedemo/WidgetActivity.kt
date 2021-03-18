@@ -1,9 +1,9 @@
 package com.livelike.livelikedemo
 
 import EngagementViewModelFactory
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.WidgetListener
 import kotlinx.android.synthetic.main.activity_widget.widget_view

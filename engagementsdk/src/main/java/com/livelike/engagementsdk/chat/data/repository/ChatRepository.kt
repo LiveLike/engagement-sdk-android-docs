@@ -10,8 +10,9 @@ import com.livelike.engagementsdk.core.data.respository.BaseRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.network.RequestType
 import com.livelike.engagementsdk.core.services.network.Result
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+
 
 internal class ChatRepository(
     private val subscribeKey: String,
@@ -63,18 +64,13 @@ internal class ChatRepository(
         title: String?,
         visibility: Visibility?
     ) = when {
-        title.isNullOrEmpty().not() && visibility != null -> RequestBody.create(
-            MediaType.parse("application/json; charset=utf-8"),
-            """{"visibility":"${visibility.name}","title":"$title"}"""
-        )
-        title.isNullOrEmpty().not() && visibility == null -> RequestBody.create(
-            MediaType.parse("application/json; charset=utf-8"), """{"title":"$title"}"""
-        )
-        title.isNullOrEmpty() && visibility != null -> RequestBody.create(
-            MediaType.parse("application/json; charset=utf-8"),
-            """{"visibility":"${visibility.name}"}"""
-        )
-        else -> RequestBody.create(null, byteArrayOf())
+        title.isNullOrEmpty().not() && visibility != null -> """{"visibility":"${visibility.name}","title":"$title"}"""
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        title.isNullOrEmpty().not() && visibility == null -> """{"title":"$title"}"""
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        title.isNullOrEmpty() && visibility != null -> """{"visibility":"${visibility.name}"}"""
+            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+        else -> byteArrayOf().toRequestBody(null, 0)
     }
 
     suspend fun updateChatRoom(

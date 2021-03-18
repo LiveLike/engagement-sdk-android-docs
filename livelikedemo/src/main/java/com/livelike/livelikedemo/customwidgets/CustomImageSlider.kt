@@ -1,7 +1,7 @@
 package com.livelike.livelikedemo.customwidgets
 
 import android.content.Context
-import android.support.constraint.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import com.livelike.engagementsdk.widget.widgetModel.ImageSliderWidgetModel
 import com.livelike.livelikedemo.R

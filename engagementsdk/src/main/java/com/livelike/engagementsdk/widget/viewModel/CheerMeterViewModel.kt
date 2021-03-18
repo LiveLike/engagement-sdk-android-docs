@@ -25,8 +25,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 
 internal class CheerMeterWidget(
     val type: WidgetType,
@@ -98,10 +98,8 @@ internal class CheerMeterViewModel(
             val count = voteState.voteCount
             val voteUrl = dataClient.voteAsync(
                 voteState.voteUrl,
-                body = RequestBody.create(
-                    MediaType.parse("application/json"),
-                    "{\"vote_count\":${voteState.voteCount}}"
-                ),
+                body = "{\"vote_count\":${voteState.voteCount}}"
+                    .toRequestBody("application/json".toMediaTypeOrNull()),
                 accessToken = userRepository.userAccessToken,
                 type = voteState.requestType,
                 useVoteUrl = false,

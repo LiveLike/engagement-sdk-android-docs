@@ -14,8 +14,8 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             val currentNetworkInfo =
                 intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
-            if (currentNetworkInfo.isConnected) {
+            if (currentNetworkInfo!!.isConnected) {
 //                (application as LiveLikeApplication).initSDK()
                 channelManager.loadClientConfig()
             }
@@ -125,13 +125,13 @@ class MainActivity : AppCompatActivity() {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network?) {
+                override fun onAvailable(network: Network) {
                     super.onAvailable(network)
 //                    (application as LiveLikeApplication).initSDK()
                     channelManager.loadClientConfig()
                 }
 
-                override fun onLost(network: Network?) {
+                override fun onLost(network: Network) {
                     super.onLost(network)
                 }
 
@@ -241,10 +241,10 @@ class MainActivity : AppCompatActivity() {
                     ExoPlayerActivity.privateGroupRoomId = chatRoomIds.elementAt(which)
 
                     // Copy to clipboard
-                    val clipboard: ClipboardManager =
+                    var clipboard: ClipboardManager =
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
-                    clipboard.primaryClip = clip
+                    var clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
+                    clipboard.setPrimaryClip(clip)
                     Toast.makeText(
                         applicationContext,
                         "Room Id Copy To Clipboard",

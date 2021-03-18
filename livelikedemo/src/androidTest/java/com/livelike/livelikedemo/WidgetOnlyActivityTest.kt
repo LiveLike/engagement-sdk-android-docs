@@ -2,14 +2,14 @@ package com.livelike.livelikedemo
 
 import android.Manifest
 import android.graphics.Bitmap.CompressFormat
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
-import android.support.test.runner.screenshot.CustomScreenCaptureProcessor
-import android.support.test.runner.screenshot.Screenshot
-import android.support.v4.app.ActivityCompat
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.rule.ActivityTestRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.runner.screenshot.CustomScreenCaptureProcessor
+import androidx.test.runner.screenshot.Screenshot
+import androidx.core.app.ActivityCompat
 import android.view.View
 import org.hamcrest.Description
 import org.hamcrest.Matcher

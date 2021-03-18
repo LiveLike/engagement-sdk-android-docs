@@ -7,14 +7,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.constraint.Constraints
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import androidx.constraintlayout.widget.Constraints
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -741,12 +741,12 @@ class ExoPlayerActivity : AppCompatActivity() {
         super.onResume()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState?.putString(CHANNEL_NAME, channelManager?.selectedChannel?.name ?: "")
-        outState?.putBoolean(AD_STATE, adsPlaying)
-        outState?.putBoolean(SHOWING_DIALOG, showingDialog)
-        outState?.putLong(POSITION, player?.position() ?: 0)
+        outState.putString(CHANNEL_NAME, channelManager?.selectedChannel?.name ?: "")
+        outState.putBoolean(AD_STATE, adsPlaying)
+        outState.putBoolean(SHOWING_DIALOG, showingDialog)
+        outState.putLong(POSITION, player?.position() ?: 0)
     }
 
     companion object {

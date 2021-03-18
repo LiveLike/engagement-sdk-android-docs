@@ -9,9 +9,9 @@ import android.graphics.Canvas
 import android.graphics.PointF
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.support.annotation.DimenRes
-import android.support.annotation.FloatRange
-import android.support.v4.content.ContextCompat
+import androidx.annotation.DimenRes
+import androidx.annotation.FloatRange
+import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
