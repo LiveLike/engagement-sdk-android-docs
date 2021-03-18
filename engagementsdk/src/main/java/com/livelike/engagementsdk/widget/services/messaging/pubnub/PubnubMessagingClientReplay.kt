@@ -10,9 +10,6 @@ import com.livelike.engagementsdk.core.utils.extractStringOrEmpty
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.parseISODateTime
 import com.pubnub.api.PubNub
-import com.pubnub.api.callbacks.PNCallback
-import com.pubnub.api.models.consumer.PNStatus
-import com.pubnub.api.models.consumer.history.PNHistoryResult
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -58,8 +55,7 @@ internal class PubnubMessagingClientReplay(
             .count(count)
             .end(0)
             .includeTimetoken(true)
-            .async(object : PNCallback<PNHistoryResult>() {
-                override fun onResponse(result: PNHistoryResult?, status: PNStatus) {
+            .async{ result, status ->
                     result?.let {
                         result.messages.reversed().forEach {
                             val payload = it.entry.asJsonObject.getAsJsonObject("payload")
@@ -85,7 +81,6 @@ internal class PubnubMessagingClientReplay(
                         }
                     }
                 }
-            })
     }
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
