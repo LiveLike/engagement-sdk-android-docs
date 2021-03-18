@@ -3,6 +3,8 @@ package com.mixpanel.android.mpmetrics;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.json.JSONObject;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +34,7 @@ public class MixpanelExtension {
 
             MixpanelAPI instance = instances.get(appContext);
             if (null == instance && ConfigurationChecker.checkBasicConfiguration(appContext)) {
-                instance = new MixpanelAPI(appContext, sReferrerPrefs, token, false);
+                instance = new MixpanelAPI(appContext, sReferrerPrefs, token, false, new JSONObject());
                 instances.put(appContext, instance);
             }
             try {

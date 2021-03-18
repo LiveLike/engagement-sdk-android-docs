@@ -96,6 +96,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     }
 
 
+
     fun wouldAllowWidgetInteraction(liveLikeWidget: LiveLikeWidget): Boolean {
         return timeLineWidgets.find { it.liveLikeWidget.id == liveLikeWidget.id }?.widgetState == WidgetStates.INTERACTING
     }
