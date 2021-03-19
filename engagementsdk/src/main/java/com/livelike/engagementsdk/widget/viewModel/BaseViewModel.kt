@@ -83,6 +83,11 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
             )
         }
     }
+
+    /**
+     * all models should override this to cleanup their resources
+     **/
+   abstract fun onClear()
 }
 
 enum class WidgetStates {

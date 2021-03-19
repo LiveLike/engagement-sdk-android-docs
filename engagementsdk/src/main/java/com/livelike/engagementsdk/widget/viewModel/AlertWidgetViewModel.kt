@@ -117,4 +117,8 @@ internal class AlertWidgetViewModel(
         interactionData.reset()
     }
 
+    override fun onClear() {
+        cleanup()
+    }
+
 }
