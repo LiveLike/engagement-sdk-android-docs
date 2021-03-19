@@ -51,14 +51,18 @@ internal open class EngagementDataClientImpl : DataClient,
     @Suppress("unused")
     private fun Any?.unit() = Unit
 
-    override fun getProgramData(url: String, responseCallback: (program: Program?) -> Unit) {
+    override fun getProgramData(
+        url: String,
+        responseCallback: (program: Program?, error: String?) -> Unit
+    ) {
 
-        fun respondWith(value: Program?) = mainHandler.post { responseCallback(value) }.unit()
+        fun respondWith(value: Program?, error: String?) =
+            mainHandler.post { responseCallback(value, error) }.unit()
 
         fun respondOnException(op: () -> Unit) = try {
             op()
         } catch (e: Exception) {
-            logError { e }.also { respondWith(null) }
+            logError { e }.also { respondWith(null, e.message) }
         }
 
         respondOnException {
@@ -90,7 +94,7 @@ internal open class EngagementDataClientImpl : DataClient,
                                 // Program Url is the only required field
                                 error("Program Url not present in response.")
                             }
-                            respondWith(parsedObject.toProgram())
+                            respondWith(parsedObject.toProgram(),null)
                         }
                     }
                 }
