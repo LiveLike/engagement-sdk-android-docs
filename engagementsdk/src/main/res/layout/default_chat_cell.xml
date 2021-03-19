@@ -56,7 +56,7 @@
                 android:layout_marginEnd="@dimen/livelike_chat_bubble_background_margin_end"
                 android:layout_marginRight="@dimen/livelike_chat_bubble_background_margin_right"
                 android:layout_marginBottom="@dimen/livelike_chat_bubble_background_margin_bottom"
-                android:animateLayoutChanges="true"
+                android:animateLayoutChanges="@bool/livelike_chat_component_layout_transition_enabled"
                 android:orientation="vertical">
 
                 <TextView

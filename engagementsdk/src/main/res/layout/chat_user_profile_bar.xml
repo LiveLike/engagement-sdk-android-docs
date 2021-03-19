@@ -14,7 +14,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:animateLayoutChanges="true"
+        android:animateLayoutChanges="@bool/livelike_chat_component_layout_transition_enabled"
         android:background="@drawable/ic_chat_message_bubble_rounded_rectangle">
 
         <TextView
