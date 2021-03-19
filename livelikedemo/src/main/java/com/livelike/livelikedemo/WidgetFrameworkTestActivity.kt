@@ -2,7 +2,7 @@ package com.livelike.livelikedemo
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.widget.Toast
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser

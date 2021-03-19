@@ -8,8 +8,10 @@ import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logError
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 internal interface ChatDataClient {
     suspend fun reportMessage(remoteUrl: String, message: ChatMessage, accessToken: String?)
@@ -27,7 +29,7 @@ internal class ChatDataClientImpl : EngagementDataClientImpl(), ChatDataClient {
             .setType(MultipartBody.FORM)
             .addFormDataPart(
                 "image", "image.png",
-                RequestBody.create(MediaType.parse("image/png"), image)
+                image.toRequestBody("image/png".toMediaTypeOrNull(), 0)
             )
             .build()
 
@@ -55,9 +57,8 @@ internal class ChatDataClientImpl : EngagementDataClientImpl(), ChatDataClient {
         val result = remoteCall<LiveLikeUser>(
             remoteUrl,
             RequestType.POST,
-            RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"), json
-            ),
+            json
+                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
             accessToken
         )
         if (result is Result.Success) {

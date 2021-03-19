@@ -82,10 +82,12 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                     )
             } else {
                  jsonObject = postAsync(
-                    voteUrl, accessToken, (body ?: FormBody.Builder()
-                        .add("option_id", voteId)
-                        .add("choice_id", voteId)
-                        .build()), type ?: RequestType.PATCH
+                    voteUrl, accessToken, (body ?: voteId?.let {
+                         FormBody.Builder()
+                             .add("option_id", it)
+                             .add("choice_id", it)
+                             .build()
+                     }), type ?: RequestType.PATCH
                 )
             }
             voteUrl = jsonObject.extractStringOrEmpty("url")
@@ -146,8 +148,8 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
 
             override fun onResponse(call: Call, response: Response) {
                 try {
-                    val s = response.body()?.string()
-                    it.resume(JsonParser().parse(s).asJsonObject)
+                    val s = response.body?.string()
+                    it.resume(JsonParser.parseString(s).asJsonObject)
                 } catch (e: Exception) {
                     logError { e }
                     it.resumeWithException(e)
@@ -187,7 +189,7 @@ internal class WidgetDataClientImpl : EngagementDataClientImpl(), WidgetDataClie
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    logVerbose { "impression registered " + response.message() }
+                    logVerbose { "impression registered " + response.message }
                 }
             })
         } catch (e: Exception) {

@@ -3,9 +3,10 @@ package com.livelike.livelikedemo.channel
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.support.annotation.NonNull
+import androidx.annotation.NonNull
 import android.util.Log
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
+import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -45,8 +46,12 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
 
         val call = client.newCall(request)
         call.enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e?.message?.let { Log.e("ChannelMgr", it) }
+            }
+
             override fun onResponse(call: okhttp3.Call, response: Response) {
-                val responseData = response.body()?.string()
+                val responseData = response.body?.string()
                 mainHandler.post {
                     val savedChannel =
                         appContext.getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
@@ -78,14 +83,11 @@ class ChannelManager(private val channelConfigUrl: String, val appContext: Conte
                             }
                         }
                     } catch (e: JSONException) {
-                        Log.e("ChannelMger", e.message)
+                        e.message?.let { Log.e("ChannelMger", it) }
                     }
                 }
             }
 
-            override fun onFailure(call: okhttp3.Call, e: IOException?) {
-                Log.e("ChannelMgr", e?.message)
-            }
         })
     }
 

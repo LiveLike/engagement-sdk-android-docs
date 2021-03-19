@@ -3,7 +3,7 @@ package com.livelike.livelikedemo
 import android.content.Context
 import android.os.Bundle
 import android.os.Looper
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.core.AccessTokenDelegate

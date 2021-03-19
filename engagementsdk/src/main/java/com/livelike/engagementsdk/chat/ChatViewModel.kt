@@ -200,19 +200,21 @@ internal class ChatViewModel(
     ) {
 
         messageList.forEachIndexed { index, chatMessage ->
-            chatMessage.apply {
-                if (this.timetoken == messagePubnubToken) {
-                    if (isOwnReaction) {
-                        if (chatMessage.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
-                            chatMessage.myChatMessageReaction?.pubnubActionToken =
-                                chatMessageReaction.pubnubActionToken
+            if(chatMessage != null) { // added null check in reference to ES-1533 (though crash not reproducible at all)
+                chatMessage.apply {
+                    if (this.timetoken == messagePubnubToken) {
+                        if (isOwnReaction) {
+                            if (chatMessage.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
+                                chatMessage.myChatMessageReaction?.pubnubActionToken =
+                                    chatMessageReaction.pubnubActionToken
+                            }
+                        } else {
+                            val emojiId = chatMessageReaction.emojiId
+                            emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) + 1
+                            uiScope.launch { chatAdapter.notifyItemChanged(index) }
                         }
-                    } else {
-                        val emojiId = chatMessageReaction.emojiId
-                        emojiCountMap[emojiId] = (emojiCountMap[emojiId] ?: 0) + 1
-                        uiScope.launch { chatAdapter.notifyItemChanged(index) }
+                        return@forEachIndexed
                     }
-                    return@forEachIndexed
                 }
             }
         }

@@ -1,20 +1,22 @@
+
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.FrameLayout
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
+import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
-import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_snap_live
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_rv
+import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_snap_live
 import kotlinx.coroutines.launch
 
 class WidgetsTimeLineView(
@@ -33,7 +35,15 @@ class WidgetsTimeLineView(
     // before loading more.
     private val visibleThreshold = 2
 
-
+    /**
+     * For custom widgets to show on this timeline, set implementation of widget view factory
+     * @see <a href="https://docs.livelike.com/docs/livelikewidgetviewfactory">Docs reference</a>
+     **/
+    var widgetViewFactory: LiveLikeWidgetViewFactory? = null
+        set(value) {
+            adapter.widgetViewFactory= value
+            field = value
+        }
 
     init {
         inflate(context, R.layout.livelike_timeline_view, this)
@@ -44,7 +54,8 @@ class WidgetsTimeLineView(
                 sdk
             )
         adapter.list.addAll(timeLineViewModel.timeLineWidgets)
-        timeline_rv.layoutManager = LinearLayoutManager(context)
+        timeline_rv.layoutManager =
+            LinearLayoutManager(context)
         timeline_rv.adapter = adapter
         initListeners()
     }
@@ -70,7 +81,7 @@ class WidgetsTimeLineView(
                 if (pair.first == WidgetApiSource.REALTIME_API) {
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
-                    adapter.isLoadingInProgress = false
+                    wouldRetreatToActiveWidgetPosition()
                 } else {
                     adapter.list.addAll(pair.second)
                     adapter.notifyItemRangeInserted(
@@ -80,6 +91,17 @@ class WidgetsTimeLineView(
                     adapter.isLoadingInProgress = false
                 }
             }
+        }
+    }
+
+    /**
+     *this will check for visible position, if it is 0 then it will scroll to top
+     **/
+    private fun wouldRetreatToActiveWidgetPosition() {
+        val shouldRetreatToTopPosition =
+            (timeline_rv.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition() == 0
+        if (shouldRetreatToTopPosition) {
+            timeline_rv.smoothScrollToPosition(0)
         }
     }
 

@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.widget.viewModel
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.AnalyticsWidgetSpecificInfo

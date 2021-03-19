@@ -1,7 +1,7 @@
 package com.livelike.livelikedemo
 
 import android.content.Context
-import android.support.test.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry
 import com.livelike.engagementsdk.EngagementSDK
 import org.junit.Before
 import org.junit.Test

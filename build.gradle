@@ -3,34 +3,33 @@
 buildscript {
     ext {
         // Sdk and tools
-        compileSdkVersion = 28
+        compileSdkVersion = 30
         minSdkVersion = 17
-        targetSdkVersion = 28
+        targetSdkVersion = 30
 
         // App dependencies
         bugsnagVersion = "4+"
-        constraintLayoutVersion = "1.1.3"
+        appcompatVersion = "1.2.0"
+        constraintLayoutVersion = "2.0.4"
         dokkaVersion = "0.10.0"
         expressoVersion = "3.0.2"
         exoplayerVersion = "2.9.3"
-        coroutinesVersion = "1.3.0-RC"
-        glideVersion = '4.9.0'
+        coroutinesVersion = "1.3.9"
+        glideVersion = '4.12.0'
         gradleVersion = '3.5.0'
-        gsonVersion = '2.8.5'
-        junitVersion = '4.12'
-        kotlinVersion = '1.3.41'
+        gsonVersion = '2.8.6'
+        junitVersion = '4.13.2'
+        kotlinVersion = '1.4.21'
         ktlintVersion = '0.30.0'
-        lottieVersion = '3.0.3-support'
+        lottieVersion = '3.5.0'
         mavenPluginVersion = '2.1'
         multidexVersion = '1.0.3'
-        mixpanelVersion = '5.5.2'
+        mixpanelVersion = '5.8.7'
         mockitoVersion = '2.18.3'
-        okhttpVersion = '3.11.0'
-        pubnubVersion = '4.29.2'
+        okhttpVersion = '4.9.1'
+        pubnubVersion = '4.35.0'
         gsonVersion = '2.8.6'
-        okhttpVersion = '3.9.1'
         supportTestVersion = '1.0.2'
-        supportLibraryVersion = '28.0.0'
         threetenabpVersion = "1.1.2"
         lifecycleVersion = "1.1.1"
     }
@@ -40,6 +39,7 @@ buildscript {
         jcenter()
         maven { url 'https://repo.gradle.org/gradle/libs-releases' }
     }
+
     dependencies {
         classpath "com.android.tools.build:gradle:${gradleVersion}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"

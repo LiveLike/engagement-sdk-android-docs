@@ -82,6 +82,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                     decideWidgetInteraction(it, WidgetApiSource.REALTIME_API),
                     it
                 )
+                timeLineWidgets.add(0,widget)
                 uiScope.launch {
                     timeLineWidgetsStream.onNext(
                         Pair(
@@ -93,6 +94,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
             }
         }
     }
+
 
 
     fun wouldAllowWidgetInteraction(liveLikeWidget: LiveLikeWidget): Boolean {

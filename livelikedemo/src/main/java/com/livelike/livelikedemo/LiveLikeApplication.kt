@@ -121,6 +121,7 @@ class LiveLikeApplication : Application() {
     }
 
     companion object {
+        var showCustomWidgetsUI: Boolean = false
         const val TEST_CONFIG_URL = BuildConfig.TEST_CONFIG_URL
 //            "https://livelike-webs.s3.amazonaws.com/mobile-pilot/video-backend-sdk-android-with-id.json"
     }

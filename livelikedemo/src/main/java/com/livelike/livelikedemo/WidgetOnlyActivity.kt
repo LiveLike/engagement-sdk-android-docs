@@ -1,9 +1,9 @@
 package com.livelike.livelikedemo
 
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,6 +63,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -353,7 +354,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                 .build()
             private val contentType = "Content-Type"
             private val applicationJSON: String = "application/json"
-            private val mediaType: MediaType? = MediaType.parse(applicationJSON)
+            private val mediaType: MediaType? = applicationJSON.toMediaTypeOrNull()
 
             private val images = arrayListOf<String>(
                 "https://cf-blast-storage-staging.livelikecdn.com/assets/e38f0089-00be-4236-830a-6989e8298b50.jpg",
@@ -621,7 +622,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     .addHeader(contentType, applicationJSON)
                     .build()
                 val response: Response = client.newCall(request).execute()
-                return response.body()?.string()
+                return response.body?.string()
             }
 
             private val authorization = "Authorization"
@@ -646,7 +647,7 @@ class WidgetOnlyActivity : AppCompatActivity() {
                     .addHeader(contentType, applicationJSON)
                     .build()
                 val response: Response = client.newCall(request).execute()
-                return response.body()?.string()
+                return response.body?.string()
             }
         }
 

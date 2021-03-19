@@ -5,8 +5,8 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.constraint.ConstraintLayout
-import android.support.v7.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.content.res.AppCompatResources
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup

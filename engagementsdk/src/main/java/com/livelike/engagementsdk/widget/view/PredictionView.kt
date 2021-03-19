@@ -51,8 +51,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.widgetState?.subscribe(javaClass) { widgetStateObserver(it) }
         widgetObserver(viewModel?.data?.latest())
+        viewModel?.widgetState?.subscribe(javaClass) { widgetStateObserver(it) }
     }
 
     private fun widgetStateObserver(widgetStates: WidgetStates?) {
