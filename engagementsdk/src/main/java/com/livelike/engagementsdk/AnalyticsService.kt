@@ -234,7 +234,12 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind")
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String, programId: String, linkUrl: String?) {
+    override fun trackWidgetDisplayed(
+        kind: String,
+        id: String,
+        programId: String,
+        linkUrl: String?
+    ) {
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId")
     }
 
@@ -524,7 +529,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         val timeOfLastInteraction = parser.format(Date(interactionInfo.timeOfLastInteraction))
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
-        properties.put(PROGRAM_ID,programId)
+        properties.put(PROGRAM_ID, programId)
         properties.put(
             "First Tap Time",
             parser.format(Date(interactionInfo.timeOfFirstInteraction))
@@ -682,7 +687,10 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         properties.put(CHAT_MESSAGE_ID, msgId)
         properties.put("Character Length", (if (hasExternalImage) 0 else msg?.length ?: 0))
         properties.put("Sticker Count", msg?.findStickers()?.countMatches())
-        properties.put("Sticker Shortcodes", msg?.findStickerCodes()?.allMatches())
+        properties.put(
+            "Sticker Shortcodes",
+            if (hasExternalImage) arrayListOf() else msg?.findStickerCodes()?.allMatches()
+        )
         properties.put("Has External Image", hasExternalImage)
         properties.put("Chat Room ID", chatRoomId)
         mixpanel.track(KEY_CHAT_MESSAGE_SENT, properties)
@@ -716,7 +724,12 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         return allMatches
     }
 
-    override fun trackWidgetDisplayed(kind: String, id: String, programId: String, linkUrl: String?) {
+    override fun trackWidgetDisplayed(
+        kind: String,
+        id: String,
+        programId: String,
+        linkUrl: String?
+    ) {
         val properties = JSONObject()
         properties.put("Widget Type", kind)
         properties.put("Widget ID", id)
@@ -768,12 +781,13 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
             properties.put("Widget Type", kind)
             properties.put("Widget ID", id)
             properties.put("Dismiss Action", dismissAction)
-            properties.put(PROGRAM_ID,programId)
+            properties.put(PROGRAM_ID, programId)
 
             interactionInfo?.let {
                 properties.put("Number Of Taps", interactionInfo.interactionCount)
                 val timeNow = System.currentTimeMillis()
-                val timeSinceLastTap = (timeNow - interactionInfo.timeOfLastInteraction).toFloat() / 1000
+                val timeSinceLastTap =
+                    (timeNow - interactionInfo.timeOfLastInteraction).toFloat() / 1000
                 val timeSinceStart = (timeNow - interactionInfo.timeOfFirstDisplay).toFloat() / 1000
                 properties.put("Dismiss Seconds Since Last Tap", timeSinceLastTap)
                 properties.put("Dismiss Seconds Since Start", timeSinceStart)
