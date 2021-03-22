@@ -238,7 +238,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         onUpdate: (Float) -> Unit,
         dismissAction: (action: DismissAction) -> Unit
     ) {
-        if (widgetViewModel?.enableDefaultWidgetTransition == false) {
+        if (widgetViewModel?.showTimer == false) {
             v?.visibility = View.GONE
             return
         }

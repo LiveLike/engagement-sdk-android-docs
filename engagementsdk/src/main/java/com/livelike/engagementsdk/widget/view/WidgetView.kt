@@ -46,6 +46,11 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             field = value
             widgetContainerViewModel?.enableDefaultWidgetTransition = value
         }
+    var showTimer = true
+        set(value) {
+            field = value
+            widgetContainerViewModel?.showTimer = value
+        }
 
     init {
         context.obtainStyledAttributes(
