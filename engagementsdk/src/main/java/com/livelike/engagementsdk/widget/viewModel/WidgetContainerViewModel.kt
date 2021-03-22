@@ -43,6 +43,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 widgetContainer?.setOnTouchListener(null)
             }
         }
+    var showTimer: Boolean = true
+
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
     private lateinit var widgetViewThemeAttributes: WidgetViewThemeAttributes
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
@@ -161,6 +163,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         } else if (widgetView != null) {
             widgetView.widgetViewModel?.enableDefaultWidgetTransition =
                 enableDefaultWidgetTransition
+            widgetView.widgetViewModel?.showTimer = showTimer
             displayWidget(widgetView)
         }
         if (widgetContainer != null) {

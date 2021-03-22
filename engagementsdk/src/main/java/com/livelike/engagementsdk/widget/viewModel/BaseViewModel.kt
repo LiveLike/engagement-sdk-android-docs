@@ -23,6 +23,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
     internal val widgetState: Stream<WidgetStates> =
         SubscriptionManager<WidgetStates>(emitOnSubscribe = true)
     internal var enableDefaultWidgetTransition = true
+    internal var showTimer = true
     internal val dataClient: WidgetDataClient = WidgetDataClientImpl()
 
     internal fun voteApi(

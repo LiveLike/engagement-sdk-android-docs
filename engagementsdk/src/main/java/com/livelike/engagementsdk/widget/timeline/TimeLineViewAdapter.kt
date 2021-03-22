@@ -1,4 +1,3 @@
-
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -19,20 +18,24 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_item.view.widget_view
 
 
-class TimeLineViewAdapter(private val context: Context, private val sdk: EngagementSDK, private val timeLineViewModel: WidgetTimeLineViewModel) :
+class TimeLineViewAdapter(
+    private val context: Context,
+    private val sdk: EngagementSDK,
+    private val timeLineViewModel: WidgetTimeLineViewModel
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     init {
         setHasStableIds(true)
     }
 
-    var widgetViewFactory: LiveLikeWidgetViewFactory?=null
+    var widgetViewFactory: LiveLikeWidgetViewFactory? = null
     val list: ArrayList<TimelineWidgetResource> = arrayListOf()
     var isLoadingInProgress = false
     var isEndReached = false
 
     override fun onCreateViewHolder(p0: ViewGroup, viewtype: Int): RecyclerView.ViewHolder {
-        return when (viewtype){
+        return when (viewtype) {
 
             VIEW_TYPE_DATA -> {
                 TimeLineItemViewHolder(
@@ -65,10 +68,12 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
 
 
     override fun onBindViewHolder(itemViewHolder: RecyclerView.ViewHolder, p1: Int) {
-        if (itemViewHolder is TimeLineItemViewHolder){
+        if (itemViewHolder is TimeLineItemViewHolder) {
             val timelineWidgetResource = list[p1]
             val liveLikeWidget = timelineWidgetResource.liveLikeWidget
             itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
+            itemViewHolder.itemView.widget_view.showTimer = timelineWidgetResource.widgetState ==
+                    WidgetStates.INTERACTING
             itemViewHolder.itemView.widget_view.widgetViewFactory = widgetViewFactory
             displayWidget(itemViewHolder, liveLikeWidget)
             itemViewHolder.itemView.widget_view.setState(timelineWidgetResource.widgetState)
@@ -80,7 +85,8 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
         itemViewHolder: RecyclerView.ViewHolder,
         liveLikeWidget: LiveLikeWidget
     ) {
-        val widgetResourceJson = JsonParser.parseString(GsonBuilder().create().toJson(liveLikeWidget)).asJsonObject
+        val widgetResourceJson =
+            JsonParser.parseString(GsonBuilder().create().toJson(liveLikeWidget)).asJsonObject
         var widgetType = widgetResourceJson.get("kind").asString
         widgetType = if (widgetType.contains("follow-up")) {
             "$widgetType-updated"
@@ -124,8 +130,7 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
     }
 
 
-    companion object
-    {
+    companion object {
         private const val VIEW_TYPE_DATA = 0
         private const val VIEW_TYPE_PROGRESS = 1 // for load more // progress view type
     }
@@ -134,7 +139,7 @@ class TimeLineViewAdapter(private val context: Context, private val sdk: Engagem
 
 class TimeLineItemViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-class ProgressViewHolder(view: View): RecyclerView.ViewHolder(view)
+class ProgressViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
 data class TimelineWidgetResource(
     var widgetState: WidgetStates,
