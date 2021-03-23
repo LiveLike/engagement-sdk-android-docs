@@ -30,6 +30,12 @@ class LiveLikeApplication : Application() {
     lateinit var sdk: EngagementSDK
     lateinit var sdk2: EngagementSDK
 
+    private var errorDelegate = object : ErrorDelegate() {
+        override fun onError(error: String) {
+            println("LiveLikeApplication.onError: $error")
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         channelManager = ChannelManager(TEST_CONFIG_URL, applicationContext)
@@ -45,6 +51,7 @@ class LiveLikeApplication : Application() {
             applicationContext,
             object : ErrorDelegate() {
                 override fun onError(error: String) {
+                    println("LiveLikeApplication.onError--->$error")
                     android.os.Handler(Looper.getMainLooper()).postDelayed({
                         initSDK()
                     }, 1000)
@@ -93,9 +100,9 @@ class LiveLikeApplication : Application() {
         if (publicSession == null || publicSession?.contentSessionId() != sessionId) {
             publicSession?.close()
             publicSession = if (allowTimeCodeGetter)
-                sdk.createContentSession(sessionId, timecodeGetter)
+                sdk.createContentSession(sessionId, timecodeGetter, errorDelegate)
             else
-                sdk.createContentSession(sessionId)
+                sdk.createContentSession(sessionId, errorDelegate)
         }
         publicSession!!.widgetInterceptor = widgetInterceptor
         return publicSession as LiveLikeContentSession

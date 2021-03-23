@@ -233,7 +233,7 @@ internal class ContentSession(
                                 TEMPLATE_PROGRAM_ID,
                                 programId
                             )
-                        ) { program ->
+                        ) { program, error ->
                             if (program !== null) {
                                 programRepository.program = program
                                 userRepository.rewardType = program.rewardsType
@@ -247,13 +247,13 @@ internal class ContentSession(
                                 )
                                 chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
 
-                               /* commented, since programId and programTitle doesn't need
-                               * to be a part of super properties */
+                                /* commented, since programId and programTitle doesn't need
+                                * to be a part of super properties */
 
-                               /* program.analyticsProps.forEach { map ->
-                                    analyticServiceStream.latest()
-                                        ?.registerSuperAndPeopleProperty(map.key to map.value)
-                                }*/
+                                /* program.analyticsProps.forEach { map ->
+                                     analyticServiceStream.latest()
+                                         ?.registerSuperAndPeopleProperty(map.key to map.value)
+                                 }*/
                                 configuration.analyticsProps.forEach { map ->
                                     analyticServiceStream.latest()
                                         ?.registerSuperAndPeopleProperty(map.key to map.value)
@@ -268,6 +268,10 @@ internal class ContentSession(
                                         programRepository.rewardType
                                     )
                                 }
+                            } else if (error != null) {
+                                errorDelegate?.onError(error)
+                            } else {
+                                errorDelegate?.onError("Invalid Error")
                             }
                         }
                     }
