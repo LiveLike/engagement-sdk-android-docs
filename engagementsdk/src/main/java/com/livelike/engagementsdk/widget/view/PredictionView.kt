@@ -269,8 +269,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                         viewModel?.animationEggTimerProgress?.let { time ->
                             v?.startAnimationFrom(time, animationLength, {
                                 viewModel?.animationEggTimerProgress = it
-                            }) {
-                            }
+                            }, {
+                            })
                         }
                     }
                 }

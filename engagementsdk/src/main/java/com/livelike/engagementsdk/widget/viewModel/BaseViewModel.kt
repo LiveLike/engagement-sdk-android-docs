@@ -24,7 +24,10 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
         SubscriptionManager<WidgetStates>(emitOnSubscribe = true)
     internal var enableDefaultWidgetTransition = true
     internal var showTimer = true
+    internal var showDismissButton: Boolean = true
     internal val dataClient: WidgetDataClient = WidgetDataClientImpl()
+
+    internal var timerStartTime: Long? = null
 
     internal fun voteApi(
         url: String,

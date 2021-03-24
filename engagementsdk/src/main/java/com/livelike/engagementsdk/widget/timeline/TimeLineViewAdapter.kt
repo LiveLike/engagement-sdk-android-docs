@@ -74,10 +74,10 @@ class TimeLineViewAdapter(
             itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
             itemViewHolder.itemView.widget_view.showTimer = timelineWidgetResource.widgetState ==
                     WidgetStates.INTERACTING
+            itemViewHolder.itemView.widget_view.showDismissButton = false
             itemViewHolder.itemView.widget_view.widgetViewFactory = widgetViewFactory
             displayWidget(itemViewHolder, liveLikeWidget)
             itemViewHolder.itemView.widget_view.setState(timelineWidgetResource.widgetState)
-//            timelineWidgetResource.widgetState = WidgetStates.RESULTS
         }
     }
 

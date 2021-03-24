@@ -52,6 +52,14 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             widgetContainerViewModel?.showTimer = value
         }
 
+    /**
+     * this flag is used to configure visibility of cancel/dismiss button on default widgets
+     **/
+    var showDismissButton = true
+        set(value) {
+            field = value
+            widgetContainerViewModel?.showDismissButton = value
+        }
     init {
         context.obtainStyledAttributes(
             attr,
