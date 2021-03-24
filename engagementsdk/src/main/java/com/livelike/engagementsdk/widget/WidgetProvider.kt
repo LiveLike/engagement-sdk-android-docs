@@ -1,9 +1,9 @@
 package com.livelike.engagementsdk.widget
 
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.EngagementSDK
@@ -59,6 +59,7 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.atom_widget_title.view.titleTextView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.titleView
 import kotlinx.android.synthetic.main.widget_text_option_selection.view.txtTitleBackground
+import java.util.Calendar
 import kotlin.math.min
 
 internal class WidgetProvider {
@@ -242,10 +243,18 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
             v?.visibility = View.GONE
             return
         }
-        val animationLength = AndroidResource.parseDuration(time).toFloat()
+
+        var animationLength = AndroidResource.parseDuration(time).toFloat()
+        var remainingAnimationLength = animationLength
+        if (widgetViewModel?.timerStartTime != null) {
+            remainingAnimationLength = animationLength- (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime?:0))
+        }else{
+            widgetViewModel?.timerStartTime = Calendar.getInstance().timeInMillis
+        }
+        val animationEggTimerProgress = (animationLength - remainingAnimationLength) / animationLength
         if ((animationEggTimerProgress ?: 0f) < 1f) {
             animationEggTimerProgress?.let {
-                v?.startAnimationFrom(it, animationLength, onUpdate, dismissAction)
+                v?.startAnimationFrom(it, remainingAnimationLength, onUpdate, dismissAction)
             }
         }
     }
