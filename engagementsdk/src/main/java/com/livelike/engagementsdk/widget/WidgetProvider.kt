@@ -247,7 +247,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
         var animationLength = AndroidResource.parseDuration(time).toFloat()
         var remainingAnimationLength = animationLength
         if (widgetViewModel?.timerStartTime != null) {
-            remainingAnimationLength = animationLength- (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime?:0))
+            remainingAnimationLength = animationLength - (Calendar.getInstance().timeInMillis - (widgetViewModel?.timerStartTime?:0)).toFloat()
         }else{
             widgetViewModel?.timerStartTime = Calendar.getInstance().timeInMillis
         }
