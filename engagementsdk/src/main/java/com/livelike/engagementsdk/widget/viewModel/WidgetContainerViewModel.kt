@@ -100,7 +100,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             }
         }
         // Show / Hide animation
-        widgetContainer.layoutTransition = LayoutTransition()
+       // widgetContainer.layoutTransition = LayoutTransition()
     }
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
