@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
+
     private lateinit var currentWidgetId: String
     private lateinit var currentWidgetType: String
     var enableDefaultWidgetTransition: Boolean = true
@@ -44,6 +45,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             }
         }
     var showTimer: Boolean = true
+    internal var showDismissButton: Boolean = true
 
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
     private lateinit var widgetViewThemeAttributes: WidgetViewThemeAttributes
@@ -164,6 +166,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             widgetView.widgetViewModel?.enableDefaultWidgetTransition =
                 enableDefaultWidgetTransition
             widgetView.widgetViewModel?.showTimer = showTimer
+            widgetView.widgetViewModel?.showDismissButton = showDismissButton
             displayWidget(widgetView)
         }
         if (widgetContainer != null) {
