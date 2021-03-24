@@ -100,6 +100,7 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             }
         }
         // Show / Hide animation
+        // commenting this because of ES-1572
        // widgetContainer.layoutTransition = LayoutTransition()
     }
 
