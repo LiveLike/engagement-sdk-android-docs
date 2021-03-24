@@ -88,7 +88,8 @@ class WidgetsTimeLineView(
                     timeLineViewModel.uiScope.launch {
                         delay(AndroidResource.parseDuration(pair.second[0].liveLikeWidget.timeout?:""))
                         pair.second[0]?.widgetState = WidgetStates.RESULTS
-                        adapter.notifyDataSetChanged()
+
+                        adapter.notifyItemChanged(0)
                     }
                 } else {
                     adapter.list.addAll(pair.second)
