@@ -58,6 +58,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     var swipeDismissTouchListener: View.OnTouchListener? = null
 
     var widgetViewViewFactory: LiveLikeWidgetViewFactory? = null
+    var isLayoutTransitionEnabled:Boolean? = null
+
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(
@@ -104,7 +106,10 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             }
         }
         // Show / Hide animation
-        widgetContainer.layoutTransition = LayoutTransition()
+        // changes because of ES-1572
+        if(isLayoutTransitionEnabled!!) {
+            widgetContainer.layoutTransition = LayoutTransition()
+        }
     }
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {

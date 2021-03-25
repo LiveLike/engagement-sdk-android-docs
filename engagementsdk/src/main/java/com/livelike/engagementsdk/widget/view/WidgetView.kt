@@ -72,6 +72,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 recycle()
             }
         }
+        widgetContainerViewModel?.isLayoutTransitionEnabled = context.resources.getBoolean(R.bool.livelike_widget_component_layout_transition_enabled)
         widgetContainerViewModel?.setWidgetContainer(this, widgetViewThemeAttributes)
     }
 
