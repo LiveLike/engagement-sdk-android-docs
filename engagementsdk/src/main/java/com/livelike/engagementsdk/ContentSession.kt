@@ -325,6 +325,7 @@ internal class ContentSession(
         widgetView: FrameLayout,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
+        widgetContainer.isLayoutTransitionEnabled = applicationContext.resources.getBoolean(R.bool.livelike_widget_component_layout_transition_enabled)
         widgetContainer.setWidgetContainer(widgetView, widgetViewThemeAttributes)
     }
 

@@ -3,6 +3,7 @@ package com.livelike.engagementsdk.widget.viewModel
 import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -54,6 +55,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     var swipeDismissTouchListener: View.OnTouchListener? = null
 
     var widgetViewViewFactory: LiveLikeWidgetViewFactory? = null
+    var isLayoutTransitionEnabled:Boolean? = null
+
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(
@@ -100,8 +103,10 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             }
         }
         // Show / Hide animation
-        // commenting this because of ES-1572
-       // widgetContainer.layoutTransition = LayoutTransition()
+        // changes because of ES-1572
+        if(isLayoutTransitionEnabled!!) {
+            widgetContainer.layoutTransition = LayoutTransition()
+        }
     }
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
