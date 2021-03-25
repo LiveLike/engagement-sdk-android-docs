@@ -3,36 +3,48 @@ package com.livelike.livelikedemo
 import WidgetsTimeLineView
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.livelike.engagementsdk.LiveLikeContentSession
-import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.livelike.livelikedemo.customwidgets.timeline.TimeLineWidgetFactory
+import com.livelike.livelikedemo.viewmodels.LiveBlogViewModel
+import com.livelike.livelikedemo.viewmodels.LiveBlogModelFactory
 import kotlinx.android.synthetic.main.activity_live_blog.timeline_container
 
 class LiveBlogActivity : AppCompatActivity() {
 
 
-    private lateinit var session: LiveLikeContentSession
+    var liveBlogViewModel: LiveBlogViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_blog)
-        val channelManager = (application as LiveLikeApplication).channelManager
-        val channel = channelManager.selectedChannel
-        session = (application as LiveLikeApplication).createPublicSession(
-            channel.llProgram.toString(),
-            null
-        )
-        val timeLineViewModel = WidgetTimeLineViewModel(session)
+
+        /**
+         * init view model, which will be responsible for managing WidgetTimelineViewmodel, so that its not created each time
+         **/
+        initViewModel()
+
+        /**
+         * create timeline view
+         **/
         val timeLineView = WidgetsTimeLineView(
             this,
-            timeLineViewModel,
-            (application as LiveLikeApplication).sdk
+            liveBlogViewModel?.timeLineViewModel!!,
+            liveBlogViewModel?.getEngagementSDK()!!
         )
         if(LiveLikeApplication.showCustomWidgetsUI){
-            timeLineView.widgetViewFactory = TimeLineWidgetFactory(this,timeLineViewModel.timeLineWidgets)
+            timeLineView.widgetViewFactory = TimeLineWidgetFactory(this,liveBlogViewModel?.timeLineViewModel!!.timeLineWidgets)
         }
 
         timeline_container.addView(timeLineView)
+    }
+
+
+    private fun initViewModel(){
+        liveBlogViewModel = ViewModelProvider(
+            this,
+            LiveBlogModelFactory(this.application)
+        ).get(LiveBlogViewModel::class.java)
+
     }
 
 
