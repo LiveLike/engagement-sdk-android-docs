@@ -257,6 +257,10 @@ internal class PredictionViewModel(
         interactionData.reset()
     }
 
+    override fun onClear() {
+        cleanUp()
+    }
+
     private fun claimPredictionRewards(){
         data.currentData?.let {
             it.resource.claim_url?.let { url ->

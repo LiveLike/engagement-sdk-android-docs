@@ -2,9 +2,9 @@ package com.livelike.engagementsdk.widget.view.components
 
 import android.animation.Animator
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
 import kotlinx.android.synthetic.main.atom_widget_egg_timer_and_close_button.view.closeButton
@@ -26,7 +26,8 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
         progress: Float,
         duration: Float,
         onUpdate: (Float) -> Unit,
-        dismissAction: (action: DismissAction) -> Unit
+        dismissAction: (action: DismissAction) -> Unit,
+        showDismissButton: Boolean = true
     ) {
         showEggTimer()
         eggTimer.speed = ANIMATION_BASE_TIME / duration
@@ -46,7 +47,9 @@ class EggTimerCloseButtonView(context: Context, attr: AttributeSet? = null) :
             override fun onAnimationEnd(animation: Animator?) {
                 eggTimer.removeAllUpdateListeners()
                 eggTimer.removeAllAnimatorListeners()
-                showCloseButton(dismissAction)
+                if(showDismissButton) {
+                    showCloseButton(dismissAction)
+                }
             }
         })
         eggTimer.addAnimatorUpdateListener {
