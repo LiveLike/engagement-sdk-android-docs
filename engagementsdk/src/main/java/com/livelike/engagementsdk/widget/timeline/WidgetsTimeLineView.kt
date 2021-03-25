@@ -49,7 +49,11 @@ class WidgetsTimeLineView(
 
     init {
         inflate(context, R.layout.livelike_timeline_view, this)
-        showLoadingSpinnerForTimeline()
+
+        // added a check based on data, since this will be causing issue during rotation of device
+        if(timeLineViewModel.timeLineWidgets.isEmpty()) {
+            showLoadingSpinnerForTimeline()
+        }
         adapter =
             TimeLineViewAdapter(
                 context,
