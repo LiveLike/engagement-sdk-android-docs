@@ -26,7 +26,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
 
     var decideWidgetInteractivity: DecideWidgetInteractivity? = null
     internal val widgetEventStream: Stream<String> =
-        SubscriptionManager(false)
+        SubscriptionManager(true)
 
     var  widgetViewModelCache = mutableMapOf<String, BaseViewModel?>()
 
