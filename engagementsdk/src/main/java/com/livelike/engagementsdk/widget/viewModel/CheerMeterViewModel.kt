@@ -216,6 +216,10 @@ internal class CheerMeterViewModel(
         viewModelJob.cancel("Widget Cleanup")
     }
 
+    override fun onClear() {
+        cleanUp()
+    }
+
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 

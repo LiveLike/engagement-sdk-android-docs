@@ -131,7 +131,7 @@ internal abstract class WidgetViewModel<T : Resource>(
         onClear()
     }
 
-    open fun onClear() {
+    override fun onClear() {
         viewModelJob.cancel()
         timeoutStarted = false
     }

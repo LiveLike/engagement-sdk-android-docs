@@ -221,6 +221,10 @@ internal class QuizViewModel(
         interactionData.reset()
     }
 
+    override fun onClear() {
+        cleanUp()
+    }
+
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 

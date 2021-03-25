@@ -8,6 +8,7 @@ import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.widget.viewModel.BaseViewModel
 import com.livelike.engagementsdk.widget.viewModel.ViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.coroutines.cancel
@@ -26,6 +27,8 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     var decideWidgetInteractivity: DecideWidgetInteractivity? = null
     internal val widgetEventStream: Stream<String> =
         SubscriptionManager(false)
+
+    var  widgetViewModelCache = mutableMapOf<String, BaseViewModel?>()
 
     init {
         loadPastPublishedWidgets(LiveLikePagination.FIRST)
@@ -121,6 +124,10 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
     fun clear() {
         uiScope.cancel()
         contentSession.widgetStream.unsubscribe(this)
+        widgetViewModelCache.forEach { entry ->
+            entry.value?.onClear()
+        }
+        widgetViewModelCache.clear()
     }
 
     /**

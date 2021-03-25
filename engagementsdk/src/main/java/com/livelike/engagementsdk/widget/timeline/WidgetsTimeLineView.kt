@@ -3,10 +3,10 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.FrameLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -14,9 +14,11 @@ import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
+import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_rv
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_snap_live
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class WidgetsTimeLineView(
@@ -51,7 +53,8 @@ class WidgetsTimeLineView(
         adapter =
             TimeLineViewAdapter(
                 context,
-                sdk
+                sdk,
+                timeLineViewModel
             )
         adapter.list.addAll(timeLineViewModel.timeLineWidgets)
         timeline_rv.layoutManager =
@@ -82,6 +85,12 @@ class WidgetsTimeLineView(
                     adapter.list.addAll(0, pair.second)
                     adapter.notifyItemInserted(0)
                     wouldRetreatToActiveWidgetPosition()
+                    timeLineViewModel.uiScope.launch {
+                        delay(AndroidResource.parseDuration(pair.second[0].liveLikeWidget.timeout?:""))
+                        pair.second[0]?.widgetState = WidgetStates.RESULTS
+
+                        adapter.notifyItemChanged(0)
+                    }
                 } else {
                     adapter.list.addAll(pair.second)
                     adapter.notifyItemRangeInserted(

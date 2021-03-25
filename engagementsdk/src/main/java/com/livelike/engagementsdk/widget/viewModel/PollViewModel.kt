@@ -238,6 +238,10 @@ internal class PollViewModel(
         viewModelJob.cancel("Widget Cleanup")
     }
 
+    override fun onClear() {
+        cleanUp()
+    }
+
     var firstClick = true
 
     fun onOptionClicked() {
