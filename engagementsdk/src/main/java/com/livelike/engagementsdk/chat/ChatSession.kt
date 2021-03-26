@@ -11,9 +11,12 @@ import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.chatreaction.ChatReactionRepository
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
+import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
+import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
+import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
@@ -24,6 +27,7 @@ import com.livelike.engagementsdk.core.utils.logError
 import com.livelike.engagementsdk.publicapis.ErrorDelegate
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
+import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -73,6 +77,7 @@ internal class ChatSession(
     private var privateChatRoomID = ""
     private val chatSessionIdleStream: Stream<Boolean> =
         SubscriptionManager(true)
+    private var currentChatRoom: ChatRoom? = null
 
     private val configurationUserPairFlow = flow {
         while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
@@ -310,6 +315,7 @@ internal class ChatSession(
                 currentChatRoom = chatRoom
                 chatLoaded = false
             }
+            this.currentChatRoom = chatRoom
             pubnubMessagingClient.activeChatRoom = channel
         }
     }
@@ -332,5 +338,38 @@ internal class ChatSession(
     }
 
     override var avatarUrl: String? = null
+
+    override fun sendChatMessage(
+        message: String?,
+        imageUrl: String?,
+        imageWidth: Int?,
+        imageHeight: Int?,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    ) {
+        val timeData = getPlayheadTime()
+        ChatMessage(
+            PubnubChatEventType.MESSAGE_CREATED,
+            currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
+            message,
+            userRepository.currentUserStream.latest()?.id ?: "empty-id",
+            userRepository.currentUserStream.latest()?.nickname ?: "John Doe",
+            avatarUrl,
+            isFromMe = true,
+            image_width = 100,
+            image_height = 100
+        ).let {
+            (chatClient as? ChatEventListener)?.onChatMessageSend(it, timeData)
+            val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
+            currentChatRoom?.id?.let { id ->
+                analyticsServiceStream.latest()?.trackMessageSent(
+                    it.id,
+                    it.message,
+                    hasExternalImage,
+                    id)
+            }
+            //TODO: need to update for error handling here if pubnub respond failure of message
+            liveLikeCallback.onResponse(it.toLiveLikeChatMessage(), null)
+        }
+    }
 
 }

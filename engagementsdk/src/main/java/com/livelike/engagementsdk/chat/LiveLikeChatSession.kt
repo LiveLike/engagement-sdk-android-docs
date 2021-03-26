@@ -4,6 +4,7 @@ import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import java.util.Calendar
 
 /**
@@ -53,4 +54,21 @@ interface LiveLikeChatSession {
 
     /** Avatar Image Url  **/
     var avatarUrl: String?
+
+    /**
+     * send Chat Message to the current ChatRoom
+     *
+     * @message : text message
+     * @imageUrl: image message
+     * @imageWidth: image width default is 100
+     * @imageHeight: image height default is 100
+     * @liveLikeCallback : callback to provide the message object, this callback is not meant the message is sent
+     * **/
+    fun sendChatMessage(
+        message: String?,
+        imageUrl: String? = null,
+        imageWidth: Int? = 100,
+        imageHeight: Int? = 100,
+        liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
+    )
 }
