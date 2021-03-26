@@ -44,6 +44,7 @@ import kotlinx.android.synthetic.main.activity_main.chatroomText1
 import kotlinx.android.synthetic.main.activity_main.chk_custom_widgets_ui
 import kotlinx.android.synthetic.main.activity_main.chk_show_avatar
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
+import kotlinx.android.synthetic.main.activity_main.custom_chat
 import kotlinx.android.synthetic.main.activity_main.ed_avatar
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
@@ -441,6 +442,9 @@ class MainActivity : AppCompatActivity() {
                     ChatOnlyActivity::class.java
                 )
             )
+        }
+        custom_chat.setOnClickListener {
+            startActivity(Intent(this, CustomChatActivity::class.java))
         }
 
         (application as LiveLikeApplication).removePublicSession()
