@@ -32,6 +32,13 @@ import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagi
                      widgetEventStream.onNext(event)
                  }
 
+                 override fun onClientMessageEvents(
+                     client: MessagingClient,
+                     events: List<ClientMessage>
+                 ) {
+
+                 }
+
                  override fun onClientMessageError(client: MessagingClient, error: Error) {
                  }
 
