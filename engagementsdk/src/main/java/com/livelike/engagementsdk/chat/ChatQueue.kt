@@ -47,6 +47,7 @@ internal class ChatQueue(upstream: MessagingClient) :
         for ((key, value) in deletedMap) {
             value.forEach {
                 renderer?.deleteChatMessage(it.id)
+                msgListener?.onDeleteMessage(it.id)
             }
         }
         val map = hashMapOf<String, ArrayList<ChatMessage>>()
@@ -61,6 +62,7 @@ internal class ChatQueue(upstream: MessagingClient) :
             value.forEach {
                 renderer?.displayChatMessage(it)
             }
+            msgListener?.onHistoryMessage(key, value.map { it.toLiveLikeChatMessage() })
         }
     }
 

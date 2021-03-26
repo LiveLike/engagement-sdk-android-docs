@@ -71,4 +71,20 @@ interface LiveLikeChatSession {
         imageHeight: Int? = 100,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
+
+    /**
+     * to load Chat History
+     * @limit: default is 20,max is 100
+     */
+    fun loadNextHistory(limit: Int = 20)
+
+    /**
+     * To get the loaded message
+     */
+    fun getLoadedMessages(): ArrayList<LiveLikeChatMessage>
+
+    /**
+     * to get the deleted messages from the loaded message
+     */
+    fun getDeletedMessages(): ArrayList<String>
 }

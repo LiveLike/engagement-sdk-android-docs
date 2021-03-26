@@ -590,6 +590,17 @@ class ExoPlayerActivity : AppCompatActivity() {
                         )
                     }
                 }
+
+                override fun onHistoryMessage(
+                    chatRoom: String,
+                    messages: List<LiveLikeChatMessage>
+                ) {
+
+                }
+
+                override fun onDeleteMessage(messageId: String) {
+
+                }
             })
             chatRoomIds.forEach {
                 privateGroupChatsession?.joinChatRoom(it)

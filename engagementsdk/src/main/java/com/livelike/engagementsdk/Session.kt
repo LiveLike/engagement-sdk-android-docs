@@ -80,6 +80,8 @@ interface LiveLikeContentSession {
  */
 interface MessageListener {
     fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage)
+    fun onHistoryMessage(chatRoom: String, messages: List<LiveLikeChatMessage>)
+    fun onDeleteMessage(messageId: String)
 }
 
 /**

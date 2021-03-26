@@ -78,6 +78,10 @@ internal class ChatSession(
     private val chatSessionIdleStream: Stream<Boolean> =
         SubscriptionManager(true)
     private var currentChatRoom: ChatRoom? = null
+    private val messageListMap: HashMap<String, ArrayList<LiveLikeChatMessage>> = hashMapOf()
+    private val deletedMsgList = arrayListOf<String>()
+
+
 
     private val configurationUserPairFlow = flow {
         while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
@@ -167,10 +171,29 @@ internal class ChatSession(
             }
             for (chatRoomIdPair in chatRoomMap) {
                 if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
+                    val list = messageListMap[chatRoom] ?: arrayListOf()
+                    list.add(message)
+                    messageListMap[chatRoom] = list
                     msgListener?.onNewMessage(chatRoomIdPair.key, message)
                     return
                 }
             }
+        }
+        override fun onHistoryMessage(chatRoom: String, messages: List<LiveLikeChatMessage>) {
+            for (chatRoomIdPair in chatRoomMap) {
+                if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
+                    val list = messageListMap[chatRoom] ?: arrayListOf()
+                    list.addAll(messages)
+                    messageListMap[chatRoom] = list
+                    msgListener?.onHistoryMessage(chatRoomIdPair.key, messages)
+                    return
+                }
+            }
+        }
+
+        override fun onDeleteMessage(messageId: String) {
+            deletedMsgList.add(messageId)
+            msgListener?.onDeleteMessage(messageId)
         }
     }
 
@@ -370,6 +393,30 @@ internal class ChatSession(
             //TODO: need to update for error handling here if pubnub respond failure of message
             liveLikeCallback.onResponse(it.toLiveLikeChatMessage(), null)
         }
+    }
+
+    override fun loadNextHistory(limit: Int) {
+        currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
+            if (chatRepository != null) {
+                chatRepository?.loadPreviousMessages(channel, limit)
+            } else {
+                logError { "Chat repo is null" }
+                errorDelegate?.onError("Chat Repository is Null")
+            }
+        }
+    }
+
+    override fun getLoadedMessages(): ArrayList<LiveLikeChatMessage> {
+        currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
+            messageListMap[channel]?.let {
+                return it
+            }
+        }
+        return arrayListOf()
+    }
+
+    override fun getDeletedMessages(): ArrayList<String> {
+        return deletedMsgList
     }
 
 }

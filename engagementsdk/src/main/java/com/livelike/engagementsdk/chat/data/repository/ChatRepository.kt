@@ -64,7 +64,8 @@ internal class ChatRepository(
         title: String?,
         visibility: Visibility?
     ) = when {
-        title.isNullOrEmpty().not() && visibility != null -> """{"visibility":"${visibility.name}","title":"$title"}"""
+        title.isNullOrEmpty()
+            .not() && visibility != null -> """{"visibility":"${visibility.name}","title":"$title"}"""
             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         title.isNullOrEmpty().not() && visibility == null -> """{"title":"$title"}"""
             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
@@ -133,7 +134,7 @@ internal class ChatRepository(
         )
     }
 
-    fun loadPreviousMessages(channel: String) {
-        pubnubChatMessagingClient?.loadMessagesWithReactions(channel, 20)
+    fun loadPreviousMessages(channel: String, limit: Int = 20) {
+        pubnubChatMessagingClient?.loadMessagesWithReactions(channel, limit)
     }
 }
