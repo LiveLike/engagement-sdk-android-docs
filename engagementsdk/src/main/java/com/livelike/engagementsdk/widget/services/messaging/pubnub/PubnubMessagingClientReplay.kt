@@ -110,6 +110,10 @@ internal class PubnubMessagingClientReplay(
     override fun start() {
         upstream.start()
     }
+
+    override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+
+    }
 }
 
 // Think of it as adding a behaviouralSubject functionalities to the pubnub channels

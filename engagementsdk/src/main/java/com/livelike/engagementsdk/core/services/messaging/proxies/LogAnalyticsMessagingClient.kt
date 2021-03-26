@@ -26,6 +26,10 @@ internal class LogAnalyticsMessagingClient(
         upstream.start()
     }
 
+    override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+
+    }
+
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         logDebug { "Message received at LogAnalyticsMessagingClient" }
         listener?.onClientMessageEvent(client, event)

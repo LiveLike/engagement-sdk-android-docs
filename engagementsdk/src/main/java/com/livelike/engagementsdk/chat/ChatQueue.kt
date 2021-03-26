@@ -27,6 +27,43 @@ internal class ChatQueue(upstream: MessagingClient) :
         upstream.start()
     }
 
+    override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+        val list = events.filter { event ->
+            return@filter (event.message.get("event").asString == ChatViewModel.EVENT_NEW_MESSAGE)
+        }
+        val deletedList = events.filter { event ->
+            return@filter (event.message.get("event").asString == ChatViewModel.EVENT_MESSAGE_DELETED)
+        }
+        //TODO: all this process of adding data to map will be removed once single chatroom with single session is made
+        val deletedMap = hashMapOf<String, ArrayList<ChatMessage>>()
+
+        deletedList.forEach { event->
+            val events = deletedMap[event.channel] ?: arrayListOf()
+            val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
+            chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
+            events.add(chatMessage)
+            deletedMap[event.channel] = events
+        }
+        for ((key, value) in deletedMap) {
+            value.forEach {
+                renderer?.deleteChatMessage(it.id)
+            }
+        }
+        val map = hashMapOf<String, ArrayList<ChatMessage>>()
+        list.forEach { event ->
+            val events = map[event.channel] ?: arrayListOf()
+            val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
+            chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
+            events.add(chatMessage)
+            map[event.channel] = events
+        }
+        for ((key, value) in map) {
+            value.forEach {
+                renderer?.displayChatMessage(it)
+            }
+        }
+    }
+
     var renderer: ChatRenderer? = null
 
     override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
