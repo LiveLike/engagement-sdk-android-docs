@@ -35,7 +35,7 @@ internal class ChatQueue(upstream: MessagingClient) :
 
     override fun onClientMessageError(client: MessagingClient, error: Error) {
         super.onClientMessageError(client, error)
-        if(error.type.equals(MessageError.DENIED_MESSAGE_PUBLISH.name)){
+        if (error.type.equals(MessageError.DENIED_MESSAGE_PUBLISH.name)) {
             renderer?.errorSendingMessage(MessageError.DENIED_MESSAGE_PUBLISH)
         }
     }
@@ -66,15 +66,11 @@ internal class ChatQueue(upstream: MessagingClient) :
                 if (time > 0) {
                     epochTimeStamp = time / 10000
                 }
+                val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
+                chatMessage.timeStamp = epochTimeStamp.toString()
                 msgListener?.onNewMessage(
                     event.channel,
-                    LiveLikeChatMessage(
-                        "",
-                        "",
-                        "",
-                        epochTimeStamp.toString(),
-                        event.message.get("messageId").asString.hashCode().toLong()
-                    )
+                    chatMessage.toLiveLikeChatMessage()
                 )
             }
             ChatViewModel.EVENT_LOADING_COMPLETE -> {

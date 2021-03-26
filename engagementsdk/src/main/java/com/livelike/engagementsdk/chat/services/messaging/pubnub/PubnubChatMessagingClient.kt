@@ -396,7 +396,15 @@ internal class PubnubChatMessagingClient(
                     ) {
                         logError { "discarding as its own recently published message which is broadcasted by pubnub on that channel." }
                         clientMessage = ClientMessage(
-                            JsonObject().apply {
+                            gson.toJsonTree(
+                                pubnubChatEvent.payload.toChatMessage(
+                                    channel,
+                                    timeToken,
+                                    processReactionCounts(actions),
+                                    getOwnReaction(actions),
+                                    event
+                                )
+                            ).asJsonObject.apply {
                                 addProperty("event", ChatViewModel.EVENT_MESSAGE_TIMETOKEN_UPDATED)
                                 addProperty("messageId", pubnubChatEvent.payload.messageId)
                                 addProperty("timetoken", timeToken)
@@ -453,7 +461,8 @@ internal class PubnubChatMessagingClient(
     }
 
     private fun isMessageModerated(jsonObject: JsonObject): Boolean {
-        return jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")?.size() ?: 0 > 0
+        return jsonObject.getAsJsonObject("payload")?.getAsJsonArray("content_filter")
+            ?.size() ?: 0 > 0
     }
 
     private fun getOwnReaction(actions: java.util.HashMap<String, java.util.HashMap<String, List<PNFetchMessageItem.Action>>>?): ChatMessageReaction? {
@@ -484,14 +493,14 @@ internal class PubnubChatMessagingClient(
         chatHistoyLimit: Int = com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
     ) {
         if (firstTimeToken == 0L)
-            pubnub.time().async{ result, status ->
-                    firstTimeToken = result?.timetoken ?: 0
-                    loadMessagesWithReactions(
-                        channel,
-                        chatHistoyLimit
-                    )
-                }
-            else {
+            pubnub.time().async { result, status ->
+                firstTimeToken = result?.timetoken ?: 0
+                loadMessagesWithReactions(
+                    channel,
+                    chatHistoyLimit
+                )
+            }
+        else {
             logDebug { "LoadMessages from History for channel $channel ,time:$firstTimeToken" }
             pubnub.fetchMessages()
                 .channels(listOf(channel))
@@ -562,21 +571,21 @@ internal class PubnubChatMessagingClient(
             .count(MAX_HISTORY_COUNT_PER_CHANNEL)
             .includeTimetoken(true)
             .reverse(false)
-            .async{ result, status ->
-                    if (!status.isError && result?.messages?.isEmpty() == false) {
-                        result.messages.forEach {
-                            processPubnubChatEvent(
-                                it.entry.asJsonObject,
-                                channel,
-                                this@PubnubChatMessagingClient,
-                                it.timetoken
-                            )
-                        }
-                        if (result.messages.size >= MAX_HISTORY_COUNT_PER_CHANNEL) {
-                            getAllMessages(channel, result.messages.last().timetoken, endTimeToken)
-                        }
+            .async { result, status ->
+                if (!status.isError && result?.messages?.isEmpty() == false) {
+                    result.messages.forEach {
+                        processPubnubChatEvent(
+                            it.entry.asJsonObject,
+                            channel,
+                            this@PubnubChatMessagingClient,
+                            it.timetoken
+                        )
+                    }
+                    if (result.messages.size >= MAX_HISTORY_COUNT_PER_CHANNEL) {
+                        getAllMessages(channel, result.messages.last().timetoken, endTimeToken)
                     }
                 }
+            }
     }
 
     fun addMessageAction(channel: String, messageTimetoken: Long, value: String) {
@@ -586,36 +595,36 @@ internal class PubnubChatMessagingClient(
                 type = REACTION_CREATED
                 this.value = value
                 this.messageTimetoken = messageTimetoken
-            }).async{ result, status ->
-                    if (!status.isError) {
-                        val clientMessage = ClientMessage(
-                            JsonObject().apply {
-                                addProperty("event", ChatViewModel.EVENT_REACTION_ADDED)
-                                addProperty(
-                                    "isOwnReaction",
-                                    true
-                                )
-                                addProperty(
-                                    "actionPubnubToken",
-                                    result?.actionTimetoken
-                                )
-                                addProperty(
-                                    "messagePubnubToken",
-                                    result?.messageTimetoken
-                                )
-                                addProperty("emojiId", result?.value)
-                            },
-                            channel
-                        )
-                        listener?.onClientMessageEvent(
-                            this@PubnubChatMessagingClient,
-                            clientMessage
-                        )
-                        logDebug { "own message action added" }
-                    } else {
-                        status.errorData.throwable.printStackTrace()
-                    }
+            }).async { result, status ->
+                if (!status.isError) {
+                    val clientMessage = ClientMessage(
+                        JsonObject().apply {
+                            addProperty("event", ChatViewModel.EVENT_REACTION_ADDED)
+                            addProperty(
+                                "isOwnReaction",
+                                true
+                            )
+                            addProperty(
+                                "actionPubnubToken",
+                                result?.actionTimetoken
+                            )
+                            addProperty(
+                                "messagePubnubToken",
+                                result?.messageTimetoken
+                            )
+                            addProperty("emojiId", result?.value)
+                        },
+                        channel
+                    )
+                    listener?.onClientMessageEvent(
+                        this@PubnubChatMessagingClient,
+                        clientMessage
+                    )
+                    logDebug { "own message action added" }
+                } else {
+                    status.errorData.throwable.printStackTrace()
                 }
+            }
     }
 
     fun removeMessageAction(channel: String, messageTimetoken: Long, actionTimetoken: Long) {
@@ -623,13 +632,13 @@ internal class PubnubChatMessagingClient(
             .channel(channel)
             .messageTimetoken(messageTimetoken)
             .actionTimetoken(actionTimetoken)
-            .async{ result, status ->
-                    if (!status.isError) {
-                        logDebug { "own message action removed" }
-                    } else {
-                        status.errorData.throwable.printStackTrace()
-                    }
+            .async { result, status ->
+                if (!status.isError) {
+                    logDebug { "own message action removed" }
+                } else {
+                    status.errorData.throwable.printStackTrace()
                 }
+            }
     }
 
     /**
@@ -670,9 +679,11 @@ internal class PubnubChatMessagingClient(
                 .channelsTimetoken(listOf(convertToTimeToken(startTimestamp)))
                 .sync()
             logDebug {
-                "Count Read channel : $channel lasttimestamp:${convertToTimeToken(
-                    startTimestamp
-                )} count:${countResult?.channels?.get(channel) ?: 0}"
+                "Count Read channel : $channel lasttimestamp:${
+                    convertToTimeToken(
+                        startTimestamp
+                    )
+                } count:${countResult?.channels?.get(channel) ?: 0}"
             }
             Result.Success(countResult?.channels?.get(channel) ?: 0)
         } catch (ex: PubNubException) {
