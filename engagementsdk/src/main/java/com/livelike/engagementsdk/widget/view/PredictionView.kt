@@ -52,7 +52,14 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         widgetObserver(viewModel?.data?.latest())
-        viewModel?.widgetState?.subscribe(javaClass) { widgetStateObserver(it) }
+        viewModel?.widgetState?.subscribe(javaClass.simpleName) { widgetStateObserver(it) }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass.simpleName)
+        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
+        viewModel?.results?.unsubscribe(javaClass.simpleName)
     }
 
     private fun widgetStateObserver(widgetStates: WidgetStates?) {

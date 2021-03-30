@@ -61,16 +61,26 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         set(value) {
             field = value
             viewModel = value as CheerMeterViewModel
-            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
         }
 
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+        viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
         viewModel?.results?.subscribe(javaClass.simpleName) { resultObserver(it) }
         viewModel?.voteEnd?.subscribe(javaClass.simpleName) { endObserver(it) }
     }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass.simpleName)
+        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
+        viewModel?.results?.unsubscribe(javaClass.simpleName)
+        viewModel?.voteEnd?.unsubscribe(javaClass.simpleName)
+    }
+
+
 
     private fun stateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
