@@ -120,8 +120,8 @@ class ChatOnlyActivity : AppCompatActivity() {
                 object : LiveLikeCallback<ChatUserMuteStatus>() {
                     override fun onResponse(result: ChatUserMuteStatus?, error: String?) {
                         result?.let {
-                            btn_mute_status.post{
-                                showToast("User is ${if(result.isMuted)" " else "not "}muted ")
+                            btn_mute_status.post {
+                                showToast("User is ${if (result.isMuted) " " else "not "}muted ")
                             }
                         }
                         error?.let {
@@ -225,7 +225,6 @@ class ChatOnlyActivity : AppCompatActivity() {
                         override fun onResponse(result: Boolean?, error: String?) {
                             result?.let {
                                 showToast("Deleted ChatRoom")
-                                privateGroupChatsession.exitChatRoom(id)
                                 privateGroupChatsession.close()
                                 (application as LiveLikeApplication).removePrivateSession()
                                 chat_view.visibility = View.INVISIBLE
@@ -322,7 +321,8 @@ class ChatOnlyActivity : AppCompatActivity() {
             privateGroupChatsession.avatarUrl = it
         }
         sessionMap[chatRoomId] = privateGroupChatsession
-        privateGroupChatsession.enterChatRoom(chatRoomId)
+        if (privateGroupChatsession.getActiveChatRoom.invoke().isEmpty())
+            privateGroupChatsession.connectToChatRoom(chatRoomId)
         txt_chat_room_id.visibility = View.VISIBLE
         txt_chat_room_title.visibility = View.VISIBLE
         (application as LiveLikeApplication).sdk.getChatRoom(
