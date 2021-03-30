@@ -27,6 +27,45 @@ internal class ChatQueue(upstream: MessagingClient) :
         upstream.start()
     }
 
+    override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+        val list = events.filter { event ->
+            return@filter (event.message.get("event").asString == ChatViewModel.EVENT_NEW_MESSAGE)
+        }
+        val deletedList = events.filter { event ->
+            return@filter (event.message.get("event").asString == ChatViewModel.EVENT_MESSAGE_DELETED)
+        }
+        //TODO: all this process of adding data to map will be removed once single chatroom with single session is made
+        val deletedMap = hashMapOf<String, ArrayList<ChatMessage>>()
+
+        deletedList.forEach { event->
+            val events = deletedMap[event.channel] ?: arrayListOf()
+            val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
+            chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
+            events.add(chatMessage)
+            deletedMap[event.channel] = events
+        }
+        for ((key, value) in deletedMap) {
+            value.forEach {
+                renderer?.deleteChatMessage(it.id)
+                msgListener?.onDeleteMessage(it.id)
+            }
+        }
+        val map = hashMapOf<String, ArrayList<ChatMessage>>()
+        list.forEach { event ->
+            val events = map[event.channel] ?: arrayListOf()
+            val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
+            chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
+            events.add(chatMessage)
+            map[event.channel] = events
+        }
+        for ((key, value) in map) {
+            value.forEach {
+                renderer?.displayChatMessage(it)
+            }
+            msgListener?.onHistoryMessage(key, value.map { it.toLiveLikeChatMessage() })
+        }
+    }
+
     var renderer: ChatRenderer? = null
 
     override fun onChatMessageSend(message: ChatMessage, timeData: EpochTime) {
@@ -35,7 +74,7 @@ internal class ChatQueue(upstream: MessagingClient) :
 
     override fun onClientMessageError(client: MessagingClient, error: Error) {
         super.onClientMessageError(client, error)
-        if(error.type.equals(MessageError.DENIED_MESSAGE_PUBLISH.name)){
+        if (error.type.equals(MessageError.DENIED_MESSAGE_PUBLISH.name)) {
             renderer?.errorSendingMessage(MessageError.DENIED_MESSAGE_PUBLISH)
         }
     }
@@ -66,15 +105,11 @@ internal class ChatQueue(upstream: MessagingClient) :
                 if (time > 0) {
                     epochTimeStamp = time / 10000
                 }
+                val chatMessage = gson.fromJson(event.message, ChatMessage::class.java)
+                chatMessage.timeStamp = epochTimeStamp.toString()
                 msgListener?.onNewMessage(
                     event.channel,
-                    LiveLikeChatMessage(
-                        "",
-                        "",
-                        "",
-                        epochTimeStamp.toString(),
-                        event.message.get("messageId").asString.hashCode().toLong()
-                    )
+                    chatMessage.toLiveLikeChatMessage()
                 )
             }
             ChatViewModel.EVENT_LOADING_COMPLETE -> {

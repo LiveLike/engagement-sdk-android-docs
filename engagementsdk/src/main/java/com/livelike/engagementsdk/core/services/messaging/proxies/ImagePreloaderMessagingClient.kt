@@ -36,6 +36,10 @@ internal class ImagePreloaderMessagingClient(
         upstream.start()
     }
 
+    override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+
+    }
+
     private val processingList = mutableListOf<ImageMessage>()
     private val downloadedImages = mutableListOf<String>()
 

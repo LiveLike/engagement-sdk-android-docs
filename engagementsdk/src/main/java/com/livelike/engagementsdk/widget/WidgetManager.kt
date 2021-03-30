@@ -104,6 +104,10 @@ internal class WidgetManager(
         upstream.start()
     }
 
+    override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+        TODO("Not yet implemented")
+    }
+
     private val handler = Handler(Looper.getMainLooper())
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

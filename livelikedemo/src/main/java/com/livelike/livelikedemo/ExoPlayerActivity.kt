@@ -523,15 +523,17 @@ class ExoPlayerActivity : AppCompatActivity() {
                     if (chatRoom == privateGroupChatsession?.getActiveChatRoom?.invoke()) {
                         messageCount[chatRoom] = 0 // reset unread message count
                         // Adding the timetoken of the message from pubnub to get the count,if not time token then current timestamp in microseconds
-                        if (message.timestamp.isEmpty()) {
+                        if (message.timestamp?.isEmpty() == true) {
                             chatRoomLastTimeStampMap[chatRoom] =
                                 Calendar.getInstance().timeInMillis
                         } else {
                             // Added 1 into time //this is done only for those cases when user is watching the chatroom
                             // if it is not watching the chatroom then no need to add the 1 in the time
-                            if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < message.timestamp.toLong())
+                            if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < (message.timestamp?.toLong()
+                                    ?: 0L)
+                            )
                                 chatRoomLastTimeStampMap[chatRoom] =
-                                    (message.timestamp.toLong() + 1)
+                                    ((message.timestamp?.toLong() ?: 0L) + 1)
                         }
                         Log.v(
                             "Here$chatRoom",
@@ -547,7 +549,7 @@ class ExoPlayerActivity : AppCompatActivity() {
                             ).apply()
                     } else {
                         if (chatRoomLastTimeStampMap[chatRoom] == 0L) {
-                            chatRoomLastTimeStampMap[chatRoom] = message.timestamp.toLong()
+                            chatRoomLastTimeStampMap[chatRoom] = message.timestamp?.toLong() ?: 0L
                             if (messageCount[chatRoom] == null) {
                                 messageCount[chatRoom] = 1
                             }
@@ -568,7 +570,9 @@ class ExoPlayerActivity : AppCompatActivity() {
                             "Here$chatRoom",
                             "onNewMessage4: ${message.message}  timestamp:${message.timestamp} lastTimeStamp:${chatRoomLastTimeStampMap[chatRoom]}"
                         )
-                        if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < message.timestamp.toLong())
+                        if (chatRoomLastTimeStampMap[chatRoom] == null || chatRoomLastTimeStampMap[chatRoom]!! < (message.timestamp?.toLong()
+                                ?: 0L)
+                        )
                             if (messageCount[chatRoom] == null) {
                                 messageCount[chatRoom] = 1
                             } else {
@@ -585,6 +589,17 @@ class ExoPlayerActivity : AppCompatActivity() {
                             "channel : ${it.key}, unread : ${it.value} lasttimestamp:${chatRoomLastTimeStampMap[chatRoom]}"
                         )
                     }
+                }
+
+                override fun onHistoryMessage(
+                    chatRoom: String,
+                    messages: List<LiveLikeChatMessage>
+                ) {
+
+                }
+
+                override fun onDeleteMessage(messageId: String) {
+
                 }
             })
             chatRoomIds.forEach {

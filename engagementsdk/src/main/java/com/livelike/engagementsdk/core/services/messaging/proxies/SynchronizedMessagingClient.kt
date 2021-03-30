@@ -42,6 +42,26 @@ internal class SynchronizedMessagingClient(
         upstream.start()
     }
 
+    override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+        val list = events.filter { event ->
+            when {
+                shouldPublishEvent(event) -> {
+                    return@filter true
+                }
+                shouldDismissEvent(event) -> {
+                    logDismissedEvent(event)
+                    return@filter false
+                }
+                else -> {
+                    addMessageToQueue(event)
+                    return@filter false
+                }
+            }
+        }
+        processQueueForScheduledEvent()
+        listener?.onClientMessageEvents(this, list)
+    }
+
     private suspend fun publishTimeSynchronizedMessageFromQueue() {
         processQueueForScheduledEvent()
         delay(SYNC_TIME_FIDELITY)
@@ -71,29 +91,38 @@ internal class SynchronizedMessagingClient(
                 // Adding the check for similar message ,it is occuring if user get message
                 // from history and also receive message from pubnub listener
                 // checking right now is based on id
-                val queue = queueMap[event.channel] ?: Queue()
-                val currentChatMessageId = event.message.get("id")?.asString
-                val foundMsg = queue.elements.find {
-                    val msgId = it.message.get("id")?.asString
-                    return@find msgId != null && currentChatMessageId != null && msgId == currentChatMessageId
-                }
-                if (foundMsg == null) {
-                    queue.enqueue(event)
-                }
-                queue.elements.sortBy {
-                    if (it.message.has("pubnubMessageToken")) {
-                        return@sortBy it.message.get("pubnubMessageToken")?.asLong ?: 0L
-                    }
-                    return@sortBy 0L
-                }
-                queueMap[event.channel] = queue
+                addMessageToQueue(event)
             }
         }
     }
 
+    private fun addMessageToQueue(event: ClientMessage) {
+        // Adding the check for similar message ,it is occuring if user get message
+        // from history and also receive message from pubnub listener
+        // checking right now is based on id
+        val queue = queueMap[event.channel] ?: Queue()
+        val currentChatMessageId = event.message.get("id")?.asString
+
+        val foundMsg = queue.elements.find {
+            val msgId = it.message.get("id")?.asString
+            return@find msgId != null && currentChatMessageId != null && msgId == currentChatMessageId
+        }
+        if (foundMsg == null) {
+            queue.enqueue(event)
+        }
+        queue.elements.sortBy {
+            if (it.message.has("pubnubMessageToken")) {
+                return@sortBy it.message.get("pubnubMessageToken")?.asLong ?: 0L
+            }
+            return@sortBy 0L
+        }
+        queueMap[event.channel] = queue
+    }
+
     fun processQueueForScheduledEvent() {
-        if (isQueueProcess.not()) {
+        if (isQueueProcess.not() && queueMap.isNotEmpty()) {
             isQueueProcess = true
+            val publishedEvents = arrayListOf<ClientMessage>()
             queueMap.keys.forEach {
                 val queue = queueMap[it]
                 queue?.let {
@@ -103,7 +132,7 @@ internal class SynchronizedMessagingClient(
                         val event = queue.peek()
                         event?.let {
                             when {
-                                shouldPublishEvent(event) -> publishEvent(queue.dequeue()!!)
+                                shouldPublishEvent(event) -> publishedEvents.add(event)
                                 shouldDismissEvent(event) -> {
                                     logDismissedEvent(event)
                                     queue.dequeue()
@@ -116,6 +145,7 @@ internal class SynchronizedMessagingClient(
                     }
                 }
             }
+            listener?.onClientMessageEvents(this, publishedEvents)
             isQueueProcess = false
         }
     }

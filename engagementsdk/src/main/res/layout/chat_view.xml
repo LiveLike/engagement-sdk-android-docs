@@ -46,7 +46,6 @@
                 android:stackFromBottom="true"
                 android:transcriptMode="normal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:stackFromEnd="true"
                 tools:listitem="@layout/default_chat_cell" />
 
 
