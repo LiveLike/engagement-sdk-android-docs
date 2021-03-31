@@ -64,6 +64,15 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
         viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
     }
 
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass.simpleName)
+        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
+        viewModel?.currentVoteId?.unsubscribe(javaClass.simpleName)
+        viewModel?.points?.unsubscribe(javaClass.simpleName)
+        viewModel?.results?.unsubscribe(javaClass.simpleName)
+    }
+
     private fun stateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
             WidgetStates.READY -> {
