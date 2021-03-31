@@ -87,6 +87,21 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
             )
         }
     }
+    protected fun trackWidgetBecameInteractive(
+        widgetType: WidgetType?,
+        widgetId: String,
+        programId: String,
+        alertLink: String? = null
+    ) {
+
+        widgetType?.let { type ->
+            analyticsService.trackWidgetBecameInteractive(
+                type.toAnalyticsString(),
+                widgetId,
+                programId
+            )
+        }
+    }
 
     /**
      * all models should override this to cleanup their resources
