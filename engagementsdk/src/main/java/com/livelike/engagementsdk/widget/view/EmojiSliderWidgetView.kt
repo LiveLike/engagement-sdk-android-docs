@@ -36,6 +36,7 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
 
     override fun unLockInteraction() {
         image_slider.isUserSeekable = true
+        viewModel?.markAsInteractive()
     }
 
     override fun subscribeCalls() {

@@ -148,6 +148,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             val isFollowUp = it.resource.kind.contains("follow-up")
             if (!isFollowUp) {
                 viewModel?.adapter?.selectionLocked = false
+                //marked widget as interactive
+                viewModel?.markAsInteractive()
             }
         }
     }

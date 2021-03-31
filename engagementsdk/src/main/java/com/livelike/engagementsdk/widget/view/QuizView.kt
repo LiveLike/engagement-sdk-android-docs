@@ -192,6 +192,8 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun unLockInteraction() {
         viewModel?.adapter?.selectionLocked = false
+        //marked widget as interactive
+        viewModel?.markAsInteractive()
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {

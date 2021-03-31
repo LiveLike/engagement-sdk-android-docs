@@ -102,6 +102,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun unLockInteraction() {
         view_ripple?.isClickable = true
         view_ripple2?.isClickable = true
+        viewModel?.markAsInteractive()
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
