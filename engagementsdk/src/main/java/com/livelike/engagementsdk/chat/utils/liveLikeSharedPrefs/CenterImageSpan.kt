@@ -5,8 +5,12 @@ import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.text.style.ImageSpan
 
+/**
+ * Image Span used to center align
+ * the image with surrounding text inside a textview
+ */
 
-class VerticalImageSpan(drawable: Drawable): ImageSpan(drawable) {
+class CenterImageSpan(drawable: Drawable): ImageSpan(drawable) {
     /**
      * update the text line height
      */

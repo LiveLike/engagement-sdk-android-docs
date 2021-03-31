@@ -13,7 +13,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
-import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.VerticalImageSpan
+import com.livelike.engagementsdk.chat.utils.liveLikeSharedPrefs.CenterImageSpan
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import pl.droidsonroids.gif.GifDrawable
 import pl.droidsonroids.gif.MultiCallback
@@ -64,7 +64,7 @@ fun replaceWithStickers(
     size: Int = 50,
     onMatch: (() -> Unit)? = null
 ) {
-    val existingSpans = s?.getSpans(0, s.length, VerticalImageSpan::class.java)
+    val existingSpans = s?.getSpans(0, s.length, CenterImageSpan::class.java)
     val existingSpanPositions = ArrayList<Int>(existingSpans?.size ?: 0)
     existingSpans?.forEach { imageSpan ->
         existingSpanPositions.add(s.getSpanStart(imageSpan))
@@ -105,7 +105,7 @@ fun replaceWithStickers(
                             drawable.start()
                             drawable.callback = callback
                             //val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_CENTER)
-                            val span = VerticalImageSpan(drawable)
+                            val span = CenterImageSpan(drawable)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
                         } catch (e: IOException) {
@@ -128,7 +128,7 @@ fun replaceWithStickers(
                         try {
                             setupBounds(drawable, edittext_chat_message, size)
                             //val span = ImageSpan(drawable, url, DynamicDrawableSpan.ALIGN_BASELINE)
-                            val span = VerticalImageSpan(drawable)
+                            val span = CenterImageSpan(drawable)
                             s?.setSpan(span, startIndex, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                             onMatch?.invoke()
                         } catch (e: IOException) {
