@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
@@ -61,8 +62,9 @@ class WidgetsTimeLineView(
                 timeLineViewModel
             )
         adapter.list.addAll(timeLineViewModel.timeLineWidgets)
-        timeline_rv.layoutManager =
-            LinearLayoutManager(context)
+        /*timeline_rv.layoutManager =
+            LinearLayoutManager(context)*/
+        timeline_rv.layoutManager = SmoothScrollerLinearLayoutManager(context)
         timeline_rv.adapter = adapter
         initListeners()
     }
