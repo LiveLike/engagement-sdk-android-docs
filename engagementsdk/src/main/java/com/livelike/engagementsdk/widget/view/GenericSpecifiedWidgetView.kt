@@ -100,7 +100,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         viewModel.data.subscribe(javaClass.simpleName) {
             dataModelObserver(it)
         }
-        viewModel.state.subscribe(javaClass.name) {
+        viewModel.state.subscribe(javaClass.simpleName) {
             it?.let { stateObserver(it) }
         }
         widgetViewModel?.widgetState?.subscribe(javaClass.simpleName) {
@@ -156,15 +156,13 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
 
     protected open fun unsubscribeCalls() {
         viewModel.state.unsubscribe(javaClass.name)
-//        viewModel.state.unsubscribe(javaClass.name)
+        viewModel.data.unsubscribe(javaClass.name)
+        widgetViewModel?.widgetState?.unsubscribe(javaClass.name)
     }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         subscribeCalls()
-//        viewModel.data.subscribe(javaClass.simpleName) {
-//            dataModelObserver(it)
-//        }
     }
 
     override fun onDetachedFromWindow() {

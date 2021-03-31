@@ -5,8 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,6 +12,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.R
@@ -53,6 +53,12 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 }
             }
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass)
+        viewModel?.widgetState?.unsubscribe(javaClass)
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {

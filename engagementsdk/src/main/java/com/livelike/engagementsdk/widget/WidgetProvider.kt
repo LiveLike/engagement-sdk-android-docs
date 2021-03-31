@@ -225,6 +225,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        widgetViewModel?.widgetState?.unsubscribe(this)
         widgetLifeCycleEventsListener?.onWidgetDismissed(widgetData)
     }
 

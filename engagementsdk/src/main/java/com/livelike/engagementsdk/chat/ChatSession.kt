@@ -315,6 +315,10 @@ internal class ChatSession(
         imageHeight: Int?,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
+        if (message?.isEmpty() == true) {
+            liveLikeCallback.onResponse(null, "Message cannot be empty")
+            return
+        }
         val timeData = getPlayheadTime()
         ChatMessage(
             PubnubChatEventType.MESSAGE_CREATED,
