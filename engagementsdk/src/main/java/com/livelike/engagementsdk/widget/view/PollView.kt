@@ -38,7 +38,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             field = value
             viewModel = value as PollViewModel
 //            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
+//            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
 //            viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
             viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
@@ -72,6 +72,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
+                //marked widget as interactive
+                viewModel?.markAsInteractive()
                 viewModel?.results?.subscribe(javaClass.simpleName) {
                     if (isFirstInteraction)
                         resultsObserver(it)

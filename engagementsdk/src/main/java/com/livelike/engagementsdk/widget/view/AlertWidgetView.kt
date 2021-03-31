@@ -67,6 +67,9 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
             logDebug { "Current State: $widgetStates" }
             widgetStates?.let {
+                if(widgetStates == WidgetStates.INTERACTING){
+                    viewModel?.markAsInteractive()
+                }
                 if (viewModel?.enableDefaultWidgetTransition == true) {
                     defaultStateTransitionManager(widgetStates)
                 }
