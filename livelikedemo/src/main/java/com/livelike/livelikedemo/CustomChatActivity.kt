@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
@@ -55,7 +56,8 @@ class CustomChatActivity : AppCompatActivity() {
                     chatRoom: String,
                     messages: List<LiveLikeChatMessage>
                 ) {
-                    messages.toMutableList().removeAll { session.chatSession.getDeletedMessages().contains(it.id) }
+                    messages.toMutableList()
+                        .removeAll { session.chatSession.getDeletedMessages().contains(it.id) }
                     runOnUiThread {
                         adapter.chatList.addAll(0, messages)
                         adapter.notifyDataSetChanged()
@@ -86,13 +88,19 @@ class CustomChatActivity : AppCompatActivity() {
                     msg,
                     liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
                         override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                            ed_msg.text.clear()
-                            result?.let { message ->
-                                val index = adapter.chatList.indexOfFirst { message.id == it.id }
-                                if (index == -1) {
-                                    adapter.chatList.add(message)
-                                    adapter.notifyItemInserted(adapter.chatList.size - 1)
-                                    rcyl_chat.scrollToPosition(adapter.itemCount - 1)
+                            if (error != null) {
+                                Toast.makeText(this@CustomChatActivity, error, Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                ed_msg.text.clear()
+                                result?.let { message ->
+                                    val index =
+                                        adapter.chatList.indexOfFirst { message.id == it.id }
+                                    if (index == -1) {
+                                        adapter.chatList.add(message)
+                                        adapter.notifyItemInserted(adapter.chatList.size - 1)
+                                        rcyl_chat.scrollToPosition(adapter.itemCount - 1)
+                                    }
                                 }
                             }
                         }
@@ -102,6 +110,7 @@ class CustomChatActivity : AppCompatActivity() {
         }
     }
 }
+
 class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
     val chatList = arrayListOf<LiveLikeChatMessage>()
 
@@ -124,6 +133,7 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
             Locale.getDefault()
         ).format(dateTime)
     }
+
     override fun getItemCount(): Int = chatList.size
 }
 

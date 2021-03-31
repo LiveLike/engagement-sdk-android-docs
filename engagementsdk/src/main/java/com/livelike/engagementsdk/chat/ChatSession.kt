@@ -82,7 +82,6 @@ internal class ChatSession(
     private val deletedMsgList = arrayListOf<String>()
 
 
-
     private val configurationUserPairFlow = flow {
         while (sdkConfiguration.latest() == null || userRepository.currentUserStream.latest() == null) {
             delay(1000)
@@ -179,11 +178,12 @@ internal class ChatSession(
                 }
             }
         }
+
         override fun onHistoryMessage(chatRoom: String, messages: List<LiveLikeChatMessage>) {
             for (chatRoomIdPair in chatRoomMap) {
                 if (chatRoomIdPair.value.channels.chat[CHAT_PROVIDER] == chatRoom) {
                     val list = messageListMap[chatRoom] ?: arrayListOf()
-                    list.addAll(messages)
+                    list.addAll(0, messages)
                     messageListMap[chatRoom] = list
                     msgListener?.onHistoryMessage(chatRoomIdPair.key, messages)
                     return
@@ -369,6 +369,10 @@ internal class ChatSession(
         imageHeight: Int?,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     ) {
+        if (message?.isEmpty() == true) {
+            liveLikeCallback.onResponse(null, "Message cannot be empty")
+            return
+        }
         val timeData = getPlayheadTime()
         ChatMessage(
             PubnubChatEventType.MESSAGE_CREATED,
@@ -388,7 +392,8 @@ internal class ChatSession(
                     it.id,
                     it.message,
                     hasExternalImage,
-                    id)
+                    id
+                )
             }
             //TODO: need to update for error handling here if pubnub respond failure of message
             liveLikeCallback.onResponse(it.toLiveLikeChatMessage(), null)
