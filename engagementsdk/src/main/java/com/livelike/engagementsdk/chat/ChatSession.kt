@@ -2,7 +2,6 @@ package com.livelike.engagementsdk.chat
 
 import android.content.Context
 import com.livelike.engagementsdk.AnalyticsService
-import com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.EpochTime

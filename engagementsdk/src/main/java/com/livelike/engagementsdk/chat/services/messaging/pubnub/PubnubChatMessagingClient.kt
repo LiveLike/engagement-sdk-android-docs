@@ -615,7 +615,10 @@ internal class PubnubChatMessagingClient(
 
         var count: Byte = 0
         pnHistoryResult?.messages?.forEach {
-            if (it.meta.asJsonObject.get("content_filter")?.asString?.contains("filtered") == false)
+            if (it.meta.isJsonObject && it.meta.asJsonObject.get("content_filter")?.asString?.contains(
+                    "filtered"
+                ) == false
+            )
                 count++
         }
         return Result.Success(count)
@@ -668,6 +671,8 @@ internal class PubnubChatMessagingClient(
         val msg = JsonObject().apply {
             addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
         }
+        //TODO: remove one event once the default chat is merged with custom chat
+        listener?.onClientMessageEvents(this, arrayListOf())
         listener?.onClientMessageEvent(
             this, ClientMessage(
                 msg, channel,
