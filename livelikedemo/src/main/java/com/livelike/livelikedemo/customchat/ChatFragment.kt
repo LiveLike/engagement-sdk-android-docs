@@ -1,5 +1,6 @@
 package com.livelike.livelikedemo.customchat
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.livelikedemo.CustomChatActivity
+import com.livelike.livelikedemo.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.R
 import kotlinx.android.synthetic.main.custom_chat_item.view.txt_message
 import kotlinx.android.synthetic.main.custom_chat_item.view.txt_msg_time
@@ -19,6 +21,7 @@ import kotlinx.android.synthetic.main.fragment_chat.ed_msg
 import kotlinx.android.synthetic.main.fragment_chat.lay_swipe
 import kotlinx.android.synthetic.main.fragment_chat.rcyl_chat
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -111,6 +114,21 @@ class ChatFragment : Fragment() {
                         }
                     })
             }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (activity as? CustomChatActivity)?.selectedHomeChat?.let {
+            val sharedPref =
+                (activity as? CustomChatActivity)?.getSharedPreferences(
+                    PREFERENCES_APP_ID,
+                    Context.MODE_PRIVATE
+                )
+            sharedPref?.edit()?.putLong(
+                "msg_time_${it.channel.llProgram}",
+                Calendar.getInstance().timeInMillis
+            )?.apply()
         }
     }
 
