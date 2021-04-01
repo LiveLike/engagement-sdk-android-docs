@@ -2,6 +2,7 @@ package com.livelike.livelikedemo.customchat
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,8 +43,9 @@ class ChatFragment : Fragment() {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
             homeChat.session.chatSession.setMessageListener(object : MessageListener {
-
+                private val TAG = "LiveLike"
                 override fun onNewMessage(message: LiveLikeChatMessage) {
+                    Log.i(TAG, "onNewMessage: $message")
                     val index = adapter.chatList.indexOfFirst { it.id == message.id }
                     if (index > -1) {
                         adapter.chatList[index] = message
@@ -64,6 +66,7 @@ class ChatFragment : Fragment() {
                 }
 
                 override fun onHistoryMessage(messages: List<LiveLikeChatMessage>) {
+                    Log.d(TAG, "onHistoryMessage: ${messages.size}")
                     messages.toMutableList()
                         .removeAll {
                             homeChat.session.chatSession.getDeletedMessages().contains(it.id)
@@ -81,6 +84,7 @@ class ChatFragment : Fragment() {
 
 
                 override fun onDeleteMessage(messageId: String) {
+                    Log.d(TAG, "onDeleteMessage: $messageId")
                     val index = adapter.chatList.indexOfFirst { it.id == messageId }
                     if (index > -1) {
                         adapter.chatList.removeAt(index)

@@ -10,9 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.LiveLikeContentSession
-import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
@@ -28,7 +26,12 @@ import java.util.Calendar
 class HomeFragment : Fragment() {
 
 
-    private lateinit var adapter: HomeAdapter
+    private val adapter = HomeAdapter(object : ItemClickListener {
+        override fun itemClick(homeChat: HomeChat) {
+            homeChat.msgCount = 0
+            (activity as? CustomChatActivity)?.showChatScreen(homeChat)
+        }
+    })
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,12 +43,6 @@ class HomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        adapter = HomeAdapter(object : ItemClickListener {
-            override fun itemClick(homeChat: HomeChat) {
-                homeChat.msgCount = 0
-                (activity as CustomChatActivity).showChatScreen(homeChat)
-            }
-        })
         rcyl_chats.adapter = adapter
         val dividerItemDecoration = DividerItemDecoration(
             rcyl_chats.context,
@@ -53,17 +50,19 @@ class HomeFragment : Fragment() {
         )
         rcyl_chats.addItemDecoration(dividerItemDecoration)
         (activity?.application as? LiveLikeApplication)?.let { application ->
-            val channelManager = application.channelManager
-            val sdk = application.sdk
-            val channels = channelManager.getChannels()
-            val sessions =
-                ArrayList(channels.map { channel ->
-                    HomeChat(
-                        channel,
-                        sdk.createContentSession(channel.llProgram.toString())
-                    )
-                })
-            adapter.sessionsList.addAll(sessions)
+            if (adapter.sessionsList.isEmpty()) {
+                val channelManager = application.channelManager
+                val sdk = application.sdk
+                val channels = channelManager.getChannels()
+                val sessions =
+                    ArrayList(channels.map { channel ->
+                        HomeChat(
+                            channel,
+                            sdk.createContentSession(channel.llProgram.toString())
+                        )
+                    })
+                adapter.sessionsList.addAll(sessions)
+            }
             adapter.notifyDataSetChanged()
             //fetching old messages
             lay_swipe.setOnRefreshListener {
@@ -71,6 +70,11 @@ class HomeFragment : Fragment() {
             }
             lay_swipe?.postDelayed({ loadUnreadCount() }, 5000L)
         }
+    }
+
+    override fun onDestroy() {
+        adapter.sessionsList.forEach { it.session.close() }
+        super.onDestroy()
     }
 
     private fun loadUnreadCount() {
