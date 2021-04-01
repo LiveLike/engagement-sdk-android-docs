@@ -69,7 +69,7 @@ class HomeFragment : Fragment() {
             lay_swipe.setOnRefreshListener {
                 loadUnreadCount()
             }
-            lay_swipe.postDelayed({ loadUnreadCount() }, 5000L)
+            lay_swipe?.postDelayed({ loadUnreadCount() }, 5000L)
         }
     }
 
@@ -77,7 +77,7 @@ class HomeFragment : Fragment() {
         val sharedPref =
             activity?.application?.getSharedPreferences(PREFERENCES_APP_ID, Context.MODE_PRIVATE)
         sharedPref?.let {
-            lay_swipe.isRefreshing = true
+            lay_swipe?.isRefreshing = true
             adapter.sessionsList.forEachIndexed { index, homeChat ->
                 val time = sharedPref.getLong("msg_time_${homeChat.channel.llProgram}", 0L)
                 println("HomeFragment.loadUnreadCount TIME->${homeChat.channel.name} ->$time")
@@ -91,7 +91,7 @@ class HomeFragment : Fragment() {
                             homeChat.msgCount = result?.toInt() ?: 0
                             adapter.sessionsList[index] = homeChat
                             activity?.runOnUiThread {
-                                lay_swipe.isRefreshing = false
+                                lay_swipe?.isRefreshing = false
                                 adapter.notifyItemChanged(index)
                             }
                         }

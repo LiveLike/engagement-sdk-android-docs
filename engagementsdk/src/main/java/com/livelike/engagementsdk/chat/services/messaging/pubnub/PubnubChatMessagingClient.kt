@@ -603,25 +603,28 @@ internal class PubnubChatMessagingClient(
         startTimestamp: Long,
         endTimeStamp: Long = Calendar.getInstance().timeInMillis
     ): Result<Byte> {
+        try {
+            val pnHistoryResult = pubnub.history()
+                .channel(channel)
+                .start(convertToTimeToken(startTimestamp))
+                .end(convertToTimeToken(endTimeStamp))
+                .includeMeta(true)
+                .includeTimetoken(true)
+                .reverse(false)
+                .sync()
 
-        val pnHistoryResult = pubnub.history()
-            .channel(channel)
-            .start(convertToTimeToken(startTimestamp))
-            .end(convertToTimeToken(endTimeStamp))
-            .includeMeta(true)
-            .includeTimetoken(true)
-            .reverse(false)
-            .sync()
-
-        var count: Byte = 0
-        pnHistoryResult?.messages?.forEach {
-            if (it.meta.isJsonObject && it.meta.asJsonObject.get("content_filter")?.asString?.contains(
-                    "filtered"
-                ) == false
-            )
-                count++
+            var count: Byte = 0
+            pnHistoryResult?.messages?.forEach {
+                if (it.meta.isJsonObject && it.meta.asJsonObject.get("content_filter")?.asString?.contains(
+                        "filtered"
+                    ) == false
+                )
+                    count++
+            }
+            return Result.Success(count)
+        } catch (e: PubNubException) {
+            return Result.Error(e)
         }
-        return Result.Success(count)
     }
 
     @Deprecated("use getMessageCountV1()")
