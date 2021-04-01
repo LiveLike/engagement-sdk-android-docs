@@ -132,7 +132,7 @@ internal class SynchronizedMessagingClient(
                         val event = queue.peek()
                         event?.let {
                             when {
-                                shouldPublishEvent(event) -> publishedEvents.add(event)
+                                shouldPublishEvent(event) -> publishedEvents.add(queue.dequeue()!!)
                                 shouldDismissEvent(event) -> {
                                     logDismissedEvent(event)
                                     queue.dequeue()
