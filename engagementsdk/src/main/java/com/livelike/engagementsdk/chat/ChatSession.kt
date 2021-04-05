@@ -66,7 +66,7 @@ internal class ChatSession(
             null
         )
     }
-    override var getActiveChatRoom: () -> String = { currentChatRoom?.id ?: "" }
+    override var getCurrentChatRoom: () -> String = { currentChatRoom?.id ?: "" }
 
     private var chatClient: MessagingClient? = null
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -263,6 +263,7 @@ internal class ChatSession(
         }
     }
 
+    //TODO: will move to constructor later after discussion
     override fun connectToChatRoom(chatRoomId: String) {
         if (currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) == chatRoomId) return // Already in the room
         currentChatRoom?.let { chatRoom ->

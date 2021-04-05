@@ -24,8 +24,8 @@ interface LiveLikeChatSession {
     /** Closes the current session.*/
     fun close()
 
-    /** The current active chat room, it is the last entered chat room */
-    var getActiveChatRoom: () -> String
+    /** The current chat room */
+    var getCurrentChatRoom: () -> String
 
     /**
      * To connect to the chatRoom with provided chatRoomId, by default it will load initial messages
