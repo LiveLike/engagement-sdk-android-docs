@@ -321,7 +321,7 @@ class ChatOnlyActivity : AppCompatActivity() {
             privateGroupChatsession.avatarUrl = it
         }
         sessionMap[chatRoomId] = privateGroupChatsession
-        if (privateGroupChatsession.getActiveChatRoom.invoke().isEmpty())
+        if (privateGroupChatsession.getCurrentChatRoom.invoke().isEmpty())
             privateGroupChatsession.connectToChatRoom(chatRoomId)
         txt_chat_room_id.visibility = View.VISIBLE
         txt_chat_room_title.visibility = View.VISIBLE
