@@ -277,4 +277,8 @@ internal class PollViewModel(
         onDismiss()
         cleanUp()
     }
+
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
+    }
 }

@@ -14,4 +14,10 @@ interface LiveLikeWidgetMediator {
      */
     fun finish()
 
+    /**
+     * This will capture the analytics event Widget Became Interactive
+     * It should be called when the widget is opened first time for user interaction
+     **/
+    fun markAsInteractive()
+
 }
