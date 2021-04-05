@@ -94,7 +94,7 @@ internal class ChatRecyclerAdapter(
     private var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
-    private var chatPopUpView: ChatActionsPopupView? = null
+    internal var chatPopUpView: ChatActionsPopupView? = null
     var showChatAvatarLogo = true
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
@@ -124,6 +124,7 @@ internal class ChatRecyclerAdapter(
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         mRecyclerView = null
+
     }
 
     /** Commenting this code for now so QA finalize whether old issues are coming or not

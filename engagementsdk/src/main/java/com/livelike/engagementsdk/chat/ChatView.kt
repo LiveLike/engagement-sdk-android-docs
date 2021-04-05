@@ -912,6 +912,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        //added to dismiss popup reaction panel on fragment replace
+        viewModel?.chatAdapter?.chatPopUpView?.dismiss()
     }
 
     companion object {
