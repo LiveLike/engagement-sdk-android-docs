@@ -322,15 +322,16 @@ internal class ChatSession(
         }
         val timeData = getPlayheadTime()
         ChatMessage(
-            PubnubChatEventType.MESSAGE_CREATED,
-            currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             when (imageUrl != null) {
-                true -> ":$imageUrl:"
-                else -> message
+                true -> PubnubChatEventType.IMAGE_CREATED
+                else -> PubnubChatEventType.MESSAGE_CREATED
             },
+            currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
+            message,
             userRepository.currentUserStream.latest()?.id ?: "empty-id",
             userRepository.currentUserStream.latest()?.nickname ?: "John Doe",
             avatarUrl,
+            imageUrl = imageUrl,
             isFromMe = true,
             image_width = 100,
             image_height = 100,

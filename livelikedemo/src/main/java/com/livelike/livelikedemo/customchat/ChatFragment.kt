@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.MessageListener
-import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.livelikedemo.CustomChatActivity
@@ -196,13 +195,12 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         chatMessage.timestamp?.let {
             dateTime.time = it.toLong()
         }
-        if (chatMessage.message != null && chatMessage.message?.findImages()
-                ?.matches() == true && chatMessage.image_width != null && chatMessage.image_height != null
+        if (chatMessage.imageUrl != null && chatMessage.image_width != null && chatMessage.image_height != null
         ) {
             holder.itemView.img_message.visibility = View.VISIBLE
-            chatMessage.message?.let {
+            chatMessage.imageUrl?.let {
                 Glide.with(holder.itemView.img_message.context)
-                    .load(it.substring(1, it.length - 1))
+                    .load(it)
                     .apply(
                         RequestOptions().override(
                             chatMessage.image_width!!,
