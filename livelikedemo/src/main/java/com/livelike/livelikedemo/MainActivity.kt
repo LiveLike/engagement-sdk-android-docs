@@ -19,7 +19,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
@@ -75,6 +74,7 @@ import java.io.FileInputStream
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import kotlin.jvm.Throws
 import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
@@ -91,6 +91,22 @@ class MainActivity : AppCompatActivity() {
         var customCheerMeter: Boolean = false
     )
 
+    private var networkCallback: ConnectivityManager.NetworkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            super.onAvailable(network)
+//                    (application as LiveLikeApplication).initSDK()
+            channelManager.loadClientConfig()
+        }
+
+        override fun onLost(network: Network) {
+            super.onLost(network)
+        }
+
+        override fun onUnavailable() {
+            super.onUnavailable()
+        }
+    }
+
     private lateinit var channelManager: ChannelManager
     private val mConnReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -106,7 +122,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         ExoPlayerActivity.privateGroupRoomId = null
-        unregisterReceiver(mConnReceiver)
+
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            cm.unregisterNetworkCallback(networkCallback)
+        } else {
+            unregisterReceiver(mConnReceiver)
+        }
+        (application as LiveLikeApplication).sdk.userStream.unsubscribe(this)
         super.onDestroy()
     }
 
@@ -124,21 +147,7 @@ class MainActivity : AppCompatActivity() {
         channelManager = (application as LiveLikeApplication).channelManager
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    super.onAvailable(network)
-//                    (application as LiveLikeApplication).initSDK()
-                    channelManager.loadClientConfig()
-                }
-
-                override fun onLost(network: Network) {
-                    super.onLost(network)
-                }
-
-                override fun onUnavailable() {
-                    super.onUnavailable()
-                }
-            })
+            cm.registerDefaultNetworkCallback(networkCallback)
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
