@@ -271,21 +271,13 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 )
             }
 
-            if (widgetViewModel?.enableDefaultWidgetTransition == true) {
-                val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
-                if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
-                    listOf(textEggTimer).forEach { v ->
-                        viewModel?.animationEggTimerProgress?.let { time ->
-                            v?.startAnimationFrom(time, animationLength, {
-                                viewModel?.animationEggTimerProgress = it
-                            }, {
-                            })
-                        }
-                    }
-                }
-            } else {
-                textEggTimer?.visibility = View.GONE
-            }
+
+            showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+                viewModel?.animationEggTimerProgress = it
+            }, {
+                viewModel?.dismissWidget(it)
+            })
+
             logDebug { "showing PredictionView Widget" }
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)

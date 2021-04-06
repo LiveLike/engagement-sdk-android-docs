@@ -8,13 +8,13 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.EngagementSDK
-import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
 import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
+import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.timeline_rv
@@ -168,7 +168,7 @@ class WidgetsTimeLineView(
             timeLineViewModel.widgetEventStream.subscribe(javaClass.simpleName) {
                 logDebug { "Widget timeline event stream : $it" }
                 when (it) {
-
+                    
                     WidgetTimeLineViewModel.WIDGET_LOADING_COMPLETE -> {
                         timeLineViewModel.uiScope.launch {
                             hideLoadingSpinnerForTimeline()
@@ -184,11 +184,8 @@ class WidgetsTimeLineView(
                     }
 
                     WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
-                        timeLineViewModel.uiScope.launch {
-                            showLoadingSpinnerForTimeline()
-                        }
-                    }
 
+                    }
                 }
             }
     }

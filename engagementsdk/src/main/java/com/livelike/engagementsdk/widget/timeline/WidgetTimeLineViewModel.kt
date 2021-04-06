@@ -39,6 +39,7 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
      * load history widgets (published)
      **/
     private fun loadPastPublishedWidgets(page: LiveLikePagination) {
+        widgetEventStream.onNext(WIDGET_LOADING_STARTED)
         contentSession.getPublishedWidgets(
             page,
             object : LiveLikeCallback<List<LiveLikeWidget>>() {
@@ -56,13 +57,13 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
                             timeLineWidgetsStream.onNext(Pair(WidgetApiSource.HISTORY_API, widgets))
                         }
                     }
+                    widgetEventStream.onNext(WIDGET_LOADING_COMPLETE)
                     // this means that published result is finished, there are no more to display
                     if (result == null && error == null) {
-                            logDebug { "timeline list finished" }
-                            widgetEventStream.onNext(WIDGET_TIMELINE_END)
+                        logDebug { "timeline list finished" }
+                        widgetEventStream.onNext(WIDGET_TIMELINE_END)
 
                     }
-                    widgetEventStream.onNext(WIDGET_LOADING_COMPLETE)
                 }
             })
     }
@@ -71,7 +72,12 @@ class WidgetTimeLineViewModel(private val contentSession: LiveLikeContentSession
      * this call load the next available page of past published widgets on this program.
      **/
     fun loadMore() {
-        loadPastPublishedWidgets(LiveLikePagination.NEXT)
+        if(widgetEventStream.latest()?.equals(WIDGET_TIMELINE_END) == true){
+            return
+        }
+        if(widgetEventStream.latest()?.equals(WIDGET_LOADING_COMPLETE) == true) {
+            loadPastPublishedWidgets(LiveLikePagination.NEXT)
+        }
     }
 
 

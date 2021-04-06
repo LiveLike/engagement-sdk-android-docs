@@ -939,7 +939,6 @@ class EngagementSDK(
         errorDelegate: ErrorDelegate? = null
     ): LiveLikeChatSession {
         return ChatSession(
-            clientId,
             configurationStream,
             userRepository,
             applicationContext,

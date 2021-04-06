@@ -24,27 +24,16 @@ interface LiveLikeChatSession {
     /** Closes the current session.*/
     fun close()
 
-    /** Enter a Chat Room */
-    /** Join a Chat Room, membership will be created for this room */
-    fun joinChatRoom(chatRoomId: String, timestamp: Long = Calendar.getInstance().timeInMillis)
+    /** The current chat room */
+    var getCurrentChatRoom: () -> String
 
-    /** Leave a Chat Room, membership will be cancelled with this room */
-    fun leaveChatRoom(chatRoomId: String)
-
-    /** Enter a Chat Room, the last entered Chat Room will be the active one */
-    fun enterChatRoom(chatRoomId: String)
-
-    /** The current active chat room, it is the last entered chat room */
-    var getActiveChatRoom: () -> String
-
-    /** Exit the specified Chat Room */
-    fun exitChatRoom(chatRoomId: String)
-
-    /** Exit all the Connected Chat Rooms */
-    fun exitAllConnectedChatRooms()
+    /**
+     * To connect to the chatRoom with provided chatRoomId, by default it will load initial messages
+     */
+    fun connectToChatRoom(chatRoomId: String)
 
     /** Returns the number of messages published on a chatroom since a given time*/
-    fun getMessageCount(chatRoomId: String, startTimestamp: Long, callback: LiveLikeCallback<Byte>)
+    fun getMessageCount(startTimestamp: Long, callback: LiveLikeCallback<Byte>)
 
     /** Register a message count listner for the specified Chat Room */
     fun setMessageListener(messageListener: MessageListener)

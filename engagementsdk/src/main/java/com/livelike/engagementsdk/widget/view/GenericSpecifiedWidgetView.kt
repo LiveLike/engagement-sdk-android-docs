@@ -72,7 +72,9 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         entity?.let { _ ->
             if (!isViewInflated) {
                 isViewInflated = true
-                widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
+                if (widgetViewModel?.widgetState?.latest() == null)
+                    widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
+
             }
             showTimer(entity.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
                 viewModel?.animationEggTimerProgress = it

@@ -290,7 +290,7 @@ internal class PubnubChatMessagingClient(
                     val event = message.message.asJsonObject.extractStringOrEmpty("event")
                         .toPubnubChatEventType()
                     when (event) {
-                        MESSAGE_CREATED -> {
+                        MESSAGE_CREATED, IMAGE_CREATED -> {
                             if (!list.contains(msgId)) {
                                 list.add(msgId)
                                 map[channel] = list
@@ -603,22 +603,28 @@ internal class PubnubChatMessagingClient(
         startTimestamp: Long,
         endTimeStamp: Long = Calendar.getInstance().timeInMillis
     ): Result<Byte> {
+        try {
+            val pnHistoryResult = pubnub.history()
+                .channel(channel)
+                .start(convertToTimeToken(startTimestamp))
+                .end(convertToTimeToken(endTimeStamp))
+                .includeMeta(true)
+                .includeTimetoken(true)
+                .reverse(false)
+                .sync()
 
-        val pnHistoryResult = pubnub.history()
-            .channel(channel)
-            .start(convertToTimeToken(startTimestamp))
-            .end(convertToTimeToken(endTimeStamp))
-            .includeMeta(true)
-            .includeTimetoken(true)
-            .reverse(false)
-            .sync()
-
-        var count: Byte = 0
-        pnHistoryResult?.messages?.forEach {
-            if (it.meta.asJsonObject.get("content_filter")?.asString?.contains("filtered") == false)
-                count++
+            var count: Byte = 0
+            pnHistoryResult?.messages?.forEach {
+                if (it.meta.isJsonObject && it.meta.asJsonObject.get("content_filter")?.asString?.contains(
+                        "filtered"
+                    ) == false
+                )
+                    count++
+            }
+            return Result.Success(count)
+        } catch (e: PubNubException) {
+            return Result.Error(e)
         }
-        return Result.Success(count)
     }
 
     @Deprecated("use getMessageCountV1()")
@@ -668,6 +674,8 @@ internal class PubnubChatMessagingClient(
         val msg = JsonObject().apply {
             addProperty("event", ChatViewModel.EVENT_LOADING_COMPLETE)
         }
+        //TODO: remove one event once the default chat is merged with custom chat
+        listener?.onClientMessageEvents(this, arrayListOf())
         listener?.onClientMessageEvent(
             this, ClientMessage(
                 msg, channel,
