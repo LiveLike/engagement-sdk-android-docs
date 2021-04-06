@@ -67,7 +67,8 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
             logDebug { "Current State: $widgetStates" }
             widgetStates?.let {
-                if(widgetStates == WidgetStates.INTERACTING){
+                if(widgetStates == WidgetStates.INTERACTING && (!viewModel?.data?.latest()?.link_url.isNullOrEmpty())){
+                    // will only be fired if link is available in alert widget
                     viewModel?.markAsInteractive()
                 }
                 if (viewModel?.enableDefaultWidgetTransition == true) {

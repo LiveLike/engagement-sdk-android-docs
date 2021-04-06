@@ -81,8 +81,6 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             }
             WidgetStates.INTERACTING -> {
                 unLockInteraction()
-                //marked widget as interactive
-                viewModel?.markAsInteractive()
                 viewModel?.results?.subscribe(javaClass.simpleName) {
                     if (isFirstInteraction)
                         resultsObserver(it)
@@ -108,6 +106,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun unLockInteraction() {
         viewModel?.adapter?.selectionLocked = false
+        //marked widget as interactive
+        viewModel?.markAsInteractive()
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
