@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/answer_background_default"
-        app:layout_constraintBottom_toBottomOf="@+id/text_button"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,7 +22,7 @@
         android:id="@+id/determinateBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
-        android:layout_height="25dp"
+        android:layout_height="24dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:gravity="start|center"
@@ -34,6 +34,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_button"
         tools:progress="60"
+        app:layout_constraintVertical_bias="0.5"
         tools:progressDrawable="@drawable/progress_bar_correct"
         tools:visibility="visible" />
 
@@ -44,11 +45,10 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/livelike_option_font"
         android:gravity="center_vertical"
-        android:lineSpacingExtra="4dp"
+        android:lineSpacingExtra="8sp"
         android:minHeight="45dp"
         android:paddingStart="@dimen/widget_option_item_padding_start"
         android:paddingLeft="@dimen/widget_option_item_padding_start"
-        android:paddingTop="@dimen/widget_option_item_padding_top"
         android:paddingEnd="@dimen/widget_option_item_padding_end"
         android:paddingRight="@dimen/widget_option_item_padding_end"
         android:textAlignment="textStart"
