@@ -187,6 +187,10 @@ internal class CheerMeterViewModel(
         cleanUp()
     }
 
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
+    }
+
     fun dismissWidget(action: DismissAction) {
         currentWidgetType?.let {
             data.currentData?.resource?.program_id?.let { programId ->

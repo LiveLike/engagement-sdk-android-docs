@@ -255,4 +255,8 @@ internal class QuizViewModel(
         onDismiss()
         cleanUp()
     }
+
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
+    }
 }

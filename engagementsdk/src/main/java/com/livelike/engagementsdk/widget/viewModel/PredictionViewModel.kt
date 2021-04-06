@@ -308,6 +308,10 @@ internal class PredictionViewModel(
         cleanUp()
     }
 
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
+    }
+
     override fun lockInVote(optionID: String) {
         trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,
             programId

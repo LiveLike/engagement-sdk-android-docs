@@ -20,6 +20,7 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
     ViewModel() {
 
     private  var subscribedWidgetChannelName: String?=null
+    internal var isMarkedInteractive:Boolean = false
     internal val widgetState: Stream<WidgetStates> =
         SubscriptionManager<WidgetStates>(emitOnSubscribe = true)
     internal var enableDefaultWidgetTransition = true
@@ -85,6 +86,23 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
                 currentWidgetId,
                 programId
             )
+        }
+    }
+    protected fun trackWidgetBecameInteractive(
+        widgetType: WidgetType?,
+        widgetId: String,
+        programId: String,
+        alertLink: String? = null
+    ) {
+        if(!isMarkedInteractive) {
+            isMarkedInteractive = true
+            widgetType?.let { type ->
+                analyticsService.trackWidgetBecameInteractive(
+                    type.toAnalyticsString(),
+                    widgetId,
+                    programId
+                )
+            }
         }
     }
 

@@ -105,6 +105,10 @@ internal class EmojiSliderWidgetViewModel(
         onClear()
     }
 
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
+    }
+
     override fun lockInVote(magnitude: Double) {
         data.latest()?.program_id?.let {
             trackWidgetEngagedAnalytics(currentWidgetType, currentWidgetId,

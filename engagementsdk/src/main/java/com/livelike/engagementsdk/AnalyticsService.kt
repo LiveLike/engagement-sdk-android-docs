@@ -59,6 +59,7 @@ interface AnalyticsService {
     fun trackLastWidgetStatus(status: Boolean)
     fun trackWidgetReceived(kind: String, id: String)
     fun trackWidgetDisplayed(kind: String, id: String, programId: String, linkUrl: String? = null)
+    fun trackWidgetBecameInteractive(kind: String, id: String, programId: String, linkUrl: String? = null)
     fun trackWidgetDismiss(
         kind: String,
         id: String,
@@ -235,6 +236,15 @@ class MockAnalyticsService(private val clientId: String = "") : AnalyticsService
     }
 
     override fun trackWidgetDisplayed(
+        kind: String,
+        id: String,
+        programId: String,
+        linkUrl: String?
+    ) {
+        Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId")
+    }
+
+    override fun trackWidgetBecameInteractive(
         kind: String,
         id: String,
         programId: String,
@@ -740,6 +750,22 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         Log.d("[Analytics]", "[${object {}.javaClass.enclosingMethod?.name}] $kind $programId")
     }
 
+    override fun trackWidgetBecameInteractive(
+        kind: String,
+        id: String,
+        programId: String,
+        linkUrl: String?
+    ) {
+        val properties = JSONObject()
+        properties.put("Widget Type", kind)
+        properties.put("Widget ID", id)
+        properties.put(PROGRAM_ID, programId)
+        linkUrl?.let { properties.put(LINK_URL, it) }
+        mixpanel.track(KEY_WIDGET_BECAME_INTERACTIVE, properties)
+        eventObservers[clientId]?.invoke(KEY_WIDGET_BECAME_INTERACTIVE, properties)
+    }
+
+
     override fun trackWidgetReceived(kind: String, id: String) {
         val properties = JSONObject()
         properties.put(
@@ -868,6 +894,7 @@ class MixpanelAnalytics(val context: Context, token: String?, private val client
         const val KEY_CHAT_MESSAGE_DISPLAYED = "Chat Message Displayed"
         const val KEY_WIDGET_RECEIVED = "Widget_Received"
         const val KEY_WIDGET_DISPLAYED = "Widget Displayed"
+        const val KEY_WIDGET_BECAME_INTERACTIVE = "Widget Became Interactive"
         const val KEY_WIDGET_INTERACTION = "Widget Interacted"
         const val KEY_WIDGET_ENGAGED = "Widget Engaged"
         const val KEY_WIDGET_USER_DISMISS = "Widget Dismissed"
