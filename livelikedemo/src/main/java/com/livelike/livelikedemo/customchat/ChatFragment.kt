@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.livelikedemo.CustomChatActivity
@@ -189,24 +190,31 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 
     override fun onBindViewHolder(holder: CustomChatViewHolder, position: Int) {
         val chatMessage = chatList[position]
-        holder.itemView.txt_message.text = chatMessage.message
+
         holder.itemView.txt_name.text = chatMessage.nickname
         val dateTime = Date()
         chatMessage.timestamp?.let {
             dateTime.time = it.toLong()
         }
-        if (chatMessage.imageUrl != null) {
+        if (chatMessage.message != null && chatMessage.message?.findImages()
+                ?.matches() == true && chatMessage.image_width != null && chatMessage.image_height != null
+        ) {
             holder.itemView.img_message.visibility = View.VISIBLE
-            Glide.with(holder.itemView.img_message.context).load(chatMessage.imageUrl)
-                .apply(
-                    RequestOptions().override(
-                        chatMessage.image_width!!,
-                        chatMessage.image_height!!
+            chatMessage.message?.let {
+                Glide.with(holder.itemView.img_message.context)
+                    .load(it.substring(1, it.length - 1))
+                    .apply(
+                        RequestOptions().override(
+                            chatMessage.image_width!!,
+                            chatMessage.image_height!!
+                        )
                     )
-                )
-                .into(holder.itemView.img_message)
+                    .into(holder.itemView.img_message)
+            }
+            holder.itemView.txt_message.text = ""
         } else {
             holder.itemView.img_message.visibility = View.GONE
+            holder.itemView.txt_message.text = chatMessage.message
         }
         holder.itemView.txt_msg_time.text = SimpleDateFormat(
             "MMM d, h:mm a",
