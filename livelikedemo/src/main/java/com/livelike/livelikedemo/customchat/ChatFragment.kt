@@ -8,15 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.livelikedemo.CustomChatActivity
 import com.livelike.livelikedemo.PREFERENCES_APP_ID
 import com.livelike.livelikedemo.R
+import kotlinx.android.synthetic.main.custom_chat_item.view.img_message
 import kotlinx.android.synthetic.main.custom_chat_item.view.txt_message
 import kotlinx.android.synthetic.main.custom_chat_item.view.txt_msg_time
 import kotlinx.android.synthetic.main.custom_chat_item.view.txt_name
+import kotlinx.android.synthetic.main.fragment_chat.btn_gif_send
+import kotlinx.android.synthetic.main.fragment_chat.btn_img_send
 import kotlinx.android.synthetic.main.fragment_chat.btn_send
 import kotlinx.android.synthetic.main.fragment_chat.ed_msg
 import kotlinx.android.synthetic.main.fragment_chat.lay_swipe
@@ -27,6 +32,21 @@ import java.util.Date
 import java.util.Locale
 
 class ChatFragment : Fragment() {
+
+    val images = arrayListOf<String>(
+        "https://homepages.cae.wisc.edu/~ece533/images/fruits.png",
+        "https://homepages.cae.wisc.edu/~ece533/images/monarch.png",
+        "https://homepages.cae.wisc.edu/~ece533/images/mountain.png",
+        "https://homepages.cae.wisc.edu/~ece533/images/watch.png",
+        "https://homepages.cae.wisc.edu/~ece533/images/serrano.png"
+    )
+    val gifs = arrayListOf<String>(
+        "https://media.giphy.com/media/SggILpMXO7Xt6/giphy.gif",
+        "https://media.giphy.com/media/xULW8PLGQwyZNaw68U/giphy.gif",
+        "https://media.giphy.com/media/wqb5K5564JSlW/giphy.gif",
+        "https://media.giphy.com/media/401riYDwVhHluIByQH/giphy.gif",
+        "https://media.giphy.com/media/4rW9yu8QaZJFC/giphy.gif"
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,6 +138,44 @@ class ChatFragment : Fragment() {
                         }
                     })
             }
+            btn_img_send.setOnClickListener {
+                homeChat.session.chatSession.sendChatMessage(
+                    null,
+                    imageUrl = images.random(),
+                    imageHeight = 100,
+                    imageWidth = 100,
+                    liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
+                        override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                            result?.let { message ->
+                                val index = adapter.chatList.indexOfFirst { message.id == it.id }
+                                if (index == -1) {
+                                    adapter.chatList.add(message)
+                                    adapter.notifyItemInserted(adapter.chatList.size - 1)
+                                    rcyl_chat.scrollToPosition(adapter.itemCount - 1)
+                                }
+                            }
+                        }
+                    })
+            }
+            btn_gif_send.setOnClickListener {
+                homeChat.session.chatSession.sendChatMessage(
+                    null,
+                    imageUrl = gifs.random(),
+                    imageHeight = 100,
+                    imageWidth = 100,
+                    liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
+                        override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                            result?.let { message ->
+                                val index = adapter.chatList.indexOfFirst { message.id == it.id }
+                                if (index == -1) {
+                                    adapter.chatList.add(message)
+                                    adapter.notifyItemInserted(adapter.chatList.size - 1)
+                                    rcyl_chat.scrollToPosition(adapter.itemCount - 1)
+                                }
+                            }
+                        }
+                    })
+            }
         }
     }
 
@@ -159,6 +217,19 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
         val dateTime = Date()
         chatMessage.timestamp?.let {
             dateTime.time = it.toLong()
+        }
+        if (chatMessage.imageUrl != null) {
+            holder.itemView.img_message.visibility = View.VISIBLE
+            Glide.with(holder.itemView.img_message.context).load(chatMessage.imageUrl)
+                .apply(
+                    RequestOptions().override(
+                        chatMessage.image_width!!,
+                        chatMessage.image_height!!
+                    )
+                )
+                .into(holder.itemView.img_message)
+        } else {
+            holder.itemView.img_message.visibility = View.GONE
         }
         holder.itemView.txt_msg_time.text = SimpleDateFormat(
             "MMM d, h:mm a",
