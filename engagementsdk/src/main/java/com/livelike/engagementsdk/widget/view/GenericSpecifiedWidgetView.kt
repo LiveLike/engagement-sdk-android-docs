@@ -72,7 +72,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
         entity?.let { _ ->
             if (!isViewInflated) {
                 isViewInflated = true
-                if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
+                if (widgetViewModel?.widgetState?.latest() == null)
                     widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
 
             }

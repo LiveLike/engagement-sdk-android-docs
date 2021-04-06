@@ -254,7 +254,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 viewModel?.dismissWidget(it)
             })
             logDebug { "Showing CheerMeter Widget" }
-            if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
+            if (widgetViewModel?.widgetState?.latest() == null)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
 
         }
