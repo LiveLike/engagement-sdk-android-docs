@@ -144,8 +144,8 @@ internal class ChatViewModel(
                 isFromMe = userStream.latest()?.id == senderId
             })
         } else {
-            messageList.first()?.let {
-                if (message.timetoken != 0L && it.timetoken > message.timetoken) {
+            messageList.first()?.let { chatMessage ->
+                if (message.timetoken != 0L && chatMessage.timetoken > message.timetoken) {
                     messageList.add(0, message.apply {
                         isFromMe = userStream.latest()?.id == senderId
                     })
@@ -160,6 +160,11 @@ internal class ChatViewModel(
                     messageList.add(message.apply {
                         isFromMe = userStream.latest()?.id == senderId
                     })
+                    if (message.timetoken != 0L) {
+                        messageList.sortBy {
+                            it.timetoken
+                        }
+                    }
                 }
             }
         }
@@ -200,7 +205,7 @@ internal class ChatViewModel(
     ) {
 
         messageList.forEachIndexed { index, chatMessage ->
-            if(chatMessage != null) { // added null check in reference to ES-1533 (though crash not reproducible at all)
+            if (chatMessage != null) { // added null check in reference to ES-1533 (though crash not reproducible at all)
                 chatMessage.apply {
                     if (this.timetoken == messagePubnubToken) {
                         if (isOwnReaction) {
@@ -227,7 +232,8 @@ internal class ChatViewModel(
             messageList.find {
                 it.id.toLowerCase() == messageId
             }?.apply {
-                message = applicationContext.getString(R.string.livelike_chat_message_deleted_message)
+                message =
+                    applicationContext.getString(R.string.livelike_chat_message_deleted_message)
                 isDeleted = true
             }
             uiScope.launch {
@@ -360,10 +366,11 @@ internal class ChatViewModel(
         const val EVENT_NEW_MESSAGE = "new-message"
         const val EVENT_MESSAGE_DELETED = "deletion"
         const val EVENT_MESSAGE_TIMETOKEN_UPDATED = "id-updated"
-        const val EVENT_LOADING_COMPLETE = "loading-complete"  
+        const val EVENT_LOADING_COMPLETE = "loading-complete"
         const val EVENT_LOADING_STARTED = "loading-started"
         const val EVENT_REACTION_ADDED = "reaction-added"
         const val EVENT_REACTION_REMOVED = "reaction-removed"
-        const val EVENT_MESSAGE_CANNOT_SEND = "message_cannot_send"  // case 0 : occurs when user is muted inside a room and sends a message
+        const val EVENT_MESSAGE_CANNOT_SEND =
+            "message_cannot_send"  // case 0 : occurs when user is muted inside a room and sends a message
     }
 }
