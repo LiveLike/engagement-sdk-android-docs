@@ -144,8 +144,8 @@ internal class ChatViewModel(
                 isFromMe = userStream.latest()?.id == senderId
             })
         } else {
-            messageList.first()?.let {
-                if (message.timetoken != 0L && it.timetoken > message.timetoken) {
+            messageList.first()?.let { chatMessage ->
+                if (message.timetoken != 0L && chatMessage.timetoken > message.timetoken) {
                     messageList.add(0, message.apply {
                         isFromMe = userStream.latest()?.id == senderId
                     })
@@ -160,6 +160,9 @@ internal class ChatViewModel(
                     messageList.add(message.apply {
                         isFromMe = userStream.latest()?.id == senderId
                     })
+                    messageList.sortBy {
+                        it.timetoken
+                    }
                 }
             }
         }
