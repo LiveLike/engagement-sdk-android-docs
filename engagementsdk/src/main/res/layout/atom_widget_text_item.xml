@@ -51,7 +51,6 @@
         android:paddingLeft="@dimen/widget_option_item_padding_start"
         android:paddingEnd="@dimen/widget_option_item_padding_end"
         android:paddingRight="@dimen/widget_option_item_padding_end"
-        android:textAlignment="textStart"
         android:textAllCaps="false"
         android:textColor="@color/livelike_option_text_color"
         android:textSize="@dimen/livelike_option_text_size"
