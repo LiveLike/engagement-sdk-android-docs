@@ -196,9 +196,6 @@ class ChatOnlyHomeFragment : Fragment() {
                         override fun onResponse(result: Boolean?, error: String?) {
                             result?.let {
                                 showToast("Deleted ChatRoom")
-                                (activity as? ChatOnlyActivity)?.privateGroupChatsession?.exitChatRoom(
-                                    id
-                                )
                                 (activity as? ChatOnlyActivity)?.privateGroupChatsession?.close()
                                 (activity?.application as? LiveLikeApplication)?.removePrivateSession()
                             }

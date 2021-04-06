@@ -67,13 +67,13 @@ internal class ContentSession(
     }
 
     override var chatSession: ChatSession = ChatSession(
-        clientId,
         sdkConfiguration,
         userRepository,
         applicationContext,
         true,
         analyticServiceStream,
-        errorDelegate, currentPlayheadTime
+        errorDelegate,
+        currentPlayheadTime
     )
 
     override var contentSessionleaderBoardDelegate: LeaderBoardDelegate? = null
@@ -245,7 +245,7 @@ internal class ContentSession(
                                     configuration,
                                     pair.first.id
                                 )
-                                chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
+                                chatSession.connectToChatRoom(program.defaultChatRoom?.id ?: "")
 
                                 /* commented, since programId and programTitle doesn't need
                                 * to be a part of super properties */

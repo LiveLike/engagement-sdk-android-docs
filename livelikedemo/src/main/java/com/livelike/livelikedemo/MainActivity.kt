@@ -14,12 +14,12 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
@@ -444,7 +444,10 @@ class MainActivity : AppCompatActivity() {
             )
         }
         custom_chat.setOnClickListener {
-            startActivity(Intent(this, CustomChatActivity::class.java))
+            if (channelManager.getChannels().isNotEmpty())
+                startActivity(Intent(this, CustomChatActivity::class.java))
+            else
+                Toast.makeText(this, "Please wait for events loading", Toast.LENGTH_SHORT).show()
         }
 
         (application as LiveLikeApplication).removePublicSession()

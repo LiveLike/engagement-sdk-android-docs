@@ -135,6 +135,9 @@ internal class ChatRepository(
     }
 
     fun loadPreviousMessages(channel: String, limit: Int = 20) {
-        pubnubChatMessagingClient?.loadMessagesWithReactions(channel, limit)
+        pubnubChatMessagingClient?.loadMessagesWithReactions(
+            channel,
+            limit
+        )
     }
 }

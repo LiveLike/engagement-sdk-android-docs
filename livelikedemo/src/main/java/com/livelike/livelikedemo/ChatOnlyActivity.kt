@@ -58,7 +58,7 @@ class ChatOnlyActivity : AppCompatActivity() {
             privateGroupChatsession?.avatarUrl = it
         }
         sessionMap[chatRoomId] = privateGroupChatsession!!
-        privateGroupChatsession?.enterChatRoom(chatRoomId)
+        privateGroupChatsession?.connectToChatRoom(chatRoomId)
         (application as LiveLikeApplication).sdk.getChatRoom(
             chatRoomId,
             object : LiveLikeCallback<ChatRoomInfo>() {
