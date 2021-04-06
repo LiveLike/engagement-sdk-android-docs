@@ -18,230 +18,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
-    <LinearLayout
-        android:id="@+id/lay_top"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <Button
-                android:id="@+id/btn_create"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:text="Create"
-                android:textSize="12sp" />
-
-            <EditText
-                android:id="@+id/ed_chat_room_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:hint="Enter Room title"
-                android:textColor="@android:color/white" />
-
-            <ProgressBar
-                android:id="@+id/prg_create"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:visibility="invisible" />
-
-            <Button
-                android:id="@+id/btn_visibility"
-                android:layout_width="70dp"
-                android:layout_height="34dp"
-                android:text="Visibility"
-                android:textSize="9sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <Button
-                android:id="@+id/btn_join"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:textSize="12sp"
-                android:text="Join" />
-
-            <EditText
-                android:id="@+id/ed_chat_room_id"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:hint="Enter Room Id "
-                android:textColor="@android:color/white" />
-
-            <ProgressBar
-                android:id="@+id/prg_join"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:visibility="invisible" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <Button
-                android:id="@+id/btn_mute_status"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:textSize="12sp"
-                android:text="Mute status " />
-
-            <ProgressBar
-                android:id="@+id/prg_mute"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:visibility="invisible" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <Button
-                android:id="@+id/btn_change"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:textSize="12sp"
-                android:text="Change ChatRoom" />
-
-            <Button
-                android:id="@+id/btn_refresh"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:textSize="12sp"
-                android:text="Refresh ChatRoom List" />
-
-            <ProgressBar
-                android:id="@+id/prg_refresh"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:visibility="invisible" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical">
-
-            <Button
-                android:id="@+id/btn_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:textSize="12sp"
-                android:text="Remove User From ChatRoom" />
-
-            <ProgressBar
-                android:id="@+id/prg_delete"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:visibility="invisible" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <com.livelike.engagementsdk.chat.ChatView
-        android:id="@+id/chat_view"
+    <FrameLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lay_top" />
-
-    <LinearLayout
-        android:id="@+id/lay_join_chat_room"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingRight="5dp"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lay_top">
-
-        <Button
-            android:id="@+id/btn_chat_room_members"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:textSize="12sp"
-            android:text="Show Room Members" />
-
-        <ProgressBar
-            android:id="@+id/prg_members"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:visibility="invisible" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/txt_chat_room_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/rounded_black_background"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lay_join_chat_room" />
-
-    <TextView
-        android:id="@+id/txt_chat_room_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/rounded_black_background"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_chat_room_id" />
-
-    <TextView
-        android:id="@+id/txt_chat_room_visibility"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/rounded_black_background"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_chat_room_title" />
+        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar" />
 
     <ProgressBar
-        android:id="@+id/prg_visibility"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginRight="10dp"
+        android:id="@+id/prg_chat"
         android:visibility="invisible"
-        app:layout_constraintRight_toLeftOf="@+id/txt_chat_room_visibility"
-        app:layout_constraintTop_toTopOf="@+id/txt_chat_room_visibility" />
-
-    <TextView
-        android:id="@+id/txt_chat_room_members_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/rounded_black_background"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_chat_room_visibility" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
