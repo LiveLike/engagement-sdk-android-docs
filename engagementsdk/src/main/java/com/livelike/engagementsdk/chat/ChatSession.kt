@@ -334,7 +334,8 @@ internal class ChatSession(
             imageUrl = imageUrl
         ).let {
             (chatClient as? ChatEventListener)?.onChatMessageSend(it, timeData)
-            val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
+            val hasExternalImage =
+                (it.message?.findImages()?.countMatches() ?: 0) > 0 || it.imageUrl != null
             currentChatRoom?.id?.let { id ->
                 analyticsServiceStream.latest()?.trackMessageSent(
                     it.id,
