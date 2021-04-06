@@ -290,7 +290,7 @@ internal class PubnubChatMessagingClient(
                     val event = message.message.asJsonObject.extractStringOrEmpty("event")
                         .toPubnubChatEventType()
                     when (event) {
-                        MESSAGE_CREATED -> {
+                        MESSAGE_CREATED, IMAGE_CREATED -> {
                             if (!list.contains(msgId)) {
                                 list.add(msgId)
                                 map[channel] = list

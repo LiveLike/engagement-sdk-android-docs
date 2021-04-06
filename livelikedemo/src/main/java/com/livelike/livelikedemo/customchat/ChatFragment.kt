@@ -189,24 +189,30 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 
     override fun onBindViewHolder(holder: CustomChatViewHolder, position: Int) {
         val chatMessage = chatList[position]
-        holder.itemView.txt_message.text = chatMessage.message
+
         holder.itemView.txt_name.text = chatMessage.nickname
         val dateTime = Date()
         chatMessage.timestamp?.let {
             dateTime.time = it.toLong()
         }
-        if (chatMessage.imageUrl != null) {
+        if (chatMessage.imageUrl != null && chatMessage.image_width != null && chatMessage.image_height != null
+        ) {
             holder.itemView.img_message.visibility = View.VISIBLE
-            Glide.with(holder.itemView.img_message.context).load(chatMessage.imageUrl)
-                .apply(
-                    RequestOptions().override(
-                        chatMessage.image_width!!,
-                        chatMessage.image_height!!
+            chatMessage.imageUrl?.let {
+                Glide.with(holder.itemView.img_message.context)
+                    .load(it)
+                    .apply(
+                        RequestOptions().override(
+                            chatMessage.image_width!!,
+                            chatMessage.image_height!!
+                        )
                     )
-                )
-                .into(holder.itemView.img_message)
+                    .into(holder.itemView.img_message)
+            }
+            holder.itemView.txt_message.text = ""
         } else {
             holder.itemView.img_message.visibility = View.GONE
+            holder.itemView.txt_message.text = chatMessage.message
         }
         holder.itemView.txt_msg_time.text = SimpleDateFormat(
             "MMM d, h:mm a",

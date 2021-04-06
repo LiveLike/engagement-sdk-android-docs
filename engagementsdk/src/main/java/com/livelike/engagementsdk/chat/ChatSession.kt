@@ -14,8 +14,6 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
-import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
-import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
@@ -322,20 +320,22 @@ internal class ChatSession(
         }
         val timeData = getPlayheadTime()
         ChatMessage(
-            PubnubChatEventType.MESSAGE_CREATED,
+            when (imageUrl != null) {
+                true -> PubnubChatEventType.IMAGE_CREATED
+                else -> PubnubChatEventType.MESSAGE_CREATED
+            },
             currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) ?: "",
             message,
             userRepository.currentUserStream.latest()?.id ?: "empty-id",
             userRepository.currentUserStream.latest()?.nickname ?: "John Doe",
             avatarUrl,
+            imageUrl = imageUrl,
             isFromMe = true,
             image_width = 100,
             image_height = 100,
-            imageUrl = imageUrl
         ).let {
             (chatClient as? ChatEventListener)?.onChatMessageSend(it, timeData)
-            val hasExternalImage =
-                (it.message?.findImages()?.countMatches() ?: 0) > 0 || it.imageUrl != null
+            val hasExternalImage = imageUrl != null
             currentChatRoom?.id?.let { id ->
                 analyticsServiceStream.latest()?.trackMessageSent(
                     it.id,
