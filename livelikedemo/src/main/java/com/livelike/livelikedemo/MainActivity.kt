@@ -105,10 +105,9 @@ class MainActivity : AppCompatActivity() {
     private var chatRoomIds: MutableSet<String> = mutableSetOf()
 
     override fun onDestroy() {
-        super.onDestroy()
         ExoPlayerActivity.privateGroupRoomId = null
-        LocalBroadcastManager.getInstance(this)
-            .unregisterReceiver(mConnReceiver)
+        unregisterReceiver(mConnReceiver)
+        super.onDestroy()
     }
 
     override fun onBackPressed() {
