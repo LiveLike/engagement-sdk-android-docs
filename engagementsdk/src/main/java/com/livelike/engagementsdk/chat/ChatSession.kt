@@ -14,8 +14,6 @@ import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
-import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
-import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.syncTo
@@ -337,7 +335,7 @@ internal class ChatSession(
             image_height = 100,
         ).let {
             (chatClient as? ChatEventListener)?.onChatMessageSend(it, timeData)
-            val hasExternalImage = (it.message?.findImages()?.countMatches() ?: 0) > 0
+            val hasExternalImage = imageUrl != null
             currentChatRoom?.id?.let { id ->
                 analyticsServiceStream.latest()?.trackMessageSent(
                     it.id,
