@@ -48,6 +48,7 @@ class ChatFragment : Fragment() {
         "https://media.giphy.com/media/4rW9yu8QaZJFC/giphy.gif"
     )
 
+    private val adapter = CustomChatAdapter()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,7 +59,7 @@ class ChatFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val adapter = CustomChatAdapter()
+
         rcyl_chat.adapter = adapter
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
@@ -122,60 +123,36 @@ class ChatFragment : Fragment() {
             }
             btn_send.setOnClickListener {
                 val msg = ed_msg.text.toString()
-                homeChat.session.chatSession.sendChatMessage(
-                    msg,
-                    liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
-                        override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                            ed_msg.text.clear()
-                            result?.let { message ->
-                                val index = adapter.chatList.indexOfFirst { message.id == it.id }
-                                if (index == -1) {
-                                    adapter.chatList.add(message)
-                                    adapter.notifyItemInserted(adapter.chatList.size - 1)
-                                    rcyl_chat.scrollToPosition(adapter.itemCount - 1)
-                                }
-                            }
-                        }
-                    })
+                if (msg.trim().isNotEmpty()) {
+                    sendMessage(msg, null)
+                }
             }
             btn_img_send.setOnClickListener {
-                homeChat.session.chatSession.sendChatMessage(
-                    null,
-                    imageUrl = images.random(),
-                    imageHeight = 100,
-                    imageWidth = 100,
-                    liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
-                        override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                            result?.let { message ->
-                                val index = adapter.chatList.indexOfFirst { message.id == it.id }
-                                if (index == -1) {
-                                    adapter.chatList.add(message)
-                                    adapter.notifyItemInserted(adapter.chatList.size - 1)
-                                    rcyl_chat.scrollToPosition(adapter.itemCount - 1)
-                                }
-                            }
-                        }
-                    })
+                sendMessage(null, images.random())
             }
             btn_gif_send.setOnClickListener {
-                homeChat.session.chatSession.sendChatMessage(
-                    null,
-                    imageUrl = gifs.random(),
-                    imageHeight = 100,
-                    imageWidth = 100,
-                    liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
-                        override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                            result?.let { message ->
-                                val index = adapter.chatList.indexOfFirst { message.id == it.id }
-                                if (index == -1) {
-                                    adapter.chatList.add(message)
-                                    adapter.notifyItemInserted(adapter.chatList.size - 1)
-                                    rcyl_chat.scrollToPosition(adapter.itemCount - 1)
-                                }
+                sendMessage(null, gifs.random())
+            }
+        }
+    }
+
+    private fun sendMessage(message: String?, imageUrl: String?) {
+        (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
+            homeChat.session.chatSession.sendChatMessage(
+                message, imageUrl = imageUrl,
+                liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
+                    override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
+                        ed_msg.text.clear()
+                        result?.let { message ->
+                            val index = adapter.chatList.indexOfFirst { message.id == it.id }
+                            if (index == -1) {
+                                adapter.chatList.add(message)
+                                adapter.notifyItemInserted(adapter.chatList.size - 1)
+                                rcyl_chat.scrollToPosition(adapter.itemCount - 1)
                             }
                         }
-                    })
-            }
+                    }
+                })
         }
     }
 
