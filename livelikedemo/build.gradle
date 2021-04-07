@@ -95,7 +95,7 @@ dependencies {
     implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
     implementation "com.airbnb.android:lottie:$lottieVersion"
     implementation 'com.github.anastr:speedviewlib:1.5.3'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
 
 def reportsDirectory = "$buildDir/reports/androidTests/connected"
