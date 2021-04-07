@@ -28,6 +28,7 @@ import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetIntercep
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
+import com.livelike.engagementsdk.core.utils.unregisterLogsHandler
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.domain.Reward
@@ -525,6 +526,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         session?.widgetInterceptor = null
         session?.setWidgetContainer(FrameLayout(applicationContext))
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        unregisterLogsHandler()
         super.onDestroy()
     }
 
