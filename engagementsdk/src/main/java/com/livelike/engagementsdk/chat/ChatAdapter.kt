@@ -91,7 +91,7 @@ internal class ChatRecyclerAdapter(
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
-    private var mRecyclerView: RecyclerView? = null
+    internal var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
     internal var chatPopUpView: ChatActionsPopupView? = null
