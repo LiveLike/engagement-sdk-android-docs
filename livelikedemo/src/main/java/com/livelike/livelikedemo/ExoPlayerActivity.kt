@@ -526,6 +526,9 @@ class ExoPlayerActivity : AppCompatActivity() {
         session?.widgetInterceptor = null
         session?.setWidgetContainer(FrameLayout(applicationContext))
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = null
+        widget_view.widgetLifeCycleEventsListener = null
+        timer.cancel()
         unregisterLogsHandler()
         super.onDestroy()
     }

@@ -24,9 +24,11 @@ import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
+import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
@@ -91,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         var customCheerMeter: Boolean = false
     )
 
+    private lateinit var userStream: Stream<LiveLikeUserApi>
     private var networkCallback: ConnectivityManager.NetworkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
@@ -129,7 +132,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             unregisterReceiver(mConnReceiver)
         }
-        (application as LiveLikeApplication).sdk.userStream.unsubscribe(this)
+         userStream.unsubscribe(this)
+        (application as LiveLikeApplication).removePublicSession()
+        (application as LiveLikeApplication).removePrivateSession()
         super.onDestroy()
     }
 
@@ -392,7 +397,8 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
-        (application as LiveLikeApplication).sdk.userStream.subscribe(this) {
+         userStream = (application as LiveLikeApplication).sdk.userStream
+        userStream.subscribe(this) {
             runOnUiThread {
                 txt_nickname_server.text = it?.nickname
             }
