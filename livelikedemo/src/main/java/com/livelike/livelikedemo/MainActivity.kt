@@ -76,7 +76,6 @@ import java.io.FileInputStream
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
-import kotlin.jvm.Throws
 import kotlin.reflect.KClass
 
 class MainActivity : AppCompatActivity() {
@@ -94,21 +93,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     private lateinit var userStream: Stream<LiveLikeUserApi>
-    private var networkCallback: ConnectivityManager.NetworkCallback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            super.onAvailable(network)
-//                    (application as LiveLikeApplication).initSDK()
-            channelManager.loadClientConfig()
-        }
-
-        override fun onLost(network: Network) {
-            super.onLost(network)
-        }
-
-        override fun onUnavailable() {
-            super.onUnavailable()
-        }
-    }
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     private lateinit var channelManager: ChannelManager
     private val mConnReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -128,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            cm.unregisterNetworkCallback(networkCallback)
+            cm.unregisterNetworkCallback(networkCallback!!)
         } else {
             unregisterReceiver(mConnReceiver)
         }
@@ -148,11 +133,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun registerNetWorkCallback() {
+    private fun registerNetWorkCallback() {
         channelManager = (application as LiveLikeApplication).channelManager
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            cm.registerDefaultNetworkCallback(networkCallback)
+          networkCallback =  object : ConnectivityManager.NetworkCallback() {
+              override fun onAvailable(network: Network) {
+                  super.onAvailable(network)
+//                    (application as LiveLikeApplication).initSDK()
+                  channelManager.loadClientConfig()
+              }
+
+              override fun onLost(network: Network) {
+                  super.onLost(network)
+              }
+
+              override fun onUnavailable() {
+                  super.onUnavailable()
+              }
+          }
+            cm.registerDefaultNetworkCallback(networkCallback!!)
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
