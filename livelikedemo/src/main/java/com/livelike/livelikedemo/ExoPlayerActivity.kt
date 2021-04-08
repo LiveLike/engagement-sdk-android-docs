@@ -530,6 +530,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         widget_view.widgetLifeCycleEventsListener = null
         timer.cancel()
         unregisterLogsHandler()
+        chat_view.clearSession()
         super.onDestroy()
     }
 
