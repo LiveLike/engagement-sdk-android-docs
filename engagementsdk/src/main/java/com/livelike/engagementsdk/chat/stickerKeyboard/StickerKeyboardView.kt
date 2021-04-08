@@ -4,10 +4,10 @@ import android.animation.LayoutTransition
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
-import android.support.constraint.ConstraintLayout
-import android.support.design.widget.TabLayout
-import android.support.v4.view.ViewPager
-import android.support.v7.widget.LinearLayoutManager
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.tabs.TabLayout
+import androidx.viewpager.widget.ViewPager
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager
 import kotlinx.android.synthetic.main.livelike_sticker_keyboard_pager.view.pager_tab
 
 class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
-    ConstraintLayout(context, attributes) {
+    ConstraintLayout(context!!, attributes) {
     private var viewModel: StickerKeyboardViewModel? = null
     private var chatViewThemeAttributes: ChatViewThemeAttributes? = null
 
@@ -87,7 +87,11 @@ class StickerKeyboardView(context: Context?, attributes: AttributeSet? = null) :
                 ) { s -> listener?.onClick(s) }
                 pager_tab.removeAllTabs()
                 pager.layoutManager =
-                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    LinearLayoutManager(
+                        context,
+                        LinearLayoutManager.HORIZONTAL,
+                        false
+                    )
                 pager.adapter = stickerCollectionPagerAdapter
                 val pageListener = object : TabLayout.TabLayoutOnPageChangeListener(pager_tab) {
                     override fun onPageScrollStateChanged(state: Int) {

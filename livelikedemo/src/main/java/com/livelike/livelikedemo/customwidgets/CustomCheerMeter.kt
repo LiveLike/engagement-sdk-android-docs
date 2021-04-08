@@ -3,7 +3,7 @@ package com.livelike.livelikedemo.customwidgets
 import android.content.Context
 import android.os.CountDownTimer
 import android.os.Handler
-import android.support.constraint.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.util.AttributeSet
 import android.util.Log
 import com.bumptech.glide.Glide

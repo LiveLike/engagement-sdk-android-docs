@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="@bool/livelike_widget_component_layout_transition_enabled">
 
 
     <View
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/answer_background_default"
-        app:layout_constraintBottom_toBottomOf="@+id/text_button"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,17 +22,19 @@
         android:id="@+id/determinateBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="8dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="start|center"
         android:indeterminate="false"
         android:textSize="@dimen/livelike_option_text_size"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/text_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-
+        app:layout_constraintTop_toTopOf="@+id/text_button"
         tools:progress="60"
+        app:layout_constraintVertical_bias="0.5"
         tools:progressDrawable="@drawable/progress_bar_correct"
         tools:visibility="visible" />
 
@@ -42,13 +44,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/livelike_option_font"
-        android:gravity="start|center"
+        android:gravity="center_vertical"
+        android:lineSpacingExtra="8sp"
         android:minHeight="45dp"
-        android:paddingStart="16dp"
-        android:paddingLeft="16dp"
-        android:paddingEnd="46dp"
-        android:paddingRight="46dp"
-        android:textAlignment="textStart"
+        android:paddingStart="@dimen/widget_option_item_padding_start"
+        android:paddingLeft="@dimen/widget_option_item_padding_start"
+        android:paddingEnd="@dimen/widget_option_item_padding_end"
+        android:paddingRight="@dimen/widget_option_item_padding_end"
         android:textAllCaps="false"
         android:textColor="@color/livelike_option_text_color"
         android:textSize="@dimen/livelike_option_text_size"
@@ -67,19 +69,17 @@
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:gravity="end"
-
         android:textColor="@color/livelike_percent_label_text_color"
         android:textSize="@dimen/livelike_percent_label_text_size"
         android:textStyle="bold"
         app:fontFamily="@font/livelike_option_font"
         app:layout_constraintBottom_toBottomOf="@+id/determinateBar"
         app:layout_constraintEnd_toEndOf="parent"
-
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/determinateBar"
         app:layout_constraintTop_toTopOf="@+id/determinateBar"
-        tools:text="80%"
+        tools:text="100%"
         tools:visibility="visible" />
 
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

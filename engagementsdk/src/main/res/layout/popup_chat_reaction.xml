@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/chat_reaction_background_card"
         android:layout_width="wrap_content"
         android:layout_height="42dp"
@@ -30,9 +30,9 @@
             android:gravity="center"
             android:orientation="horizontal"
             tools:targetApi="o" />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/moderation_flag_lay"
         android:layout_width="46dp"
         android:layout_height="42dp"
@@ -51,6 +51,6 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/report_message"
             android:src="@drawable/chat_ic_flag" />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

@@ -4,12 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat.startActivity
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat.startActivity
 import com.bumptech.glide.Glide
 import com.livelike.engagementsdk.DismissAction
 import com.livelike.engagementsdk.R
@@ -67,11 +67,21 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
             logDebug { "Current State: $widgetStates" }
             widgetStates?.let {
+                if(widgetStates == WidgetStates.INTERACTING && (!viewModel?.data?.latest()?.link_url.isNullOrEmpty())){
+                    // will only be fired if link is available in alert widget
+                    viewModel?.markAsInteractive()
+                }
                 if (viewModel?.enableDefaultWidgetTransition == true) {
                     defaultStateTransitionManager(widgetStates)
                 }
             }
         }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass)
+        viewModel?.widgetState?.unsubscribe(javaClass)
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {

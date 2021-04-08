@@ -6,11 +6,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.support.constraint.ConstraintLayout
-import android.support.v7.app.AlertDialog
-import android.support.v7.recyclerview.extensions.ListAdapter
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.util.TypedValue
 import android.view.Gravity
@@ -24,6 +19,11 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -94,7 +94,7 @@ internal class ChatRecyclerAdapter(
     private var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
-    private var chatPopUpView: ChatActionsPopupView? = null
+    internal var chatPopUpView: ChatActionsPopupView? = null
     var showChatAvatarLogo = true
 
     override fun onCreateViewHolder(root: ViewGroup, position: Int): ViewHolder {
@@ -124,11 +124,12 @@ internal class ChatRecyclerAdapter(
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         mRecyclerView = null
+
     }
 
     /** Commenting this code for now so QA finalize whether old issues are coming or not
     Flowing code helps in accessbility related issues
-    **/
+     **/
 //    override fun onViewDetachedFromWindow(holder: ViewHolder) {
 //        holder.hideFloatingUI()
 //        super.onViewDetachedFromWindow(holder)
@@ -633,7 +634,7 @@ internal class ChatRecyclerAdapter(
                         }
 
                         val spaceRemover = Pattern.compile("[\\s]")
-                        val inputNoString = spaceRemover.matcher(message.message)
+                        val inputNoString = spaceRemover.matcher(message.message ?: "")
                             .replaceAll(Matcher.quoteReplacement(""))
                         val isOnlyStickers =
                             inputNoString.findIsOnlyStickers()

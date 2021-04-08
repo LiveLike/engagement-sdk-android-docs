@@ -66,4 +66,11 @@
     <color name="image_slider_bg">#e6e6e6</color>
     <color name="widget_time_bar_color">#FFC500</color>
 
+<!--   custom widgets test cases-->
+    <color name="mml_time_bar_color">#fac83c</color>
+    <color name="mml_widget_title_color">#17171d</color>
+    <color name="poll_progress_bar_color">#0079c2</color>
+    <color name="progress_bar_color">#e6e6e6</color>
+    <color name="mml_image_option_stroke_color">#E6E6E6</color>
+
 </resources>

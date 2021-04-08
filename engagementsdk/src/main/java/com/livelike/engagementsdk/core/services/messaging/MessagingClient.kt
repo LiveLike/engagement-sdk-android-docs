@@ -21,7 +21,9 @@ internal interface MessagingClient {
  *  Represents a messaging client triggerListener which will receive MessagingClient messages
  */
 internal interface MessagingEventListener {
+    //TODO: future task to update code to have 1 onClientMessageEvent method only
     fun onClientMessageEvent(client: MessagingClient, event: ClientMessage)
+    fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>)
     fun onClientMessageError(client: MessagingClient, error: Error)
     fun onClientMessageStatus(client: MessagingClient, status: ConnectionStatus)
 }

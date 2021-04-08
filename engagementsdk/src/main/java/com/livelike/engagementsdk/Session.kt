@@ -79,7 +79,9 @@ interface LiveLikeContentSession {
  *
  */
 interface MessageListener {
-    fun onNewMessage(chatRoom: String, message: LiveLikeChatMessage)
+    fun onNewMessage(message: LiveLikeChatMessage)
+    fun onHistoryMessage(messages: List<LiveLikeChatMessage>)
+    fun onDeleteMessage(messageId: String)
 }
 
 /**

@@ -11,7 +11,7 @@
     android:orientation="horizontal"
     tools:showIn="@layout/chat_input">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="@bool/livelike_chat_component_layout_transition_enabled"
@@ -42,7 +42,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/coin" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.livelike.engagementsdk.widget.view.components.PointView
         android:id="@+id/pointView"

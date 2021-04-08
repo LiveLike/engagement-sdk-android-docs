@@ -31,10 +31,10 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 
 class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout(context, attr) {
 
-    private var engagementSDKTheme: LiveLikeEngagementTheme? = null
-    private var widgetContainerViewModel: WidgetContainerViewModel? =
+    internal var engagementSDKTheme: LiveLikeEngagementTheme? = null
+    internal var widgetContainerViewModel: WidgetContainerViewModel? =
         WidgetContainerViewModel(SubscriptionManager())
-    private val widgetViewThemeAttributes = WidgetViewThemeAttributes()
+    internal val widgetViewThemeAttributes = WidgetViewThemeAttributes()
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
         set(value) {
             field = value
@@ -46,7 +46,20 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             field = value
             widgetContainerViewModel?.enableDefaultWidgetTransition = value
         }
+    var showTimer = true
+        set(value) {
+            field = value
+            widgetContainerViewModel?.showTimer = value
+        }
 
+    /**
+     * this flag is used to configure visibility of cancel/dismiss button on default widgets
+     **/
+    var showDismissButton = true
+        set(value) {
+            field = value
+            widgetContainerViewModel?.showDismissButton = value
+        }
     init {
         context.obtainStyledAttributes(
             attr,
@@ -59,6 +72,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
                 recycle()
             }
         }
+        widgetContainerViewModel?.isLayoutTransitionEnabled = context.resources.getBoolean(R.bool.livelike_widget_component_layout_transition_enabled)
         widgetContainerViewModel?.setWidgetContainer(this, widgetViewThemeAttributes)
     }
 
@@ -150,10 +164,10 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
     fun displayWidget(sdk: EngagementSDK, widgetResourceJson: JsonObject) {
         try {
             var widgetType = widgetResourceJson.get("kind").asString
-            if (widgetType.contains("follow-up")) {
-                widgetType = "$widgetType-updated"
+            widgetType = if (widgetType.contains("follow-up")) {
+                "$widgetType-updated"
             } else {
-                widgetType = "$widgetType-created"
+                "$widgetType-created"
             }
             val widgetId = widgetResourceJson["id"].asString
             widgetContainerViewModel?.analyticsService = sdk.analyticService.latest()
@@ -182,6 +196,13 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
             logDebug { "Invalid json passed for displayWidget" }
             ex.printStackTrace()
         }
+    }
+
+
+    fun displayWidget(widgetType : String, widgetView: SpecifiedWidgetView ){
+        widgetContainerViewModel?.currentWidgetViewStream?.onNext(
+            Pair(widgetType, widgetView)
+        )
     }
 
     // clears the displayed widget (if any)

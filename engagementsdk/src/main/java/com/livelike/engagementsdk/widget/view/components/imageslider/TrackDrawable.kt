@@ -90,7 +90,7 @@ internal class TrackDrawable : GenericDrawableCallback() {
         this.trackColor.alpha = alpha
     }
 
-    override fun setColorFilter(colorFilter: ColorFilter) {
+    override fun setColorFilter(colorFilter: ColorFilter?) {
         this.progressGradient.colorFilter = colorFilter
         this.trackColor.colorFilter = colorFilter
     }

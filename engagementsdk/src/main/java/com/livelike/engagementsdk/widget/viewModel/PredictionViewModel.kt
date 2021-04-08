@@ -1,7 +1,7 @@
 package com.livelike.engagementsdk.widget.viewModel
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
@@ -257,6 +257,10 @@ internal class PredictionViewModel(
         interactionData.reset()
     }
 
+    override fun onClear() {
+        cleanUp()
+    }
+
     private fun claimPredictionRewards(){
         data.currentData?.let {
             it.resource.claim_url?.let { url ->
@@ -302,6 +306,10 @@ internal class PredictionViewModel(
     override fun finish() {
         onDismiss()
         cleanUp()
+    }
+
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
     }
 
     override fun lockInVote(optionID: String) {

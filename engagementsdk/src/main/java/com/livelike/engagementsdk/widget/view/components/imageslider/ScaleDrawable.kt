@@ -34,7 +34,7 @@ internal class ScaleDrawable(private val bitmap: Bitmap, scale: Float = 1f) : Dr
     @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
     override fun draw(canvas: Canvas) {
         rect.set(bounds)
-        canvas.drawBitmap(scaledBitmap, bounds.left.toFloat(), bounds.top.toFloat(), paint)
+        scaledBitmap?.let { canvas.drawBitmap(it, bounds.left.toFloat(), bounds.top.toFloat(), paint) }
     }
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT

@@ -61,16 +61,26 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
         set(value) {
             field = value
             viewModel = value as CheerMeterViewModel
-            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
         }
 
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
+        viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
         viewModel?.results?.subscribe(javaClass.simpleName) { resultObserver(it) }
         viewModel?.voteEnd?.subscribe(javaClass.simpleName) { endObserver(it) }
     }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass.simpleName)
+        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
+        viewModel?.results?.unsubscribe(javaClass.simpleName)
+        viewModel?.voteEnd?.unsubscribe(javaClass.simpleName)
+    }
+
+
 
     private fun stateObserver(widgetStates: WidgetStates?) {
         when (widgetStates) {
@@ -102,6 +112,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun unLockInteraction() {
         view_ripple?.isClickable = true
         view_ripple2?.isClickable = true
+        viewModel?.markAsInteractive()
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {
@@ -242,8 +253,10 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             }, {
                 viewModel?.dismissWidget(it)
             })
-            widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
             logDebug { "Showing CheerMeter Widget" }
+            if (widgetViewModel?.widgetState?.latest() == null)
+                widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
+
         }
 
         if (widget == null) {

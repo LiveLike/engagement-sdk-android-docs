@@ -5,14 +5,13 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.constraint.ConstraintLayout
-import android.support.v7.content.res.AppCompatResources
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.Target
 import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.R
 import com.livelike.engagementsdk.core.utils.AndroidResource
@@ -80,7 +79,39 @@ internal class WidgetItemView(context: Context, attr: AttributeSet? = null) :
             layoutTransition = LayoutTransition()
         }
         text_button?.text = option.description
-
+        text_button.post {
+            val layoutParam = determinateBar.layoutParams as LayoutParams
+            if (text_button.lineCount > 1) {
+                layoutParam.verticalBias = 0F
+                layoutParam.setMargins(
+                    layoutParam.leftMargin,
+                    AndroidResource.dpToPx(5),
+                    layoutParam.rightMargin,
+                    0
+                )
+                text_button.setPadding(
+                    text_button.paddingLeft,
+                    AndroidResource.dpToPx(6),
+                    text_button.paddingRight,
+                    text_button.paddingBottom
+                )
+            } else {
+                layoutParam.verticalBias = 0.5F
+                layoutParam.setMargins(
+                    layoutParam.leftMargin,
+                    0,
+                    layoutParam.rightMargin,
+                    0
+                )
+                text_button.setPadding(
+                    text_button.paddingLeft,
+                    0,
+                    text_button.paddingRight,
+                    text_button.paddingBottom
+                )
+            }
+            determinateBar.layoutParams = layoutParam
+        }
         clickListener?.apply {
             text_button?.setOnClickListener(clickListener)
         }

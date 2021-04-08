@@ -26,10 +26,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okio.ByteString
 import java.io.IOException
@@ -51,14 +52,18 @@ internal open class EngagementDataClientImpl : DataClient,
     @Suppress("unused")
     private fun Any?.unit() = Unit
 
-    override fun getProgramData(url: String, responseCallback: (program: Program?) -> Unit) {
+    override fun getProgramData(
+        url: String,
+        responseCallback: (program: Program?, error: String?) -> Unit
+    ) {
 
-        fun respondWith(value: Program?) = mainHandler.post { responseCallback(value) }.unit()
+        fun respondWith(value: Program?, error: String?) =
+            mainHandler.post { responseCallback(value, error) }.unit()
 
         fun respondOnException(op: () -> Unit) = try {
             op()
         } catch (e: Exception) {
-            logError { e }.also { respondWith(null) }
+            logError { e }.also { respondWith(null, e.message) }
         }
 
         respondOnException {
@@ -70,7 +75,7 @@ internal open class EngagementDataClientImpl : DataClient,
 
             call.enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) = respondOnException {
-                    when (response.code()) {
+                    when (response.code) {
                         in 400..499 -> error("Program Id is invalid $url")
 
                         in 500..599 -> if (requestCount++ < MAX_PROGRAM_DATA_REQUESTS) {
@@ -81,7 +86,7 @@ internal open class EngagementDataClientImpl : DataClient,
                         }
 
                         else -> {
-                            val programJsonString = response.body()?.string()
+                            val programJsonString = response.body?.string()
                             val parsedObject =
                                 gson.fromJson(programJsonString, ProgramModel::class.java)
                                     ?: error("Program data was null")
@@ -90,7 +95,7 @@ internal open class EngagementDataClientImpl : DataClient,
                                 // Program Url is the only required field
                                 error("Program Url not present in response.")
                             }
-                            respondWith(parsedObject.toProgram())
+                            respondWith(parsedObject.toProgram(),null)
                         }
                     }
                 }
@@ -131,9 +136,13 @@ internal open class EngagementDataClientImpl : DataClient,
                 )
                 .build()
         ).enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
+            override fun onFailure(call: Call, e: IOException) {
+                logError { e }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
                 try {
-                    val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                    val responseData = JsonParser.parseString(response.body?.string()).asJsonObject
                     val user = LiveLikeUser(
                         responseData.extractStringOrEmpty("id"),
                         responseData.extractStringOrEmpty("nickname"),
@@ -150,10 +159,6 @@ internal open class EngagementDataClientImpl : DataClient,
                     logError { e }
                 }
             }
-
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
         })
     }
 
@@ -169,9 +174,13 @@ internal open class EngagementDataClientImpl : DataClient,
                 .get()
                 .build()
         ).enqueue(object : Callback {
-            override fun onResponse(call: Call?, response: Response) {
+            override fun onFailure(call: Call, e: IOException) {
+                logError { e }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
                 try {
-                    val responseData = JsonParser().parse(response.body()?.string()).asJsonObject
+                    val responseData = JsonParser.parseString(response.body?.string()).asJsonObject
                     val user = LiveLikeUser(
                         responseData.extractStringOrEmpty("id"),
                         responseData.extractStringOrEmpty("nickname"),
@@ -188,10 +197,6 @@ internal open class EngagementDataClientImpl : DataClient,
                     logError { e }
                 }
             }
-
-            override fun onFailure(call: Call?, e: IOException?) {
-                logError { e }
-            }
         })
     }
 
@@ -199,9 +204,8 @@ internal open class EngagementDataClientImpl : DataClient,
         val result: Result<LiveLikeUser> = remoteCall<LiveLikeUser>(
             profileUrl,
             RequestType.PATCH,
-            RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"), userJson.toString()
-            ),
+            userJson.toString()
+                .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
             accessToken
         )
         if (result is Result.Error) {
@@ -230,7 +234,7 @@ internal open class EngagementDataClientImpl : DataClient,
                 val execute = call.execute()
 //               TODO add more network handling cases and remove !!, generic exception
                 if (execute.isSuccessful) {
-                    val responseString = execute.body()?.string()
+                    val responseString = execute.body?.string()
                     val data: T = gson.fromJson<T>(
                         responseString,
                         T::class.java
@@ -239,16 +243,16 @@ internal open class EngagementDataClientImpl : DataClient,
                         data
                     )
                 } else {
-                    val error = execute.body()?.string()
-                    val errorJson = JsonParser().parse(error).asJsonObject
-                    val msg = execute.message()
+                    val error = execute.body?.string()
+                    val errorJson = JsonParser.parseString(error).asJsonObject
+                    val msg = execute.message
                     val errorMsg = when (msg.isNotEmpty()) {
                         true -> msg
                         else -> errorJson.get("detail").asString
                     }
                     Result.Error(
                         IOException(
-                            "response code : ${execute.code()} - $errorMsg"
+                            "response code : ${execute.code} - $errorMsg"
                         )
                     )
                 }
@@ -273,19 +277,19 @@ internal open class EngagementDataClientImpl : DataClient,
                 .build()
             val call = client.newCall(request)
             call.enqueue(object : Callback {
-                override fun onResponse(call: Call?, response: Response) {
+                override fun onFailure(call: Call, e: IOException) {
+                    it.resume(JsonObject())
+                    logError { e }
+                }
+
+                override fun onResponse(call: Call, response: Response) {
                     try {
-                        val s = response.body()?.string()
-                        it.resume(JsonParser().parse(s).asJsonObject)
+                        val s = response.body?.string()
+                        it.resume(JsonParser.parseString(s).asJsonObject)
                     } catch (e: Exception) {
                         logError { e }
                         it.resume(JsonObject())
                     }
-                }
-
-                override fun onFailure(call: Call?, e: IOException?) {
-                    it.resume(JsonObject())
-                    logError { e }
                 }
             })
         }

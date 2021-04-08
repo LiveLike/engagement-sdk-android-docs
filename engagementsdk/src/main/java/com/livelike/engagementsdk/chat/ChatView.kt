@@ -4,10 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.support.constraint.ConstraintLayout
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.Spannable
 import android.text.TextWatcher
@@ -23,6 +19,10 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.DEFAULT_CHAT_MESSAGE_DATE_TIIME_FROMATTER
 import com.livelike.engagementsdk.EpochTime
@@ -451,12 +451,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
              * and in case normal keyboard is already visible then this changes to emoji button
              */
             button_emoji.setOnClickListener {
-                    if (sticker_keyboard.visibility == View.GONE) {
-                        showStickerKeyboard()
-                    } else {
-                        hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
-                        showKeyboard()
-                    }
+                if (sticker_keyboard.visibility == View.GONE) {
+                    showStickerKeyboard()
+                } else {
+                    hideStickerKeyboard(KeyboardHideReason.CHANGING_KEYBOARD_TYPE)
+                    showKeyboard()
+                }
             }
         }
     }
@@ -692,12 +692,12 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
      * used for hiding sticker keyboard / sticker view
      **/
     private fun hideStickerKeyboard(reason: KeyboardHideReason) {
-            chatAttribute.apply {
-                button_emoji.setImageDrawable(chatStickerSendDrawable)
-            }
+        chatAttribute.apply {
+            button_emoji.setImageDrawable(chatStickerSendDrawable)
+        }
 
-            findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
-                //            if (visibility == View.VISIBLE) {
+        findViewById<StickerKeyboardView>(R.id.sticker_keyboard)?.apply {
+            //            if (visibility == View.VISIBLE) {
 //                session?.analyticService?.trackKeyboardClose(KeyboardType.STICKER, reason)
 //            }
             visibility = View.GONE
@@ -893,7 +893,9 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
                 val lm = rv.layoutManager as LinearLayoutManager
                 val lastVisiblePosition = lm.itemCount - lm.findLastVisibleItemPosition()
                 if (lastVisiblePosition < SMOOTH_SCROLL_MESSAGE_COUNT_LIMIT) {
-                    rv.smoothScrollToPosition(it)
+                    chatdisplay.postDelayed({
+                        rv.smoothScrollToPosition(it)
+                    }, 200)
                 } else {
                     chatdisplay.postDelayed({
                         rv.scrollToPosition(it - 1)
@@ -910,6 +912,8 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        //added to dismiss popup reaction panel on fragment replace
+        viewModel?.chatAdapter?.chatPopUpView?.dismiss()
     }
 
     companion object {

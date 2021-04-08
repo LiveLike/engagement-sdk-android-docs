@@ -51,8 +51,15 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
     // Refresh the view when re-attached to the activity
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        viewModel?.widgetState?.subscribe(javaClass) { widgetStateObserver(it) }
         widgetObserver(viewModel?.data?.latest())
+        viewModel?.widgetState?.subscribe(javaClass.simpleName) { widgetStateObserver(it) }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass.simpleName)
+        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
+        viewModel?.results?.unsubscribe(javaClass.simpleName)
     }
 
     private fun widgetStateObserver(widgetStates: WidgetStates?) {
@@ -148,6 +155,8 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             val isFollowUp = it.resource.kind.contains("follow-up")
             if (!isFollowUp) {
                 viewModel?.adapter?.selectionLocked = false
+                //marked widget as interactive
+                viewModel?.markAsInteractive()
             }
         }
     }
@@ -262,21 +271,13 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
                 )
             }
 
-            if (widgetViewModel?.enableDefaultWidgetTransition == true) {
-                val animationLength = AndroidResource.parseDuration(resource.timeout).toFloat()
-                if (viewModel?.animationEggTimerProgress!! < 1f && !isFollowUp) {
-                    listOf(textEggTimer).forEach { v ->
-                        viewModel?.animationEggTimerProgress?.let { time ->
-                            v?.startAnimationFrom(time, animationLength, {
-                                viewModel?.animationEggTimerProgress = it
-                            }) {
-                            }
-                        }
-                    }
-                }
-            } else {
-                textEggTimer?.visibility = View.GONE
-            }
+
+            showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+                viewModel?.animationEggTimerProgress = it
+            }, {
+                viewModel?.dismissWidget(it)
+            })
+
             logDebug { "showing PredictionView Widget" }
             if (widgetViewModel?.widgetState?.latest() == null || widgetViewModel?.widgetState?.latest() == WidgetStates.READY)
                 widgetViewModel?.widgetState?.onNext(WidgetStates.READY)

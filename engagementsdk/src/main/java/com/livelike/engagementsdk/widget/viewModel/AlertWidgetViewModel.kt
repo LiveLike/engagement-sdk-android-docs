@@ -84,6 +84,11 @@ internal class AlertWidgetViewModel(
         cleanup()
     }
 
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
+    }
+
+
     override fun alertLinkClicked(url : String) {
         onClickLink(url)
         data.latest()?.program_id?.let {
@@ -115,6 +120,10 @@ internal class AlertWidgetViewModel(
         currentWidgetType = null
         currentWidgetId = ""
         interactionData.reset()
+    }
+
+    override fun onClear() {
+        cleanup()
     }
 
 }

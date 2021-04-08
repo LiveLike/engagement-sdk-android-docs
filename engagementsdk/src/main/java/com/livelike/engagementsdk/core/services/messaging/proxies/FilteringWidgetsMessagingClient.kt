@@ -29,6 +29,10 @@ internal class FilteringWidgetsMessagingClient(
         upstream.start()
     }
 
+    override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+
+    }
+
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         try {
             logDebug { "Message received at FilterWidgetMessagingClient" }

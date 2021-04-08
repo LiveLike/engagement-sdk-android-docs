@@ -67,13 +67,13 @@ internal class ContentSession(
     }
 
     override var chatSession: ChatSession = ChatSession(
-        clientId,
         sdkConfiguration,
         userRepository,
         applicationContext,
         true,
         analyticServiceStream,
-        errorDelegate, currentPlayheadTime
+        errorDelegate,
+        currentPlayheadTime
     )
 
     override var contentSessionleaderBoardDelegate: LeaderBoardDelegate? = null
@@ -185,7 +185,7 @@ internal class ContentSession(
     private val currentWidgetViewStream =
         SubscriptionManager<Pair<String, SpecifiedWidgetView?>?>()
     internal val widgetContainer = WidgetContainerViewModel(currentWidgetViewStream)
-    override val widgetStream = SubscriptionManager<LiveLikeWidget>()
+    override val widgetStream = SubscriptionManager<LiveLikeWidget>(false)
     private val programRepository =
         ProgramRepository(
             programId,
@@ -233,7 +233,7 @@ internal class ContentSession(
                                 TEMPLATE_PROGRAM_ID,
                                 programId
                             )
-                        ) { program ->
+                        ) { program, error ->
                             if (program !== null) {
                                 programRepository.program = program
                                 userRepository.rewardType = program.rewardsType
@@ -245,15 +245,15 @@ internal class ContentSession(
                                     configuration,
                                     pair.first.id
                                 )
-                                chatSession.enterChatRoom(program.defaultChatRoom?.id ?: "")
+                                chatSession.connectToChatRoom(program.defaultChatRoom?.id ?: "")
 
-                               /* commented, since programId and programTitle doesn't need
-                               * to be a part of super properties */
+                                /* commented, since programId and programTitle doesn't need
+                                * to be a part of super properties */
 
-                               /* program.analyticsProps.forEach { map ->
-                                    analyticServiceStream.latest()
-                                        ?.registerSuperAndPeopleProperty(map.key to map.value)
-                                }*/
+                                /* program.analyticsProps.forEach { map ->
+                                     analyticServiceStream.latest()
+                                         ?.registerSuperAndPeopleProperty(map.key to map.value)
+                                 }*/
                                 configuration.analyticsProps.forEach { map ->
                                     analyticServiceStream.latest()
                                         ?.registerSuperAndPeopleProperty(map.key to map.value)
@@ -268,6 +268,10 @@ internal class ContentSession(
                                         programRepository.rewardType
                                     )
                                 }
+                            } else if (error != null) {
+                                errorDelegate?.onError(error)
+                            } else {
+                                errorDelegate?.onError("Invalid Error")
                             }
                         }
                     }
@@ -325,6 +329,7 @@ internal class ContentSession(
         widgetView: FrameLayout,
         widgetViewThemeAttributes: WidgetViewThemeAttributes
     ) {
+        widgetContainer.isLayoutTransitionEnabled = applicationContext.resources.getBoolean(R.bool.livelike_widget_component_layout_transition_enabled)
         widgetContainer.setWidgetContainer(widgetView, widgetViewThemeAttributes)
     }
 

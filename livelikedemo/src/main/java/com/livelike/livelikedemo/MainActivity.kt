@@ -14,12 +14,12 @@ import android.net.Network
 import android.net.NetworkInfo
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
@@ -41,9 +41,10 @@ import kotlinx.android.synthetic.main.activity_main.chat_input_visibility_switch
 import kotlinx.android.synthetic.main.activity_main.chat_only_button
 import kotlinx.android.synthetic.main.activity_main.chatroomText
 import kotlinx.android.synthetic.main.activity_main.chatroomText1
-import kotlinx.android.synthetic.main.activity_main.chk_custom_cheer_meter
+import kotlinx.android.synthetic.main.activity_main.chk_custom_widgets_ui
 import kotlinx.android.synthetic.main.activity_main.chk_show_avatar
 import kotlinx.android.synthetic.main.activity_main.chk_show_dismiss
+import kotlinx.android.synthetic.main.activity_main.custom_chat
 import kotlinx.android.synthetic.main.activity_main.ed_avatar
 import kotlinx.android.synthetic.main.activity_main.events_button
 import kotlinx.android.synthetic.main.activity_main.events_label
@@ -95,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             val currentNetworkInfo =
                 intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
-            if (currentNetworkInfo.isConnected) {
+            if (currentNetworkInfo!!.isConnected) {
 //                (application as LiveLikeApplication).initSDK()
                 channelManager.loadClientConfig()
             }
@@ -125,13 +126,13 @@ class MainActivity : AppCompatActivity() {
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network?) {
+                override fun onAvailable(network: Network) {
                     super.onAvailable(network)
 //                    (application as LiveLikeApplication).initSDK()
                     channelManager.loadClientConfig()
                 }
 
-                override fun onLost(network: Network?) {
+                override fun onLost(network: Network) {
                     super.onLost(network)
                 }
 
@@ -188,9 +189,11 @@ class MainActivity : AppCompatActivity() {
             player.showAvatar = isChecked;
         }
 
-        chk_custom_cheer_meter.setOnCheckedChangeListener { buttonView, isChecked ->
+        chk_custom_widgets_ui.setOnCheckedChangeListener { buttonView, isChecked ->
             player.customCheerMeter = isChecked
             onlyWidget.customCheerMeter = isChecked
+
+            LiveLikeApplication.showCustomWidgetsUI = isChecked
         }
         sample_app.setOnClickListener {
             startActivity(Intent(this, SampleAppActivity::class.java))
@@ -239,10 +242,10 @@ class MainActivity : AppCompatActivity() {
                     ExoPlayerActivity.privateGroupRoomId = chatRoomIds.elementAt(which)
 
                     // Copy to clipboard
-                    val clipboard: ClipboardManager =
+                    var clipboard: ClipboardManager =
                         getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
-                    clipboard.primaryClip = clip
+                    var clip = ClipData.newPlainText("label", chatRoomIds.elementAt(which))
+                    clipboard.setPrimaryClip(clip)
                     Toast.makeText(
                         applicationContext,
                         "Room Id Copy To Clipboard",
@@ -439,6 +442,12 @@ class MainActivity : AppCompatActivity() {
                     ChatOnlyActivity::class.java
                 )
             )
+        }
+        custom_chat.setOnClickListener {
+            if (channelManager.getChannels().isNotEmpty())
+                startActivity(Intent(this, CustomChatActivity::class.java))
+            else
+                Toast.makeText(this, "Please wait for events loading", Toast.LENGTH_SHORT).show()
         }
 
         (application as LiveLikeApplication).removePublicSession()

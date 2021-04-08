@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp" />
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/chat_constraint_box"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -140,7 +140,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/border_bottom"

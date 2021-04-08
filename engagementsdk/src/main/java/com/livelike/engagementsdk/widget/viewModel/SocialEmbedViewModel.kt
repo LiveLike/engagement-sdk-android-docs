@@ -75,4 +75,8 @@ internal class SocialEmbedViewModel(
         interactionData.reset()
     }
 
+    override fun onClear() {
+        cleanup()
+    }
+
 }

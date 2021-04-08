@@ -16,12 +16,12 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/layout_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -201,7 +201,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/chk_show_dismiss" />
 
                 <CheckBox
-                    android:id="@+id/chk_custom_cheer_meter"
+                    android:id="@+id/chk_custom_widgets_ui"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="6dp"
@@ -209,16 +209,16 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/chk_show_avatar" />
-            </android.support.constraint.ConstraintLayout>
-        </android.support.v7.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/chat_room_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -290,16 +290,16 @@
                     app:layout_constraintStart_toEndOf="@+id/btn_create"
                     app:layout_constraintTop_toBottomOf="@+id/chatroomText" />
 
-            </android.support.constraint.ConstraintLayout>
-        </android.support.v7.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/chat_room_section1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -370,10 +370,10 @@
                     app:layout_constraintStart_toEndOf="@+id/btn_join"
                     app:layout_constraintTop_toBottomOf="@+id/chatroomText1" />
 
-            </android.support.constraint.ConstraintLayout>
-        </android.support.v7.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/standalone_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -493,16 +493,24 @@
                     android:text="ViewPage Sample"
                     app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
 
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
+                <Button
+                    android:id="@+id/custom_chat"
+                    style="@style/TestAppButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:text="Custom Chat"
+                    app:layout_constraintTop_toBottomOf="@id/standalone_divider" />
 
-        <android.support.v7.widget.CardView
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
             android:id="@+id/settings_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -673,17 +681,17 @@
                         android:layout_gravity="center"
                         android:checked="true" />
                 </LinearLayout>
-            </android.support.constraint.ConstraintLayout>
-        </android.support.v7.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/version_details_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="12dp">
@@ -712,7 +720,7 @@
                     app:layout_constraintTop_toBottomOf="@id/sdk_version"
                     tools:text="Bitrise build : NA" />
 
-            </android.support.constraint.ConstraintLayout>
-        </android.support.v7.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 </ScrollView>

@@ -38,7 +38,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
             field = value
             viewModel = value as PollViewModel
 //            viewModel?.data?.subscribe(javaClass.simpleName) { resourceObserver(it) }
-            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
+//            viewModel?.widgetState?.subscribe(javaClass.simpleName) { stateObserver(it) }
 //            viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
             viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
             viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
@@ -62,6 +62,15 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 //        viewModel?.results?.subscribe(javaClass.simpleName) { resultsObserver(it) }
         viewModel?.currentVoteId?.subscribe(javaClass.simpleName) { clickedOptionObserver(it) }
         viewModel?.points?.subscribe(javaClass.simpleName) { rewardsObserver(it) }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel?.data?.unsubscribe(javaClass.simpleName)
+        viewModel?.widgetState?.unsubscribe(javaClass.simpleName)
+        viewModel?.currentVoteId?.unsubscribe(javaClass.simpleName)
+        viewModel?.points?.unsubscribe(javaClass.simpleName)
+        viewModel?.results?.unsubscribe(javaClass.simpleName)
     }
 
     private fun stateObserver(widgetStates: WidgetStates?) {
@@ -97,6 +106,8 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
 
     private fun unLockInteraction() {
         viewModel?.adapter?.selectionLocked = false
+        //marked widget as interactive
+        viewModel?.markAsInteractive()
     }
 
     private fun defaultStateTransitionManager(widgetStates: WidgetStates?) {

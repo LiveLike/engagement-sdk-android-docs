@@ -30,6 +30,7 @@ import com.livelike.engagementsdk.widget.widgetModel.QuizWidgetModel
 
 class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, SpecifiedWidgetView?>?>) {
 
+
     private lateinit var currentWidgetId: String
     private lateinit var currentWidgetType: String
     var enableDefaultWidgetTransition: Boolean = true
@@ -43,6 +44,9 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
                 widgetContainer?.setOnTouchListener(null)
             }
         }
+    var showTimer: Boolean = true
+    internal var showDismissButton: Boolean = true
+
     var widgetLifeCycleEventsListener: WidgetLifeCycleEventsListener? = null
     private lateinit var widgetViewThemeAttributes: WidgetViewThemeAttributes
     private var dismissWidget: ((action: DismissAction) -> Unit)? = null
@@ -54,6 +58,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
     var swipeDismissTouchListener: View.OnTouchListener? = null
 
     var widgetViewViewFactory: LiveLikeWidgetViewFactory? = null
+    var isLayoutTransitionEnabled:Boolean? = null
+
 
     @SuppressLint("ClickableViewAccessibility")
     fun setWidgetContainer(
@@ -100,7 +106,10 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
             }
         }
         // Show / Hide animation
-        widgetContainer.layoutTransition = LayoutTransition()
+        // changes because of ES-1572
+        if(isLayoutTransitionEnabled!!) {
+            widgetContainer.layoutTransition = LayoutTransition()
+        }
     }
 
     private fun widgetObserver(widgetView: SpecifiedWidgetView?, widgetType: String?) {
@@ -161,6 +170,8 @@ class WidgetContainerViewModel(val currentWidgetViewStream: Stream<Pair<String, 
         } else if (widgetView != null) {
             widgetView.widgetViewModel?.enableDefaultWidgetTransition =
                 enableDefaultWidgetTransition
+            widgetView.widgetViewModel?.showTimer = showTimer
+            widgetView.widgetViewModel?.showDismissButton = showDismissButton
             displayWidget(widgetView)
         }
         if (widgetContainer != null) {

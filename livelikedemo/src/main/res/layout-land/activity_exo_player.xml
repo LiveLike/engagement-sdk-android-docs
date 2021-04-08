@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -49,17 +49,6 @@
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/startAd" />
-
-    <Button
-        android:id="@+id/chat_room_button"
-        android:layout_width="100dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="8dp"
-        android:text="Chat Room"
-        android:textSize="13sp"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectChannelButton" />
 
     <Button
         android:id="@+id/startAd"
@@ -134,4 +123,4 @@
         app:layout_constraintEnd_toStartOf="@+id/chatWidget" />
 
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

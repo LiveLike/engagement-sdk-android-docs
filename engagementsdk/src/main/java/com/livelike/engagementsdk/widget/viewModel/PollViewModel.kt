@@ -1,6 +1,6 @@
 package com.livelike.engagementsdk.widget.viewModel
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.AnalyticsWidgetSpecificInfo
@@ -238,6 +238,10 @@ internal class PollViewModel(
         viewModelJob.cancel("Widget Cleanup")
     }
 
+    override fun onClear() {
+        cleanUp()
+    }
+
     var firstClick = true
 
     fun onOptionClicked() {
@@ -272,5 +276,9 @@ internal class PollViewModel(
     override fun finish() {
         onDismiss()
         cleanUp()
+    }
+
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
     }
 }

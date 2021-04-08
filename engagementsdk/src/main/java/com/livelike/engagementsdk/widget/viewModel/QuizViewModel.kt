@@ -1,7 +1,7 @@
 package com.livelike.engagementsdk.widget.viewModel
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.AnalyticsWidgetInteractionInfo
 import com.livelike.engagementsdk.DismissAction
@@ -221,6 +221,10 @@ internal class QuizViewModel(
         interactionData.reset()
     }
 
+    override fun onClear() {
+        cleanUp()
+    }
+
     override val widgetData: LiveLikeWidget
         get() = gson.fromJson(widgetInfos.payload, LiveLikeWidget::class.java)
 
@@ -250,5 +254,9 @@ internal class QuizViewModel(
     override fun finish() {
         onDismiss()
         cleanUp()
+    }
+
+    override fun markAsInteractive() {
+        trackWidgetBecameInteractive(currentWidgetType, currentWidgetId, programId)
     }
 }

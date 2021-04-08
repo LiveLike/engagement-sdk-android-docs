@@ -20,10 +20,15 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
     ViewModel() {
 
     private  var subscribedWidgetChannelName: String?=null
+    internal var isMarkedInteractive:Boolean = false
     internal val widgetState: Stream<WidgetStates> =
         SubscriptionManager<WidgetStates>(emitOnSubscribe = true)
     internal var enableDefaultWidgetTransition = true
+    internal var showTimer = true
+    internal var showDismissButton: Boolean = true
     internal val dataClient: WidgetDataClient = WidgetDataClientImpl()
+
+    internal var timerStartTime: Long? = null
 
     internal fun voteApi(
         url: String,
@@ -83,6 +88,28 @@ abstract class BaseViewModel(private val analyticsService: AnalyticsService) :
             )
         }
     }
+    protected fun trackWidgetBecameInteractive(
+        widgetType: WidgetType?,
+        widgetId: String,
+        programId: String,
+        alertLink: String? = null
+    ) {
+        if(!isMarkedInteractive) {
+            isMarkedInteractive = true
+            widgetType?.let { type ->
+                analyticsService.trackWidgetBecameInteractive(
+                    type.toAnalyticsString(),
+                    widgetId,
+                    programId
+                )
+            }
+        }
+    }
+
+    /**
+     * all models should override this to cleanup their resources
+     **/
+   abstract fun onClear()
 }
 
 enum class WidgetStates {
