@@ -125,11 +125,11 @@
         <TextView
             android:id="@+id/txt_chat_reactions_count"
             android:layout_width="wrap_content"
-            android:layout_height="13dp"
+            android:layout_height="@dimen/livelike_reaction_count_height"
             android:layout_marginLeft="@dimen/livelike_reaction_count_margin_left"
             android:layout_marginTop="@dimen/livelike_reaction_count_margin_top"
             android:layout_marginRight="@dimen/livelike_reaction_count_margin_right"
-            android:layout_marginBottom="0dp"
+            android:layout_marginBottom="@dimen/livelike_reaction_count_margin_bottom"
             android:gravity="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@android:color/white"
