@@ -19,15 +19,16 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.github.angads25.filepicker.controller.DialogSelectionListener
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
 import com.livelike.engagementsdk.FontFamilyProvider
 import com.livelike.engagementsdk.LiveLikeEngagementTheme
+import com.livelike.engagementsdk.Stream
 import com.livelike.engagementsdk.chat.ChatRoomInfo
 import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
+import com.livelike.engagementsdk.publicapis.LiveLikeUserApi
 import com.livelike.livelikedemo.channel.ChannelManager
 import com.livelike.livelikedemo.utils.DialogUtils
 import com.livelike.livelikedemo.utils.ThemeRandomizer
@@ -91,6 +92,9 @@ class MainActivity : AppCompatActivity() {
         var customCheerMeter: Boolean = false
     )
 
+    private lateinit var userStream: Stream<LiveLikeUserApi>
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
+
     private lateinit var channelManager: ChannelManager
     private val mConnReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -105,10 +109,18 @@ class MainActivity : AppCompatActivity() {
     private var chatRoomIds: MutableSet<String> = mutableSetOf()
 
     override fun onDestroy() {
-        super.onDestroy()
         ExoPlayerActivity.privateGroupRoomId = null
-        LocalBroadcastManager.getInstance(this)
-            .unregisterReceiver(mConnReceiver)
+
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            cm.unregisterNetworkCallback(networkCallback!!)
+        } else {
+            unregisterReceiver(mConnReceiver)
+        }
+         userStream.unsubscribe(this)
+        (application as LiveLikeApplication).removePublicSession()
+        (application as LiveLikeApplication).removePrivateSession()
+        super.onDestroy()
     }
 
     override fun onBackPressed() {
@@ -121,25 +133,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun registerNetWorkCallback() {
+    private fun registerNetWorkCallback() {
         channelManager = (application as LiveLikeApplication).channelManager
         val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            cm.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
-                override fun onAvailable(network: Network) {
-                    super.onAvailable(network)
+          networkCallback =  object : ConnectivityManager.NetworkCallback() {
+              override fun onAvailable(network: Network) {
+                  super.onAvailable(network)
 //                    (application as LiveLikeApplication).initSDK()
-                    channelManager.loadClientConfig()
-                }
+                  channelManager.loadClientConfig()
+              }
 
-                override fun onLost(network: Network) {
-                    super.onLost(network)
-                }
+              override fun onLost(network: Network) {
+                  super.onLost(network)
+              }
 
-                override fun onUnavailable() {
-                    super.onUnavailable()
-                }
-            })
+              override fun onUnavailable() {
+                  super.onUnavailable()
+              }
+          }
+            cm.registerDefaultNetworkCallback(networkCallback!!)
         } else {
             registerReceiver(mConnReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         }
@@ -384,7 +397,8 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
         })
-        (application as LiveLikeApplication).sdk.userStream.subscribe(this) {
+         userStream = (application as LiveLikeApplication).sdk.userStream
+        userStream.subscribe(this) {
             runOnUiThread {
                 txt_nickname_server.text = it?.nickname
             }

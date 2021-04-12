@@ -156,6 +156,7 @@ internal class ChatSession(
         }
         contentSessionScope.cancel()
         isClosed = true
+        chatViewModel.chatAdapter.mRecyclerView = null
     }
 
     // TODO remove proxy message listener by having pipe in chat data layers/chain that tranforms pubnub channel to room

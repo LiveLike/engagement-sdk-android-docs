@@ -39,6 +39,8 @@ import com.livelike.engagementsdk.chat.stickerKeyboard.countMatches
 import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithImages
 import com.livelike.engagementsdk.chat.stickerKeyboard.replaceWithStickers
+import com.livelike.engagementsdk.chat.stickerKeyboard.targetByteArrays
+import com.livelike.engagementsdk.chat.stickerKeyboard.targetDrawables
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.AndroidResource.Companion.dpToPx
 import com.livelike.engagementsdk.core.utils.animators.buildScaleAnimator
@@ -547,14 +549,6 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         }
     }
 
-    override fun onViewRemoved(view: View?) {
-        viewModel?.apply {
-            eventStream.unsubscribe(javaClass.simpleName)
-            userStream.unsubscribe(javaClass.simpleName)
-        }
-        super.onViewRemoved(view)
-    }
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthDp = AndroidResource.pxToDp(width)
         if (widthDp < CHAT_MINIMUM_SIZE_DP && widthDp != 0) {
@@ -914,6 +908,24 @@ open class ChatView(context: Context, private val attrs: AttributeSet?) :
         super.onDetachedFromWindow()
         //added to dismiss popup reaction panel on fragment replace
         viewModel?.chatAdapter?.chatPopUpView?.dismiss()
+    }
+
+    /**
+     *This should generally be called to cleanup at time of onDestroy of activity and onDestroyView of fragment
+     **/
+    fun clearSession() {
+        viewModel?.apply {
+            eventStream.unsubscribe(javaClass.simpleName)
+            userStream.unsubscribe(javaClass.simpleName)
+            programRepository?.programGamificationProfileStream?.unsubscribe(javaClass.simpleName)
+            stickerPackRepositoryStream.unsubscribe(this@ChatView)
+            chatAdapter.checkListIsAtTop = null
+            chatAdapter.mRecyclerView = null
+            chatAdapter.messageTimeFormatter = null
+        }
+        chatdisplay.adapter = null
+        targetDrawables.clear()
+        targetByteArrays.clear()
     }
 
     companion object {
