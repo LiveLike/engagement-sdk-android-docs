@@ -71,6 +71,9 @@ android {
         release
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 dependencies {
