@@ -178,7 +178,7 @@ class QuizView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
                 this.adapter = viewModel?.adapter
                 setHasFixedSize(true)
             }
-            showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+            showTimer(resource.timeout, textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
                 viewModel?.dismissWidget(it)
