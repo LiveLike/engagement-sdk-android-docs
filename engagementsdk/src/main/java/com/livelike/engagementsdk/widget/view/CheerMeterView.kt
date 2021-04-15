@@ -249,7 +249,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 playAnimation()
             }
 
-            showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+            showTimer(resource.timeout,textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
                 viewModel?.dismissWidget(it)
