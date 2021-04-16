@@ -1,20 +1,13 @@
 package com.livelike.livelikedemo.customchat
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputConnection
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.core.view.inputmethod.EditorInfoCompat
-import androidx.core.view.inputmethod.InputConnectionCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -80,9 +73,9 @@ class ChatFragment : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                val matcher = ":${s.toString()}:".findImages()
+                val matcher = s.toString().findImages()
                 if (matcher.matches()) {
-                    sendMessage(null, s.toString())
+                    sendMessage(null, s.toString().substring(1, s.toString().length - 1))
                     ed_msg.text?.clear()
                 }
             }
@@ -250,45 +243,3 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 }
 
 class CustomChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-class MyEditText : AppCompatEditText {
-    constructor(context: Context) : super(context)
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    )
-
-    override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection {
-        val ic: InputConnection = super.onCreateInputConnection(editorInfo)
-        EditorInfoCompat.setContentMimeTypes(
-            editorInfo,
-            arrayOf("image/*", "image/gif", "image/png")
-        )
-        val callback =
-            InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
-                val lacksPermission = (flags and
-                        InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && lacksPermission) {
-                    try {
-                        inputContentInfo.requestPermission()
-                    } catch (e: Exception) {
-                        return@OnCommitContentListener false
-                    }
-                }
-                context.contentResolver.openAssetFileDescriptor(
-                    inputContentInfo.contentUri,
-                    "r"
-                )
-                    ?.use {
-                        if (it.length > 3_000_000) {
-                            return@OnCommitContentListener false
-                        }
-                    }
-                setText("${inputContentInfo.contentUri}")
-                true
-            }
-        return InputConnectionCompat.createWrapper(ic, editorInfo, callback)
-    }
-}
