@@ -272,7 +272,7 @@ class PredictionView(context: Context, attr: AttributeSet? = null) :
             }
 
 
-            showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+            showTimer(resource.timeout, textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
                 viewModel?.dismissWidget(it)

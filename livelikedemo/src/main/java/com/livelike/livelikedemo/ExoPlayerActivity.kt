@@ -7,13 +7,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.FrameLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.Constraints
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -21,19 +21,15 @@ import com.google.gson.reflect.TypeToken
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeUser
 import com.livelike.engagementsdk.LiveLikeWidget
-import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.WidgetListener
-import com.livelike.engagementsdk.chat.ChatRoomInfo
-import com.livelike.engagementsdk.chat.LiveLikeChatSession
 import com.livelike.engagementsdk.chat.data.remote.LiveLikePagination
 import com.livelike.engagementsdk.core.services.messaging.proxies.LiveLikeWidgetEntity
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetInterceptor
 import com.livelike.engagementsdk.core.services.messaging.proxies.WidgetLifeCycleEventsListener
 import com.livelike.engagementsdk.core.utils.isNetworkConnected
 import com.livelike.engagementsdk.core.utils.registerLogsHandler
-import com.livelike.engagementsdk.publicapis.ErrorDelegate
+import com.livelike.engagementsdk.core.utils.unregisterLogsHandler
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.domain.Reward
 import com.livelike.engagementsdk.widget.domain.RewardSource
@@ -67,7 +63,6 @@ import kotlinx.android.synthetic.main.widget_chat_stacked.chat_view
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_id
 import kotlinx.android.synthetic.main.widget_chat_stacked.txt_chat_room_title
 import kotlinx.android.synthetic.main.widget_chat_stacked.widget_view
-import java.util.Calendar
 import java.util.Date
 import java.util.Timer
 import java.util.TimerTask
@@ -529,7 +524,13 @@ class ExoPlayerActivity : AppCompatActivity() {
         timer.purge()
         player?.release()
         session?.widgetInterceptor = null
+        session?.setWidgetContainer(FrameLayout(applicationContext))
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        (applicationContext as LiveLikeApplication).sdk.userProfileDelegate = null
+        widget_view.widgetLifeCycleEventsListener = null
+        timer.cancel()
+        unregisterLogsHandler()
+        chat_view.clearSession()
         super.onDestroy()
     }
 

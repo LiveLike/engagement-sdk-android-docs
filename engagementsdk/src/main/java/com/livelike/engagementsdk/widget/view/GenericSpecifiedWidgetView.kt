@@ -76,7 +76,7 @@ internal abstract class GenericSpecifiedWidgetView<Entity : Resource, T : Widget
                     widgetViewModel?.widgetState?.onNext(WidgetStates.READY)
 
             }
-            showTimer(entity.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+            showTimer(entity.timeout,textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
                 viewModel?.dismissWidget(it)

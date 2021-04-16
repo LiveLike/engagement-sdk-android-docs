@@ -2,6 +2,7 @@ package com.livelike.engagementsdk.widget
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.livelike.engagementsdk.AnalyticsService
@@ -235,7 +236,6 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
 
     internal fun showTimer(
         time: String,
-        animationEggTimerProgress: Float?,
         v: EggTimerCloseButtonView?,
         onUpdate: (Float) -> Unit,
         dismissAction: (action: DismissAction) -> Unit
@@ -253,6 +253,7 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
             widgetViewModel?.timerStartTime = Calendar.getInstance().timeInMillis
         }
         val animationEggTimerProgress = (animationLength - remainingAnimationLength) / animationLength
+
         if ((animationEggTimerProgress ?: 0f) < 1f) {
             animationEggTimerProgress?.let {
                 v?.startAnimationFrom(

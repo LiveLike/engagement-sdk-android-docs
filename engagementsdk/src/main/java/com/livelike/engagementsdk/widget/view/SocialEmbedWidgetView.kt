@@ -92,7 +92,7 @@ internal class SocialEmbedWidgetView(context: Context) : SpecifiedWidgetView(con
                 web_view.settings.javaScriptEnabled = true
                 web_view.settings.domStorageEnabled = true
 
-                showTimer(liveLikeWidget.timeout ?: "", 0f, textEggTimer, {
+                showTimer(liveLikeWidget.timeout ?: "", textEggTimer, {
                 }, {
                     viewModel?.dismissWidget(it)
                 })

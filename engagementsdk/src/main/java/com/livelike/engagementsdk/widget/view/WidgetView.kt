@@ -96,11 +96,7 @@ class WidgetView(context: Context, private val attr: AttributeSet) : FrameLayout
         widgetContainerViewModel?.widgetLifeCycleEventsListener = widgetLifeCycleEventsListener
         widgetContainerViewModel?.widgetViewViewFactory = widgetViewFactory
         session.livelikeThemeStream.onNext(engagementSDKTheme)
-        session.widgetStream.subscribe(this) {
-            it?.let {
-                widgetListener?.onNewWidget(it)
-            }
-        }
+
     }
 
     /**

@@ -112,6 +112,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
     private fun unLockInteraction() {
         view_ripple?.isClickable = true
         view_ripple2?.isClickable = true
+        viewModel?.isWidgetInteractedEventLogged = false
         viewModel?.markAsInteractive()
     }
 
@@ -248,7 +249,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                 playAnimation()
             }
 
-            showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+            showTimer(resource.timeout,textEggTimer, {
                 viewModel?.animationEggTimerProgress = it
             }, {
                 viewModel?.dismissWidget(it)
@@ -384,7 +385,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             team2.vote_count =
                 resource.options?.find { option -> option.id == team2.id }?.vote_count
 
-            viewModel?.voteEnd()
+            //viewModel?.voteEnd()
             fl_result_team.visibility = View.VISIBLE
             logDebug { "CheerMeter voting stop,result: Team1:${team1.vote_count},Team2:${team2.vote_count}" }
             fl_result_team.postDelayed({

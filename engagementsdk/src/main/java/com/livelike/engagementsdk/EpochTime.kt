@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk
 
-import android.text.TextUtils
 import com.livelike.engagementsdk.core.utils.logError
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneOffset
@@ -93,7 +92,7 @@ internal fun String.parseISODateTime(): ZonedDateTime? {
     }
 
     var nanoSeconds = 0
-    if (!TextUtils.isEmpty(matcher.group(8))) {
+    if (matcher.group(8) != null && matcher.group(8).isNotEmpty()) {
         val bd = BigDecimal("0." + matcher.group(8))
         // we care only for milliseconds, so movePointRight(3)
         nanoSeconds = bd.movePointRight(9).toInt()
