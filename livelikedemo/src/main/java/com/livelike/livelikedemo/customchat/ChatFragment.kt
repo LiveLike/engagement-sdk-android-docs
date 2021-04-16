@@ -1,16 +1,26 @@
 package com.livelike.livelikedemo.customchat
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.view.inputmethod.EditorInfoCompat
+import androidx.core.view.inputmethod.InputConnectionCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.livelikedemo.CustomChatActivity
@@ -59,8 +69,24 @@ class ChatFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         rcyl_chat.adapter = adapter
+        ed_msg.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val matcher = ":${s.toString()}:".findImages()
+                if (matcher.matches()) {
+                    sendMessage(null, s.toString())
+                    ed_msg.text?.clear()
+                }
+            }
+        })
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
             homeChat.session.chatSession.setMessageListener(object : MessageListener {
@@ -139,10 +165,10 @@ class ChatFragment : Fragment() {
     private fun sendMessage(message: String?, imageUrl: String?) {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             homeChat.session.chatSession.sendChatMessage(
-                message, imageUrl = imageUrl,
+                message, imageUrl = imageUrl, imageWidth = 150, imageHeight = 150,
                 liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
                     override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                        ed_msg.text.clear()
+                        ed_msg.text?.clear()
                         result?.let { message ->
                             val index = adapter.chatList.indexOfFirst { message.id == it.id }
                             if (index == -1) {
@@ -224,3 +250,45 @@ class CustomChatAdapter : RecyclerView.Adapter<CustomChatViewHolder>() {
 }
 
 class CustomChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+class MyEditText : AppCompatEditText {
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    )
+
+    override fun onCreateInputConnection(editorInfo: EditorInfo): InputConnection {
+        val ic: InputConnection = super.onCreateInputConnection(editorInfo)
+        EditorInfoCompat.setContentMimeTypes(
+            editorInfo,
+            arrayOf("image/*", "image/gif", "image/png")
+        )
+        val callback =
+            InputConnectionCompat.OnCommitContentListener { inputContentInfo, flags, opts ->
+                val lacksPermission = (flags and
+                        InputConnectionCompat.INPUT_CONTENT_GRANT_READ_URI_PERMISSION) != 0
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1 && lacksPermission) {
+                    try {
+                        inputContentInfo.requestPermission()
+                    } catch (e: Exception) {
+                        return@OnCommitContentListener false
+                    }
+                }
+                context.contentResolver.openAssetFileDescriptor(
+                    inputContentInfo.contentUri,
+                    "r"
+                )
+                    ?.use {
+                        if (it.length > 3_000_000) {
+                            return@OnCommitContentListener false
+                        }
+                    }
+                setText("${inputContentInfo.contentUri}")
+                true
+            }
+        return InputConnectionCompat.createWrapper(ic, editorInfo, callback)
+    }
+}
