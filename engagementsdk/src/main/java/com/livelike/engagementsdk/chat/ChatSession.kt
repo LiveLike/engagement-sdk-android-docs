@@ -253,8 +253,8 @@ internal class ChatSession(
         currentChatRoom?.id?.let { chatRoomId ->
             logDebug { "messageCount $chatRoomId ,$startTimestamp" }
             fetchChatRoom(chatRoomId, object : LiveLikeCallback<ChatRoom>() {
-                override fun onResponse(chatRoom: ChatRoom?, error: String?) {
-                    chatRoom?.let {
+                override fun onResponse(result: ChatRoom?, error: String?) {
+                    result?.let { chatRoom ->
                         chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
                             if (pubnubClientForMessageCount == null) {
                                 pubnubClientForMessageCount =
