@@ -21,6 +21,7 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
+
 class SynchronizedMessagingClientTest {
 
     @Mock
@@ -35,6 +36,7 @@ class SynchronizedMessagingClientTest {
     private lateinit var listener: MessagingEventListener
 
     val dispatcher = TestCoroutineDispatcher()
+
 
     companion object {
         @JvmStatic
@@ -91,4 +93,23 @@ class SynchronizedMessagingClientTest {
         subject.processQueueForScheduledEvent()
         verify(listener).onClientMessageEvent(subject, clientMessage)
     }
+
+    @Test
+    fun `should publish past event even if event ahead of current video time is on top of sync queue`() {
+        val clientMessage = ClientMessage(
+            JsonObject(), "",
+            EpochTime(timeSource.invoke().timeSinceEpochInMs + 50000)
+        )
+        val pastClientMessage = ClientMessage(
+            JsonObject().apply { addProperty("id",1) }, "",
+            EpochTime(timeSource.invoke().timeSinceEpochInMs - 5000)
+        )
+        subject.listener = listener
+        subject.onClientMessageEvent(messaingClient, clientMessage)
+        subject.onClientMessageEvent(messaingClient, pastClientMessage)
+        subject.processQueueForScheduledEvent()
+        verify(listener).onClientMessageEvent(subject, pastClientMessage)
+    }
+
+
 }
