@@ -7,6 +7,11 @@ import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.core.utils.LogLevel
 import com.livelike.engagementsdk.core.utils.minimumLogLevel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
@@ -29,6 +34,8 @@ class SynchronizedMessagingClientTest {
     private lateinit var subject: SynchronizedMessagingClient
     private lateinit var listener: MessagingEventListener
 
+    val dispatcher = TestCoroutineDispatcher()
+
     companion object {
         @JvmStatic
         @BeforeClass
@@ -37,11 +44,19 @@ class SynchronizedMessagingClientTest {
         }
     }
 
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
+        Dispatchers.setMain(dispatcher)
         listener = mock(MessagingEventListener::class.java)
         subject = SynchronizedMessagingClient(messaingClient, timeSource, 86000L)
+    }
+
+    @After
+    fun tearDown() {
+//        dispatcher.cleanupTestCoroutines()
+        Dispatchers.resetMain()
     }
 
     @Test
