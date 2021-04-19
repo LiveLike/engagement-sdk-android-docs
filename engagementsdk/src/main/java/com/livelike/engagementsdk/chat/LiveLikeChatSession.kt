@@ -1,11 +1,9 @@
 package com.livelike.engagementsdk.chat
 
-import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import java.util.Calendar
 
 /**
  * Created by Shivansh Mittal on 2020-04-08.
@@ -30,7 +28,7 @@ interface LiveLikeChatSession {
     /**
      * To connect to the chatRoom with provided chatRoomId, by default it will load initial messages
      */
-    fun connectToChatRoom(chatRoomId: String)
+    fun connectToChatRoom(chatRoomId: String, callback: LiveLikeCallback<Unit>? = null)
 
     /** Returns the number of messages published on a chatroom since a given time*/
     fun getMessageCount(startTimestamp: Long, callback: LiveLikeCallback<Byte>)
