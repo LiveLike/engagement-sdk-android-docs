@@ -160,11 +160,6 @@ internal class ChatViewModel(
                     messageList.add(message.apply {
                         isFromMe = userStream.latest()?.id == senderId
                     })
-                    if (message.timetoken != 0L) {
-                        messageList.sortBy {
-                            it.timetoken
-                        }
-                    }
                 }
             }
         }

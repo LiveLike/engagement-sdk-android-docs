@@ -26,7 +26,7 @@ internal class SynchronizedMessagingClient(
 
     private val messageComparator : Comparator<ClientMessage> =
         Comparator<ClientMessage> { o1, o2 ->
-            (o2.timeStamp.timeSinceEpochInMs - o1.timeStamp.timeSinceEpochInMs).toInt()
+            (o1.timeStamp.timeSinceEpochInMs - o2.timeStamp.timeSinceEpochInMs).toInt()
         }
 
     init {
