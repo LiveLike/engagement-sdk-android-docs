@@ -70,6 +70,7 @@ internal class ChatSession(
     private val contentSessionScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     private var chatRepository: ChatRepository? = null
+    private var chatRoomId:String? =null
 
     private val chatSessionIdleStream: Stream<Boolean> =
         SubscriptionManager(true)
@@ -246,9 +247,9 @@ internal class ChatSession(
         startTimestamp: Long,
         callback: LiveLikeCallback<Byte>
     ) {
-        currentChatRoom?.id?.let { chatRoomId ->
-            logDebug { "messageCount $chatRoomId ,$startTimestamp" }
-            fetchChatRoom(chatRoomId) { chatRoom ->
+            chatRoomId?.let {
+                logDebug { "messageCount $chatRoomId ,$startTimestamp" }
+             fetchChatRoom(it) { chatRoom ->
                 chatRoom.channels.chat[CHAT_PROVIDER]?.let { channel ->
                     if (pubnubClientForMessageCount == null) {
                         pubnubClientForMessageCount =
@@ -262,6 +263,7 @@ internal class ChatSession(
         }
     }
 
+
     //TODO: will move to constructor later after discussion
     override fun connectToChatRoom(chatRoomId: String) {
         if (currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER) == chatRoomId) return // Already in the room
@@ -273,6 +275,7 @@ internal class ChatSession(
         }
         messages.clear()
         deletedMsgList.clear()
+        this.chatRoomId = chatRoomId
         fetchChatRoom(chatRoomId) { chatRoom ->
             val channel = chatRoom.channels.chat[CHAT_PROVIDER]
             channel?.let { ch ->
