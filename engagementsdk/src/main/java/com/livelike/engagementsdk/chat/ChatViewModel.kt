@@ -39,7 +39,8 @@ internal class ChatViewModel(
     val userStream: Stream<LiveLikeUser>,
     val isPublicRoom: Boolean,
     val animationEventsStream: SubscriptionManager<ViewAnimationEvents>? = null,
-    val programRepository: ProgramRepository? = null
+    val programRepository: ProgramRepository? = null,
+    private val dataClient: ChatDataClient
 ) : ChatRenderer, ViewModel() {
 
     var chatListener: ChatEventListener? = null
@@ -99,7 +100,7 @@ internal class ChatViewModel(
                 eventStream.onNext(EVENT_LOADING_STARTED)
             }
         }
-    private val dataClient: ChatDataClient = ChatDataClientImpl()
+
 
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {

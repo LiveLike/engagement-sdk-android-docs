@@ -1,6 +1,8 @@
 package com.livelike.engagementsdk.chat
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.net.Uri
 import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.CHAT_PROVIDER
 import com.livelike.engagementsdk.EngagementSDK
@@ -13,6 +15,8 @@ import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.messaging.pubnub.PubnubChatMessagingClient
+import com.livelike.engagementsdk.chat.services.network.ChatDataClient
+import com.livelike.engagementsdk.chat.services.network.ChatDataClientImpl
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.core.data.respository.UserRepository
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
@@ -33,6 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import java.net.URL
 import java.util.UUID
 
 /**
@@ -54,14 +59,15 @@ internal class ChatSession(
 
     private var pubnubClientForMessageCount: PubnubChatMessagingClient? = null
     private lateinit var pubnubMessagingClient: PubnubChatMessagingClient
-
+    private val dataClient: ChatDataClient = ChatDataClientImpl()
     private var isClosed = false
     val chatViewModel: ChatViewModel by lazy {
         ChatViewModel(
             applicationContext,
             userRepository.currentUserStream,
             isPublicRoom,
-            null
+            null,
+            dataClient = dataClient
         )
     }
     override var getCurrentChatRoom: () -> String = { currentChatRoom?.id ?: "" }
@@ -357,21 +363,57 @@ internal class ChatSession(
             avatarUrl,
             imageUrl = imageUrl,
             isFromMe = true,
-            image_width = 100,
-            image_height = 100,
-        ).let {
-            (chatClient as? ChatEventListener)?.onChatMessageSend(it, timeData)
+            image_width = imageWidth ?: 100,
+            image_height = imageHeight ?: 100,
+        ).let { chatMessage ->
+
+            //TODO: need to update for error handling here if pubnub respond failure of message
+            liveLikeCallback.onResponse(chatMessage.toLiveLikeChatMessage(), null)
+
             val hasExternalImage = imageUrl != null
+            if (hasExternalImage) {
+                contentSessionScope.launch {
+                    val uri = Uri.parse(chatMessage.imageUrl)
+                    when {
+                        uri.scheme != null && uri.scheme.equals("content") -> {
+                            applicationContext.contentResolver.openInputStream(uri)
+                        }
+                        else -> {
+                            URL(chatMessage.imageUrl).openConnection().getInputStream()
+                        }
+                    }?.use {
+                        val fileBytes = it.readBytes()
+                        val uploadedImageUrl = dataClient.uploadImage(
+                            currentChatRoom!!.uploadUrl,
+                            null,
+                            fileBytes
+                        )
+                        chatMessage.messageEvent = PubnubChatEventType.IMAGE_CREATED
+                        chatMessage.imageUrl = uploadedImageUrl
+                        val bitmap =
+                            BitmapFactory.decodeByteArray(fileBytes, 0, fileBytes.size)
+                        chatMessage.image_width = imageWidth ?: bitmap.width
+                        chatMessage.image_height = imageHeight ?: bitmap.height
+                        val m = chatMessage.copy()
+                        m.message = ""
+                        (chatClient as? ChatEventListener)?.onChatMessageSend(
+                            chatMessage,
+                            timeData
+                        )
+                        bitmap.recycle()
+                    }
+                }
+            } else {
+                (chatClient as? ChatEventListener)?.onChatMessageSend(chatMessage, timeData)
+            }
             currentChatRoom?.id?.let { id ->
                 analyticsServiceStream.latest()?.trackMessageSent(
-                    it.id,
-                    it.message,
+                    chatMessage.id,
+                    chatMessage.message,
                     hasExternalImage,
                     id
                 )
             }
-            //TODO: need to update for error handling here if pubnub respond failure of message
-            liveLikeCallback.onResponse(it.toLiveLikeChatMessage(), null)
         }
     }
 
