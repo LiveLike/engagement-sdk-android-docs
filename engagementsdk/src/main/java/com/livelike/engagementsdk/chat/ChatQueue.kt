@@ -7,7 +7,6 @@ import com.livelike.engagementsdk.core.services.messaging.Error
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.proxies.MessagingClientProxy
 import com.livelike.engagementsdk.core.utils.gson
-import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.engagementsdk.publicapis.toLiveLikeChatMessage
 
 internal class ChatQueue(upstream: MessagingClient) :
@@ -46,7 +45,7 @@ internal class ChatQueue(upstream: MessagingClient) :
             chatMessage.timeStamp = event.timeStamp.timeSinceEpochInMs.toString()
             return@map chatMessage
         }
-        messageList.forEach { renderer?.displayChatMessage(it) }
+        renderer?.displayChatMessages(messageList)
         msgListener?.onHistoryMessage(messageList.map { it.toLiveLikeChatMessage() })
     }
 
