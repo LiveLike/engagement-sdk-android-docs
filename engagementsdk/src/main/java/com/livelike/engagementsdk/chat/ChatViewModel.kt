@@ -52,7 +52,6 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter =
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     var messageList = mutableListOf<ChatMessage>()
-    var allMessageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
 
@@ -114,17 +113,7 @@ internal class ChatViewModel(
             } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
-        // Now the message is belongs to my currentChat Room
-        if (allMessageList.isEmpty())
-            allMessageList.add(message)
-        else
-            allMessageList.first()?.let {
-                if (message.timetoken != 0L && it.timetoken > message.timetoken) {
-                    allMessageList.add(0, message)
-                } else {
-                    allMessageList.add(message)
-                }
-            }
+
         if (getBlockedUsers()
                 .contains(message.senderId)
         ) {
@@ -187,7 +176,6 @@ internal class ChatViewModel(
 
     override fun errorSendingMessage(error: MessageError) {
         if (error.equals(MessageError.DENIED_MESSAGE_PUBLISH)) {
-            allMessageList.remove(allMessageList.findLast { it.isFromMe })
             messageList.remove(messageList.findLast { it.isFromMe })
             chatAdapter.submitList(messageList)
             eventStream.onNext(EVENT_MESSAGE_CANNOT_SEND)
@@ -300,7 +288,7 @@ internal class ChatViewModel(
     fun loadPreviousMessages() {
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
             if (chatRepository != null) {
-                logDebug { "Chat loading previous messages size:${messageList.size},all Message size:${allMessageList.size},deleted Message:${deletedMessages.size}," }
+                logDebug { "Chat loading previous messages size:${messageList.size},all Message size:${messageList.size},deleted Message:${deletedMessages.size}," }
                 chatRepository?.loadPreviousMessages(channel)
             } else {
                 eventStream.onNext(EVENT_LOADING_COMPLETE)
