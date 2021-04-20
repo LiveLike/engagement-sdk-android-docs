@@ -22,7 +22,6 @@ import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.network.ChatDataClient
-import com.livelike.engagementsdk.chat.services.network.ChatDataClientImpl
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
@@ -199,7 +198,7 @@ internal class ChatViewModel(
         messagePubnubToken: Long,
         chatMessageReaction: ChatMessageReaction
     ) {
-
+        logDebug { "add Message Reaction OwnReaction:$isOwnReaction" }
         messageList.forEachIndexed { index, chatMessage ->
             if (chatMessage != null) { // added null check in reference to ES-1533 (though crash not reproducible at all)
                 chatMessage.apply {
@@ -208,6 +207,8 @@ internal class ChatViewModel(
                             if (chatMessage.myChatMessageReaction?.emojiId == chatMessageReaction.emojiId) {
                                 chatMessage.myChatMessageReaction?.pubnubActionToken =
                                     chatMessageReaction.pubnubActionToken
+                                // added notifyItemChange for reaction own ,reference to ES-1734
+                                uiScope.launch { chatAdapter.notifyItemChanged(index) }
                             }
                         } else {
                             val emojiId = chatMessageReaction.emojiId
