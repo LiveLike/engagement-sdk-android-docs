@@ -21,7 +21,7 @@ internal class SynchronizedMessagingClient(
     MessagingClientProxy(upstream) {
 
     private val queueMap: MutableMap<String, PriorityQueue<ClientMessage>> = mutableMapOf()
-    private var coroutineTimer: Job
+    private var publishSyncMessagesJob: Job
     private var isQueueProcess: Boolean = false
 
     private val messageComparator : Comparator<ClientMessage> =
@@ -30,7 +30,7 @@ internal class SynchronizedMessagingClient(
         }
 
     init {
-        coroutineTimer = MainScope().launch {
+        publishSyncMessagesJob = MainScope().launch {
             publishTimeSynchronizedMessageFromQueue()
         }
     }
@@ -74,7 +74,7 @@ internal class SynchronizedMessagingClient(
     }
 
     override fun unsubscribeAll() {
-        coroutineTimer.cancel()
+        publishSyncMessagesJob.cancel()
         super.unsubscribeAll()
     }
 
@@ -179,6 +179,12 @@ internal class SynchronizedMessagingClient(
                     event.timeStamp.timeSinceEpochInMs +
                     " : timeSourceTime" + timeSource().timeSinceEpochInMs
         }
+
+    override fun destroy() {
+        super.destroy()
+        publishSyncMessagesJob.cancel()
+
+    }
 }
 
 // Extension for MessagingClient to be synced

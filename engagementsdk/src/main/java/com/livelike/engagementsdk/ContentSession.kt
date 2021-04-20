@@ -399,6 +399,7 @@ internal class ContentSession(
         widgetClient?.run {
             destroy()
         }
+        chatSession.close()
         currentWidgetViewStream.clear()
         analyticServiceStream.latest()?.trackLastChatStatus(false)
         analyticServiceStream.latest()?.trackLastWidgetStatus(false)
