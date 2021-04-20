@@ -88,8 +88,7 @@ dependencies {
     implementation "com.airbnb.android:lottie:$lottieVersion"
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
-    // Tests frameworks
-    testImplementation "junit:junit:$junitVersion"
+
 
     // Glide
     //noinspection GradleDependency
@@ -97,8 +96,6 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.18'
 
-    // Mock library
-    testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
     // Time lib
     implementation "com.jakewharton.threetenabp:threetenabp:$threetenabpVersion"
@@ -107,6 +104,13 @@ dependencies {
     implementation "com.mixpanel.android:mixpanel-android:$mixpanelVersion"
 
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+
+
+    // unit tests components
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+
 }
 
 repositories {

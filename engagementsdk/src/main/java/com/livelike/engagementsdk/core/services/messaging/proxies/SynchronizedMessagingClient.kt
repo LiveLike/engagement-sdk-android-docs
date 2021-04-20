@@ -3,13 +3,13 @@ package com.livelike.engagementsdk.core.services.messaging.proxies
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.utils.Queue
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logVerbose
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.PriorityQueue
 
 const val SYNC_TIME_FIDELITY = 500L
 
@@ -20,9 +20,14 @@ internal class SynchronizedMessagingClient(
 ) :
     MessagingClientProxy(upstream) {
 
-    private val queueMap: MutableMap<String, Queue<ClientMessage>> = mutableMapOf()
+    private val queueMap: MutableMap<String, PriorityQueue<ClientMessage>> = mutableMapOf()
     private var coroutineTimer: Job
     private var isQueueProcess: Boolean = false
+
+    private val messageComparator : Comparator<ClientMessage> =
+        Comparator<ClientMessage> { o1, o2 ->
+            (o1.timeStamp.timeSinceEpochInMs - o2.timeStamp.timeSinceEpochInMs).toInt()
+        }
 
     init {
         coroutineTimer = MainScope().launch {
@@ -73,11 +78,16 @@ internal class SynchronizedMessagingClient(
         super.unsubscribeAll()
     }
 
+    private val DEFAULT_QUEUE_CAPACITY = 20
+
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         logDebug { "Message received at SynchronizedMessagingClient" }
         when {
             shouldPublishEvent(event) -> {
-                val queue = queueMap[event.channel] ?: Queue()
+                val queue = queueMap[event.channel] ?: PriorityQueue(
+                    DEFAULT_QUEUE_CAPACITY,
+                    messageComparator
+                )
                 if (queue.isEmpty().not()) {
                     processQueueForScheduledEvent()
                 }
@@ -100,24 +110,22 @@ internal class SynchronizedMessagingClient(
         // Adding the check for similar message ,it is occuring if user get message
         // from history and also receive message from pubnub listener
         // checking right now is based on id
-        val queue = queueMap[event.channel] ?: Queue()
+        val queue = queueMap[event.channel] ?: PriorityQueue(
+            DEFAULT_QUEUE_CAPACITY,
+            messageComparator
+        )
         val currentChatMessageId = event.message.get("id")?.asString
 
-        val foundMsg = queue.elements.find {
+        val foundMsg = queue.find {
             val msgId = it.message.get("id")?.asString
             return@find msgId != null && currentChatMessageId != null && msgId == currentChatMessageId
         }
         if (foundMsg == null) {
-            queue.enqueue(event)
-        }
-        queue.elements.sortBy {
-            if (it.message.has("pubnubMessageToken")) {
-                return@sortBy it.message.get("pubnubMessageToken")?.asLong ?: 0L
-            }
-            return@sortBy 0L
+            queue.add(event)
         }
         queueMap[event.channel] = queue
     }
+
 
     fun processQueueForScheduledEvent() {
         if (isQueueProcess.not() && queueMap.isNotEmpty()) {
@@ -132,10 +140,10 @@ internal class SynchronizedMessagingClient(
                         val event = queue.peek()
                         event?.let {
                             when {
-                                shouldPublishEvent(event) -> publishedEvents.add(queue.dequeue()!!)
+                                shouldPublishEvent(event) -> publishedEvents.add(queue.remove()!!)
                                 shouldDismissEvent(event) -> {
                                     logDismissedEvent(event)
-                                    queue.dequeue()
+                                    queue.remove()
                                 }
                                 else -> {
                                 }
