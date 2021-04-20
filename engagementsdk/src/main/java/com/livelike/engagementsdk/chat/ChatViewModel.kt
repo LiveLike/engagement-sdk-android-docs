@@ -22,7 +22,6 @@ import com.livelike.engagementsdk.chat.data.remote.ChatRoom
 import com.livelike.engagementsdk.chat.data.remote.PubnubChatEventType
 import com.livelike.engagementsdk.chat.data.repository.ChatRepository
 import com.livelike.engagementsdk.chat.services.network.ChatDataClient
-import com.livelike.engagementsdk.chat.services.network.ChatDataClientImpl
 import com.livelike.engagementsdk.chat.stickerKeyboard.StickerPackRepository
 import com.livelike.engagementsdk.core.data.respository.ProgramRepository
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
@@ -100,6 +99,20 @@ internal class ChatViewModel(
             }
         }
 
+    override fun displayChatMessages(messages: List<ChatMessage>) {
+
+        messages.forEach {
+            replaceImageMessageContentWithImageUrl(it)
+        }
+
+        messageList.addAll(0, messages.filter {
+            !deletedMessages.contains(it.id) && getBlockedUsers()
+                .contains(it.senderId)
+        })
+
+        notifyNewChatMessages()
+    }
+
 
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
@@ -124,15 +137,14 @@ internal class ChatViewModel(
             logDebug { "the message is deleted by producer" }
             return
         }
-        val imageUrl = message.imageUrl
 
-        if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
-            message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
-        }
+        replaceImageMessageContentWithImageUrl(message)
+
         if (messageList.size == 0) {
             messageList.add(message.apply {
                 isFromMe = userStream.latest()?.id == senderId
             })
+
         } else {
             messageList.first()?.let { chatMessage ->
                 if (message.timetoken != 0L && chatMessage.timetoken > message.timetoken) {
@@ -153,11 +165,24 @@ internal class ChatViewModel(
                 }
             }
         }
+        notifyNewChatMessages()
+    }
+
+    private fun notifyNewChatMessages() {
         if (chatLoaded) {
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList))
                 eventStream.onNext(EVENT_NEW_MESSAGE)
             }
+        }
+    }
+
+    private fun replaceImageMessageContentWithImageUrl(
+        message: ChatMessage
+    ) {
+        val  imageUrl = message.imageUrl
+        if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
+            message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
         }
     }
 
