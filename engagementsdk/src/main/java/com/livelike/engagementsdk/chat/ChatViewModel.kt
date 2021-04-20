@@ -108,6 +108,9 @@ internal class ChatViewModel(
         messageList.addAll(0, messages.filter {
             !deletedMessages.contains(it.id) && getBlockedUsers()
                 .contains(it.senderId)
+        }.map {
+            it.isFromMe = userStream.latest()?.id == it.senderId
+            it
         })
 
         notifyNewChatMessages()
@@ -139,32 +142,10 @@ internal class ChatViewModel(
         }
 
         replaceImageMessageContentWithImageUrl(message)
+        messageList.add(message.apply {
+            isFromMe = userStream.latest()?.id == senderId
+        })
 
-        if (messageList.size == 0) {
-            messageList.add(message.apply {
-                isFromMe = userStream.latest()?.id == senderId
-            })
-
-        } else {
-            messageList.first()?.let { chatMessage ->
-                if (message.timetoken != 0L && chatMessage.timetoken > message.timetoken) {
-                    messageList.add(0, message.apply {
-                        isFromMe = userStream.latest()?.id == senderId
-                    })
-                }
-//                else if (message.timetoken != 0L && messageList?.last()?.timetoken > message.timetoken) {
-//                    messageList.add(message)
-//                    messageList.sortBy {
-//                        it.timetoken
-//                    }
-//                }
-                else {
-                    messageList.add(message.apply {
-                        isFromMe = userStream.latest()?.id == senderId
-                    })
-                }
-            }
-        }
         notifyNewChatMessages()
     }
 
