@@ -48,6 +48,7 @@ internal class SynchronizedMessagingClient(
     }
 
     override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+
         val list = events.filter { event ->
             when {
                 shouldPublishEvent(event) -> {
@@ -63,8 +64,8 @@ internal class SynchronizedMessagingClient(
                 }
             }
         }
+        listener?.onClientMessageEvents(this, list.sortedWith(messageComparator))
         processQueueForScheduledEvent()
-        listener?.onClientMessageEvents(this, list)
     }
 
     private suspend fun publishTimeSynchronizedMessageFromQueue() {
