@@ -106,7 +106,7 @@ internal class ChatViewModel(
         }
 
         messageList.addAll(0, messages.filter {
-            !deletedMessages.contains(it.id) && getBlockedUsers()
+            !deletedMessages.contains(it.id) && !getBlockedUsers()
                 .contains(it.senderId)
         }.map {
             it.isFromMe = userStream.latest()?.id == it.senderId
