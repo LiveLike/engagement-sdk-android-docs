@@ -51,7 +51,6 @@ internal class ChatViewModel(
     var chatAdapter: ChatRecyclerAdapter =
         ChatRecyclerAdapter(analyticsService, ::reportChatMessage)
     var messageList = mutableListOf<ChatMessage>()
-    var allMessageList = mutableListOf<ChatMessage>()
     var cacheList = mutableListOf<ChatMessage>()
     var deletedMessages = hashSetOf<String>()
 
@@ -100,6 +99,23 @@ internal class ChatViewModel(
             }
         }
 
+    override fun displayChatMessages(messages: List<ChatMessage>) {
+
+        messages.forEach {
+            replaceImageMessageContentWithImageUrl(it)
+        }
+
+        messageList.addAll(0, messages.filter {
+            !deletedMessages.contains(it.id) && !getBlockedUsers()
+                .contains(it.senderId)
+        }.map {
+            it.isFromMe = userStream.latest()?.id == it.senderId
+            it
+        })
+
+        notifyNewChatMessages()
+    }
+
 
     override fun displayChatMessage(message: ChatMessage) {
         logDebug {
@@ -113,17 +129,7 @@ internal class ChatViewModel(
             } check deleted:${deletedMessages.contains(message.id)}"
         }
         if (message.channel != currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)) return
-        // Now the message is belongs to my currentChat Room
-        if (allMessageList.isEmpty())
-            allMessageList.add(message)
-        else
-            allMessageList.first()?.let {
-                if (message.timetoken != 0L && it.timetoken > message.timetoken) {
-                    allMessageList.add(0, message)
-                } else {
-                    allMessageList.add(message)
-                }
-            }
+
         if (getBlockedUsers()
                 .contains(message.senderId)
         ) {
@@ -134,40 +140,30 @@ internal class ChatViewModel(
             logDebug { "the message is deleted by producer" }
             return
         }
-        val imageUrl = message.imageUrl
 
-        if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
-            message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
-        }
-        if (messageList.size == 0) {
-            messageList.add(message.apply {
-                isFromMe = userStream.latest()?.id == senderId
-            })
-        } else {
-            messageList.first()?.let { chatMessage ->
-                if (message.timetoken != 0L && chatMessage.timetoken > message.timetoken) {
-                    messageList.add(0, message.apply {
-                        isFromMe = userStream.latest()?.id == senderId
-                    })
-                }
-//                else if (message.timetoken != 0L && messageList?.last()?.timetoken > message.timetoken) {
-//                    messageList.add(message)
-//                    messageList.sortBy {
-//                        it.timetoken
-//                    }
-//                }
-                else {
-                    messageList.add(message.apply {
-                        isFromMe = userStream.latest()?.id == senderId
-                    })
-                }
-            }
-        }
+        replaceImageMessageContentWithImageUrl(message)
+        messageList.add(message.apply {
+            isFromMe = userStream.latest()?.id == senderId
+        })
+
+        notifyNewChatMessages()
+    }
+
+    private fun notifyNewChatMessages() {
         if (chatLoaded) {
             uiScope.launch {
                 chatAdapter.submitList(ArrayList(messageList))
                 eventStream.onNext(EVENT_NEW_MESSAGE)
             }
+        }
+    }
+
+    private fun replaceImageMessageContentWithImageUrl(
+        message: ChatMessage
+    ) {
+        val  imageUrl = message.imageUrl
+        if (message.messageEvent == PubnubChatEventType.IMAGE_CREATED && !imageUrl.isNullOrEmpty()) {
+            message.message = CHAT_MESSAGE_IMAGE_TEMPLATE.replace("message", imageUrl)
         }
     }
 
@@ -186,7 +182,6 @@ internal class ChatViewModel(
 
     override fun errorSendingMessage(error: MessageError) {
         if (error.equals(MessageError.DENIED_MESSAGE_PUBLISH)) {
-            allMessageList.remove(allMessageList.findLast { it.isFromMe })
             messageList.remove(messageList.findLast { it.isFromMe })
             chatAdapter.submitList(messageList)
             eventStream.onNext(EVENT_MESSAGE_CANNOT_SEND)
@@ -301,7 +296,7 @@ internal class ChatViewModel(
     fun loadPreviousMessages() {
         currentChatRoom?.channels?.chat?.get(CHAT_PROVIDER)?.let { channel ->
             if (chatRepository != null) {
-                logDebug { "Chat loading previous messages size:${messageList.size},all Message size:${allMessageList.size},deleted Message:${deletedMessages.size}," }
+                logDebug { "Chat loading previous messages size:${messageList.size},all Message size:${messageList.size},deleted Message:${deletedMessages.size}," }
                 chatRepository?.loadPreviousMessages(channel)
             } else {
                 eventStream.onNext(EVENT_LOADING_COMPLETE)
