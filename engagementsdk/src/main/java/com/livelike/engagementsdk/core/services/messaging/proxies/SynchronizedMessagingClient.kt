@@ -146,7 +146,7 @@ internal class SynchronizedMessagingClient(
                 val queue = queueMap[it]
                 queue?.let {
                     while (queue.peek() != null && shouldPublishEvent(queue.peek())) {
-                        publishEvent(queue.peek())
+                        publishEvent(queue.remove())
                     }
                 }
             }
