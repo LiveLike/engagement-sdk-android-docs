@@ -45,6 +45,15 @@ fun registerLogsHandler(logHandler: (String) -> Unit) {
     handler = logHandler
 }
 
+/**
+ * call it to tear down the registered logs handler
+ */
+
+fun unregisterLogsHandler() {
+    handler = null
+}
+
+
 internal inline fun <reified T> T.log(level: LogLevel, message: () -> Any?) {
     if (level >= minimumLogLevel) {
         message().let {

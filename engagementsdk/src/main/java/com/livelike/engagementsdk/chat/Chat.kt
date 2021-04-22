@@ -10,6 +10,10 @@ internal interface ChatEventListener {
 
 internal interface ChatRenderer {
     fun displayChatMessage(message: ChatMessage)
+    /**
+     * called whenever messages are loaded from history call or at fist time load call
+     **/
+    fun displayChatMessages(messages : List<ChatMessage>)
     fun deleteChatMessage(messageId: String)
     fun updateChatMessageTimeToken(messageId: String, timetoken: String)
     fun loadingCompleted()

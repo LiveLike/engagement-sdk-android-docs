@@ -7,15 +7,23 @@ import com.livelike.engagementsdk.core.services.messaging.MessagingClient
 import com.livelike.engagementsdk.core.services.messaging.MessagingEventListener
 import com.livelike.engagementsdk.core.utils.LogLevel
 import com.livelike.engagementsdk.core.utils.minimumLogLevel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class SynchronizedMessagingClientTest {
 
     @Mock
@@ -29,6 +37,9 @@ class SynchronizedMessagingClientTest {
     private lateinit var subject: SynchronizedMessagingClient
     private lateinit var listener: MessagingEventListener
 
+    val dispatcher = TestCoroutineDispatcher()
+
+
     companion object {
         @JvmStatic
         @BeforeClass
@@ -37,11 +48,19 @@ class SynchronizedMessagingClientTest {
         }
     }
 
+
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
+        Dispatchers.setMain(dispatcher)
         listener = mock(MessagingEventListener::class.java)
         subject = SynchronizedMessagingClient(messaingClient, timeSource, 86000L)
+    }
+
+    @After
+    fun tearDown() {
+//        dispatcher.cleanupTestCoroutines()
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -76,4 +95,23 @@ class SynchronizedMessagingClientTest {
         subject.processQueueForScheduledEvent()
         verify(listener).onClientMessageEvent(subject, clientMessage)
     }
+
+    @Test
+    fun `should publish past event even if event ahead of current video time is on top of sync queue`() {
+        val clientMessage = ClientMessage(
+            JsonObject(), "",
+            EpochTime(timeSource.invoke().timeSinceEpochInMs + 50000)
+        )
+        val pastClientMessage = ClientMessage(
+            JsonObject().apply { addProperty("id",1) }, "",
+            EpochTime(timeSource.invoke().timeSinceEpochInMs - 5000)
+        )
+        subject.listener = listener
+        subject.onClientMessageEvent(messaingClient, clientMessage)
+        subject.onClientMessageEvent(messaingClient, pastClientMessage)
+        subject.processQueueForScheduledEvent()
+        verify(listener).onClientMessageEvent(subject, pastClientMessage)
+    }
+
+
 }

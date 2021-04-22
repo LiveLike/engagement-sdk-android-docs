@@ -202,7 +202,7 @@ class PollView(context: Context, attr: AttributeSet? = null) : SpecifiedWidgetVi
     }
 
     private fun PollWidget.showTimer() {
-        showTimer(resource.timeout, viewModel?.animationEggTimerProgress, textEggTimer, {
+        showTimer(resource.timeout, textEggTimer, {
             viewModel?.animationEggTimerProgress = it
         }, {
             viewModel?.dismissWidget(it)

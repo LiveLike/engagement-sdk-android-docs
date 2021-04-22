@@ -9,7 +9,7 @@ import com.livelike.livelikedemo.LiveLikeApplication
 import com.livelike.livelikedemo.channel.ChannelManager
 
 class LiveBlogViewModel constructor(
-    application: LiveLikeApplication
+   val application: LiveLikeApplication
 ) : AndroidViewModel(application) {
 
     var publicSession: LiveLikeContentSession? = null
@@ -69,7 +69,9 @@ class LiveBlogViewModel constructor(
      * widget timeline view model connection/scopes closed
      **/
     override fun onCleared() {
-        super.onCleared()
         timeLineViewModel?.clear()
+        publicSession?.close()
+        application.publicSession = null
+        super.onCleared()
     }
 }

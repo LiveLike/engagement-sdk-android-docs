@@ -63,6 +63,7 @@ internal class CheerMeterViewModel(
     private var programId: String = ""
     private var currentWidgetType: WidgetType? = null
     private val interactionData = AnalyticsWidgetInteractionInfo()
+    var isWidgetInteractedEventLogged = false
     var animationEggTimerProgress = 0f
     var animationProgress = 0f
 
@@ -118,13 +119,17 @@ internal class CheerMeterViewModel(
 
     fun voteEnd() {
         currentWidgetType?.let {
-            data.latest()?.resource?.program_id?.let { programId ->
-                analyticsService.trackWidgetInteraction(
-                    it.toAnalyticsString(),
-                    currentWidgetId,
-                    programId,
-                    interactionData
-                )
+            // interaction event will only be fired if interaction cunt is more than 0 and if not logged before
+            if(interactionData.interactionCount > 0 && !isWidgetInteractedEventLogged) {
+                isWidgetInteractedEventLogged = true
+                data.latest()?.resource?.program_id?.let { programId ->
+                    analyticsService.trackWidgetInteraction(
+                        it.toAnalyticsString(),
+                        currentWidgetId,
+                        programId,
+                        interactionData
+                    )
+                }
             }
         }
     }
@@ -157,7 +162,8 @@ internal class CheerMeterViewModel(
             currentWidgetType = WidgetType.fromString(widgetInfos.type)
             interactionData.widgetDisplayed()
 
-            currentWidgetType?.let {
+            // this is not needed here, ideally this event should get called when interaction expires
+           /* currentWidgetType?.let {
                     analyticsService.trackWidgetInteraction(
                         it.toAnalyticsString(),
                         currentWidgetId,
@@ -165,7 +171,7 @@ internal class CheerMeterViewModel(
                         interactionData
                     )
 
-            }
+            }*/
         }
     }
 

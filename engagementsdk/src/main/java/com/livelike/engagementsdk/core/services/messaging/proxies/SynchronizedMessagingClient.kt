@@ -3,13 +3,14 @@ package com.livelike.engagementsdk.core.services.messaging.proxies
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.core.services.messaging.ClientMessage
 import com.livelike.engagementsdk.core.services.messaging.MessagingClient
-import com.livelike.engagementsdk.core.utils.Queue
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.core.utils.logVerbose
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.PriorityQueue
 
 const val SYNC_TIME_FIDELITY = 500L
 
@@ -20,12 +21,26 @@ internal class SynchronizedMessagingClient(
 ) :
     MessagingClientProxy(upstream) {
 
-    private val queueMap: MutableMap<String, Queue<ClientMessage>> = mutableMapOf()
-    private var coroutineTimer: Job
-    private var isQueueProcess: Boolean = false
+    private val queueMap: MutableMap<String, PriorityQueue<ClientMessage>> = mutableMapOf()
+    private var publishSyncMessagesJob: Job
+
+    private val messageComparator : Comparator<ClientMessage> =
+        Comparator<ClientMessage> { o1, o2 ->
+            when {
+                o1.timeStamp.timeSinceEpochInMs > o2.timeStamp.timeSinceEpochInMs -> {
+                    return@Comparator 1
+                }
+                o2.timeStamp.timeSinceEpochInMs > o1.timeStamp.timeSinceEpochInMs -> {
+                    return@Comparator -1
+                }
+                else -> {
+                    return@Comparator 0
+                }
+            }
+        }
 
     init {
-        coroutineTimer = MainScope().launch {
+        publishSyncMessagesJob = CoroutineScope(Dispatchers.IO).launch {
             publishTimeSynchronizedMessageFromQueue()
         }
     }
@@ -43,6 +58,7 @@ internal class SynchronizedMessagingClient(
     }
 
     override fun onClientMessageEvents(client: MessagingClient, events: List<ClientMessage>) {
+
         val list = events.filter { event ->
             when {
                 shouldPublishEvent(event) -> {
@@ -58,8 +74,8 @@ internal class SynchronizedMessagingClient(
                 }
             }
         }
+        listener?.onClientMessageEvents(this, list.sortedWith(messageComparator))
         processQueueForScheduledEvent()
-        listener?.onClientMessageEvents(this, list)
     }
 
     private suspend fun publishTimeSynchronizedMessageFromQueue() {
@@ -69,18 +85,26 @@ internal class SynchronizedMessagingClient(
     }
 
     override fun unsubscribeAll() {
-        coroutineTimer.cancel()
+        publishSyncMessagesJob.cancel()
         super.unsubscribeAll()
     }
+
+    private val DEFAULT_QUEUE_CAPACITY = 20
 
     override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {
         logDebug { "Message received at SynchronizedMessagingClient" }
         when {
             shouldPublishEvent(event) -> {
-                val queue = queueMap[event.channel] ?: Queue()
-                if (queue.isEmpty().not()) {
+
+                val queue = queueMap[event.channel] ?: PriorityQueue(
+                    DEFAULT_QUEUE_CAPACITY,
+                    messageComparator
+                )
+
+                if (queue.isNotEmpty()) {
                     processQueueForScheduledEvent()
                 }
+
                 publishEvent(event)
             }
             shouldDismissEvent(event) -> {
@@ -100,54 +124,32 @@ internal class SynchronizedMessagingClient(
         // Adding the check for similar message ,it is occuring if user get message
         // from history and also receive message from pubnub listener
         // checking right now is based on id
-        val queue = queueMap[event.channel] ?: Queue()
+        val queue = queueMap[event.channel] ?: PriorityQueue(
+            DEFAULT_QUEUE_CAPACITY,
+            messageComparator
+        )
         val currentChatMessageId = event.message.get("id")?.asString
 
-        val foundMsg = queue.elements.find {
+        val foundMsg = queue.find {
             val msgId = it.message.get("id")?.asString
             return@find msgId != null && currentChatMessageId != null && msgId == currentChatMessageId
         }
         if (foundMsg == null) {
-            queue.enqueue(event)
-        }
-        queue.elements.sortBy {
-            if (it.message.has("pubnubMessageToken")) {
-                return@sortBy it.message.get("pubnubMessageToken")?.asLong ?: 0L
-            }
-            return@sortBy 0L
+            queue.add(event)
         }
         queueMap[event.channel] = queue
     }
 
+
     fun processQueueForScheduledEvent() {
-        if (isQueueProcess.not() && queueMap.isNotEmpty()) {
-            isQueueProcess = true
-            val publishedEvents = arrayListOf<ClientMessage>()
             queueMap.keys.forEach {
                 val queue = queueMap[it]
                 queue?.let {
-                    val count = queue.count()
-                    var check = 0
-                    while (check < count) {
-                        val event = queue.peek()
-                        event?.let {
-                            when {
-                                shouldPublishEvent(event) -> publishedEvents.add(queue.dequeue()!!)
-                                shouldDismissEvent(event) -> {
-                                    logDismissedEvent(event)
-                                    queue.dequeue()
-                                }
-                                else -> {
-                                }
-                            }
-                        }
-                        check++
+                    while (queue.peek() != null && shouldPublishEvent(queue.peek())) {
+                        publishEvent(queue.remove())
                     }
                 }
             }
-            listener?.onClientMessageEvents(this, publishedEvents)
-            isQueueProcess = false
-        }
     }
 
     private fun publishEvent(event: ClientMessage) {
@@ -171,6 +173,13 @@ internal class SynchronizedMessagingClient(
                     event.timeStamp.timeSinceEpochInMs +
                     " : timeSourceTime" + timeSource().timeSinceEpochInMs
         }
+
+    override fun destroy() {
+        super.destroy()
+        publishSyncMessagesJob.cancel()
+
+    }
+
 }
 
 // Extension for MessagingClient to be synced

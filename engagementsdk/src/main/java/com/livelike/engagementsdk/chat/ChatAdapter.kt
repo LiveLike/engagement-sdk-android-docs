@@ -87,11 +87,12 @@ internal class ChatRecyclerAdapter(
     lateinit var stickerPackRepository: StickerPackRepository
     var chatReactionRepository: ChatReactionRepository? = null
 
-    lateinit var checkListIsAtTop: (position: Int) -> Boolean
+    var checkListIsAtTop: (((position: Int) -> Boolean)?)  = null
+
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
     internal var isPublicChat: Boolean = true
-    private var mRecyclerView: RecyclerView? = null
+    internal var mRecyclerView: RecyclerView? = null
     internal var messageTimeFormatter: ((time: Long?) -> String)? = null
     var currentChatReactionPopUpViewPos: Int = -1
     internal var chatPopUpView: ChatActionsPopupView? = null
@@ -211,7 +212,7 @@ internal class ChatRecyclerAdapter(
                 showFloatingUI(
                     isOwnMessage,
                     message?.myChatMessageReaction,
-                    checkListIsAtTop(adapterPosition) && itemCount > 1
+                    (checkListIsAtTop?.invoke(adapterPosition)?:false) && itemCount > 1
                 )
             }
         }

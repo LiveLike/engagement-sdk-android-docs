@@ -1,11 +1,9 @@
 package com.livelike.engagementsdk.chat
 
-import com.livelike.engagementsdk.AnalyticsService
 import com.livelike.engagementsdk.EpochTime
 import com.livelike.engagementsdk.MessageListener
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
-import java.util.Calendar
 
 /**
  * Created by Shivansh Mittal on 2020-04-08.
@@ -30,7 +28,7 @@ interface LiveLikeChatSession {
     /**
      * To connect to the chatRoom with provided chatRoomId, by default it will load initial messages
      */
-    fun connectToChatRoom(chatRoomId: String)
+    fun connectToChatRoom(chatRoomId: String, callback: LiveLikeCallback<Unit>? = null)
 
     /** Returns the number of messages published on a chatroom since a given time*/
     fun getMessageCount(startTimestamp: Long, callback: LiveLikeCallback<Byte>)
@@ -49,15 +47,19 @@ interface LiveLikeChatSession {
      *
      * @message : text message
      * @imageUrl: image message
-     * @imageWidth: image width default is 100
-     * @imageHeight: image height default is 100
+     * @imageWidth: image width default is 100, if value is not null then the original width of image will not set
+     * @imageHeight: image height default is 100, f value is not null then the original height of image will not set
      * @liveLikeCallback : callback to provide the message object, this callback is not meant the message is sent
+     *
+     * Note: For the very first for every message livelikeCallback return the ChatMessage object which contains the data added by the user,
+     * then the #messageListener will recieve the same chatMessage with uploaded url and timetoken updated ,you can check it with the id in #ChatMessage
+     *
      * **/
     fun sendChatMessage(
         message: String?,
         imageUrl: String? = null,
-        imageWidth: Int? = 100,
-        imageHeight: Int? = 100,
+        imageWidth: Int?,
+        imageHeight: Int?,
         liveLikeCallback: LiveLikeCallback<LiveLikeChatMessage>
     )
 

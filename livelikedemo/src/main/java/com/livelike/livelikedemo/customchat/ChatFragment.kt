@@ -2,6 +2,8 @@ package com.livelike.livelikedemo.customchat
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.livelike.engagementsdk.MessageListener
+import com.livelike.engagementsdk.chat.stickerKeyboard.findImages
 import com.livelike.engagementsdk.publicapis.LiveLikeCallback
 import com.livelike.engagementsdk.publicapis.LiveLikeChatMessage
 import com.livelike.livelikedemo.CustomChatActivity
@@ -59,8 +62,24 @@ class ChatFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         rcyl_chat.adapter = adapter
+        ed_msg.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val matcher = s.toString().findImages()
+                if (matcher.matches()) {
+                    sendMessage(null, s.toString().substring(1, s.toString().length - 1))
+                    ed_msg.text?.clear()
+                }
+            }
+        })
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             adapter.chatList.addAll(homeChat.session.chatSession.getLoadedMessages())
             homeChat.session.chatSession.setMessageListener(object : MessageListener {
@@ -139,10 +158,10 @@ class ChatFragment : Fragment() {
     private fun sendMessage(message: String?, imageUrl: String?) {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
             homeChat.session.chatSession.sendChatMessage(
-                message, imageUrl = imageUrl,
+                message, imageUrl = imageUrl, imageWidth = 150, imageHeight = 150,
                 liveLikeCallback = object : LiveLikeCallback<LiveLikeChatMessage>() {
                     override fun onResponse(result: LiveLikeChatMessage?, error: String?) {
-                        ed_msg.text.clear()
+                        ed_msg.text?.clear()
                         result?.let { message ->
                             val index = adapter.chatList.indexOfFirst { message.id == it.id }
                             if (index == -1) {
