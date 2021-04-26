@@ -1,6 +1,5 @@
 package com.livelike.engagementsdk.widget.timeline
 
-import TimelineWidgetResource
 import com.livelike.engagementsdk.LiveLikeContentSession
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.Stream
