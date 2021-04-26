@@ -100,7 +100,7 @@ internal class TimeLineViewAdapter(
             "$widgetType-created"
         }
         val widgetId = widgetResourceJson["id"].asString
-        itemViewHolder.itemView.widget_view.run {
+        itemViewHolder.itemView.widget_view?.run {
             //TODO segregate widget view and viewmodel creation
             val widgetView = WidgetProvider()
                 .get(
