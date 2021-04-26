@@ -67,7 +67,7 @@ internal class AlertWidgetView : SpecifiedWidgetView {
         viewModel?.widgetState?.subscribe(javaClass) { widgetStates ->
             logDebug { "Current State: $widgetStates" }
             widgetStates?.let {
-                if(widgetStates == WidgetStates.INTERACTING && (!viewModel?.data?.latest()?.link_url.isNullOrEmpty())){
+                if (widgetStates == WidgetStates.INTERACTING && (!viewModel?.data?.latest()?.link_url.isNullOrEmpty())) {
                     // will only be fired if link is available in alert widget
                     viewModel?.markAsInteractive()
                 }
@@ -118,6 +118,17 @@ internal class AlertWidgetView : SpecifiedWidgetView {
                 }
                 bodyBackground.background =
                     AndroidResource.createDrawable(themeComponent.body)
+                AndroidResource.updateThemeForView(
+                    bodyText,
+                    themeComponent.body,
+                    fontFamilyProvider
+                )
+                AndroidResource.updateThemeForView(
+                    linkText,
+                    themeComponent.body,
+                    fontFamilyProvider
+                )
+
             }
         }
     }
