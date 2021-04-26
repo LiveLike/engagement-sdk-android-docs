@@ -8,8 +8,11 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
@@ -77,6 +80,28 @@ class WidgetsTimeLineView(
 //        this.timeLineViewModel = timeLineViewModel
 //
 //    }
+
+    /**
+     * will update the value of theme to be applied for all widgets in timeline
+     * This will update the theme on the current displayed widget as well
+     **/
+    fun applyTheme(theme: LiveLikeEngagementTheme) {
+        this.adapter.liveLikeEngagementTheme = theme
+    }
+
+    /**
+     * this method parse livelike theme from json object and apply if its a valid json
+     * refer @applyTheme(theme)
+     **/
+    fun applyTheme(themeJson: JsonObject): Result<Boolean> {
+        val themeResult = LiveLikeEngagementTheme.instanceFrom(themeJson)
+        return if (themeResult is Result.Success) {
+            applyTheme(themeResult.data)
+            Result.Success(true)
+        } else {
+            themeResult as Result.Error
+        }
+    }
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()

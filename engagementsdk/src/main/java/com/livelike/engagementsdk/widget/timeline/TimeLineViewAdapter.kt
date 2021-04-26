@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.LiveLikeWidget
 import com.livelike.engagementsdk.MockAnalyticsService
 import com.livelike.engagementsdk.R
@@ -19,7 +20,7 @@ import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_item.view.widget_view
 
 
-class TimeLineViewAdapter(
+internal class TimeLineViewAdapter(
     private val context: Context,
     private val sdk: EngagementSDK,
     private val timeLineViewModel: WidgetTimeLineViewModel
@@ -34,6 +35,7 @@ class TimeLineViewAdapter(
     val list: ArrayList<TimelineWidgetResource> = arrayListOf()
     var isLoadingInProgress = false
     var isEndReached = false
+    var liveLikeEngagementTheme: LiveLikeEngagementTheme? = null
 
     override fun onCreateViewHolder(p0: ViewGroup, viewtype: Int): RecyclerView.ViewHolder {
         return when (viewtype) {
@@ -72,6 +74,9 @@ class TimeLineViewAdapter(
         if (itemViewHolder is TimeLineItemViewHolder) {
             val timelineWidgetResource = list[p1]
             val liveLikeWidget = timelineWidgetResource.liveLikeWidget
+            liveLikeEngagementTheme?.let {
+                itemViewHolder.itemView.widget_view.applyTheme(it)
+            }
             itemViewHolder.itemView.widget_view.enableDefaultWidgetTransition = false
             itemViewHolder.itemView.widget_view.showTimer = timelineWidgetResource.widgetState ==
                     WidgetStates.INTERACTING
