@@ -1,3 +1,5 @@
+package com.livelike.engagementsdk.widget.timeline
+
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +15,6 @@ import com.livelike.engagementsdk.WidgetInfos
 import com.livelike.engagementsdk.core.utils.SubscriptionManager
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
 import com.livelike.engagementsdk.widget.WidgetProvider
-import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_item.view.widget_view
 

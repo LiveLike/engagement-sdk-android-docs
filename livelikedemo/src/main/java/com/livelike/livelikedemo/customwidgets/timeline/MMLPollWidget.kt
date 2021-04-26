@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.livelike.engagementsdk.OptionsItem
+import com.livelike.engagementsdk.widget.timeline.TimelineWidgetResource
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import com.livelike.engagementsdk.widget.widgetModel.PollWidgetModel
 import com.livelike.livelikedemo.R
