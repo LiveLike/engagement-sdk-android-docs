@@ -1,5 +1,6 @@
 package com.livelike.engagementsdk.chat.services.messaging.pubnub
 
+import android.util.Log
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
@@ -68,7 +69,9 @@ internal class PubnubChatMessagingClient(
     private val analyticsService: AnalyticsService,
     publishKey: String? = null,
     val isDiscardOwnPublishInSubcription: Boolean = true,
-    val origin: String? = null
+    val origin: String? = null,
+    pubnubHeartbeatInterval: Int,
+    pubnubPresenceTimeout: Int
 ) : MessagingClient {
 
     @Volatile
@@ -198,6 +201,7 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
+        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(pubnubPresenceTimeout,pubnubHeartbeatInterval)
         pubnubConfiguration.filterExpression =
             "sender_id == '$uuid' || !(content_filter contains 'filtered')"
         if (origin != null) {
@@ -205,6 +209,10 @@ internal class PubnubChatMessagingClient(
         }
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
+
+        logDebug { "pubnubOrigin $origin"}
+        logDebug { "pubnubHearbeatInterval $pubnubHeartbeatInterval"}
+        logDebug { "pubnubPresenceTimeout $pubnubPresenceTimeout"}
         val client = this
 
         // Extract SubscribeCallback?

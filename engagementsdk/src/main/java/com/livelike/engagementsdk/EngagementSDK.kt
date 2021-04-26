@@ -206,7 +206,9 @@ class EngagementSDK(
                             pair.first.id,
                             MockAnalyticsService(),
                             pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin
+                            origin = pair.second.pubnubOrigin,
+                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
+                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
 
                     uiScope.launch {
@@ -254,7 +256,9 @@ class EngagementSDK(
                             pair.first.id,
                             MockAnalyticsService(),
                             pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin
+                            origin = pair.second.pubnubOrigin,
+                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
+                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
 
                     uiScope.launch {
@@ -291,7 +295,9 @@ class EngagementSDK(
                             pair.first.id,
                             MockAnalyticsService(),
                             pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin
+                            origin = pair.second.pubnubOrigin,
+                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
+                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
                     uiScope.launch {
                         val chatRoomResult = chatRepository.fetchChatRoom(
@@ -337,7 +343,9 @@ class EngagementSDK(
                             pair.first.id,
                             MockAnalyticsService(),
                             pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin
+                            origin = pair.second.pubnubOrigin,
+                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
+                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
                     uiScope.launch {
                         val url = when (liveLikePagination) {
@@ -384,7 +392,9 @@ class EngagementSDK(
                             pair.first.id,
                             MockAnalyticsService(),
                             pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin
+                            origin = pair.second.pubnubOrigin,
+                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
+                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
 
                     uiScope.launch {
@@ -441,7 +451,9 @@ class EngagementSDK(
                             pair.first.id,
                             MockAnalyticsService(),
                             pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin
+                            origin = pair.second.pubnubOrigin,
+                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
+                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
                     uiScope.launch {
                         val chatRoomResult = chatRepository.deleteCurrentUserFromChatRoom(
@@ -644,7 +656,9 @@ class EngagementSDK(
                             pair.first.id,
                             MockAnalyticsService(),
                             pair.second.pubnubPublishKey,
-                            origin = pair.second.pubnubOrigin
+                            origin = pair.second.pubnubOrigin,
+                            pubnubHeartbeatInterval = pair.second.pubnubHeartbeatInterval,
+                            pubnubPresenceTimeout = pair.second.pubnubPresenceTimeout
                         )
 
                     val chatRoomResult = chatRepository.fetchChatRoom(
@@ -986,7 +1000,12 @@ class EngagementSDK(
         @SerializedName("pubnub_origin")
         val pubnubOrigin: String? = null,
         @SerializedName("leaderboard_detail_url_template")
-        val leaderboardDetailUrlTemplate: String? = null
+        val leaderboardDetailUrlTemplate: String? = null,
+        @SerializedName("pubnub_heartbeat_interval")
+        val pubnubHeartbeatInterval: Int,
+        @SerializedName("pubnub_presence_timeout")
+        val pubnubPresenceTimeout: Int,
+
     )
 
     companion object {
