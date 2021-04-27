@@ -1,6 +1,7 @@
 package com.livelike.engagementsdk.chat.data.repository
 
 import com.livelike.engagementsdk.AnalyticsService
+import com.livelike.engagementsdk.CHAT_HISTORY_LIMIT
 import com.livelike.engagementsdk.TEMPLATE_CHAT_ROOM_ID
 import com.livelike.engagementsdk.chat.Visibility
 import com.livelike.engagementsdk.chat.data.remote.ChatRoom
@@ -134,7 +135,7 @@ internal class ChatRepository(
         )
     }
 
-    fun loadPreviousMessages(channel: String, limit: Int = 20) {
+    fun loadPreviousMessages(channel: String, limit: Int = CHAT_HISTORY_LIMIT) {
         pubnubChatMessagingClient?.loadMessagesWithReactions(
             channel,
             limit
