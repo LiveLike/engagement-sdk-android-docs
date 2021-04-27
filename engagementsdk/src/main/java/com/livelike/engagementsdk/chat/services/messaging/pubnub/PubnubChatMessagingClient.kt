@@ -59,8 +59,6 @@ import java.util.Calendar
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-const val MAX_HISTORY_COUNT_PER_CHANNEL = 100
-
 internal class PubnubChatMessagingClient(
     subscriberKey: String,
     authKey: String,
