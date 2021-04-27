@@ -346,8 +346,8 @@ internal class ContentSession(
         widgetClient =
             PubnubMessagingClient(
                 config.pubNubKey,
-                uuid,
                 config.pubnubHeartbeatInterval,
+                uuid,
                 config.pubnubPresenceTimeout
             ).filter().logAnalytics(analyticServiceStream.latest()!!)
                 .withPreloader(applicationContext)
