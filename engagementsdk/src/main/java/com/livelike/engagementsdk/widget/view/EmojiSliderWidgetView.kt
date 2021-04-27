@@ -24,9 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import java.math.RoundingMode
-import java.util.concurrent.ExecutionException
 
 internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = null) :
     GenericSpecifiedWidgetView<ImageSliderEntity, EmojiSliderWidgetViewModel>(context, attr) {
@@ -91,6 +89,9 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                     entity.initialMagnitude?.let {
                         image_slider.progress = it
                     }
+                viewModel.currentVote.currentData?.let {
+                    image_slider.progress = it.toFloat()
+                }
                 val size = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP,
                     36f,
@@ -129,10 +130,10 @@ internal class EmojiSliderWidgetView(context: Context, attr: AttributeSet? = nul
                 image_slider.positionListener = { magnitude ->
                     viewModel.currentVote.onNext(
                         "${
-                        magnitude.toBigDecimal().setScale(
-                            2,
-                            RoundingMode.UP
-                        ).toFloat()
+                            magnitude.toBigDecimal().setScale(
+                                2,
+                                RoundingMode.UP
+                            ).toFloat()
                         }"
                     )
                 }
