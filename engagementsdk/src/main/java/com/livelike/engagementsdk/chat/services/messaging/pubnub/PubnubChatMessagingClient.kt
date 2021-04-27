@@ -200,16 +200,14 @@ internal class PubnubChatMessagingClient(
         pubnubConfiguration.authKey = authKey
         pubnubConfiguration.uuid = uuid
         pubnubConfiguration.publishKey = publishKey
-        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(pubnubPresenceTimeout,pubnubHeartbeatInterval)
         pubnubConfiguration.filterExpression =
             "sender_id == '$uuid' || !(content_filter contains 'filtered')"
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
+        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(pubnubPresenceTimeout,pubnubHeartbeatInterval)
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
-
-        logDebug { "pubnubHearbeatInterval $pubnubHeartbeatInterval  pubnubPresenceTimeout $pubnubPresenceTimeout"}
         val client = this
 
         // Extract SubscribeCallback?
