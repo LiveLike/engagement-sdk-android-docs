@@ -25,7 +25,9 @@ import com.livelike.engagementsdk.widget.services.messaging.pubnub.PubnubMessagi
          if (messagingClient == null) {
              messagingClient = PubnubMessagingClient.getInstance(
                  sdkConfiguration.pubNubKey,
-                 currentUserStream.latest()?.id
+                 currentUserStream.latest()?.id,
+                 sdkConfiguration.pubnubHeartbeatInterval,
+                 sdkConfiguration.pubnubPresenceTimeout
              )
              messagingClient?.addMessagingEventListener(object : MessagingEventListener {
                  override fun onClientMessageEvent(client: MessagingClient, event: ClientMessage) {

@@ -70,8 +70,8 @@ internal class PubnubChatMessagingClient(
     publishKey: String? = null,
     val isDiscardOwnPublishInSubcription: Boolean = true,
     val origin: String? = null,
-    pubnubHeartbeatInterval: Int,
-    pubnubPresenceTimeout: Int
+    private val pubnubHeartbeatInterval: Int,
+    private val pubnubPresenceTimeout: Int
 ) : MessagingClient {
 
     @Volatile
