@@ -40,8 +40,7 @@ internal class PubnubMessagingClient(
         pubnubConfiguration.setPresenceTimeoutWithCustomInterval(pubnubPresenceTimeout,pubnubHeartbeatInterval)
         pubnub = PubNub(pubnubConfiguration)
 
-        logDebug { "pubnubHearbeatInterval $pubnubHeartbeatInterval"}
-        logDebug { "pubnubPresenceTimeout $pubnubPresenceTimeout"}
+        logDebug { "pubnubHearbeatInterval $pubnubHeartbeatInterval pubnubPresenceTimeout $pubnubPresenceTimeout"}
 
         val client = this
 
