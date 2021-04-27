@@ -2,7 +2,7 @@ package com.livelike.livelikedemo.customwidgets.timeline
 
 import MMLAlertWidget
 import MMLPollWidget
-import TimelineWidgetResource
+import com.livelike.engagementsdk.widget.timeline.TimelineWidgetResource
 import android.content.Context
 import android.view.View
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory

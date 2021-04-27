@@ -1,3 +1,4 @@
+package com.livelike.engagementsdk.widget.timeline
 
 import android.animation.Animator
 import android.animation.AnimatorSet
@@ -7,13 +8,14 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.JsonObject
 import com.livelike.engagementsdk.EngagementSDK
+import com.livelike.engagementsdk.LiveLikeEngagementTheme
 import com.livelike.engagementsdk.R
+import com.livelike.engagementsdk.core.services.network.Result
 import com.livelike.engagementsdk.core.utils.AndroidResource
 import com.livelike.engagementsdk.core.utils.logDebug
 import com.livelike.engagementsdk.widget.LiveLikeWidgetViewFactory
-import com.livelike.engagementsdk.widget.timeline.WidgetApiSource
-import com.livelike.engagementsdk.widget.timeline.WidgetTimeLineViewModel
 import com.livelike.engagementsdk.widget.util.SmoothScrollerLinearLayoutManager
 import com.livelike.engagementsdk.widget.viewModel.WidgetStates
 import kotlinx.android.synthetic.main.livelike_timeline_view.view.loadingSpinnerTimeline
@@ -44,7 +46,7 @@ class WidgetsTimeLineView(
      **/
     var widgetViewFactory: LiveLikeWidgetViewFactory? = null
         set(value) {
-            adapter.widgetViewFactory= value
+            adapter.widgetViewFactory = value
             field = value
         }
 
@@ -52,7 +54,7 @@ class WidgetsTimeLineView(
         inflate(context, R.layout.livelike_timeline_view, this)
 
         // added a check based on data, since this will be causing issue during rotation of device
-        if(timeLineViewModel.timeLineWidgets.isEmpty()) {
+        if (timeLineViewModel.timeLineWidgets.isEmpty()) {
             showLoadingSpinnerForTimeline()
         }
         adapter =
@@ -79,6 +81,28 @@ class WidgetsTimeLineView(
 //
 //    }
 
+    /**
+     * will update the value of theme to be applied for all widgets in timeline
+     * This will update the theme on the current displayed widget as well
+     **/
+    fun applyTheme(theme: LiveLikeEngagementTheme) {
+        this.adapter.liveLikeEngagementTheme = theme
+    }
+
+    /**
+     * this method parse livelike theme from json object and apply if its a valid json
+     * refer @applyTheme(theme)
+     **/
+    fun applyTheme(themeJson: JsonObject): Result<Boolean> {
+        val themeResult = LiveLikeEngagementTheme.instanceFrom(themeJson)
+        return if (themeResult is Result.Success) {
+            applyTheme(themeResult.data)
+            Result.Success(true)
+        } else {
+            themeResult as Result.Error
+        }
+    }
+
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         subscribeForTimelineWidgets()
@@ -92,7 +116,11 @@ class WidgetsTimeLineView(
                     adapter.notifyItemInserted(0)
                     wouldRetreatToActiveWidgetPosition()
                     timeLineViewModel.uiScope.launch {
-                        delay(AndroidResource.parseDuration(pair.second[0].liveLikeWidget.timeout?:""))
+                        delay(
+                            AndroidResource.parseDuration(
+                                pair.second[0].liveLikeWidget.timeout ?: ""
+                            )
+                        )
                         pair.second[0]?.widgetState = WidgetStates.RESULTS
 
                         adapter.notifyItemChanged(0)
@@ -124,7 +152,7 @@ class WidgetsTimeLineView(
      * view click listeners
      * snap to live added
      **/
-    private fun initListeners(){
+    private fun initListeners() {
         val lm = timeline_rv.layoutManager as LinearLayoutManager
         timeline_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(
@@ -165,29 +193,29 @@ class WidgetsTimeLineView(
             snapToLiveForTimeline()
         }
 
-            timeLineViewModel.widgetEventStream.subscribe(javaClass.simpleName) {
-                logDebug { "Widget timeline event stream : $it" }
-                when (it) {
-                    
-                    WidgetTimeLineViewModel.WIDGET_LOADING_COMPLETE -> {
-                        timeLineViewModel.uiScope.launch {
-                            hideLoadingSpinnerForTimeline()
+        timeLineViewModel.widgetEventStream.subscribe(javaClass.simpleName) {
+            logDebug { "Widget timeline event stream : $it" }
+            when (it) {
 
-                        }
-                    }
-
-                    WidgetTimeLineViewModel.WIDGET_TIMELINE_END -> {
-                        timeLineViewModel.uiScope.launch {
-                            adapter.isEndReached = true
-                            adapter.notifyItemChanged(adapter.list.size - 1)
-                        }
-                    }
-
-                    WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
+                WidgetTimeLineViewModel.WIDGET_LOADING_COMPLETE -> {
+                    timeLineViewModel.uiScope.launch {
+                        hideLoadingSpinnerForTimeline()
 
                     }
                 }
+
+                WidgetTimeLineViewModel.WIDGET_TIMELINE_END -> {
+                    timeLineViewModel.uiScope.launch {
+                        adapter.isEndReached = true
+                        adapter.notifyItemChanged(adapter.list.size - 1)
+                    }
+                }
+
+                WidgetTimeLineViewModel.WIDGET_LOADING_STARTED -> {
+
+                }
             }
+        }
     }
 
 
@@ -201,7 +229,6 @@ class WidgetsTimeLineView(
         loadingSpinnerTimeline.visibility = View.GONE
         timeline_rv.visibility = View.VISIBLE
     }
-
 
 
     /**
@@ -232,7 +259,6 @@ class WidgetsTimeLineView(
     }
 
 
-
     private fun snapToLiveForTimeline() {
         timeline_rv?.let { rv ->
             hideSnapToLiveForWidgets()
@@ -251,7 +277,9 @@ class WidgetsTimeLineView(
         val translateAnimation = ObjectAnimator.ofFloat(
             timeline_snap_live,
             "translationY",
-            if (showingSnapToLive) 0f else AndroidResource.dpToPx(TIMELINE_SNAP_TO_LIVE_ANIMATION_DESTINATION)
+            if (showingSnapToLive) 0f else AndroidResource.dpToPx(
+                TIMELINE_SNAP_TO_LIVE_ANIMATION_DESTINATION
+            )
                 .toFloat()
         )
         translateAnimation?.duration = TIMELINE_SNAP_TO_LIVE_ANIMATION_DURATION.toLong()
