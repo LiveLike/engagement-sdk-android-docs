@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:padding="5dp"
+                android:padding="@dimen/cheer_meter_title_padding"
                 android:text="@string/minigame_pick_a_side"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
                 android:textColor="@color/livelike_cheer_meter_title_color"

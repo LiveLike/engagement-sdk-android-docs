@@ -268,10 +268,10 @@ abstract class SpecifiedWidgetView @JvmOverloads constructor(
     }
 
     protected fun applyThemeOnTitleView(it: WidgetBaseThemeComponent) {
-        titleView.componentTheme = it.title
+        titleView?.componentTheme = it.title
         AndroidResource.updateThemeForView(titleTextView, it.title, fontFamilyProvider)
         if (it.header?.background != null) {
-            txtTitleBackground.background = AndroidResource.createDrawable(it.header)
+            txtTitleBackground?.background = AndroidResource.createDrawable(it.header)
         }
         AndroidResource.setPaddingForView(txtTitleBackground, it.header?.padding)
     }

@@ -93,12 +93,12 @@ internal class AndroidResource {
         }
 
         fun updateThemeForView(
-            textView: TextView,
+            textView: TextView?,
             component: ViewStyleProps?,
             fontFamilyProvider: FontFamilyProvider? = null
         ) {
             component?.let {
-                textView.apply {
+                textView?.apply {
                     it.fontSize?.let {
                         setTextSize(TypedValue.COMPLEX_UNIT_SP, it.toFloat())
                     }
@@ -128,8 +128,8 @@ internal class AndroidResource {
             }
         }
 
-        fun setPaddingForView(view: View, padding: List<Double>?) {
-            view.setPadding(
+        fun setPaddingForView(view: View?, padding: List<Double>?) {
+            view?.setPadding(
                 webPxToDevicePx(padding?.get(0)?.toInt() ?: 0),
                 webPxToDevicePx(padding?.get(1)?.toInt() ?: 0),
                 webPxToDevicePx(padding?.get(2)?.toInt() ?: 0),
