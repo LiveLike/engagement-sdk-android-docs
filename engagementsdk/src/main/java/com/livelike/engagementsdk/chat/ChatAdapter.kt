@@ -87,7 +87,7 @@ internal class ChatRecyclerAdapter(
     lateinit var stickerPackRepository: StickerPackRepository
     var chatReactionRepository: ChatReactionRepository? = null
 
-    var checkListIsAtTop: (((position: Int) -> Boolean)?)  = null
+    var checkListIsAtTop: (((position: Int) -> Boolean)?) = null
 
     lateinit var chatViewThemeAttribute: ChatViewThemeAttributes
 
@@ -212,7 +212,7 @@ internal class ChatRecyclerAdapter(
                 showFloatingUI(
                     isOwnMessage,
                     message?.myChatMessageReaction,
-                    (checkListIsAtTop?.invoke(adapterPosition)?:false) && itemCount > 1
+                    (checkListIsAtTop?.invoke(adapterPosition) ?: false) && itemCount > 1
                 )
             }
         }
@@ -633,6 +633,7 @@ internal class ChatRecyclerAdapter(
                             else
                                 img_chat_avatar.setImageDrawable(chatUserPicDrawable)
                         }
+                        chatMessage.tag = message.id
 
                         val spaceRemover = Pattern.compile("[\\s]")
                         val inputNoString = spaceRemover.matcher(message.message ?: "")
@@ -666,7 +667,8 @@ internal class ChatRecyclerAdapter(
                                     message.image_height ?: LARGER_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    chatMessage.text = s
+                                    if (chatMessage.tag == message.id)
+                                        chatMessage.text = s
                                 }
                             }
                             !isDeleted && (isOnlyStickers && numberOfStickers < 2) -> {
@@ -680,7 +682,8 @@ internal class ChatRecyclerAdapter(
                                     LARGER_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    chatMessage.text = s
+                                    if (chatMessage.tag == message.id)
+                                        chatMessage.text = s
                                 }
                             }
                             !isDeleted && atLeastOneSticker -> {
@@ -694,7 +697,8 @@ internal class ChatRecyclerAdapter(
                                     MEDIUM_STICKER_SIZE
                                 ) {
                                     // TODO this might write to the wrong messageView on slow connection.
-                                    chatMessage.text = s
+                                    if (chatMessage.tag == message.id)
+                                        chatMessage.text = s
                                 }
                             }
                             else -> {
