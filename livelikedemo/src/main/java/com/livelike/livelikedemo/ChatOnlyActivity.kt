@@ -58,7 +58,7 @@ class ChatOnlyActivity : AppCompatActivity() {
             privateGroupChatsession?.avatarUrl = it
         }
         sessionMap[chatRoomId] = privateGroupChatsession!!
-        privateGroupChatsession?.connectToChatRoom(chatRoomId, object : LiveLikeCallback<Unit>() {
+        privateGroupChatsession?.connectToChatRoom("", object : LiveLikeCallback<Unit>() {
             override fun onResponse(result: Unit?, error: String?) {
                 println("ChatOnlyActivity.onResponse -> $result -> $error")
             }
