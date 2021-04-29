@@ -209,13 +209,13 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
             txt_cheer_meter_title.text = resource.question
             if (optionList.size == 2) {
                 txt_cheer_meter_team_1.text = optionList[0].description
-                Glide.with(context)
+                Glide.with(context.applicationContext)
                     .load(optionList[0].image_url)
                     .into(img_logo_team_1)
 
                 txt_cheer_meter_team_2.text = optionList[1].description
 
-                Glide.with(context)
+                Glide.with(context.applicationContext)
                     .load(optionList[1].image_url)
                     .into(img_logo_team_2)
 
@@ -407,7 +407,7 @@ class CheerMeterView(context: Context, attr: AttributeSet? = null) :
                         R.anim.cheer_meter_winner_scale_animation
                     )
                 img_winner_team.visibility = View.VISIBLE
-                Glide.with(context)
+                Glide.with(context.applicationContext)
                     .load(winnerTeam.image_url)
                     .into(img_winner_team)
                 animation.setAnimationListener(object :
