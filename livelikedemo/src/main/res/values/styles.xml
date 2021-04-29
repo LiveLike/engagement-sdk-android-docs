@@ -25,6 +25,8 @@
         <item name="sendIconTintColor">#FFF</item>
         <item name="stickerIconTintColor">#FFF</item>
         <item name="chatBubbleMarginLeft">5dp</item>
+        <item name="reaction_count_margin_right">30dp</item>
+        <item name="chatBubbleMarginRight">25dp</item>
         <item name="chatAvatarMarginLeft">13dp</item>
         <item name="chatReactionPanelColor">@android:color/white</item>
         <item name="chatReactionRadius">12dp</item>
