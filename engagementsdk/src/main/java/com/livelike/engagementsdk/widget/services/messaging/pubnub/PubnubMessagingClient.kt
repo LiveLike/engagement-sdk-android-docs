@@ -20,7 +20,11 @@ import com.pubnub.api.models.consumer.PNStatus
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult
 
-internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : MessagingClient {
+internal class PubnubMessagingClient(
+    subscriberKey: String, pubnubHeartbeatInterval: Int, uuid: String,
+    pubnubPresenceTimeout: Int
+) : MessagingClient {
+
     override fun publishMessage(message: String, channel: String, timeSinceEpoch: EpochTime) {
     }
 
@@ -33,7 +37,9 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
     init {
         pubnubConfiguration.subscribeKey = subscriberKey
         pubnubConfiguration.uuid = uuid
+        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(pubnubPresenceTimeout,pubnubHeartbeatInterval)
         pubnub = PubNub(pubnubConfiguration)
+
         val client = this
 
         // Extract SubscribeCallback?
@@ -157,12 +163,18 @@ internal class PubnubMessagingClient(subscriberKey: String, uuid: String) : Mess
     }
 
     companion object {
-        fun getInstance(subscriberKey: String, uuid: String?): PubnubMessagingClient? {
+        fun getInstance(
+            subscriberKey: String, uuid: String?,
+            pubnubHeartbeatInterval: Int, pubnubPresenceTimeout: Int
+        ): PubnubMessagingClient? {
+
             uuid?.let {
                 if (validateUuid(uuid)) {
                     return PubnubMessagingClient(
                         subscriberKey,
-                        uuid
+                        pubnubHeartbeatInterval,
+                        uuid,
+                        pubnubPresenceTimeout
                     )
                 }
             }

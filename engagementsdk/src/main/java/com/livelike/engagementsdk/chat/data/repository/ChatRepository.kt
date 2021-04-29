@@ -21,7 +21,9 @@ internal class ChatRepository(
     private val uuid: String,
     private val analyticsService: AnalyticsService,
     private val publishKey: String? = null,
-    private val origin: String? = null
+    private val origin: String? = null,
+    private val pubnubHeartbeatInterval: Int,
+    private val pubnubPresenceTimeout: Int
 ) : BaseRepository() {
 
     var pubnubChatMessagingClient: PubnubChatMessagingClient? = null
@@ -31,12 +33,14 @@ internal class ChatRepository(
         if (pubnubChatMessagingClient == null)
             pubnubChatMessagingClient =
                 PubnubChatMessagingClient(
-                    subscribeKey,
-                    authKey,
-                    uuid,
-                    analyticsService,
-                    publishKey,
-                    origin = origin
+                    subscriberKey = subscribeKey,
+                    authKey = authKey,
+                    uuid = uuid,
+                    analyticsService = analyticsService,
+                    publishKey = publishKey,
+                    origin = origin,
+                    pubnubHeartbeatInterval = pubnubHeartbeatInterval,
+                    pubnubPresenceTimeout = pubnubPresenceTimeout
                 )
         return pubnubChatMessagingClient!!
     }

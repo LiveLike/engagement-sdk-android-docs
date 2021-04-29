@@ -105,7 +105,9 @@ internal class ChatSession(
                         liveLikeUser.id,
                         MockAnalyticsService(),
                         pair.first.pubnubPublishKey,
-                        origin = pair.first.pubnubOrigin
+                        origin = pair.first.pubnubOrigin,
+                        pubnubHeartbeatInterval = pair.first.pubnubHeartbeatInterval,
+                        pubnubPresenceTimeout = pair.first.pubnubPresenceTimeout
                     )
                 logDebug { "chatRepository created" }
                 // updating urls value will be added in enterChat Room

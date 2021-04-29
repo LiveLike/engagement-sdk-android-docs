@@ -66,7 +66,9 @@ internal class PubnubChatMessagingClient(
     private val analyticsService: AnalyticsService,
     publishKey: String? = null,
     val isDiscardOwnPublishInSubcription: Boolean = true,
-    val origin: String? = null
+    val origin: String? = null,
+    private val pubnubHeartbeatInterval: Int,
+    private val pubnubPresenceTimeout: Int
 ) : MessagingClient {
 
     @Volatile
@@ -201,6 +203,7 @@ internal class PubnubChatMessagingClient(
         if (origin != null) {
             pubnubConfiguration.origin = origin
         }
+        pubnubConfiguration.setPresenceTimeoutWithCustomInterval(pubnubPresenceTimeout,pubnubHeartbeatInterval)
         pubnubConfiguration.reconnectionPolicy = PNReconnectionPolicy.EXPONENTIAL
         pubnub = PubNub(pubnubConfiguration)
         val client = this
