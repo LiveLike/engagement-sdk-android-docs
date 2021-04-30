@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
@@ -100,6 +101,7 @@ internal class ChatViewModel(
         }
 
     override fun displayChatMessages(messages: List<ChatMessage>) {
+        Log.d("custom","messages")
 
         messages.forEach {
             replaceImageMessageContentWithImageUrl(it)
@@ -107,7 +109,7 @@ internal class ChatViewModel(
 
         messageList.addAll(0, messages.filter {
             !deletedMessages.contains(it.id) && !getBlockedUsers()
-                .contains(it.senderId) && it.messageEvent == PubnubChatEventType.CUSTOM_MESSAGE_CREATED
+                .contains(it.senderId) && (it.messageEvent != PubnubChatEventType.CUSTOM_MESSAGE_CREATED)
         }.map {
             it.isFromMe = userStream.latest()?.id == it.senderId
             it

@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -33,9 +32,20 @@ import kotlinx.android.synthetic.main.custom_chat_item.view.widget_view
 import kotlinx.android.synthetic.main.fragment_chat.btn_gif_send
 import kotlinx.android.synthetic.main.fragment_chat.btn_img_send
 import kotlinx.android.synthetic.main.fragment_chat.btn_send
+import kotlinx.android.synthetic.main.fragment_chat.custom
 import kotlinx.android.synthetic.main.fragment_chat.ed_msg
 import kotlinx.android.synthetic.main.fragment_chat.lay_swipe
 import kotlinx.android.synthetic.main.fragment_chat.rcyl_chat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -58,7 +68,20 @@ class CustomMessageFragment : Fragment() {
         "https://media.giphy.com/media/4rW9yu8QaZJFC/giphy.gif"
     )
 
+    private val authorization = "Authorization"
+    private var  accessToken: String =
+        "Bearer dyE3arFtBKdtN4b_PhlJXXgivpfLIvbFkQon96Dk4PN2_5mTwkLJZw"
+    private val client = OkHttpClient().newBuilder()
+        .build()
+
+    private val contentType = "Content-Type"
+    private val applicationJSON: String = "application/json"
+    private val mediaType: MediaType? = applicationJSON.toMediaTypeOrNull()
     private val adapter = CustomMessageChatAdapter()
+
+    val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,7 +102,8 @@ class CustomMessageFragment : Fragment() {
             var programId = homeChat.channel.llProgram
 
             if(programId.equals("5b4b2538-02c3-4ad2-820a-2c5e6da66314",ignoreCase = true)){
-                (activity as CustomChatActivity).selectedHomeChat?.session?.chatSession?.connectToChatRoom("1e69f1b6-ff35-402f-9e7c-1a7ab68c3ce2", object : LiveLikeCallback<Unit>() {
+                (activity as CustomChatActivity).selectedHomeChat?.session?.chatSession?.
+                    connectToChatRoom("4121f7af-9f18-43e5-a658-0ac364e2f176", object : LiveLikeCallback<Unit>() {
                     override fun onResponse(result: Unit?, error: String?) {
                         println("ChatOnlyActivity.onResponse -> $result -> $error")
                     }
@@ -180,9 +204,40 @@ class CustomMessageFragment : Fragment() {
             }
         }
 
-
-
+   // send custom message
+        custom.setOnClickListener {
+            scope.launch(Dispatchers.IO) {
+                sendCustomMessage(
+                    "https://cf-blast-qa.livelikecdn.com/api/v1/chat-rooms/4121f7af-9f18-43e5-a658-0ac364e2f176/custom-messages/",
+                    "{\n" +
+                            "  \"custom_data\": \"heyaa, this is for testing\"\n" +
+                            "}"
+                )
+            }
+        }
     }
+
+
+    private fun sendCustomMessage(url: String,
+                                    post: String? = null): String? {
+
+        val body = post?.toRequestBody()
+            val request: Request = Request.Builder()
+                .url(url)
+                .method("POST", body)
+                .addHeader(
+                    authorization,
+                    accessToken
+                )
+                .addHeader(contentType, applicationJSON)
+                .build()
+            val response: Response = client.newCall(request).execute()
+            val code = response.code
+            Log.d("responseCode",code.toString())
+            return response.body?.string()
+        }
+
+
 
     private fun sendMessage(message: String?, imageUrl: String?) {
         (activity as CustomChatActivity).selectedHomeChat?.let { homeChat ->
@@ -287,7 +342,6 @@ class CustomMessageChatAdapter : RecyclerView.Adapter<CustomMessageChatViewHolde
                     }
 
                 } catch (ex: Exception) {
-                    Toast.makeText(holder.itemView.context, "Invalid json", Toast.LENGTH_LONG).show()
                     holder.itemView.custom_tv.text = customData
                     holder.itemView.custom_tv.visibility = View.VISIBLE
                     holder.itemView.widget_view.visibility = View.GONE
