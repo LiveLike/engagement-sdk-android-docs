@@ -29,10 +29,7 @@ class HomeFragment : Fragment() {
     private val adapter = HomeAdapter(object : ItemClickListener {
         override fun itemClick(homeChat: HomeChat) {
             homeChat.msgCount = 0
-           // (activity as? CustomChatActivity)?.showChatScreen(homeChat)
-
-            //open custom receiving chat section
-            (activity as? CustomChatActivity)?.showCustomMessageScreen(homeChat)
+           (activity as? CustomChatActivity)?.showChatScreen(homeChat)
         }
     })
 
